@@ -1,0 +1,5 @@
+{
+  "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-4de4d17d9b115f4e-a1/workspace"
+}
+attempts
+{'attempt_id': 'afo-4de4d17d9b115f4e-a1', 'order_id': 'afo-4de4d17d9b115f4e', 'seq': 1, 'state': 'FAILED', 'record': '{"schema_version": "1.0", "order_id": "afo-4de4d17d9b115f4e", "attempt_id": "afo-4de4d17d9b115f4e-a1", "attempt_seq": 1, "state": "FAILED", "workspace_ref": "workorder:WO-AFO-4de4d17d9b115f4e-a1", "factory_revision": "pending", "created_utc": "2026-10-30T06:56:22.720743Z", "fabro_run_id": null, "fabro_server": null, "recovery_plan_id": null, "exit_status": "local_launch_not_started", "terminal_package_status": null, "checkpoint_refs": [], "evidence_refs": ["nonce:fd6a996cf1d9c2db5303a54a9c139925", "dispatched_epoch:1793343383"], "finished_utc": "2026-10-30T06:56:39.023249Z"}', 'created_utc': '2026-10-30T06:56:22.720743Z', 'finished_utc': '2026-10-30T06:56:39.023249Z'}

@@ -1,75 +1,132 @@
-# Full-phase QM demonstration and six-hour progress checkpoint
+# Full-phase QM demonstration: tested implementation and actual outcomes
 
-Owner steering on 30 October: ignore development constraints for now and obtain a complete pipeline run.
-The owner subsequently agreed to bounded repair cycles before advancing with remaining findings.
-The first demonstration already running uses the existing single-pass policy; the bounded-repair variant is
-being implemented separately. Do not claim its behavior is active in the current run.
+Owner selected a complete development demonstration and agreed to two author correction
+cycles per phase, then advisory advancement with all findings retained. QM, SafeC disabled.
+No accepted delivery, safety or ASPICE compliance claim.
 
-## Active execution
+## Current runtime checkpoint — 2026-10-30T07:38:13.082185Z
 
-- Source remains `e21aa74411d01458bab45fee8af6d59f710fad03`; no unqualified source activation.
-- Profile `local-rtx-v2-omniverse2-q38-qm-demo-mtp`: SafeC disabled, QM, Qwen Q8_0/MTP3/xhigh,
-  262144 context, one inference slot. Quality failures remain findings rather than workflow stops.
-- LL order `afo-e6593e4a6b4ec1b8`, job `afo-product-109acc58b919a37613210e04`, native
-  `01M65P3JYHR82VVYR5K1FCK1YQ`: authoritative RUNNING/LIVE/HELD, one SENT request at 05:57:09 UTC.
-- Same mission `F014-NIGHT-20261027-RCC`; prior expenditure, uncertainty and spent correction remain intact.
-- Explicit, disclosed, owner-delegated eight-hour deadline amendment to **2026-10-30T13:52:52Z**;
-  prior deadline 08:11:56 UTC retained in the durable receipt. Non-time ceilings unchanged.
-- Scope SHA256 `c7a32bb8354e2bd866e2f26eb2c800aac297a1255980e699e934c1681da6cdc8`;
-  separate source/role/time grants signed through the already delegated SSH agent. Epoch 64.
-- HAL `afo-3005a1af7d6cd7eb` not submitted. Its demonstration must identify the generated LL as
-  **provisional**, never independently accepted. The existing formal import still requires all six passing gates;
-  a narrowly scoped demonstration import is a prerequisite, not a reason to relabel failed gates.
-- Existing host Git observer rebound, same progress branch/history, five already enrolled orders,
-  five-minute reporting. No competing scheduler. Git publication must be checked before claiming it updated.
-- Local read-only collector armed through the explicit deadline for this exact LL/HAL pair. It waits for
-  QUIESCENT/RELEASED, verifies the archive SHA and inventory, then copies to loop10
-  `inspection/feature014/2026-10-30-qwen/full-pipeline-qm-all-phases/`.
+Exact deployed source **899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f**, operator RUNNING epoch72.
+Profile local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp, Qwen3.8 27B Q8_0,
+f16 KV, MTP3, xhigh, 262144 context, one inference slot.
 
-## Previous strict LL outcome and actual diagnosis
+LL **afo-f3ad027406784ef7**, product **afo-product-09d5a51e57adaa5a6a71589e**,
+native **01M65TR9K7DRDTM8AX8ZTP445G**: RUNNING / LIVE / HELD.
+At this checkpoint five first-attempt author packets VALID, one request SENT,
+76163 completed reported tokens. [Actual observation](bounded-repair-live.json).
+This is a timestamped observation, not a guarantee of future progress.
 
-Order `afo-6bde501adad6a2bf` completed BLOCKED with 50 gaps, **30 requests / 545576 reported tokens**.
-Native `01M65G3CG47YKS11GRQEATNB10` SUCCEEDED denotes execution completion, not product acceptance;
-its durable task outcome is BLOCKED and its execution is QUIESCENT/RELEASED.
-The complete blocked package was copied and independently archive-verified on local loop10 under
-`inspection/feature014/2026-10-30-qwen/full-pipeline-context-fixed/`.
+Same mission F014-NIGHT-20261027-RCC; historical failures, reservations, expenditure,
+uncertainty and the spent protocol correction remain. Explicit prior deadline
+**2026-10-30T13:52:52Z** remains unchanged. No new capacity or time grant this increment.
+Scope bdf0f9637adf9e1f4efc46978b9bc5d68346090b108235bad4e08352418c049f
+has exact source/role signatures under the standing owner delegation.
 
-All seven initial SWE.1 author packets were valid on their first attempt. A two-call localized rework
-cleared two inspection criteria on the next baseline. CPU/timing allocations remained absent, and the final
-inspection also found consistency defects. No full SWE.1 or product acceptance.
+HAL **afo-c6fc39d5d0b4557b NOT_SUBMITTED**.
+[Explicit handoff tool](prepare-enrol-dependent-hal.py) defaults to a read-only prerequisite
+check, --prepare creates immutable intake files, --enrol delegates execution to Conductor.
+On the actual host the check correctly returned WAIT_FOR_PROVISIONAL_LL / LL_TASK_NOT_FINISHED,
+HAL_submitted=false, model_requests=0 ([record](hal-prerequisite-check.json)).
+Its prepare/enrol paths are **NOT_RUN**. No background retry scheduler was introduced.
+It requires native QUIESCENT/RELEASED, a verified archive, all six attempted snapshots and the
+exact sealed implementation header. Existing signed trial covers both order IDs.
+Provisional code remains read-only and explicitly unaccepted; strict imports still require six PASS.
 
-AFO produced an accepted NEEDS_EVIDENCE proposal, requesting an authoritative measurable CPU/timing allocation.
-The packet inventory is complete (`complete=true`, `missing=[]`), but its primary upstream source explicitly
-contains NOT_PROVIDED/placeholders. Inventory completeness is not the missing engineering decision. The surfaced
-`LOCAL_DIAGNOSIS_FAILED:MISSING_EVIDENCE` is not evidence of a malformed proposal. Do not invent that allocation
-or repeat an identical strict run hoping prose repair can supply it.
+Existing host-only Git recorder now publishes seven enrolled orders/source899/epoch72
+on overnight/2026-10-30-local-qwen-aspice. GitHub independently confirmed its07:34:19 checkpoint.
+Local collector is active on loop10 under
+inspection/feature014/2026-10-30-qwen/full-pipeline-qm-launch-ready/.
+It waits for native quiescence/released resources, verifies archive SHA and inventory,
+and extracts private outcomes. No raw prompts or hidden reasoning are collected.
 
-## Implementation and verification
+## Runtime changes and tested revisions
 
-Earlier integrated Qwen context repair `e21aa74`: **164 local / 125 distinct native tests PASS**,
-all seven CRE gates PASS, and eight independent frozen context/accounting checks PASS. Bootstrap/protocol
-corrections were owner-directed; this is not proof of completely unattended factory-code self-healing.
+- **b1abd4b**: two durable author/test-author correction cycles; normal verification/inspection
+  rerun; evidence-keyed route replay; nine structured calls/task across three visits.
+  After exhaustion, advisory advancement preserves all failed verdicts, including absent baselines.
+  Provisional sealed LL import is restricted to the explicitly selected QM demonstration lane.
+  Legacy binding compatibility accepts only exact previous validator59531a99... with all other
+  fields unchanged. New policy cannot use legacy authority.
+- **3bc1f10**: Qwen's actual “after an RCC reset” startup invariant was wrongly refused by a
+  classifier recognizing only “after reset”. Shared reset-event recognition fixes author,
+  target-test mapping and both inspector paths. Original designated JSON is replayed unchanged;
+  the causal old-classifier test still reproduces the original rejection.
+- **078663b**, included in the tested base: existing simulation measurement extended to authored
+  LL/HAL scopes using existing profile/C-index/wrapper/Arm/Renode paths. Stimuli are authored in
+  SWE.5's existing write authority and measured by SWE.6. Missing APIs, source tampering,
+  functional failure despite cost PASS and over-budget failures remain blocked.
+  Opt-in; no invented timing allocation or physical hardware WCET claim.
+- **899865d**: actual native launch found AGENT_SKILL_HASH_MISMATCH:swe5-author:skills.lock.
+  The reviewed optional performance paragraph was missing from the canonical generator/lock.
+  Generator and lock now reproduce the exact skill; integrity checking remains enabled.
+  Installed PlantUML/Renode directories are included in runtime PATH, preserving old PATH when
+  absent. No source hot-change of a running graph.
 
-Feedback candidate `f037a0cf1ccb8bdc035b0cc5348b3efe2b2aefc4`, not deployed:
-full inspector finding delivery, correct reset-versus-startup scope, Open-point provenance/routing,
-and compatible provided-input provenance. Previous local cohort **159 PASS / one skip**.
-Native first attempt: **83 PASS /63 SKIP /14 fixture setup errors**. After adding the actual read-only RCC inputs,
-the exact source/cohort produced **97 PASS /63 SKIP /0 failures/errors**, 90.04 seconds.
-Skipped: 59 require the unavailable pinned SafeC engine, three require Fabro in the verifier's PATH,
-one lacks a frozen SWE.2 baseline. None count as native passes. Both attempts preserved.
-Each bounded maintenance window resumed the existing source without deployment; factory epoch progressed to62.
+Native base **3bc1f10**: language **46 PASS**, product-policy **92 PASS**, measurement **85 PASS**;
+zero failures/errors/skips in each final cohort. These cohorts have overlapping case IDs;
+do not sum them as distinct tests. Local corresponding cohorts passed, including four actual
+Fabro graph parser cases and two selected semantic-inspector compatibility cases.
 
-New authored-driver measurement implementation **078663bd0461e99ab680733ea8178bf8be04474a**, not deployed:
-extends the existing profile/C-index/LL-wrapper/Arm/Renode path to authored LL and HAL; refuses incomplete,
-unsupported or combined scopes. The performance stimulus is authored in SWE.5 using its existing target-test
-write authority, then consumed by SWE.6's existing measurement keyword. No expanded agent write permissions.
-Real compiler/Renode tests cover two namespaces and both layers, source tampering, functional failure despite
-cost PASS, and measured over-budget failure. Existing delivered-code behavior remains exercised.
-Combined cohort: **84 PASS / one failing test fixture**, then the same failed test PASS after adding its missing
-deterministic report step and correcting a synthetic IWDG expectation to the stated model. The production
-implementation was unchanged by these fixture corrections. Initial failures retained. Ruff E9/F, diff check,
-and14 static design checks PASS. Static validation is not runtime qualification. Three existing demonstration
-workflow tests also PASS locally. Native measurement qualification NOT_RUN while Qwen is active.
+Native exact delta **899865d**: launch-integrity **17 PASS**, zero failures/errors/skips.
+Only generator/lock/PATH/new PATH-test differ from the qualified base.
+The real source899 launch preflight passed agents/MCP and reached the native launch boundary
+with Renode available, while interception created no native execution and left request
+ledger **631→631**. [Actual preflight](native/actual-launch-preflight/result.json).
+Optional diagram rendering, HwSim and gcov remained disabled; required MCP operations passed.
 
-Formal Feature014 **30/58 unchanged**; no new task IDs completed. Full LL/HAL product success, independent
-learning benefit, broad model capability and24/72/168-hour availability remain unproven.
+All native cohorts used one verifier, four CPU affinity/400% quota,8GiB physical memory/no swap,
+finite96GiB virtual address reservation for Renode/.NET,600s wall,1800CPU seconds,
+no network/GPU/owner identity/SSH agent. Finite virtual address space is not physical memory use.
+Qualification ran only after Qwen quiescence in fenced maintenance windows; existing source resumed
+before later exact-source activation. All test workers made zero model calls.
+
+Exact commands/revisions/results: [manifest](tested-revisions-and-commands.json).
+Native per-cohort provenance, pytest logs, input hashes and JUnit live under [native/](native/).
+Local JUnit: [bounded policy](bounded-repair-local.xml),
+[real Fabro parsing](bounded-repair-fabro-parser.xml), [startup wording](startup-wording-local.xml),
+[semantic compatibility](startup-wording-semantic-compat.xml), [launch integrity](launch-integrity-local.xml).
+Static specification/contracts/design validation is separate; never runtime qualification.
+
+## Failed executions and failed verification retained
+
+1. Strict LL **afo-6bde501adad6a2bf**: BLOCKED/50gaps,30requests/545576 reported tokens,
+   native SUCCEEDED but task BLOCKED/QUIESCENT/RELEASED. All seven initial author packets valid;
+   localized Qwen rework cleared two inspection criteria, CPU/timing remained absent.
+   AFO NEEDS_EVIDENCE correctly requested the missing authoritative allocation.
+   Complete packet inventory does not supply that allocation. Verified local outcome:
+   inspection/feature014/2026-10-30-qwen/full-pipeline-context-fixed/.
+2. Single-pass QM LL **afo-e6593e4a6b4ec1b8**, native01M65P3JYHR82VVYR5K1FCK1YQ:
+   BLOCKED/49gaps,18requests/352415 reported tokens. All six phases have attempted author/snapshot/
+   inspection records, but no complete implementation. Six valid requirements packets; crosscut
+   falsely rejected as above, correction refused by single-call policy, subsequent interface used
+   invalid SWR-000 after missing requirements. [Terminal findings](single-pass-terminal-findings.json).
+   Archive SHA cc9044697a328b9f8ce2c8a2074b72d854bc007bfd27b0bf4ee81b756445ae00;
+   verified copy inspection/feature014/2026-10-30-qwen/full-pipeline-qm-all-phases/.
+3. First bounded retry **afo-4de4d17d9b115f4e** at3bc1f10:
+   blocked before native launch by canonical skill-lock mismatch. **No native ID or inference**;
+   liveness NOT_STARTED/resource RELEASED. [Preserved failure](bounded-repair-initial-launch-failure.json).
+   Verified failed-admission package copied to
+   inspection/feature014/2026-10-30-qwen/full-pipeline-qm-bounded-repair/.
+   New order/source899 preserves that failed attempt and mission charges.
+4. Earlier f037 native fixture attempt83PASS/63SKIP/14setup errors; corrected read-only actual inputs
+   gave97PASS/63SKIP/no failures/errors.59skips lacked pinned SafeC,3lacked FabroPATH,
+   1lacked a frozen SWE.2 baseline. Skips never count as PASS. Both attempts retained.
+5. Authored measurement local initial84PASS/one fixture failure; same test passed after correcting
+   a synthetic expectation and adding the missing deterministic report step, with production
+   implementation unchanged. Native final85PASS. Initial startup replay harness TypeErrors were
+   corrected as harness defects and preserved; the final causal classifier test reproduces the
+   actual runtime defect and passes against corrected source.
+
+## Separate acceptance statuses
+
+Runtime implementation: qualified base plus exact tested launch delta, deployed and currently executing.
+Local-model capability: experimental role trial; no broad role qualification from these tests.
+Product: complete clean LL/HAL **UNPROVEN**; advisory demonstration is never accepted delivery.
+Learning: independent benefit **UNPROVEN**.
+Availability:24/72/168-hour operational campaigns **NOT_RUN/UNPROVEN**.
+Formal Feature014 **30/58 unchanged**, no newly completed task IDs this increment.
+
+Next: observe actual bounded repairs and all six LL phases; verify/copy terminal outcomes;
+then prepare/enrol provisional HAL if sealed implementation prerequisites exist in the unchanged
+window. If absent, record the precise missing prerequisite and fix/test the cause without
+fabricating code, resetting accounting or treating native success as product success.

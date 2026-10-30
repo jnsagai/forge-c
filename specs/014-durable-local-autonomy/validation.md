@@ -1,5 +1,27 @@
 # Implementation and qualification status
 
+## Latest actual execution — 2026-10-30 07:38UTC
+
+Deployed **899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f**, RUNNING epoch72,
+QM/SafeC disabled/Qwen Q8_0/f16/MTP3/xhigh/262144/one inference.
+LL afo-f3ad027406784ef7, native01M65TR9K7DRDTM8AX8ZTP445G RUNNING/LIVE/HELD:
+five initial author packets VALID, sixth SENT,76163 completed reported tokens.
+Two durable phase corrections then advisory advance is active. HAL NOT_SUBMITTED;
+its read-only prerequisite check correctly waits for LL completion. No product acceptance.
+
+Qualified native base3bc1f10 language46/product92/measurement85 PASS, zero skips/errors/failures.
+Exact899 launch delta17 PASS and real launch preflight PASS/zero model calls.
+Base tests were not all rerun at899; precise tested revisions/commands are in the linked manifest.
+The failed3bc admission (skill-lock mismatch before any native launch) and prior single-pass
+six-phase but incomplete product remain retained and copied locally. Skills generator/lock
+and installed tool PATH are corrected with integrity checks enabled.
+
+Same mission/history/counters/uncertainty and existing explicit13:52:52UTC deadline unchanged.
+Formal30/58, no newly completed task IDs. Broad role qualification, clean full LL/HAL,
+independent learning benefit and24/72/168h operational proof remain UNPROVEN/NOT_RUN.
+[Evidence and exact commands](../../evidence/014-durable-local-autonomy/qm-all-phases-20261030/README.md).
+Historical checkpoints below retain their original timestamps.
+
 ## Current correction — 2026-10-30 01:14UTC
 
 Full RCC LL is BLOCKED after7first-attempt VALID requirements packets/88317reported

@@ -1,6 +1,187 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 05:31 UTC: localized Qwen rework demonstrated; scoped-feedback fixes ready locally
+## Latest state — 07:38 UTC: corrected launch active; bounded-repair LL running
+
+Owner requests complete QM artifacts first, two author corrections then advisory advance.
+**Do not resume historical checkpoints below as current instructions.**
+Runtime **899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f**, RUNNING epoch72.
+Qwen3.8 27B Q8_0/f16/MTP3/xhigh/context262144/one inference,
+profile local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp, SafeC disabled.
+
+LL **afo-f3ad027406784ef7**, product **afo-product-09d5a51e57adaa5a6a71589e**,
+native **01M65TR9K7DRDTM8AX8ZTP445G** is RUNNING/LIVE/HELD at07:38:13UTC.
+Five first-attempt author packets VALID, one SENT,76163 completed reported tokens.
+**Do not restart or edit the active graph.** Same mission F014-NIGHT-20261027-RCC,
+all historical failures/counters/uncertainty/spent correction preserved.
+Existing explicit deadline **2026-10-30T13:52:52Z** unchanged, no new grant/ceiling.
+
+Native base3bc1f10 completed language46PASS/product92PASS/measurement85PASS,
+zero errors/failures/skips. Local cohorts and four real Fabro parser casesPASS.
+An attempted3bc launch then failed **before native start/inference** because the optional
+SWE.5 skill paragraph was missing from canonical generator/lock. Failed order
+afo-4de4d17d9b115f4e retained and copied locally with NOT_STARTED/RELEASED.
+Fix899865d synchronizes generator/lock and exposes actually installed simulation tool PATH.
+Exact899 native17PASS; real launch preflight agents/MCPPASS, Renode available,
+native launch intercepted, ledger631→631, zero model calls. Do not claim all base tests
+rerun at899: qualified base + tested four-file delta + actual native launch preflight.
+Only control plane restarted; loaded model/provider unchanged.
+
+HAL **afo-c6fc39d5d0b4557b NOT_SUBMITTED**.
+Prepared explicit tool locally A3/prepare-enrol-qm-rcc-launch-ready-hal.py and remotely
+/mnt/data/forge-c/production-local-014/deployment/qm-rcc-launch-ready-20261030-v1/prepare-enrol-hal.py.
+Default is read-only; actual check returned WAIT/LL_TASK_NOT_FINISHED, no model calls.
+--prepare/--enrol are **NOT_RUN**. Requires LL nativeQUIESCENT/RELEASED, verified archive,
+all six attempted snapshots and exact sealed SWE.3 header; uses demo.provided_ll,
+read-only provisional input/actual gate decisions/quality_accepted:false.
+Existing signed source/roles scope already covers both IDs, no new signing/time needed.
+Never use old strict-HAL script unchanged or claim failed gates passed.
+Scope bdf0f9637adf9e1f4efc46978b9bc5d68346090b108235bad4e08352418c049f.
+
+Observer O/observe-qm-rcc-launch-ready.py --native; remote O as above.
+Existing Git recorder rebound; GitHub confirmed07:34:19/source899/epoch72/seven orders.
+Local collector A3/collect-qm-rcc-launch-ready-outcomes.py is active, copies verified
+archives to loop10 inspection/feature014/2026-10-30-qwen/full-pipeline-qm-launch-ready/.
+No parallel GPU/remote CPU qualification; preserve active inference lease.
+
+Current visible designated output, completed answers (not token streaming):
+ssh omniverse2@100.118.28.92 '/mnt/data/forge-c/production-local-014/venv/bin/python /mnt/data/forge-c/production-local-014/deployment/qm-rcc-launch-ready-20261030-v1/watch-qm-rcc-launch-ready-visible-output.py'
+No raw prompts or hidden reasoning.
+
+Formal **30/58 unchanged**, no newly completed task IDs. Product/role capability,
+independent learning benefit and24/72/168h availability remain unproven.
+[Exact commands, revisions, failed attempts and evidence](../../evidence/014-durable-local-autonomy/qm-all-phases-20261030/README.md).
+
+## Historical checkpoint — 06:49 UTC: single-pass demo exposed a wording bug; exact corrected source qualifying natively
+
+Owner now prioritizes a complete QM pipeline despite quality findings, and agreed to **two author correction
+cycles, then advisory advancement**. SafeC remains disabled. Do not mistake native completion for delivery.
+
+The single-pass LL **afo-e6593e4a6b4ec1b8**, native **01M65P3JYHR82VVYR5K1FCK1YQ**, finished
+**BLOCKED /49gaps /18requests /352415reported tokens**; native SUCCEEDED and execution QUIESCENT/RELEASED.
+All six phases have author/snapshot/inspection attempt records, but it did NOT produce a complete implementation.
+Six first-pass requirement packets were valid. The cross-cutting packet was refused because Qwen wrote
+**"after an RCC reset"** and the validator only recognized **"after reset"**. Its correction was then refused by
+`DEVELOPMENT_PHASE_REPAIR_EXHAUSTED` (single-call policy). Missing SWE.1 led to an invalid SWR-000 interface packet.
+This was a framework wording bug plus an overrestrictive execution setting; do not blame model capability or
+relax the recorded verdict. The failed package was copied and archive-verified on local loop10, SHA
+**cc9044697a328b9f8ce2c8a2074b72d854bc007bfd27b0bf4ee81b756445ae00**.
+
+Committed and pushed source **3bc1f10e41c24afb3db30f4b243e35df063cb721**, NOT_DEPLOYED:
+- b1abd4b: bounded demonstration v2, two durable author/test-author returns, actual re-verification/inspection,
+  advisory advancement after exhaustion (including missing baseline), nine structured calls/task across visits,
+  evidence-keyed route replay without another spent correction. Provisional, sealed, read-only LL import for QM
+  HAL demonstrations only; strict imports still require six passing gates. Legacy execution binding compatibility
+  is limited to the exact previous validator hash59531a99... with every policy field unchanged.
+- 3bc1f10: shared qualified-reset language across author validation, target-test mapping and both inspector paths.
+  Original Qwen JSON is replayed unchanged and now passes; target verification remains required. Reset-control
+  identifiers remain excluded. Local **46 startup/regression +2 semantic compatibility PASS**. Earlier incomplete
+  test harness calls are retained as failures, not product defects. Full causal legacy-classifier replay included.
+- Underlying authored LL/HAL measurement078663b remains opt-in; not needed to unblock this demonstration.
+
+Local bounded-policy cohort **92PASS/0FAIL/ERROR/SKIP**,380.176s, plus four real Fabro graph-parser casesPASS.
+Do not present the parser checks as model qualification. Selected Ruff and static14 design checksPASS separately.
+
+Native qualification is running against exact3bc1f10 after confirmed Qwen quiescence, in a fenced maintenance
+pause **epoch65**. Controller `/mnt/data/forge-c/production-local-014/deployment/qualify-qm-bounded-repair-maintenance-window.py`
+(the local filename is `qualify-qm-bounded-repair-maintenance-window.py`; remote current filename is the same).
+Worker `.../deployment/qualify-native-qm-bounded-repair-3bc1f10.py`.
+Window directory `.../deployment/qm-bounded-repair-qualification-window-v1/`.
+Three serial cohorts: language, product, measurement. **Language46PASS/0skip**, product running, measurement NOT_RUN
+at this checkpoint. Each uses one verifier, four CPU affinity/400% quota,8GiB physical RAM/no swap, finite96GiB
+virtual address reservation for Renode/.NET,600s wall limit, no network/GPU/owner identity. Larger VM is not larger
+physical RAM. Scope limits are asserted and recorded. Safe real tool resources were prepared to avoid the prior
+Java/CLR reservation issue. On completion the wrapper resumes existing source only at unchanged pause epoch65
+(expected RUNNING66); newer operator intent is preserved. No deployment or model calls by qualification.
+
+Production source is still **e21aa74**, existing QM single-pass profile, temporarily PAUSED65 for qualification.
+Same RCC mission/counters/uncertainty; existing explicitly extended deadline **13:52:52UTC**, no further extension.
+The exact next LL/HAL scope preparation script is ready locally:
+`operations/feature014/incremental-m1-followup-20261029/prepare-qm-rcc-bounded-repair.py` (outside the git worktree).
+It requires RUNNING66 after qualification, uses qualified product-cohort checkout, binds new source/profile and
+same mission/deadline, and creates fresh primary/role signing payloads. No new time grant, cap reset or r3.
+Review its generated scope and sign under standing delegation, then activate exact qualified3bc1f10 and enqueue
+one fresh LL. Do not reuse the single-pass scope hash or activate before all three native cohorts pass.
+New profile `local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp`, context262144/Q8/MTP3/xhigh/one slot, QM.
+HAL must wait for a usable sealed generated LL component; no header/phase evidence may be invented.
+
+Current public progress branch `overnight/2026-10-30-local-qwen-aspice` retains all five orders and history.
+The loop10 collector session94574 watches the old demo pair until13:52:52; retain it, but arm a new collector for
+new IDs and rebind the existing observer after enrollment. Owner's old visible-output command points to the
+finished single-pass order; provide a new command when the next run starts. It shows completed answers, not
+answer-token streaming; prompts/hidden reasoning are not exposed.
+
+Formal **30/58 unchanged**, no newly completed task IDs. Full product success, independently measured learning
+benefit and24/72/168-hour availability remain unproven. Current mission target is actual complete LL/HAL artifacts,
+with honest findings, before quality tightening. [Evidence](../../evidence/014-durable-local-autonomy/qm-all-phases-20261030/README.md).
+
+## Historical checkpoint — 06:18 UTC: owner selected full-phase QM demonstration, then agreed to bounded repair
+
+**Do not resume the old strict CPU-budget blocker as the active objective.** Owner now requests a complete
+pipeline despite development quality findings; subsequently agreed to two author correction cycles, then
+advancement with findings. Current live run remains the existing single-pass demonstration. New bounded
+repair/provisional-HAL support is being qualified separately; do not hot-change the running native graph.
+
+Runtime source **e21aa74411d01458bab45fee8af6d59f710fad03**, profile
+`local-rtx-v2-omniverse2-q38-qm-demo-mtp` (QM, SafeC disabled), RUNNING epoch64.
+LL order **afo-e6593e4a6b4ec1b8**, product **afo-product-109acc58b919a37613210e04**,
+native **01M65P3JYHR82VVYR5K1FCK1YQ** authoritatively RUNNING/LIVE/HELD at06:16:40.
+Six of seven SWE.1 author packets VALID on first attempt; cross-cutting request SENT at06:15:47;
+87350 completed reported tokens. No inspector yet at that observation, no product acceptance.
+
+Explicit owner-delegated source/roles/time signing and disclosed eight-hour amendment set deadline
+**2026-10-30T13:52:52Z**. Same mission **F014-NIGHT-20261027-RCC**, all past counters, uncertainty,
+failed jobs and the spent correction retained; non-time ceilings unchanged. Scope
+**c7a32bb8354e2bd866e2f26eb2c800aac297a1255980e699e934c1681da6cdc8**.
+Remote deployment `qm-rcc-all-phases-20261030-v1`; observe-host.py is read-only. Existing Git observer
+now reports five enrolled orders, same progress branch/history, five-minute interval, new deadline.
+GitHub confirmed06:11:26/sourcee21/epoch64/current LL RUNNING. Local collector session94574 waits
+for QUIESCENT/RELEASED and verified package, outputs loop10
+`inspection/feature014/2026-10-30-qwen/full-pipeline-qm-all-phases/`.
+
+Owner can view completed structured answers live:
+`ssh omniverse2@100.118.28.92 '/mnt/data/forge-c/production-local-014/venv/bin/python /mnt/data/forge-c/production-local-014/deployment/qm-rcc-all-phases-20261030-v1/watch-visible-output.py'`.
+This displays each completed answer, not token-by-token output; no raw prompts/hidden reasoning. Smoke showed
+four actual answer sections. Script also supports --once. User has been told the streaming limitation.
+
+HAL **afo-3005a1af7d6cd7eb NOT_SUBMITTED**. Current production's normal provided_ll requires all six PASS
+and cannot import this provisional demo source. New narrowly scoped demonstration import is in the pending
+bounded-repair candidate. It requires all six attempt snapshots and a current sealed SWE.3 header, keeps it
+read-only, records all real gates and explicitly labels it unaccepted. Formal imports keep their strict rule.
+
+Old strict LL afo-6bde501adad6a2bf BLOCKED/50gaps,30requests/545576reported tokens, native SUCCEEDED but
+task BLOCKED/QUIESCENT/RELEASED. Full archive copied/verified locally. AFO returned an admissible
+NEEDS_EVIDENCE proposal for the absent authoritative CPU/timing allocation. complete=true/missing=[] refers
+to inventory, not a supplied engineering allocation. This was not malformed JSON or a missing evidence packet.
+
+New committed measurement implementation **078663bd0461e99ab680733ea8178bf8be04474a**, not deployed:
+authored LL/HAL scope and Arm/Renode measurements, SWE.5-authored stimuli using existing permissions;
+source tampering, over-budget and functional-failure controls. Combined initial84PASS/one failing fixture,
+then same failed testPASS after fixing its synthetic expectation and missing deterministic report step.
+Production implementation unchanged during fixture corrections. Native measurement qualification NOT_RUN.
+Ruff, diff and14 static design checksPASS; static results are not runtime qualification.
+
+Feedback candidate f037a0c now has native **97PASS/63SKIP/0failures/errors** after correcting read-only RCC
+input fixtures. Earlier83PASS/63SKIP/14setup errors preserved. Skips:59 unavailable pinned SafeC engine,
+three unavailable Fabro binary in verifier PATH, one missing frozen SWE.2 baseline. No skip counts as PASS.
+No deployment; temporary maintenance windows resumed production, then current QM activation moved epoch64.
+
+Current uncommitted candidate adds `qm-pipeline-demonstration-repair-v2`: two durable phase returns to the
+first engineering/test author, ordinary verification/inspection rerun, nine structured calls per task across
+three visits, explicit advisory advance even with absent baseline, immutable quality verdicts. Route replay
+uses evidence identity and cannot spend another correction. Legacy execution bindings accept only the exact
+known pre-extension validator hash with all policy fields unchanged. New v2 cannot use legacy authority.
+Targeted11 testsPASS; final combined regression is running locally. Do not commit/activate until its result
+is inspected. CPU-only native qualification must wait for current Qwen quiescence and a fenced maintenance
+window; no parallel remote qualification during the mission.
+
+Priorities: observe/collect this exact LL through all six phases; finish candidate tests and executable native
+qualification; after LL quiescence qualify/activate exact source and scoped role grants, then run provisional
+HAL under the same mission/deadline. No automatic restart, old-mission reset or silent grant renewal.
+Formal **30/58 unchanged**, no newly completed task IDs. Product success, bounded-repair live behavior,
+independent learning benefit and24/72/168-hour availability remain unproven.
+[Detailed outcome, six-hour report and test evidence](../../evidence/014-durable-local-autonomy/qm-all-phases-20261030/README.md).
+
+## Historical checkpoint — 05:31 UTC: localized Qwen rework demonstrated; scoped-feedback fixes ready locally
 
 Runtime remains **e21aa74411d01458bab45fee8af6d59f710fad03, RUNNING epoch58**.
 LL order **afo-6bde501adad6a2bf**, native **01M65G3CG47YKS11GRQEATNB10** is
