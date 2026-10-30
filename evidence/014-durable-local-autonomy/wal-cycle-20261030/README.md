@@ -74,3 +74,25 @@ preserved. Native source qualification and native performance benefit are NOT_RU
 The actual runtime remains12e601e4 afterward. A later deployment/performance test
 requires its concrete bounded source scope. Formal Feature014 remains30/58; no
 new task IDs closed, LL/HAL/role/learning/availability acceptance remains unproven.
+# Native qualification update — original failure retained
+
+Exact source `a7804054744ce3d471d6e15c60a205610755503a`: native306tests,
+305PASS/1FAIL, zero errors/skips. The failure is
+`test_afo_m1_services.py::test_rendered_units_are_complete_bounded_and_preflighted`;
+`services.verify` returned false in the isolated verifier. [Original JUnit and
+provenance](native-original/qualification-wal-session-a7804054-epoch95-v1/).
+The candidate was NOT_DEPLOYED, runtime remained12e601e4. Its owned PAUSED95 was
+resumed only after verifier quiescence, to RUNNING96; model requests0.
+
+Retained diagnostics distinguish fixture errors: v1 used an absent Fabro path;
+v2 showed missing private XDG runtime directory; v3 confirmed the isolation helper
+deliberately strips inherited XDG_RUNTIME_DIR. v4 created a private runtime directory
+inside the verifier and read-only exposed the actual Ollama executable for unit
+ExecStart validation; `services.verify` then returned ok=true. No GPU/model weights,
+network, credentials, live DB mutation or service installation/start were involved.
+This diagnoses qualification prerequisites; it does not turn the original306run
+green or establish native performance benefit. Corrected qualification uses a short
+private `/tmp/forge-runtime` path and preserves the identity/network/filesystem boundary.
+
+The later product-binding candidate includes this WAL change; its separate native
+results belong to its exact revision. Earlier NOT_RUN/queued checkpoints below are history.

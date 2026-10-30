@@ -103,3 +103,29 @@ These exposed fixtures are not fresh capability holdouts or qualified lessons.
 
 Formal Feature014 remains30/58. Clean full LL/HAL, role capability, independent
 learning benefit and24/72/168h availability remain unproven.
+# Final comparison — 30 October, completed at 12:54:48 UTC
+
+All 24 frozen trials completed on runtime `12e601e4f53ab71b6d184ae19379faa1dd8f6e97`.
+Q8/f16/MTP3/context262144 and output ceiling34816 stayed fixed. Actual wire
+`enable_thinking=false`, native reasoning off and rendered empty thinking block
+were verified for `none`; this is execution evidence rather than a configuration guess.
+
+| Setting | Median native tok/s | Total gateway seconds | Total trial seconds | Expected decisions |
+|---|---:|---:|---:|---:|
+| none | 61.76 | 28.3161 | 682.0006 | 2/8 |
+| medium | 68.64 | 129.2873 | 743.1877 | 2/8 |
+| xhigh | 63.29 | 1178.1363 | 1859.9405 | 2/8 |
+
+None cuts generated tokens and request latency, but has no correctness advantage.
+Each setting wrongly requested evidence on all six complete-packet cases. All
+three protocol reports FAIL. Serial order/cache/thermal effects remain; these are
+exposed diagnosis fixtures, not author/inspector or full-product qualification.
+Whole-trial timings include orchestration and verification and exclude initial
+activation; request latency must not be reported as pipeline throughput.
+
+[Final report](v2/final/SPEED-REPORT.md), [machine-readable rows and comparisons](v2/final/speed-summary.json),
+immutable cohort completions/protocol reports/native settings and all24 original
+numeric meters are under `v2/final/`. The local427-member transfer verified every
+member hash; sealed packets remain available privately on loop10. No hidden reasoning
+or raw prompts were exported. Prior activation failures and unknown historical usage
+remain preserved. Earlier checkpoints below are historical, not current status.

@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-30T13:24:09.754707+00:00",
+  "status": "ALL_HASHES_VERIFIED",
+  "files": 167,
+  "archive_sha256": "f9e8862a76b7225651a9b28e58cdde36af81bdc8154d55fa92c8edccf21bfc6a",
+  "complete": {
+    "medium": true
+  },
+  "destination": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/stepwise-diagnosis-pilot"
+}

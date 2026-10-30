@@ -1,4 +1,33 @@
-# Existing four-question diagnosis — preparation queued, NOT_RUN
+# Existing four-question diagnosis — completed exposed pilot
+
+On unchanged runtime `12e601e4f53ab71b6d184ae19379faa1dd8f6e97`, the existing signed
+four-question path completed8/8 expected decisions and protocol PASS: six accepted
+PROPOSE_REPAIR proposals and two NEEDS_EVIDENCE results. Median native decode70.6349
+tok/s,26requests of32allowed,8jobs,2097152conservative charged tokens, no unknown
+usage, no mission/deadline reset. This exercises diagnosis/broker binding and audit;
+it does not execute or independently verify a product repair. The negative-case
+UNKNOWN-only grammar means those two cases are not independent recognition evidence.
+
+[Final report](final/SPEED-REPORT.md), [all eight numeric rows](final/speed-summary.json),
+[protocol report](final/medium/protocol-report.json), scope, original designated
+proposals, independent audits and native settings are in `final/`. All167private
+transfer members were hash-verified locally on loop10. No raw prompts/hidden reasoning.
+
+The original coordinator failed at13:15:53UTC with SQLite BEGIN IMMEDIATE lock timeout
+while recording the seventh trial. Conductor stayed active; native execution was
+independently QUIESCENT/RELEASED. An external same-scope coordinator resume at13:21:38
+completed the remaining cases at13:23:17. Original failure/driver-exit and resume
+receipts remain. This is infrastructure interruption and external recovery, not
+Qwen self-healing. No source/tool/case/oracle/grant/epoch changed during the pilot;
+operator RUNNING98 and existing13:52:52UTC expiry were preserved.
+
+Experimental product integration source `a32d87a311cc4a46cd12b6f00d1aea8a210c305c`
+binds the signed adapter task class before initial context sizing. Standalone flags,
+changed/revoked/ambiguous trial identities remain refused. An ASPICE-only experimental
+profile permits ordinary AFO recovery and blocking gates; it does not claim role
+qualification. This source is not deployed. Formal Feature014 stays30/58.
+
+The preparation checkpoint below is retained as history and is superseded above.
 
 The current one-response reasoning comparison remains frozen on12e601e4. All eight
 none and medium trials returned only two expected decisions. Exact request-hash

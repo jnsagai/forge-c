@@ -1,0 +1,14 @@
+{
+  "status": "ISOLATED_DIAGNOSTIC_ONLY",
+  "source_revision": "a7804054744ce3d471d6e15c60a205610755503a",
+  "private_sandbox_runtime_directory": true,
+  "actual_ollama_executable_read_only": true,
+  "gpu_or_model_weights_exposed": false,
+  "exit_code": 1,
+  "verification": {
+    "error": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import os,json; from pathlib import Path; Path(os.environ['XDG_RUNTIME_DIR']).mkdir(mode=0o700); from forge_factory.afo import services; print(json.dumps(services.verify(services.render())))\n                                                   ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"<frozen os>\", line 717, in __getitem__\nKeyError: 'XDG_RUNTIME_DIR'\n"
+  },
+  "model_requests": 0,
+  "systemd_units_installed_or_started": false,
+  "live_database_mutated": false
+}

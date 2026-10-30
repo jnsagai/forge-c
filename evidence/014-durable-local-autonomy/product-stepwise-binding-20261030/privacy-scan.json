@@ -1,0 +1,7 @@
+{
+  "status": "PASS_SCOPED_PATTERN_AND_JSON_KEY_SCAN",
+  "selected_evidence_files": 104,
+  "secret_or_hidden_reasoning_findings": 0,
+  "scope": "New final speed/stepwise results, product binding and original native WAL artifacts; not a universal privacy guarantee",
+  "raw_private_inputs_or_prompts_selected": false
+}

@@ -1,5 +1,70 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Latest state — 30 October: non-thinking comparison and stepwise diagnosis complete
+
+Owner requested `enable_thinking=false`; all24 same-source none/medium/xhigh trials
+are complete. Actual runtime/test revision remains
+**12e601e4f53ab71b6d184ae19379faa1dd8f6e97**, Q8/f16/MTP3/context262144/one inference.
+Median decode none61.76, medium68.64, xhigh63.29tok/s. Total gateway seconds
+28.3161/129.2873/1178.1363; total trial seconds682.0006/743.1877/1859.9405.
+Each matches only2/8 expected decisions/protocolFAIL. None reduces output/request
+time without correctness improvement; do not select it globally from speed alone.
+Final427private artifacts per-member hash-verified on loop10, no hidden reasoning.
+[Final reports and original numeric meters](../../evidence/014-durable-local-autonomy/non-thinking-speed-20261030/v2/final/).
+
+The existing signed four-question medium diagnosis path subsequently completed8/8
+expected decisions, protocolPASS, median70.6349tok/s,26requests/32bound,8jobs and
+2097152conservative charged tokens. Six accepted bounded PROPOSE_REPAIR proposals;
+two incomplete-packet NEEDS_EVIDENCE cases forceUNKNOWN in grammar and therefore do
+not establish independent missing-evidence recognition. Same exposed260-input
+reference cases/oracles, source12e unchanged. This is diagnosis/broker/audit evidence,
+NOT implemented/verified repair, fresh role qualification, clean LL/HAL or self-healing.
+[Final167-member verified transfer, proposals, audits, scope/settings and reports](../../evidence/014-durable-local-autonomy/stepwise-diagnosis-20261030/).
+
+Original coordinator unitforge-q38-stepwise-diagnosis-20261030-v1 failed13:15:53UTC
+with sqlite BEGIN IMMEDIATE lock timeout during seventh-case provision. Original
+failure retained. Conductor stayed active and seventh native execution became
+QUIESCENT/RELEASED; external unchanged-scope driver resume unit
+forge-q38-stepwise-driver-resume-20261030-v1 completed13:23:17UTC. No reset, source/
+tool/case/oracle/deadline change; not autonomous Qwen recovery. Both coordinator
+MainPIDs now0. Local final report:
+B/inspection/feature014/2026-10-30-qwen/stepwise-diagnosis-pilot/SPEED-REPORT.md.
+
+New candidate **a32d87a311cc4a46cd12b6f00d1aea8a210c305c**, NOT_DEPLOYED:
+bind the signed product-role task class before initial context measurement/reservation,
+then reauthenticate/check class every request. Fixes product-trial selection remaining
+one-shot despite signed stepwise identity. Ambiguous/revoked/forged identities refused.
+Experimental local-rtx-v2-omniverse2-q38-aspice-stepwise-medium uses ordinary blocking
+ASPICE gates and recovery; no QM-demo recovery deferral. Q8/f16/MTP3/262144/one-slot
+unchanged;1M planner-job cumulative allowance never enlarges physical request context
+or resets mission history. Experimental configuration is not measured role capability.
+
+Exacta32d local148PASS, native333PASS/0failures/errors/skips, source clean before/after.
+Native detached verifier4CPUs/8GiB/no swap/no network/GPU/model/owner/SSH. Window owned
+RUNNING98→PAUSED99→RUNNING100 only after verifier quiescent. Model calls0, deployment
+false. Ruff/diff/spec/contracts/14design PASS separately; static validation is not
+runtime qualification. [Exact commands, JUnit/provenance and executable native tools](../../evidence/014-durable-local-autonomy/product-stepwise-binding-20261030/).
+
+WALa780 original native306tests=305PASS/1services.verify failure, NOT_DEPLOYED.
+Diagnosticv1 nonexistent assumed Fabro path; v2 missing privateXDG directory; v3
+helper intentionally stripped inheritedXDG; v4 private directory inside sandbox plus
+read-only actual Ollama executable verified units successfully. New333run creates
+short private/tmp/forge-runtime and exposes only the executable (no weights/GPU),
+and passes the original failing test. Keep original305/1 as failed, no native speed
+benefit or 24/7 proof claimed. [Original run and diagnostic receipts](../../evidence/014-durable-local-autonomy/wal-cycle-20261030/).
+
+Current operator RUNNING100, model-free Conductor active. No driver order restarted
+and no GPU campaign queued. Owner's speed-benchmark priority still applies; LL/HAL
+remain owner-aborted/deferred. Existing authorization expiry13:52:52UTC unchanged,
+all old mission charges/uncertainty/failures retained. Do not silently renew grants.
+Next product preparation can use the qualified sourcea32d and new normal ASPICE
+profile with signed planner taskclass two-step-diagnosis, fresh exact scope/context
+allocation and existing RCC mission lineage/history. Do not reuse old demo helper
+unchanged: it defers recovery and enables advisory continuation. No activation until
+its frozen scope/source/current authority and prerequisites actually verify.
+Formal Feature01430/58 unchanged, no task newly closed. Product/role/learning/long-term
+availability remain unproven. Historical checkpoints below are preserved.
+
 ## Latest state — 12:46UTC: current benchmark unchanged; WAL candidate/stepwise preparation queued
 
 Runtime remains12e601e4f53ab71b6d184ae19379faa1dd8f6e97. Live fixed-source reasoning
