@@ -66,6 +66,16 @@ def model_profile(model: str, provider: str, code_model: str | None, nodes: dict
     }
 
 
+def section_map(ws: Path) -> dict[str, str]:
+    """The prepared primary-source index, shared by launch and role preflight."""
+    sections = {}
+    for line in (Path(ws) / "inputs/index.md").read_text().splitlines():
+        parts = [x.strip() for x in line.split(" | ")]
+        if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in sections:
+            sections[parts[0]] = parts[3]
+    return sections
+
+
 def register_index(md: Path) -> list[dict]:
     """Deterministic heading -> line index so agents can read_file(offset) the exact RM section."""
     out = []
@@ -844,11 +854,7 @@ def run(
     phases = resume_from(ws, manifest, resume, resume_upto) if resume else None
     if phases == []:
         return {"work_order": wo, "workspace": str(ws), "package": finalize(ws, wo), "resumed_from": resume}
-    secmap = {}
-    for line in (ws / "inputs/index.md").read_text().splitlines():
-        parts = [x.strip() for x in line.split(" | ")]
-        if len(parts) == 4 and parts[0][:1].isdigit() and parts[0] not in secmap:
-            secmap[parts[0]] = parts[3]
+    secmap = section_map(ws)
     if recovery_plan is not None:
         from .afo.recovery_context import install
 

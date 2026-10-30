@@ -833,11 +833,12 @@ ASSESSMENT = {"manifest": None}
 
 def complete_scope_sections(keys: list[str]) -> list[str]:
     manifest = ASSESSMENT["manifest"] or {}
-    pr = PERIPHERAL["profile"]
-    if manifest.get("purpose") != "ASPICE_ONLY" or not pr:
+    if manifest.get("purpose") != "ASPICE_ONLY":
         return keys
     from ..lrtx.obligations import scope_sections
+    from ..peripheral import load
 
+    pr = PERIPHERAL["profile"] or load("rcc")  # Existing RCC work orders omit the default peripheral key.
     selected = scope_sections(manifest["scope"], pr["rm"]["doc"], keys)
     missing = [key for key in selected if key not in SECTIONS]
     if missing:
@@ -882,7 +883,7 @@ def author_prompt(phase: str) -> str:
         body = [x.replace("then 12-26 requirements", "then enough atomic requirements to cover the full scope")
                 .replace("then 8-15 requirements", "then enough atomic requirements to cover the full scope")
                 .replace("RCC_AHB1ENR and RCC_AHB1RSTR section files",
-                         "in-scope clock-enable and reset register section files" if pr and pr["id"] == "rcc"
+                         "in-scope clock-enable and reset register section files" if not pr or pr["id"] == "rcc"
                          else "RCC_AHB1ENR and RCC_AHB1RSTR section files")
                 for x in body]
     if BROWNFIELD["mode"] and phase == "SWE.3":  # feature 008: describe the delivered code, never write it

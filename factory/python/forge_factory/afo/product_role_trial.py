@@ -147,7 +147,7 @@ def preflight(workspace, job, requests):
     from ..llm_gateway import sanitize_request
     from ..lrtx import profile, role_capability
     from ..workflow.builder import build
-    from ..workorder import factory_revision, local_profile_structured
+    from ..workorder import factory_revision, local_profile_structured, section_map
     from .diagnosis_packet import measure_request
 
     ws = Path(workspace)
@@ -159,7 +159,10 @@ def preflight(workspace, job, requests):
     model = prof["models"]["allowed"].get(job["model"])
     if not model or model["digest"] != job.get("model_digest") or model["quantization"] != job.get("precision"):
         raise Refused("PRODUCT_PREFLIGHT_MODEL_CHANGED")
-    _, nodes = build(man["work_order"], goal="Role admission preflight", sections={},
+    # Use the same source inventory as launch. Request-only legacy fixtures may
+    # omit it; an actual ASPICE scope still refuses any unresolved section.
+    sections = section_map(ws) if (ws / "inputs/index.md").is_file() else {}
+    _, nodes = build(man["work_order"], goal="Role admission preflight", sections=sections,
                      layer=man.get("layer", "LL+HAL"), brownfield=man.get("code_mode"),
                      peripheral=man.get("peripheral"), operation_scope=man.get("operation_scope"),
                      delivery_style=((man.get("delivery") or {}).get("build") or {}).get("style"),

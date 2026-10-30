@@ -267,6 +267,23 @@ def test_missing_release_request_cannot_pass_preflight(product_preflight):
     assert next(r for r in report["rows"] if r["role"] == "release-manager")["reason"] == "COMPLETE_SERIALIZED_REQUEST_MISSING"
 
 
+def test_real_prepared_scope_preflight_uses_launch_section_inventory(product_preflight, monkeypatch):
+    from forge_factory import workorder
+    from forge_factory.common import REPO_ROOT
+
+    trial, _, requests, _ = product_preflight
+    ws, _ = workorder.prepare(REPO_ROOT / "examples/0002a-arm_55_rcc_ll", "WO-SCOPE-PREFLIGHT", purpose="ASPICE_ONLY")
+    report = T.preflight(ws, trial.job, requests)
+    assert report["status"] == "PASS_STATIC_ADMISSION"
+    assert not report["generation_performed"] and not report["reservation_performed"]
+    index = ws / "inputs/index.md"
+    index.write_text("\n".join(line for line in index.read_text().splitlines()
+                               if not line.startswith("14.10.90 |")))
+    monkeypatch.setattr(C, "admit_job", lambda *a, **kw: pytest.fail("missing source cannot reach request admission"))
+    with pytest.raises(ValueError, match="WORKFLOW_SCOPE_SECTION_MISSING:14.10.90"):
+        T.preflight(ws, trial.job, requests)
+
+
 def test_preflight_measures_tools_and_gateway_reasoning_before_admission(product_preflight):
     trial, ws, requests, prof = product_preflight
     prof["gateway"] = {"reasoning": {"local": {"effort": "xhigh", "extra_output_tokens": 32768}}}

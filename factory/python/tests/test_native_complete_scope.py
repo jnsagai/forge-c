@@ -21,7 +21,7 @@ def test_real_owner_scope_reaches_author_and_inspector(tmp_path, monkeypatch, la
     # Builder-only test: a HAL execution still requires independently verified LL.
     manifest["scope"] = json.loads((REPO_ROOT / "examples" / example / "workorder.json").read_text())["scope"]
     sections = {key: value["file"] for key, value in swe1._section_files(ws).items()}
-    graph, _ = build("WO-COMPLETE-SCOPE", layer=layer, peripheral="rcc", sections=sections,
+    graph, _ = build("WO-COMPLETE-SCOPE", layer=layer, peripheral=manifest.get("peripheral"), sections=sections,
                      assessment_manifest=manifest)
     p = prompts(graph)
     selected = scope_sections(manifest["scope"], "RM0486", ["14.10.1", "14.10.2", "14.10.79", "14.10.64"])
