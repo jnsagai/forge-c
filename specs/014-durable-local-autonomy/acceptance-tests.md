@@ -749,3 +749,11 @@ is explicitly unaccepted and cannot close IE-T008/009, M1 or formal qualificatio
 Current authority/accounting/operator/inference boundaries remain. Strict existing
 profiles retain their gating and rework behavior. Qualify actual edge traversal,
 failed-check preservation, provisional injection, blocked release and compatibility.
+# Delivery-First supplemental acceptance
+
+DF-AT-001..017 in [DELIVERY-FIRST-E2E.md](DELIVERY-FIRST-E2E.md) are additional
+development cases. [The implementation ledger](DELIVERY-FIRST-IMPLEMENTATION.md)
+maps deterministic, native and deferred cases without replacing DA acceptance.
+Functional candidate PASS, completed native traversal, strict release and
+autonomous qualification are separate verdicts. Target simulation is not a
+physical hardware timing or safety claim.

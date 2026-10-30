@@ -206,3 +206,10 @@ is explicitly unaccepted and cannot close IE-T008/009, M1 or formal qualificatio
 Current authority/accounting/operator/inference boundaries remain. Strict existing
 profiles retain their gating and rework behavior. Qualify actual edge traversal,
 failed-check preservation, provisional injection, blocked release and compatibility.
+# Delivery-First supplemental backlog
+
+DF-T001..012 are tracked separately in
+[DELIVERY-FIRST-IMPLEMENTATION.md](DELIVERY-FIRST-IMPLEMENTATION.md), with
+DF-AT evidence from [the delivery specification](DELIVERY-FIRST-E2E.md).
+These do not renumber or close the 58 DA tasks below. A passing isolated
+fixture or external first-candidate simulation cannot close native DF-M1.

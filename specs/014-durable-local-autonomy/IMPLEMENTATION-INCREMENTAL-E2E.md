@@ -344,3 +344,11 @@ qualify the model or claim self-healing/learning benefit. Improve quality after 
 full demonstration. Later strict M1 and M2–M5 criteria remain separate and unproven.
 This scope supersedes the unactivated 5b398d2 QM runtime packet; prepare new exact
 source/profile execution records without resetting history or extending the window.
+# Immediate Delivery-First amendment
+
+[DELIVERY-FIRST-E2E.md](DELIVERY-FIRST-E2E.md) now sets the immediate bounded
+engineering sequence; [implementation/evidence status](DELIVERY-FIRST-IMPLEMENTATION.md)
+keeps the original frozen-ST-code demonstration separate from genuine new
+Qwen-authored code. Historical scopes, receipts, verdicts and strict releases
+remain unchanged. The opt-in delivery manifest extends the existing QM
+demonstration graph and finalizer, with at most two implementation corrections.

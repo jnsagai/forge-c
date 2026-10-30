@@ -1,5 +1,72 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Terminal update — 30 October21:43UTC
+
+Native01M6788GYKREQSS1YTZHS9N3TV/sourcebeb48b49 completed21:43:09: transport
+SUCCEEDED, productBLOCKED57, archive integrityPASS. ArchiveSHA
+f953209eefcf3c06a88281c93f4771653f9e01715e66875c9f6a4213557c93dd.
+All six author/inspector stages were attempted; phase files6/3/3/3/0/6.
+No SWE.5 phase artifact was produced. Original full functional report remains
+INCONCLUSIVE; candidate header SHA511956... unchanged. External post-hoc PASS
+does not retroactively turn this into autonomous DF-M1.
+Reported native tokens610015input/209145output/4545363cache-read; separate
+reasoning breakdown/physical request countUNKNOWN. Preserve these charges,
+all failed nodes and missing evidence on continuation. Physical slot observed
+idle21:43:31, independently of native terminality. Production staysPAUSED111.
+Collector copied this terminal run under the loop10 inspection destination.
+The next specific execution is a clean58ef89b7/profile3 AFO development trial
+with frozen target oracle and actual admission/lease/usage binding; no HAL or
+three-run cohort until that full-contract autonomous milestone passes.
+
+## Delivery-First integrated verifier — 30 October21:41UTC checkpoint
+
+Read [the implementation/task ledger](DELIVERY-FIRST-IMPLEMENTATION.md) and
+[exact verification evidence](../../evidence/014-durable-local-autonomy/delivery-first-independent-20261030/README.md).
+The Delivery-First specification now sets immediate priority: DF-T001..009;
+no HAL/repeatability/general-learning expansion before actual DF-M1.
+
+Latest committed implementation **58ef89b7c798b7fdeb05aef08813f1b26a24a6a9**.
+Exact regression103PASS/one disabled live Fabro skip, zero failures/errors.
+Ruff/source diff and spec/contracts checks PASS; spec validation is not runtime.
+New fixes include static-header cost measurement/full declared API and input
+binding, frozen independent target oracle, shadow build/simulation without
+overwriting model tests, final-byte recheck, native authorship/usage metadata,
+JSON/scorecard export and deterministic two-correction enforcement in the
+existing tool policy. The extra inherited SWE.3 fix author is removed only in
+this lane. Actual AFO role-trial preflight now uses the selected demo graph.
+
+The first genuine Qwen header remains SHA511956a9345ca465b265a60214f16fb43c5d2395b18dfcf7fd4766a980cc29f5.
+External Omniverse qualification atd846ec82 passed351target assertions and
+140measured calls (70/API), maximum2instructions/20virtual ns per API at100MIPS;
+16Bobject flash,0Bstatic RAM/max frame. Wrong-read and one-instruction-budget
+controls were rejected. Target fixture was authored post-hoc for this first
+candidate and preregistered for future jobs; no autonomous success attribution.
+
+External Omniverse **integrated** verification at clean58ef89b7 also passed the
+actual candidate and packaged integrityPASS, functionalPASS, releaseBLOCKED;
+archiveSHAdce554349609770e867b25bded70cc0f2cc882747f2e63fee7fb88139a563423.
+A controlled later wrong-read mutation failed final verification, correction0;
+its failing package retained integrityPASS. No model calls/active workspace
+edits occurred during either external qualification.
+
+Actual native01M6788GYKREQSS1YTZHS9N3TV remains cleanbeb48b49/profile2;
+at21:41:19RUNNING/SWE.6inspector. It now has actual author/inspector start events
+for all six phases, but numerous real failures. Do not hot-patch or restart it.
+R=/mnt/data/forge-c/delivery-first-014-20261030-v1, API32402/gateway11459,
+dashboard8786. The existing read-only collector62942 is alive; local terminal
+outcome destination/observation deadline below remain unchanged. Inspect the
+same handle through terminal packaging and preserve all usage/failures.
+
+**DF-M1 NOT_PROVEN; formal DA progress remains30/58.** Current standalone trial
+is not AFO admission/reconciliation qualification. Production remainsPAUSED111;
+do not silently renew its expired grant. Next: terminal archive + local copy,
+provider quiescence, then a source-pinned authorized development trial through
+existing AFO ledgers/lease and LRTX namespace. Host network probe isNOT_ENFORCED
+(external address reachable); unshare user/net probe passed. Do not bypass the
+profile's namespace requirement or invent capability receipts. The integrated
+snapshot qualifier lives atR/qualify-delivery-integrated-58ef89b7.py; it performs
+no inference and is not a new product run. Keep original RCC obligations open.
+
 ## Current checkpoint — genuine Qwen C passed independent host checks, 30 October20:40UTC
 
 Read [delivery-first evidence](../../evidence/014-durable-local-autonomy/delivery-first-20261030/README.md).

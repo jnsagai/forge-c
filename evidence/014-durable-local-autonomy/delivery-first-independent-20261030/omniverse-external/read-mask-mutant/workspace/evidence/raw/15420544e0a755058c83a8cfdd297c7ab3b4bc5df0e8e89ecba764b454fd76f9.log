@@ -1,0 +1,4 @@
+/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-first-candidate-v1/read-mask-mutant/workspace/build/target-cm55-gcc/forge_ll_measure.c:4:6:forge_measure_LL_CRC_Write_IDR	0	static
+/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-first-candidate-v1/read-mask-mutant/workspace/build/target-cm55-gcc/forge_ll_measure.c:6:10:forge_measure_LL_CRC_Read_IDR	0	static
+/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-first-candidate-v1/read-mask-mutant/workspace/inputs/idr_target_probe.c:9:6:forge_probe_write	0	static
+/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-first-candidate-v1/read-mask-mutant/workspace/inputs/idr_target_probe.c:13:10:forge_probe_read	0	static

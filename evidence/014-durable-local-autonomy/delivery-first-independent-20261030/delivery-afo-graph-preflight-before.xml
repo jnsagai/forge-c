@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.765" timestamp="2026-10-30T21:17:26.948379+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first" name="test_existing_afo_preflight_uses_the_selected_delivery_graph" time="0.514"><failure message="ValueError: DELIVERY_FIRST_GENERATOR_ROUTE_AMBIGUOUS:swe3_regmap">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...7c20749474f05869c9b'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d198d3dd810&gt;
+
+    def test_existing_afo_preflight_uses_the_selected_delivery_graph(prepared, monkeypatch):
+        from forge_factory.afo import product_role_trial
+        from forge_factory.lrtx.profile import load
+    
+        ws, _ = prepared
+        profile = load("local-rtx-v2-omniverse2-q38-delivery-first")
+        monkeypatch.setattr(W, "factory_revision", lambda: {"commit": "fixture-only-source", "dirty": False})
+        model = profile["models"]["default"]
+        job = {"factory_revision": {"commit": "fixture-only-source"}, "profile": profile["id"], "model": model,
+               "model_digest": profile["models"]["allowed"][model]["digest"],
+               "precision": profile["models"]["allowed"][model]["quantization"]}
+&gt;       result = product_role_trial.preflight(ws, job, [])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_delivery_first.py:271: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/product_role_trial.py:165: in preflight
+    _, nodes = build(man["work_order"], goal="Role admission preflight", sections=sections,
+factory/python/forge_factory/workflow/builder.py:215: in build
+    dot, nodes = delivery_workflow(dot, nodes, assessment_manifest, _env(), sys.executable)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+graph = 'digraph ForgeC_WO_DF_FIXTURE_ONLY {\n  graph [goal="Role admission preflight", default_fidelity="compact", loop_resta...nspect_gate -&gt; release_manager [condition="outcome=succeeded"]\n  release_manager -&gt; finalize\n  finalize -&gt; exit\n}\n'
+nodes = {'release_manager': {'role': 'release-manager'}, 'swe1_author': {'phase': 'SWE.1', 'role': 'swe1-author'}, 'swe1_inspector': {'phase': 'SWE.1', 'role': 'swe1-inspector'}, 'swe1_triage': {'phase': 'SWE.1', 'role': 'swe1-author'}, ...}
+manifest = {'budgets': {'flash_bytes': 4096, 'stack_bytes': 128, 'static_ram_bytes': 64, 'status': 'development targets set by th...67c20749474f05869c9b'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...}
+command_env = 'PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnig...38/test_existing_afo_preflight_us0/STATE FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c'
+python = '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python'
+
+    def workflow(graph, nodes, manifest, command_env, python):
+        """Prepend a three-attempt native author/check sequence; reuse all six phase nodes."""
+        from .workflow.builder import _q
+    
+        cfg = contract(manifest)
+        if cfg is None:
+            return graph, nodes
+        nodes = dict(nodes)
+        edge = re.search(r"^  start -&gt; (\w+)\n", graph, re.M)
+        if edge is None:
+            raise ValueError("DELIVERY_FIRST_START_EDGE_MISSING")
+        continuation = edge[1]
+        graph = graph[:edge.start()] + graph[edge.end():]
+        # The native fast author already generated this candidate. Re-running a
+        # second generator using the legacy array API would replace its pointer API.
+        # Keep the existing compile/fix, documentation, review and verification nodes.
+        for obsolete in ("swe3_regmap", "swe3_ll_author"):
+            from .acp import statements
+    
+            incoming = list(re.finditer(r"^  (\w+) -&gt; " + obsolete + r"\n", graph, re.M))
+            outgoing = list(re.finditer(r"^  " + obsolete + r" -&gt; (\w+)\n", graph, re.M))
+            if len(incoming) != 1 or len(outgoing) != 1:
+&gt;               raise ValueError("DELIVERY_FIRST_GENERATOR_ROUTE_AMBIGUOUS:" + obsolete)
+E               ValueError: DELIVERY_FIRST_GENERATOR_ROUTE_AMBIGUOUS:swe3_regmap
+
+factory/python/forge_factory/delivery_first.py:284: ValueError</failure></testcase></testsuite></testsuites>

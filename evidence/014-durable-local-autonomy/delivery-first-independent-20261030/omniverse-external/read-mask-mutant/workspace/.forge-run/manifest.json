@@ -1,0 +1,329 @@
+{
+  "budgets": {
+    "flash_bytes": 4096,
+    "stack_bytes": 128,
+    "static_ram_bytes": 64,
+    "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)"
+  },
+  "created_at": "2026-10-30T20:31:22.841777Z",
+  "delivery_first": {
+    "candidate_files": [
+      "software/ll/stm32n6xx_ll_crc.h"
+    ],
+    "contract": "inputs/IDR-CONTRACT.md",
+    "host_oracle": "inputs/idr_oracle.c",
+    "include_dirs": [
+      "software/ll",
+      "inputs"
+    ],
+    "max_corrections": 2,
+    "required_functions": [
+      "LL_CRC_Write_IDR",
+      "LL_CRC_Read_IDR"
+    ],
+    "schema": "forge-c/delivery-first/1",
+    "target_probe": "inputs/idr_target_probe.c",
+    "unit_harness": "inputs/idr_unit_harness.c"
+  },
+  "development_execution": {
+    "advisory_relaunch": "DEFERRED_BY_DEVELOPMENT_POLICY",
+    "decision": {
+      "path": "specs/014-durable-local-autonomy/IMPLEMENTATION-INCREMENTAL-E2E.md",
+      "sha256": "28340dab01d73830e5319b1f8855ad5c7afa8de4513b67c20749474f05869c9b"
+    },
+    "demonstration_only": true,
+    "factory_maintenance": "DEFERRED_BY_DEVELOPMENT_POLICY",
+    "max_failed_checks_per_operation": 10000,
+    "max_phase_repair_passes": 0,
+    "max_task_calls": 1,
+    "max_tool_calls_per_visit": 10000,
+    "max_upstream_loops": 0,
+    "name": "qm-pipeline-demonstration-v1",
+    "product_diagnosis": "DEFERRED_BY_DEVELOPMENT_POLICY",
+    "purpose": "QM",
+    "quality_gates_block_workflow": false,
+    "schema": "forge-c/development-execution/1",
+    "validator_sha256": "1afd8f65bb3adb0f55b1171c59ec1c5a62ae1fce6bc80a63501ef77359364ca8"
+  },
+  "driver": "STM32N6 CRC IDR: new Qwen-authored two-function delivery experiment",
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "beb48b49d4ed7588798b964bc9da99ec47ff7251",
+    "dirty": false
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "historical_safety_scope": null,
+  "input_baseline_commit": "2a5e24250b6f7d6aa68882f695c38031231a8ae8",
+  "inputs": [
+    {
+      "bytes": 1056393,
+      "path": "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "bytes": 28656,
+      "path": "inputs/RM0486-rev4-ch26-crc.md",
+      "role": "reference_manual_crc_chapter",
+      "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+      "bytes": 3455,
+      "path": "inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "role": "reference_manual_memory_map",
+      "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+      "bytes": 3358,
+      "path": "inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+      "bytes": 697,
+      "path": "inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+      "bytes": 1362,
+      "path": "inputs/inputs-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+    },
+    {
+      "bytes": 455865,
+      "path": "inputs/hal_driver_guideline.md",
+      "role": "development_guideline",
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    },
+    {
+      "bytes": 4572,
+      "path": "inputs/provided-requirements.json",
+      "role": "delivery_first_reviewed_reference_requirements",
+      "sha256": "c65c2093156181d5ac1c3b021de3b9715a84fb55883864226791d62fe1088e14"
+    },
+    {
+      "bytes": 2496,
+      "path": "inputs/IDR-CONTRACT.md",
+      "role": "delivery_first_contract",
+      "sha256": "6ad4a49d8f54c394b8fb4d87c10321a2ce4de19075f5e31cfe5c19a6c021b5e3"
+    },
+    {
+      "bytes": 1138,
+      "path": "inputs/forge_crc_device.h",
+      "role": "delivery_first_oracle_or_device_fixture",
+      "sha256": "59ad4e687a1c25f15d2b9c6b2c65862a81fdd2c82127c18c0c89a9ab2eba4961"
+    },
+    {
+      "bytes": 1803,
+      "path": "inputs/idr_oracle.c",
+      "role": "delivery_first_oracle_or_device_fixture",
+      "sha256": "b529eb4cb408e0c12472ef1e8f49f00d71f504ae9136376422fbfaa1c21a2e10"
+    },
+    {
+      "bytes": 571,
+      "path": "inputs/idr_target_probe.c",
+      "role": "delivery_first_oracle_or_device_fixture",
+      "sha256": "4aa5567216d172e627bdd0ef382c33fd7d914cfb8365643893762df70389e625"
+    },
+    {
+      "bytes": 681,
+      "path": "inputs/idr_unit_harness.c",
+      "role": "delivery_first_host_harness",
+      "sha256": "01077a1f987b3ad10bbf4cd37852d3f645a43061c8ee326aff88ba3057ebc0bb"
+    }
+  ],
+  "inspection_assessment_context": {
+    "purpose": "QM",
+    "renderer_sha256": "ebc55c5554626e7558c30cd0daefef6da0f8e479c7b7520ec8a36e80ca72d54f",
+    "schema": "forge-c/inspection-assessment-context/2",
+    "scope_sha256": "73c5b145e475e080a6a4629198254cfb7e757828624e79e7cf9ba8b5f243ab99"
+  },
+  "layer": "LL",
+  "local_profile": {
+    "config": "config/factory/profiles/local-rtx-v2-omniverse2-q38-delivery-first.yaml",
+    "config_sha256": "e0a10942976443ff714552356cd698976d7220ff1ff83648ad5c1a0ab1779995",
+    "id": "local-rtx-v2-omniverse2-q38-delivery-first",
+    "status": "DEVELOPMENT_ARTIFACT_TRIAL_NOT_QUALIFIED",
+    "version": 2
+  },
+  "native_artifact_trial": {
+    "AFO_intake": false,
+    "inference_mode": "REAL_LOCAL_QWEN",
+    "no_production_acceptance": true,
+    "owner_scope": "RELAXED_DEVELOPMENT_ARTIFACTS; preserve deterministic verification and historical outcomes",
+    "standalone": true
+  },
+  "operation_scope": {
+    "dependencies": [
+      {
+        "description": "Valid accessible CRC_TypeDef instance; caller owns clock/power/security setup. No invented setup sequence.",
+        "kind": "caller_precondition"
+      },
+      {
+        "description": "Qwen-authored header, immutable source-backed CRC_TypeDef compile/host fixture; no ST driver implementation is imported.",
+        "kind": "build"
+      }
+    ],
+    "functions": [
+      "LL_CRC_Write_IDR",
+      "LL_CRC_Read_IDR"
+    ],
+    "primary_sections": [
+      "26.4.2"
+    ],
+    "prompt_overrides": {
+      "integration": "Write a 32-bit IDR value through LL_CRC_Write_IDR(CRC,value), then read through LL_CRC_Read_IDR(CRC), and check exact equality and untouched unrelated registers. Use boundary and alternating patterns.",
+      "ll_api": "Only void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData) and uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx); use the declared signatures. CRCx is a valid accessible instance. No implicit singleton or invented return status.",
+      "requirement_example": "When the caller requests an IDR write with a valid accessible CRC instance, the CRC LL driver shall write the supplied 32-bit value to CRC_IDR.IDR.",
+      "swe1_cover": "Cover only CRC_IDR.IDR write/read through the two declared functions, valid accessible-instance caller preconditions and no autonomous startup writes. No generic safe state or invented error-handling contract.",
+      "swe1_effect_example": "{\"case\":\"WRITE_IDR\",\"swr\":\"SWR-001\",\"register\":\"CRC_IDR\",\"field\":\"IDR\",\"op\":\"write\",\"value\":\"0x12345678\"}",
+      "swe1_effect_rule": "Write-IDR: op write to CRC_IDR.IDR with the supplied 32-bit value. Read-IDR: op no_write with CRC_IDR.IDR; read returns its current 32-bit value. No calculation/reversal requirements.",
+      "swe2_dynamic_view": "Caller passes CRCx and a 32-bit value to LL_CRC_Write_IDR, then passes CRCx to LL_CRC_Read_IDR and receives that stored value. No CRC calculations or configuration.",
+      "swe2_static_view": "Caller -> header-only stm32n6xx_ll_crc -> CRC_IDR; caller owns accessible-instance setup. Keep only the two declared IDR functions.",
+      "target_tests": "Execute IDR write/read round trips at zero, all ones and alternating 32-bit patterns through the two actual Qwen-authored functions; read test also presets IDR independently. Record Renode target-simulation fidelity and caller setup limitations, not physical board verification. The proposed simulation-only performance contract requires software/tests/target/test_performance.c to include forge_performance_calls.h and call forge_measure_LL_CRC_Write_IDR and forge_measure_LL_CRC_Read_IDR, so the simulator can observe actual entry and return PCs. The generated header exists in the simulator build directory; it declares typed wrappers for exactly the scoped functions. Each measured call must meet 64 executed instructions and 100 microseconds of virtual time at 100 MIPS, without injected interrupts or bus stalls. This is not a hardware timing claim. SWE.6 invokes Run Target Scenario on that target test and Simulation Performance Should Meet Budget.",
+      "ut_example": "static void ut_idr(void) { LL_CRC_Write_IDR(CRC, 0x12345678U); CHECK(\"UT-001\", CRC->IDR == 0x12345678U); CRC->IDR = 0x87654321U; CHECK(\"UT-002\", LL_CRC_Read_IDR(CRC) == 0x87654321U); }",
+      "ut_rule": "Test all 32 IDR bits with zero, all ones and alternating values; test read independently by presetting IDR. Snapshot other registers to verify the IDR calls do not change them. Use the Qwen-authored candidate and immutable device-layout fixture."
+    },
+    "register_fields": [
+      "CRC_IDR.IDR"
+    ],
+    "schema": "forge-c/operation-scope/1"
+  },
+  "outputs": {
+    "SWE.1": "workproducts/SWE.1/software_requirements.md (EARS) + traceability/requirements_to_tests.csv + safety/software_safety_requirements.md",
+    "SWE.2": "workproducts/SWE.2/software_architecture.md",
+    "SWE.3": "workproducts/SWE.3/detailed_design.md + software/hal/*.c|h + software/ll/*.h",
+    "SWE.4": "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.c",
+    "SWE.5": "workproducts/SWE.5/integration_verification_report.md + software/tests/integration/test_*.c + software/tests/target/test_*.c (Renode)",
+    "SWE.6": "workproducts/SWE.6/software_verification_report.md"
+  },
+  "peripheral": "crc",
+  "peripheral_profile_sha256": "a9d0ca93103f1a1f7fa82d56eae9bac811c78cf4ced703bb84c556473d1e08c1",
+  "provided": [],
+  "purpose": "QM",
+  "qm_development": {
+    "base_checklists": {
+      "SWE.1": "c2fb3cf54a927b399f6b5d7f74d9142f55530b49b6611281b57e8eb321fa75c9",
+      "SWE.2": "3522b34a4574ab72d29061a8a3c4bb6cbedd3dfbcf7e59244f38ad36f01d6404",
+      "SWE.3": "58a79af9ef858b3c9a4e8da378803182fd41853280c3e021ad3c0faedd44e4af",
+      "SWE.4": "b6b0e53563c84415a5ca6e663c55ec8b1617ce402ad9da05dc0f64b29c8cd9e7",
+      "SWE.5": "87a7bc4ea272193222112f5ad92c43358808cde12928c1e0bfbe44bbe4eb06ba",
+      "SWE.6": "78f19b6e0df8efed7190d9d6a16397708d3874636843f6eac87c49be8b8c28bb"
+    },
+    "base_policies": {
+      "factory/release-manager/policies/release-package-policy-v0.4.json": "c69fab88c6ec01509eda324cef4475254fe167cd4a601350e8e5c9da62094908",
+      "factory/release-manager/policies/release-package-policy-v0.5.json": "37dac9b31548bbd40dfebdbe40046ae75a19b5e7e4eec8f977b7ea8e2e02b98e"
+    },
+    "classification": "QM",
+    "owner_decision": {
+      "approved_at": "2026-10-29",
+      "approved_by": "Jefferson",
+      "assessed_aspice_compliance": null,
+      "classification": "QM",
+      "criterion_tailoring": {
+        "SWE1-01": {
+          "criterion": "The hardware/software interface and allocated functional software requirements are baselined and traceable.",
+          "original_criterion_sha256": "e4d43e56585176235f891a8666956d8947f93fd34ad42010a7b32ef18dea084b"
+        },
+        "SWE1-03": {
+          "criterion": "Failure/error behavior, reset/startup actions and caller responsibilities are source-supported within the declared invocation domain. An explicitly specified absence of error signaling or startup actions is valid when supported by that contract; behavior outside the domain is explicitly identified rather than invented.",
+          "original_criterion_sha256": "b468b8b01f6fab5f4f63a82c3c7081c4b9cb2c09da12eedde00181d677013ab9"
+        },
+        "SWE2-04": {
+          "criterion": "Functional error handling, any required degraded behavior and architecture dependencies are defined within the declared supported invocation domain.",
+          "original_criterion_sha256": "67f3ea7716e8cd193837a067abd636302d1e8f5e2066900c828aef54c03fb556"
+        },
+        "SWE6-03": {
+          "criterion": "Required functional behavior, error responses and target-specific constraints are addressed within the declared supported invocation domain.",
+          "original_criterion_sha256": "910894cbd31888dad7f1e5d98641907829918bef44f23ec876cae54537280b7d"
+        },
+        "SWE6-06": {
+          "criterion": "The final verification summary accurately states unverified hardware, simulation fidelity and remaining functional limitations.",
+          "original_criterion_sha256": "c8eaf19bb1a231d04c3c70111c43e6123ccc9e63a95a7264f072f519152dbc6c"
+        }
+      },
+      "decision": "OWNER-20261029-QM-DEVELOPMENT",
+      "enabled": true,
+      "purpose": "QM",
+      "request": "Forget about safety now!!! implement as QM",
+      "safety_approval": null,
+      "schema": "forge-c/qm-development-policy/1",
+      "scope": "Prospective owner-selected QM development for any declared driver; retain functional and ASPICE engineering gates. Historical allocations and failed runs remain unchanged."
+    },
+    "policy_ref": {
+      "path": "config/factory/qm-development-policy.yaml",
+      "sha256": "01c69cbb3d38f730c6ccc717b0fe2d6e311f337f6c6b3736a60432bb5fe6ce71"
+    },
+    "purpose": "QM",
+    "safety_approval": null,
+    "schema": "forge-c/qm-development-binding/1",
+    "statement": "OUT_OF_SCOPE: QM development selected by the owner. No software safety requirements, allocated safety safe state or safety assurance are required. Functional requirements, startup/error behavior, resource constraints, traceability and verification remain required.",
+    "validator_sha256": "ffeefb7afb9d09bb2c6a8204a4f9eef060ff699d8d5dc59ada2ef870cb824bfe"
+  },
+  "qm_resume_contract_version": 1,
+  "register_contract": "rc-v1",
+  "rules": [
+    "Cite source as DOC p.N for every hardware fact",
+    "Never invent registers or bits",
+    "Final reply: compact JSON only",
+    "OUT_OF_SCOPE: QM development selected by the owner. No software safety requirements, allocated safety safe state or safety assurance are required. Functional requirements, startup/error behavior, resource constraints, traceability and verification remain required."
+  ],
+  "safety_target": "QM",
+  "schema": "forge-c/work-order/0.4",
+  "scope": [
+    "Write and read the general-purpose 32-bit independent data register (CRC_IDR.IDR), using only LL_CRC_Write_IDR and LL_CRC_Read_IDR.",
+    "Caller supplies a valid CRC peripheral instance with the register interface accessible; caller-owned clock, power, security and access setup is a precondition, not implemented or inferred by these LL functions.",
+    "Within this slice no LL call occurs automatically at startup, no status-flag polling or error return is specified for valid accessible calls, and invalid pointers or inaccessible hardware are outside the supported invocation domain.",
+    "Out of scope: CRC calculation/feed, polynomial configuration, initial CRC value, reversal, calculation-unit reset, DMA, HAL, other LL functions and autonomous factory modification."
+  ],
+  "section_index_files": {
+    "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md": ".forge-run/index/DS14791-rev9-stm32n6x5-x7-datasheet.json",
+    "inputs/IDR-CONTRACT.md": ".forge-run/index/IDR-CONTRACT.json",
+    "inputs/RM0486-rev4-ch26-crc.md": ".forge-run/index/RM0486-rev4-ch26-crc.json",
+    "inputs/RM0486-rev4-memory-map-excerpt-crc.md": ".forge-run/index/RM0486-rev4-memory-map-excerpt-crc.json",
+    "inputs/RM0486-rev4-register-conventions.md": ".forge-run/index/RM0486-rev4-register-conventions.json",
+    "inputs/hal_driver_guideline.md": ".forge-run/index/hal_driver_guideline.json"
+  },
+  "simulation_performance": {
+    "instructions_per_call": 64,
+    "microseconds_per_call": 100,
+    "performance_mips": 100,
+    "schema": "forge-c/simulation-performance-budget/1",
+    "test_source": "software/tests/target/test_performance.c"
+  },
+  "system_names": [
+    "CRC LL driver",
+    "CRC driver",
+    "STM32N6 CRC LL driver"
+  ],
+  "target": {
+    "core": "Arm Cortex-M55",
+    "hsi_contract": "RM0486 Rev 4 ch.26 CRC register interface + memory map p.176 (CRC secure base 0x56024C00)",
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "safety_allocation": "OUT_OF_SCOPE: QM development selected by the owner. No software safety requirements, allocated safety safe state or safety assurance are required. Functional requirements, startup/error behavior, resource constraints, traceability and verification remain required.",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 26 (CRC) + memory map p.176"
+    ]
+  },
+  "trace_profile": "owner-2026-10-17",
+  "upstream": {
+    "issues": [
+      "UPSTREAM_FILE_MISSING"
+    ],
+    "sha256": null,
+    "status": "NOT_PROVIDED"
+  },
+  "work_order": "WO-F014-QWEN-CRC-IDR-DELIVERY-20261030-01",
+  "external_qualification": {
+    "case": "read-mask-mutant",
+    "verifier_revision": "d846ec82086e299f2acd88a24e1b2b6e234dc27f",
+    "new_model_execution": false,
+    "origin_native_id": "01M6788GYKREQSS1YTZHS9N3TV",
+    "candidate_kind": "CONTROLLED_MUTANT"
+  }
+}

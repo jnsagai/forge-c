@@ -1811,3 +1811,27 @@ No ledger backfill or budget reset occurred. Historical direct-tool counts may
 be incomplete and must be audited on host recovery. This is local tooling
 evidence, not native Qwen/product/learning/operational qualification. IE-T004
 remains partial and formal task counts are unchanged.
+## Delivery-First native terminal and integrated verifier — 30 October 2026
+
+See [the bounded implementation ledger](DELIVERY-FIRST-IMPLEMENTATION.md) and
+[exact commands/results](../../evidence/014-durable-local-autonomy/delivery-first-independent-20261030/README.md).
+Original DA task progress remains30/58; no DA acceptance was closed here.
+
+- Implementation `58ef89b7c798b7fdeb05aef08813f1b26a24a6a9`:103PASS,
+  one disabled live Fabro skip, zero failures/errors. Before-change AFO graph
+  and correction-bound failures are retained. Strict/demonstration/policy
+  regressions and false-PASS controls are included; counts overlap older cohorts.
+- External Omniverse first-candidate verification atd846ec82:351target assertions
+  PASS;70samples/API,2instructions/20virtual ns maximum per API at100MIPS.
+  Wrong-read and tight-cost controls fail as expected. Post-hoc external fixture,
+  not an autonomous success for the original job or a hardware timing claim.
+- External integrated verification on clean58ef89b7: functionalPASS,
+  packageBLOCKED, archive integrityPASS. Final controlled mutationFAIL, no
+  extra correction. Zero model calls or active-workspace edits.
+- Real native01M6788GYKREQSS1YTZHS9N3TV atbeb48b49 completed21:43:09UTC:
+  all six author/inspector attempts, productBLOCKED57, archive integrityPASS;
+  legacy functionalINCONCLUSIVE. Candidate unchanged. Complete archive copied
+  and hash-verified on loop10; provider independently idle21:43:31.
+- Runtime source/model-role competence, AFO delivery admission, autonomousDF-M1,
+  repeatability, HAL, learning benefit and continuous operation remain distinct
+  unproven qualifications. Spec validation is SPEC_CONTRACTS_ONLY_NOT_RUNTIME.

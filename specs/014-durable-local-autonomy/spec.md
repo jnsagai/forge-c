@@ -322,3 +322,11 @@ is explicitly unaccepted and cannot close IE-T008/009, M1 or formal qualificatio
 Current authority/accounting/operator/inference boundaries remain. Strict existing
 profiles retain their gating and rework behavior. Qualify actual edge traversal,
 failed-check preservation, provisional injection, blocked release and compatibility.
+# Delivery-First amendment — 30 October 2026
+
+The opt-in QM development slice in [DELIVERY-FIRST-E2E.md](DELIVERY-FIRST-E2E.md)
+sets the immediate implementation order. Its DF-FR-001..016 supplement this
+specification without replacing historical obligations or strict release
+semantics. [Implementation and acceptance traceability](DELIVERY-FIRST-IMPLEMENTATION.md)
+records actual source, model-authorship and verification boundaries; it is not
+an assertion that DF-M1 or the original feature is qualified.

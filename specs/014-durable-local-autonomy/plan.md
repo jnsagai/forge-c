@@ -190,3 +190,11 @@ is explicitly unaccepted and cannot close IE-T008/009, M1 or formal qualificatio
 Current authority/accounting/operator/inference boundaries remain. Strict existing
 profiles retain their gating and rework behavior. Qualify actual edge traversal,
 failed-check preservation, provisional injection, blocked release and compatibility.
+# Delivery-First implementation ordering amendment
+
+Execute DF-T001..009 in [DELIVERY-FIRST-E2E.md](DELIVERY-FIRST-E2E.md) through
+the existing engine before expanding general learning, HAL dependencies or
+long campaigns. The [source/evidence map](DELIVERY-FIRST-IMPLEMENTATION.md)
+identifies the concrete integration surfaces. Preserve the native/AFO lease,
+operator intent, immutable inputs, finite budgets and existing strict release
+authority; no parallel scheduler or silent production activation is introduced.

@@ -2,13 +2,18 @@
 
 **Implementation specification + execution plan (Codex handoff)**  
 **Date:** 2026-10-30  
-**Status:** PROPOSED / NOT IMPLEMENTED / NOT EXECUTED  
+**Status:** DEVELOPMENT_IMPLEMENTED / NATIVE_TRIAL_BLOCKED / DF-M1_NOT_PROVEN
 **Repository:** [`jnsagai/forge-c`](https://github.com/jnsagai/forge-c)  
 **Target integration line:** `feat/014-durable-local-autonomy` (stacked Feature 014 / PR #42; verify current HEAD and PR state before coding)  
 **Proposed repository destination:** `specs/014-durable-local-autonomy/DELIVERY-FIRST-E2E.md`  
 **Scope:** An opt-in, strictly local/offline, QM *development* mode of the existing Forge-C engine; **not** a new factory, release process, or full replacement for Feature 014.
 
 > **Decision:** Good, real, measured software delivery beats perfect-looking incomplete process execution. Finish one small Qwen-authored, compiled, independently tested, fully packaged software increment before expanding architecture, autonomous self-repair, learning, or qualification campaigns. **Never convert a failing test, missing source, or absent inspection into a PASS.**
+
+Current source/evidence and per-task limits are recorded in
+[DELIVERY-FIRST-IMPLEMENTATION.md](DELIVERY-FIRST-IMPLEMENTATION.md). The original
+motivation below is a dated baseline; a new candidate PASS is not a retrospective
+change to earlier failed jobs or a claim that DF-M1 is complete.
 
 ## 0. Read this first — implementation contract
 
@@ -409,4 +414,6 @@ Do not spend another full development cycle on multi-agent review, extensive new
 - [Recorded Codex/Claude r4 snapshot](https://github.com/jnsagai/forge-c/blob/feat/014-durable-local-autonomy/evidence/014-durable-local-autonomy/three-day-review-20261030/codex-claude-r4-terminal-snapshot.json)
 - [Recorded Qwen snapshot](https://github.com/jnsagai/forge-c/blob/feat/014-durable-local-autonomy/evidence/014-durable-local-autonomy/three-day-review-20261030/qwen-live-snapshot.json)
 
-**Publication note:** This Markdown file is a proposed implementation specification. Creating it does **not** mean it has been committed to GitHub, deployed on Omniverse, or executed.
+**Publication note:** This is a versioned development specification. Its publication
+and implementation are distinct from deployed source and measured qualification;
+the implementation ledger records those statuses separately.
