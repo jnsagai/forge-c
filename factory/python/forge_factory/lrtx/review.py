@@ -226,7 +226,7 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
                 issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
                 continue
             contested[it["id"]] = conf
-        verdicts[it["id"]] = {"verdict": d["verdict"], "findings": [f[:200] for f in d["findings"]],
+        verdicts[it["id"]] = {"verdict": d["verdict"], "findings": list(d["findings"]),
                               "evidence_refs": [f"configuration/baselines/{phase}/{bl['baseline_id']}.json",
                                                 *d["evidence_checked"][:8]]}
     if issues:  # incomplete: nothing is recorded (an aggregate never invents a verdict)

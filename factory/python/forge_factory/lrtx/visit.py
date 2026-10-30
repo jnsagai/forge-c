@@ -177,7 +177,16 @@ def rework_findings(ws: Path, phase: str, since: str) -> list[str]:
     if ins:
         d = json.loads(ins[-1].read_text())
         if d.get("recorded_at", "") > since and d.get("verdict") != "PASS":
-            out += [f"{f.get('id')}: {f.get('detail', '')}" for f in d.get("findings") or []]
+            # Published item findings are the repair evidence; detail is a compact display summary.
+            # Old inspections and separately supplied findings retain their legacy summary fallback.
+            items = d.get("items") or {}
+            for finding in d.get("findings") or []:
+                item = items.get(finding.get("id"))
+                full = item.get("findings") if isinstance(item, dict) and item.get("verdict") == "FAIL" else None
+                if isinstance(full, list) and full and all(isinstance(text, str) for text in full):
+                    out += [f"{finding.get('id')}: {text}" for text in full]
+                else:
+                    out.append(f"{finding.get('id')}: {finding.get('detail', '')}")
             if d.get("stale_reason"):
                 out.append(f"inspection stale: {d['stale_reason']}")
     for p in sorted((ws / ".forge-run/defects").glob("DEF-*.json")) if (ws / ".forge-run/defects").is_dir() else []:
