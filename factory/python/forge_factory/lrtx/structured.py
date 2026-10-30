@@ -31,6 +31,8 @@ PROMPT_VERSION = "lrtx-prompts-1"
 # local run lrtx4 (2026-10-21; inspection packets with register tables are the densest). 2.75 keeps the estimate
 # above the reported prompt_tokens, which are recorded next to it for every call.
 CHARS_PER_TOKEN = 2.75
+# Legacy envelope for the pre-profile baseline: the env override and this default stay, unchanged, for runs without
+# a selected local profile; a selected profile's own runtime context replaces them (never shrinks them silently).
 CONTEXT_TOKENS = int(os.environ.get("FORGE_LRTX_CONTEXT_TOKENS", "24576"))
 DEFAULT_OUTPUT_RESERVE = 4096
 RECOVERY_WORKSPACE: ContextVar[Path | None] = ContextVar("lrtx_recovery_workspace", default=None)
@@ -38,6 +40,21 @@ RECOVERY_WORKSPACE: ContextVar[Path | None] = ContextVar("lrtx_recovery_workspac
 
 class PacketRefused(ValueError):
     pass
+
+
+def profile_context_tokens(ws: Path | None) -> tuple[int, str]:
+    """The serialized-prompt envelope of this packet: the selected local profile's OLLAMA_CONTEXT_LENGTH, else the
+    legacy env/default. The profile is the same selection every structured role of the work order uses, so all of
+    its packets share one consistent context; without a selection the preserved legacy default applies."""
+    if ws is not None:
+        man = ws / ".forge-run/manifest.json"
+        prof_id = (json.loads(man.read_text()).get("local_profile") or {}).get("id") if man.is_file() else None
+        if prof_id:
+            from . import profile as lp
+
+            prof = lp.load(prof_id)
+            return int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"]), f"profile:{prof_id}"
+    return CONTEXT_TOKENS, "legacy:FORGE_LRTX_CONTEXT_TOKENS"
 
 
 SKILL_SECTIONS = ("Mission", "Work instruction", "Authoritative inputs")
@@ -182,12 +199,14 @@ def packet(
     msgs = messages(p, sk, sources, artifacts or [], previous)
     chars = sum(len(m["content"]) for m in msgs)
     est = int(chars / CHARS_PER_TOKEN) + 64
+    context_tokens, context_basis = profile_context_tokens(ws)
     p["accounting"] = {
         "serialized_chars": chars,
         "estimated_prompt_tokens": est,
         "output_reserve": output_reserve,
-        "context_tokens": CONTEXT_TOKENS,
-        "fits": est + output_reserve <= CONTEXT_TOKENS,
+        "context_tokens": context_tokens,
+        "context_basis": context_basis,
+        "fits": est + output_reserve <= context_tokens,
     }
     from ..afo.diagnosis_packet import measure_request
 
@@ -206,7 +225,7 @@ def packet(
     measured = measure_request(complete)
     p["accounting"]["complete_serialized_request"] = measured
     if ws is not None and (ws / ".forge-run/durable-binding.json").is_file():
-        p["accounting"]["fits"] = p["accounting"]["fits"] and measured["input_tokens"] + output_reserve <= CONTEXT_TOKENS
+        p["accounting"]["fits"] = p["accounting"]["fits"] and measured["input_tokens"] + output_reserve <= context_tokens
     p["input_hash"] = hashlib.sha256(canonical_json({k: v for k, v in p.items() if k != "accounting"})).hexdigest()
     p["_messages"] = msgs
     def without_lessons(reason: str) -> dict:
@@ -235,7 +254,7 @@ def packet(
     if not p["accounting"]["fits"]:
         if exposed:  # DA-FR-040: an unfit lesson block is omitted explicitly; it never refuses the task itself
             return without_lessons("CONTEXT_UNFIT")
-        raise PacketRefused(f"PACKET_TOO_LARGE:{task}:{est}+{output_reserve}>{CONTEXT_TOKENS} (repartition)")
+        raise PacketRefused(f"PACKET_TOO_LARGE:{task}:{est}+{output_reserve}>{context_tokens} (repartition)")
     if exposed and not LessonStore().expose(
         exposed, manifest.get("work_order", task), data={"packet_input_hash": p["input_hash"], "role": role, "phase": phase}
     ):
