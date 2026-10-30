@@ -1,3 +1,18 @@
+# Prospective diagnosis context correction — 30 October 2026, 11:15 UTC
+
+Source017e68da015390c60abb8ca46b7dfdd40a0afa79 is NOT_DEPLOYED. Global requirement/
+incident namespaces clarified; global dependencies/known absences preserved through
+all four questions. Gates, source facts, packet bytes, schemas and authority remain.
+Final affected36PASS/transport64PASS; earlier121PASS+1setup failure, failed case
+corrected and independently rerunPASS with real Fabro parse. Clean-source CLI32inputs,
+zero model/grant/job/mission/service changes. Native model benefit NOT_RUN.
+Native CPU qualification queued only after all frozen MTP measurements/quiescence;
+actual check-only refused busy RUNNING82. Newer intent preserved, no source promotion.
+Current remote remainsa9b2ddf; draft3median63.44/draft2median56.94, draft4 live,
+draft6 not started. No product restart, no task checkbox change; formal30/58.
+[Exact evidence and executable tooling](../../evidence/014-durable-local-autonomy/diagnosis-context-20261030/README.md).
+Historical checkpoints below remain preserved.
+
 # MTP experiment checkpoint — 30 October 2026, 10:28 UTC
 
 Exact sourcea9b2ddfccc326bdcf8287c95a4310c0408429ccb: local60PASS/30PASS (overlap),

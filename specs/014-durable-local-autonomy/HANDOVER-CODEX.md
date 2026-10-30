@@ -1,6 +1,56 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 10:28UTC: controlled MTP sweep running, source a9b2ddf qualified
+## Latest state — 11:15UTC: MTP4 live; generic context fix local-tested, NOT_DEPLOYED
+
+Owner priority remains model-speed benchmarking; **do not restart LL/HAL**.
+Remote runtime remains a9b2ddfccc326bdcf8287c95a4310c0408429ccb, current MTP4 stage,
+controller RUNNING84. Fresh draft3 baseline finished63.43857median tok/s; draft2
+finished56.93569 (about10% lower). Draft4 running, draft6 NOT_STARTED. The finite
+continuation forge-q38-mtp-speed-20261030-v1.service/MainPID3297794 remains active.
+No second driver or concurrent GPU test. All finite scopes expire13:52:52UTC,
+all prior history/counters/uncertainty unchanged; no production winner yet.
+Local hash-verified result collector and report continue under
+B/inspection/feature014/2026-10-30-qwen/mtp-speed-pilot/ (PID142046; revalidate before signalling).
+
+Prospective source **017e68da015390c60abb8ca46b7dfdd40a0afa79**, NOT_DEPLOYED,
+clarifies incident-unit versus global-requirement namespaces and declared synthetic
+scope without inventing authority or changing gates. All four question views now
+retain global IDs/dependencies/known absences; later questions accurately describe
+compact established evidence, not nonexistent repeated primary text. Complete
+serialized requests include all context in measured hashes. Real missing facts and
+unknown authority can still block; duplicate semantic items remain invalid. No
+SKILL/inspector permission, packet bytes, source facts, response schema or budget changed.
+
+Tests: final affected36PASS, transport/envelope/fault64PASS, no errors/failures/skips.
+Earlier122-case broad group121PASS/1missing-Fabro-path setup failure; that exact
+failed case rerunPASS with FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro, including
+actual Fabro graph parse. Preserve the original failure (public XML privacy-redacted),
+not a fictional single green122 run. Clean017e68d CLI froze32 reference-backed inputs
+with zero model/grant/job/mission/service effect. No native model-benefit claim.
+
+A3 and P/deployment: diagnosis-context-017e68d.bundle,
+qualify-native-diagnosis-context-017e68d.py,
+qualify-diagnosis-context-after-mtp.py,
+followup-diagnosis-context-after-mtp.py. Native check-only correctly refused busy
+RUNNING82 (NOT_RUN), no tests/intent/deployment. Owned-child completion/cancel fences
+passed locally. Unit forge-context-qa-after-mtp-017-v1.service waits for all frozen
+MTP completion receipts, requires unchanged RUNNING86/true quiescence, then pauses87
+for one CPU-only source qualification, settles verifier and resumes only its own
+unchanged pause. **No source activation or model evaluation.** Newer intent is preserved.
+Do not launch another qualification window while this follow-up is active.
+
+Local QA collector PID185751 (revalidate argv), A3/collect-diagnosis-context-qualification.py,
+log diagnosis-context-qa-collector.log, will hash-verify private native QA receipts under
+B/inspection/feature014/2026-10-30-qwen/diagnosis-context-qualification/.
+The worker has not yet run. After MTP/CPU qualification, inspect actual results and
+prepare any next exact-source/model/product scope using valid existing delegation;
+never reset spent missions or silently renew authority. Do not relabel exposed
+fixture cases as fresh held-out role qualification or promote their responses as lessons.
+
+[Fix, exact local tests, preserved setup failure, CLI and queued native tooling](../../evidence/014-durable-local-autonomy/diagnosis-context-20261030/README.md).
+Formal30/58 unchanged/no new task IDs closed; full product/role/learning/24/72/168h unproven.
+
+## Historical checkpoint — superseded 10:28UTC state — 10:28UTC: controlled MTP sweep running, source a9b2ddf qualified
 
 Owner priority remains **model-speed benchmarks; product run remains aborted**.
 The previous reasoning pilot and all local835-member/263-file result copies remain.
