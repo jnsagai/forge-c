@@ -90,6 +90,42 @@ def reasoning_policy() -> dict[str, dict]:
     return {m: v for m, v in pol.items() if isinstance(v, dict) and v.get("effort") in EFFORTS} if isinstance(pol, dict) else {}
 
 
+def system_messages_first(messages: list) -> list:
+    """Adapt compaction's late system notes to templates that accept one initial system message.
+
+    Only existing system messages move. User/assistant/tool messages keep their
+    order and contents, including tool-call IDs. No evidence text is truncated.
+    Metadata is retained as explicitly labelled JSON rather than silently lost.
+    """
+    systems = [(i, m) for i, m in enumerate(messages) if isinstance(m, dict) and m.get("role") == "system"]
+    if not systems or len(systems) == 1 and systems[0][0] == 0:
+        return messages
+
+    def text_of(message):
+        content = message.get("content")
+        if isinstance(content, str):
+            text = content
+        elif isinstance(content, list) and all(
+            isinstance(p, dict) and p.get("type") in ("text", "input_text") and isinstance(p.get("text"), str)
+            for p in content
+        ):
+            parts = []
+            for part in content:
+                metadata = {k: v for k, v in part.items() if k not in ("type", "text")}
+                prefix = "[System text metadata: " + json.dumps(metadata, ensure_ascii=False, sort_keys=True) + "]\n" \
+                    if metadata else ""
+                parts.append(prefix + part["text"])
+            text = "\n".join(parts)
+        else:
+            raise ValueError("SYSTEM_MESSAGE_CONTENT_UNSUPPORTED")
+        metadata = {k: v for k, v in message.items() if k not in ("role", "content")}
+        return ("[System message metadata: " + json.dumps(metadata, ensure_ascii=False, sort_keys=True) + "]\n"
+                if metadata else "") + text
+
+    merged = {"role": "system", "content": "\n\n".join(text_of(m) for _, m in systems)}
+    return [merged, *[m for m in messages if not isinstance(m, dict) or m.get("role") != "system"]]
+
+
 def sanitize_request(body: dict, *, policy=None, role: str | None = None) -> dict:
     body = scope_tools(body)
     out = {k: v for k, v in body.items() if k not in ("reasoning", "think", "thinking")}
@@ -120,7 +156,10 @@ def sanitize_request(body: dict, *, policy=None, role: str | None = None) -> dic
             m = {k: v for k, v in m.items() if k not in REASONING_KEYS}
         msgs.append(m)
     if "messages" in out:
-        out["messages"] = msgs
+        order = pol.get("system_message_order") if pol else None
+        if order not in (None, "merge_first"):
+            raise ValueError("SYSTEM_MESSAGE_ORDER_POLICY_INVALID")
+        out["messages"] = system_messages_first(msgs) if order == "merge_first" else msgs
     return out
 
 

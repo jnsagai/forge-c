@@ -1,6 +1,6 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-q38-qm-native-artifacts
-version: 1
+version: 2
 work_order_purpose: QM
 status: DEVELOPMENT_ARTIFACT_TRIAL_NOT_QUALIFIED
 description: Owner-requested native MCP artifact trial. Same six-phase agent workflow,
@@ -67,6 +67,7 @@ gateway:
   reasoning:
     qwen3.8:27b-q8_0:
       effort: medium
+      system_message_order: merge_first
       extra_output_tokens: 32768
       role_efforts:
         swe1-inspector: xhigh
