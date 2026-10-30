@@ -1,3 +1,43 @@
+# Final checkpoint — xhigh/medium pilot complete, 30 October 2026
+
+The product run remains owner-aborted, BLOCKED and saved. No LL retry/HAL launch.
+[Complete speed report](SPEED-REPORT.md), [numeric summary](final-summary.json),
+[all frozen speed inputs/results/audits](speed-pilot-results.tar.gz),
+[263-file hash verification](final-transfer.json).
+
+| Setting | Real generations / frozen trials | Median native decode | Expected decisions |
+|---|---:|---:|---:|
+| xhigh | 6 / 8 (two pre-inference setup failures preserved) | 62.49 tokens/s | 2 / 8 |
+| medium | 8 / 8 | 71.01 tokens/s | 2 / 8 |
+| high | 0; unsupported by installed template | NOT_RUN | NOT_RUN |
+
+On six matched generated cases, aggregate gateway generation time fell from
+948.5801 to118.2134seconds (**8.024× faster**); median decode rate increased
+13.63%. Most of the latency gain came from fewer output/reasoning tokens.
+These are model-request timings, not full-pipeline performance. All job/admission/
+load/failed-attempt costs remain in raw metrics. The serial-order/thermal and small
+cohort limits are retained; no learning-cost or formal comparison qualification claim.
+
+Both protocol reports **FAIL**. Four complete-evidence xhigh cases incorrectly
+returned NEEDS_EVIDENCE. Medium's two upstream-owner responses were additionally
+rejected: missing_evidence had duplicate items, violating uniqueItems, with
+CONTRACT_INVALID. The two missing-primary cases correctly requested evidence.
+The two initial xhigh infrastructure refusals remain in the frozen denominator.
+This is not evidence of safe production selection, qualified repair, or clean product.
+Author/inspector and mixed-pipeline capability remain untested by this diagnosis pilot.
+MTP draft stayed3 throughout; a2/3/4/6 sweep is the next separate experiment, NOT_RUN.
+
+[Post-campaign capture](post-campaign-supervision.json): controller active,
+RUNNING78, zero pending executions/nonquiescent requests/inference holders,
+all prior mission snapshots exactly unchanged, old LL BLOCKED/HAL not submitted.
+The model-free factory continues after both finite benchmark missions exhaust;
+no autonomous global stop or product retry. Benchmark-only medium remains resident,
+not promoted as a production winner. Existing authority still expires13:52:52UTC.
+No Feature014 task IDs closed; formal30/58 remains. Product/learning/24/72/168h
+qualification remain UNPROVEN/NOT_RUN. Exact runtime/test source37c0c35 below.
+
+## Historical execution record (superseded by final checkpoint above)
+
 # Owner abort and controlled Qwen speed pilot — 30 October 2026
 
 The owner superseded “finish LL first”: **abort the product run, save all results,

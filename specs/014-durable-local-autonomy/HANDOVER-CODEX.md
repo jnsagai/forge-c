@@ -1,6 +1,42 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — owner abort saved; model-speed pilot active (30 October, 09:29 UTC)
+## Latest state — 10:00UTC: owner abort saved; both speed cohorts complete
+
+**Owner priority: product run aborted, all results saved, focus model speed.**
+No product retry/HAL submission. Runtime/tested source37c0c354629312a70eb6a199989477036bb674d9.
+Native96 reasoning/gateway PASS and92 context/workflow PASS (overlap), no failures/errors/skips.
+Model-free controller active RUNNING78; no pending executions/requests/holders.
+All historical mission snapshots unchanged; original LL BLOCKED, HAL not submitted.
+Product review ZIP integrity PASS plus835-member complete private engineering snapshot on loop10.
+
+Xhigh and medium frozen8-case diagnosis cohorts completed serially on Omniverse2,
+Q8_0/f16/MTP3/262144/one inference/temp0. Xhigh6 actual generations plus2 retained
+pre-inference host setup failures: median62.49037tok/s, protocol FAIL/2 expected decisions of8.
+Medium8 generations: median71.01074tok/s, protocol FAIL/2 expected decisions of8.
+Six matched generated cases:948.5801→118.2134gatewayseconds,8.024× faster,
+13.63% median decode gain, primarily fewer output tokens. No full-pipeline performance claim.
+Medium upstream-owner:0/:1 have duplicate missing_evidence entries, CONTRACT_INVALID/uniqueItems.
+Other complete-evidence cases wrongly request more evidence. No qualified repair/model winner.
+High is genuinely UNSUPPORTED, no silent alias/inference. MTP factor sweep is NOT_RUN.
+
+Both benchmark missions are spent (8jobs each); preserve their history and conservative
+charges/uncertainty. No rerun/rebind/reset under these IDs. Grants expire13:52:52UTC unchanged.
+Benchmark-only medium remains resident; no new product authority/automatic deployment selection.
+Finite drivers completed; normal model-free supervision persists. Local collector completed
+263-file hash-verified final copy and generates the standalone private SPEED-REPORT.md:
+B/inspection/feature014/2026-10-30-qwen/model-speed-pilot/.
+Final archive A3/q38-speed-pilot-final.tar.gz (SHAed114e5292b1b3d4122545bd09a6049183a987c0eb7d6e04236ac7e44a0b9a98).
+Product snapshot A3/owner-aborted-full-engineering.tar.gz plus extracted sibling retains all results.
+
+Next execution: preregister a separate MTP draft2/3/4/6 factor with Q8/context/reasoning
+fixed; prepare/qualify exact profiles/source and delegated finite grants before execution.
+Do not silently renew previous authority or start another driver product. Diagnosis/context
+failures require separate investigation; do not alter outputs or gates to manufacture PASS.
+Formal30/58 unchanged; no task IDs newly closed; clean LL/HAL, independent learning benefit
+and24/72/168h remain UNPROVEN/NOT_RUN.
+[Complete report, artifacts, exact tests and receipts](../../evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/README.md).
+
+## Historical checkpoint — superseded 09:29UTC state — owner abort saved; model-speed pilot active (30 October, 09:29 UTC)
 
 **Owner changed priority: abort LL, save all results, focus on model speed.** This
 supersedes every older “finish LL first” instruction below. HAL must not be submitted.

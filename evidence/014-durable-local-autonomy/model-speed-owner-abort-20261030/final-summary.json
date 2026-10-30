@@ -1,0 +1,24 @@
+{
+  "schema": "forge-c/reasoning-speed-final-summary/1",
+  "status": "COMPLETE_DESCRIPTIVE_PILOT_NOT_QUALIFICATION",
+  "runtime_revision": "37c0c354629312a70eb6a199989477036bb674d9",
+  "paired_generated_cases": 6,
+  "paired_xhigh_gateway_seconds": 948.5800999999999,
+  "paired_medium_gateway_seconds": 118.21340000000001,
+  "aggregate_generation_speedup": 8.024302659427779,
+  "median_decode_improvement_percent": 13.634692625662769,
+  "xhigh_median_decode_tokens_per_second": 62.49037208463234,
+  "medium_median_decode_tokens_per_second": 71.01074223900493,
+  "case_decisions_matching_expected": {
+    "xhigh": "2/8, including two pre-inference setup failures in denominator",
+    "medium": "2/8, including two contract rejections"
+  },
+  "medium_contract_failure": "upstream-owner:0 and :1: duplicate missing_evidence entries, uniqueItems violated; CONTRACT_INVALID",
+  "high": "UNSUPPORTED_MODEL_TEMPLATE_ZERO_REQUESTS",
+  "mtp": "FIXED_DRAFT3; factor sweep NOT_RUN",
+  "product_success": "NOT_RUN",
+  "role_qualification": "NOT_ESTABLISHED",
+  "learning_benefit": "NOT_RUN",
+  "operational_availability": "UNPROVEN",
+  "new_task_ids_completed": []
+}

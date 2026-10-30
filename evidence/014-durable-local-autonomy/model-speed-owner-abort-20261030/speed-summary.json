@@ -1,0 +1,245 @@
+{
+  "schema": "forge-c/descriptive-reasoning-speed-pilot/1",
+  "status": "COMPLETE_DESCRIPTIVE_PILOT",
+  "runtime_revision": "37c0c354629312a70eb6a199989477036bb674d9",
+  "cohorts": {
+    "xhigh": {
+      "complete": true,
+      "expected_trials": 8,
+      "recorded_trials": 8,
+      "decode_measured_trials": 6,
+      "setup_no_generation": 2,
+      "expected_decision_matches": 2,
+      "median_decode_tokens_per_second": 62.49037208463234,
+      "load_and_control_start_seconds": 10.687378832139075,
+      "rows": [
+        {
+          "trial_id": "late-finding:0",
+          "observed": "FAILED_PROTOCOL",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": null,
+          "gateway_total_seconds": null,
+          "trial_wall_seconds": 20.06070590019226,
+          "backend_decode_tokens_per_second": null,
+          "metric_sha256": "8643b07a56c15939006f7caaf4d111e5f2b945a3b623883b3fe74256a41fb935"
+        },
+        {
+          "trial_id": "late-finding:1",
+          "observed": "FAILED_PROTOCOL",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": null,
+          "gateway_total_seconds": null,
+          "trial_wall_seconds": 16.47434711456299,
+          "backend_decode_tokens_per_second": null,
+          "metric_sha256": "2c335bc30143aaab9879c390524b0608ea5252b1777355f796eb693a8e88fab9"
+        },
+        {
+          "trial_id": "missing-primary:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 17943,
+          "gateway_total_seconds": 290.9915,
+          "trial_wall_seconds": 349.5189936161041,
+          "backend_decode_tokens_per_second": 61.90132384586788,
+          "metric_sha256": "78a71e42b35b3140c876d3a98bb3c2f5619683354f9c2c916725274b829efe3a"
+        },
+        {
+          "trial_id": "missing-primary:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 16674,
+          "gateway_total_seconds": 273.6726,
+          "trial_wall_seconds": 328.00983810424805,
+          "backend_decode_tokens_per_second": 61.2198231505658,
+          "metric_sha256": "e6061a1be307c9556d485b75b28ef08518c35070f168679193ac2306523aa2e9"
+        },
+        {
+          "trial_id": "obligation-counterexample:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 6293,
+          "gateway_total_seconds": 102.8787,
+          "trial_wall_seconds": 243.26969408988953,
+          "backend_decode_tokens_per_second": 61.86184999469658,
+          "metric_sha256": "c4023ec1938c1b9cb96d27c23fec5e651f2f80186b877f1e579124f25e3b585a"
+        },
+        {
+          "trial_id": "obligation-counterexample:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 4889,
+          "gateway_total_seconds": 76.4584,
+          "trial_wall_seconds": 121.17195677757263,
+          "backend_decode_tokens_per_second": 65.05555803204608,
+          "metric_sha256": "4aa541b921f44feb9595fbaab2a2cc154f2197e83269faad20c49abab2d45a9e"
+        },
+        {
+          "trial_id": "upstream-owner:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 5718,
+          "gateway_total_seconds": 91.9116,
+          "trial_wall_seconds": 136.8557608127594,
+          "backend_decode_tokens_per_second": 63.13945537968477,
+          "metric_sha256": "66a55960549203fcd4af7a3b3b64aaf812387690c6e9036ee6624e91d3f0dafe"
+        },
+        {
+          "trial_id": "upstream-owner:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 7021,
+          "gateway_total_seconds": 112.6673,
+          "trial_wall_seconds": 165.44857025146484,
+          "backend_decode_tokens_per_second": 63.0794203233968,
+          "metric_sha256": "28bbea4edbd0371c95015eceef6fd22cb0ea8c56c11ed88fdacee412ff549ae0"
+        }
+      ]
+    },
+    "medium": {
+      "complete": true,
+      "expected_trials": 8,
+      "recorded_trials": 8,
+      "decode_measured_trials": 8,
+      "setup_no_generation": 0,
+      "expected_decision_matches": 2,
+      "median_decode_tokens_per_second": 71.01074223900493,
+      "load_and_control_start_seconds": 10.703193867113441,
+      "rows": [
+        {
+          "trial_id": "late-finding:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 735,
+          "gateway_total_seconds": 12.1048,
+          "trial_wall_seconds": 149.83141493797302,
+          "backend_decode_tokens_per_second": 68.27358852483532,
+          "metric_sha256": "1c8edcfcfe3d9a4cdefb2779bd7550d6dba2ea91f85488dcad81731115210a35"
+        },
+        {
+          "trial_id": "late-finding:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 620,
+          "gateway_total_seconds": 10.0539,
+          "trial_wall_seconds": 56.59908056259155,
+          "backend_decode_tokens_per_second": 70.80422175882254,
+          "metric_sha256": "81998cf961af3b9e31e4066404ba71d40749028ed67a8b55beb73c27be408154"
+        },
+        {
+          "trial_id": "missing-primary:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 798,
+          "gateway_total_seconds": 12.345,
+          "trial_wall_seconds": 59.57732558250427,
+          "backend_decode_tokens_per_second": 70.18630153372021,
+          "metric_sha256": "e8ea33baddb5aabb1ab3e6646f73d9316682ed2e09263c04d84183c82f725f7b"
+        },
+        {
+          "trial_id": "missing-primary:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "NEEDS_EVIDENCE",
+          "completion_output_tokens": 1079,
+          "gateway_total_seconds": 16.0038,
+          "trial_wall_seconds": 57.95530128479004,
+          "backend_decode_tokens_per_second": 70.78055404315056,
+          "metric_sha256": "5e8e1ba04b4148684e32a1f93e019be671f33742d52bb3fc670541a6527687c5"
+        },
+        {
+          "trial_id": "obligation-counterexample:0",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 994,
+          "gateway_total_seconds": 14.7881,
+          "trial_wall_seconds": 57.77046251296997,
+          "backend_decode_tokens_per_second": 73.27433054242171,
+          "metric_sha256": "aff3d99fc0ce8e9146a9debb15a59724ca3a2ab7f7aa341ac3f66ffff292be41"
+        },
+        {
+          "trial_id": "obligation-counterexample:1",
+          "observed": "NEEDS_EVIDENCE",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 825,
+          "gateway_total_seconds": 12.78,
+          "trial_wall_seconds": 57.15040373802185,
+          "backend_decode_tokens_per_second": 71.21726271918732,
+          "metric_sha256": "fe7b24403395bbee898ced01d01ca30c76cec0ba22ee7c47f1e64b0ae770a42d"
+        },
+        {
+          "trial_id": "upstream-owner:0",
+          "observed": "REJECTED",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 2195,
+          "gateway_total_seconds": 31.2656,
+          "trial_wall_seconds": 74.27136898040771,
+          "backend_decode_tokens_per_second": 73.06048542784487,
+          "metric_sha256": "318332400e927ef626ec70b28d6c7deeab92d1db9ddc7f0653038f4d02e3ab39"
+        },
+        {
+          "trial_id": "upstream-owner:1",
+          "observed": "REJECTED",
+          "expected": "PROPOSE_REPAIR",
+          "completion_output_tokens": 2162,
+          "gateway_total_seconds": 31.030900000000003,
+          "trial_wall_seconds": 76.31697726249695,
+          "backend_decode_tokens_per_second": 72.61061700216892,
+          "metric_sha256": "a81cd9fd1db60a86bdbfcd556126ab4951ae5500b6bf72d75ffbbbcf05cd58f4"
+        }
+      ]
+    }
+  },
+  "paired_generated_cases": [
+    {
+      "trial_id": "missing-primary:0",
+      "xhigh_gateway_seconds": 290.9915,
+      "medium_gateway_seconds": 12.345,
+      "latency_ratio_medium_over_xhigh": 0.0424239195990261,
+      "both_match_expected": true
+    },
+    {
+      "trial_id": "missing-primary:1",
+      "xhigh_gateway_seconds": 273.6726,
+      "medium_gateway_seconds": 16.0038,
+      "latency_ratio_medium_over_xhigh": 0.05847790388953808,
+      "both_match_expected": true
+    },
+    {
+      "trial_id": "obligation-counterexample:0",
+      "xhigh_gateway_seconds": 102.8787,
+      "medium_gateway_seconds": 14.7881,
+      "latency_ratio_medium_over_xhigh": 0.14374306829304803,
+      "both_match_expected": false
+    },
+    {
+      "trial_id": "obligation-counterexample:1",
+      "xhigh_gateway_seconds": 76.4584,
+      "medium_gateway_seconds": 12.78,
+      "latency_ratio_medium_over_xhigh": 0.16714971801659465,
+      "both_match_expected": false
+    },
+    {
+      "trial_id": "upstream-owner:0",
+      "xhigh_gateway_seconds": 91.9116,
+      "medium_gateway_seconds": 31.2656,
+      "latency_ratio_medium_over_xhigh": 0.3401703375852449,
+      "both_match_expected": false
+    },
+    {
+      "trial_id": "upstream-owner:1",
+      "xhigh_gateway_seconds": 112.6673,
+      "medium_gateway_seconds": 31.030900000000003,
+      "latency_ratio_medium_over_xhigh": 0.27542064112657355,
+      "both_match_expected": false
+    }
+  ],
+  "unsupported_high": true,
+  "automatic_model_selection": false,
+  "formal_controlled_comparison": "INCOMPLETE_INDEPENDENT_COMPARISON_MEASUREMENT_NOT_QUALIFIED",
+  "learning_overhead": "NOT_SEPARATELY_MEASURED",
+  "limitations": [
+    "Two initial xhigh cases had host setup refusals before inference, retained in denominator",
+    "Small diagnosis-only cohort; not author/inspector or pipeline qualification",
+    "Serial xhigh-first order and thermal/cache differences are recorded; not randomized",
+    "Model reasoning tokens included; no hidden reasoning content collected"
+  ]
+}

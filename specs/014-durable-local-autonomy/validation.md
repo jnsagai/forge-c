@@ -1,3 +1,18 @@
+# Final speed-pilot checkpoint — 30 October 2026, 10:00 UTC
+
+Exact native runtime/test source37c0c354629312a70eb6a199989477036bb674d9.
+Isolated native cohorts96PASS/92PASS, no failures/errors/skips, overlapping tests.
+Xhigh8 frozen trials (6 generations/2 setup failures): median62.49tok/s, protocolFAIL.
+Medium8 generations: median71.01tok/s, protocolFAIL. Both2/8 expected decisions;
+medium also two CONTRACT_INVALID duplicate missing_evidence errors. Six matched
+model-request timings:948.58→118.21seconds (8.024×); not pipeline/role qualification.
+High unsupported; MTP draft3 fixed, factor sweep NOT_RUN.263 final transferred files
+hash-verified on loop10. Original product remains owner-aborted/BLOCKED and saved.
+Controller RUNNING78/active after campaign completion, zero pending requests/leases,
+historical mission snapshots unchanged. Formal30/58/no newly completed tasks.
+[Full evidence and exact source/commands](../../evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/README.md).
+Historical checkpoints below are retained and superseded by this result.
+
 # Latest operational checkpoint: owner abort and speed pilot, 30 October 2026
 
 Owner-aborted LL is saved as a sealed BLOCKED package plus complete private local
