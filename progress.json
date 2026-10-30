@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-30T05:56:17.364686Z",
+  "captured_utc": "2026-10-30T06:01:19.344794Z",
   "deadline_epoch": 1793368372,
   "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
   "intent": {
@@ -53,22 +53,28 @@
     },
     {
       "order_id": "afo-e6593e4a6b4ec1b8",
-      "state": "QUEUED",
-      "attempts": []
+      "state": "RUNNING",
+      "attempts": [
+        {
+          "attempt_id": "afo-e6593e4a6b4ec1b8-a1",
+          "seq": 1,
+          "state": "RUNNING"
+        }
+      ]
     }
   ],
   "claim": "EXPERIMENTAL_WORK_ONLY;NATIVE_GATES_AND_OFFLINE_REVIEW_REMAIN_REQUIRED",
-  "requests": 613,
+  "requests": 615,
   "native_ownership": [
     {
       "resource": "inference",
-      "holder": null,
-      "epoch": 58
+      "holder": "afo-product-109acc58b919a37613210e04",
+      "epoch": 59
     },
     {
       "resource": "generation",
-      "holder": null,
-      "epoch": 1226
+      "holder": "structured-request-cff4679733fe46dab82303ad85170183",
+      "epoch": 1229
     }
   ]
 }
