@@ -496,10 +496,13 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         if ins:
             _w(stage, f"inspection/{p}/inspection_record.json", pretty_json(ins[-1]))
     from ..delivery_first import report as delivery_report
+    from ..delivery_first import scorecard
 
     if wo.get("delivery_first"):
         # Evidence-only report; strict release decisions are unchanged.
-        _w(stage, "verification/delivery-first/report.json", pretty_json(delivery_report(ws)))
+        delivery = delivery_report(ws)
+        _w(stage, "verification/delivery-first/report.json", pretty_json(delivery))
+        _w(stage, "verification/delivery-first/SCORECARD.md", scorecard(delivery))
         _copy_tree(ws / ".forge-run/delivery-first", stage / "verification/delivery-first/attempts")
         for item in wo.get("inputs", []):
             if item.get("role", "").startswith("delivery_first"):

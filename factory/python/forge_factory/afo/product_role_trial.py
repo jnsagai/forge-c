@@ -166,7 +166,8 @@ def preflight(workspace, job, requests):
                      layer=man.get("layer", "LL+HAL"), brownfield=man.get("code_mode"),
                      peripheral=man.get("peripheral"), operation_scope=man.get("operation_scope"),
                      delivery_style=((man.get("delivery") or {}).get("build") or {}).get("style"),
-                     structured=local_profile_structured(prof, man, job["model"]), assessment_manifest=man)
+                     structured=local_profile_structured(prof, man, job["model"]), assessment_manifest=man,
+                     execution_policy=man.get("development_execution"))
     roles = {n["role"] for n in nodes.values()}
     if any(not isinstance(r, dict) or set(r) != {"role", "body"} or r["role"] not in roles for r in requests):
         raise Refused("PRODUCT_PREFLIGHT_REQUEST_INVENTORY_INVALID")

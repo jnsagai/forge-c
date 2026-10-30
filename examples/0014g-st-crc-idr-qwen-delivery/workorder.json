@@ -82,6 +82,10 @@
     {
       "path": "idr_unit_harness.c",
       "role": "delivery_first_host_harness"
+    },
+    {
+      "path": "idr_target_oracle.c",
+      "role": "delivery_first_independent_target_oracle"
     }
   ],
   "layer": "LL",
@@ -147,6 +151,12 @@
       "LL_CRC_Read_IDR"
     ],
     "max_corrections": 2,
-    "unit_harness": "inputs/idr_unit_harness.c"
+    "unit_harness": "inputs/idr_unit_harness.c",
+    "simulation_oracle": "inputs/idr_target_oracle.c",
+    "compiler_profiles": {
+      "host": "host-clang",
+      "target": "target-cm55-gcc"
+    },
+    "simulation_adapter": "stm32n6-cortex-m55-v1"
   }
 }

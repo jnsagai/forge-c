@@ -36,11 +36,25 @@ def contract(man):
             or names != (man.get("operation_scope") or {}).get("functions")
             or value.get("max_corrections") != 2):
         raise ValueError("DELIVERY_FIRST_SCOPE_INVALID")
-    for key in ("contract", "host_oracle", "target_probe", *(["unit_harness"] if "unit_harness" in value else [])):
+    optional = [key for key in ("unit_harness", "simulation_oracle") if key in value]
+    for key in ("contract", "host_oracle", "target_probe", *optional):
         raw = value.get(key)
         if not isinstance(raw, str) or not raw.startswith("inputs/") or raw not in {
                 i["path"] for i in man.get("inputs", [])}:
             raise ValueError("DELIVERY_FIRST_INPUT_NOT_DECLARED:" + key)
+    if value.get("simulation_oracle"):
+        from .mcp.servers import sim
+        from .simulation_performance import validate
+
+        validate(man.get("simulation_performance"))
+        sim.validate_adapter(man, value.get("simulation_adapter"))
+    from .mcp.servers.build import PROFILES
+
+    compilers = value.get("compiler_profiles")
+    if (not isinstance(compilers, dict) or set(compilers) != {"host", "target"}
+            or any(not isinstance(v, str) or v not in PROFILES or not v.startswith(k + "-")
+                   for k, v in compilers.items())):
+        raise ValueError("DELIVERY_FIRST_COMPILER_ADAPTER_UNSUPPORTED")
     if (not isinstance(value.get("include_dirs"), list) or not value["include_dirs"]
             or any(not isinstance(p, str) for p in paths + value["include_dirs"])):
         raise ValueError("DELIVERY_FIRST_PATHS_INVALID")
@@ -73,13 +87,14 @@ def include_flags(ws):
 
 def checked_paths(ws, cfg):
     ctx = context(ws)
-    from .policy.authz import Authorizer, Binding
+    from .policy.authz import ALWAYS_PROTECTED, ROLE_WRITE_PREFIXES, _match
 
-    auth = Authorizer(Binding("delivery-first", str(ctx.workspace), {"author": {"role": "swe3-author", "phase": "SWE.3"}}))
     paths = {}
     for raw in cfg["candidate_files"]:
         p = ctx.path(raw, must_exist=False)
-        if not auth.decide("author", "write_file", {"file_path": raw}).allow:
+        rel = p.relative_to(ctx.workspace).as_posix()
+        if (_match(rel, ALWAYS_PROTECTED) or not any(rel.startswith(prefix)
+                for prefix in ROLE_WRITE_PREFIXES["swe3-author"] if prefix.startswith("software/"))):
             raise ValueError("DELIVERY_FIRST_CANDIDATE_PATH_DENIED:" + raw)
         paths[raw] = p
     for raw in cfg["include_dirs"]:
@@ -110,21 +125,77 @@ def preflight(ws):
     return record
 
 
+def independent_target(ws, cfg, root):
+    """Use a build/test snapshot, never overwrite the model's tests or implementation."""
+    import shutil
+
+    from . import simulation_performance as performance
+    from .mcp.servers import build, sim
+
+    shadow = root / "independent-target" / "workspace"
+    shadow.mkdir(parents=True)
+    _, man = selected(ws)
+    for item in man["inputs"]:
+        source = context(ws).path(item["path"], kind="file")
+        target = shadow / item["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+    for raw, source in checked_paths(ws, cfg).items():
+        target = shadow / raw
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+    (shadow / ".forge-run").mkdir()
+    (shadow / ".forge-run/manifest.json").write_text(pretty_json(man))
+    oracle = context(ws).path(cfg["simulation_oracle"], kind="file")
+    target = shadow / performance.TEST
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(oracle, target)
+    bc = ToolContext("forge-build-mcp", "compile", "deterministic-verifier", "SWE.3", shadow, man["work_order"])
+    profile = cfg["compiler_profiles"]["target"]
+    compiled = build.compile_(bc, build.CompileIn(profile=profile))
+    outputs = {"compile": compiled}
+    if compiled["status"] == "PASS":
+        outputs["size"] = build.measure_elf(bc, build.ProfileIn(profile=profile))
+        outputs["stack"] = build.stack_usage(bc, build.ProfileIn(profile=profile))
+        sc = ToolContext("forge-sim-mcp", "run_renode", "deterministic-verifier", "SWE.5", shadow, man["work_order"])
+        outputs["simulation"] = sim.run_renode(sc, sim.SimIn())
+        try:
+            outputs["cost"] = performance.verify_result(shadow, outputs["simulation"])
+        except (ValueError, OSError, KeyError, TypeError) as exc:
+            outputs["cost"] = {"status": "NOT_VERIFIED", "reason": str(exc)}
+    size = outputs.get("size", {}).get("metrics", {})
+    stack = outputs.get("stack", {}).get("metrics", {})
+    budgets = man["budgets"]
+    resource_ok = (outputs.get("size", {}).get("status") == outputs.get("stack", {}).get("status") == "PASS"
+                   and size.get("flash_bytes", float("inf")) <= budgets["flash_bytes"]
+                   and size.get("ram_bytes", float("inf")) <= budgets["static_ram_bytes"]
+                   and stack.get("max_frame_bytes", float("inf")) <= budgets["stack_bytes"])
+    passed = (compiled["status"] == "PASS" and resource_ok
+              and outputs.get("simulation", {}).get("status") == outputs.get("cost", {}).get("status") == "PASS")
+    return {"status": "PASS" if passed else "FAIL", "outputs": outputs, "resources_within_declared_limits": resource_ok,
+            "resource_scope": "OBJECT_LEVEL_AND_MAXIMUM_FRAME; NOT_LINKED_FIRMWARE_OR_CALL_GRAPH",
+            "workspace": str(shadow.relative_to(ws)), "independent_oracle_sha256": sha256_file(oracle),
+            "physical_hardware": "NOT_RUN", "source_rewritten": False}
+
+
+
 def verify(ws, attempt):
     """Real tool calls; archive every candidate before compiling, with no hidden retries."""
     from .mcp.servers.build import PROFILES, WARN
 
     ws = Path(ws).resolve()
     cfg, man = selected(ws)
-    if not cfg or attempt not in (0, 1, 2):
+    if not cfg or attempt not in (0, 1, 2, "final"):
         raise ValueError("DELIVERY_FIRST_ATTEMPT_INVALID")
     validate_inputs(ws)
     if not (ws / ".forge-run/delivery-first/initial.json").is_file():
         raise ValueError("DELIVERY_FIRST_PREFLIGHT_REQUIRED")
     paths = checked_paths(ws, cfg)
     root = ws / ".forge-run/delivery-first" / ("attempt-" + str(attempt))
-    if attempt and not (root.parent / ("attempt-" + str(attempt - 1)) / "result.json").is_file():
+    if isinstance(attempt, int) and attempt and not (root.parent / ("attempt-" + str(attempt - 1)) / "result.json").is_file():
         raise ValueError("DELIVERY_FIRST_PREVIOUS_ATTEMPT_REQUIRED")
+    if attempt == "final" and not (root.parent / "attempt-0/result.json").is_file():
+        raise ValueError("DELIVERY_FIRST_INITIAL_ATTEMPT_REQUIRED")
     receipt = root / "result.json"
     current = {raw: sha256_file(p) if p.is_file() else None for raw, p in paths.items()}
     if receipt.exists():
@@ -146,8 +217,8 @@ def verify(ws, attempt):
         ctx = context(ws)
         includes = [arg for raw in cfg["include_dirs"] for arg in ("-I", str(ctx.path(raw)))]
         sources = [str(p) for p in paths.values() if p.suffix == ".c"]
-        for label, profname, fixture in (("host_compile", "host-clang", "host_oracle"),
-                                         ("target_compile", "target-cm55-gcc", "target_probe")):
+        for label, profname, fixture in (("host_compile", cfg["compiler_profiles"]["host"], "host_oracle"),
+                                         ("target_compile", cfg["compiler_profiles"]["target"], "target_probe")):
             prof = PROFILES[profname]
             dest = root / ("oracle" if label == "host_compile" else "probe.o")
             argv = [prof["cc"], *prof["flags"], *WARN, *includes, str(ctx.path(cfg[fixture], kind="file")),
@@ -163,13 +234,22 @@ def verify(ws, attempt):
     outcomes = {c["check"]: c["status"] for c in calls}
     passed = not missing and all(outcomes.get(k) == "PASS" for k in
                                 ("host_compile", "target_compile", "independent_behavior"))
+    target = independent_target(ws, cfg, root) if passed and cfg.get("simulation_oracle") else None
+    if target is not None:
+        passed = passed and target["status"] == "PASS"
     unchanged = current == {raw: sha256_file(p) if p.is_file() else None for raw, p in paths.items()}
-    result = {"at": utc_now(), "mode": MODE, "attempt": attempt, "correction_count": attempt,
+    validate_inputs(ws)
+    corrections = attempt if isinstance(attempt, int) else max(
+        [int(p.parent.name.removeprefix("attempt-")) for p in root.parent.glob("attempt-[0-2]/result.json")], default=0)
+    result = {"at": utc_now(), "mode": MODE, "attempt": attempt, "correction_count": corrections,
+              "verification_round": "FINAL_RECHECK_NO_NEW_AUTHOR" if attempt == "final" else "BOUNDED_AUTHOR_ATTEMPT",
               "work_order": man["work_order"], "factory_revision": man.get("factory_revision"),
               "candidate_hashes": current, "candidate_unchanged_during_checks": unchanged,
               "status": "PASS" if passed and unchanged else "FAIL", "missing": missing, "calls": calls,
-              "verification_scope": "DECLARED_HOST_BEHAVIOR_AND_TARGET_COMPILATION_ONLY",
-              "simulation": "NOT_RUN", "physical_hardware": "NOT_RUN",
+              "verification_scope": ("DECLARED_HOST_TARGET_SIMULATION_COST_AND_OBJECT_FRAME_RESOURCES" if target
+                                     else "DECLARED_HOST_BEHAVIOR_AND_TARGET_COMPILATION_ONLY"),
+              "simulation": target["status"] if target else "NOT_RUN", "independent_target": target,
+              "physical_hardware": "NOT_RUN",
               "authorship": "NATIVE_WRITE_EVENTS_REQUIRED", "release_eligibility": "BLOCKED"}
     immutable_json(receipt, result)
     # A convenience pointer, not an overwrite of a failed attempt's evidence.
@@ -207,7 +287,7 @@ def workflow(graph, nodes, manifest, command_env, python):
     # The native fast author already generated this candidate. Re-running a
     # second generator using the legacy array API would replace its pointer API.
     # Keep the existing compile/fix, documentation, review and verification nodes.
-    for obsolete in ("swe3_regmap", "swe3_ll_author"):
+    for obsolete in ("swe3_regmap", "swe3_ll_author", "swe3_fix_author"):
         from .acp import statements
 
         incoming = list(re.finditer(r"^  (\w+) -> " + obsolete + r"\n", graph, re.M))
@@ -258,13 +338,102 @@ def workflow(graph, nodes, manifest, command_env, python):
         if name in nodes and 'prompt="' in attrs:
             note = ("DELIVERY-FIRST: read .forge-run/delivery-first/latest.json if present. Early Qwen implementation "
                     "and independent checks happened before this documentation; report that chronology honestly. "
-                    "Keep the candidate if correct; do not replace it solely to satisfy a different API example. "
+                    "The bounded implementation authoring sequence is finished. Candidate code is now frozen; "
+                    "produce your phase documents/tests and record remaining defects without changing the driver. "
                     "Use the exact scoped function signatures in " + cfg["contract"] + ". ")
             edits.append((start, end, graph[start:end].replace('prompt="', 'prompt="' + _q(note), 1)))
     for start, end, text in reversed(edits):
         graph = graph[:start] + text + graph[end:]
+    # Recheck final bytes after downstream authors may have changed the code.
+    # This runs no new model correction and leaves every earlier receipt intact.
+    graph = re.sub(r"^  (\w+) -> finalize\n", r"  \1 -> df_final_verify\n", graph, flags=re.M)
+    declarations = [line.removesuffix(" -> finalize") + " -> df_final_verify"
+                    if line.endswith(" -> finalize") else line for line in declarations]
+    declarations += [f'  df_final_verify [shape=parallelogram, '
+                     f'script="{_q(cmd + " --step final-verify")}"]', "  df_final_verify -> finalize"]
     pos = graph.rfind("\n}")
     return graph[:pos] + "\n" + "\n".join(declarations) + graph[pos:], nodes
+
+
+def native_record(ws, candidate_hashes):
+    """Read actual native events/usage; never substitute fixture authorship or guessed tokens."""
+    from .fabro.client import client_for_workspace
+
+    ws = Path(ws)
+    rid_file = ws / ".forge-run/fabro_run_id"
+    server_file = ws / ".forge-run/fabro_server.json"
+    if not rid_file.is_file() or not server_file.is_file():
+        return {"status": "NOT_AVAILABLE", "authorship": "UNVERIFIED", "model_requests": "UNKNOWN"}
+    rid = rid_file.read_text().strip()
+    try:
+        with client_for_workspace(ws, timeout=15) as client:
+            events = list(client.iter_events(rid))
+            usage = client.usage(rid)
+            from .fabro.client import run_status
+
+            native_status = run_status(client.get_run(rid))
+        binding = ws / ".forge-run/binding.json"
+        roles = json.loads(binding.read_text()).get("nodes", {}) if binding.is_file() else {}
+        starts, completed, node_failures, phases = {}, {}, [], {}
+        for i in range(1, 7):
+            phases["SWE." + str(i)] = {
+                kind + "_attempted": any(e["event"] == "stage.started" and e.get("node_id") == f"swe{i}_{kind}"
+                                        for e in events) for kind in ("author", "inspector")}
+        for event in events:
+            if event["event"] == "stage.failed":
+                node_failures.append({"node": event.get("node_id"), "failure":
+                                      (event.get("properties") or {}).get("failure"), "at": event.get("ts")})
+            payload = (event.get("properties") or {}).get("event")
+            if not isinstance(payload, dict):
+                continue
+            done = payload.get("ToolCallCompleted")
+            if isinstance(done, dict):
+                completed[done.get("tool_call_id")] = done
+            start = payload.get("ToolCallStarted")
+            if (not isinstance(start, dict) or start.get("tool_name") != "write_file"
+                    or roles.get(event.get("node_id"), {}).get("role") != "swe3-author"):
+                continue
+            args = start.get("arguments") or {}
+            if isinstance(args, str):
+                try:
+                    args = json.loads(args)
+                except ValueError:
+                    continue
+            if not isinstance(args, dict) or not isinstance(args.get("content"), str):
+                continue
+            raw = args.get("file_path") or args.get("path")
+            if not isinstance(raw, str):
+                continue
+            path = (Path(raw) if Path(raw).is_absolute() else ws / raw).resolve()
+            if not path.is_relative_to(ws):
+                continue
+            rel = path.relative_to(ws).as_posix()
+            if rel in candidate_hashes:
+                from .common import sha256_bytes
+
+                starts[start["tool_call_id"]] = {"path": rel, "sha256": sha256_bytes(args["content"].encode()),
+                                                 "node": event.get("node_id")}
+        evidence = [{"tool_call_id": call, **item} for call, item in starts.items()
+                    if call in completed and completed[call].get("is_error") is False
+                    and candidate_hashes[item["path"]] == item["sha256"]]
+        confirmed = bool(candidate_hashes) and {item["path"] for item in evidence} == set(candidate_hashes)
+        output = usage.get("totals", {}).get("usage", {}).get("tokens", {})
+        stages = usage.get("stages", [])
+        author_tokens = [s.get("usage", {}).get("tokens", {}).get("output") for s in stages
+                         if roles.get(s.get("stage", {}).get("id"), {}).get("role", "").endswith("-author")]
+        return {"status": "OBSERVED", "native_id": rid, "native_status": native_status, "authorship":
+                "CONFIRMED_NATIVE_WRITE_FILE" if confirmed else "UNVERIFIED_EDIT_CHAIN",
+                "write_evidence": evidence, "phase_attempts": phases, "node_failures": node_failures,
+                "external_guidance_events": sum("steer" in e["event"] for e in events),
+                "model_requests": "UNKNOWN", "reported_tokens": output or "UNKNOWN",
+                "reported_author_output_tokens": sum(author_tokens) if author_tokens and all(
+                    type(n) is int and n >= 0 for n in author_tokens) else "UNKNOWN",
+                "reasoning_token_breakdown": "UNKNOWN", "usage_by_stage": stages,
+                "basis": "ACTUAL_NATIVE_API_NOT_MODEL_SELF_REPORT"}
+    except Exception as exc:  # metadata unavailability must not destroy the candidate package
+        return {"status": "NOT_AVAILABLE", "authorship": "UNVERIFIED", "reason": type(exc).__name__,
+                "model_requests": "UNKNOWN"}
+
 
 
 def report(ws):
@@ -278,10 +447,26 @@ def report(ws):
     last = records[-1] if records else None
     matching = bool(last and last["candidate_hashes"] == current)
     slice_status = last["status"] if matching else "NOT_RUN"
-    # The reviewed scope also includes startup and simulation/performance
-    # obligations. Host behavior plus a target object cannot establish those.
-    functional = "INCONCLUSIVE" if slice_status == "PASS" else slice_status
+    target = (last or {}).get("independent_target") if matching else None
+    # Legacy receipts without an independent simulation stay inconclusive.
+    qualified = bool(target and target["status"] == "PASS" and slice_status == "PASS")
+    functional = "PASS" if qualified else "INCONCLUSIVE" if slice_status == "PASS" else slice_status
     integrity_issues = []
+    if qualified:
+        from .simulation_performance import verify_result
+
+        try:
+            shadow = (Path(ws) / target["workspace"]).resolve()
+            if not shadow.is_relative_to(root.resolve()):
+                raise ValueError("DELIVERY_FIRST_INDEPENDENT_TARGET_PATH_CHANGED")
+            if any(sha256_file(shadow / raw) != digest for raw, digest in current.items()):
+                raise ValueError("DELIVERY_FIRST_INDEPENDENT_CANDIDATE_CHANGED")
+            if verify_result(shadow, target["outputs"]["simulation"])["status"] != "PASS":
+                raise ValueError("DELIVERY_FIRST_INDEPENDENT_COST_NOT_PASS")
+        except (ValueError, OSError, KeyError, TypeError) as exc:
+            integrity_issues.append(str(exc))
+            functional = "FAIL"
+            qualified = False
     try:
         validate_inputs(ws)
     except (ValueError, OSError) as exc:
@@ -291,28 +476,88 @@ def report(ws):
     from .inspection.engine import PHASES, Store
 
     store = Store(Path(ws))
-    phases = {ph: {"baseline": bool(store.latest_baseline(ph)), "gate": store.gate(ph)["decision"]}
+    phases = {ph: {"baseline": bool(store.latest_baseline(ph)), "gate": store.gate(ph)["decision"],
+                   "files": store.files_of(ph)}
               for ph in PHASES}
+    native = native_record(ws, current)
+    attempted = native.get("phase_attempts", {})
+    execution = ("CANCELLED" if native.get("native_status") == "CANCELLED" else
+                 "COMPLETED" if attempted and all(all(v.values()) for v in attempted.values())
+                 else "PARTIAL" if attempted else "FAILED")
+    model_file = Path(ws) / ".forge-run/model-profile.json"
+    model = json.loads(model_file.read_text()) if model_file.is_file() else "UNKNOWN"
+    from datetime import datetime
+
+    initial = root / "initial.json"
+    first = next((r for r in records if (r.get("independent_target") or {}).get("status") == "PASS"), None)
+    seconds = "UNKNOWN"
+    if initial.is_file() and first:
+        seconds = round((datetime.fromisoformat(first["at"]) - datetime.fromisoformat(
+            json.loads(initial.read_text())["at"])).total_seconds(), 3)
     return {"mode": MODE, "work_order": man["work_order"], "candidate_hashes": current,
+            "factory_revision": man.get("factory_revision"), "local_profile": man.get("local_profile"),
+            "model_profile": model, "declared_scope": man.get("operation_scope"),
+            "execution": execution, "native_evidence": native,
             "artifact_delivery": "COMPLETE" if all(current.values()) else "PARTIAL" if any(current.values()) else "NONE",
             "functional_verification": functional,
             "slice_behavior_and_compile": slice_status,
             "integrity_issues": integrity_issues,
-            "functional_scope": "HOST_BEHAVIOR_AND_TARGET_COMPILATION; SIMULATION_PERFORMANCE_NOT_QUALIFIED",
+            "functional_scope": ("DECLARED_HOST_AND_SIMULATED_BEHAVIOR_AND_COST; OBJECT_AND_FRAME_RESOURCE_LIMITS"
+                                 if qualified else "HOST_BEHAVIOR_AND_TARGET_COMPILATION; SIMULATION_NOT_QUALIFIED"),
+            "artifact_delivery_scope": "DECLARED_CANDIDATE_FILES_ONLY; PHASE_BASELINES_REPORTED_SEPARATELY",
             "final_candidate_matches_last_verification": matching, "attempts": records,
             "process_qualification": "GAPS", "release_eligibility": "BLOCKED", "phases": phases,
-            "authorship": "NATIVE_WRITE_EVENTS_REQUIRED", "milestone": "NOT_PROVEN",
-            "unrun": ["physical_hardware", "complete simulation/performance requirement qualification"]}
+            "authorship": native["authorship"], "milestone": "NOT_PROVEN",
+            "metrics": {"attempted_products": 1, "functionally_verified_candidates": int(qualified),
+                        "functionally_verified_products": "UNKNOWN_REQUIRES_REAL_MODEL_AND_TERMINAL_AUDIT",
+                        "end_to_end_yield": "UNKNOWN", "cohort_scope": "THIS_WORK_ORDER_ONLY_NOT_REPEATABILITY",
+                        "corrections": (last or {}).get("correction_count", 0),
+                        "model_requests": native.get("model_requests", "UNKNOWN"),
+                        "reported_tokens": native.get("reported_tokens", "UNKNOWN"),
+                        "reported_author_output_tokens": native.get("reported_author_output_tokens", "UNKNOWN"),
+                        "wall_clock_to_first_functional_result_s": seconds,
+                        "wall_clock_basis": "PREFLIGHT_TO_COMPLETE_INDEPENDENT_CHECKS",
+                        "human_interventions": "UNKNOWN_REQUIRES_EXTERNAL_OBSERVER",
+                        "compiler_passes": sum(c["status"] == "PASS" for r in records for c in r["calls"]
+                                               if c["check"].endswith("compile")),
+                        "compiler_failures": sum(c["status"] == "FAIL" for r in records for c in r["calls"]
+                                                 if c["check"].endswith("compile")),
+                        "required_functions": cfg["required_functions"]},
+            "unrun": ["physical_hardware", "whole-program call-graph stack analysis"]
+                     + ([] if qualified else ["complete simulation/performance requirement qualification"])}
+
+
+def scorecard(record):
+    """One page from the same evidence as JSON; no independent success authority."""
+    metrics = record["metrics"]
+    lines = ["# Forge-C Delivery-First Experiment — " + record["work_order"], "",
+             "Mode: " + record["mode"],
+             "Source: " + json.dumps(record["factory_revision"], sort_keys=True),
+             "Model/profile: " + json.dumps({"model": record["model_profile"], "profile": record["local_profile"]},
+                                            sort_keys=True),
+             "Declared functions: " + ", ".join(metrics["required_functions"]), ""]
+    for key in ("execution", "artifact_delivery", "functional_verification", "process_qualification",
+                "release_eligibility", "authorship", "milestone"):
+        lines.append(key + ": " + record[key])
+    lines += ["", "Functional scope: " + record["functional_scope"],
+              "Metrics: " + json.dumps(metrics, sort_keys=True), "", "Phase evidence (hashes in report.json):"]
+    for phase, item in record["phases"].items():
+        lines.append(f"- {phase}: {len(item['files'])} files; baseline={item['baseline']}; gate={item['gate']}")
+    lines += ["", "Unrun: " + "; ".join(record["unrun"]),
+              "Gaps and failures: existing package gap register; report.json native_evidence.node_failures.",
+              "No claims of production release, ASPICE compliance, safety, generic targets, 24/7 or model learning."]
+    return "\n".join(lines) + "\n"
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--workspace", type=Path, required=True)
-    ap.add_argument("--step", choices=("preflight", "verify"), required=True)
+    ap.add_argument("--step", choices=("preflight", "verify", "final-verify"), required=True)
     ap.add_argument("--attempt", type=int, default=0)
     args = ap.parse_args(argv)
     try:
-        out = preflight(args.workspace) if args.step == "preflight" else verify(args.workspace, args.attempt)
+        out = preflight(args.workspace) if args.step == "preflight" else verify(
+            args.workspace, "final" if args.step == "final-verify" else args.attempt)
     except (ValueError, OSError) as exc:
         print(json.dumps({"status": "BLOCKED", "error": str(exc)}))
         return 2

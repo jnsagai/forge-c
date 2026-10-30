@@ -40,10 +40,18 @@ class FaultIn(ToolInput):
 
 
 SIM_DIR = REPO_ROOT / "factory" / "sim" / "stm32n6"
+ADAPTER_ID = "stm32n6-cortex-m55-v1"
 MAILBOX = 0x341F0000
 MAGIC = 0xF0C6E5A1
 CFLAGS = ["-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os", "-ffreestanding", "-nostdlib",
           "-Wall", "-Wextra"]
+
+
+def validate_adapter(manifest, adapter):
+    """This adapter supports one target ISA; selecting it cannot qualify another."""
+    if (adapter != ADAPTER_ID or manifest.get("target", {}).get("core") != "Arm Cortex-M55"
+            or manifest.get("delivery_first", {}).get("compiler_profiles", {}).get("target") != "target-cm55-gcc"):
+        raise ValueError("DELIVERY_FIRST_SIMULATION_ADAPTER_UNSUPPORTED")
 
 
 def renode_bin() -> str | None:
