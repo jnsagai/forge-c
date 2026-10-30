@@ -729,7 +729,7 @@ def contract_step(phase: str) -> list[str]:
               '{\"case\":\"HSI_ENABLE\",\"swr\":\"SWR-001\",\"register\":\"RCC_CR\",\"field\":\"HSION\",'
               '\"op\":\"set\"}')
         extra = CONTRACT_SWE1_HAL if hal else CONTRACT_SWE1_LL
-        if (ASSESSMENT["manifest"] or {}).get("purpose") == "ASPICE_ONLY":
+        if (ASSESSMENT["manifest"] or {}).get("purpose") in ("ASPICE_ONLY", "QM"):
             if not hal:
                 extra = (" Function return types and values come from the requirements: queries return the specified "
                          "value, not void. Do not add HAL status or ready contract fields to an LL case. Reset assert "
@@ -845,22 +845,22 @@ ASSESSMENT = {"manifest": None}
 
 def complete_scope_sections(keys: list[str]) -> list[str]:
     manifest = ASSESSMENT["manifest"] or {}
-    if manifest.get("purpose") != "ASPICE_ONLY":
+    if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
         return keys
     from ..lrtx.obligations import scope_sections
     from ..peripheral import load
 
     pr = PERIPHERAL["profile"] or load("rcc")  # Existing RCC work orders omit the default peripheral key.
-    selected = scope_sections(manifest["scope"], pr["rm"]["doc"], keys)
+    selected = scope_sections(manifest.get("scope", []), pr["rm"]["doc"], keys)
     missing = [key for key in selected if key not in SECTIONS]
-    if missing:
+    if missing and manifest.get("purpose") == "ASPICE_ONLY":
         raise ValueError("WORKFLOW_SCOPE_SECTION_MISSING:" + ",".join(missing))
     return selected
 
 
 def assessment_scope_note() -> str:
     manifest = ASSESSMENT["manifest"] or {}
-    if manifest.get("purpose") != "ASPICE_ONLY":
+    if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
         return ""
     note = ("The full work-order scope in .forge-run/manifest.json is authoritative. Catalog seed sections and "
             "example requirement counts do not narrow it. Account for every requested source section and field; "
