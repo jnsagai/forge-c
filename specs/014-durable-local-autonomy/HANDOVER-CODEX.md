@@ -1,5 +1,66 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Latest state — 12:46UTC: current benchmark unchanged; WAL candidate/stepwise preparation queued
+
+Runtime remains12e601e4f53ab71b6d184ae19379faa1dd8f6e97. Live fixed-source reasoning
+comparison unitforge-q38-nonthink-speed-20261030-v2/MainPID3371975; currentxhigh,
+operatorRUNNING94. None8/8 complete:61.7555median decode,28.3161gateway seconds total,
+682.0006full trial seconds,1184output tokens. Medium8/8 complete:68.6440median,
+129.2873gateway seconds,743.1877full trial seconds,8190output tokens. Both2/8 expected
+decisions/protocolFAIL; request acceleration is not pipeline/correctness success.
+At12:43xhigh6/8 active. Do not alter live tools/cases/source or launch a competing GPU job.
+A read-only reconstruction of the first none request exactly matched its ledger
+body hashfa3ea7422cbbb6363ba0b2cf507ef42dd96d57ddef44787398fdc25ed2305269;
+A1/A3 actually contain SWR-001, the normative reg_enable contract and mask1. Qwen
+still claimed missing contract. This is not truncation evidence or proof of source
+authority; preserve the false absence claim and separate capability from transport.
+
+Prospective **a7804054744ce3d471d6e15c60a205610755503a**, NOT_DEPLOYED: one idle
+SQLite WAL connection for each existing bounded Conductor cycle, never a long
+transaction; existing independent FULL commits/device checks/rollback/fencing
+remain. No connection survives between cycles, no new store/scheduler/authority,
+legacy and DISABLED/no-database behavior preserved. A40-second native read-only
+Conductor sample saw93journal waits/200 samples,0.75%one-core CPU; local isolated
+actual-Store32-transaction test measured1.80x and6x fewer write bytes, integrityPASS.
+This is not a native performance claim or proof all waits come from one database.
+Local affected27PASS; broader exacta780:195PASS/1fixture import failure from relative
+PYTHONPATH, exact failed case rerunPASS with absolute source path. Original failure
+retained/redacted with raw-private hashes. Spec/contracts/14design PASS separately.
+
+WAL native qualifier queued AFTER all three reasoning cohorts complete and true
+quiescence, requires unchangedRUNNING94→PAUSED95→resume only own pause96. Unit
+forge-wal-qa-after-comparison-a780-v1/MainPID3388717 confirmedlive; no source activation
+or model calls. A real check-only refusedRUNNING94, no effects. Local collector
+PID250383/check argv; privatewal-session-qualification/under the inspection root.
+Native WAL test/performance benefit remainsNOT_RUN. Runtime stays12e601e4 afterward.
+[Exact source, tests, I/O observations and staged tooling](../../evidence/014-durable-local-autonomy/wal-cycle-20261030/README.md).
+
+Next independent pilot uses the ALREADY IMPLEMENTED four-question diagnosis path:
+conflict→technique→owner/strategy→repair. Existing task_class='two-step-diagnosis'
+selects it; no prompt/case/oracle/gate source change. Single-response large repair
+anyOf was already noted in semantic_proposal.py as never generated in previous
+local batches. Do not misread repeated single-response speed failures as proof of
+every Qwen task's capacity. The stepwise complete packet still permitsUNKNOWN;
+incomplete-packet grammar permits onlyUNKNOWN (disclose that in the results).
+This is an exposed protocol pilot, not fresh holdout/product qualification.
+
+Native preparation ONLY is queued viaforge-stepwise-prepare-after-comparison-v1/
+MainPID3400042. Waits for WAL maintenance window's verified quiescence and own
+RUNNING96; runtime must still be clean12e601e4 with its actual279 native proof.
+It will prepare eight medium/MTP3/Q8/f16/262144 cases, signed taskclass4requests/job,
+262144reserved/job,32requests maximum. No grant/mission/job/model/source effects.
+Independent source remains12e regardless whether undeployed WAL optimization passes.
+Artifacts O=/mnt/data/forge-c/production-local-014/deployment/q38-stepwise-protocol-20261030-v1;
+prep result underdeployment/stepwise-preparation-20261030-v1/result.json.
+A3 hascollect-prepared-stepwise-once.py, sign-stepwise-diagnosis.py and three execution
+tools. They are prepared, NOTSIGNED/NOTACTIVATED. Next: inspect native prep, collect
+and hash verify, sign exact finite scope under existing delegation, validate actual
+policy.load PILOT, tools and immutable inputs before activation. Expiry13:52:52UTC
+must remain unchanged; do not reset old missions or silently renew authority.
+No LL/HAL restart until current speed investigation has completed. Formal30/58
+unchanged/no newly closed task IDs, full product/role/learning/availability unproven.
+Historical checkpoints below remain preserved.
+
 ## Latest state — 12:04UTC: explicit non-thinking model trials live
 
 Active runtime/test source **12e601e4f53ab71b6d184ae19379faa1dd8f6e97**, native279PASS

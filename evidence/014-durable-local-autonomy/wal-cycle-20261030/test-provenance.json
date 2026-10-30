@@ -1,0 +1,21 @@
+{
+  "source_revision": "a7804054744ce3d471d6e15c60a205610755503a",
+  "native_runtime_deployment": "NOT_DEPLOYED",
+  "original_broad_tests": 196,
+  "original_broad_failures": 1,
+  "original_broad_passes": 195,
+  "original_xml_sha256": "7d9786ececce1ec9a1892945a27c6501f516d17ac1a6c1c5bf45d1f8b7fe1a3c",
+  "redacted_xml_sha256": "f66b327ec715a47d869d999b7e8387adfaf88c50c1b74bff67cfe823e83be195",
+  "failed_case": "test_da014_provider_recovery.py::test_stack_gateway_entry_and_delayed_producer_share_retired_namespace",
+  "corrected_case": "PASS_WITH_ABSOLUTE_PYTHONPATH",
+  "local_affected_tests": 27,
+  "groups_overlap": true,
+  "native_qualification": "QUEUED_AFTER_REASONING_COMPARISON_NOT_RUN",
+  "native_qa_unit": "forge-wal-qa-after-comparison-a780-v1.service",
+  "native_qa_main_pid": 3388717,
+  "local_collector_pid": 250383,
+  "runtime_remains": "12e601e4f53ab71b6d184ae19379faa1dd8f6e97",
+  "model_requests": 0,
+  "pipeline_success": "NOT_RUN",
+  "learning_benefit": "NOT_MEASURED"
+}

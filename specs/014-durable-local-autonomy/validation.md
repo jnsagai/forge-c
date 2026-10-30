@@ -1,3 +1,19 @@
+# WAL candidate and next bounded diagnosis mode — 30October2026,12:46UTC
+
+Prospective sourcea7804054744ce3d471d6e15c60a205610755503a NOT_DEPLOYED: bounded
+idle WAL session per Conductor cycle, independent FULL commits/no held transaction,
+legacy/device/rollback/intent paths preserved. Local27PASS; broader195PASS/1 child
+namespace import setup failure, corrected exact-case rerunPASS. Actual native I/O
+observation and isolated local1.80x/6x-write reduction are not native speed proof.
+Native source checks queued after all fixed12e601e4 comparison cohorts, PAUSED95
+only after quiescence/unchangedRUNNING94; resume only own pause96, no deployment.
+Current none/medium cohorts complete2/8 decisions each, xhighstill live. Source
+12e601e4 stays frozen. Next existing-four-question medium pilot is preparation-only,
+no signature/job/model/mission/source effect, separately scoped32requests/eight jobs.
+Spec/contracts/14static design PASS, formal30/58 unchanged/no new task closed.
+[Precise tests, preserved setup failure and native tooling](../../evidence/014-durable-local-autonomy/wal-cycle-20261030/README.md).
+Historical checkpoints below remain preserved.
+
 # Active explicit non-thinking trial — 30 October2026,12:04UTC
 
 Exact runtime/test source12e601e4f53ab71b6d184ae19379faa1dd8f6e97, native279PASS
