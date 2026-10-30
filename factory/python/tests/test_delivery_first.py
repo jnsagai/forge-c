@@ -199,6 +199,22 @@ def test_native_graph_has_exactly_two_corrections_then_all_six_phases(prepared):
     assert D.contract({"purpose": "LEGACY"}) is None
 
 
+def test_fast_authors_bind_existing_afo_request_role_before_first_tool_call(prepared):
+    import re
+
+    from forge_factory.llm_gateway import detect_role
+
+    ws, man = prepared
+    graph, _ = build(man["work_order"], layer="LL", peripheral="crc", sections=W.section_map(ws),
+                     operation_scope=man["operation_scope"], assessment_manifest=man,
+                     execution_policy=man["development_execution"])
+    for i in range(3):
+        match = re.search(r'df_author_' + str(i) + r' \[[^\n]*prompt="((?:\\.|[^"\\])*)"', graph)
+        assert match
+        prompt = json.loads('"' + match[1] + '"')
+        assert detect_role([{"role": "user", "content": prompt}]) == "swe3-author"
+
+
 def test_existing_finalizer_packages_attempts_without_releasing(prepared):
     from forge_factory.release import finalize
 

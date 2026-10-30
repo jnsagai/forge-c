@@ -308,7 +308,7 @@ def workflow(graph, nodes, manifest, command_env, python):
     for i in range(3):
         name, check = f"df_author_{i}", f"df_verify_{i}"
         nodes[name] = {"role": "swe3-author", "phase": "SWE.3"}
-        text = ("LOCAL QWEN DELIVERY-FIRST DEVELOPMENT. Use your swe3-author skill. Read " + cfg["contract"] +
+        text = ("LOCAL QWEN DELIVERY-FIRST DEVELOPMENT. Use use_skill with skill_name swe3-author. Read " + cfg["contract"] +
                 " and the declared primary inputs in .forge-run/manifest.json. Author actual C in " +
                 ", ".join(cfg["candidate_files"]) + ". Required functions: " + ", ".join(cfg["required_functions"]) +
                 ". No vendor implementation is supplied or substituted. Retain correct existing candidate content. "
