@@ -1,5 +1,5 @@
 {
-  "captured_utc": "2026-10-30T13:45:02.407892Z",
+  "captured_utc": "2026-10-30T13:50:07.325447Z",
   "deadline_epoch": 1793389200.0,
   "source_revision": "a32d87a311cc4a46cd12b6f00d1aea8a210c305c",
   "intent": {
@@ -20,7 +20,7 @@
     }
   ],
   "claim": "EXPERIMENTAL_WORK_ONLY;NATIVE_GATES_AND_OFFLINE_REVIEW_REMAIN_REQUIRED",
-  "requests": 769,
+  "requests": 776,
   "native_ownership": [
     {
       "resource": "inference",
@@ -29,8 +29,8 @@
     },
     {
       "resource": "generation",
-      "holder": "structured-request-f026244f92164c028a916809db8929fb",
-      "epoch": 1537
+      "holder": "structured-request-0dd204e2fe6a4a5283d60ca7a94f1148",
+      "epoch": 1551
     }
   ]
 }
