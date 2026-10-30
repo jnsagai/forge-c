@@ -1,41 +1,36 @@
 {
-  "captured_utc": "2026-10-30T14:47:13.182724Z",
+  "captured_utc": "2026-10-30T14:52:34.830041Z",
   "deadline_epoch": 1793389200.0,
-  "source_revision": "a32d87a311cc4a46cd12b6f00d1aea8a210c305c",
+  "source_revision": "7fbefc40e0912e15aabeb70ca6b85932085b1b27",
   "intent": {
-    "mode": "PAUSED",
-    "epoch": 103
+    "mode": "RUNNING",
+    "epoch": 104
   },
   "orders": [
     {
-      "order_id": "afo-c7af7908207bca71",
-      "state": "BLOCKED",
+      "order_id": "afo-c9331219520d5237",
+      "state": "RUNNING",
       "attempts": [
         {
-          "attempt_id": "afo-c7af7908207bca71-a1",
+          "attempt_id": "afo-c9331219520d5237-a1",
           "seq": 1,
-          "state": "SUCCEEDED"
-        },
-        {
-          "attempt_id": "afo-c7af7908207bca71-a2",
-          "seq": 2,
-          "state": "FAILED"
+          "state": "RUNNING"
         }
       ]
     }
   ],
   "claim": "EXPERIMENTAL_WORK_ONLY;NATIVE_GATES_AND_OFFLINE_REVIEW_REMAIN_REQUIRED",
-  "requests": 843,
+  "requests": 844,
   "native_ownership": [
     {
       "resource": "inference",
-      "holder": null,
-      "epoch": 230
+      "holder": "afo-product-ff72d4fd63fa0f77f125fe69",
+      "epoch": 231
     },
     {
       "resource": "generation",
-      "holder": null,
-      "epoch": 1686
+      "holder": "structured-request-df38c0b1f8d542669f602e33840e5782",
+      "epoch": 1687
     }
   ]
 }
