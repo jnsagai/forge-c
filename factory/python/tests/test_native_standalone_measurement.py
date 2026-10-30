@@ -12,6 +12,19 @@ from forge_factory.lrtx.request_measurement import METHOD
 MODEL = "qwen3.8:27b-q8_0"
 
 
+def test_delivery_profile_reserve_fits_measured_native_initial_request():
+    from forge_factory.lrtx.profile import load
+
+    profile = load("local-rtx-v2-omniverse2-q38-delivery-first")
+    effective = G.sanitize_request({"model": MODEL, "max_tokens": profile["runtime"]["fabro_max_output_tokens"],
+                                   "messages": [{"role": "user", "content": "two-function engineering contract"}]},
+                                  policy=profile["gateway"]["reasoning"])
+    # Frozen real initial request/template/control measurement from the failed
+    # fixture (2f60aa9a): do not clip inputs to make its output allowance fit.
+    assert effective["max_tokens"] == 24576
+    assert 17586 + effective["max_tokens"] <= profile["runtime"]["context_limit_tokens"] == 65536
+
+
 @pytest.mark.parametrize("stream", [False, True])
 def test_standalone_full_effective_body_is_measured_without_mission_binding(tmp_path, monkeypatch, stream):
     monkeypatch.setenv("FORGE_GATEWAY_ROUTES", json.dumps({MODEL: "http://native"}))

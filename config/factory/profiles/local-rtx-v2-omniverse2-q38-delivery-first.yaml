@@ -1,6 +1,6 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-q38-delivery-first
-version: 1
+version: 2
 work_order_purpose: QM
 status: DEVELOPMENT_ARTIFACT_TRIAL_NOT_QUALIFIED
 description: Opt-in Qwen-authored delivery-first two-function development experiment;
@@ -66,7 +66,7 @@ gateway:
     qwen3.8:27b-q8_0:
       effort: medium
       system_message_order: merge_first
-      extra_output_tokens: 32768
+      extra_output_tokens: 8192
       role_efforts: {}
   measure_unbound_requests: true
 afo:
