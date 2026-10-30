@@ -7,14 +7,14 @@ monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a58681a6030&gt;
                 return CompletedProcess(args, 200, "ERROR\n3\nSyntax Error? (Assumed diagram type: component)\n", "")
             failed = views.STATIC in args
             return CompletedProcess(args, int(failed), "", "Some diagram description contains errors" if failed else "")
-    
+
         monkeypatch.setattr(views, "_plantuml", run)
         report = views.check_views(diagrams)
         assert report["verdict"] == "FAIL"
 &gt;       assert report["major_findings"] == [
             "VIEWS:SYNTAX:" + views.STATIC + ":line 4:Syntax Error? (Assumed diagram type: component)"]
 E       AssertionError: assert ['VIEWS:SYNTA...tains errors'] == ['VIEWS:SYNTA...: component)']
-E         
+E
 E         At index 0 diff: 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_static.puml:Some diagram description contains errors' != 'VIEWS:SYNTAX:workproducts/SWE.2/architecture_static.puml:line 4:Syntax Error? (Assumed diagram type: component)'
 E         Use -v to get more diff
 

@@ -31,4 +31,13 @@ python -m pytest factory/python/tests/test_plantuml_diagnostics.py factory/pytho
 The actual AFO run remains untouched at clean `a34fdd85`. This change is
 **NOT_DEPLOYED / MODEL_BENEFIT_NOT_MEASURED**. The active run reached SWE.3
 inspection at23:29:40UTC; terminal DF-M1 and the three fresh trials remain
-pending. Source-specific post-commit regression evidence is recorded separately.
+pending. Exact clean implementation revision
+**2d6b1bcfda29fe40a1f640ba042f89f6509d780f** repeated the broader cohort:
+63PASS/one disabled live Fabro skip, zero failures/errors; see
+[tested revision](tested-revision.json) and [JUnit receipt](exact.xml).
+
+Raw failed-test JUnit text included trailing spaces that failed the publication
+diff check. The readable `before.xml` and `intermediate.xml` views now omit only
+that whitespace; exact originals are losslessly retained as adjacent `.gz`
+files and locally. [Representation hashes](receipt-representations.json) bind
+both forms and preserve the original failed results/test counts.

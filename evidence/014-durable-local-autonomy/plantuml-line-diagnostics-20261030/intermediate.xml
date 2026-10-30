@@ -5,12 +5,12 @@ bad = 'workproducts/SWE.2/architecture_static.puml'
     @pytest.mark.parametrize("bad", [views.STATIC, views.DYNAMIC])
     def test_syntax_failure_names_actual_view_and_does_not_render(diagrams, monkeypatch, bad):
         calls = []
-    
+
         def run(args, cwd, **kwargs):
             calls.append(args)
             failed = bad in args
             return CompletedProcess(args, int(failed), "", "Some diagram description contains errors" if failed else "")
-    
+
         monkeypatch.setattr(views, "_plantuml", run)
         report = views.check_views(diagrams, render=True)
         assert report["verdict"] == "FAIL"
@@ -27,12 +27,12 @@ bad = 'workproducts/SWE.2/architecture_dynamic.puml'
     @pytest.mark.parametrize("bad", [views.STATIC, views.DYNAMIC])
     def test_syntax_failure_names_actual_view_and_does_not_render(diagrams, monkeypatch, bad):
         calls = []
-    
+
         def run(args, cwd, **kwargs):
             calls.append(args)
             failed = bad in args
             return CompletedProcess(args, int(failed), "", "Some diagram description contains errors" if failed else "")
-    
+
         monkeypatch.setattr(views, "_plantuml", run)
         report = views.check_views(diagrams, render=True)
         assert report["verdict"] == "FAIL"

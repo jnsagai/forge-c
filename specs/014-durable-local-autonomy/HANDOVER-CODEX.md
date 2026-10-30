@@ -1,5 +1,33 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 30 October23:35UTC
+
+Same real AFO native01M67ETTPXS1Q73QPMQ98DNJX0 remains RUNNING and reached
+SWE.3 inspection23:29:40. Source remains cleana34fdd85, original epoch4 and
+fixed deadline31October07:57:59. First candidate SHA855f53a6... is unchanged;
+full attempt0 functionalPASS persists. No final-byte recheck/package yet and
+no operator candidate/source/model steering. Do not restart this native merely
+because an observation interval ended. Prior read-only watcher72506 completed
+its ten-minute observation; the actual native was re-polled live afterwards.
+
+Latest local implementation **2d6b1bcfda29fe40a1f640ba042f89f6509d780f** adds a
+bounded15-second optional parser diagnostic after PlantUML failure, naming its
+source line. Original failures cannot become PASS when this diagnostic times
+out or returns malformed/out-of-range/successful data. Exact clean-source
+regression63PASS/one disabled live Fabro skip, zero failures/errors. The real
+pinned CLI fixture verifies line numbering. Failed-before and intermediate
+test receipts remain. This is NOT_DEPLOYED; sourcea34fdd85/grants remain current.
+See [line diagnostics and qualification](../../evidence/014-durable-local-autonomy/plantuml-line-diagnostics-20261030/README.md).
+
+New read-only mission evidence confirms3attempts, preserved historical
+requests/tools/charges and unknown usage. Reservations are not actual generated
+tokens. SWE.3 legacy checks expect a register-block array/defines although the
+frozen input declares typed-device-pointer functions; keep these adapter gaps
+separate from naming findings and the independently passing IDR behavior.
+Do not fabricate PASS or change the current job. No follow-up cohort is yet
+submitted. All existing live handles and collector/guardian remain as below;
+revalidate them before actions. DF-M1 and the complete LL/HAL goal stay open.
+
 ## Overnight checkpoint — 30 October23:15UTC
 
 Real AFO native01M67ETTPXS1Q73QPMQ98DNJX0 has reached SWE.3 author.
