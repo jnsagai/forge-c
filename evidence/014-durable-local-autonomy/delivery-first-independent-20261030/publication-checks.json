@@ -6,7 +6,8 @@
     "raw_hidden_reasoning_absent": true,
     "frozen_input_contents_excluded": true,
     "transfer_hashes_match": true,
-    "native_terminal_archive_copied_and_sha256_verified": true
+    "native_terminal_archive_copied_and_sha256_verified": true,
+    "all_publication_files_tracked_in_git": true
   },
   "issues": []
 }
