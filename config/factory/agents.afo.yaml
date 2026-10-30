@@ -40,6 +40,7 @@ agents:
   max_mcp_output_bytes: 65536
   allowed_tools:
   - forge-maintainer-mcp.read_case
+  - forge-maintainer-mcp.list_sources
   - forge-maintainer-mcp.read_source
   - forge-maintainer-mcp.write_source
   - forge-maintainer-mcp.edit_source

@@ -216,6 +216,43 @@ def work_unit(case: dict) -> dict:
             "kind": "REWORK_RETAINED_CANDIDATE" if files else "REPAIR_BASELINE", "files": files}
 
 
+SOURCE_ROOTS = ("factory/python/forge_factory", "factory/python/tests", "config/factory/profiles")
+
+
+def source_inventory(case: dict, prefix: str = "factory/python/forge_factory") -> dict:
+    """Names/hashes of existing readable Git/candidate files; no shell/glob permissions."""
+    if (prefix != "." and (not re.fullmatch(r"[A-Za-z0-9_./-]{1,200}", prefix)
+                           or ".." in Path(prefix).parts or prefix.startswith("/"))):
+        raise MaintainerDenied("SOURCE_INVENTORY_PREFIX_INVALID")
+    prefix = "" if prefix == "." else prefix.rstrip("/")
+    if prefix and not any(prefix == root or prefix.startswith(root + "/") for root in SOURCE_ROOTS):
+        raise MaintainerDenied("SOURCE_INVENTORY_OUT_OF_SCOPE", prefix)
+    src = Path(case["src"])
+    globs = protected_globs()
+    with _case_lock(case):
+        names = _git("ls-files", "-z", "--cached", "--others", "--exclude-standard", cwd=src).split("\0")
+        if len(names) > 20000:
+            raise MaintainerDenied("SOURCE_INVENTORY_TOO_LARGE")
+        entries = []
+        for rel in sorted(set(names)):
+            if not any(rel.startswith(root + "/") for root in SOURCE_ROOTS):
+                continue
+            if prefix and rel != prefix and not rel.startswith(prefix + "/"):
+                continue
+            if (not re.fullmatch(r"[A-Za-z0-9_./-]{1,200}", rel)
+                    or path_issue(rel, globs) in ("PATH_TRAVERSAL", "PROTECTED_PATH")):
+                continue
+            try:
+                p = safe_path(src, rel, globs, write=False)
+            except MaintainerDenied:
+                continue  # a symlink never becomes a discoverable source
+            if p.is_file():
+                entries.append({"path": rel, "bytes": p.stat().st_size, "sha256": sha256_file(p)})
+    return {"schema": "forge-c/maintenance-source-inventory/1", "base": case["base"],
+            "roots": list(SOURCE_ROOTS), "prefix": prefix or ".", "entries": entries,
+            "count": len(entries), "write_authority": "UNCHANGED"}
+
+
 def read_source(case: dict, rel: str, max_bytes: int = MAX_EXCERPT * 2) -> str:
     p = safe_path(Path(case["src"]), rel, protected_globs(), write=False)
     if not p.is_file():

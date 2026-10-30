@@ -23,6 +23,7 @@ new_servers:
   server_mandatory: false
   ops:
   - {name: read_case, logical_tool: AFO maintainer case, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-factory-maintainer]}
+  - {name: list_sources, logical_tool: AFO bounded source inventory, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-factory-maintainer]}
   - {name: read_source, logical_tool: AFO candidate worktree read, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-factory-maintainer]}
   - {name: write_source, logical_tool: AFO candidate worktree write, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-factory-maintainer]}
   - {name: edit_source, logical_tool: AFO bounded candidate source edit, mandatory: false, status: IMPLEMENTED_AFO, timeout_seconds: 30, role_grants: [afo-factory-maintainer]}

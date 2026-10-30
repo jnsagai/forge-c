@@ -49,6 +49,11 @@ class PathIn(NoIn):
     path: str = Field(min_length=3, max_length=200)
 
 
+class InventoryIn(NoIn):
+    prefix: str = Field(default="factory/python/forge_factory", min_length=1, max_length=200,
+                        description="Exact source prefix, or . for declared roots. Discover paths before reading files.")
+
+
 class WriteIn(ToolInput):
     path: str = Field(min_length=3, max_length=200)
     content: str = Field(max_length=65536)
@@ -73,12 +78,29 @@ class SubmitIn(ToolInput):
                                    description="Exact signature following SYMPTOM_PRESENT: on the baseline.")
 
 
+def list_sources(ctx: ToolContext, a: InventoryIn) -> dict:
+    from ...afo import maintainer as M
+
+    c = _case()
+    inventory = _call(M.source_inventory, c, a.prefix)
+    return payload(ctx, inventory, a.offset, refs=[f"afo-maint:{c['proposal_id']}"], summary="Source paths and current hashes")
+
+
 def read_case(ctx: ToolContext, a: NoIn) -> dict:
-    from ...afo.maintainer import ALLOW, CANDIDATE_TESTS, DENY
+    from ...afo.maintainer import ALLOW, CANDIDATE_TESTS, DENY, SOURCE_ROOTS
 
     c = _case()
     body = {"proposal_id": c["proposal_id"], "base": c["base"], "incident": c["incident"],
-            "allow": ALLOW, "deny": DENY, "candidate_tests": CANDIDATE_TESTS}
+            "allow": ALLOW, "deny": DENY, "candidate_tests": CANDIDATE_TESTS, "source_inventory_roots": list(SOURCE_ROOTS)}
+    selected = os.environ.get("FORGE_LRTX_PROFILE")
+    if selected:
+        from ...common import REPO_ROOT
+        from ...lrtx.profile import load
+
+        p = load(selected)
+        body["runtime_profile"] = {"id": p["id"], "path": str(Path(p["_path"]).relative_to(REPO_ROOT)
+                                                       if Path(p["_path"]).is_absolute() else p["_path"]),
+                                   "sha256": p["_sha256"], "source": "CONTROLLER_BOUND_ENVIRONMENT"}
     return payload(ctx, body, a.offset, refs=[f"afo-maint:{c['proposal_id']}"], summary="Maintainer case; untrusted data")
 
 
@@ -127,6 +149,8 @@ def submit_candidate(ctx: ToolContext, a: SubmitIn) -> dict:
 
 OPERATIONS = [
     Operation("read_case", NoIn, read_case, "The frozen maintainer case: incident, baseline, allowlist."),
+    Operation("list_sources", InventoryIn, list_sources,
+              "Discover exact source/profile paths and hashes in a bounded paginated inventory."),
     Operation("read_source", PathIn, read_source, "Bounded read of a non-protected file of the candidate worktree."),
     Operation("write_source", WriteIn, write_source, "Write one allowlisted file of the candidate worktree."),
     Operation("edit_source", EditIn, edit_source,
