@@ -243,7 +243,7 @@ def visit_code(ws: Path, model: str, max_calls: int | None = None, resume: bool 
     role = {a.id: a for a in load_agents()[0]}["swe3-author"]
     since = V.last_finished(ws, PHASE)
     budget, findings = V.open_visit(ws, PHASE, resume, lambda: V.rework_findings(ws, PHASE, since) if since else [],
-                                    max_calls or role.max_turns, time_budget_s)
+                                    V.author_call_limit(ws, PHASE, role.max_turns, max_calls), time_budget_s)
     try:
         return _visit_code(ws, model, budget, findings)
     except V.Continue as c:
