@@ -48,6 +48,32 @@ def test_write_effects_are_valid_contract_entries(tmp_path, monkeypatch):
     assert any(x.startswith("CONTRACT_WRITE_VALUE:") for x in RC.check_effects(ws, "LL"))
 
 
+def test_contract_uses_the_declared_manual_instead_of_an_implicit_st_manual(tmp_path, monkeypatch):
+    from forge_factory import layer
+    from test_easa_m3_m4 import SR
+
+    # Synthetic input/profile fixture, not evidence about another physical device.
+    monkeypatch.setattr(layer, "profile", lambda ws=None: {"register_prefix": "OTHER", "rm": {"doc": "MANUAL42"}})
+    files = {
+        ".forge-run/manifest.json": json.dumps({"layer": "LL"}),
+        "inputs/sections/MANUAL42/status.md": SR.replace("RCC", "OTHER").replace("RM0486", "MANUAL42"),
+        "inputs/sections/RM0486/wrong.md": SR.replace("RCC", "OTHER").replace("HSERDY", "UNRELATED"),
+        "workproducts/SWE.1/software_requirements.md": (
+            "- **SWR-001** When queried, the driver shall return 1 when OTHER_SR.HSERDY is set and 0 otherwise.\n"),
+        RC.EFFECTS: json.dumps({"schema": "forge-c/register-effects/1", "effects": [
+            {"case": "READ_STATUS", "swr": "SWR-001", "register": "OTHER_SR", "field": "HSERDY", "op": "no_write"}]}),
+    }
+    for rel, content in files.items():
+        path = tmp_path / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+    assert RC.check_effects(tmp_path, "LL") == []
+    bad = json.loads((tmp_path / RC.EFFECTS).read_text())
+    bad["effects"][0]["field"] = "UNRELATED"
+    (tmp_path / RC.EFFECTS).write_text(json.dumps(bad))
+    assert any(issue.startswith("CONTRACT_NOT_IN_RM:") for issue in RC.check_effects(tmp_path, "LL"))
+
+
 def test_oracle_checks_the_written_value(tmp_path, monkeypatch):
     ws = _ws(tmp_path, monkeypatch)
     r = oracle_gen.run(ws, [ws / "software/ll"], [ws / "software/src/stm32n6xx_ll_iwdg.c"], "stm32n6xx_ll_iwdg.h")

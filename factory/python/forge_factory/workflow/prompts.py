@@ -728,7 +728,19 @@ def contract_step(phase: str) -> list[str]:
               '\"op\":\"set\",\"ready\":\"RCC_SR.HSERDY\",\"status\":\"HAL_OK\"}' if hal else
               '{\"case\":\"HSI_ENABLE\",\"swr\":\"SWR-001\",\"register\":\"RCC_CR\",\"field\":\"HSION\",'
               '\"op\":\"set\"}')
-        return [CONTRACT_SWE1.format(example=ex, extra=CONTRACT_SWE1_HAL if hal else CONTRACT_SWE1_LL)]
+        extra = CONTRACT_SWE1_HAL if hal else CONTRACT_SWE1_LL
+        if (ASSESSMENT["manifest"] or {}).get("purpose") == "ASPICE_ONLY":
+            if not hal:
+                extra = (" Function return types and values come from the requirements: queries return the specified "
+                         "value, not void. Do not add HAL status or ready contract fields to an LL case. Reset assert "
+                         "is set and release is clear.")
+                pr = PERIPHERAL["profile"]
+                if pr and pr["id"] != "rcc":
+                    extra += " " + (pr.get("prompt") or {}).get("swe1_effect_rule", "")
+            extra += (" Include every read/query requirement too: use op no_write WITH the exact named register and "
+                      "field. That case checks preservation of register state; return values require the separate "
+                      "requirement-based tests. Each case must name a register/field present in its own SWR text.")
+        return [CONTRACT_SWE1.format(example=ex, extra=extra)]
     if phase == "SWE.2":
         ex = (', e.g. \"&(const hal_rcc_osc_config_t){ .oscillator = HAL_RCC_OSC_HSE }\" and \"{timeout}\" where '
               'the caller passes the timeout; invalid cases pass the invalid value (NULL, 0U, HAL_RCC_TIMEOUT_VALUE + 1U, '

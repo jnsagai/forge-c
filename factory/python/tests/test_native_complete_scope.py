@@ -40,6 +40,10 @@ def test_real_owner_scope_reaches_author_and_inspector(tmp_path, monkeypatch, la
         assert "explicit simulation_performance allocation: at most 64" in p[node]
         assert "not a bound for unmeasured timeout paths or physical hardware WCET" in p[node]
     assert "Simulation Performance Should Meet Budget" in p["swe6_author"]
+    assert "Include every read/query requirement too" in p["swe1_author"]
+    if layer == "LL":
+        assert "queries return the specified value, not void" in p["swe1_author"]
+        assert "LL functions return nothing" not in p["swe1_author"]
 
 
 def test_missing_literal_section_refuses_before_native_submission():
