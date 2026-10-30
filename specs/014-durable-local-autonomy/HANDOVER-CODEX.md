@@ -1,6 +1,6 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 04:12 UTC: qualified Qwen repair deployed; full LL actually running
+## Latest state — 04:20 UTC: full LL running; three clean author packets
 
 Runtime **e21aa74411d01458bab45fee8af6d59f710fad03, RUNNING epoch58**.
 Exact Qwen candidate **bc931bd9274b0e1361bcc3d2b5e0ad23110d8db1** cherry-picked
@@ -11,8 +11,8 @@ Initial error/fixture attempts retained. Prior full CRE seven gates PASS and ind
 original frozen-context/usage eight tests PASS. Static spec/design checks pass separately.
 
 Full LL **afo-6bde501adad6a2bf**, job **afo-product-4855f18721196dcca4107ca6**,
-native **01M65G3CG47YKS11GRQEATNB10**. At04:12:09 UTC RUNNING/LIVE/HELD,
-one actual request SENT (14553 input +36864 output reserved); no completed packet yet.
+native **01M65G3CG47YKS11GRQEATNB10**. At04:20:51 UTC RUNNING/LIVE/HELD; three author packets VALID on first attempt,
+zero packet errors,39907reported tokens; fourth request SENT.
 Workspace `/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-6bde501adad6a2bf-a1/workspace`.
 Same RCC mission/lineage/counters/finite caps and **08:11:56 UTC** expiry. Single
 protocol CORRECTION already spent; no r3, rework allowance or mission reset.
@@ -26,6 +26,11 @@ Provider unchanged: Qwen Q8_0/f16/MTP3/xhigh,262144ctx,one inference. No paralle
 Host observer rebound; GitHub confirms sourcee21/epoch58, all four existing orders.
 Progress branch `overnight/2026-10-30-local-qwen-aspice`. Its expiry leaves Conductor running.
 [Exact qualification, activation and live evidence](../../evidence/014-durable-local-autonomy/rcc-qwen-context-integration-20261030/README.md).
+
+Read-only local outcome collector is armed until08:11:56UTC, waits for native
+QUIESCENT/RELEASED, verifies SHA/archive inventory and copies only this LL/HAL pair
+to loop10 inspection/feature014/2026-10-30-qwen/full-pipeline-context-fixed/.
+No completed archive yet. Its smoke check PASS; no inference/job submission.
 
 Next: observe this native full LL through independent inspections; preserve any failure,
 let bounded existing AFO diagnose/rework within unchanged authority, and admit HAL only

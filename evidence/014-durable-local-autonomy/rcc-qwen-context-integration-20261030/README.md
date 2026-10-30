@@ -59,3 +59,16 @@ Conductor running. Progress: overnight/2026-10-30-local-qwen-aspice/progress.jso
 No newly completed formal task IDs: **30/58 unchanged**. IE-T008/M1 unaccepted;
 M2–M5, full LL/HAL acceptance, broad autonomy, learning benefit, product campaign and
 24/72/168-hour availability remain unproven/unrun.
+
+
+## 04:20 UTC progress and local collection
+
+Three author packets VALID on first attempt, zero packet errors, fourth request SENT;
+39907 reported tokens for completed requests. No phase acceptance or recovery intervention yet.
+The existing Git observer has independently published RUNNING epoch58/sourcee21aa74.
+A read-only local collector is armed until the unchanged08:11:56UTC deadline for this
+exact LL/HAL pair. It waits for QUIESCENT/RELEASED, copies the existing complete archive,
+verifies remote SHA256 and archive inventory, then extracts into local loop10 private
+inspection/feature014/2026-10-30-qwen/full-pipeline-context-fixed/. Smoke check PASS,
+no completed archive to copy yet. It submits zero jobs/model requests. HAL preparation
+and intake scripts are adapted but UNRUN; their guard requires independent verified LL.
