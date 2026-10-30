@@ -1,0 +1,152 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 CRC IDR: new Qwen-authored two-function delivery experiment",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 26 (CRC) + memory map p.176"
+    ],
+    "hsi_contract": "RM0486 Rev 4 ch.26 CRC register interface + memory map p.176 (CRC secure base 0x56024C00)",
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the CRC benchmark work orders"
+  },
+  "scope": [
+    "Write and read the general-purpose 32-bit independent data register (CRC_IDR.IDR), using only LL_CRC_Write_IDR and LL_CRC_Read_IDR.",
+    "Caller supplies a valid CRC peripheral instance with the register interface accessible; caller-owned clock, power, security and access setup is a precondition, not implemented or inferred by these LL functions.",
+    "Within this slice no LL call occurs automatically at startup, no status-flag polling or error return is specified for valid accessible calls, and invalid pointers or inaccessible hardware are outside the supported invocation domain.",
+    "Out of scope: CRC calculation/feed, polynomial configuration, initial CRC value, reversal, calculation-unit reset, DMA, HAL, other LL functions and autonomous factory modification."
+  ],
+  "system_names": [
+    "CRC LL driver",
+    "CRC driver",
+    "STM32N6 CRC LL driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "role": "reference_manual_crc_chapter"
+    },
+    {
+      "path": "../0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0014-crc-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    },
+    {
+      "path": "../0014f-st-cube-crc-idr-qm/provided-requirements.json",
+      "role": "delivery_first_reviewed_reference_requirements"
+    },
+    {
+      "path": "IDR-CONTRACT.md",
+      "role": "delivery_first_contract"
+    },
+    {
+      "path": "forge_crc_device.h",
+      "role": "delivery_first_oracle_or_device_fixture"
+    },
+    {
+      "path": "idr_oracle.c",
+      "role": "delivery_first_oracle_or_device_fixture"
+    },
+    {
+      "path": "idr_target_probe.c",
+      "role": "delivery_first_oracle_or_device_fixture"
+    },
+    {
+      "path": "idr_unit_harness.c",
+      "role": "delivery_first_host_harness"
+    }
+  ],
+  "layer": "LL",
+  "peripheral": "crc",
+  "development_execution_policy": "qm-pipeline-demonstration-v1",
+  "operation_scope": {
+    "schema": "forge-c/operation-scope/1",
+    "functions": [
+      "LL_CRC_Write_IDR",
+      "LL_CRC_Read_IDR"
+    ],
+    "register_fields": [
+      "CRC_IDR.IDR"
+    ],
+    "primary_sections": [
+      "26.4.2"
+    ],
+    "dependencies": [
+      {
+        "kind": "caller_precondition",
+        "description": "Valid accessible CRC_TypeDef instance; caller owns clock/power/security setup. No invented setup sequence."
+      },
+      {
+        "kind": "build",
+        "description": "Qwen-authored header, immutable source-backed CRC_TypeDef compile/host fixture; no ST driver implementation is imported."
+      }
+    ],
+    "prompt_overrides": {
+      "swe1_cover": "Cover only CRC_IDR.IDR write/read through the two declared functions, valid accessible-instance caller preconditions and no autonomous startup writes. No generic safe state or invented error-handling contract.",
+      "swe1_effect_example": "{\"case\":\"WRITE_IDR\",\"swr\":\"SWR-001\",\"register\":\"CRC_IDR\",\"field\":\"IDR\",\"op\":\"write\",\"value\":\"0x12345678\"}",
+      "swe1_effect_rule": "Write-IDR: op write to CRC_IDR.IDR with the supplied 32-bit value. Read-IDR: op no_write with CRC_IDR.IDR; read returns its current 32-bit value. No calculation/reversal requirements.",
+      "ll_api": "Only void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData) and uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx); use the declared signatures. CRCx is a valid accessible instance. No implicit singleton or invented return status.",
+      "swe2_static_view": "Caller -> header-only stm32n6xx_ll_crc -> CRC_IDR; caller owns accessible-instance setup. Keep only the two declared IDR functions.",
+      "swe2_dynamic_view": "Caller passes CRCx and a 32-bit value to LL_CRC_Write_IDR, then passes CRCx to LL_CRC_Read_IDR and receives that stored value. No CRC calculations or configuration.",
+      "ut_example": "static void ut_idr(void) { LL_CRC_Write_IDR(CRC, 0x12345678U); CHECK(\"UT-001\", CRC->IDR == 0x12345678U); CRC->IDR = 0x87654321U; CHECK(\"UT-002\", LL_CRC_Read_IDR(CRC) == 0x87654321U); }",
+      "ut_rule": "Test all 32 IDR bits with zero, all ones and alternating values; test read independently by presetting IDR. Snapshot other registers to verify the IDR calls do not change them. Use the Qwen-authored candidate and immutable device-layout fixture.",
+      "target_tests": "Execute IDR write/read round trips at zero, all ones and alternating 32-bit patterns through the two actual Qwen-authored functions; read test also presets IDR independently. Record Renode target-simulation fidelity and caller setup limitations, not physical board verification. The proposed simulation-only performance contract requires software/tests/target/test_performance.c to include forge_performance_calls.h and call forge_measure_LL_CRC_Write_IDR and forge_measure_LL_CRC_Read_IDR, so the simulator can observe actual entry and return PCs. The generated header exists in the simulator build directory; it declares typed wrappers for exactly the scoped functions. Each measured call must meet 64 executed instructions and 100 microseconds of virtual time at 100 MIPS, without injected interrupts or bus stalls. This is not a hardware timing claim. SWE.6 invokes Run Target Scenario on that target test and Simulation Performance Should Meet Budget.",
+      "integration": "Write a 32-bit IDR value through LL_CRC_Write_IDR(CRC,value), then read through LL_CRC_Read_IDR(CRC), and check exact equality and untouched unrelated registers. Use boundary and alternating patterns.",
+      "requirement_example": "When the caller requests an IDR write with a valid accessible CRC instance, the CRC LL driver shall write the supplied 32-bit value to CRC_IDR.IDR."
+    }
+  },
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 64,
+    "microseconds_per_call": 100,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  },
+  "delivery_first": {
+    "schema": "forge-c/delivery-first/1",
+    "contract": "inputs/IDR-CONTRACT.md",
+    "host_oracle": "inputs/idr_oracle.c",
+    "target_probe": "inputs/idr_target_probe.c",
+    "candidate_files": [
+      "software/ll/stm32n6xx_ll_crc.h"
+    ],
+    "include_dirs": [
+      "software/ll",
+      "inputs"
+    ],
+    "required_functions": [
+      "LL_CRC_Write_IDR",
+      "LL_CRC_Read_IDR"
+    ],
+    "max_corrections": 2,
+    "unit_harness": "inputs/idr_unit_harness.c"
+  }
+}

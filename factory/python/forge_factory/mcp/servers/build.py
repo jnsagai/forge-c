@@ -74,10 +74,12 @@ def sources(ctx: ToolContext) -> list[Path]:
 
 def includes(ctx: ToolContext, profile: str = "target-cm55-gcc") -> list[str]:
     from ...brownfield.cmsis import host_flags, target_flags
+    from ...delivery_first import include_flags
 
     # feature 008 (ST pilot): a CMSIS delivery needs the vendor device headers (target) or the host device map (host)
     vendor = target_flags(ctx.workspace) if profile.startswith("target") else host_flags(ctx.workspace)
-    return vendor + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()]
+    return (vendor + include_flags(ctx.workspace)
+            + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()])
 
 
 def configure(ctx: ToolContext, a: ConfigureIn) -> dict:

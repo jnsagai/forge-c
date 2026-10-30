@@ -209,6 +209,10 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
                  for start, end, _index, name, attrs in statements(dot) if name in nodes and 'prompt="' in attrs]
         for start, end, text in reversed(edits):
             dot = dot[:start] + text + dot[end:]
+    if assessment_manifest and assessment_manifest.get("delivery_first"):
+        from ..delivery_first import workflow as delivery_workflow
+
+        dot, nodes = delivery_workflow(dot, nodes, assessment_manifest, _env(), sys.executable)
     return dot, nodes
 
 

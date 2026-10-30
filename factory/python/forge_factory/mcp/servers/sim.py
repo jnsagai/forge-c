@@ -68,8 +68,9 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
     incs = [f"-I{ws / d}" for d in ("software/hal", "software/ll", "software/include", "software/tests/target",
                                      "software/tests/software") if (ws / d).is_dir()]
     from ...brownfield.cmsis import target_flags
+    from ...delivery_first import include_flags
 
-    incs += target_flags(ws)  # feature 008 (ST pilot): vendor includes, defines, -mcmse (RCC_S at the secure base)
+    incs += target_flags(ws) + include_flags(ws)  # pinned target adapter, explicit work-order selection
     from ... import simulation_performance as performance
 
     budget = performance.selected(ws)

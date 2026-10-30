@@ -80,10 +80,12 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
 
     fake = level == "unit" and (ctx.workspace / FAKE_DIR).is_dir()  # CAPA-038: the LL test double wins the include
     from ...brownfield.cmsis import host_flags
+    from ...delivery_first import include_flags
 
     # feature 008 (ST pilot): a CMSIS delivery compiles on the host against the generated host device directory
-    incs = host_flags(ctx.workspace) + [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS +
-                                        [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()]
+    incs = (host_flags(ctx.workspace) + include_flags(ctx.workspace)
+            + [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS
+               + [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()])
     if fake and modified(ctx.workspace):
         return result(ctx, "FAIL", "generated LL test double was modified", issues=[
             f"GENERATED_TEST_DOUBLE_MODIFIED:{fake_header(ctx.workspace)} (generated from the provided LL header; "
@@ -371,8 +373,8 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                       "build_failed": sorted(builds), "unobserved": sorted(
                           {i.split(":")[1] for i in unobserved if i.startswith("REQUIREMENT_NOT_OBSERVED:")})})
     undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, "run_robot") if ok else []
-    from ...simulation_performance import selected
     from ...afo.durable import digest
+    from ...simulation_performance import selected
 
     performance = selected(ctx.workspace)
     contract = {"simulation_performance_contract": json.dumps({

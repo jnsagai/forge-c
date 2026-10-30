@@ -113,6 +113,20 @@ def scaffold(ws: Path) -> dict:
     if p.is_file() and TEST_CASES_MARKER in p.read_text(errors="replace"):
         return {"status": "PASS", "created": False, "file": UNIT_TEST}
     p.parent.mkdir(parents=True, exist_ok=True)
+    from ..delivery_first import selected as delivery_selected
+
+    cfg, _ = delivery_selected(ws)
+    if cfg and cfg.get("unit_harness"):
+        from ..development_demonstration import validate_inputs
+        from ..mcp.sdk import ToolContext
+
+        validate_inputs(ws)
+        ctx = ToolContext("scaffold", "unit", "swe4-author", "SWE.4", ws.resolve(), "delivery-first")
+        text = ctx.path(cfg["unit_harness"], kind="file").read_text()
+        if TEST_CASES_MARKER not in text or TEST_CALLS_MARKER not in text:
+            raise ValueError("DELIVERY_FIRST_UNIT_HARNESS_MARKERS_MISSING")
+        p.write_text(text, encoding="utf-8")
+        return {"status": "PASS", "created": True, "file": UNIT_TEST, "declared_target_harness": True}
     from ..brownfield.cmsis import is_cmsis, write_host_device
 
     if is_cmsis(ws):  # feature 008 (ST pilot): the delivered CMSIS code on the generated host device map

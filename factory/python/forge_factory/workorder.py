@@ -290,6 +290,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         **({"provided_requirements": assisted} if assisted else {}),
         **({"development_execution": execution} if execution else {}),
         **({"operation_scope": spec["operation_scope"]} if "operation_scope" in spec else {}),
+        **({"delivery_first": spec["delivery_first"]} if "delivery_first" in spec else {}),
         **({"aspice_development": aspice_scope, "aspice_resume_contract_version": 2} if aspice_scope else {}),
         **({"qm_development": qm_scope, "qm_resume_contract_version": 1, "safety_target": "QM"} if qm_scope else {}),
         **({"development_safety": development} if development else {}),
@@ -402,6 +403,9 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
 
     if aspice_scope or qm_scope:
         manifest[assessment_context.FIELD] = assessment_context.binding(manifest)
+    from .delivery_first import contract as delivery_first_contract
+
+    delivery_first_contract(manifest)
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.engine import PHASES, load_checklist
 
