@@ -49,11 +49,27 @@ def write_heartbeat(cycle: int, mode: str, ok: bool, detail: str = "") -> None:
 
 def cycle(n: int) -> tuple[str, bool, str]:
     """One Conductor cycle: policy evaluation (fail closed), then the scheduler cycle the mode allows (M2)."""
+    if os.environ.get("FORGE_DURABLE_AUTONOMY") != "1":
+        return _cycle(n)
+    from .policy import load
+    from .queue import Store, default_path
+
+    eff = load(log=(n % 60 == 0))
+    if eff.mode == "DISABLED" and not default_path().is_file():
+        return _cycle(n, eff=eff)
+    store = Store()
+    # One idle connection for this cycle, not one long transaction. Every
+    # existing state transition keeps its independent FULL durable commit.
+    with store.wal_session():
+        return _cycle(n, store=store, eff=eff)
+
+
+def _cycle(n: int, *, store=None, eff=None) -> tuple[str, bool, str]:
     from . import scheduler
     from .policy import load
     from .queue import Store
 
-    eff = load(log=(n % 60 == 0))  # record a policy decision every 60 cycles and at start
+    eff = eff if eff is not None else load(log=(n % 60 == 0))
     if eff.mode == "DISABLED":
         from . import local_agent
         from .queue import default_path
@@ -61,10 +77,10 @@ def cycle(n: int) -> tuple[str, bool, str]:
         if default_path().is_file():
             from . import dispatch
 
-            store = Store()
+            store = store if store is not None else Store()
             local_agent.supervise(store, eff)
-            from . import product_job
             from ..fabro.client import FabroClient, load_token
+            from . import product_job
 
             with FabroClient(token=load_token(), timeout=5) as client:
                 product_job.reconcile(store, eff, client)
@@ -72,12 +88,12 @@ def cycle(n: int) -> tuple[str, bool, str]:
             if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
                 learning_cycle(store)
         return eff.mode, True, ("; ".join(eff.issues))[:200]
-    store = Store()
+    store = store if store is not None else Store()
     from . import local_agent
 
     local_agent.supervise(store, eff)
-    from . import product_job
     from ..fabro.client import FabroClient, load_token
+    from . import product_job
 
     with FabroClient(token=load_token(), timeout=5) as client:
         product_job.reconcile(store, eff, client)
@@ -126,8 +142,8 @@ def cycle(n: int) -> tuple[str, bool, str]:
         deadletter.sweep(store, runtime.workspace_of, window_s=window)  # AFO M6: one case + one alert per BLOCKED
         alerts.deliver(store)  # local fallback always; adapters optional
         store.forward_events()
-        from .housekeeping import clean
         from ..common import state_dir
+        from .housekeeping import clean
 
         scratch = state_dir() / "afo/tmp"
         if n % 60 == 0 and (scratch / ".forge-disposable").is_file():
@@ -142,11 +158,11 @@ def cycle(n: int) -> tuple[str, bool, str]:
 
 
 def learning_cycle(store):
-    from ..knowledge.store import LessonStore
+    from ..fabro.client import FabroClient, load_token
     from ..knowledge.experience import capture_afo, capture_workorders, consolidate
     from ..knowledge.improvement import route
+    from ..knowledge.store import LessonStore
     from .runtime import workspace_of
-    from ..fabro.client import FabroClient, load_token
 
     lessons = LessonStore()
     capture_afo(store, lessons, workspace_of, limit=32)
@@ -154,8 +170,8 @@ def learning_cycle(store):
         capture_workorders(store, lessons, client=client, limit=8)
     consolidate(lessons, limit=32)
     from ..reliability.capa import CapaRegistry
-    from ..reliability.store import CREStore
     from ..reliability.policy import load as cre_policy
+    from ..reliability.store import CREStore
 
     route(lessons, capa_registry=CapaRegistry(CREStore(), cre_policy(), lessons=lessons), limit=32)
 
@@ -166,8 +182,7 @@ class Conductor:
 
     def run(self) -> int:
         from ..supervisor.service import install_model_guard, sd_notify
-
-        from .operations import configured, Intent
+        from .operations import Intent, configured
 
         if configured() and self.max_cycles is not None:
             raise ValueError("CONTINUOUS_SERVICE_CANNOT_HAVE_FINITE_CYCLE_LIMIT")

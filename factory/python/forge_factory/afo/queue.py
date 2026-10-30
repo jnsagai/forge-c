@@ -178,6 +178,21 @@ class Store:
         return c
 
     @contextmanager
+    def wal_session(self):
+        """Keep WAL open across a bounded batch of independent durable transactions.
+
+        No transaction or lock is held here. Each tx still commits with FULL
+        synchronization; other readers/writers and normal WAL checkpoints work
+        unchanged. Closing the last connection after every small tx otherwise
+        repeatedly checkpoints/unlinks the WAL and amplifies journal I/O.
+        """
+        keeper = self.connect()
+        try:
+            yield
+        finally:
+            keeper.close()
+
+    @contextmanager
     def tx(self):
         """BEGIN IMMEDIATE: one writer at a time, serialised across processes."""
         c = self.connect()
