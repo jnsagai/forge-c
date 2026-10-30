@@ -1,10 +1,10 @@
 {
-  "captured_utc": "2026-10-30T06:37:00.931720Z",
+  "captured_utc": "2026-10-30T06:42:04.389372Z",
   "deadline_epoch": 1793368372,
   "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
   "intent": {
-    "mode": "RUNNING",
-    "epoch": 64
+    "mode": "PAUSED",
+    "epoch": 65
   },
   "orders": [
     {
