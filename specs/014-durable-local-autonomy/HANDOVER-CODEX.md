@@ -1,5 +1,51 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Current execution — native shared Qwen workflow started 30 October 18:42 UTC
+
+Native **01M671YCDV672HSSY5QDGH4SNT**, work order
+WO-F014-QWEN-NATIVE-ARTIFACTS-20261030-LL-01, source
+c221b65ebc011cbed488db83af3e2804790c1129. Root
+N=/mnt/data/forge-c/native-artifacts-014-20261030-v1. Uses common native MCP
+SWE.1–6 graph, QM bounded-repair demonstration, no structured substitutions.
+Owner requested relaxed development admission/accounting; this is standalone,
+not proven production AFO integration or an accepted ASPICE delivery. Production
+P remains intentionally PAUSED111 to prevent competing dispatch; do not resume
+P against the still-active native GPU trial. Only one inference slot.
+
+At18:54:58UTC native RUNNING/SWE.1 author;14completed responses,
+36761reported output tokens,40completed native tools, zero tool errors. Tool names
+glob/read_file/update_plan/use_skill; no domain MCP result yet. Earlier zero domain
+tool count did not mean no tool use. No full phase/product pass is established.
+Four old Qwen SWE.1 files are seeded working drafts, no inspection/PASS import.
+See [actual native launch, handoff, observation and tools](../../evidence/014-durable-local-autonomy/native-qm-workflow-20261030/README.md).
+
+The prior451 structured order afo-f2a638a42fadd518 is externally superseded,
+QUIESCENT/RELEASED with no pending request; sealed BLOCKED49/integrityPASS,
+SHAcb189bb758b8f91aebb91f2251d036a74ed1be626646ba87558b5199b4f22e80.
+Complete package copied/hash/inventory-verified privately on loop10. The handoff
+is not a Qwen failure or self-healing success. One stale epoch assertion after
+recording PAUSED111 was corrected without another operator transition.
+
+Dashboard: http://100.118.28.92:8786, existing local/trusted-device access policy;
+SSH -L8786:127.0.0.1:8786 permits local browser viewing. New read-only local
+collector A3/collect-native-qwen-artifact-outcomes-20261030-v1.py, execsession29654,
+copies LL outcomes to B/inspection/feature014/2026-10-30-qwen/full-pipeline-native-qm-artifacts/.
+Revalidate process/session before relying on it. N/prepare-hal.py defaults check-only
+and returned NOT_RUN_LL_STILL_LIVE. It uses this run's own sealed provisional LL,
+all six actual phase attempts and archive integrity before optional --prepare/--start.
+No HAL is launched yet; add its actual handle to outcome collection after launch.
+
+Cloud r4's exact failure is now audited:11216B in the generated per-function LL
+measurement object,0B in the include-only TU, vs4096Bdeclared. Not a linked-image
+measurement; no budget/oracle was changed. Two existing local native/HAL boundary
+tests PASS; no new formal task closed (30/58). Full clean LL/HAL, broader autonomy,
+learning benefit and availability still unproven. Next: monitor the same native
+handle through actual writes/review/tool checks, fix actual factory defects,
+then run its dependent HAL. Do not restart solely for observation timeout.
+
+The three-day report was also pushed to main as **bf3f1eb9** (report/evidence only,
+no Feature014 implementation merge). Its18:33cutoff predates this native launch.
+
 ## Current review entry point — 30 October 2026, 18:33 UTC snapshot
 
 Read [the three-day Astra review](ASTRA-REVIEW-20261028-30.md) first. It reconciles

@@ -1,0 +1,53 @@
+{
+  "schema": "forge-c/diagnostic-control-budget-audit/1",
+  "execution_source_revision": "f5e07c9e844b9ee09c391f50f74b2d30e4888246",
+  "native_id": "01M66YMZK9JTMZCF2PNV4JRGCY",
+  "measurement_command": [
+    "arm-none-eabi-size",
+    "build/target-cm55-gcc/forge_ll_measure.o",
+    "build/target-cm55-gcc/stm32n6xx_ll_rcc.o"
+  ],
+  "exit_code": 0,
+  "output": "   text\t   data\t    bss\t    dec\t    hex\tfilename\n  11216\t      0\t      0\t  11216\t   2bd0\tbuild/target-cm55-gcc/forge_ll_measure.o\n      0\t      0\t      0\t      0\t      0\tbuild/target-cm55-gcc/stm32n6xx_ll_rcc.o\n",
+  "recorded_author_gate_failures": [
+    {
+      "errors": [
+        "AGENT_OUTPUT_SCHEMA",
+        "next_action: 'Rework SWE.3 flash usage without reducing API scope.' is not one of ['next', 'rework', 'halt', 'package', 'escalate', 'none', 'retry']"
+      ],
+      "issues": [
+        "AGENT_OUTPUT_SCHEMA",
+        "SWR-590 unresolved: measured flash 11216 B exceeds 4096 B; linked driver attribution unavailable."
+      ],
+      "phase": "SWE.3",
+      "result": "REJECTED",
+      "status": "FAILED",
+      "step": "author",
+      "ts": "2026-10-30T18:06:05.553931Z"
+    },
+    {
+      "issues": [
+        "SWR-590 unresolved: 11216 B object flash exceeds 4096 B; required linked attribution unavailable. DEF-001 escalated."
+      ],
+      "phase": "SWE.3",
+      "result": "REJECTED",
+      "status": "BLOCKED",
+      "step": "author",
+      "ts": "2026-10-30T18:11:13.711039Z"
+    },
+    {
+      "issues": [
+        "SWR-590 unresolved: 11216 B object flash exceeds 4096 B; required linked attribution unavailable. DEF-001 escalated."
+      ],
+      "phase": "SWE.3",
+      "result": "REJECTED",
+      "status": "BLOCKED",
+      "step": "author",
+      "ts": "2026-10-30T18:16:01.901201Z"
+    }
+  ],
+  "interpretation": "Actual object measurement exceeds the declared4096B target; generated one-instance-per-LL-function unit accounts for text. This does not prove a linked firmware image size or authorize changing requirements. Existing QM demonstration preserves finding and attempts later phases.",
+  "linked_attribution_status": "NOT_MEASURED",
+  "source_or_artifacts_modified": false,
+  "new_model_calls": 0
+}
