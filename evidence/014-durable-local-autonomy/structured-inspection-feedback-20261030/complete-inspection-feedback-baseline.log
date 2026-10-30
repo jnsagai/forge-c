@@ -1,0 +1,64 @@
+F..F                                                                     [100%]
+=================================== FAILURES ===================================
+______________ test_rework_reads_each_complete_published_finding _______________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-108/test_rework_reads_each_complet0')
+
+    def test_rework_reads_each_complete_published_finding(tmp_path):
+        first = 'SWR-001: ' + 'first independent observation; ' * 20 + 'FIRST_END'
+        second = 'SWR-002: distinct second issue requiring a different author obligation.'
+        _publish(tmp_path, {'SWE1-02': {'verdict': 'FAIL', 'findings': [first, second]}},
+                 [{'id': 'SWE1-02', 'detail': first[:200]}])
+>       assert visit.rework_findings(tmp_path, 'SWE.1', '') == ['SWE1-02: ' + first, 'SWE1-02: ' + second]
+E       AssertionError: assert ['SWE1-02: SW...ation; first'] == ['SWE1-02: SW... obligation.']
+E         
+E         At index 0 diff: 'SWE1-02: SWR-001: first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first' != 'SWE1-02: SWR-001: first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independent observation; first independe...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+factory/python/tests/test_lrtx_complete_inspection_feedback.py:24: AssertionError
+_ test_structured_inspector_publishes_complete_findings_through_existing_operation _
+
+ws1 = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-108/test_structured_inspector_publ0/state/workorders/WO-T-IWDG-LL/workspace')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70421764c7c0>
+
+    def test_structured_inspector_publishes_complete_findings_through_existing_operation(ws1, monkeypatch):  # noqa: F811
+        first = 'SWR-001 contains inconsistent named-field effects. ' + 'Inspect the stated bit operation. ' * 12 + 'FIRST_END'
+        second = 'SWR-002 names an unsupported field in its requirement statement. SECOND_END'
+    
+        def answer(packet):
+            item = packet['task'].rsplit(':', 1)[1]
+            return {'verdict': 'FAIL' if item == 'SWE1-02' else 'PASS',
+                    'findings': [first, second] if item == 'SWE1-02' else [],
+                    'evidence_checked': ['workproducts/SWE.1/software_requirements.md']}
+    
+        monkeypatch.setattr(S, 'call', _scripted(Answers({}, answer), []))
+        assert review.visit(ws1, 'SWE.1', 'synthetic')['status'] == 'REWORK'
+        report = json.loads(sorted((ws1 / 'inspection/SWE.1').glob('INS-*.json'))[-1].read_text())
+        assert report['verdict'] == 'FAIL'
+>       assert report['items']['SWE1-02']['findings'] == [first, second]
+E       AssertionError: assert ['SWR-001 con.... SECOND_END'] == ['SWR-001 con.... SECOND_END']
+E         
+E         At index 0 diff: 'SWR-001 contains inconsistent named-field effects. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the s' != 'SWR-001 contains inconsistent named-field effects. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operation. Inspect the stated bit operat...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+factory/python/tests/test_lrtx_complete_inspection_feedback.py:56: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "03585e2bc0db95c4d72f1cc53b81fa5f000b1079cec381d160fcc02f846b71c1"}
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "inspect:03585e2bc0db95c4:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_lrtx_complete_inspection_feedback.py::test_rework_reads_each_complete_published_finding
+FAILED factory/python/tests/test_lrtx_complete_inspection_feedback.py::test_structured_inspector_publishes_complete_findings_through_existing_operation

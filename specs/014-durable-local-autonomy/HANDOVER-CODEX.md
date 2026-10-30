@@ -1,6 +1,70 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 04:32 UTC: all seven author packets and first inspector criterion pass
+## Latest state — 05:31 UTC: localized Qwen rework demonstrated; scoped-feedback fixes ready locally
+
+Runtime remains **e21aa74411d01458bab45fee8af6d59f710fad03, RUNNING epoch58**.
+LL order **afo-6bde501adad6a2bf**, native **01M65G3CG47YKS11GRQEATNB10** is
+authoritatively RUNNING;28 requests complete/one SENT,509390reported tokens at05:31:07.
+Same mission/counters/finite caps and **08:11:56 UTC** expiry; no renewal or reset.
+HAL NOT_SUBMITTED. Full LL/SWE.1 unaccepted; do not mark full pipeline clean.
+
+All seven first-pass author packets VALID. First actual inspection returned REWORK
+for SWE1-02/03/04. Without operator artifact edits, ordinary Qwen author rework used
+**two calls**, reused other validated obligations, and its next baseline passed
+SWE1-01/02/03/05/06. Only **SWE1-04 CPU/timing** remained FAIL; another bounded
+rework is active. This is artifact self-correction, not independent correctness from
+same-model agreement or fully autonomous factory-code recovery proof.
+
+New candidate **f037a0cf1ccb8bdc035b0cc5348b3efe2b2aefc4** is NOT_DEPLOYED:
+
+-77503c9 limits startup refutation to explicit behaviour-denial language; reset-bit
+ findings were wrongly refuted using the unrelated startup/no-write invariant.
+-5c28f1f retains complete published inspector findings and delivers every failed-item
+ finding to rework, across SWE.1–SWE.6, with legacy summary compatibility. Actual
+ model findings363/283chars became200/200, then only the first200-char summary reached
+ the author, losing the second issue. No severity/criteria/gate is relaxed.
+-d60fe4f preserves local Open point task/input scope and stable hashed provenance;
+ routes feedback to its note owner as well as referenced SWR tasks. The actual clock
+ task's note stayed untouched when rework targeted only the cited reset-task SWRs.
+-f037a0c fixes the discovered real provided-input compatibility regression: materialized
+ records have an actual provided-input/record hash, not a model base_hash. Seven
+ intermediate inherited failures are retained; fixtures were not rewritten.
+
+Exact f037a0c selected combined regression cohort **159 PASS,0failures/errors,1skip**,
+129.102s. The skip needs a frozen SWE.2 baseline absent from that fixture. Compatibility
+cohort21 PASS. Static spec/contracts,14 design checks and selected Ruff E9/F PASS
+separately. Native source bundle/runner are prepared; --check-only correctly returns
+NOT_RUN because Qwen is active and no authenticated maintenance pause exists. It
+never pauses/restarts/deploys itself. Require actual quiescence and a short, fenced
+owner maintenance window before running this candidate's native verification.
+[Implementation, failures, test logs and executable qualification](../../evidence/014-durable-local-autonomy/structured-inspection-feedback-20261030/README.md).
+
+Next execution priorities:
+
+1. Keep the existing native run observable through its bounded rework and eventual
+   AFO diagnosis. Do not restart because an observation fails. Capture terminal
+   outcomes with the existing collector; it waits for QUIESCENT/RELEASED.
+2. The actual immutable work order has flash4096/RAM64/stack128 only, no CPU/time
+   allocation and no simulation_performance. Do not start an identical-input run
+   expecting requirement rewrites to create missing allocations. Prepare explicit
+   prospective development-only CPU/time targets without invented physical timing or
+   owner review. Existing simulation_performance currently supports delivered-code
+   scopes/wrappers; authored LL/HAL measurement is a prerequisite to extend through
+   the existing Renode path. The owner's QM/no-safety instruction is still binding:
+   existing QM profiles include advisory demonstration settings, so use/prepare a
+   strict scope preserving all functional gates rather than silently using a demo.
+3. Qualify f037a0c natively once quiet; preserve all failed model/verification history,
+   the spent CORRECTION and exhausted old maintenance rework root. A changed-input,
+   source-bound continuation must stay in the same mission and finite authority.
+   No source activation or08:11:56UTC extension is implicit in this checkpoint.
+
+Private partial diagnostic copies on local loop10:
+`inspection/feature014/2026-10-30-qwen/rcc-swe1-rework-diagnostics/START-HERE.md`.
+First two published inspections, full designated model verdict, original note packet
+and author visit history retained; no hidden reasoning. Full outcome collector remains
+active until08:11:56UTC. Formal **30/58 unchanged**, no newly completed task IDs.
+
+## Historical checkpoint — 04:32 UTC: all seven author packets and first inspector criterion pass
 
 Runtime **e21aa74411d01458bab45fee8af6d59f710fad03, RUNNING epoch58**.
 Exact Qwen candidate **bc931bd9274b0e1361bcc3d2b5e0ad23110d8db1** cherry-picked
