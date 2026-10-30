@@ -27,6 +27,27 @@ VERDICT_SCHEMA = {"type": "object", "additionalProperties": False, "required": [
 MAX_FILE_CHARS = 40_000
 
 
+def source_char_limit(ws: Path) -> int:
+    """A pinned loading bound, separate from complete-request context admission.
+
+    Large peripherals can have a requirements file larger than the inherited
+    40k envelope. An explicit profile override loads the WHOLE frozen file;
+    S.packet and the gateway still independently refuse an oversized request.
+    This does not qualify a tokenizer, enlarge model context or waive review.
+    """
+    manifest = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+    selected = (manifest.get("local_profile") or {}).get("id")
+    if not selected:
+        return MAX_FILE_CHARS
+    from .profile import load
+
+    structured = load(selected).get("structured") or {}
+    limit = structured.get("inspection_max_source_chars", MAX_FILE_CHARS)
+    if type(limit) is not int or not 1 <= limit <= 4 * 1024 * 1024:
+        raise ValueError("PROFILE_INSPECTION_SOURCE_LIMIT_INVALID")
+    return limit
+
+
 def _notes(ws: Path, phase: str, item: str) -> list[str]:
     from ..layer import profile
     from ..workflow import prompts
@@ -71,7 +92,8 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     if phase != "SWE.1":
         files += [f for f in ("workproducts/SWE.1/software_requirements.md", "workproducts/SWE.1/register_effects.json")
                   if f not in files]
-    srcs = [S.source(ws, f, max_chars=MAX_FILE_CHARS) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
+    limit = source_char_limit(ws)
+    srcs = [S.source(ws, f, max_chars=limit) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
     for f in [f for f in files if f in ENGINE_FILES and (Path(ws) / f).is_file()]:
         data = (Path(ws) / f).read_bytes()
         note = json.dumps({"path": f, "sha256": sha256_bytes(data), "bytes": len(data), "content": ENGINE_NOTE}, indent=1)

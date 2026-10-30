@@ -11,7 +11,7 @@ from .durable import Refused
 from .mission_ledger import MissionLedger
 
 
-def reserve(store, binding, body, *, eff=None):
+def reserve(store, binding, body, *, eff=None, measurement=None):
     from . import local_agent
     from .policy import load
 
@@ -59,7 +59,17 @@ def reserve(store, binding, body, *, eff=None):
             and local_agent.authorized(order, eff, job["model"])
         )
 
-    measured = measure_request(body)
+    measured = measurement if measurement is not None else measure_request(body)
+    from .durable import digest
+
+    if (not isinstance(measured, dict) or measured.get("sha256") != digest(body)
+            or type(measured.get("input_tokens")) is not int or measured["input_tokens"] < 1):
+        raise Refused("REQUEST_MEASUREMENT_BINDING_INVALID")
+    from .provider_recovery import current_instance
+
+    provider_instance = current_instance()
+    if measurement is not None and measured.get("provider_instance_sha256") != digest(provider_instance):
+        raise Refused("NATIVE_MEASUREMENT_PROVIDER_CHANGED")
     caps = [body[k] for k in ("max_tokens", "max_completion_tokens") if body.get(k) is not None]
     if len(caps) != 1:
         raise Refused("PROVIDER_OUTPUT_CAP_MISSING_OR_AMBIGUOUS")
@@ -99,9 +109,6 @@ def reserve(store, binding, body, *, eff=None):
                 },
             )
             raise
-    from .provider_recovery import current_instance
-
-    provider_instance = current_instance()
     rec = MissionLedger(store).reserve_request(
         ctx.mission_id,
         ctx.job_id,

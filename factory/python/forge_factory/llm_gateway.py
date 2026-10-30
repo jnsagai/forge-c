@@ -302,6 +302,12 @@ def create_app(
     routes = json.loads(os.environ.get("FORGE_GATEWAY_ROUTES") or "{}")
     routed = {m: httpx.AsyncClient(base_url=u.rstrip("/"), timeout=timeout, transport=transport)
               for m, u in routes.items()}
+    from .lrtx.request_measurement import METHOD as native_measurement_method
+
+    measurement_policy = json.loads(os.environ.get("FORGE_GATEWAY_REQUEST_MEASUREMENT") or "{}")
+    if (not isinstance(measurement_policy, dict)
+            or any(m not in routed or method != native_measurement_method for m, method in measurement_policy.items())):
+        raise ValueError("GATEWAY_REQUEST_MEASUREMENT_INVALID")
 
     def cl(body: dict | None) -> httpx.AsyncClient:
         return routed.get((body or {}).get("model"), client)
@@ -458,7 +464,19 @@ def create_app(
 
         store = Store()
         try:
-            rec = durable.reserve(store, binding, body)
+            if body.get("model") in measurement_policy:
+                from .afo.durable import digest
+                from .afo.provider_recovery import current_instance
+                from .lrtx.request_measurement import measure
+
+                provider = digest(current_instance())
+                measured = await measure(cl(body), body)
+                if digest(current_instance()) != provider:
+                    raise Refused("NATIVE_MEASUREMENT_PROVIDER_CHANGED")
+                measured["provider_instance_sha256"] = provider
+                rec = durable.reserve(store, binding, body, measurement=measured)
+            else:
+                rec = durable.reserve(store, binding, body)
         except (Refused, KeyError, ValueError) as exc:
             code = exc.code if isinstance(exc, Refused) else "INVALID_DURABLE_BINDING"
             meter.refusal(body.get("model"), code)

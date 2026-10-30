@@ -597,6 +597,9 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         "FORGE_GATEWAY_SAMPLE_S": str((prof.get("measurement") or {}).get("sample_s", 10)),
         "FORGE_GATEWAY_REASONING": gateway_reasoning(prof),
     }
+    from .request_measurement import policy as request_measurement_policy
+
+    gw_env["FORGE_GATEWAY_REQUEST_MEASUREMENT"] = json.dumps(request_measurement_policy(prof))
     gw_env["FORGE_GATEWAY_REQUEST_TIMEOUT_S"] = str(gateway_timeout(prof))
     if "drop_retries" in prof.get("gateway", {}):
         retries = prof["gateway"]["drop_retries"]

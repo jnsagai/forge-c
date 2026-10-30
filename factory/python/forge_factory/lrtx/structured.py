@@ -226,6 +226,14 @@ def packet(
     p["accounting"]["complete_serialized_request"] = measured
     if ws is not None and (ws / ".forge-run/durable-binding.json").is_file():
         p["accounting"]["fits"] = p["accounting"]["fits"] and measured["input_tokens"] + output_reserve <= context_tokens
+        if not p["accounting"]["fits"]:
+            from .request_measurement import required_at_gateway
+
+            if required_at_gateway(ws, model):
+                # Byte size is retained as evidence, not misrepresented as an
+                # exact tokenizer result or a positive context-fit decision.
+                p["accounting"]["fits"] = None
+                p["accounting"]["admission"] = "PENDING_GATEWAY_NATIVE_MEASUREMENT"
     p["input_hash"] = hashlib.sha256(canonical_json({k: v for k, v in p.items() if k != "accounting"})).hexdigest()
     p["_messages"] = msgs
     def without_lessons(reason: str) -> dict:
@@ -251,7 +259,7 @@ def packet(
         q["lessons_omitted"] = {"count": len(exposed), "reason": reason}
         return q
 
-    if not p["accounting"]["fits"]:
+    if p["accounting"]["fits"] is False:
         if exposed:  # DA-FR-040: an unfit lesson block is omitted explicitly; it never refuses the task itself
             return without_lessons("CONTEXT_UNFIT")
         raise PacketRefused(f"PACKET_TOO_LARGE:{task}:{est}+{output_reserve}>{context_tokens} (repartition)")
