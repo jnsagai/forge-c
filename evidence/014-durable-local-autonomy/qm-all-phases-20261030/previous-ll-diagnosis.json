@@ -1,0 +1,23 @@
+{
+  "proposal": {
+    "decision": "NEEDS_EVIDENCE",
+    "evidence_refs": [
+      "finding:3ed109bd82ce157aba3ea8db",
+      "artifact:016779bd7d32391274fd1aedc7a3be640e1b87b3da10d90e51b1e471808058e5:f45e9f8aebe55d7a",
+      "artifact:dd652546470c61de6470613917ad9c7d66f77b6a121109259337b707907081a4:88dacd0c1f117306",
+      "artifact:87fd18e830c67581e0f37476d9b2b270e10aa050e2383acd76cc6e2132df823d:d21b8477aa526a8f",
+      "artifact:c94b7b026f547ba374f3890396f845ec18c52d5c88aefed48e78ecc6f0306e0c:63c9c0588a1c5a7a",
+      "artifact:3b607caa538d6903a221bd8e3eb3a4e70e97d4cfaca42ac9097a67bf48983f9b:36c0566ac774ee58",
+      "artifact:e12a70e1831e2b96e518e61d0bfb1b8a991133f8a291d4b80f790d132537eddf:ce38c09aa52edf8b",
+      "artifact:10b1df3a889f31799c93bd7e4d3ae7d74c4ffd70bae90cb01d04b5c2035189d4:0d6726aa153bbfad"
+    ],
+    "missing_evidence": [
+      {
+        "evidence_kind": "AUTHORITATIVE_INPUT",
+        "obligation_ref": "OBL-1b41ced05cec22508120",
+        "reason": "The decisive fact needed to repair the timing constraint is an authoritative, measurable timing or CPU budget for the RCC LL driver. A1 shows upstream budgets are NOT_PROVIDED and contain placeholders"
+      }
+    ]
+  },
+  "reason": null
+}

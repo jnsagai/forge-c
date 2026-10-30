@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-30T05:39:20.687105Z",
+  "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
+  "order_id": "afo-6bde501adad6a2bf",
+  "order": {
+    "state": "BLOCKED",
+    "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:MISSING_EVIDENCE:afo-agent-e2d3e5df3c5757358d0b1a6b",
+    "created_epoch": 1793333451.2753763
+  },
+  "product": {
+    "job_id": "afo-product-4855f18721196dcca4107ca6",
+    "execution": {
+      "execution_liveness": "QUIESCENT",
+      "resource_lease": "RELEASED",
+      "native_run_ids": [
+        "01M65G3CG47YKS11GRQEATNB10"
+      ],
+      "task_outcome": "BLOCKED",
+      "terminal_reason": "PRODUCT_PACKAGE_BLOCKED:package BLOCKED / BLOCKED, 50 gaps"
+    },
+    "request_states": {
+      "QUIESCENT": 30
+    },
+    "reported_tokens_known": 545576,
+    "native_status_now": {
+      "01M65G3CG47YKS11GRQEATNB10": "SUCCEEDED"
+    }
+  }
+}

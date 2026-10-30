@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-30T05:57:09.375532Z",
+  "operator": {
+    "mode": "RUNNING",
+    "epoch": 64
+  },
+  "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
+  "order_id": "afo-e6593e4a6b4ec1b8",
+  "order": {
+    "state": "RUNNING",
+    "terminal_reason": null,
+    "created_epoch": 1793339710.5901194
+  },
+  "product": {
+    "job_id": "afo-product-109acc58b919a37613210e04",
+    "model": "qwen3.8:27b-q8_0",
+    "profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
+    "execution": {
+      "execution_liveness": "LIVE",
+      "resource_lease": "HELD",
+      "native_run_ids": [
+        "01M65P3JYHR82VVYR5K1FCK1YQ"
+      ],
+      "task_outcome": "ACTIVE",
+      "terminal_reason": null
+    },
+    "request_states": {
+      "SENT": 1
+    },
+    "reported_tokens_known": 0,
+    "native_status_now": {
+      "01M65P3JYHR82VVYR5K1FCK1YQ": "RUNNING"
+    }
+  },
+  "model_requests_by_observer": 0
+}
