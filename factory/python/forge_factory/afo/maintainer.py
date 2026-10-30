@@ -404,7 +404,7 @@ def _submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
         intent = {"request_sha256": request, "case_sha256": sha256_file(frozen),
                   "parent": _git("rev-parse", "HEAD", cwd=src).strip(),
                   "tree": _git("write-tree", cwd=src).strip(), "submitted_utc": utc_now(),
-                  "message": f"AFO maintainer candidate {pid}: {' '.join(summary.split())[:200]}"}
+                  "message": f"AFO maintainer candidate {pid}: {' '.join(summary.split())[:200]}".rstrip(" ")}
         immutable_json(intent_path, intent)
     if (d / "submission-receipt.json").exists():
         return submission(case, require_receipt=True)[0]
@@ -416,7 +416,9 @@ def _submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
         head = _git("rev-parse", "HEAD", cwd=src).strip()
     # A crash after commit but before receipt must adopt precisely that effect, never commit again.
     actual = _git("show", "-s", "--format=%P%n%T%n%B", head, cwd=src).strip().split("\n", 2)
-    if actual != [intent["parent"], intent["tree"], intent["message"]]:
+    # Git strips trailing ASCII spaces from a commit message. Adopt legacy effects
+    # only under that exact normalization; parent, tree and all other message bytes stay bound.
+    if actual != [intent["parent"], intent["tree"], intent["message"].rstrip(" ")]:
         raise MaintainerDenied("SUBMISSION_COMMIT_MISMATCH")
     cand = head
     issues = veto(case["base"], cand, Path(case["repo"]))
