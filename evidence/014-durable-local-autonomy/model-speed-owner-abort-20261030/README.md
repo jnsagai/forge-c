@@ -95,3 +95,25 @@ observed NEEDS_EVIDENCE; no successful diagnosis claim. Remaining baseline cases
 medium and MTP-factor results remain **NOT_RUN**. No speed/quality winner selected.
 Formal Feature014 remains **30/58**, no task IDs newly completed. Clean LL/HAL, learning
 benefit and 24/72/168-hour availability remain UNPROVEN/NOT_RUN.
+
+## Durable continuation and local inspection
+
+Xhigh observer: user unit forge-q38-speed-xhigh-driver-20261030-v2.service.
+Finite [medium follow-up](continue-medium.py): user unit
+forge-q38-speed-medium-followup-20261030-v2.service; no resource quotas on inherited
+model processes, no duplicate dispatch, newer intent/expiry fenced. It waits for the
+baseline completion and actual quiescence, then invokes the reviewed activation tool
+and the same Conductor-owned pilot. The factory controller continues after the pilot.
+
+[Read-only exporter](export-readonly.py), [local collector](collect-local.py) and
+[descriptive reporter](report-speed.py) preserve all selected input/result/audit hashes
+without collecting hidden reasoning. Local collector runs every30s through both
+completion receipts (or bounded final collection grace); grants are never renewed.
+Inspect B/inspection/feature014/2026-10-30-qwen/model-speed-pilot/SPEED-REPORT.md
+and speed-summary.json. The report is regenerated after each verified snapshot.
+Report helpers must be colocated using their operational names
+collect-q38-speed-results.py and report-q38-speed.py; public names above are review copies.
+
+Later baseline observations:65.06,63.14,63.08tok/s and76.46,91.91,112.67 gateway
+seconds. All three additional complete-evidence cases also returned NEEDS_EVIDENCE
+instead of expected PROPOSE_REPAIR. The missing-primary cases and medium are pending.

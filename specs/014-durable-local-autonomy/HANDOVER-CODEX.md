@@ -26,16 +26,26 @@ FAILED_PROTOCOL rows/costs. Corrected driver only enrolls/provisions/records; is
 Conductor exclusively dispatches/polls. First actual native job
 01M6626QG8D2KVYX691Z3CTDWQ is RUNNING. No measured winner yet.
 
-Local A3/run-q38-reasoning-speed.py runs remotely via SSH; current long exec session76200,
-stdout q38-reasoning-speed-xhigh-live-v3.log. Do not run a second driver concurrently.
-For progress read O/xhigh/progress.json; metrics and independent audit references accrue
-under O/xhigh/metrics. First two setup-failed cases remain in the denominator.
-After xhigh completion and actual request/native quiescence, use the prepared
-activate-q38-reasoning-speed.py --effort medium --epoch 76, then the same finite
-run-q38-reasoning-speed.py --effort medium. Activation fences newer intent and requires
-all resources quiet; it pauses, retires the exact provider, updates the profile/policy,
-then starts a truthfully captured medium provider. No product retry. Do not silently
-renew authority after 13:52:52 UTC. MTP settings are the next separate factor.
+The xhigh driver now runs durably as user unit
+forge-q38-speed-xhigh-driver-20261030-v2.service (old SSH session76200 retired;
+no model/native cancellation). Unit forge-q38-speed-medium-followup-20261030-v2.service
+waits for xhigh/completion.json and true resource quiescence, then activates medium
+with expected epoch76 and runs its finite driver. It refuses newer operator intent
+or expiry, never resumes an old product, and does not reset budgets. Do not start a
+second driver or manually activate medium while this unit is active.
+
+Automatic local read-only collection and report generation:
+B/inspection/feature014/2026-10-30-qwen/model-speed-pilot/SPEED-REPORT.md
+and speed-summary.json, with frozen inputs, metrics, results and independent audits.
+A3/collect-q38-speed-results.py copies/validates every30s, writes transfer history,
+ends after both completion receipts or14:02:52UTC (ten-minute final collection grace).
+It has no inference/admission authority. Native grants still expire13:52:52UTC.
+
+First four actual xhigh rates:61.86,65.06,63.14,63.08tok/s; gateway102.88,76.46,
+91.91,112.67s. All four expected PROPOSE_REPAIR but observed NEEDS_EVIDENCE.
+The two initial host setup refusals remain; missing-primary case0 is running longer.
+No winner/role/product qualification claim. Medium remains NOT_RUN at this checkpoint.
+MTP settings remain a separate subsequent factor; preserve Q8/context/effort controls.
 
 [Abort receipts, local inspection paths, exact native tests and executable tools](../../evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/README.md).
 Formal30/58 unchanged; no task newly complete; product/role/learning/availability claims
