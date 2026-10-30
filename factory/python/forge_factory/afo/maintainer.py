@@ -24,6 +24,8 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 
 from ..common import REPO_ROOT, sha256_bytes, sha256_file, state_dir, utc_now
@@ -222,15 +224,82 @@ def read_source(case: dict, rel: str, max_bytes: int = MAX_EXCERPT * 2) -> str:
         return stream.read(max_bytes).decode("utf-8", errors="replace")
 
 
-def write_source(case: dict, rel: str, text: str) -> str:
+@contextmanager
+def _case_lock(case: dict, *, wait: bool = False):
+    import fcntl
+
+    path = case_dir(case["proposal_id"]) / ".submission.lock"
+    fd = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "a") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | (0 if wait else fcntl.LOCK_NB))
+        except BlockingIOError as exc:
+            raise MaintainerDenied("SOURCE_EDIT_BUSY") from exc
+        yield
+
+
+def _unsealed(case: dict) -> None:
+    directory = case_dir(case["proposal_id"])
+    if (directory / "submission-intent.json").exists() or (directory / "submission.json").exists():
+        raise MaintainerDenied("CASE_ALREADY_SUBMITTED", case["proposal_id"])
+
+
+def _write_source(case: dict, rel: str, text: str) -> str:
     if len(text.encode()) > MAX_FILE_BYTES:
         raise MaintainerDenied("FILE_TOO_LARGE", rel)
     p = safe_path(Path(case["src"]), rel, protected_globs(), write=True)
     if p.exists() and not os.access(p, os.W_OK):
         raise MaintainerDenied("OS_READ_ONLY", rel)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(text)
+    raw = text.encode("utf-8")
+    mode = p.stat().st_mode & 0o777 if p.exists() else 0o644
+    fd, temporary = tempfile.mkstemp(prefix=".afo-source-", dir=p.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temporary, mode)
+        os.replace(temporary, p)
+        parent = os.open(p.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(parent)
+        finally:
+            os.close(parent)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
     return sha256_file(p)
+
+
+def write_source(case: dict, rel: str, text: str) -> str:
+    with _case_lock(case):
+        _unsealed(case)
+        return _write_source(case, rel, text)
+
+
+def edit_source(case: dict, rel: str, expected_sha256: str, old_text: str, new_text: str) -> str:
+    """One exact bounded replacement; stale/ambiguous requests never mutate source."""
+    if (not re.fullmatch(r"[0-9a-f]{64}", expected_sha256) or not old_text or old_text == new_text
+            or max(len(old_text.encode()), len(new_text.encode())) > 8192):
+        raise MaintainerDenied("SOURCE_EDIT_INVALID")
+    with _case_lock(case):
+        _unsealed(case)
+        p = safe_path(Path(case["src"]), rel, protected_globs(), write=True)
+        if not p.is_file() or p.stat().st_size > MAX_FILE_BYTES:
+            raise MaintainerDenied("SOURCE_EDIT_FILE_INVALID", rel)
+        raw = p.read_bytes()
+        if sha256_bytes(raw) != expected_sha256:
+            raise MaintainerDenied("SOURCE_EDIT_STALE", rel)
+        before = old_text.encode("utf-8")
+        if raw.count(before) != 1:
+            raise MaintainerDenied("SOURCE_EDIT_ANCHOR_NOT_UNIQUE", rel)
+        replacement = raw.replace(before, new_text.encode("utf-8"), 1)
+        try:
+            text = replacement.decode("utf-8")
+        except UnicodeError as exc:
+            raise MaintainerDenied("SOURCE_EDIT_NOT_UTF8", rel) from exc
+        return _write_source(case, rel, text)
 
 
 def clean_env(src: Path, scratch: Path) -> dict:
@@ -268,11 +337,7 @@ def run_tests(case: dict, tests: list[str], timeout: int = 540) -> dict:
 # -- submit: broker commit + veto + sealed reproducer (T047) ------------------------------------------------------
 def submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
     """Serialize one submission; recover a lost commit acknowledgement from its frozen tree/parent."""
-    import fcntl
-
-    d = case_dir(case["proposal_id"])
-    with (d / ".submission.lock").open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
+    with _case_lock(case, wait=True):
         return _submit(case, summary, reproducer, signature)
 
 

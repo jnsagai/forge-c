@@ -42,6 +42,7 @@ agents:
   - forge-maintainer-mcp.read_case
   - forge-maintainer-mcp.read_source
   - forge-maintainer-mcp.write_source
+  - forge-maintainer-mcp.edit_source
   - forge-maintainer-mcp.run_candidate_tests
   - forge-maintainer-mcp.submit_candidate
   readonly: false

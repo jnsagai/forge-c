@@ -58,6 +58,13 @@ class TestsIn(ToolInput):
     tests: list[str] = Field(min_length=1, max_length=5)
 
 
+class EditIn(ToolInput):
+    path: str = Field(min_length=3, max_length=200)
+    expected_sha256: str = Field(pattern=r"^[0-9a-f]{64}$", description="SHA256 of the exact current file bytes.")
+    old_text: str = Field(min_length=1, max_length=8192, description="Exact UTF8 text occurring once; at most 8192 bytes.")
+    new_text: str = Field(max_length=8192, description="Replacement UTF8 text, at most 8192 bytes; empty deletes.")
+
+
 class SubmitIn(ToolInput):
     summary: str = Field(min_length=10, max_length=300, description="Compact repair summary, at most 300 characters.")
     reproducer: str = Field(min_length=10, max_length=200,
@@ -100,6 +107,14 @@ def run_candidate_tests(ctx: ToolContext, a: TestsIn) -> dict:
                    refs=[f"maint-tests:{r['output_sha256'][:16]}"], summary=f"exit {r['exit_code']} ({r['isolation']})")
 
 
+def edit_source(ctx: ToolContext, a: EditIn) -> dict:
+    from ...afo import maintainer as M
+
+    sha = _call(M.edit_source, _case(), a.path, a.expected_sha256, a.old_text, a.new_text)
+    return result(ctx, "PASS", f"edited {a.path}", [f"src:{a.path}@{sha[:16]}"], [],
+                  {"sha256": sha}, "forge-afo", input_obj={"path": a.path, "sha256": sha})
+
+
 def submit_candidate(ctx: ToolContext, a: SubmitIn) -> dict:
     from ...afo import maintainer as M
 
@@ -114,6 +129,8 @@ OPERATIONS = [
     Operation("read_case", NoIn, read_case, "The frozen maintainer case: incident, baseline, allowlist."),
     Operation("read_source", PathIn, read_source, "Bounded read of a non-protected file of the candidate worktree."),
     Operation("write_source", WriteIn, write_source, "Write one allowlisted file of the candidate worktree."),
+    Operation("edit_source", EditIn, edit_source,
+              "Replace one exact unique UTF8 fragment in a hash-bound allowlisted file; preserve all other bytes."),
     Operation("run_candidate_tests", TestsIn, run_candidate_tests, "Run candidate-owned tests in the sandbox UID."),
     Operation("submit_candidate", SubmitIn, submit_candidate, "Hand the patch to the broker (commit, veto, seal)."),
 ]
