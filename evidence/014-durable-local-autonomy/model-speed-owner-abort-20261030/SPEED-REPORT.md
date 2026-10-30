@@ -47,7 +47,7 @@ only from paired timing, retained in the eight-case quality denominator.
 | Six matched diagnosis trials | xhigh | medium | Speedup |
 |---|---:|---:|---:|
 | Gateway request seconds | 948.5801 | 118.2134 | 8.024x |
-| Complete trial wall seconds | 1344.2748 | 383.0418 | 3.510x |
+| Complete trial wall seconds | 1344.2748 | 383.0418 | 3.509x |
 | Completion tokens, including reasoning | 58538 | 8053 | 7.269x fewer |
 
 Full trial wall includes orchestration/polling/verification, excludes initial model
