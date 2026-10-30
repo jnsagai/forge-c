@@ -1,6 +1,93 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — mixed medium-author/xhigh-inspector run ACTIVE, 30 October
+## Latest state — watchdog/context corrections deployed, LL RUNNING, 30 October 15:55 UTC
+
+Actual runtime **20dccfcbd9ecea639d1d0b0a80deb9a8d920af71**; profile
+local-rtx-v2-omniverse2-q38-aspice-medium-author-xhigh-inspector version2.
+Medium authors/diagnosis/maintenance, xhigh all6inspectors, Q8/f16/MTP3/262144,
+one inference, normal blocking ASPICE gates. **First xhigh inspection is pending**.
+
+New LL **afo-2cb9c4fd0989c741**, native **01M66R7P6XYM1CFHKYXT8TN5R3**,
+job **afo-product-130be492850d77ed19a1d919**, workspace
+P/state/workorders/WO-AFO-2cb9c4fd0989c741-a1/workspace, started15:53:05UTC.
+RUNNING/LIVE/HELD verified. First live author request has exact complete body hash
+914199a965af6983f9f5b8e350ecf430aa5dee9fc8001dd017e008398a52fa63,
+actual native template3398tokens, conservative complete bound3967, effective output
+cap36864. Metadata explicitly records medium and native_template_plus_serialized;
+full serialized request/template/control counts, provider hash and17.964ms overhead.
+One VALID packet/two request records at exported snapshot; no full product success.
+
+**Previous mixed-role attempt failed from Fabro watchdog**, not an inspector verdict:
+old native01M66MQ89VRBEJ538HDJ3CQFH4 stopped15:21:46UTC after1800seconds without
+command-node activity. Stdout does not reset it.14VALID author packets remain;
+xhigh inspection never occurred. Conductor prepared a transient retry; external
+maintenance PAUSED105 after native/request quiescence, quarantined that never-started
+attempt2 and blocked the old order with explicit owner source-correction reason.
+No execution lease was released by the external business-state change. Failed
+package BLOCKED55/integrityPASS, SHA9701548f9ac5142d63225ee75e7fd6bc60a03462b6a3f71f84ebf47fad9280cc,
+copied/verified/extracted privately on loop10 under full-pipeline-aspice-role-split/.
+This source fix/relaunch is external engineering, not autonomous Qwen self-healing.
+
+27f337e1 fixes600second existing checkpointed visits, profile1MiB whole-file loading
+(the partial requirements already exceeded64000chars vs inherited40000), and complete
+native context measurement at the existing gateway before reservation/generation.
+Bound=max(tokenized complete JSON, native chat template+non-message controls)+128;
+body/provider changes, native errors and context overflow refuse. Pending large
+structured packets never claim fits=true; final ordinary role/context/mission gates
+remain. Three old author bodies reconstruct with exact stored hashes; template
+counts3398/2386/3021 equal reported prompt counts, bounded3967/2934/3580. No generation
+or raw prompt/reasoning persistence by this probe; not independent inspector quality.
+
+20dccfcb additionally revalidates local cached task outputs and supports normal
+resumes of exactly matching author packets under current schema/task validators,
+retaining source-record hash/usage history; no inspector/phase PASS import. Existing
+cross-revision fresh recovery boundary remains: this first new-source attempt starts
+fresh. Subsequent compatible same-source attempts can reuse validated author tasks.
+
+Verification: exact27f local283PASS/1inherited SWE.2-fixture skip, native482PASS/0skip;
+exact20dccfcb local159PASS/1same skip, native492PASS/0skip, overlapping cohorts.
+Native4CPU/8GiB/no-swap/no-network/no-GPU/no-owner-or-SSH, source clean before/after,
+zero model calls, unchanged PAUSED105. Earlier exploratory local200PASS/1skip/1error
+is retained: systemClang12 rejects -fstack-usage. PinnedLLVM19.1.7 broader rerun passed,
+including real six-phase QM fixture/missing-trace negative. Ruff/diff and static
+spec/contracts/14design checks pass separately; no runtime qualification claim.
+
+Exact signed scope **b114da2cfa24ccf9a4e8e888386491defe9ef0879509cda9ad9285682c3fe237**;
+AUTH-014-ASPICE-CONTEXT-20261030-V2 and AUTH-014-ASPICE-CONTEXT-ROLES-20261030-V2,
+standing owner signing delegation, no new time grant. Same accepted **19:40UTC**
+expiry and RCC mission F014-NIGHT-20261027-RCC/lineage/all old charges/unknown usage.
+Owned PAUSED105→RUNNING106; services healthy. Conservative1Bproduct reservation is
+not actual generation; after new admission attempts11/requests254/charged9005396720,
+usage_unknown=true. Never reset history or silently renew the deadline.
+
+[Complete evidence, exact commands/results and limitations](../../evidence/014-durable-local-autonomy/request-context-20261030/).
+Source commits27f337e1/20dccfcb pushed to existing feature branch, PR42 remains draft.
+FormalFeature014 **30/58**, no task newly closed. Clean LL/HAL, independent role
+quality, learning benefit and24/72/168hour availability remain unproven; goal ACTIVE.
+
+**Next:** watch the same native handle and first600second continuation; no restart
+on observation timeout. Git observer branch overnight/2026-10-30-aspice-context,
+existing recorder unit rebound and journal confirms publication; observer-only,
+no intake/new scheduler. Local read-only collector
+A3/collect-aspice-rcc-context-outcomes.py (execsession25400; verify process) copies
+terminal archives under B/inspection/feature014/2026-10-30-qwen/full-pipeline-aspice-context/.
+Old collector PID416784 stopped after verifying its terminal archive.
+
+HAL **afo-6f0570510e5eeec1 NOT_SUBMITTED**. Native tool
+P/deployment/aspice-rcc-context-20261030-v2/prepare-enrol-aspice-rcc-context-hal.py
+is check-only by default; --enrol needs independent READY LL/sixPASS gates/native
+success/released resources/archive integrity/literal section coverage and the newly
+generated LL header. Removes LL resume selectors for the fresh HAL order. Actual
+check returned NOT_RUN_VERIFIED_LL_REQUIRED while LL RUNNING, zero model calls.
+
+Known future capacity review: only SWE.1 currently uses the profile author-call
+override. Other structured author phases still use registry defaults (typically35).
+Measure actual generated unit/test obligations before asserting those phases fit;
+source20 does not solve this prospectively or prove the complete product pipeline.
+Do not edit the active hash-bound checkout/profile or waive gates to bypass it.
+
+## Historical state — first mixed-role run on7fb, superseded by watchdog evidence
+
 
 **Actual Omniverse2 runtime/test source7fbefc40e0912e15aabeb70ca6b85932085b1b27**.
 Owner explicitly asked to try medium authors with xhigh inspection. Profile

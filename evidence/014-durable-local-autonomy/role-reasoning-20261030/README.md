@@ -1,4 +1,6 @@
-# Medium authors, xhigh inspectors — active Omniverse experiment
+# Medium authors, xhigh inspectors — historical first trial
+
+**Superseded:** native01M66MQ89VRBEJ538HDJ3CQFH4 failed15:21:46UTC from the1800second Fabro stall watchdog, after14VALID author packets and before any xhigh inspection. See [preserved failure and corrected runtime](../request-context-20261030/). The following snapshots describe the earlier active state.
 
 Owner explicitly requested this split. Active runtime/test source
 **7fbefc40e0912e15aabeb70ca6b85932085b1b27**, profile
