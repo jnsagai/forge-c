@@ -38,12 +38,16 @@ def test_the_variant_profile_serves_the_pinned_model_with_two_slots():
     assert prof["models"] == base["models"] and prof["structured"] == base["structured"]  # one serving factor only
     assert prof["deployment"]["ports"]["llama"] not in prof["deployment"]["forbidden_ports"]
 
-@pytest.mark.parametrize("profile_id,context", [
-    ("local-rtx-v2-omniverse2-q38-aspice-mtp", 131072),
-    ("local-rtx-v2-omniverse2-q38-afo-repair-mtp", 131072),
-    ("local-rtx-v2-omniverse2-q38-afo-max-mtp", 262144),
+@pytest.mark.parametrize("profile_id,context,draft", [
+    ("local-rtx-v2-omniverse2-q38-aspice-mtp", 131072, 3),
+    ("local-rtx-v2-omniverse2-q38-afo-repair-mtp", 131072, 3),
+    ("local-rtx-v2-omniverse2-q38-afo-max-mtp", 262144, 3),
+    ("local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp", 262144, 3),
+    ("local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp-draft2-trial", 262144, 2),
+    ("local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp-draft4-trial", 262144, 4),
+    ("local-rtx-v2-omniverse2-q38-qm-demo-repair-mtp-draft6-trial", 262144, 6),
 ])
-def test_q38_mtp_keeps_xhigh_one_slot_and_verified_q8_blob(tmp_path, profile_id, context):
+def test_q38_mtp_keeps_xhigh_one_slot_and_verified_q8_blob(tmp_path, profile_id, context, draft):
     r, old = _root(tmp_path)
     source = r / "ollama-models/manifests/registry.ollama.ai/library/qwen3.6/35b-a3b"
     target = source.parents[1] / "qwen3.8/27b-q8_0"
@@ -63,7 +67,7 @@ def test_q38_mtp_keeps_xhigh_one_slot_and_verified_q8_blob(tmp_path, profile_id,
     assert argv[argv.index("--reasoning-effort") + 1] == "xhigh"
     assert argv[argv.index("--reasoning-format") + 1] == "deepseek"
     assert argv[argv.index("--spec-type") + 1] == "draft-mtp"
-    assert argv[argv.index("--spec-draft-n-max") + 1] == "3"
+    assert argv[argv.index("--spec-draft-n-max") + 1] == str(draft)
     assert argv[argv.index("--gpu-layers") + 1] == "all"
     for wrong in (True, 0, 9, "3"):
         p["runtime"]["llama_server"]["mtp_draft"] = wrong

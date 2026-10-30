@@ -61,10 +61,8 @@ def _put(path, value):
     return {"path": str(path.resolve()), "sha256": sha256_file(path)}
 
 
-def prepare(root, *, compiler, capabilities_ref):
-    """Freeze actual cases/measurements and preregistration; native results remain NOT_RUN."""
-    profiles = comparable_profiles()
-    ref = capabilities_ref
+def validate_template_preflight(ref, model_digest):
+    """Reuse the actual installed-template proof without rendering or generating again."""
     cp = Path(ref["path"])
     if cp.is_symlink() or sha256_file(cp) != ref["sha256"]:
         raise Refused("REASONING_TEMPLATE_PREFLIGHT_CHANGED")
@@ -72,7 +70,7 @@ def prepare(root, *, compiler, capabilities_ref):
     observations = {r["effort"]: r for r in capabilities.get("rows", [])}
     if (capabilities.get("test_kind") != "NATIVE_TEMPLATE_RENDER_ONLY_NO_INFERENCE"
             or capabilities.get("native_model_alias") != MODEL
-            or capabilities.get("model_digest") != profiles["xhigh"]["models"]["allowed"][MODEL]["digest"]
+            or capabilities.get("model_digest") != model_digest
             or capabilities.get("model_requests") != 0
             or capabilities.get("request_ledger_before") != capabilities.get("request_ledger_after")
             or observations.get("xhigh", {}).get("http_status") != 200
@@ -82,6 +80,15 @@ def prepare(root, *, compiler, capabilities_ref):
             or observations.get("high", {}).get("http_status") != 500
             or observations.get("high", {}).get("unsupported_effort_error") is not True):
         raise Refused("REASONING_TEMPLATE_PREFLIGHT_INCOMPATIBLE")
+    return capabilities
+
+
+def prepare(root, *, compiler, capabilities_ref):
+    """Freeze actual cases/measurements and preregistration; native results remain NOT_RUN."""
+    profiles = comparable_profiles()
+    capabilities = validate_template_preflight(
+        capabilities_ref, profiles["xhigh"]["models"]["allowed"][MODEL]["digest"]
+    )
     root = Path(root).resolve()
     if root.exists():
         raise Refused("REASONING_COMPARISON_ROOT_ALREADY_EXISTS")
