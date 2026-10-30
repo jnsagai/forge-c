@@ -111,11 +111,11 @@ UPSTREAM_RX = re.compile(r"\bHSI\b|\bbudget|\bupstream\b|interface contract|safe
 LATER_RX = re.compile(r"no test (?:file|procedure|case|script)|test (?:file|procedure)s? (?:is|are)? ?(?:not )?"
                       r"(?:provided|present|available)|no (?:test )?evidence .{0,80}(?:measured|verified)|not "
                       r"(?:explicitly )?measured", re.I)
-# the negation must govern reset/startup within one clause ("do not specify failure handling, reset/startup ...",
-# "reset behaviour is not specified"); lrtx8: "do not specify safe states. While SWR-014 addresses startup" is not one
-NO_STARTUP_RX = re.compile(r"\b(?:no|not|without|missing|lacks?)\s+(?:[\w,]+\s+){0,4}?(?:reset|start-?up)\b|"
-                           r"\b(?:reset|start-?up)[/\w\s-]{0,30}?\b(?:is|are)\s+(?:not|missing|absent|unspecified)\b",
-                           re.I)
+# A no-write startup invariant refutes only an explicit denial of startup behaviour.
+# Register-reset bits/values/semantics are distinct obligations and must retain their findings.
+STARTUP_BEHAVIOUR = r"(?:reset(?:/start-?up)?|start-?up)\s+behaviou?r"
+NO_STARTUP_RX = re.compile(r"\b(?:no|not|without|missing|lacks?)\s+(?:[\w,]+\s+){0,4}?" + STARTUP_BEHAVIOUR + r"\b|"
+                           r"\b" + STARTUP_BEHAVIOUR + r"\s+(?:is|are)\s+(?:not|missing|absent|unspecified)\b", re.I)
 
 
 def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list[str]:
