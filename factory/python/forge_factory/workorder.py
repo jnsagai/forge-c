@@ -649,13 +649,18 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         "timeout_s": st.get("timeout_s", 3600),
         "visit_time_s": st.get("visit_time_s", 1200),
     }
+    from .lrtx.c_language_context import selected as c_language_selected
+
+    if c_language_selected({"structured": st}):
+        out["c_parameter_list_note"] = True
     from .development_execution import DEMO, DEMO_REPAIR
 
     if (manifest.get("development_execution") or {}).get("name") in (DEMO, DEMO_REPAIR):
         return {**out, "demonstration": True, "reinspect": False}
     if st.get("advisory_continue"):  # only when enabled, so records of profiles without it stay byte-identical (v1)
         out["advisory"] = True
-    return out if out["phases"] or out["inspect_phases"] or out["reinspect"] or out.get("advisory") else None
+    return out if (out["phases"] or out["inspect_phases"] or out["reinspect"] or out.get("advisory")
+                   or out.get("c_parameter_list_note")) else None
 
 
 def run(

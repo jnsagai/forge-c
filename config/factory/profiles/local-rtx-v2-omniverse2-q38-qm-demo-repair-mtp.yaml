@@ -44,6 +44,7 @@ runtime:
     batch_tokens: 1024
     microbatch_tokens: 512
 structured:
+  c_parameter_list_note: true
   coherent_scope_groups: true
   phases_by_layer:
     LL:

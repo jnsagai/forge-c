@@ -130,6 +130,19 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     if execution_policy and execution_policy.get("purpose") == "QM" and not assessment_manifest:
         raise ValueError("QM_ASSESSMENT_MANIFEST_REQUIRED")
     dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
+    if structured and structured.get("c_parameter_list_note") is True:
+        import re
+
+        from ..acp import statements
+        from ..lrtx.c_language_context import NOTE
+
+        selected = {name for name, role in nodes.items() if role.get("phase") == "SWE.1"
+                    and role["role"].endswith(("-author", "-inspector"))}
+        edits = [(start, end, re.sub(r'(\bprompt=")', lambda m: m.group(1) + _q(NOTE) + " ",
+                                     dot[start:end], count=1))
+                 for start, end, _index, name, attrs in statements(dot) if name in selected and 'prompt="' in attrs]
+        for start, end, text in reversed(edits):
+            dot = dot[:start] + text + dot[end:]
     if recovery_plan is not None:
         import re
 

@@ -208,6 +208,8 @@ def required_scope_exclusions(ws: Path, doc: dict, g: dict) -> list[str]:
 
 
 def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = None, previous: dict | None = None) -> dict:
+    from .c_language_context import for_workspace
+
     m = _manifest(ws)
     sysname = system_name(ws)
     hints = scope_hints(ws, g)
@@ -231,6 +233,8 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
     crit = [f"every requirement's subject is exactly 'the {sysname}'", "every field of the task is covered or listed "
             "in not_covered", "every effect names a field of this task that its statement names",
             "a statement that sets, clears or writes a field has an effect for it"]
+    if note := for_workspace(ws):
+        instr += " " + note
     return S.packet(phase="SWE.1", task=f"requirements:{g['id']}", role="swe1-author", instructions=instr,
                     sources=[S.source(ws, g["file"])], criteria=crit, output_schema=GROUP_SCHEMA, model=model,
                     findings=findings, previous=previous)
@@ -238,6 +242,8 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
 
 def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list[str] | None = None,
                     previous: dict | None = None) -> dict:
+    from .c_language_context import for_workspace
+
     m = _manifest(ws)
     sysname = system_name(ws)
     listing = "\n".join(f"- [{r['key']}] {r['statement']}" for r in functional)
@@ -263,6 +269,8 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
     chapter = str(profile(ws)["rm"]["chapter"])
     func = [n for n, s in secs.items() if n.startswith(chapter + ".") and "functional" in s["title"].lower()]
     srcs = [S.source(ws, secs[n]["file"], max_chars=20_000) for n in func[:1]]
+    if note := for_workspace(ws):
+        instr += " " + note
     return S.packet(phase="SWE.1", task="requirements:crosscutting", role="swe1-author", instructions=instr,
                     sources=srcs, artifacts=[art], criteria=[f"subject exactly 'the {sysname}'",
                                                              "no budget requirements"],
