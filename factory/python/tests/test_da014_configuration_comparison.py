@@ -124,6 +124,8 @@ def test_measured_report_counts_failed_attempt_costs_and_learning(data):
         assert row["total_tokens"] == 60 and row["total_wall_seconds"] == 6
         assert row["tokens_per_accepted_work_order"] == 60
         assert row["costs"]["learning_tokens"] == 10 and row["costs"]["learning_wall_seconds"] == 2
+        assert row["end_to_end_output_tokens_per_second"] == 5
+        assert row["backend_decode_tokens_per_second"] is None
 
 
 def test_missing_row_cannot_shrink_denominator_or_hide_cost(data):
@@ -133,6 +135,7 @@ def test_missing_row_cannot_shrink_denominator_or_hide_cost(data):
     assert r["status"] == "INCOMPLETE" and len(r["candidate"]["missing"]) == 1
     assert r["candidate"]["total_tokens"] is None
     assert r["candidate"]["known_subset_tokens"] == 30
+    assert r["candidate"]["end_to_end_output_tokens_per_second"] is None
 
 
 def test_same_model_agreement_and_missing_audit_is_unknown(data):

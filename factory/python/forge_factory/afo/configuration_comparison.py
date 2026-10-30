@@ -174,6 +174,12 @@ def _campaign(plan, bundle, identity, *, preregistered=False):
         "total_wall_seconds": total_wall if not missing and not unknown else None,
         "tokens_per_accepted_work_order": total_tokens / accepted if accepted and not unknown and not missing else None,
         "seconds_per_accepted_work_order": total_wall / accepted if accepted and not unknown and not missing else None,
+        # Completion speed includes prompt processing, retries and learning. It
+        # must never be labelled backend decode throughput.
+        "end_to_end_output_tokens_per_second": costs["output_tokens"] / total_wall
+        if total_wall > 0 and not missing and not unknown else None,
+        "backend_decode_tokens_per_second": None,
+        "backend_decode_timing_status": "NOT_CAPTURED_BY_THIS_REPORT; use separately correlated native timings",
         "complete": not missing and not unknown and bool(native),
     }
 
