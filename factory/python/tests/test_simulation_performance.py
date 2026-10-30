@@ -224,7 +224,8 @@ def test_no_actual_calls_refuse_even_when_symbols_are_present(measured):
 
 def test_measurement_plan_handles_a_different_driver_namespace(tmp_path):
     (tmp_path / ".forge-run/delivery").mkdir(parents=True)
-    (tmp_path / ".forge-run/manifest.json").write_text(json.dumps({F.FIELD: BUDGET}))
+    (tmp_path / ".forge-run/manifest.json").write_text(json.dumps({
+        F.FIELD: BUDGET, "delivery": {"source": "synthetic-namespace-fixture"}}))
     (tmp_path / ".forge-run/delivery/scope.json").write_text(json.dumps({"functions": [{"name": "LL_TIMER_GetState"}]}))
     plan = F.plan(tmp_path, "00000010 <forge_measure_LL_TIMER_GetState>:\n"
                  " 0: f000 f806 bl 10 <forge_measure_LL_TIMER_GetState>\n")

@@ -34,9 +34,52 @@ def selected(ws):
     return validate(manifest[FIELD]) if FIELD in manifest else None
 
 
+def _authored_scope(ws):
+    """Reuse the driver profile and C index; unsupported APIs refuse rather than disappear from coverage."""
+    from . import layer
+    from .brownfield.scope import FUNC_HEAD, _blank_directives, _skip_if0, index, strip_comments
+
+    ws = Path(ws)
+    kind = layer.layer_of(ws)
+    if kind not in ("LL", "HAL"):
+        raise ValueError("SIMULATION_PERFORMANCE_AUTHORED_SCOPE_LAYER_UNSUPPORTED")
+    header = layer.api_header(kind, ws)
+    text = (ws / header).read_text()
+    prefix = layer.api_prefix(kind, ws)
+    definitions = [d for d in index(text, header) if d.name.startswith(prefix)]
+    code = _blank_directives(_skip_if0(strip_comments(text)))
+    declaration_rx = re.compile(FUNC_HEAD.pattern.removesuffix(r"\{") + ";")
+    declarations = [m for m in declaration_rx.finditer(code) if m["name"].startswith(prefix)]
+    candidates = set(re.findall(r"\b(" + re.escape(prefix) + r"\w+)\s*\(", code))
+    if kind == "LL":
+        names = [d.name for d in definitions if d.kind == "static_inline"]
+        valid = not declarations and all(d.kind == "static_inline" for d in definitions)
+    else:
+        names = [m["name"] for m in declarations]
+        source = layer.hal_c(ws)
+        impl = _blank_directives(_skip_if0(strip_comments((ws / source).read_text())))
+        implemented = [m["name"] for m in FUNC_HEAD.finditer(impl)
+                       if not re.search(r"\bstatic\b", m["quals"])]
+        valid = (not definitions and all(not re.search(r"\bstatic\b", m["quals"]) for m in declarations)
+                 and all(implemented.count(name) == 1 for name in names))
+    if not valid or not names or len(names) != len(set(names)) or set(names) != candidates:
+        raise ValueError("SIMULATION_PERFORMANCE_AUTHORED_SCOPE_UNSUPPORTED_OR_INCOMPLETE")
+    return kind, names, text
+
+
+def _delivered(ws):
+    from .brownfield import is_brownfield, manifest_of
+
+    return is_brownfield(manifest_of(Path(ws)))
+
+
 def symbols(ws):
-    scope = json.loads((Path(ws) / ".forge-run/delivery/scope.json").read_text())
-    names = ["forge_measure_" + f["name"] for f in scope.get("functions", [])]
+    if _delivered(ws):
+        scope = json.loads((Path(ws) / ".forge-run/delivery/scope.json").read_text())
+        names = ["forge_measure_" + f["name"] for f in scope.get("functions", [])]
+    else:
+        kind, public, _ = _authored_scope(ws)
+        names = [("forge_measure_" if kind == "LL" else "") + name for name in public]
     if not names or len(names) != len(set(names)) or any(not re.fullmatch(r"[A-Za-z_]\w{0,150}", n) for n in names):
         raise ValueError("SIMULATION_PERFORMANCE_SCOPE_UNMEASURED")
     return names
@@ -56,17 +99,29 @@ def inputs(ws):
 def prepare(ws, output):
     from .brownfield.cmsis import delivered_unit
 
-    unit = delivered_unit(Path(ws), Path(output))
+    ws, output = Path(ws), Path(output)
+    if _delivered(ws):
+        unit = delivered_unit(ws, output)
+    else:
+        from . import layer
+
+        kind, _, text = _authored_scope(ws)
+        content = (layer.ll_measure_unit(text, ws) if kind == "LL" else
+                   f'#include "{Path(layer.hal_h(ws)).name}"\n')
+        if not content:
+            raise ValueError("SIMULATION_PERFORMANCE_WRAPPERS_UNAVAILABLE")
+        unit = output / "forge_authored_performance.c"
+        unit.write_text(content)
     if unit is None:
         raise ValueError("SIMULATION_PERFORMANCE_WRAPPERS_UNAVAILABLE")
     text = unit.read_text()
     declarations = [ln for ln in text.splitlines() if ln.startswith("#include") or
                     re.fullmatch(r"[^{}]+forge_measure_\w+\([^{}]*\);", ln)]
-    for name in symbols(ws):
+    for name in (n for n in symbols(ws) if n.startswith("forge_measure_")):
         if not any(re.search(r"\b" + re.escape(name) + r"\(", line) for line in declarations):
             raise ValueError("SIMULATION_PERFORMANCE_WRAPPER_MISSING:" + name)
-    header = Path(output) / "forge_performance_calls.h"
-    header.write_text("/* Generated measurement declarations; frozen delivery remains unchanged. */\n" +
+    header = output / "forge_performance_calls.h"
+    header.write_text("/* Generated measurement declarations; driver sources remain unchanged. */\n" +
                       "\n".join(declarations) + "\n")
     return unit
 
