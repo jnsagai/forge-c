@@ -124,6 +124,7 @@ class Proxy:
                "CODEX_PATH": str(data_root() / codex_home.CODEX),
                "CODEX_CONFIG": json.dumps({"features": {f: False for f in codex_home.DISABLED_FEATURES},
                                         "model_verbosity": codex_home.VERBOSITY,
+                                        "developer_instructions": codex_home.REPLY_INSTRUCTIONS,
                                            "mcp_servers": gate_servers(binding, node, self.ws)})}
         argv = agent_argv or [str(data_root() / CODEX_ACP)]
         self.agent = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
