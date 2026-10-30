@@ -43,4 +43,3 @@ finally:
  result={'exit_code':code,'source_revision':'a32d87a311cc4a46cd12b6f00d1aea8a210c305c','owned_verifier_quiescent':scope_quiet,'operator_mode':current['mode'],'operator_epoch':current['epoch'],'resumed_only_own_pause':resumed,'model_requests':0,'deployment':False}
  immutable_json(N/'result.json',result);print(json.dumps(result))
 raise SystemExit(code)
-

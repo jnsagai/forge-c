@@ -49,3 +49,7 @@ to RUNNING100. Model requests0, source deployment false. Private XDG directory p
 read-only actual Ollama executable let the original systemd verification test pass
 without exposing GPU/model weights or host credentials. Original305/1 run remains.
 Spec/contracts and14design validations PASS separately, not runtime qualification.
+
+The published window review copy normalizes its final blank line; the executed A3/remote
+window SHA256 is `4c461222ac4232da7305201af1e3a1f5b436e5d3b16963d766b8849673205355`.
+The native worker is byte-identical to its recorded executed hash.
