@@ -4,8 +4,8 @@
 
 Read [delivery-first evidence](../../evidence/014-durable-local-autonomy/delivery-first-20261030/README.md).
 Incorporated eeed84f5 DELIVERY-FIRST-E2E.md without discarding5222996d or older
-recovery work. Latest tested local source **433254aabb1a5c421dcc773d8bad319e6586ef31**;
-50focused cases PASS, no skip/failure/error. It includes prospective header-only
+recovery work. Latest tested local source **b1e092d03026011a9f0c0b848d7851455d9495e9**;
+51focused cases PASS, no skip/failure/error. It includes prospective header-only
 build discovery. Actual remote source remains **beb48b49d4ed7588798b964bc9da99ec47ff7251**,
 clean, profile local-rtx-v2-omniverse2-q38-delivery-first v2.
 
@@ -18,11 +18,15 @@ At20:35:55 the first candidate passed Clang, Cortex-M55 compilation and630frozen
 independent host checks, correction0. This is a limited functional result,
 **not** full nine-requirement qualification, ASPICE acceptance, HAL or AFO integration.
 
-The author node still failed on HTTP429/context growth; its valid C survived and
-the real graph advanced to SWE.1. At saved20:40checkpoint RUNNING; revalidate.
+The author node still failed on HTTP429/context growth; its valid C survived.
+At20:49:50 RUNNING/SWE.2; SWE.1 author gate completed but its inspector hit the
+same64K context bound (42404/47917input bounds plus24576output). Revalidate.
 A native shell denial and missing header-only build discovery are preserved.
 Do not hot-patch this running source or supply an undisclosed reference repair.
 433254aa fixes normal MCP build discovery for a future source-pinned retry.
+b1e092d0/profile3 restores262144context prospectively and makes permanent
+standalone context errors400with a cause rather than429/rate-limit. Temporary
+measurement transport failures remain503. The active run staysbeb48b49/profile2.
 Future work: actual simulation/performance/startup/resource evidence, six-phase
 terminal product, final-code re-verification, then fresh repeats and LL/HAL.
 Original broad RCC obligations remain open; this is a separately scoped new job.
@@ -46,7 +50,8 @@ Production Conductor remains PAUSED111. Do not resume it against the current
 standalone GPU job. Physical model remains Q8/f16/draft-MTP/one262144slot; new
 experimental Fabro context65536, all-role medium reasoning. Ordinary role/file/MCP
 permissions remain. No production authorization/grant was silently renewed.
-The prior dashboard8786 still follows the old N trial until deliberately repointed.
+Dashboard http://100.118.28.92:8786 now follows R and the current native handle;
+/api/v1/runs returned200with that run. Existing access policy is unchanged.
 New read-only collector A3/collect-delivery-first-outcomes-20261030-v1.py,
 session62942, copies terminal outcomes to
 B/inspection/feature014/2026-10-30-qwen/full-pipeline-delivery-first/.

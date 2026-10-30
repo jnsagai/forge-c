@@ -119,6 +119,29 @@ Cohorts overlap; counts must not be added.
 
 ## Remaining execution and qualification
 
+### Later checkpoint —20:49UTC; prospective context fix
+
+The same native job reached SWE.2 at20:45:19. SWE.1 author/export gate completed;
+its inspector failed on the experimental64K bound, not on a recorded semantic
+inspection verdict. Measurements show42404+24576 and47917+24576exceeding65536.
+These are complete request bounds, not a GPU memory shortage. Active source/profile
+remainbeb48b49/v2 and were not hot-patched.
+
+Latest tested source **b1e092d03026011a9f0c0b848d7851455d9495e9** restores the
+already-loaded262144physical capacity for a **future** profile3 trial. It keeps
+the24576output reservation and every input. Permanent standalone context/template
+errors now return400with their cause instead of429/rate-limit; transport
+unavailability remains503. Two before-change cases fail with429; the exact
+corrected cohort passes **51/51**, zero skip/failure/error. This prospective
+framework/configuration correction is not a qualified new live result.
+
+The read-only dashboard now follows R and the CRC native handle at
+http://100.118.28.92:8786. The exact old dashboard PID was stopped; no workflow,
+model or inference service was signalled. Its first verification used the wrong
+probe path; /api/v1/runs returned200with the current run without another service
+restart. The [proof](dashboard-proof.json) records that correction. Local archive
+collection remains active. See live-snapshot-latest.json for the later observation.
+
 1. Observe the same native handle until terminal; retain every failed node and
    actual phase artifact. The first valid C candidate alone does not finish G1.
 2. Independently verify simulation/performance, startup/no-polling and resource
