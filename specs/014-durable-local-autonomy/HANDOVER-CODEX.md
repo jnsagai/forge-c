@@ -1,6 +1,40 @@
 # Feature 014 handover to Codex — 2026-10-27
 
-## Latest state — 03:59 UTC: Qwen candidate passes all independent CRE gates
+## Latest state — 04:12 UTC: qualified Qwen repair deployed; full LL actually running
+
+Runtime **e21aa74411d01458bab45fee8af6d59f710fad03, RUNNING epoch58**.
+Exact Qwen candidate **bc931bd9274b0e1361bcc3d2b5e0ad23110d8db1** cherry-picked
+without engineering edits, model authorship retained. Combined qualification:
+**164 local PASS; 125 distinct native PASS** (initial124 PASS/one missing-private-input
+setup error; the same unchanged extra test PASS after supplying its read-only fixture).
+Initial error/fixture attempts retained. Prior full CRE seven gates PASS and independent
+original frozen-context/usage eight tests PASS. Static spec/design checks pass separately.
+
+Full LL **afo-6bde501adad6a2bf**, job **afo-product-4855f18721196dcca4107ca6**,
+native **01M65G3CG47YKS11GRQEATNB10**. At04:12:09 UTC RUNNING/LIVE/HELD,
+one actual request SENT (14553 input +36864 output reserved); no completed packet yet.
+Workspace `/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-6bde501adad6a2bf-a1/workspace`.
+Same RCC mission/lineage/counters/finite caps and **08:11:56 UTC** expiry. Single
+protocol CORRECTION already spent; no r3, rework allowance or mission reset.
+HAL **NOT_SUBMITTED**, depends on verified new LL; never reuse failed original LL as accepted.
+
+Signed scope **df87551e…7a7065** / deployment `aspice-rcc-context-fixed-20261030-v1`.
+Primary/source and 16-configuration-per-role grants include actual temp0/seedNone.
+Initial intake refused old-grant policy hash; corrected intake uses the existing
+current-admission-authority receipt mechanism without rewriting historical mission authority.
+Provider unchanged: Qwen Q8_0/f16/MTP3/xhigh,262144ctx,one inference. No parallel GPU test.
+Host observer rebound; GitHub confirms sourcee21/epoch58, all four existing orders.
+Progress branch `overnight/2026-10-30-local-qwen-aspice`. Its expiry leaves Conductor running.
+[Exact qualification, activation and live evidence](../../evidence/014-durable-local-autonomy/rcc-qwen-context-integration-20261030/README.md).
+
+Next: observe this native full LL through independent inspections; preserve any failure,
+let bounded existing AFO diagnose/rework within unchanged authority, and admit HAL only
+from verified LL. Export outcomes to local loop10 inspection. Do not mark full pipeline
+or unattended self-healing successful from transport/submission/CRE eligibility alone.
+Formal **30/58 unchanged**, no newly completed task IDs. IE-T008/M1 unaccepted; M2–M5,
+learning benefit, product benchmark and 24/72/168-hour availability unproven/unrun.
+
+## Historical checkpoint — 03:59 UTC: Qwen candidate passes independent CRE gates
 
 Global implementation **5a288206f8b64c2435375f0e4b943f295ea8e14d**:
 **107 local / 96 isolated Omniverse tests PASS**. Runtime remains **ab46545**, RUNNING epoch56.
