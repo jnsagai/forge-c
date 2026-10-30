@@ -1,91 +1,36 @@
 {
-  "captured_utc": "2026-10-30T07:12:02.883367Z",
-  "deadline_epoch": 1793368372,
-  "source_revision": "3bc1f10e41c24afb3db30f4b243e35df063cb721",
+  "captured_utc": "2026-10-30T13:38:02.020847Z",
+  "deadline_epoch": 1793389200.0,
+  "source_revision": "a32d87a311cc4a46cd12b6f00d1aea8a210c305c",
   "intent": {
     "mode": "RUNNING",
-    "epoch": 70
+    "epoch": 102
   },
   "orders": [
     {
-      "order_id": "afo-83276a5a34a47931",
-      "state": "BLOCKED",
+      "order_id": "afo-c7af7908207bca71",
+      "state": "RUNNING",
       "attempts": [
         {
-          "attempt_id": "afo-83276a5a34a47931-a1",
+          "attempt_id": "afo-c7af7908207bca71-a1",
           "seq": 1,
-          "state": "SUCCEEDED"
-        }
-      ]
-    },
-    {
-      "order_id": "afo-7ab1af2aa4e1d7b4",
-      "state": "BLOCKED",
-      "attempts": [
-        {
-          "attempt_id": "afo-7ab1af2aa4e1d7b4-a1",
-          "seq": 1,
-          "state": "CANCELLED"
-        }
-      ]
-    },
-    {
-      "order_id": "afo-7e653513a54375a5",
-      "state": "BLOCKED",
-      "attempts": [
-        {
-          "attempt_id": "afo-7e653513a54375a5-a1",
-          "seq": 1,
-          "state": "CANCELLED"
-        }
-      ]
-    },
-    {
-      "order_id": "afo-6bde501adad6a2bf",
-      "state": "BLOCKED",
-      "attempts": [
-        {
-          "attempt_id": "afo-6bde501adad6a2bf-a1",
-          "seq": 1,
-          "state": "SUCCEEDED"
-        }
-      ]
-    },
-    {
-      "order_id": "afo-e6593e4a6b4ec1b8",
-      "state": "BLOCKED",
-      "attempts": [
-        {
-          "attempt_id": "afo-e6593e4a6b4ec1b8-a1",
-          "seq": 1,
-          "state": "SUCCEEDED"
-        }
-      ]
-    },
-    {
-      "order_id": "afo-4de4d17d9b115f4e",
-      "state": "BLOCKED",
-      "attempts": [
-        {
-          "attempt_id": "afo-4de4d17d9b115f4e-a1",
-          "seq": 1,
-          "state": "FAILED"
+          "state": "RUNNING"
         }
       ]
     }
   ],
   "claim": "EXPERIMENTAL_WORK_ONLY;NATIVE_GATES_AND_OFFLINE_REVIEW_REMAIN_REQUIRED",
-  "requests": 631,
+  "requests": 764,
   "native_ownership": [
     {
       "resource": "inference",
-      "holder": null,
-      "epoch": 62
+      "holder": "afo-product-df4f84f791f0e462eebe6627",
+      "epoch": 225
     },
     {
       "resource": "generation",
-      "holder": null,
-      "epoch": 1262
+      "holder": "structured-request-9febe007750c4607a14372c6667aef3a",
+      "epoch": 1527
     }
   ]
 }
