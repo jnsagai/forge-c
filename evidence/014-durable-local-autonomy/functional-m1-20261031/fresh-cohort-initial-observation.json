@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-31T03:21:09.100180Z",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "model_calls": 0,
+  "nonquiescent_requests": [
+    {
+      "job_id": "afo-product-f6dbe535b2814ef1fdd350f2",
+      "n": 1,
+      "state": "SENT"
+    }
+  ],
+  "orders": [
+    {
+      "attempts": [
+        {
+          "attempt_id": "afo-7f71565db57f0a76-a1",
+          "candidate_initially_absent": true,
+          "candidate_sha256": null,
+          "latest_stage": {
+            "event": "stage.started",
+            "node_id": "df_author_0",
+            "ts": "2026-10-31T03:20:52.625369915Z"
+          },
+          "native_id": "01M67ZJWDYS7H33828MPTK6E6D",
+          "native_status": "RUNNING",
+          "verifiers": [],
+          "workspace": "WO-AFO-7f71565db57f0a76-a1"
+        }
+      ],
+      "order_id": "afo-7f71565db57f0a76",
+      "state": "RUNNING",
+      "terminal_reason": null
+    },
+    {
+      "attempts": [],
+      "order_id": "afo-f83452175591716f",
+      "state": "QUEUED",
+      "terminal_reason": null
+    },
+    {
+      "attempts": [],
+      "order_id": "afo-48b5f7eb60495e69",
+      "state": "QUEUED",
+      "terminal_reason": null
+    }
+  ],
+  "read_only": true,
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60"
+}

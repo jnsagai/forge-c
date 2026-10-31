@@ -1,0 +1,19 @@
+{
+  "archive": {
+    "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/archives/WO-AFO-ee4282b25001a15d-a1/forge-c-WO-AFO-ee4282b25001a15d-a1-review.zip",
+    "sha256": "4a20153d88fed3dea1c9499ce071e4230c1a3f54a484833d19f691c4a1703a79"
+  },
+  "auditor_revision": "30371da548bad2790a9f3c21dafc8964047ce06d",
+  "candidate_reuse": false,
+  "cohort_sha256": "a14bfe74a0365a47360a630e09cdaec0338b10385ecb8be7a1b4d3389d18e759",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "m1_audit_ref": {
+    "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/repeatability-20261031-v4b/native05-external-m1-audit.json",
+    "sha256": "9ffc4f5651d779cf831f22f436fb454e48c17c7c681f261f1b39e9621139af89"
+  },
+  "mission_id": "mission-feature014-delivery-first-20261030",
+  "native_id": "01M67R1HNE9TKPWCYJ2SVKEPJS",
+  "release_policy": "UNCHANGED_STRICT",
+  "schema": "forge-c/delivery-first-cohort-admission-binding/1",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60"
+}

@@ -1,5 +1,53 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October 03:22 UTC: scoped M1 PASS
+
+**DF-M1 FUNCTIONAL_MILESTONE_PASS** for CRC IDR two functions only. External
+nine-condition auditSHA9ffc4f5651d779cf831f22f436fb454e48c17c7c681f261f1b39e9621139af89.
+Producer0e native01M67R1HNE9TKPWCYJ2SVKEPJS finished03:15:42UTC:
+nativeSUCCEEDED, initial/final independentPASS, frozen9aa11db1... header,
+archiveSHA4a20153d88fed3dea1c9499ce071e4230c1a3f54a484833d19f691c4a1703a79,
+integrityPASS and local transferSHAmatch. Contained final receipt equals live
+bytes and the report entry;14frozen inputs and all phase files match archived
+hashes. External terminal auditor303 confirms write+6edit native chain;
+producer's internalUNVERIFIED_EDIT_CHAIN/NOT_PROVEN remains unchanged.
+Zero observed post-launch job interventions/steering. All six author/inspector
+attempts, phase files3/8/9/3/3/3. SWE.1/6PASS; SWE.2–5REWORK. Strict release
+BLOCKED25. Actual297requests,339976output tokens,7597.950seconds wall time;
+reasoning breakdownUNKNOWN. DF-T001–009 complete for this scoped amendment;
+original DA ledger remains30/58, full LL/HAL/clean product/24/7 unproven.
+
+Read [M1 audit, exact commands, raw receipt bindings and cohort intake](../../evidence/014-durable-local-autonomy/functional-m1-20261031/README.md).
+Existing collector copied the private package to loop10:
+B/inspection/feature014/2026-10-30-qwen/overnight-afo-delivery/native-01M67R1HNE9TKPWCYJ2SVKEPJS/.
+Do not publish full manuals/private archives or rewrite old results.
+
+DF-T010 now RUNNING:06 orderafo-7f71565db57f0a76, native
+**01M67ZJWDYS7H33828MPTK6E6D**, jobafo-product-f6dbe535b2814ef1fdd350f2,
+WO-AFO-7f71565db57f0a76-a1. Initial candidate absent, df_author_0.
+07afo-f83452175591716f and08afo-48b5f7eb60495e69 are QUEUED.
+AdmissionbindingSHA8fa0c1667d6e84555f57981e069c5bf7c8128fa74153479ac4ffdd4b3d587bc4
+binds cohorta14bfe74... to qualifying M1audit9ffc.../archive4a20153d... .
+All three retain source0e/profile3/auditor303, same frozen criteria/mission,
+one inference and original07:57:59UTC deadline. No deployment/renewal/reset.
+Mission at intake:4historical attempts,875requests,1493tools,265814016charged/
+reserved tokens; unknown historical usage persists. Queuing is not execution.
+
+First cohort helper called role binding before S.submit and was refused before
+any new order/native/charge. Version2 follows the existing intake sequence;
+all3orders were then created. Both helpers and failure are preserved, no factory
+defect or model failure invented. Later outcomes, cancellations and unfinished
+members must all remain in denominator3. Do not replace unfavorable trials.
+
+Next: monitor/copy each native terminal, rebind the read-only303 source audit
+to each actual workspace and archived candidate, retain separate per-case metrics,
+interventions/gaps/source/model/inputs, then report actual cohort yield. Do not
+activate new inactive prompt fixd0090099 mid-cohort. Full HAL/provisional work
+remains deferred until required repeatability evidence. Never extend expiry;
+host clock trails tool UTC about49seconds, stop with a margin and verify physical
+quiescence/accounting. Current guard2564269, Conductor2567516, holder2564275,
+operationsRUNNING6, API32404/dashboard8786; productionPAUSED111 untouched.
+
 ## Overnight checkpoint — 31 October 02:50 UTC
 
 Qwen passed33authored simulated target checks after two images initially failed

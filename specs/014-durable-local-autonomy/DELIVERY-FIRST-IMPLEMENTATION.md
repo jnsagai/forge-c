@@ -1,5 +1,23 @@
 # Delivery-First implementation and evidence ledger
 
+03:22UTC: **scoped DF-M1 FUNCTIONAL_MILESTONE_PASS**, external nine-condition
+auditSHA9ffc4f56... . Native01M67R1HNE9TKPWCYJ2SVKEPJS/source0e342eef finished
+03:15:42UTC, initial/final independentPASS, same9aa11db1... candidate,
+archive4a20153d.../integrityPASS. The final receipt is INSIDE the sealed archive,
+byte-equal to its live original and included in the report. Terminal external
+auditor30371da5 confirms the native write/edit chain; internalUNVERIFIED_EDIT_CHAIN/
+NOT_PROVEN remains untouched. All six author/inspector attempts and phase files
+3/8/9/3/3/3 are preserved. SWE.1/6 gatesPASS; SWE.2–5REWORK. Strict releaseBLOCKED25.
+Actual297request-ledger entries,339976output tokens,7597.950seconds wall time;
+reasoning breakdownUNKNOWN, zero observed post-launch job interventions.
+Read [complete scoped audit, exact commands and cohort admission](../../evidence/014-durable-local-autonomy/functional-m1-20261031/README.md).
+
+DF-T001–009 now have the required scoped evidence. This does not qualify the
+full LL/HAL owner goal or close any original DA qualification task (still30/58).
+DF-T010 is RUNNING: fresh06 native01M67ZJWDYS7H33828MPTK6E6D,07/08queued;
+all3 remain in the denominator. Same0e/profile3/auditor303/input/oracle hashes,
+mission and07:57:59UTC expiry. No grant renewal or source deployment.
+
 02:50UTC: [target API prompt correction and actual Qwen test repair](../../evidence/014-durable-local-autonomy/target-api-prompt-20261031/README.md).
 Inactive source d0090099 fixes an observed target-author instruction to use
 unprovided array/offset macros (failed-before regression; exact95framework tests
@@ -81,15 +99,15 @@ separate. No budget or oracle was relaxed to make this control pass.
 | Task | Evidence-backed status |
 |---|---|
 | DF-T001 | Inventory and implementation map complete; r4 resource failure triaged. Active source, profile and provider observations are timestamped in evidence. |
-| DF-T002 | Separate CRC scope and immutable host/target fixtures implemented; positive and behavioral/cost negative controls executed. Target simulation oracle is preregistered for **future** runs; first-candidate simulation was explicitly external/post-hoc. |
+| DF-T002 | COMPLETE for the declared slice. Separate CRC scope and immutable host/target fixtures; positive and behavioral/cost negative controls executed. Current05 initial/final simulation uses the preregistered oracle and14frozen inputs. Earliest standalone candidate simulation remains explicitly external/post-hoc. |
 | DF-T003 | FIXTURE_ONLY native `01M6785DZFM30CS67KYZ9JNVWR`: all six author/inspector attempts, terminal SUCCEEDED; product BLOCKED51, integrity PASS. Zero Qwen generations. |
 | DF-T004 | Opt-in manifest/profile implemented; strict/demonstration/policy regressions exercised. No global behavior switch or production activation. |
-| DF-T005 | Real Qwen C authorship confirmed for prior sourcea34 native01M67ETTPXS1Q73QPMQ98DNJX0/header855f53a6... . New source0e342eef retry wrote/edited header9aa11db1...; the current exact-write matcher conservatively returnsUNVERIFIED_EDIT_CHAIN pending a complete native edit audit. |
-| DF-T006 | Prior AFO sourcea34 passed initial and final independent full-scope checks; the final receipt was outside its prematurely sealed archive. Retry01M67R1HNE9TKPWCYJ2SVKEPJS/source0e342eef passed initial host/target/630host/351target/simulation/resource checks at01:15:07UTC, correction round0. New final-byte recheck remains pending. |
-| DF-T007 | Prior AFO native completed all six author/inspector attempts, with phase files3/8/12/3/3/3 and SWE.5 gatePASS. Earlier standalone first-job files6/3/3/3/0/6 remain historical; its missing SWE.5 is not repaired retrospectively. |
-| DF-T008 | Implemented/tested; actual AFO archive BLOCKED30/integrityPASS was sealed before final recheck and omits that receipt. Source0e342eef defers early model sealing;68exact framework casesPASS. New native terminal packaging remains pending; old archives stay unchanged. |
-| DF-T009 | Prior terminal auditNOT_PROVEN because final verifier evidence was absent from its sealed archive. Active same-mission retry01M67R1HNE9TKPWCYJ2SVKEPJS has initial independentPASS but conservatively unverified write/edit provenance. DF-M1 remainsNOT_PROVEN pending terminal package, final-receipt inclusion, integrity and external provenance/intervention audit. |
-| DF-T010 | NOT_RUN; blocked on DF-M1, not satisfied by fixture calls, copied candidates or resumed jobs. |
+| DF-T005 | COMPLETE for native05/header9aa11db1... . Pinned external auditor30371da5 reconstructs the accepted native source write plus six edits and matches the final archived bytes. Local model digest/network/profile are bound. Producer0e's conservative internalUNVERIFIED_EDIT_CHAIN is unchanged. |
+| DF-T006 | COMPLETE for this scope. Native05 initial and final host/target compilation,630host/351target assertions, independent simulation cost and object/frame resourcesPASS, correction round0; the final receipt is sealed. Ordinary first-author edits are disclosed. Prior03's omitted sealed receipt remains historical. |
+| DF-T007 | COMPLETE truthful traversal: native05 has all six author/inspector attempts and archived substantive files3/8/9/3/3/3. SWE.1/6PASS; SWE.2–5REWORK. Unit mixed-coverage rewrite and target harness adaptation remain recorded. Earlier missing/failed stages are not repaired retrospectively. |
+| DF-T008 | COMPLETE for scoped M1: archive4a20153d... integrityPASS contains the byte-exact final verifier receipt/report entry, candidate, pinned configuration and25strict release gaps. Source0e defers early sealing; old archive2cbfa28a... remains unchanged andNOT_PROVEN. |
+| DF-T009 | COMPLETE scoped DF-M1: external nine-condition audit9ffc4f56... binds actual native05, archive, local Qwen origin, terminal source provenance, independent controls, metrics and observed interventions. Strict releaseBLOCKED25. No full LL/HAL, production or availability claim. |
+| DF-T010 | RUNNING, not complete: three preregistered fresh06/07/08 orders admitted after M1 audit via existing AFO, binding8fa0c166...;06running,07/08queued. All outcomes retain denominator3 and fixed07:57:59UTC expiry. |
 | DF-T011 | DEFERRED by specification until DF-T010; no new provisional dependency implementation. |
 | DF-T012 | DEFERRED by specification until DF-T010; strict release remains unchanged meanwhile. |
 
@@ -109,7 +127,8 @@ separate. No budget or oracle was relaxed to make this control pass.
 - DF-AT-010/011: existing execution/request lease and operator-intent paths
   remain binding. A new live Delivery-First contention/stop campaign is NOT_RUN;
   standalone native traversal does not qualify these authority boundaries.
-- DF-AT-012/014: NOT_RUN and intentionally deferred. No repeatability claim.
+- DF-AT-012: fresh three-run cohort RUNNING, not qualified; DF-AT-014 remains
+  intentionally deferred. No repeatability or LL/HAL dependency claim.
 - DF-AT-016: fixture-only native packages are visibly BLOCKED; deterministic
   functional PASS never establishes Qwen authorship or DF-M1. Metrics retain
   UNKNOWN for unverified local-model cohorts/interventions/request counts.

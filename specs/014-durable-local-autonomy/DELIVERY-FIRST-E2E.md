@@ -2,7 +2,7 @@
 
 **Implementation specification + execution plan (Codex handoff)**  
 **Date:** 2026-10-30  
-**Status:** DEVELOPMENT_IMPLEMENTED / AFO_NATIVE_TRIAL_RUNNING / DF-M1_NOT_PROVEN
+**Status:** DEVELOPMENT_IMPLEMENTED / SCOPED_DF-M1_FUNCTIONAL_PASS / FRESH_COHORT_RUNNING
 **Repository:** [`jnsagai/forge-c`](https://github.com/jnsagai/forge-c)  
 **Target integration line:** `feat/014-durable-local-autonomy` (stacked Feature 014 / PR #42; verify current HEAD and PR state before coding)  
 **Proposed repository destination:** `specs/014-durable-local-autonomy/DELIVERY-FIRST-E2E.md`  
@@ -366,15 +366,20 @@ The paths `inspection/gate.py`, `afo/conductor.py`, and `afo/scheduler.py` were 
 
 ### DF-M1 is DONE only if all conditions hold
 
-- [ ] A new, authorized, source-pinned work order declares exactly the intended CRC IDR function scope, dependencies and independent oracle.
-- [ ] Genuine local Qwen inference produced the implementation files; source provenance rules out frozen/vendor code substitution as the delivered candidate.
-- [ ] The generated C compiles with the declared toolchain and passes all preregistered applicable independent behavioral checks for the **entire** declared scope.
-- [ ] Actual SWE.1–SWE.6 execution attempts and their outcomes are recorded; substantive available artifacts are packaged, and missing/failed ones are explicitly identified.
-- [ ] No operator/assistant code or manual intervention was needed **between authorized launch and terminal package**. Pre-run environment setup and external engineering fixes must be disclosed and are not called autonomous healing.
-- [ ] The terminal package is integrity-checked, source/model/config pinned, and contains complete gap/verifier evidence.
-- [ ] A separate process/release verdict is preserved; unless the strict qualification actually passed, release remains **BLOCKED** / **DEMONSTRATION_ONLY**.
-- [ ] Independent negative controls establish that compilation failure, behavioral mismatch, absent evidence and tampered provenance are **not** accepted as functional PASS.
-- [ ] The report provides exact run IDs, relevant SHAs, executed commands, timestamps, and measured requests/time; unknown data is labeled unknown.
+Observed 31October03:20UTC for native01M67R1HNE9TKPWCYJ2SVKEPJS only:
+[external nine-condition audit and limits](../../evidence/014-durable-local-autonomy/functional-m1-20261031/README.md).
+Original producer report remains conservative; the separately bound external
+audit establishes this scoped milestone. Earlier failed runs stay unchanged.
+
+- [x] A new, authorized, source-pinned work order declares exactly the intended CRC IDR function scope, dependencies and independent oracle.
+- [x] Genuine local Qwen inference produced the implementation files; source provenance rules out frozen/vendor code substitution as the delivered candidate.
+- [x] The generated C compiles with the declared toolchain and passes all preregistered applicable independent behavioral checks for the **entire** declared scope.
+- [x] Actual SWE.1–SWE.6 execution attempts and their outcomes are recorded; substantive available artifacts are packaged, and missing/failed ones are explicitly identified.
+- [x] No operator/assistant code or manual intervention was needed **between authorized launch and terminal package**. Pre-run environment setup and external engineering fixes must be disclosed and are not called autonomous healing.
+- [x] The terminal package is integrity-checked, source/model/config pinned, and contains complete gap/verifier evidence.
+- [x] A separate process/release verdict is preserved; unless the strict qualification actually passed, release remains **BLOCKED** / **DEMONSTRATION_ONLY**.
+- [x] Independent negative controls establish that compilation failure, behavioral mismatch, absent evidence and tampered provenance are **not** accepted as functional PASS.
+- [x] The report provides exact run IDs, relevant SHAs, executed commands, timestamps, and measured requests/time; unknown data is labeled unknown.
 
 ### Standard completion report (one page, generated from evidence)
 

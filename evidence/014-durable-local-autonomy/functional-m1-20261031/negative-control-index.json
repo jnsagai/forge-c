@@ -1,0 +1,183 @@
+{
+  "basis": "INDEX_OF_PREVIOUS_ACTUAL_JUNIT_EXECUTION; NO_NEW_TEST_EXECUTION",
+  "functional_source_identity_ref": "prepared-cohort/functional-verifier-identity.json",
+  "groups": {
+    "absent_or_changed_evidence": [
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_missing_candidate_and_tampered_authority_never_pass",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_changed_independent_evidence_cannot_reuse_a_pass",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_package_order",
+        "name": "test_missing_or_invalid_final_receipt_never_permits_model_sealing[not json]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_package_order",
+        "name": "test_missing_or_invalid_final_receipt_never_permits_model_sealing[[]]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_package_order",
+        "name": "test_missing_or_invalid_final_receipt_never_permits_model_sealing[{}]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_package_order",
+        "name": "test_missing_or_invalid_final_receipt_never_permits_model_sealing[{\"attempt\":0,\"status\":\"PASS\"}]",
+        "result": "PASS"
+      }
+    ],
+    "behavioral_mismatch": [
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_independent_oracle_rejects_behavioral_mutants[#ifndef TEST_CRC_H\\n#define TEST_CRC_H\\n#include \"forge_crc_device.h\"\\nstatic inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)\\n{\\n    CRCx->IDR = InData & 0xFFU;\\n}\\nstatic inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)\\n{\\n    return CRCx->IDR;\\n}\\n#endif\\n]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_independent_oracle_rejects_behavioral_mutants[#ifndef TEST_CRC_H\\n#define TEST_CRC_H\\n#include \"forge_crc_device.h\"\\nstatic inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)\\n{\\n    CRCx->IDR = InData;\\n}\\nstatic inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)\\n{\\n    return CRCx->IDR & 0xFFU;\\n}\\n#endif\\n]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_independent_oracle_rejects_behavioral_mutants[#ifndef TEST_CRC_H\\n#define TEST_CRC_H\\n#include \"forge_crc_device.h\"\\nstatic inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)\\n{\\n    CRCx->IDR = InData; CRCx->DR = 0U;\\n}\\nstatic inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)\\n{\\n    return CRCx->IDR;\\n}\\n#endif\\n]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_independent_oracle_rejects_behavioral_mutants[#ifndef TEST_CRC_H\\n#define TEST_CRC_H\\n#include \"forge_crc_device.h\"\\nstatic inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)\\n{\\n    CRCx->IDR = InData;\\n}\\nstatic inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)\\n{\\n    return 0U;\\n}\\n#endif\\n]",
+        "result": "PASS"
+      }
+    ],
+    "compilation_failure": [
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_compile_failure_then_two_corrections_preserve_failed_candidates",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_generated_header_uses_declared_probe_in_normal_build_tools",
+        "result": "PASS"
+      }
+    ],
+    "tampered_provenance": [
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_native_authorship_requires_success_role_and_exact_content[False-df_author_0-False-False-CONFIRMED_NATIVE_WRITE_FILE]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_native_authorship_requires_success_role_and_exact_content[True-df_author_0-False-False-UNVERIFIED_EDIT_CHAIN]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_native_authorship_requires_success_role_and_exact_content[False-swe3_inspector-False-False-UNVERIFIED_EDIT_CHAIN]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_native_authorship_requires_success_role_and_exact_content[False-df_author_0-True-False-UNVERIFIED_EDIT_CHAIN]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first",
+        "name": "test_native_authorship_requires_success_role_and_exact_content[False-df_author_0-False-True-CONFIRMED_NATIVE_WRITE_EDIT_CHAIN]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[none]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[json_args]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[failed_edit]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[pending]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[wrong_role]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[wrong_target]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[ambiguous]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[tampered_final]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[malformed_args]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[opaque_patch]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_replay_requires_successful_bound_unambiguous_edits[wrong_completion]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_every_declared_candidate_requires_its_own_complete_chain[False]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_every_declared_candidate_requires_its_own_complete_chain[True]",
+        "result": "PASS"
+      },
+      {
+        "classname": "factory.python.tests.test_delivery_first_edit_provenance",
+        "name": "test_audit_detects_candidate_change_during_metadata_collection",
+        "result": "PASS"
+      }
+    ]
+  },
+  "limitations": [
+    "Groups may overlap; counts must not be added to other cohorts",
+    "Compiler/behavior negative controls use supplied fixtures, never presented as Qwen products",
+    "Provenance checks reject authorship/milestone acceptance; compilation alone can still pass an unproven source",
+    "Inherited RCC graph-golden failure remains outside this exact cohort"
+  ],
+  "producer_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "receipt": {
+    "path": "evidence/014-durable-local-autonomy/native-edit-provenance-20261031/cli-exact.xml",
+    "sha256": "bc0ce1eb5475605a3e3f32abe65c7d1a6536a5edc9b48833f321b31b54897598"
+  },
+  "schema": "forge-c/delivery-first-negative-control-receipt-index/1",
+  "scope": "SYNTHETIC_FRAMEWORK_NEGATIVE_CONTROLS; NOT_NATIVE_MODEL_CAPABILITY",
+  "tested_revision": "30371da548bad2790a9f3c21dafc8964047ce06d"
+}
