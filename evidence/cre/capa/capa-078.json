@@ -1,0 +1,101 @@
+{
+ "CAPA-078": {
+  "history": [
+   {
+    "at": "2026-10-31T20:23:31.943686Z",
+    "capa_id": "CAPA-078",
+    "evidence": "[\"fabro-swe1-obl-20261031-02-critical-gap\"]",
+    "from_state": null,
+    "reason": "Fabro SWE.1 run WO-F014-SWE1-OBL-20261031-02 (01M69RYT6NP8Y8ZXB3MB173SDP) on Omniverse2 2026-10-31: the critical OBL-preserve-other-registers was recorded as an obligation gap with a false reason; author gate FROZEN, inspection PASS",
+    "seq": 593,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-10-31T20:23:32.047779Z",
+    "capa_id": "CAPA-078",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 594,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-10-31T20:23:32.169813Z",
+    "capa_id": "CAPA-078",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-077 assigned",
+    "seq": 595,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-10-31T20:23:38.650903Z",
+    "capa_id": "CAPA-078",
+    "evidence": "[\"reproducer-run:rr-e3ebf1e3ee3a02809d1c\", \"reproducer-run:rr-d4a9b2574b51ab5aa6d5\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 596,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-10-31T20:23:38.673810Z",
+    "capa_id": "CAPA-078",
+    "evidence": "[\"git:06914b8b84da..8d6841bd3da6\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 8d6841bd3da6 (patch 7656 bytes)",
+    "seq": 597,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-10-31T20:36:31.570206Z",
+    "capa_id": "CAPA-078",
+    "evidence": "[\"reproducer-run:rr-bd30d26eb29042c19c9f\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-077 absent at 8d6841bd3da6",
+    "seq": 598,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-10-31T20:36:31.586757Z",
+    "capa_id": "CAPA-078",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 599,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-e8629479307a10df8c3143b367b75df9c557e53c",
+   "06914b8b84da095b1bd2f10c929e67cbd9460962",
+   "8d6841bd3da608d4e501dd7ab8c22e1bda187788",
+   "pd-d07d5b621a1fb617d019"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<8d6841bd3da6"
+   ],
+   "candidate_patch_sha256": "60ec8396db38431abb9ad7f21cabc79de08642abcaaa11dbe2acb3537439e774",
+   "capa_id": "CAPA-078",
+   "created_at": "2026-10-31T20:23:31.943686Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe1-obl-20261031-02-critical-gap"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-077",
+   "reproducer_id": "RPR-077",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-e3ebf1e3ee3a02809d1c",
+    "reproducer-run:rr-d4a9b2574b51ab5aa6d5"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "An obligation gap needed only a reason, whatever the obligation's criticality; owner rule: critical obligations can never be gaps",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-10-31T20:36:31.586757Z"
+  }
+ }
+}

@@ -836,3 +836,13 @@ reproducers:
     operations: [inspection/gate.step_author, lrtx/swe1.self_check, lrtx/review.evidence]
     root_cause: "No SWE.1 mechanism compared the requirements with the owner's obligations: the author gate checks structure only, no checklist item asks for completeness against the owner contract, and lrtx/review.evidence gives the inspector the baseline and manifest views but not the owner contract."
     remedy: "Global opt-in owner obligations (owner 2026-10-31: global mechanism): a work-order input with role owner_obligations (forge-c/owner-obligations/1). assurance/owner_obligations.coverage_findings requires every obligation to be implemented by a requirement ('  - Obligations:' lines, register effects checked) or recorded under '## Obligation gaps' with a reason; it runs in swe1.self_check (localized repair) and in the SWE.1 author gate (any author path). The structured author gets an obligation-aware schema and the obligations source; SWE.1 inspectors get the obligations and the inputs they cite. Orders without the input are unchanged."
+  - id: RPR-077
+    script: rpr077_critical_obligation_gap.py
+    sha256: 55889ebdc4ba4eb87170811bec7dc4899b4e434a37b7543f099a07334ad20312
+    symptom_signature: "SWE.1 baseline that records a critical owner obligation as a gap is frozen by the author gate"
+    observed_in: "Fabro SWE.1 run WO-F014-SWE1-OBL-20261031-02 (01M69RYT6NP8Y8ZXB3MB173SDP) on Omniverse2 2026-10-31: Qwen3.8 medium recorded the critical OBL-preserve-other-registers as an obligation gap ('covered by the register-level task'); no requirement implements it; author gate FROZEN, inspection PASS 6/6"
+    baseline_revision: 06914b8b84da095b1bd2f10c929e67cbd9460962
+    error_codes: [SWE1_OBLIGATION_CRITICAL_GAP]
+    operations: [assurance/owner_obligations.coverage_findings, inspection/gate.step_author, lrtx/swe1.group_schema]
+    root_cause: "An obligation gap needed only a reason of at least 10 characters, whatever the obligation's criticality, so an author could close a critical obligation with an unverified justification; the deterministic check cannot judge the reason and the inspector accepted it."
+    remedy: "Owner 2026-10-31: critical obligations can never be gaps. coverage_findings reports SWE1_OBLIGATION_CRITICAL_GAP (self-check routed repair and the SWE.1 author gate); the structured cross-cutting schema offers only non-critical ids in obligation_gaps and its instructions name the critical ids."
