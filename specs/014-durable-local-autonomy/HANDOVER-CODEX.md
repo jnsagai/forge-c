@@ -1,5 +1,20 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Local continuation — 31 October: stopped-order projection
+
+Latest source `c0777eadb595e25ac993ff2fa5f4b10e27299636` projects the bound
+current product's OPERATOR_SHUTDOWN outcome to its active order inside the
+existing intent fence/queue transaction. It also handles a crash after capacity
+settlement. Native status/attempts, ownership, accounting and packages are not
+inferred or changed by the projection. Metadata failure is explicitly PENDING
+and does not postpone physical stop. Exact **152 PASS / 0 SKIP / zero failures
+or errors**, 21.929s; corrected before-counterexample4FAIL/2PASS. Initial fixture
+setup errors are preserved separately. [Source, tests and limits](../../evidence/014-durable-local-autonomy/shutdown-order-projection-c0777ead/README.md).
+This remains inactive remotely. Current read-only metadata shows STOPPED7,
+effective_stop=true, no holder/held execution/nonquiescent request; all eight
+configured grants expired07:57:59UTC. No new kernel/model qualification, renewal
+or deployment. Stopped-job learning disposition remains an open, separate gap.
+
 ## Local continuation — 31 October: assertion metadata repair
 
 Source `6a4721ecbef8c85326dfd101811c232f6258174e` fixes the existing host

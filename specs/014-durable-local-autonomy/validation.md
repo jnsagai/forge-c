@@ -1915,3 +1915,15 @@ cases are explicitly deselected, not claimed. Ruff and static 58-mapping /
 No inference, generated-Qwen-C execution locally, deployment, renewal, original
 DA task closure or live learning/model-benefit claim. Historical cohort stays
 2/3; full LL/HAL remains unproven.
+
+## 31 October — stopped product order projection
+
+Exact source c0777eadb595e25ac993ff2fa5f4b10e27299636: 152 PASS / 0 SKIP /
+zero failures or errors, 21.929s. Existing STOPPED intent fence plus durable
+queue transaction project only a bound current product's known shutdown
+outcome. Actual native liveness/capacity/accounting remain separate. Corrected
+counterexample4FAIL/2PASS; initial invalid fixture transition failures are
+retained as fixture errors. Changed-source Ruff and static mapping/contracts/
+design checks PASS. No live GPU/model/service activation or stopped-job learning
+completion is claimed. [Exact commands and raw receipts](../../evidence/014-durable-local-autonomy/shutdown-order-projection-c0777ead/README.md).
+The prior overnight cohort2/3 and original DA30/58 remain unchanged.
