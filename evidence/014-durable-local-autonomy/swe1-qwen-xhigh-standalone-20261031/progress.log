@@ -1,0 +1,86 @@
+2026-10-31T15:44:20Z PREFLIGHT PASS (measured 15:44:20Z): gpu 936MiB used, 0% util, 0 compute procs; afo intent STOPPED epoch 7 sha 9eff2df3; production-local-014 intent PAUSED epoch 111 sha 1387fbb2; gpuq pending/running empty, no STOP; no own llama-server/gateway/scripts, ports 18599-18601 free; guard OK; hard deadline 17:44:00Z (120 min), server deadline 17:35:00Z, last inspector pass start 17:10:00Z
+2026-10-31T15:44:54Z CHECKOUT: reusing the medium-arm clone /mnt/data/forge-c/operations/swe1-qwen-20261031/repo HEAD 2d91c2fa6f7cc7f7983e98259bd4ddb20fba6733, git status clean
+2026-10-31T15:44:54Z RO SNAPSHOT BEFORE: trial-06 source, ornith report-workspaces + inspect-ws, qwen-medium report-workspaces + inspect-ws + start-ws -> work/ro-before.json
+2026-10-31T15:44:54Z START-WS READY: /mnt/data/forge-c/operations/swe1-qwen-xhigh-20261031/start-ws (fresh cp -a of trial 06); isolation: binding.json+workflow.toml workspace path -> start-ws, durable-binding.json moved to work/isolated-start/ (work/isolation-edits-start.json); manifest local_profile.id unchanged = local-rtx-v2-omniverse2-q38-delivery-first
+2026-10-31T15:45:00Z SERVER STARTING qwen3.8:27b-q8_0 pid 2683526 port 18599 (factory llama_server_spec argv, max profile local-rtx-v2-omniverse2-q38-aspice-max-mtp)
+2026-10-31T15:45:05Z SERVER UP pid 2683526: health ok after 4.82s; VRAM 46558 MiB (baseline 936); n_ctx_slot = 262144
+2026-10-31T15:45:06Z GATEWAY UP pid 2683773 port 18600 -> llama 18599 (max-profile reasoning: effort xhigh, extra_output_tokens 32768); VRAM 46558 MiB
+2026-10-31T15:45:06Z MODELCMP STARTING (repeat 2, SWE.1, model qwen3.8:27b-q8_0, gateway 18600, xhigh)
+2026-10-31T15:45:06Z CHECKPOINTS: no attempt workspace yet
+2026-10-31T15:45:08Z ATTEMPT STARTED qwen3.8_27b-q8_0-01
+2026-10-31T15:45:36Z CHECKPOINTS qwen3.8_27b-q8_0-01: 0 task checkpoints
+2026-10-31T15:46:06Z CHECKPOINTS qwen3.8_27b-q8_0-01: 0 task checkpoints
+2026-10-31T15:46:36Z CHECKPOINTS qwen3.8_27b-q8_0-01: 0 task checkpoints
+2026-10-31T15:47:06Z CHECKPOINTS qwen3.8_27b-q8_0-01: 0 task checkpoints
+2026-10-31T15:47:36Z CHECKPOINTS qwen3.8_27b-q8_0-01: 0 task checkpoints
+2026-10-31T15:48:07Z CHECKPOINTS qwen3.8_27b-q8_0-01: 0 task checkpoints
+2026-10-31T15:48:37Z CHECKPOINTS qwen3.8_27b-q8_0-01: 0 task checkpoints
+2026-10-31T15:48:45Z CALL requirements:CRC_IDR attempt 0 errors 3 wall 216782.8 ms
+2026-10-31T15:49:07Z CHECKPOINTS qwen3.8_27b-q8_0-01: 0 task checkpoints
+2026-10-31T15:49:37Z CHECKPOINTS qwen3.8_27b-q8_0-01: 0 task checkpoints
+2026-10-31T15:49:55Z CALL requirements:CRC_IDR attempt 1 errors 0 wall 71138.8 ms
+2026-10-31T15:50:07Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:50:37Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:51:07Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:51:37Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:52:07Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:52:37Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:53:07Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:53:37Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:54:07Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:54:33Z CALL requirements:crosscutting attempt 0 errors 2 wall 277806.1 ms
+2026-10-31T15:54:37Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:54:57Z ATTEMPT STARTED qwen3.8_27b-q8_0-02
+2026-10-31T15:54:57Z CALL requirements:crosscutting attempt 1 errors 0 wall 22970.9 ms
+2026-10-31T15:54:57Z ATTEMPT FINISHED qwen3.8:27b-q8_0-01: visit PASS, gate FROZEN, calls 4, wall 589.4 s
+2026-10-31T15:55:07Z CHECKPOINTS qwen3.8_27b-q8_0-02: 0 task checkpoints
+2026-10-31T15:55:37Z CHECKPOINTS qwen3.8_27b-q8_0-02: 0 task checkpoints
+2026-10-31T15:56:07Z CHECKPOINTS qwen3.8_27b-q8_0-02: 0 task checkpoints
+2026-10-31T15:56:37Z CHECKPOINTS qwen3.8_27b-q8_0-02: 0 task checkpoints
+2026-10-31T15:56:45Z CALL requirements:CRC_IDR attempt 0 errors 0 wall 107836.8 ms
+2026-10-31T15:57:07Z CHECKPOINTS qwen3.8_27b-q8_0-02: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T15:57:37Z CHECKPOINTS qwen3.8_27b-q8_0-02: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T15:58:07Z CHECKPOINTS qwen3.8_27b-q8_0-02: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T15:58:37Z CHECKPOINTS qwen3.8_27b-q8_0-02: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T15:59:07Z CHECKPOINTS qwen3.8_27b-q8_0-02: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T15:59:37Z CHECKPOINTS qwen3.8_27b-q8_0-02: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T16:00:07Z CHECKPOINTS qwen3.8_27b-q8_0-02: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T16:00:17Z CALL requirements:crosscutting attempt 0 errors 2 wall 211951.5 ms
+2026-10-31T16:00:33Z CALL requirements:crosscutting attempt 1 errors 0 wall 15534.4 ms
+2026-10-31T16:00:37Z ATTEMPT FINISHED qwen3.8:27b-q8_0-02: visit PASS, gate FROZEN, calls 3, wall 339.8 s
+2026-10-31T16:00:37Z CHECKPOINTS qwen3.8_27b-q8_0-02: 2 task checkpoints; latest requirements:crosscutting VALID (2 calls)
+2026-10-31T16:00:41Z MODELCMP FINISHED rc 0 ({"rc":0,"wall_s":929.8,"at":"2026-10-31T16:00:36Z"})
+2026-10-31T16:00:41Z INSPECTION DECISION: GO
+2026-10-31T16:00:41Z INSPECT-WS READY: /mnt/data/forge-c/operations/swe1-qwen-xhigh-20261031/inspect-ws (copy of attempt-1 workspace); isolation: {"edits": [[".forge-run/binding.json", "replace_path", 1], [".forge-run/workflow.toml", "replace_path", 2], [".forge-run/durable-binding.json", "absent_in_copy", null]], "left_unchanged": 25}
+2026-10-31T16:00:42Z INSPECT RUNNER PASS 1 START (inspect SWE.1 --time-budget 1200 )
+2026-10-31T16:00:42Z INSPECT CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T16:01:12Z INSPECT CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T16:01:42Z INSPECT CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T16:02:12Z INSPECT CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T16:02:36Z INSPECT CALL inspect:148e03cf2670f126:SWE1-01 attempt 0 errors 0 wall 112711.6 ms
+2026-10-31T16:02:42Z INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:03:12Z INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:03:42Z INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:04:12Z INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:04:42Z INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:05:12Z INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:05:42Z INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:05:52Z INSPECT CALL inspect:148e03cf2670f126:SWE1-02 attempt 0 errors 0 wall 194815.0 ms
+2026-10-31T16:06:12Z INSPECT CHECKPOINTS: 2 inspector item checkpoints; latest SWE1-02 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:06:26Z INSPECT CALL inspect:148e03cf2670f126:SWE1-03 attempt 0 errors 0 wall 34261.4 ms
+2026-10-31T16:06:42Z INSPECT CHECKPOINTS: 3 inspector item checkpoints; latest SWE1-03 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:07:12Z INSPECT CHECKPOINTS: 3 inspector item checkpoints; latest SWE1-03 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:07:42Z INSPECT CALL inspect:148e03cf2670f126:SWE1-04 attempt 0 errors 0 wall 74333.9 ms
+2026-10-31T16:07:42Z INSPECT CHECKPOINTS: 4 inspector item checkpoints; latest SWE1-04 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:08:12Z INSPECT CHECKPOINTS: 4 inspector item checkpoints; latest SWE1-04 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:08:42Z INSPECT CHECKPOINTS: 4 inspector item checkpoints; latest SWE1-04 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:09:12Z INSPECT CHECKPOINTS: 4 inspector item checkpoints; latest SWE1-04 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:09:30Z INSPECT CALL inspect:148e03cf2670f126:SWE1-05 attempt 0 errors 0 wall 109655.7 ms
+2026-10-31T16:09:42Z INSPECT CHECKPOINTS: 5 inspector item checkpoints; latest SWE1-05 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:10:12Z INSPECT CHECKPOINTS: 5 inspector item checkpoints; latest SWE1-05 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T16:10:25Z INSPECT RUNNER PASS 1 FINISHED rc 0 status PASS calls 6 wall {"pass":1,"rc":0,"status":"PASS","calls":"6","wall_s":583.2,"at":"2026-10-31T16:10:25Z"}
+2026-10-31T16:10:26Z INSPECT CALL inspect:148e03cf2670f126:SWE1-06 attempt 0 errors 0 wall 54383.7 ms
+2026-10-31T16:10:32Z SERVER+GATEWAY STOPPED (STOP_REQUESTED) server 2683526 signal TERM exit 0 gone=yes; gateway 2683773 gone=yes; GPU after 936 MiB apps []; ports 18599 open=no 18600 open=no; VRAM peak 46590 MiB
+2026-10-31T16:10:33Z INSPECT GATE rc 0: {"phase": "SWE.1", "decision": "PASS", "reason": "INS-SWE.1-001", "failed_inspections": 0, "max_rework_cycles": 3} 
+2026-10-31T16:10:33Z RUN DONE
+2026-10-31T16:11:05Z CLEANUP VERIFIED (16:10:50Z): server 2683526 and gateway 2683773 gone, no own llama-server/gateway/scripts, GPU 936 MiB 0 compute apps, ports 18599/18600/18601 closed, guard OK, runner 2742646 + conductor 3699940 untouched, gpuq empty, no STOP; intents unchanged; read-only proof: trial-06, ornith report-workspaces + inspect-ws, qwen-medium report-workspaces + inspect-ws + start-ws identical (work/ro-compare.json)

@@ -1,0 +1,10 @@
+requirement_id,test_id,test_file
+SWR-001,UT-001,software/tests/unit/test_crc.c
+SWR-002,UT-002,software/tests/unit/test_crc.c
+SWR-003,SWR-003,software/tests/software/test_crc_requirements.robot
+SWR-004,UT-003,software/tests/unit/test_crc.c
+SWR-005,SWR-005,software/tests/software/test_crc_requirements.robot
+SWR-006,SWR-006,software/tests/software/test_crc_requirements.robot
+SWR-007,SWR-007,software/tests/software/test_crc_requirements.robot
+SWR-008,SWR-008,software/tests/software/test_crc_requirements.robot
+SWR-009,SWR-009,software/tests/software/test_crc_requirements.robot

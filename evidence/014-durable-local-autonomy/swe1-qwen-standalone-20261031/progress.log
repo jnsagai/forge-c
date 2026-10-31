@@ -1,0 +1,46 @@
+2026-10-31T15:27:11Z PREFLIGHT PASS (measured 15:27:11Z-15:28Z): gpu 936MiB used of 49140, 0% util, 0 compute procs; afo intent STOPPED epoch 7 sha 9eff2df3; production-local-014 intent PAUSED epoch 111 sha 1387fbb2; gpuq pending/running empty, no STOP; no own llama-server or gateway on 1859x ports; guard OK; hard deadline 17:07:00Z (100 min)
+2026-10-31T15:28:06Z CHECKOUT READY: fresh clone at /mnt/data/forge-c/operations/swe1-qwen-20261031/repo HEAD 2d91c2fa6f7cc7f7983e98259bd4ddb20fba6733 (origin/feat/014-durable-local-autonomy)
+2026-10-31T15:28:21Z RO SNAPSHOT BEFORE: trial-06 source, ornith report-workspaces, ornith inspect-ws -> work/ro-before.json
+2026-10-31T15:29:22Z START-WS READY: /mnt/data/forge-c/operations/swe1-qwen-20261031/start-ws (cp -a of trial 06); isolation: binding.json+workflow.toml workspace path -> start-ws, durable-binding.json moved to work/isolated-start/ (see work/isolation-edits-start.json)
+2026-10-31T15:31:58Z SERVER STARTING qwen3.8:27b-q8_0 pid 2661907 port 18596 (factory llama_server_spec argv)
+2026-10-31T15:32:03Z SERVER UP pid 2661907: health ok after 4.86s; VRAM 46558 MiB (baseline 936); n_ctx_slot = 262144
+2026-10-31T15:32:04Z GATEWAY UP pid 2662162 port 18597 -> llama 18596 (profile reasoning: effort medium, extra_output_tokens 8192, role_efforts {}); VRAM 46558 MiB
+2026-10-31T15:32:05Z MODELCMP STARTING (repeat 2, SWE.1, model qwen3.8:27b-q8_0, gateway 18597)
+2026-10-31T15:32:05Z CHECKPOINTS: no attempt workspace yet
+2026-10-31T15:32:07Z ATTEMPT STARTED qwen3.8_27b-q8_0-01
+2026-10-31T15:32:33Z CALL requirements:CRC_IDR attempt 0 errors 0 wall 26943.0 ms
+2026-10-31T15:32:35Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T15:33:05Z CHECKPOINTS qwen3.8_27b-q8_0-01: 1 task checkpoints; latest requirements:CRC_IDR VALID (1 calls)
+2026-10-31T15:33:25Z CALL requirements:crosscutting attempt 0 errors 0 wall 52338.9 ms
+2026-10-31T15:33:27Z ATTEMPT STARTED qwen3.8_27b-q8_0-02
+2026-10-31T15:33:27Z ATTEMPT FINISHED qwen3.8:27b-q8_0-01: visit PASS, gate FROZEN, calls 2, wall 79.7 s
+2026-10-31T15:33:35Z CHECKPOINTS qwen3.8_27b-q8_0-02: 0 task checkpoints
+2026-10-31T15:34:05Z CHECKPOINTS qwen3.8_27b-q8_0-02: 0 task checkpoints
+2026-10-31T15:34:35Z CHECKPOINTS qwen3.8_27b-q8_0-02: 0 task checkpoints
+2026-10-31T15:34:47Z CALL requirements:CRC_IDR attempt 0 errors 1 wall 80077.6 ms
+2026-10-31T15:34:55Z CALL requirements:CRC_IDR attempt 1 errors 0 wall 8415.1 ms
+2026-10-31T15:35:05Z CHECKPOINTS qwen3.8_27b-q8_0-02: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:35:35Z CHECKPOINTS qwen3.8_27b-q8_0-02: 1 task checkpoints; latest requirements:CRC_IDR VALID (2 calls)
+2026-10-31T15:35:47Z CALL requirements:crosscutting attempt 0 errors 2 wall 53078.3 ms
+2026-10-31T15:35:53Z CALL requirements:crosscutting attempt 1 errors 0 wall 6204.8 ms
+2026-10-31T15:35:55Z ATTEMPT FINISHED qwen3.8:27b-q8_0-02: visit PASS, gate FROZEN, calls 4, wall 148.5 s
+2026-10-31T15:35:59Z MODELCMP FINISHED rc 0 ({"rc":0,"wall_s":228.8,"at":"2026-10-31T15:35:54Z"})
+2026-10-31T15:35:59Z INSPECTION DECISION: GO
+2026-10-31T15:35:59Z INSPECT-WS READY: /mnt/data/forge-c/operations/swe1-qwen-20261031/inspect-ws (copy of attempt-1 workspace); isolation: {"edits": [[".forge-run/binding.json", "replace_path", 1], [".forge-run/workflow.toml", "replace_path", 2], [".forge-run/durable-binding.json", "absent_in_copy", null]], "left_unchanged": 25}
+2026-10-31T15:35:59Z INSPECT RUNNER PASS 1 START (inspect SWE.1 --time-budget 1200 )
+2026-10-31T15:35:59Z INSPECT CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T15:36:21Z INSPECT CALL inspect:413e7103f3d08975:SWE1-01 attempt 0 errors 0 wall 20887.4 ms
+2026-10-31T15:36:29Z INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T15:36:59Z INSPECT CHECKPOINTS: 1 inspector item checkpoints; latest SWE1-01 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T15:37:03Z INSPECT CALL inspect:413e7103f3d08975:SWE1-02 attempt 0 errors 0 wall 41753.0 ms
+2026-10-31T15:37:19Z INSPECT CALL inspect:413e7103f3d08975:SWE1-03 attempt 0 errors 0 wall 16398.7 ms
+2026-10-31T15:37:29Z INSPECT CHECKPOINTS: 3 inspector item checkpoints; latest SWE1-03 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T15:37:35Z INSPECT CALL inspect:413e7103f3d08975:SWE1-04 attempt 0 errors 0 wall 16898.9 ms
+2026-10-31T15:37:56Z INSPECT CALL inspect:413e7103f3d08975:SWE1-05 attempt 0 errors 0 wall 18845.2 ms
+2026-10-31T15:38:00Z INSPECT CHECKPOINTS: 5 inspector item checkpoints; latest SWE1-05 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T15:38:10Z INSPECT CALL inspect:413e7103f3d08975:SWE1-06 attempt 0 errors 0 wall 15088.7 ms
+2026-10-31T15:38:10Z INSPECT RUNNER PASS 1 FINISHED rc 0 status PASS calls 6 wall {"pass":1,"rc":0,"status":"PASS","calls":"6","wall_s":130.5,"at":"2026-10-31T15:38:10Z"}
+2026-10-31T15:38:17Z SERVER+GATEWAY STOPPED (STOP_REQUESTED) server 2661907 signal TERM exit 0 gone=yes; gateway 2662162 gone=yes; GPU after 936 MiB apps []; ports 18596 open=no 18597 open=no; VRAM peak 46590 MiB
+2026-10-31T15:38:18Z INSPECT GATE rc 0: {"phase": "SWE.1", "decision": "PASS", "reason": "INS-SWE.1-001", "failed_inspections": 0, "max_rework_cycles": 3} 
+2026-10-31T15:38:18Z RUN DONE
+2026-10-31T15:38:58Z CLEANUP VERIFIED (15:38:44Z): server 2661907 and gateway 2662162 gone, no own llama-server/gateway/scripts, GPU 936 MiB 0 compute apps, ports 18596/18597/18598 closed, guard OK, runner 2742646 + conductor 3699940 untouched, gpuq empty, no STOP; intents unchanged; read-only proof: trial-06 source, ornith report-workspaces, ornith inspect-ws identical (work/ro-compare.json)

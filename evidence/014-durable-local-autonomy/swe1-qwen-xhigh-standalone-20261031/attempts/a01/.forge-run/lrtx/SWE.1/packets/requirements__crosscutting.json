@@ -1,0 +1,107 @@
+{
+  "at": "2026-10-31T15:54:55.690168Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 7181,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 7053,
+          "sha256": "993b601062862b4987c2a7706d8a2a22f76914c1a509f682114a2cf7eab04161"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2013,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 5362
+      },
+      "errors": [
+        "[write_only_idr_field] effect WRITE_ONLY_IDR: value 'supplied 32-bit value' must be a number that fits CRC_IDR.IDR (32 bits)",
+        "[write_only_idr_field] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [write_only_idr_field] from the cross-cutting task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "7f0bc19b4a12b0e7ce972915cc0633c96ac88920286cf426001f96a7ba9b2545",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 15736,
+        "prompt_tokens": 1371,
+        "prompt_tokens_details": {
+          "cached_tokens": 279
+        },
+        "total_tokens": 17107
+      },
+      "wall_ms": 277806.1
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 9738,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 9610,
+          "sha256": "ab47cd8ddd768e059857cd0607d52a2bee69178d2b170a9b82b9116a8cc1d4fa"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2886,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7761
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "81ba388584e20213fb9fd708fae3032e714576973594e53b180f5e76266678b1",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 1390,
+        "prompt_tokens": 2034,
+        "prompt_tokens_details": {
+          "cached_tokens": 855
+        },
+        "total_tokens": 3424
+      },
+      "wall_ms": 22970.9
+    }
+  ],
+  "base_hash": "7f0bc19b4a12b0e7ce972915cc0633c96ac88920286cf426001f96a7ba9b2545",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "reset_no_automatic_write",
+        "source_page": 1170,
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any register.",
+        "verification": "Reset/startup robot test passes when, after reset and before any LL function call, no CRC register write is observed.",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "no_status_flag_wait",
+        "source_page": 1170,
+        "statement": "When LL_CRC_Write_IDR or LL_CRC_Read_IDR is called with a valid accessible CRC peripheral instance, the CRC LL driver shall not wait on any status flag.",
+        "verification": "Status-flag test passes when each function is called once with a valid accessible instance and neither call waits on a status flag before completing.",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "read_no_register_write",
+        "source_page": 1170,
+        "statement": "When LL_CRC_Read_IDR is called with a valid accessible CRC peripheral instance, the CRC LL driver shall not write any register.",
+        "verification": "Read side-effect test passes when LL_CRC_Read_IDR is called with a valid accessible instance and no CRC register write is observed.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

@@ -1,0 +1,50 @@
+{
+ "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace": {
+  "added": [],
+  "changed": {},
+  "entries": 706,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-ornith-20261031/inspect-ws": {
+  "added": [],
+  "changed": {},
+  "entries": 624,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-ornith-20261031/report-workspaces": {
+  "added": [],
+  "changed": {},
+  "entries": 1218,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-qwen-20261031/inspect-ws": {
+  "added": [],
+  "changed": {},
+  "entries": 626,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-qwen-20261031/report-workspaces": {
+  "added": [],
+  "changed": {},
+  "entries": 1220,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-qwen-20261031/start-ws": {
+  "added": [],
+  "changed": {},
+  "entries": 705,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ }
+}

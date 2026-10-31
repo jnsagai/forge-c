@@ -1,0 +1,30 @@
+{
+ "at": "2026-10-31T15:38:10.332211Z",
+ "baseline_id": "BL-SWE.1-001",
+ "contested_findings": {},
+ "items": [
+  "SWE1-01",
+  "SWE1-02",
+  "SWE1-03",
+  "SWE1-04",
+  "SWE1-05",
+  "SWE1-06"
+ ],
+ "result": {
+  "artifact_refs": [
+   "inspection/SWE.1/INS-SWE.1-001.json"
+  ],
+  "issues": [],
+  "metrics": {
+   "stale": false
+  },
+  "provenance": {
+   "input_sha256": "7d27a83b2cfcfee3f2bf53352162b8d0760d11ec853d72ab5aa37dff87fe5a29",
+   "invocation_id": "inv-fc0dfa214a83491c",
+   "tool": "forge-inspection",
+   "version": "0.4.0"
+  },
+  "status": "PASS",
+  "summary": "INS-SWE.1-001 PASS (0 findings)"
+ }
+}

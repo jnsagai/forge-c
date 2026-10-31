@@ -1,0 +1,7 @@
+{"lrtx_progress": "requirements:CRC_IDR", "attempt": 0, "errors": 0, "wall_ms": 26943.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 52338.9}
+{"lrtx_progress": "requirements:CRC_IDR", "attempt": 0, "errors": 1, "wall_ms": 80077.6}
+{"lrtx_progress": "requirements:CRC_IDR", "attempt": 1, "errors": 0, "wall_ms": 8415.1}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 2, "wall_ms": 53078.3}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 0, "wall_ms": 6204.8}
+{"qwen3.8:27b-q8_0": {"attempts": 2, "visit_pass": 2, "gate_frozen": 2, "wall_s_median": 114.1, "calls_median": 3.0, "load_ms_median": "UNKNOWN (no load observed)"}}

@@ -1,0 +1,80 @@
+{
+  "at": "2026-10-31T15:56:44.504671Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 9081,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 8953,
+          "sha256": "80c1492bd44fb89895cb86c0ccda5133de60939e46d0f6a6dce156c4977c76d3"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2690,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7222
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "0f6c1895f0ab5989d1364224911f3ffa4c291c43cc7e50d49d141489c33cd4e0",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 6342,
+        "prompt_tokens": 1875,
+        "prompt_tokens_details": {
+          "cached_tokens": 279
+        },
+        "total_tokens": 8217
+      },
+      "wall_ms": 107836.8
+    }
+  ],
+  "base_hash": "0f6c1895f0ab5989d1364224911f3ffa4c291c43cc7e50d49d141489c33cd4e0",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "WRITE_IDR",
+            "field": "IDR",
+            "op": "write",
+            "register": "CRC_IDR",
+            "value": "0x12345678"
+          }
+        ],
+        "key": "crc_idr_write",
+        "source_page": 1172,
+        "statement": "When the caller invokes LL_CRC_Write_IDR on a valid CRC peripheral instance with CRC_IDR.IDR accessible, the CRC LL driver shall write the supplied 32-bit value to CRC_IDR.IDR.",
+        "verification": "the host_unit_test calls LL_CRC_Write_IDR with 0x12345678 on a valid register array and passes when CRC_IDR.IDR bits 31:0 on the register array equal 0x12345678.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_IDR",
+            "field": "IDR",
+            "op": "no_write",
+            "register": "CRC_IDR",
+            "value": ""
+          }
+        ],
+        "key": "crc_idr_read",
+        "source_page": 1172,
+        "statement": "When the caller invokes LL_CRC_Read_IDR on a valid CRC peripheral instance with CRC_IDR.IDR accessible, the CRC LL driver shall return the current 32-bit value of CRC_IDR.IDR.",
+        "verification": "the host_unit_test sets CRC_IDR.IDR on the register array to 0xABCDEF01, calls LL_CRC_Read_IDR, and passes when the return value equals 0xABCDEF01 and CRC_IDR.IDR bits 31:0 on the register array remain 0xABCDEF01.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:CRC_IDR"
+}
