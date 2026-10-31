@@ -1,5 +1,35 @@
 # Feature 014 qualification inputs
 
+For the admitted Delivery-First repeatability cohort, the external observer
+`collect_delivery_trial.py` resolves the actual AFO attempt/job/native/workspace
+for one order in the hash-bound cohort. Run it on Omniverse, using the isolated
+instance interpreter and loopback host bridge (32404, not the old host32402):
+
+```bash
+E/venv/bin/python collect_delivery_trial.py \
+  --instance-root E \
+  --cohort-root E/control/repeatability-20261031-v4b/repeatability-prepared-20261031-v4b \
+  --order-id afo-7f71565db57f0a76
+```
+
+HereE is `/mnt/data/forge-c/delivery-first-afo-014-20261030-v1`; stage the
+source-pinned observer outside the product checkout, without deploying it into
+the admitted runtime. It uses SQLite read-only and actual Fabro metadata,
+reads/hashes candidate/evidence bytes, and writes a content-addressed observation
+underE/control/qualification-observations. No candidate execution, inference,
+dispatch, service control, budget change or release/milestone decision.
+Native terminal status and inference liveness remain separate. Missing final
+receipts remain missing; queued/partial results are never upgraded to PASS.
+Repeat the separately qualified303source-audit CLI against each terminal
+workspace and bind it to that order's archived candidate before external review.
+
+Observere5cdc45f has actual live-partial/queued/refusal checks recorded in
+[observer evidence](../../../evidence/014-durable-local-autonomy/cohort-observer-20261031/README.md).
+These are tooling checks, not fresh-model or terminal qualification. Its full
+terminal branch remains unrun until a fresh cohort native finishes. All three
+cases, including cancellations/unfinished work, retain the preregistered
+denominator and07:57:59UTC expiry. No new scheduler or authority is created.
+
 Size AFO reads from recorded Codex-author workspaces without contacting a model:
 `python factory/qualification/014/measure_codex_driver_files.py --state-root <workorders> --out <new-json>`.
 The [measured census, active limits and native checks](../../../evidence/014-durable-local-autonomy/afo-paging-20261029/README.md)

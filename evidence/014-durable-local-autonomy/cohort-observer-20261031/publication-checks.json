@@ -1,0 +1,6 @@
+{
+  "privacy_scan_including_gzip": "PASS",
+  "raw_receipt_hash": "MATCH",
+  "python_syntax": "PASS",
+  "scope": "OBSERVER_TOOLING_NOT_MODEL_QUALIFICATION"
+}
