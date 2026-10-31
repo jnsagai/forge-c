@@ -50,6 +50,27 @@ def _with_setter(expr: str, src_before: str) -> str:
 
 
 HOST_CHECK = re.compile(r'\bCHECK\(\s*"([^"]+)"\s*,(.*?)\)\s*;', re.S)
+# Consume comments and literals before scanning code, so example text is not a
+# second assertion. The CHECK alternative owns its complete first argument.
+CHECK_ID_TOKEN = re.compile(
+    r'/\*.*?\*/|//[^\n]*|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|'
+    r'\bCHECK\s*\(\s*"(?P<check_id>[^"\\\r\n]+)"\s*,', re.S)
+
+
+def check_ids(paths: list[Path]) -> dict[str, int]:
+    """Count complete static assertion identities across the selected test files.
+
+    A suffix is part of an ID: UT-001 and UT-001-RESULT are distinct, but two
+    UT-001-RESULT assertions are ambiguous. This is lexical metadata validation,
+    not proof that a predicate ran or that a runtime loop covers its scope.
+    """
+    seen: dict[str, int] = {}
+    for path in paths:
+        for token in CHECK_ID_TOKEN.finditer(path.read_text(errors="replace")):
+            identity = token.group("check_id")
+            if identity is not None:
+                seen[identity] = seen.get(identity, 0) + 1
+    return seen
 
 
 def _host_check_exprs(test: Path, out: bytes, limit: int = 8) -> list[str]:
@@ -127,15 +148,12 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             issues += exprs or _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
     # CAPA-022 (r86): UT-015/016 were used by two test functions; an id must name exactly one check (trace and
     # report cite ids), so duplicates fail the run deterministically instead of being found by the inspector
-    seen: dict[str, int] = {}
-    for t in tests:
-        code = re.sub(r"/\*.*?\*/|//[^\n]*", "", t.read_text(errors="replace"), flags=re.S)
-        for cid in re.findall(r'\bCHECK\s*\(\s*"([A-Z]+-\d+)"', code):
-            seen[cid] = seen.get(cid, 0) + 1
+    seen = check_ids(tests)
     dups = sorted(k for k, v in seen.items() if v > 1)
     if dups:
         failed += 1
-        issues += [f"DUPLICATE_TEST_ID:{d}:used by {seen[d]} checks - give each check its own id" for d in dups[:10]]
+        issues += [f"DUPLICATE_TEST_ID:{d}:used by {seen[d]} checks - give each check its own id; preserve predicates "
+                   "and order, use a unique suffix, do not combine checks" for d in dups[:10]]
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
     op = "run_unit" if level == "unit" else "run_integration"
     record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",

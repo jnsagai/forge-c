@@ -325,7 +325,11 @@ UT_STEPS = [
     "peripheral enable/reset functions check the bit in RCC_AHB1ENR / RCC_AHB1RSTR.",
     "Make ONE edit_file call with old_string exactly '{calls}' and new_string = one call line per test function "
     "(e.g. 'ut_hsi_enable();') followed by the marker again.",
-    "Call mcp__forge_tests_mcp__run_unit once and report its summary.",
+    "Each CHECK call site needs its own complete id across all test files. Keep one base UT id per test and use "
+    "unique suffixes for its other assertions, e.g. UT-007, UT-007-RESULT, UT-007-PRESERVED, in the same @test "
+    "UT-007 function; retain its requirement and unit-spec trace links. If only duplicate ids fail, change ids only. "
+    "Preserve every existing predicate and its evaluation order; do not combine checks or remove assertions to "
+    "satisfy metadata. Call mcp__forge_tests_mcp__run_unit once and report its summary.",
     "Reply with the list of UT ids you wrote.",
 ]
 
