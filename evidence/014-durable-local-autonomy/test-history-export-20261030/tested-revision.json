@@ -1,0 +1,13 @@
+{
+  "source_revision": "dd36baee87a6a9ea01ae827bc0eec7b9f5ae0ef6",
+  "source_tree_clean_at_test_launch_and_completion": true,
+  "tests": 60,
+  "passed": 60,
+  "skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "includes_inherited_v03_packager": true,
+  "evidence": "exact.xml",
+  "deployment": "NOT_DEPLOYED",
+  "scope": "DETERMINISTIC_REGRESSION_NOT_MODEL_CAPABILITY_OR_OPERATIONAL_QUALIFICATION"
+}

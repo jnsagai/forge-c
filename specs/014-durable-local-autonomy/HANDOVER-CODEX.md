@@ -1,5 +1,47 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October00:05UTC
+
+Same AFO native01M67ETTPXS1Q73QPMQ98DNJX0 is RUNNING at SWE.5 author
+(target author completed). Source remains cleana34fdd85, operationsRUNNING4,
+fixed deadline07:57:59UTC. Candidate855f53a6... is unchanged, correction0;
+first functionalPASS is not yet a terminal DF-M1. All earlier failures remain.
+
+Real job-local correction: unit tool rejected30checks sharing five IDs at
+23:40:08. Qwen edited tests and reran23:42:27: PASS with30distinct valid IDs,
+same30checks and product-code hash. Protected snapshots confirm unchanged code
+after ignoring only comments/whitespace/UT labels. First host line/function/
+region coverage100%, branch/MC/DC null; no target/physical claim. This is not
+factory CRE self-healing, an invented repair incident or measured learning.
+SWE.5 Renode then passed34checks/two images and46checks/three images; successive
+counts must not be added. Simulated Cortex-M55/behaviouralCRC, not silicon.
+
+Latest tested implementation **dd36baee87a6a9ea01ae827bc0eec7b9f5ae0ef6**
+extends the existing finalizer to export the raw test-integrity log and all its
+referenced hash-verified historical sources. Six failed-before regressions;
+exact clean combined finalizer/delivery/product/v0.3 cohort60PASS, zero
+failures/errors/skips. Invalid/missing/corrupt/symlinked history gives a major
+finding/BLOCKED package; valid prior failed tests remain visible without
+blocking an otherwise qualified package. No-task/no-history behavior is kept.
+[Native episode, source copies, exact tests and staging proof](../../evidence/014-durable-local-autonomy/test-history-export-20261030/README.md).
+
+**STAGED_NOT_ACTIVATED:** E/control/source-stage-dd36baee is a separate clean
+checkout atdd36baee; E/control/next-source-dd36baee.bundle SHA
+7186a5e9ebf9dbd187960cdf61673a88ef3cb9c812423d76cbbc370facdd51f4.
+The original E/source checkout and operations intent were verified unchanged.
+Current grants/role trial/policy remain V3 bound toa34fdd85; do not switch source
+or start fresh trials while this native is active. After terminal auditing,
+if a handoff is needed, retire the entire managed provider instance, preserve
+old records/charges, use exact new source-bound qualification authority and
+verify the actual gateway worker policy. Any replacement guard must bind the
+new operations epoch with the SAME07:57:59deadline. Never silently refill or
+renew the mission. The old three-run prepared cohort is NOT_SUBMITTED; any
+source change requires a clearly superseding preregistration before its first
+run, retaining the original unused preparation and all real attempts.
+
+No full LL/HAL, release, general-driver, model-role qualification, learning
+benefit or continuous-operation claim is established. Formal DA count30/58.
+
 ## Overnight checkpoint — 30 October23:35UTC
 
 Same real AFO native01M67ETTPXS1Q73QPMQ98DNJX0 remains RUNNING and reached

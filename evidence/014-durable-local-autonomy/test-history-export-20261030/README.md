@@ -44,6 +44,25 @@ PASS. Cohorts overlap; do not add the focused count. The source-specific exact
 post-commit receipt is recorded separately. Failed raw JUnit is retained as gzip
 with a whitespace-normalized readable view and explicit representation hashes.
 
+Exact clean implementation revision
+**dd36baee87a6a9ea01ae827bc0eec7b9f5ae0ef6** repeated the combined finalizer,
+delivery, product-outcome and v0.3 cohort: **60PASS**, no skips/failures/errors.
+See [tested revision](tested-revision.json) and [JUnit receipt](exact.xml).
+
+The same unchanged native subsequently reached SWE.5. Its target author/report
+author produced actual Renode passes of34checks/two images, then46checks/three
+images. Counts are successive, not additive. These are simulated Cortex-M55
+behavioural-CRC results, not silicon verification or independent same-model
+correctness proof; the preregistered351-check independent oracle is separate.
+See [target tool observations](native-target-observations.json).
+
+The tested source has been [staged separately on Omniverse](source-stage-dd36baee.json),
+with matching bundle SHA and source HEAD. It is **not activated**; the live
+checkout, sourcea34fdd85, operations epoch4 and current model remain unchanged.
+No new grant, model call or follow-up order was created by staging. The next
+activation must wait for this native's terminal audit and native/provider
+quiescence, then use exact source-bound authority within the original deadline.
+
 ```text
 python -m pytest factory/python/tests/test_release_test_history.py -q
 python -m pytest factory/python/tests/test_release_test_history.py factory/python/tests/test_m7_governance_release.py factory/python/tests/test_pipeline_demonstration.py factory/python/tests/test_delivery_first.py factory/python/tests/test_da014_product_outcomes.py -q
