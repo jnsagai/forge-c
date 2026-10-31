@@ -5,6 +5,9 @@ The external [nine-condition audit](external-m1-audit.json) establishes
 `LL_CRC_Write_IDR` and `LL_CRC_Read_IDR`. All six SWE phases were attempted.
 This is not full LL/HAL delivery, clean process qualification or production.
 Strict release remains **BLOCKED with25gaps**. Original DA ledger remains30/58.
+The [retained-gap triage](QUALITY-GAP-TRIAGE.md) separates missing author metadata,
+legacy structural-check/adapter mismatches and normal release-package evidence;
+25labels are not presented as25independent C defects.
 
 | Binding | Actual value |
 |---|---|
