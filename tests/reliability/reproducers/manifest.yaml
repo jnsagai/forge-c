@@ -794,3 +794,14 @@ reproducers:
     operations: [route_sweN, inspection/gate.step_route]
     root_cause: "Store.gate already decides BLOCKED when failed inspections reach maximum_rework_cycles. step_route computed the progress extension (progress: true) after that decision and only cleared its own 'exhausted' flag, never the BLOCKED decision it had received, so a phase whose failed cycles were inspections was blocked although the owner's rule granted it one more cycle."
     remedy: "When a progress extension is granted (cycles below the authored maximum + extra, measurable progress, not STUCK) and Store.gate decided BLOCKED, the route decision becomes REWORK for that cycle, with the extension in the reason; no progress, the cap or STUCK block as before."
+  - id: RPR-073
+    script: rpr073_packet_identity_alias.py
+    sha256: f4f3188cb5924881484da2e018ff48a5bba4e45c69dacce13c772cf4e055a656
+    symptom_signature: "packet input_hash unchanged when the pinned model digest changes under the same alias"
+    observed_in: "process-first design EGM review 2026-10-31 (docs/designs/forge-c-process-first-ornith-qwen.md G3; evidence/014-durable-local-autonomy/egm-pf-001); static finding, no native run"
+    baseline_revision: 876d75f638af153ee5ecd3be4a638f40cf916521
+    fix_revision: dc1dd0597dfccc5c56161cd5cbb4af53e809fb3c
+    error_codes: []
+    operations: [lrtx/structured.packet, lrtx/visit.run_task]
+    root_cause: "structured.packet() hashed the packet dict, which named the model only by its alias and excluded the accounting block (context envelope). The selected local profile's pinned digest, precision, reasoning settings, probed schema mode and context length were not part of input_hash, so visit and inspector checkpoints keyed on it (base_hash) were reused after a model file, precision, reasoning or context change made under an unchanged alias."
+    remedy: "packet() adds an identity block derived from the manifest's selected local profile (profile id + config sha, model digest, precision, served/gateway reasoning incl. the role's own effort, schema mode probed for that digest, context tokens) to the hashed packet, without adapter_revision (D10). It is never part of the prompt. Packets without a selected profile keep the legacy hash shape. run_task resolves the schema mode with the same digest."
