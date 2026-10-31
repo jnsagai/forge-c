@@ -1,5 +1,16 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Local continuation — 31 October: retain projection source evidence
+
+Latest source `a4bc71d186806afe45492d8c38cdd3a10e3bed7c` retains the full
+execution lifecycle snapshot alongside its canonical hash in the existing queue
+projection event; later reconciliation cannot lose its original source. Two
+before-cases fail for missing snapshot; the exact nine-file cohort reruns152
+cases with zero failures/errors/skips. Ruff/design PASS. [Raw receipts and
+scope](../../evidence/014-durable-local-autonomy/shutdown-source-snapshot-a4bc71d1/README.md).
+Inactive remotely. New execution-window/reference question is pending; do not
+renew or resume the expired window. Stopped-job learning/full LL/HAL remain open.
+
 ## Local continuation — 31 October: stopped-order projection
 
 Latest source `c0777eadb595e25ac993ff2fa5f4b10e27299636` projects the bound

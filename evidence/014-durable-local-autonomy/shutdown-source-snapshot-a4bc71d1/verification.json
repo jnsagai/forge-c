@@ -1,0 +1,39 @@
+{
+  "before_decoded_sha256": "d68cc91f8503b1f5cfa839f9644d7648ae000fc927effe55b4b5bfae09919d4f",
+  "before_encoding": "gzip",
+  "before_revision": "20ef00b935f6a1ee6f3333c97dd5e35d3587a284",
+  "command": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m pytest -q factory/python/tests/test_shutdown_order_projection.py factory/python/tests/test_da014_product_outcomes.py factory/python/tests/test_da014_protocol.py factory/python/tests/test_da014_integration.py factory/python/tests/test_da014_provider_recovery.py factory/python/tests/test_da014_control_context.py factory/python/tests/test_da014_operational_facts.py factory/python/tests/test_afo_m1_services.py factory/python/tests/test_afo_m6_operations.py --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/shutdown-snapshot-exact.xml",
+  "native_qualification": "NOT_RUN",
+  "runtime_activation": "NOT_RUN",
+  "source_sha256": {
+    "factory/python/forge_factory/afo/operations.py": "9b4b38a9cd68469128a3aa27338df69facb9a19c0f700c1d01533425ed785690",
+    "factory/python/tests/test_shutdown_order_projection.py": "cfc876fccb0edfde4499bbcc0e4838b9f6c9b46cd8f8eafe5d72ca43fb082551"
+  },
+  "summaries": {
+    "before.xml.gz": [
+      {
+        "errors": "0",
+        "failures": "2",
+        "hostname": "master",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "2",
+        "time": "0.776",
+        "timestamp": "2026-10-31T08:42:19.327050+00:00"
+      }
+    ],
+    "exact-a4bc71d1.xml": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "master",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "152",
+        "time": "23.606",
+        "timestamp": "2026-10-31T08:43:15.826297+00:00"
+      }
+    ]
+  },
+  "tested_revision": "a4bc71d186806afe45492d8c38cdd3a10e3bed7c"
+}

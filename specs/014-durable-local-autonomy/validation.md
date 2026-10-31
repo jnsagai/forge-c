@@ -1927,3 +1927,12 @@ retained as fixture errors. Changed-source Ruff and static mapping/contracts/
 design checks PASS. No live GPU/model/service activation or stopped-job learning
 completion is claimed. [Exact commands and raw receipts](../../evidence/014-durable-local-autonomy/shutdown-order-projection-c0777ead/README.md).
 The prior overnight cohort2/3 and original DA30/58 remain unchanged.
+
+## 31 October — retain shutdown source snapshot
+
+Exact a4bc71d186806afe45492d8c38cdd3a10e3bed7c repeats152 lifecycle cases with
+zero failures/errors/skips; two counterexamples fail before for absent snapshot.
+Ruff/design PASS. The existing queue event retains the full canonical-hash-bound
+source lifecycle record despite later updates. [Raw evidence](../../evidence/014-durable-local-autonomy/shutdown-source-snapshot-a4bc71d1/README.md).
+Counts overlap c0777ead. No deployment, native qualification, original task closure
+or learning/full-pipeline success claim.
