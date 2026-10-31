@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="3" time="0.817" timestamp="2026-10-31T00:30:50.380359+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first_scenario_contract" name="test_robot_author_has_no_unprovided_register_array_instructions" time="0.406"><failure message="AssertionError: assert 'll_crc_regs[' not in 'DELIVERY-FI...n in issues.'&#10;  &#10;  'll_crc_regs[' is contained here:&#10;    alues and ll_crc_regs[LL_CRC_&lt;REG&gt;_OFFSET / 4U] &amp; LL_CRC_&lt;REG&gt;_&lt;FIELD&gt;_MSK bits (always the _MSK macro, e.g. LL_CRC_CR_POLYSIZE_MSK; never the field name without _MSK). No printf, no stdlib, no ll_crc_regs definition. 6) Rewrite software/tests/software/test_crc_requirements.robot with ONE write_file: keep the header comment, '*** Settings ***', 'Library    ForgeTarget', every test case name and its [Tags] line exactly; replace each 'Fail    NOT IMPLEMENTED' line by keywords, e.g. 'Run Target Scenario    scn_&lt;topic&gt;.c' then 'Target Check Should Pass ...&#10;  &#10;  ...Full output truncated (2 lines hidden), use '-vv' to show">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...60b78de169c08a20aba'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+
+    def test_robot_author_has_no_unprovided_register_array_instructions(prepared):
+        ws, man = prepared
+        graph, _ = build(man["work_order"], layer="LL", peripheral="crc", sections={
+            "26.4.2": "inputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md"},
+            operation_scope=man["operation_scope"], assessment_manifest=man,
+            execution_policy=man["development_execution"])
+        prompt = re.search(r'swe6_test_author \[[^\n]*prompt="((?:\\.|[^"\\])*)"', graph)[1]
+&gt;       assert "ll_crc_regs[" not in prompt
+E       AssertionError: assert 'll_crc_regs[' not in 'DELIVERY-FI...n in issues.'
+E
+E         'll_crc_regs[' is contained here:
+E           alues and ll_crc_regs[LL_CRC_&lt;REG&gt;_OFFSET / 4U] &amp; LL_CRC_&lt;REG&gt;_&lt;FIELD&gt;_MSK bits (always the _MSK macro, e.g. LL_CRC_CR_POLYSIZE_MSK; never the field name without _MSK). No printf, no stdlib, no ll_crc_regs definition. 6) Rewrite software/tests/software/test_crc_requirements.robot with ONE write_file: keep the header comment, '*** Settings ***', 'Library    ForgeTarget', every test case name and its [Tags] line exactly; replace each 'Fail    NOT IMPLEMENTED' line by keywords, e.g. 'Run Target Scenario    scn_&lt;topic&gt;.c' then 'Target Check Should Pass ...
+E
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+factory/python/tests/test_delivery_first_scenario_contract.py:16: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_scenario_contract" name="test_robot_scaffold_points_to_declared_layout_in_delivery_mode" time="0.185"><failure message="AssertionError: assert 'll_crc_regs[' not in '# GENERATED... Cases ***\n'&#10;  &#10;  'll_crc_regs[' is contained here:&#10;    cenarios: ll_crc_regs[LL_CRC_&lt;REG&gt;_OFFSET / 4U] &amp; LL_CRC_&lt;REG&gt;_&lt;FIELD&gt;_MSK (e.g. LL_CRC_CR_POLYSIZE_MSK)&#10;  ?           ++++++++++++&#10;    # Simulation-only performance: use the declared instrumented test, not a copied scenario.&#10;    #   Run Target Scenario    software/tests/target/test_performance.c&#10;    #   Simulation Performance Should Meet Budget...&#10;  &#10;  ...Full output truncated (6 lines hidden), use '-vv' to show">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...60b78de169c08a20aba'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+
+    def test_robot_scaffold_points_to_declared_layout_in_delivery_mode(prepared):
+        ws, man = prepared
+        text = robot_scaffold.header(ws)
+&gt;       assert "ll_crc_regs[" not in text
+E       AssertionError: assert 'll_crc_regs[' not in '# GENERATED... Cases ***\n'
+E
+E         'll_crc_regs[' is contained here:
+E           cenarios: ll_crc_regs[LL_CRC_&lt;REG&gt;_OFFSET / 4U] &amp; LL_CRC_&lt;REG&gt;_&lt;FIELD&gt;_MSK (e.g. LL_CRC_CR_POLYSIZE_MSK)
+E         ?           ++++++++++++
+E           # Simulation-only performance: use the declared instrumented test, not a copied scenario.
+E           #   Run Target Scenario    software/tests/target/test_performance.c
+E           #   Simulation Performance Should Meet Budget...
+E
+E         ...Full output truncated (6 lines hidden), use '-vv' to show
+
+factory/python/tests/test_delivery_first_scenario_contract.py:26: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_scenario_contract" name="test_default_robot_header_keeps_existing_register_access_contract" time="0.004" /></testsuite></testsuites>

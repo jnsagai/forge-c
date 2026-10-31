@@ -1,5 +1,30 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October00:43UTC
+
+Same native01M67ETTPXS1Q73QPMQ98DNJX0 has reached **SWE.6 inspection**;
+final verification/package/DF-M1 remain pending. Qwen autonomously corrected
+Robot scenario code:1/10→7/10 requirements verified. Three resource checks still
+fail because the factory's measurement compiler omits the declared device-header
+include path. Candidate855f53a6... remains unchanged. No manual candidate fix,
+source hotpatch, steering or additional inference was supplied.
+
+Local **95250cf902afe404dc85d8337b05b98ebda77651** corrects opt-in Robot
+prompt/scaffold assumptions and applies the existing adapter include flags to
+resource measurement. Exact88tests:87PASS/one inherited RCC graph-goldenFAIL,
+no errors/skips; all six new regressions PASS. All five strict graphs have
+identical before/after hashes; the historical golden remains untouched.
+Read [evidence and limits](../../evidence/014-durable-local-autonomy/scenario-contract-20261031/README.md).
+
+Source staged at E/control/source-stage-95250cf9, **NOT_ACTIVATED**, superseding
+the unused dd36 stage without deleting it. Runtime tracked source remainsa34;
+two existing .forge-run launch records are retained. OperationsRUNNING4,
+guard/collector and fixed deadline **07:57:59UTC** remain. Audit terminal DF-M1
+before three fresh comparable trials. New source activation needs reconciled
+provider quiescence, source-bound grants, actual gateway-worker verification and
+a guard bound to the new operations epoch with the SAME deadline. Preserve
+mission charges and all failed attempts. Original DA ledger remains30/58.
+
 ## Overnight checkpoint — 31 October00:05UTC
 
 Same AFO native01M67ETTPXS1Q73QPMQ98DNJX0 is RUNNING at SWE.5 author

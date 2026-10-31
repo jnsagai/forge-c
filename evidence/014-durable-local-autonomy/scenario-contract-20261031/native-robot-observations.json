@@ -1,0 +1,108 @@
+{
+  "resource_failures": [
+    "driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/software/ll/stm32n6xx_ll_crc.h:25:10: fatal error: forge_crc_device.h: No such file or directory\n   25 | #include \"forge_crc_device.h\"\n      |          ^~~~~~~~~~~~~~~~~~~~\ncompilation terminated.\n",
+    "driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/software/ll/stm32n6xx_ll_crc.h:25:10: fatal error: forge_crc_device.h: No such file or directory\n   25 | #include \"forge_crc_device.h\"\n      |          ^~~~~~~~~~~~~~~~~~~~\ncompilation terminated.\n",
+    "driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5e42e6d55f-a1/workspace/software/ll/stm32n6xx_ll_crc.h:25:10: fatal error: forge_crc_device.h: No such file or directory\n   25 | #include \"forge_crc_device.h\"\n      |          ^~~~~~~~~~~~~~~~~~~~\ncompilation terminated.\n"
+  ],
+  "robot": [
+    {
+      "at": "2026-10-31T00:21:21.177531Z",
+      "status": "FAIL",
+      "summary": "robot: 1/10 tests passed; 1/10 requirements verified (Renode STM32N6 model + host measurements)",
+      "issues": [
+        "BUILD_FAIL:scn_instance.c:13: 'll_crc_regs' undeclared; software/tests/software/scn_instance.c:13:27: error: 'LL_CRC_IDR",
+        "BUILD_FAIL:scn_no_polling.c:11: 'll_crc_regs' undeclared; software/tests/software/scn_no_polling.c:11:27: error: 'LL_CRC",
+        "BUILD_FAIL:scn_read_idr.c:9: 'll_crc_regs' undeclared; software/tests/software/scn_read_idr.c:9:17: error: 'LL_CRC_IDR_O",
+        "BUILD_FAIL:scn_side_effects.c:13: 'll_crc_regs' undeclared; software/tests/software/scn_side_effects.c:13:17: error: 'LL",
+        "BUILD_FAIL:scn_startup.c:9: 'll_crc_regs' undeclared; software/tests/software/scn_startup.c:9:27: error: 'LL_CRC_DR_OFFS",
+        "BUILD_FAIL:scn_write_idr.c:10: 'll_crc_regs' undeclared; software/tests/software/scn_write_idr.c:10:27: error: 'LL_CRC_I",
+        "ROBOT_FAIL:SWR-007:driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5"
+      ],
+      "metrics": {
+        "environment": "robotframework 6.1 + renode 1.17.0 (simulated cortex-m55)",
+        "failed": 9,
+        "issues_total": 24,
+        "passed": 1,
+        "requirements": 10,
+        "requirements_verified": 1,
+        "silicon_verified": false,
+        "simulation_performance_contract": "{\"instructions_per_call\":64,\"microseconds_per_call\":100,\"performance_mips\":100,\"schema\":\"forge-c/simulation-performance-budget/1\",\"test_source\":\"software/tests/target/test_performance.c\",\"budget_sha256\":\"c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a\",\"scope\":\"DECLARED_INPUT_CONTRACT_NOT_A_MEASUREMENT\"}",
+        "tests": 10
+      },
+      "provenance": {
+        "duration_ms": 2198.4,
+        "exit_code": 9,
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "invocation_id": "inv-4362de83c5324386",
+        "output_sha256": "e9b46e9eb0461b49ec2283381e009bdc5a42cce2347214b6ad01ecd5a0409f5a",
+        "tool": "robotframework",
+        "version": "Robot Framework 6.1 (Python 3.13.13 on linux)"
+      }
+    },
+    {
+      "at": "2026-10-31T00:24:08.888810Z",
+      "status": "FAIL",
+      "summary": "robot: 7/10 tests passed; 7/10 requirements verified (Renode STM32N6 model + host measurements)",
+      "issues": [
+        "ROBOT_FAIL:SWR-007:driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5",
+        "ROBOT_FAIL:SWR-008:driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5",
+        "ROBOT_FAIL:SWR-009:driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5",
+        "UNCOVERED_REQUIREMENT:SWR-007",
+        "UNCOVERED_REQUIREMENT:SWR-008",
+        "UNCOVERED_REQUIREMENT:SWR-009"
+      ],
+      "metrics": {
+        "environment": "robotframework 6.1 + renode 1.17.0 (simulated cortex-m55)",
+        "failed": 3,
+        "passed": 7,
+        "requirements": 10,
+        "requirements_verified": 7,
+        "silicon_verified": false,
+        "simulation_performance_contract": "{\"instructions_per_call\":64,\"microseconds_per_call\":100,\"performance_mips\":100,\"schema\":\"forge-c/simulation-performance-budget/1\",\"test_source\":\"software/tests/target/test_performance.c\",\"budget_sha256\":\"c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a\",\"scope\":\"DECLARED_INPUT_CONTRACT_NOT_A_MEASUREMENT\"}",
+        "tests": 10
+      },
+      "provenance": {
+        "duration_ms": 12047.4,
+        "exit_code": 3,
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "invocation_id": "inv-ed226830d0634688",
+        "output_sha256": "ff3cce76ff2fba8955e074a996daaf26ae09e5015f7b642cc1b19e11b72e0fa7",
+        "tool": "robotframework",
+        "version": "Robot Framework 6.1 (Python 3.13.13 on linux)"
+      }
+    },
+    {
+      "at": "2026-10-31T00:29:30.306985Z",
+      "status": "FAIL",
+      "summary": "robot: 7/10 tests passed; 7/10 requirements verified (Renode STM32N6 model + host measurements)",
+      "issues": [
+        "ROBOT_FAIL:SWR-007:driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5",
+        "ROBOT_FAIL:SWR-008:driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5",
+        "ROBOT_FAIL:SWR-009:driver build failed: /data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-5faf7b5",
+        "UNCOVERED_REQUIREMENT:SWR-007",
+        "UNCOVERED_REQUIREMENT:SWR-008",
+        "UNCOVERED_REQUIREMENT:SWR-009"
+      ],
+      "metrics": {
+        "environment": "robotframework 6.1 + renode 1.17.0 (simulated cortex-m55)",
+        "failed": 3,
+        "passed": 7,
+        "requirements": 10,
+        "requirements_verified": 7,
+        "silicon_verified": false,
+        "simulation_performance_contract": "{\"instructions_per_call\":64,\"microseconds_per_call\":100,\"performance_mips\":100,\"schema\":\"forge-c/simulation-performance-budget/1\",\"test_source\":\"software/tests/target/test_performance.c\",\"budget_sha256\":\"c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a\",\"scope\":\"DECLARED_INPUT_CONTRACT_NOT_A_MEASUREMENT\"}",
+        "tests": 10
+      },
+      "provenance": {
+        "duration_ms": 12153.8,
+        "exit_code": 3,
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "invocation_id": "inv-c072f4196d34465b",
+        "output_sha256": "20ef2e79702825f3fb1995326e2ca5b6bb0cebf0aeac3ffc29642ac59f84a639",
+        "tool": "robotframework",
+        "version": "Robot Framework 6.1 (Python 3.13.13 on linux)"
+      }
+    }
+  ],
+  "candidate_sha256": "855f53a6b3f90d83e60e03aacba50e953e9e3a2827c3730d6ae6746fff46b173"
+}
