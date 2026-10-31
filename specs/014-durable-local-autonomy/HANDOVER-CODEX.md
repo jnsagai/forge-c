@@ -1,5 +1,44 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October 07:12 UTC: fresh cohort2/3
+
+07native01M6855WHNYHGCV6PFB5HPHAVH completed07:04:11remoteUTC, initial/final
+independentPASS, sealed archive8a02a835... integrityPASS/local copy verified.
+External scoped auditbf2dc88a... PASS, terminal303source proof3558ebf2... .
+Strict releaseBLOCKED35; phase files3/8/9/3/5/2. SWE.6onlytrace/no verification
+report or executed Robot; SWE.5inspection record missing after timeout. All
+attempts and missing/failed outcomes are explicitly packaged, not complete
+phase delivery. [Exact audit/metrics/gaps and disclosed handoff](../../evidence/014-durable-local-autonomy/fresh07-terminal-20261031/README.md).
+Scoped DF-T001–009 unchanged; DF-T010RUNNING2/3, originalDA30/58 unchanged.
+
+08native **01M68CMQAZNN7QGRZSX5DGRMYY**, orderafo-48b5f7eb60495e69,
+job afo-product-db4a6451b1d049d5966ddcc2, WO-AFO-48b5f7eb60495e69-a1,
+launched07:09:04remoteUTC. Initial source absent; newc0851300... code passed
+initial independent checks, early303source proof3c88fce1... . At SWE.1author;
+not terminal-qualified. Source0e/profile3/auditor303/frozen oracles unchanged.
+Admin reprobe08onlyafter07provenQUIESCENT/RELEASED retained defer9→10 and
+unchanged mission6attempts/1378requests/2405tools/400031744charged-reserved/
+historicalusageUNKNOWN. Recordb617e2c4... . Ordinary Conductor launch; no postlaunch
+steering. Not unattended handoff/self-healing. All3denominator, expiry unchanged.
+
+New inactive gateway source **60619be076d36d50f42aef0c1b467aa2c2c14e76** puts
+existing bounded Admission queue before durable reservation. Real07SWE.5stage
+ended while last provider response still draining; fast429retries skipped both
+SWE.6authors. New ASGI/ledger tests fail5before and pass5after, preserving
+one inference, stop/revocation fences, unknown-capacity holds and bounded wait.
+No live deployment/benefit claim. Exact broader source checks are being recorded.
+
+Hard end07:57:59toolUTC. Remote clock now trails tool~57seconds. At07:55capture
+partial facts/source proof while API lives; **request prepared stop by07:56:30**
+using A3/request-owner-window-stop-v6.py and current expected_epoch6; existing
+guard settles exact managed provider and native/request ownership. Verify real
+physical quiescence, never renew expiry. ProductionPAUSED111 untouched.
+Read-only partial-copy helper A3/copy-partial-delivery-artifacts.py was prepared
+but NOT_CAPTURED; --order-id actual08 --capture copies selected artifacts to a
+private external ZIP, explicitly unatomic/PARTIAL/not release, no candidate
+execution. Use after settlement if08has no terminal package, then SCP/hash-copy
+to loop10. Existing collector still copies sealed terminal outcomes automatically.
+
 ## Overnight checkpoint — 31 October 05:05 UTC: fresh cohort 1/3
 
 06:23UTC:07target harness initially buildFAIL, then13assertionsPASS/3FAIL.
