@@ -89,7 +89,13 @@ def normalize_args(tool_name: str, args: dict) -> dict:
         if k not in model.model_fields:
             del args[k]
     for k, f in model.model_fields.items():
-        if not f.is_required() and k in args and args[k] == f.default:
+        # MCP materializes builtin container factories before calling the
+        # wrapper. FieldInfo.default is Undefined for these, so comparing only
+        # that value makes a valid hook ticket differ from defines=[] (or an
+        # empty tool_versions map) injected by MCP. Do not execute arbitrary or
+        # context-dependent factories while authenticating arguments.
+        default = f.default_factory() if f.default_factory in (list, dict) else f.default
+        if not f.is_required() and k in args and args[k] == default:
             del args[k]
     return args
 
