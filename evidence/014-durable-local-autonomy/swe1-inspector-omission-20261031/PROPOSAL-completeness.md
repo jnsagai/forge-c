@@ -1,4 +1,10 @@
-# Proposal (owner decision needed): SWE.1 completeness against the owner contract
+# Proposal: SWE.1 completeness against the owner contract
+
+**Status: owner-approved plan, 2026-10-31.** In the owner's words: "save your proposal to be implemented after we test the codex-next" (the qwen3-coder-next run). It will be implemented **after** that test reports, through the CRE path (reproducer, CAPA, promotion gate), in this order:
+1. **Option 3** — a deterministic contract-coverage gate, with a structured obligations block in the owner-contract input.
+2. **Option 1** — the owner contract and scope become inspector sources.
+
+**Option 2** (a new checklist item in the protected path `factory/checklists/**`) stays optional and needs its own explicit owner approval. The obligation format is shared with the CRC oracle (Q4).
 
 **Measured (README.md here).** Ornith's attempt-2 SWE.1 baseline has no requirement for three obligations stated in
 the CRC IDR owner contract: no status polling, no error code on a valid call, and preserving the other fields and
