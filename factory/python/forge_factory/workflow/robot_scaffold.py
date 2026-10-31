@@ -62,6 +62,14 @@ def header(ws: Path | None = None) -> str:
 
     budget = selected(ws) if ws is not None else None
     text = HEADER
+    if ws is not None:
+        from ..delivery_first import selected as delivery_selected
+
+        cfg, _ = delivery_selected(ws)
+        if cfg:
+            text = re.sub(r"^# Register access in scenarios:.*$",
+                          "# Register access follows " + cfg["contract"] + "; use the actual candidate/device "
+                          "declarations, not assumed register arrays or mask macros.", text, flags=re.M)
     if budget:
         text = text.replace("*** Settings ***", (
             "# Simulation-only performance: use the declared instrumented test, not a copied scenario.\n"

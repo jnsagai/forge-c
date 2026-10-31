@@ -129,6 +129,7 @@ class ForgeTarget:
         out.mkdir(parents=True, exist_ok=True)
         objs = []
         from forge_factory.brownfield.cmsis import delivered_unit, target_flags
+        from forge_factory.delivery_first import include_flags
 
         units = [*sorted((self.ws / "software/hal").glob("*.c")), *self._ll_units(out)]
         if not units:  # CAPA-061 (b007): a header-only delivery (ST LL) is measured through its scope wrappers
@@ -142,7 +143,8 @@ class ForgeTarget:
             o = out / (c.stem + ".o")
             r = subprocess.run([cc, "-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os",
                                 "-ffunction-sections", "-fdata-sections", f"-I{self.ws / 'software/hal'}",
-                                f"-I{self.ws / 'software/ll'}", *target_flags(self.ws), *(extra or []), "-c", str(c),
+                                f"-I{self.ws / 'software/ll'}", *target_flags(self.ws), *include_flags(self.ws),
+                                *(extra or []), "-c", str(c),
                                 "-o", str(o)],
                                capture_output=True, text=True, timeout=120, cwd=out)
             if r.returncode != 0:

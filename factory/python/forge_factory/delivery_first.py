@@ -332,6 +332,23 @@ def workflow(graph, nodes, manifest, command_env, python):
     # Subsequent engineering phases see the same generated candidate, not a second
     # untracked implementation. Their original evidence/checks remain authoritative.
     from .acp import statements
+    from .workflow import prompts as P
+
+    access = ("Register access follows " + cfg["contract"] + ". Use only the actual API, device declarations and "
+              "source-backed target addresses in the frozen inputs. Do not invent register arrays, offset defines "
+              "or masks that the candidate/device inputs do not supply.")
+    legacy_access = _q(P.peripheralize(P.cmsisize(P.REGISTER_BLOCK_NOTE)))
+    robot_steps = P.LL_ROBOT_STEPS if manifest.get("layer") == "LL" else P.ROBOT_STEPS
+    robot_read = P.peripheralize(P.cmsisize(robot_steps[0]))
+    robot_read = robot_read.replace(
+        "Read nothing else: no other sources, tests, reports or tools are needed in this step.",
+        "Also read " + cfg["contract"] + " and the candidate's declared device inputs; the existing target tests "
+        "may be consulted for the declared interface and simulation fidelity.")
+    scenario = ("Write C scenarios software/tests/software/scn_<topic>.c, grouping the declared requirements by "
+                "topic. Include the actual candidate header(s) and forge_target_test.h, declare FORGE_MAILBOX_DEFINE, "
+                "and use int main(void) with FORGE_TEST_BEGIN(), TCHECK(number, actual_condition), FORGE_TEST_END(), "
+                "then return 0. " + access + " Pass valid instance arguments exactly as the scoped prototypes require. "
+                "Keep real behavioral assertions and the frozen implementation unchanged. No printf or stdlib.")
 
     edits = []
     for start, end, _, name, attrs in statements(graph):
@@ -341,7 +358,14 @@ def workflow(graph, nodes, manifest, command_env, python):
                     "The bounded implementation authoring sequence is finished. Candidate code is now frozen; "
                     "produce your phase documents/tests and record remaining defects without changing the driver. "
                     "Use the exact scoped function signatures in " + cfg["contract"] + ". ")
-            edits.append((start, end, graph[start:end].replace('prompt="', 'prompt="' + _q(note), 1)))
+            text = graph[start:end].replace(legacy_access, _q(access))
+            if name == "swe6_test_author":
+                for old, new in ((P.peripheralize(P.cmsisize(robot_steps[0])), robot_read),
+                                 (P.peripheralize(P.cmsisize(robot_steps[1])), scenario)):
+                    if _q(old) not in text:
+                        raise ValueError("DELIVERY_FIRST_SCENARIO_PROMPT_BOUNDARY_CHANGED")
+                    text = text.replace(_q(old), _q(new))
+            edits.append((start, end, text.replace('prompt="', 'prompt="' + _q(note), 1)))
     for start, end, text in reversed(edits):
         graph = graph[:start] + text + graph[end:]
     # Recheck final bytes after downstream authors may have changed the code.
