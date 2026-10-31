@@ -3,6 +3,14 @@
   "generation_performed": false,
   "initial_test_version": "Seven cases before final fixture expansion; not the final test file",
   "qwen_output_executed_locally": false,
+  "receipt_representations": {
+    "initial-before.xml": {
+      "decoded_sha256": "c22f3b686d15bb21785600db8f654b39124ddf3727acd44da816f77ec6323b50",
+      "encoding": "gzip",
+      "stored_as": "initial-before.xml.gz",
+      "stored_sha256": "85d934e93ffe033015540f064fc2133952cac10a2d41b5e22774d2a4e3f26c94"
+    }
+  },
   "runtime_activation": "NOT_RUN",
   "schema": "forge-c/local-regression-evidence/1",
   "source_sha256": {

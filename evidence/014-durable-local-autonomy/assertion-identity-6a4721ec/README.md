@@ -58,4 +58,3 @@ release blocked, full LL/HAL and autonomous self-healing unproven. Before a new
 live retry, retain cumulative mission accounting, establish a valid new bounded
 execution window and activate the tested fixes through the existing path.
 Do not replace the old third trial or rewrite its stop outcome.
-
