@@ -816,3 +816,13 @@ reproducers:
     operations: [lrtx/visit.write_scoped, policy/authz.Authorizer.decide, development_execution.mutation_allowed]
     root_cause: "visit.write_scoped built its Authorizer from the workspace's .forge-run/binding.json. A workspace copy (lrtx/modelcmp._fresh_copy, lrtx/seeded.evaluate, lrtx/campaign) keeps the source's binding, whose absolute workspace path makes Authorizer.decide call development_execution.mutation_allowed(<source>) -> phase_state(), which reads and rewrites the source's development-phase state while the file is written into the copy."
     remedy: "write_scoped re-roots the loaded binding at the workspace being written (same binding id and node roles/phases), so authorization and development-phase state always belong to that workspace. Scope, role and path-containment checks are unchanged."
+  - id: RPR-075
+    script: rpr075_inspector_repair_drops_findings.py
+    sha256: 4054fe085221a8d16e7ec72f9c2ef453fa32b45e0e6895262b4f94d7af300e8b
+    symptom_signature: "inspector findings dropped in repair are not kept in the task checkpoint"
+    observed_in: "standalone SWE.1 run on Omniverse2 2026-10-31 (evidence/014-durable-local-autonomy/swe1-ornith-standalone-20261031, FINDINGS.md item 2, PROPOSAL-inspector-repair.md option A): Qwen SWE1-01/SWE1-03 'PASS with findings' rejected, repaired into a clean PASS"
+    baseline_revision: 2d91c2fa6f7cc7f7983e98259bd4ddb20fba6733
+    error_codes: []
+    operations: [lrtx/visit.run_task, lrtx/review._visit]
+    root_cause: "visit.run_task kept only errors, usage and input_hash of a rejected attempt. When validate_verdict rejected an inspector answer 'PASS with findings' and the localized repair returned PASS without findings, the findings the model had stated were not recorded anywhere, so a repair could turn an observed problem into a clean PASS without a trace."
+    remedy: "Owner option A: run_task keeps a rejected inspector answer's findings (rejected_findings) in the checkpoint attempt; lrtx.review reports findings that the accepted answer no longer carries as withdrawn_in_repair in inspection-record.json and as LRTX_INSPECTOR_FINDING_WITHDRAWN_IN_REPAIR reply notes. Verdict and gate are unchanged."
