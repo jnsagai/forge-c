@@ -40,4 +40,3 @@ record={'at':utc_now(),'kind':'EXTERNAL_BETWEEN_JOBS_ADMINISTRATIVE_REPROBE','or
  'native_signal_sent':False,'runtime_or_profile_changed':False,'factory_self_healing_claim':False}
 path=E/'control/qualification-observations/cohort'/('capacity-reprobe-'+digest(record)+'.json');immutable_json(path,record)
 print(json.dumps({'path':str(path),'sha256':sha256_file(path),'record':record}))
-

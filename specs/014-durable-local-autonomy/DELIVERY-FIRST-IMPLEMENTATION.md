@@ -14,9 +14,15 @@ Read [complete scoped audit, exact commands and cohort admission](../../evidence
 
 DF-T001–009 now have the required scoped evidence. This does not qualify the
 full LL/HAL owner goal or close any original DA qualification task (still30/58).
-DF-T010 is RUNNING: fresh06 native01M67ZJWDYS7H33828MPTK6E6D,07/08queued;
+DF-T010 is RUNNING **1/3 qualified**: fresh06 native01M67ZJWDYS7H33828MPTK6E6D
+passed external terminal audit3e73552f...; nativeSUCCEEDED/releaseBLOCKED16.
+07native01M6855WHNYHGCV6PFB5HPHAVH is RUNNING (initial independentPASS),08queued;
 all3 remain in the denominator. Same0e/profile3/auditor303/input/oracle hashes,
 mission and07:57:59UTC expiry. No grant renewal or source deployment.
+Read [fresh06 terminal audit and disclosed administrative queue retry](../../evidence/014-durable-local-autonomy/fresh06-terminal-20261031/README.md).
+Healthy controller handoff was delayed by3600s sole local GPU contention backoff;
+external between-jobs Store.defer retry started07 after proven capacity release.
+Unattended handoff/self-healing remains unqualified; no post-launch job fixes.
 
 02:50UTC: [target API prompt correction and actual Qwen test repair](../../evidence/014-durable-local-autonomy/target-api-prompt-20261031/README.md).
 Inactive source d0090099 fixes an observed target-author instruction to use
@@ -107,7 +113,7 @@ separate. No budget or oracle was relaxed to make this control pass.
 | DF-T007 | COMPLETE truthful traversal: native05 has all six author/inspector attempts and archived substantive files3/8/9/3/3/3. SWE.1/6PASS; SWE.2–5REWORK. Unit mixed-coverage rewrite and target harness adaptation remain recorded. Earlier missing/failed stages are not repaired retrospectively. |
 | DF-T008 | COMPLETE for scoped M1: archive4a20153d... integrityPASS contains the byte-exact final verifier receipt/report entry, candidate, pinned configuration and25strict release gaps. Source0e defers early sealing; old archive2cbfa28a... remains unchanged andNOT_PROVEN. |
 | DF-T009 | COMPLETE scoped DF-M1: external nine-condition audit9ffc4f56... binds actual native05, archive, local Qwen origin, terminal source provenance, independent controls, metrics and observed interventions. Strict releaseBLOCKED25. No full LL/HAL, production or availability claim. |
-| DF-T010 | RUNNING, not complete: three preregistered fresh06/07/08 orders admitted after M1 audit via existing AFO, binding8fa0c166...;06running,07/08queued. All outcomes retain denominator3 and fixed07:57:59UTC expiry. |
+| DF-T010 | RUNNING 1/3 qualified, not complete: three preregistered fresh06/07/08 orders admitted after M1 audit via existing AFO, binding8fa0c166...;06externally qualified audit3e73552f/releaseBLOCKED16,07running initialPASS,08queued. Between-jobs administrative retry disclosed; no unattended handoff claim. All outcomes retain denominator3 and fixed07:57:59UTC expiry. |
 | DF-T011 | DEFERRED by specification until DF-T010; no new provisional dependency implementation. |
 | DF-T012 | DEFERRED by specification until DF-T010; strict release remains unchanged meanwhile. |
 
