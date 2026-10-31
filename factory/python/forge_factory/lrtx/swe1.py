@@ -73,11 +73,15 @@ def group_schema(obl: dict | None, crosscutting: bool = False) -> dict:
            "properties": {**REQ_SCHEMA["properties"],
                           "obligations": {"type": "array", "items": {"type": "string", "enum": ids}}}}
     out = {**GROUP_SCHEMA, "properties": {**GROUP_SCHEMA["properties"], "requirements": {"type": "array", "items": req}}}
-    if crosscutting:
+    if crosscutting:  # only non-critical obligations may be recorded as gaps (owner 2026-10-31)
+        gap_ids = [o["id"] for o in obl["obligations"] if not o.get("critical")]
         out["required"] = GROUP_SCHEMA["required"] + ["obligation_gaps"]
         out["properties"]["obligation_gaps"] = {"type": "array", "items": {
             "type": "object", "additionalProperties": False, "required": ["id", "reason"],
-            "properties": {"id": {"type": "string", "enum": ids}, "reason": {"type": "string", "minLength": 10}}}}
+            "properties": {"id": {"type": "string", "enum": gap_ids or ["(none)"]},
+                           "reason": {"type": "string", "minLength": 10}}}}
+        if not gap_ids:
+            out["properties"]["obligation_gaps"]["maxItems"] = 0
     return out
 
 
@@ -87,10 +91,15 @@ def obligation_rule(obl: dict, crosscutting: bool) -> str:
             "obligation; an obligation that names register effects is implemented only by a requirement with those "
             "effects.")
     if crosscutting:
+        critical = [o["id"] for o in obl["obligations"] if o.get("critical")]
         rule += (" Write the requirements for every owner obligation that no CURRENT ARTIFACT requirement implements "
                  "and that is not a single register field's behaviour (e.g. no status polling, no error code, other "
-                 "fields and registers preserved). An obligation the inputs cannot support goes into obligation_gaps "
-                 "with the reason; never drop an obligation silently. obligation_gaps stays empty otherwise.")
+                 "fields and registers preserved). A non-critical obligation the inputs cannot support goes into "
+                 "obligation_gaps with the reason; never drop an obligation silently. obligation_gaps stays empty "
+                 "otherwise.")
+        if critical:
+            rule += (" Critical obligations always need an implementing requirement and can never be obligation gaps: "
+                     + ", ".join(critical) + ".")
     return rule
 
 
@@ -724,7 +733,7 @@ def obligation_findings(ws: Path) -> list[str]:
                for o in (obl or {}).get("obligations", [])}
     out = []
     for f in found:
-        m = re.match(r"SWE1_OBLIGATION_UNCOVERED:(OBL-[a-z0-9-]+)", f)
+        m = re.match(r"SWE1_OBLIGATION_(?:UNCOVERED|CRITICAL_GAP):(OBL-[a-z0-9-]+)", f)
         tasks = sorted({by_field[k] for k in effects.get(m.group(1), set()) if k in by_field}) if m else []
         out.append(f + "".join(f" (task {t})" for t in tasks))
     return out

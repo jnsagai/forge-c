@@ -10,7 +10,9 @@ rule, because the check reads the SWE.1 artifacts, not an author's internal reco
     ## Obligation gaps
     - **OBL-x**: <reason the inputs cannot support it>
 
-Work orders without the input keep their behaviour; `status(ws)` reports NOT_DECLARED so the absence is visible.
+A critical obligation is never closed by a gap (owner 2026-10-31: "critical obligations can never be gaps"): it needs
+an implementing requirement. Work orders without the input keep their behaviour; `status(ws)` reports NOT_DECLARED so
+the absence is visible.
 """
 from __future__ import annotations
 
@@ -127,7 +129,10 @@ def coverage_findings(ws: Path) -> list[str]:
                 cited.setdefault(i, []).append(swr)
     out += [f"SWE1_OBLIGATION_UNKNOWN:gap:{i}" for i in gaps if i not in known]
     for i, gap_reason in gaps.items():
-        if i in known and len(gap_reason) < 10:
+        if i in known and known[i].get("critical"):
+            out.append(f"SWE1_OBLIGATION_CRITICAL_GAP:{i}: a critical owner obligation cannot be an obligation gap - "
+                       f"write the requirement that implements it (owner: {known[i]['statement'][:160]})")
+        elif i in known and len(gap_reason) < 10:
             out.append(f"SWE1_OBLIGATION_GAP_REASON_MISSING:{i}")
     effects = json.loads((ws / EFFECTS).read_text()).get("effects", []) if (ws / EFFECTS).is_file() else []
     for i, o in known.items():

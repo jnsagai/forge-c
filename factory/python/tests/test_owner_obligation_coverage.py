@@ -168,3 +168,34 @@ def test_orders_without_obligations_are_unchanged(ws, monkeypatch):
     assert amap["owner_obligations"] == {"status": "NOT_DECLARED"} and OO.CSV not in amap["files"]
     assert OO.coverage_findings(ws) == [] and OO.source_paths(ws) == []
     assert _gate(ws, monkeypatch) == 0
+
+
+def test_a_critical_obligation_can_never_be_a_gap(ws, monkeypatch):
+    """Owner 2026-10-31: run -02 recorded the critical OBL-preserve-other-registers as a gap with a false reason."""
+    declare(ws)
+    found_gap = [{"id": "OBL-no-startup-writes", "reason": "the register tasks already constrain every write"}]
+    calls = []
+    monkeypatch.setattr(S, "call", _scripted(answers({"start": ["OBL-start-key"]}, POLL_GAP + found_gap), calls))
+    rep = swe1.visit(ws, "qwen3-coder:30b")
+    assert rep["status"] == "FAILED"
+    cross = [p for p in calls if p["task"] == "requirements:crosscutting"]
+    gap_ids = cross[0]["output_schema"]["properties"]["obligation_gaps"]["items"]["properties"]["id"]["enum"]
+    assert gap_ids == ["OBL-no-polling"]  # only the non-critical obligation may be offered as a gap
+    assert "can never be obligation gaps: OBL-start-key, OBL-no-startup-writes" in cross[0]["instructions"]
+    # first line of defence: the schema refuses the critical id as a gap, so nothing is assembled; the coverage
+    # finding is the second line, for authors without the schema (test below, RPR-077)
+    assert any(i.startswith("requirements:crosscutting:") and "obligation_gaps" in i for i in rep["issues"]), rep
+    assert _gate(ws, monkeypatch) != 0
+
+
+def test_critical_gap_in_the_artifacts_is_a_finding(ws):
+    declare(ws)
+    (ws / swe1.REQS).parent.mkdir(parents=True, exist_ok=True)
+    (ws / swe1.REQS).write_text("# Software requirements\n\n## Obligation gaps\n\n"
+                                "- **OBL-start-key**: the register task covers it implicitly\n"
+                                "- **OBL-no-polling**: the inputs state no flag that could be polled\n"
+                                "- **OBL-no-startup-writes**: covered elsewhere in the register tasks\n")
+    found = OO.coverage_findings(ws)
+    assert [f.split(":")[1] for f in found if f.startswith("SWE1_OBLIGATION_CRITICAL_GAP")] == \
+        ["OBL-start-key", "OBL-no-startup-writes"]
+    assert not any("OBL-no-polling" in f for f in found)  # a non-critical gap with a reason stays allowed
