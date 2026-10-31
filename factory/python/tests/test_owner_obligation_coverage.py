@@ -269,3 +269,36 @@ def test_a_repair_round_keeps_the_earlier_attempts(ws, monkeypatch):
     ck = json.loads(swe1._ckpt(ws, "requirements:crosscutting").read_text())
     every = (ck.get("history") or []) + ck["attempts"]
     assert len(every) == 2 and any("without naming" in e for e in every[0]["errors"])
+
+
+def test_crosscutting_register_requirement_for_an_effect_obligation_is_removed_not_kept(ws):
+    """CAPA-080 (run -04): Ornith wrote the write/read IDR requirements into the cross-cutting task citing their
+    obligations; 'keep it for the obligation' made it keep them. Obligations with register effects belong to the
+    register tasks; only effect-free obligations are kept and rephrased."""
+    from forge_factory.assurance.hardware import index
+
+    declare(ws, DOC_P)
+    idx = index(ws / "inputs/sections/RM0486")
+    sysn = swe1.system_name(ws)
+    start = {"key": "start_again", "statement": f"When LL_IWDG_Enable is called, the {SYS} shall write 0x0000CCCC to "
+             "IWDG_KR.KEY.", "source_page": 2989, "verified_by": "host_unit_test", "obligations": ["OBL-start-key"],
+             "verification": "Host unit test passes when IWDG_KR.KEY holds 0xCCCC.",
+             "effects": [{"case": "START2", "register": "IWDG_KR", "field": "KEY", "op": "write", "value": "0xCCCC"}]}
+    named = {**start, "key": "start_named", "effects": []}
+    preserve = {**start, "key": "preserve_others", "effects": [], "obligations": ["OBL-preserve-others"],
+                "statement": f"When an LL function is called, the {SYS} shall leave every register other than "
+                             "IWDG_KR.KEY unchanged."}
+    startup = {"key": "startup", "statement": f"While no LL function has been called after reset, the {SYS} shall not "
+               "write any IWDG register.", "source_page": 2989, "verification": "Robot test passes when no write.",
+               "verified_by": "target_robot_test", "effects": [], "obligations": []}
+    doc = {"requirements": [startup, start, named, preserve], "not_covered": [], "open_points": [],
+           "obligation_gaps": []}
+    out = swe1.validate_group(ws, doc, None, sysn, idx)
+    for k in ("start_again", "start_named"):
+        mine = [f for f in out if f.startswith(f"[{k}]")]
+        assert mine and all(f"remove requirement [{k}]" in f and "implements them" in f for f in mine), mine
+        assert not any(f"keep [{k}]" in f for f in mine)
+    assert any(f.startswith("[preserve_others]") and "keep [preserve_others]" in f and "without naming" in f
+               for f in out)
+    p = swe1.crosscut_packet(ws, [], "qwen3.8:27b-q8_0")
+    assert "implemented by the register tasks, not here: OBL-start-key." in p["instructions"]

@@ -92,6 +92,7 @@ def obligation_rule(obl: dict, crosscutting: bool) -> str:
             "effects.")
     if crosscutting:
         critical = [o["id"] for o in obl["obligations"] if o.get("critical")]
+        register = [o["id"] for o in obl["obligations"] if o.get("effects")]
         rule += (" Write the requirements for every owner obligation that no CURRENT ARTIFACT requirement implements "
                  "and that is not a single register field's behaviour (e.g. no status polling, no error code, other "
                  "fields and registers preserved). A non-critical obligation the inputs cannot support goes into "
@@ -100,6 +101,9 @@ def obligation_rule(obl: dict, crosscutting: bool) -> str:
         if critical:
             rule += (" Critical obligations always need an implementing requirement and can never be obligation gaps: "
                      + ", ".join(critical) + ".")
+        if register:  # CAPA-080: those are the register tasks' requirements (CURRENT ARTIFACT), never written here
+            rule += (" Obligations with register effects are implemented by the register tasks, not here: "
+                     + ", ".join(register) + ".")
     return rule
 
 
@@ -452,16 +456,25 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         out.append("not_covered must be empty for the cross-cutting task")
     if g is None:  # lrtx6 (2026-10-21): the cross-cutting task wrote status-flag queries that a register task covers
         tasked = {x.split(".")[0] for x in inventory(ws)["items"]}
+        # CAPA-080 (run -04): only obligations WITHOUT register effects are the cross-cutting task's to keep
+        obl = owner_obligations(ws)
+        with_effects = {o["id"] for o in (obl or {}).get("obligations", []) if o.get("effects")}
+
+        def keepable(r: dict) -> bool:
+            return bool(r.get("obligations")) and not set(r["obligations"]) & with_effects
         for r in doc["requirements"]:
             # lrtx9 (2026-10-21): it rewrote the IWDG_KR/PR/RLR writes with effects, duplicating the register tasks
             for reg in sorted({e["register"] for e in r["effects"]} & tasked):
-                if r.get("obligations"):  # CAPA-079: never tell the author to delete what an owner obligation needs
+                if keepable(r):  # CAPA-079: never tell the author to delete what an effect-free obligation needs
                     out.append(f"[{r['key']}] acts on {reg}, which the {reg} task covers: keep [{r['key']}] for owner "
                                f"obligation(s) {', '.join(r['obligations'])}, but remove its effects on {reg} and state "
                                f"it for all scoped functions without naming {reg}")
                     continue
+                effect_ids = sorted(set(r.get("obligations") or []) & with_effects)
                 out.append(f"[{r['key']}] acts on {reg}, which the {reg} task covers - remove requirement "
-                           f"[{r['key']}] from the cross-cutting task")
+                           f"[{r['key']}] from the cross-cutting task" + (
+                               f" (owner obligation(s) {', '.join(effect_ids)} have register effects: the {reg} task "
+                               "implements them)" if effect_ids else ""))
         if not any(STARTUP.match(r["statement"]) for r in doc["requirements"]):
             # lrtx9: a repair dropped the startup invariant the packet asks for (SWE1-03 then failed for real)
             out.append(f"the cross-cutting task must state the reset/startup behaviour, e.g. 'While no LL function has "
@@ -470,7 +483,7 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         for r in doc["requirements"]:
             regs = sorted({f[0] for f in re.findall(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z0-9_]+)", r["statement"])
                            if f[0] in idx} - {e["register"] for e in r["effects"]})
-            if regs and not STARTUP.match(r["statement"]) and not r["effects"] and r.get("obligations"):
+            if regs and not STARTUP.match(r["statement"]) and not r["effects"] and keepable(r):
                 # CAPA-079 (run -03): "remove requirement" made the author delete the requirement an owner obligation
                 # needed; the rule stays (no register requirement here), the instruction says how to keep it
                 out.append(f"[{r['key']}] names {', '.join(regs)}, which its register task covers: keep [{r['key']}] for "
@@ -478,8 +491,11 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
                            f"without naming {', '.join(regs)} (e.g. 'the {sysname} shall leave every other register "
                            f"and every other {pfx} instance unchanged')")
             elif regs and not STARTUP.match(r["statement"]) and not r["effects"]:
+                effect_ids = sorted(set(r.get("obligations") or []) & with_effects)
                 out.append(f"[{r['key']}] is a requirement on {', '.join(regs)}, which its register task covers - remove "
-                           f"requirement [{r['key']}] from the cross-cutting task")
+                           f"requirement [{r['key']}] from the cross-cutting task" + (
+                               f" (owner obligation(s) {', '.join(effect_ids)} have register effects: the register "
+                               "task implements them)" if effect_ids else ""))
     return out
 
 
