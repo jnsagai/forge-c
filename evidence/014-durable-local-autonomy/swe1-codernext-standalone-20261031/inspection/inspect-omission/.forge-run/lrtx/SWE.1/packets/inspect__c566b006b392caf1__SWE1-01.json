@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-31T17:02:02.251043Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 17432,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 17304,
+          "sha256": "2e93e20faa88c76a3b2af21dd35227f2692ddf3eedb5880166fb71dcf1622005"
+        },
+        "context_basis": "profile:local-rtx-v2-omniverse2-q38-delivery-first",
+        "context_tokens": 262144,
+        "estimated_prompt_tokens": 5984,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 16280
+      },
+      "errors": [
+        "finding 'HSI contract baseline is missing: manifest states 'upstream.status: NOT_PROVIDED...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Budget baseline is missing: manifest states 'upstream.status: NOT_PROVIDED' for ...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence",
+        "finding 'Traceability evidence for HSI contract is incomplete: upstream_gaps.md lists HSI...' judges an input the owner recorded as NOT_PROVIDED as a failure: the document records the gap in traceability/upstream_gaps.md, which is what the factory requires for missing upstream inputs - re-judge the item on the other evidence"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "7403f589337b003c92aac1f1d1f3a9e3b85ebe51c9340ba96f2534fef43dca82",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 344,
+        "prompt_tokens": 4396,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 4740
+      },
+      "wall_ms": 6742.6
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 19765,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 19637,
+          "sha256": "f98a3730f74d9340ec208cee2b423f6c0db2976d65dd05ded1172698a44f0554"
+        },
+        "context_basis": "profile:local-rtx-v2-omniverse2-q38-delivery-first",
+        "context_tokens": 262144,
+        "estimated_prompt_tokens": 6816,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 18570
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "296efa7f8f4ee615576c3436bfcfb9add7ccf445f7241e59624db581dc893d34",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 68,
+        "prompt_tokens": 4979,
+        "prompt_tokens_details": {
+          "cached_tokens": 2348
+        },
+        "total_tokens": 5047
+      },
+      "wall_ms": 2457.9
+    }
+  ],
+  "base_hash": "7403f589337b003c92aac1f1d1f3a9e3b85ebe51c9340ba96f2534fef43dca82",
+  "doc": {
+    "evidence_checked": [
+      ".forge-run/manifest.json",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/software_requirements.md",
+      "workproducts/SWE.1/register_effects.json"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:c566b006b392caf1:SWE1-01"
+}

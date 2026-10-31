@@ -1,0 +1,777 @@
+{
+ "model": "qwen3-coder-next:q4_K_M",
+ "url": "http://127.0.0.1:18610",
+ "started": "2026-10-31T16:59:47Z",
+ "cases": [
+  {
+   "content": "{\n  \"answer\": \"yes\",\n  \"items\": [\n    2,\n    3,\n    5\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 29,
+    "prompt_tokens": 54,
+    "total_tokens": 83,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "tps": 66.83853719087176,
+   "wall_s": 1.58,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-plain",
+   "stream": false,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"answer\": \"yes\",\n  \"items\": [\n    2,\n    3,\n    5\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 29,
+    "prompt_tokens": 54,
+    "total_tokens": 83,
+    "prompt_tokens_details": {
+     "cached_tokens": 50
+    }
+   },
+   "tps": 80.09496974984626,
+   "wall_s": 0.43,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-plain",
+   "stream": false,
+   "seed": 2
+  },
+  {
+   "content": "{\n  \"answer\": \"yes\",\n  \"items\": [\n    2,\n    3,\n    5\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 29,
+    "prompt_tokens": 54,
+    "total_tokens": 83,
+    "prompt_tokens_details": {
+     "cached_tokens": 50
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 31,
+   "tps": 80.47295102933526,
+   "wall_s": 0.44,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-plain",
+   "stream": true,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"answer\": \"yes\",\n  \"items\": [\n    2,\n    3,\n    5\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 29,
+    "prompt_tokens": 54,
+    "total_tokens": 83,
+    "prompt_tokens_details": {
+     "cached_tokens": 50
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 31,
+   "tps": 78.18455464123062,
+   "wall_s": 0.44,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-plain",
+   "stream": true,
+   "seed": 2
+  },
+  {
+   "content": "{\n  \"answer\": \"yes\",\n  \"items\": [1, 7]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 21,
+    "prompt_tokens": 64,
+    "total_tokens": 85,
+    "prompt_tokens_details": {
+     "cached_tokens": 18
+    }
+   },
+   "tps": 62.64682850430697,
+   "wall_s": 0.85,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-adversarial",
+   "stream": false,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"answer\": \"yes\",\n  \"items\": [\n    1,\n    7\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 27,
+    "prompt_tokens": 64,
+    "total_tokens": 91,
+    "prompt_tokens_details": {
+     "cached_tokens": 60
+    }
+   },
+   "tps": 66.48137115271027,
+   "wall_s": 0.49,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-adversarial",
+   "stream": false,
+   "seed": 2
+  },
+  {
+   "content": "{\n  \"answer\": \"yes\",\n  \"items\": [1, 7]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 21,
+    "prompt_tokens": 64,
+    "total_tokens": 85,
+    "prompt_tokens_details": {
+     "cached_tokens": 60
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 23,
+   "tps": 65.43474846882688,
+   "wall_s": 0.4,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-adversarial",
+   "stream": true,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"answer\": \"yes\",\n  \"items\": [\n    1,\n    7\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 27,
+    "prompt_tokens": 64,
+    "total_tokens": 91,
+    "prompt_tokens_details": {
+     "cached_tokens": 60
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 29,
+   "tps": 65.6943896991197,
+   "wall_s": 0.49,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-adversarial",
+   "stream": true,
+   "seed": 2
+  },
+  {
+   "content": "{\n  \"peripheral\": \"XTMR\",\n  \"status\": \"OK\",\n  \"registers\": [\n    {\n      \"name\": \"CTRL\",\n      \"offset\": 0,\n      \"access\": \"rw\"\n    },\n    {\n      \"name\": \"STAT\",\n      \"offset\": 4,\n      \"access\": \"ro\"\n    },\n    {\n      \"name\": \"DATA\",\n      \"offset\": 8,\n      \"access\": \"wo\"\n    }\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 101,
+    "prompt_tokens": 64,
+    "total_tokens": 165,
+    "prompt_tokens_details": {
+     "cached_tokens": 18
+    }
+   },
+   "tps": 83.9962033716076,
+   "wall_s": 1.72,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-nested",
+   "stream": false,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"peripheral\": \"XTMR\",\n  \"status\": \"OK\",\n  \"registers\": [\n    {\n      \"name\": \"CTRL\",\n      \"offset\": 0,\n      \"access\": \"rw\"\n    },\n    {\n      \"name\": \"STAT\",\n      \"offset\": 4,\n      \"access\": \"ro\"\n    },\n    {\n      \"name\": \"DATA\",\n      \"offset\": 8,\n      \"access\": \"wo\"\n    }\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 102,
+    "prompt_tokens": 64,
+    "total_tokens": 166,
+    "prompt_tokens_details": {
+     "cached_tokens": 60
+    }
+   },
+   "tps": 82.3811916398588,
+   "wall_s": 1.45,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-nested",
+   "stream": false,
+   "seed": 2
+  },
+  {
+   "content": "{\n  \"peripheral\": \"XTMR\",\n  \"status\": \"OK\",\n  \"registers\": [\n    {\n      \"name\": \"CTRL\",\n      \"offset\": 0,\n      \"access\": \"rw\"\n    },\n    {\n      \"name\": \"STAT\",\n      \"offset\": 4,\n      \"access\": \"ro\"\n    },\n    {\n      \"name\": \"DATA\",\n      \"offset\": 8,\n      \"access\": \"wo\"\n    }\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 101,
+    "prompt_tokens": 64,
+    "total_tokens": 165,
+    "prompt_tokens_details": {
+     "cached_tokens": 60
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 103,
+   "tps": 82.69335567156514,
+   "wall_s": 1.39,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-nested",
+   "stream": true,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"peripheral\": \"XTMR\",\n  \"status\": \"OK\",\n  \"registers\": [\n    {\n      \"name\": \"CTRL\",\n      \"offset\": 0,\n      \"access\": \"rw\"\n    },\n    {\n      \"name\": \"STAT\",\n      \"offset\": 4,\n      \"access\": \"ro\"\n    },\n    {\n      \"name\": \"DATA\",\n      \"offset\": 8,\n      \"access\": \"wo\"\n    }\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 102,
+    "prompt_tokens": 64,
+    "total_tokens": 166,
+    "prompt_tokens_details": {
+     "cached_tokens": 60
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 104,
+   "tps": 85.56878247483559,
+   "wall_s": 1.26,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-nested",
+   "stream": true,
+   "seed": 2
+  },
+  {
+   "content": "{\n  \"requirements\": [\n    {\n      \"key\": \"ears_xtmr_setload\",\n      \"statement\": \"When XTMR_SetLoad is called with a valid XTMR register base address and a 16-bit load value, the function shall write the 16-bit value to the LOAD field (bits [15:0]) of the XTMR_LOAD register at offset 0x0, ignoring bits [31:16] of the input value.\",\n      \"source_page\": 1,\n      \"verification\": \"Readback via XTMR_G",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 522,
+    "prompt_tokens": 129,
+    "total_tokens": 651,
+    "prompt_tokens_details": {
+     "cached_tokens": 18
+    }
+   },
+   "tps": 82.40366916176332,
+   "wall_s": 6.89,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-swe1-group-schema",
+   "stream": false,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"requirements\": [\n    {\n      \"key\": \"req_xtmr_setload_001\",\n      \"statement\": \"When XTMR_SetLoad() is called with a valid pointer to an XTMR_TypeDef instance and a 16-bit load value v (0 \u2264 v \u2264 0xFFFF), the function shall write v to the LOAD field of the XTMR_LOAD register at offset 0x0 of the device memory-mapped register space.\",\n      \"source_page\": 1,\n      \"verification\": \"Unit test: Ass",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 529,
+    "prompt_tokens": 129,
+    "total_tokens": 658,
+    "prompt_tokens_details": {
+     "cached_tokens": 125
+    }
+   },
+   "tps": 80.01355381108498,
+   "wall_s": 6.83,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-swe1-group-schema",
+   "stream": false,
+   "seed": 2
+  },
+  {
+   "content": "{\n  \"requirements\": [\n    {\n      \"key\": \"ears_xtmr_setload\",\n      \"statement\": \"When XTMR_SetLoad is called with a valid XTMR register base address and a 16-bit load value, the function shall write the 16-bit value to the LOAD field (bits [15:0]) of the XTMR_LOAD register at offset 0x0, ignoring bits [31:16] of the input value.\",\n      \"source_page\": 1,\n      \"verification\": \"Readback via XTMR_G",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 522,
+    "prompt_tokens": 129,
+    "total_tokens": 651,
+    "prompt_tokens_details": {
+     "cached_tokens": 125
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 524,
+   "tps": 82.99368578941012,
+   "wall_s": 6.45,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-swe1-group-schema",
+   "stream": true,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"requirements\": [\n    {\n      \"key\": \"req_xtmr_setload_001\",\n      \"statement\": \"When XTMR_SetLoad() is called with a valid pointer to an XTMR_TypeDef instance and a 16-bit load value v (0 \u2264 v \u2264 0xFFFF), the function shall write v to the LOAD field of the XTMR_LOAD register at offset 0x0 of the device memory-mapped register space.\",\n      \"source_page\": 1,\n      \"verification\": \"Unit test: Ass",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 529,
+    "prompt_tokens": 129,
+    "total_tokens": 658,
+    "prompt_tokens_details": {
+     "cached_tokens": 125
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 531,
+   "tps": 82.11245487314092,
+   "wall_s": 6.51,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-swe1-group-schema",
+   "stream": true,
+   "seed": 2
+  },
+  {
+   "content": "{\n  \"verdict\": \"PASS\",\n  \"findings\": [\n    \"REQ-1 has identifier 'REQ-1' and text 'The driver shall write LOAD.'\",\n    \"REQ-2 has identifier 'REQ-2' and text 'The driver shall return LOAD.'\",\n    \"Both requirements are explicitly listed in doc/reqs.md with unique identifiers.\"\n  ],\n  \"evidence_checked\": [\n    \"doc/reqs.md contains REQ-1 and REQ-2 with identifiers\"\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 110,
+    "prompt_tokens": 75,
+    "total_tokens": 185,
+    "prompt_tokens_details": {
+     "cached_tokens": 18
+    }
+   },
+   "tps": 82.28986264387514,
+   "wall_s": 1.73,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-review-verdict-schema",
+   "stream": false,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"verdict\": \"PASS\",\n  \"findings\": [\n    \"REQ-1 and REQ-2 both have identifiers (REQ-1 and REQ-2 respectively).\",\n    \"The evidence path doc/reqs.md is referenced and contains the listed requirements with identifiers.\"\n  ],\n  \"evidence_checked\": [\n    \"REQ-1 'The driver shall write LOAD.' - identifier present: REQ-1\",\n    \"REQ-2 'The driver shall return LOAD.' - identifier present: REQ-2\"\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 114,
+    "prompt_tokens": 75,
+    "total_tokens": 189,
+    "prompt_tokens_details": {
+     "cached_tokens": 71
+    }
+   },
+   "tps": 82.66343035679147,
+   "wall_s": 1.56,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-review-verdict-schema",
+   "stream": false,
+   "seed": 2
+  },
+  {
+   "content": "{\n  \"verdict\": \"PASS\",\n  \"findings\": [\n    \"REQ-1 has identifier 'REQ-1' and text 'The driver shall write LOAD.'\",\n    \"REQ-2 has identifier 'REQ-2' and text 'The driver shall return LOAD.'\",\n    \"Both requirements are explicitly listed in doc/reqs.md with unique identifiers.\"\n  ],\n  \"evidence_checked\": [\n    \"doc/reqs.md contains REQ-1 and REQ-2 with identifiers\"\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 110,
+    "prompt_tokens": 75,
+    "total_tokens": 185,
+    "prompt_tokens_details": {
+     "cached_tokens": 71
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 112,
+   "tps": 82.33629618103109,
+   "wall_s": 1.51,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-review-verdict-schema",
+   "stream": true,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"verdict\": \"PASS\",\n  \"findings\": [\n    \"REQ-1 and REQ-2 both have identifiers (REQ-1 and REQ-2 respectively).\",\n    \"The evidence path doc/reqs.md is referenced and contains the listed requirements with identifiers.\"\n  ],\n  \"evidence_checked\": [\n    \"REQ-1 'The driver shall write LOAD.' - identifier present: REQ-1\",\n    \"REQ-2 'The driver shall return LOAD.' - identifier present: REQ-2\"\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 114,
+    "prompt_tokens": 75,
+    "total_tokens": 189,
+    "prompt_tokens_details": {
+     "cached_tokens": 71
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 116,
+   "tps": 84.32175090757814,
+   "wall_s": 1.42,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q1-review-verdict-schema",
+   "stream": true,
+   "seed": 2
+  },
+  {
+   "content": "```json\n{\n  \"is_prime\": true,\n  \"confidence\": 1.0\n}\n```\n7 is a prime number because it has exactly two distinct positive divisors: 1 and itself.",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": {
+    "completion_tokens": 44,
+    "prompt_tokens": 64,
+    "total_tokens": 108,
+    "prompt_tokens_details": {
+     "cached_tokens": 60
+    }
+   },
+   "tps": 88.65686905174263,
+   "wall_s": 0.58,
+   "exact_json": false,
+   "parsed": false,
+   "factory_parse_note": null,
+   "jsonschema_errors": null,
+   "factory_validate_errors": null,
+   "schema_valid": false,
+   "case": "control-no-schema-adversarial",
+   "stream": false,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"requirements\": [\n",
+   "reasoning_present": false,
+   "finish_reason": "length",
+   "usage": {
+    "completion_tokens": 8,
+    "prompt_tokens": 129,
+    "total_tokens": 137,
+    "prompt_tokens_details": {
+     "cached_tokens": 18
+    }
+   },
+   "tps": 71.28164395837152,
+   "wall_s": 0.68,
+   "exact_json": false,
+   "parsed": false,
+   "factory_parse_note": "NOT_JSON:Expecting value: line 2 column 20 (char 21)",
+   "jsonschema_errors": null,
+   "factory_validate_errors": null,
+   "schema_valid": false,
+   "case": "Q3-truncate-8",
+   "stream": false,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"requirements\": [\n",
+   "reasoning_present": false,
+   "finish_reason": "length",
+   "usage": {
+    "completion_tokens": 8,
+    "prompt_tokens": 129,
+    "total_tokens": 137,
+    "prompt_tokens_details": {
+     "cached_tokens": 125
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 11,
+   "tps": 66.18258830648212,
+   "wall_s": 0.19,
+   "exact_json": false,
+   "parsed": false,
+   "factory_parse_note": "NOT_JSON:Expecting value: line 2 column 20 (char 21)",
+   "jsonschema_errors": null,
+   "factory_validate_errors": null,
+   "schema_valid": false,
+   "case": "Q3-truncate-8",
+   "stream": true,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"requirements\": [\n    {\n      \"key\": \"ears_xtmr_setload\",\n      \"statement\": \"When XTMR_SetLoad is called with a valid XTMR register base address and a 16-bit load value, the function shall write the 16-bit value to the LOAD",
+   "reasoning_present": false,
+   "finish_reason": "length",
+   "usage": {
+    "completion_tokens": 64,
+    "prompt_tokens": 129,
+    "total_tokens": 193,
+    "prompt_tokens_details": {
+     "cached_tokens": 125
+    }
+   },
+   "tps": 77.11109995924127,
+   "wall_s": 0.9,
+   "exact_json": false,
+   "parsed": false,
+   "factory_parse_note": "NOT_JSON:Unterminated string starting at: line 5 column 20 (char 81)",
+   "jsonschema_errors": null,
+   "factory_validate_errors": null,
+   "schema_valid": false,
+   "case": "Q3-truncate-64",
+   "stream": false,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"requirements\": [\n    {\n      \"key\": \"ears_xtmr_setload\",\n      \"statement\": \"When XTMR_SetLoad is called with a valid XTMR register base address and a 16-bit load value, the function shall write the 16-bit value to the LOAD",
+   "reasoning_present": false,
+   "finish_reason": "length",
+   "usage": {
+    "completion_tokens": 64,
+    "prompt_tokens": 129,
+    "total_tokens": 193,
+    "prompt_tokens_details": {
+     "cached_tokens": 125
+    }
+   },
+   "usage_chunks": 1,
+   "usage_chunk_choices_len": [
+    0
+   ],
+   "usage_before_done": true,
+   "chunks": 67,
+   "tps": 77.18034473887317,
+   "wall_s": 0.9,
+   "exact_json": false,
+   "parsed": false,
+   "factory_parse_note": "NOT_JSON:Unterminated string starting at: line 5 column 20 (char 81)",
+   "jsonschema_errors": null,
+   "factory_validate_errors": null,
+   "schema_valid": false,
+   "case": "Q3-truncate-64",
+   "stream": true,
+   "seed": 1
+  },
+  {
+   "content": "{\n  \"answer\": \"yes\",\n  \"items\": [\n    2,\n    3,\n    5\n  ]\n}",
+   "reasoning_present": false,
+   "finish_reason": "stop",
+   "usage": null,
+   "usage_chunks": 0,
+   "usage_chunk_choices_len": [],
+   "usage_before_done": false,
+   "chunks": 30,
+   "tps": 80.01554587748475,
+   "wall_s": 0.46,
+   "exact_json": true,
+   "parsed": true,
+   "factory_parse_note": null,
+   "jsonschema_errors": [],
+   "factory_validate_errors": [],
+   "schema_valid": true,
+   "case": "Q5-stream-without-include_usage",
+   "stream": true,
+   "seed": 1
+  },
+  {
+   "case": "factory-structured.call-reserve-4096",
+   "errors": [],
+   "doc_present": true,
+   "usage": {
+    "completion_tokens": 420,
+    "prompt_tokens": 129,
+    "total_tokens": 549,
+    "prompt_tokens_details": {
+     "cached_tokens": 18
+    }
+   },
+   "finish_reason": "stop",
+   "format_note": null,
+   "wall_ms": 5704.9,
+   "raw_chars": 1497,
+   "n_requirements": 2
+  },
+  {
+   "case": "factory-structured.call-reserve-16",
+   "errors": [
+    "NOT_JSON:Unterminated string starting at: line 4 column 14 (char 41)",
+    "OUTPUT_TRUNCATED_AT_RESERVE (repartition the task or raise the reserve)"
+   ],
+   "doc_present": false,
+   "usage": {
+    "completion_tokens": 16,
+    "prompt_tokens": 129,
+    "total_tokens": 145,
+    "prompt_tokens_details": {
+     "cached_tokens": 125
+    }
+   },
+   "finish_reason": "length",
+   "format_note": "NOT_JSON:Unterminated string starting at: line 4 column 14 (char 41)",
+   "wall_ms": 403.9,
+   "raw_chars": 50,
+   "n_requirements": null
+  }
+ ],
+ "props": {
+  "chat_template_caps": {
+   "supports_object_arguments": true,
+   "supports_parallel_tool_calls": true,
+   "supports_preserve_reasoning": false,
+   "supports_reasoning_effort": false,
+   "supports_string_content": true,
+   "supports_system_role": true,
+   "supports_tool_calls": true,
+   "supports_tools": true,
+   "supports_typed_content": false
+  },
+  "build_info": "b1-0f3a71be1",
+  "model_alias": "qwen3-coder-next:q4_K_M",
+  "total_slots": 1,
+  "modalities": {
+   "vision": false,
+   "video": false,
+   "audio": false
+  },
+  "default_generation_settings_n_ctx": 65536,
+  "chat_template_length": 6067,
+  "chat_template_has_think": false
+ },
+ "verdicts": {
+  "Q1_strict_json_schema": "PASS",
+  "Q1_counts": {
+   "n": 20,
+   "stop": 20,
+   "exact": 20,
+   "schema_valid": 20,
+   "reasoning_present": 0
+  },
+  "Q3_truncation_finish_reason": "PASS",
+  "Q5_streaming_usage": "PASS",
+  "factory_call": "PASS"
+ },
+ "finished": "2026-10-31T17:00:42Z"
+}

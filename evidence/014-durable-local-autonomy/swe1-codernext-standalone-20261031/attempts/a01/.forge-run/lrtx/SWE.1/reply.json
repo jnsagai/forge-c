@@ -1,0 +1,11 @@
+{
+ "artifacts": [],
+ "issues": [
+  "requirements:crosscutting: [crc_reset_no_write] verification has no pass criterion ('passes when ...')",
+  "requirements:crosscutting: [crc_reset_no_write] effect RESET_STARTUP_NO_CALL: the statement must name CRC_IDR.IDR",
+  "requirements:crosscutting: [crc_reset_no_write] effect RESET_STARTUP_NO_CALL: value must be \"\" for op no_write",
+  "requirements:crosscutting: [crc_reset_no_write] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [crc_reset_no_write] from the cross-cutting task"
+ ],
+ "next_action": "rework",
+ "status": "FAILED"
+}

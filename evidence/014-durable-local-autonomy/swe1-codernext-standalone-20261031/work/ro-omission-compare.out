@@ -1,0 +1,51 @@
+{
+ "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace": {
+  "identical": true,
+  "entries": 706,
+  "added": 0,
+  "removed": 0,
+  "changed": []
+ },
+ "/mnt/data/forge-c/operations/ornith-protocol-20261031": {
+  "identical": true,
+  "entries": 51,
+  "added": 0,
+  "removed": 0,
+  "changed": []
+ },
+ "/mnt/data/forge-c/operations/swe1-codernext-20261031/report-workspaces": {
+  "identical": true,
+  "entries": 1211,
+  "added": 0,
+  "removed": 0,
+  "changed": []
+ },
+ "/mnt/data/forge-c/operations/swe1-omission-20261031": {
+  "identical": true,
+  "entries": 1343,
+  "added": 0,
+  "removed": 0,
+  "changed": []
+ },
+ "/mnt/data/forge-c/operations/swe1-ornith-20261031": {
+  "identical": true,
+  "entries": 10671,
+  "added": 0,
+  "removed": 0,
+  "changed": []
+ },
+ "/mnt/data/forge-c/operations/swe1-qwen-20261031": {
+  "identical": true,
+  "entries": 11576,
+  "added": 0,
+  "removed": 0,
+  "changed": []
+ },
+ "/mnt/data/forge-c/operations/swe1-qwen-xhigh-20261031": {
+  "identical": true,
+  "entries": 2626,
+  "added": 0,
+  "removed": 0,
+  "changed": []
+ }
+}

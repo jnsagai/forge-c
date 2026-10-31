@@ -1,0 +1,11 @@
+{
+ "added": [],
+ "removed": [
+  ".forge-run/durable-binding.json"
+ ],
+ "changed": [
+  ".forge-run",
+  ".forge-run/binding.json",
+  ".forge-run/workflow.toml"
+ ]
+}

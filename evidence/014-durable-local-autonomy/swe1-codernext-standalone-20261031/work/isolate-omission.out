@@ -1,0 +1,1 @@
+{"edits": [[".forge-run/binding.json", "replace_path", 1], [".forge-run/workflow.toml", "replace_path", 2], [".forge-run/durable-binding.json", "moved_out_of_copy", null]], "left_unchanged": 25}

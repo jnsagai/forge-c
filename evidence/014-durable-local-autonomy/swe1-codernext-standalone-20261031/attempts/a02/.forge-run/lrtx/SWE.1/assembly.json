@@ -1,0 +1,50 @@
+{
+ "at": "2026-10-31T17:01:32.559652Z",
+ "case": {
+  "READ_CRC_IDR_IDR_VALUE": "SWR-002",
+  "WRITE_CRC_IDR_IDR_VALUE": "SWR-001"
+ },
+ "files": [
+  "safety/software_safety_requirements.md",
+  "traceability/requirements_to_tests.csv",
+  "traceability/upstream_gaps.md",
+  "workproducts/SWE.1/register_effects.json",
+  "workproducts/SWE.1/software_requirements.md"
+ ],
+ "open_points": {},
+ "schema": "forge-c/lrtx-swe1-assembly/1",
+ "swr": {
+  "SWR-001": {
+   "key": "write_crc_idr_idr",
+   "task": "requirements:CRC_IDR"
+  },
+  "SWR-002": {
+   "key": "read_crc_idr_idr",
+   "task": "requirements:CRC_IDR"
+  },
+  "SWR-003": {
+   "key": "no_autonomous_startup_writes",
+   "task": "requirements:crosscutting"
+  },
+  "SWR-004": {
+   "key": "budget_flash",
+   "task": "budgets"
+  },
+  "SWR-005": {
+   "key": "budget_static_ram",
+   "task": "budgets"
+  },
+  "SWR-006": {
+   "key": "budget_stack",
+   "task": "budgets"
+  },
+  "SWR-007": {
+   "key": "budget_simulation_cpu",
+   "task": "budgets"
+  },
+  "SWR-008": {
+   "key": "budget_simulation_time",
+   "task": "budgets"
+  }
+ }
+}

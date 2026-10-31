@@ -1,0 +1,107 @@
+{
+  "by_model": {
+    "qwen3-coder-next:q4_K_M": {
+      "attempts": 2,
+      "calls_median": 4.5,
+      "gate_frozen": 1,
+      "load_ms_median": "UNKNOWN (no load observed)",
+      "per_task": {
+        "requirements:CRC_IDR": {
+          "attempts": 2,
+          "call_wall_ms_median": 11525.45,
+          "calls_median": 2.0,
+          "first_call_valid": 0,
+          "tokens_median": 4899.0,
+          "valid": 2
+        },
+        "requirements:crosscutting": {
+          "attempts": 2,
+          "call_wall_ms_median": 9568.25,
+          "calls_median": 2.5,
+          "first_call_valid": 0,
+          "tokens_median": 4655.5,
+          "valid": 1
+        }
+      },
+      "visit_pass": 1,
+      "wall_s_median": 23.5
+    }
+  },
+  "generated_at": "2026-10-31T17:01:38.572072Z",
+  "mixed_estimate": null,
+  "models": [
+    "qwen3-coder-next:q4_K_M"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "phase": "SWE.1",
+  "repeat": 2,
+  "rows": [
+    {
+      "calls": 5,
+      "gate": "NOT_RUN (visit FAILED)",
+      "issues": [
+        "requirements:crosscutting: [crc_reset_no_write] verification has no pass criterion ('passes when ...')",
+        "requirements:crosscutting: [crc_reset_no_write] effect RESET_STARTUP_NO_CALL: the statement must name CRC_IDR.IDR",
+        "requirements:crosscutting: [crc_reset_no_write] effect RESET_STARTUP_NO_CALL: value must be \"\" for op no_write",
+        "requirements:crosscutting: [crc_reset_no_write] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [crc_reset_no_write] from the cross-cutting task"
+      ],
+      "model": "qwen3-coder-next:q4_K_M",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:CRC_IDR": {
+          "call_wall_ms": 11829.6,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 783,
+          "prompt_tokens": 4134,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 10632.0,
+          "calls": 3,
+          "first_call_valid": false,
+          "output_tokens": 666,
+          "prompt_tokens": 4811,
+          "status": "INVALID"
+        }
+      },
+      "visit": "FAILED",
+      "wall_s": 26.1,
+      "workspace": "/mnt/data/forge-c/operations/swe1-codernext-20261031/report-workspaces/qwen3-coder-next_q4_K_M-01/workspace"
+    },
+    {
+      "calls": 4,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "qwen3-coder-next:q4_K_M",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:CRC_IDR": {
+          "call_wall_ms": 11221.3,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 785,
+          "prompt_tokens": 4096,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 8504.5,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 579,
+          "prompt_tokens": 3255,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 20.9,
+      "workspace": "/mnt/data/forge-c/operations/swe1-codernext-20261031/report-workspaces/qwen3-coder-next_q4_K_M-02/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/mnt/data/forge-c/operations/swe1-codernext-20261031/start-ws"
+}

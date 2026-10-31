@@ -1,0 +1,9 @@
+{"lrtx_progress": "inspect:c566b006b392caf1:SWE1-01", "attempt": 0, "errors": 3, "wall_ms": 6742.6}
+{"lrtx_progress": "inspect:c566b006b392caf1:SWE1-01", "attempt": 1, "errors": 0, "wall_ms": 2457.9}
+{"lrtx_progress": "inspect:c566b006b392caf1:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 3412.9}
+{"lrtx_progress": "inspect:c566b006b392caf1:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 3211.4}
+{"lrtx_progress": "inspect:c566b006b392caf1:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 3158.3}
+{"lrtx_progress": "inspect:c566b006b392caf1:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 3229.4}
+{"lrtx_progress": "inspect:c566b006b392caf1:SWE1-06", "attempt": 0, "errors": 1, "wall_ms": 6909.2}
+{"lrtx_progress": "inspect:c566b006b392caf1:SWE1-06", "attempt": 1, "errors": 0, "wall_ms": 4876.5}
+{"status": "REWORK", "artifacts": ["inspection/SWE.1/INS-SWE.1-001.json"], "issues": ["SWE1-06:major"], "next_action": "rework"}

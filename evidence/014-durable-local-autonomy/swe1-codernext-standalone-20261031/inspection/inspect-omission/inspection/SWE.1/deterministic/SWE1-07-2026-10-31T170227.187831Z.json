@@ -1,0 +1,62 @@
+{
+  "check_id": "SWE1-07",
+  "major_findings": [],
+  "minor_findings": [],
+  "pattern_counts": {
+    "EVENT": 4,
+    "STATE": 1,
+    "UBIQUITOUS": 3
+  },
+  "per_requirement": [
+    {
+      "findings": [],
+      "id": "SWR-001",
+      "line": 5,
+      "pattern": "EVENT"
+    },
+    {
+      "findings": [],
+      "id": "SWR-002",
+      "line": 8,
+      "pattern": "EVENT"
+    },
+    {
+      "findings": [],
+      "id": "SWR-003",
+      "line": 11,
+      "pattern": "STATE"
+    },
+    {
+      "findings": [],
+      "id": "SWR-004",
+      "line": 14,
+      "pattern": "UBIQUITOUS"
+    },
+    {
+      "findings": [],
+      "id": "SWR-005",
+      "line": 17,
+      "pattern": "UBIQUITOUS"
+    },
+    {
+      "findings": [],
+      "id": "SWR-006",
+      "line": 20,
+      "pattern": "UBIQUITOUS"
+    },
+    {
+      "findings": [],
+      "id": "SWR-007",
+      "line": 23,
+      "pattern": "EVENT"
+    },
+    {
+      "findings": [],
+      "id": "SWR-008",
+      "line": 26,
+      "pattern": "EVENT"
+    }
+  ],
+  "requirements": 8,
+  "verdict": "PASS"
+}

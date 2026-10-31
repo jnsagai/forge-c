@@ -1,0 +1,63 @@
+{
+ "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace": {
+  "added": [],
+  "changed": {},
+  "entries": 706,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/ornith-protocol-20261031": {
+  "added": [],
+  "changed": {},
+  "entries": 51,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-omission-20261031": {
+  "added": [],
+  "changed": {},
+  "entries": 1343,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-ornith-20261031": {
+  "added": [],
+  "changed": {},
+  "entries": 10671,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-qwen-20261031": {
+  "added": [],
+  "changed": {
+   "repo/.git": {
+    "after": {
+     "mode": 17917,
+     "mtime_ns": 1793466181130228075,
+     "type": "dir"
+    },
+    "before": {
+     "mode": 17917,
+     "mtime_ns": 1793465180742495612,
+     "type": "dir"
+    }
+   }
+  },
+  "entries": 11576,
+  "identical": false,
+  "removed": [],
+  "root_mtime_changed": false
+ },
+ "/mnt/data/forge-c/operations/swe1-qwen-xhigh-20261031": {
+  "added": [],
+  "changed": {},
+  "entries": 2626,
+  "identical": true,
+  "removed": [],
+  "root_mtime_changed": false
+ }
+}

@@ -1,0 +1,10 @@
+{"lrtx_progress": "requirements:CRC_IDR", "attempt": 0, "errors": 3, "wall_ms": 6161.0}
+{"lrtx_progress": "requirements:CRC_IDR", "attempt": 1, "errors": 0, "wall_ms": 5668.6}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 6, "wall_ms": 6445.9}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 1, "wall_ms": 1289.8}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 2, "errors": 4, "wall_ms": 2896.3}
+{"lrtx_progress": "requirements:CRC_IDR", "attempt": 0, "errors": 1, "wall_ms": 5623.2}
+{"lrtx_progress": "requirements:CRC_IDR", "attempt": 1, "errors": 0, "wall_ms": 5598.1}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 3, "wall_ms": 6002.2}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 0, "wall_ms": 2502.3}
+{"qwen3-coder-next:q4_K_M": {"attempts": 2, "visit_pass": 1, "gate_frozen": 1, "wall_s_median": 23.5, "calls_median": 4.5, "load_ms_median": "UNKNOWN (no load observed)"}}

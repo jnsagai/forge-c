@@ -1,0 +1,72 @@
+{
+ "gguf_version": 3,
+ "n_tensors": 843,
+ "n_kv": 38,
+ "kv": {
+  "general.architecture": "qwen3next",
+  "general.file_type": 15,
+  "general.parameter_count": 79674391296,
+  "general.quantization_version": 2,
+  "qwen3next.attention.head_count": 16,
+  "qwen3next.attention.head_count_kv": {
+   "array_type": 4,
+   "len": 48
+  },
+  "qwen3next.attention.key_length": 256,
+  "qwen3next.attention.layer_norm_rms_epsilon": 9.999999974752427e-07,
+  "qwen3next.attention.value_length": 256,
+  "qwen3next.block_count": 48,
+  "qwen3next.context_length": 262144,
+  "qwen3next.embedding_length": 2048,
+  "qwen3next.expert_count": 512,
+  "qwen3next.expert_feed_forward_length": 512,
+  "qwen3next.expert_shared_feed_forward_length": 512,
+  "qwen3next.expert_used_count": 10,
+  "qwen3next.feed_forward_length": 5120,
+  "qwen3next.full_attention_interval": 4,
+  "qwen3next.norm_top_k_prob": true,
+  "qwen3next.rope.dimension_count": 64,
+  "qwen3next.rope.freq_base": 5000000.0,
+  "qwen3next.ssm.conv_kernel": 4,
+  "qwen3next.ssm.group_count": 16,
+  "qwen3next.ssm.inner_size": 4096,
+  "qwen3next.ssm.state_size": 128,
+  "qwen3next.ssm.time_step_rank": 32,
+  "tokenizer.chat_template": "<str len 6067>",
+  "tokenizer.ggml.add_eos_token": false,
+  "tokenizer.ggml.add_padding_token": false,
+  "tokenizer.ggml.eos_token_id": 151645,
+  "tokenizer.ggml.eos_token_ids": {
+   "array_type": 5,
+   "len": 2
+  },
+  "tokenizer.ggml.merges": {
+   "array_type": 8,
+   "len": 151387
+  },
+  "tokenizer.ggml.model": "gpt2",
+  "tokenizer.ggml.padding_token_id": 151643,
+  "tokenizer.ggml.pre": "qwen2",
+  "tokenizer.ggml.scores": {
+   "array_type": 6,
+   "len": 151936
+  },
+  "tokenizer.ggml.token_type": {
+   "array_type": 5,
+   "len": 151936
+  },
+  "tokenizer.ggml.tokens": {
+   "array_type": 8,
+   "len": 151936
+  }
+ },
+ "chat_template_facts": {
+  "present": true,
+  "length": 6067,
+  "mentions_think_tag": false,
+  "mentions_enable_thinking": false,
+  "mentions_reasoning_content": false,
+  "mentions_tool_call": true,
+  "mentions_reasoning_effort": false
+ }
+}
