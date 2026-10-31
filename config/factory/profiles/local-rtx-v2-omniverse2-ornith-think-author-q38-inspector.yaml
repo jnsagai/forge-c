@@ -1,11 +1,12 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-ornith-think-author-q38-inspector
-version: 1
+version: 2
 work_order_purpose: ASPICE_ONLY
 status: EXPERIMENT_ONLY_NOT_QUALIFIED
 description: 'Owner 2026-10-31 (''Ornith with thinking on''; reverses D12 for this test only): as local-rtx-v2-omniverse2-ornith-author-q38-inspector,
   but Ornith authors with thinking ON. Its template has no effort variable (thinking on/off only); 16384 extra output tokens
-  leave room for the thinking.'
+  leave room for the thinking. Version 2 (owner 2026-10-31: ''increase output cap to maximum''): Ornith context 262144,
+  thinking allowance 229376, node timeout 21600 s.'
 host_reference:
   gpu: RTX 6000 Ada 48 GB
   cpu: Core Ultra 9 285K
@@ -57,12 +58,12 @@ runtime:
       gpu_layers: all
       batch_tokens: 2048
       microbatch_tokens: 2048
-      context_tokens: 65536
+      context_tokens: 262144
       kv_cache_type: f16
       spec_type: none
       fit: 'off'
       model_blob_sha256: de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3
-      vram_required_mib: 38500
+      vram_required_mib: 44000
   llama_server_swap:
     health_timeout_s: 600
     vram_wait_s: 120
@@ -125,7 +126,7 @@ gateway:
       extra_output_tokens: 32768
     hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0:
       effort: medium
-      extra_output_tokens: 16384
+      extra_output_tokens: 229376
 afo:
   role_job_tokens:
     afo-recovery-planner: 1048576
