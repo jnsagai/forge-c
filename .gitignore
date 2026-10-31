@@ -29,3 +29,6 @@ examples/0015-rm0486-conventions/inputs/*.md
 examples/0016-wwdg-st/inputs/*.md
 examples/0017-rng-st/inputs/*.md
 examples/0018-lptim-st/inputs/*.md
+
+# process-first lab (design rev 4 §1): generated lab work orders, launch manifests and handoff copies
+/process-lab/

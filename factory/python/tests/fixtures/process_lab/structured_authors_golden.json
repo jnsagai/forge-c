@@ -1,0 +1,10 @@
+{
+ "plain-legacy": "bef135eb4f5a97ec8e65a1453632ea5191812a7c9a930eb34d29d9013f065b6c",
+ "plain-ll": "18a1038696b50d2c7a67db4c1fd5557c2cc8b57b9a4a44eeef628ca876642a92",
+ "structured-advisory": "5c67af1e4b5265058ce455c2a8cbcd6221424d6c11eb8b3dd2d1b63209b5a003",
+ "structured-all": "a2c3cb179a7f87bad598d94b0666e7710df577c610afc668de2ac8a4e555873e",
+ "structured-demonstration": "a4e9e4490287889d592c98ad2c811553066b7b0c1a221c0dea3dc0a714f6dd7a",
+ "structured-hal": "ValueError:STRUCTURED_NODE_MISSING:swe3_ll_author",
+ "structured-reinspect": "f203e47b2656552f43a1bb27cb608eed540a108779583e45a176ed5414e0107c",
+ "structured-swe1-only": "7c156d569c1108595750a761f1fc63c0216593a0e9b522265dc162f2e0a52439"
+}
