@@ -1,0 +1,4 @@
+# RPR-076 on unfixed code (feat/014-process-lab 51a9138d tree: no assurance/owner_obligations, gate unchanged), 2026-10-31
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "4cebe4e282c81f4015c37013b56137aab28915fb6f33a0f4d69926f17f4e88d8"}
+SYMPTOM_PRESENT:SWE.1 baseline that omits a declared owner obligation is frozen by the author gate
+exit 1

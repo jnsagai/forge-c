@@ -826,3 +826,13 @@ reproducers:
     operations: [lrtx/visit.run_task, lrtx/review._visit]
     root_cause: "visit.run_task kept only errors, usage and input_hash of a rejected attempt. When validate_verdict rejected an inspector answer 'PASS with findings' and the localized repair returned PASS without findings, the findings the model had stated were not recorded anywhere, so a repair could turn an observed problem into a clean PASS without a trace."
     remedy: "Owner option A: run_task keeps a rejected inspector answer's findings (rejected_findings) in the checkpoint attempt; lrtx.review reports findings that the accepted answer no longer carries as withdrawn_in_repair in inspection-record.json and as LRTX_INSPECTOR_FINDING_WITHDRAWN_IN_REPAIR reply notes. Verdict and gate are unchanged."
+  - id: RPR-076
+    script: rpr076_owner_obligation_omitted.py
+    sha256: 4e994cf3831b14b5daf34b54ab8a25ea202e9300ef5e2907d9f065e8bb5b6a8e
+    symptom_signature: "SWE.1 baseline that omits a declared owner obligation is frozen by the author gate"
+    observed_in: "standalone SWE.1 inspector omission test on Omniverse2 2026-10-31 (evidence/014-durable-local-autonomy/swe1-inspector-omission-20261031, PROPOSAL-completeness.md options 3 and 1): the gate-frozen Ornith a02 CRC IDR baseline lacks no-polling, no-error-code and preserve-other-registers; Qwen medium, Qwen xhigh and qwen3-coder-next inspections did not name them"
+    baseline_revision: 15218323b24a283e365adf590817656ae8675fbe
+    error_codes: [SWE1_OBLIGATION_UNCOVERED]
+    operations: [inspection/gate.step_author, lrtx/swe1.self_check, lrtx/review.evidence]
+    root_cause: "No SWE.1 mechanism compared the requirements with the owner's obligations: the author gate checks structure only, no checklist item asks for completeness against the owner contract, and lrtx/review.evidence gives the inspector the baseline and manifest views but not the owner contract."
+    remedy: "Global opt-in owner obligations (owner 2026-10-31: global mechanism): a work-order input with role owner_obligations (forge-c/owner-obligations/1). assurance/owner_obligations.coverage_findings requires every obligation to be implemented by a requirement ('  - Obligations:' lines, register effects checked) or recorded under '## Obligation gaps' with a reason; it runs in swe1.self_check (localized repair) and in the SWE.1 author gate (any author path). The structured author gets an obligation-aware schema and the obligations source; SWE.1 inspectors get the obligations and the inputs they cite. Orders without the input are unchanged."
