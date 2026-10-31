@@ -1,5 +1,14 @@
 # Delivery-First implementation and evidence ledger
 
+02:35UTC: [fresh-cohort preregistration and current unit history](../../evidence/014-durable-local-autonomy/repeatability-preregistration-20261031/README.md).
+Current05 reached SWE.4 inspection with frozen9aa11db1... bytes. Three comparable
+orders06/07/08 are PREPARED_NOT_SUBMITTED, conditional on terminal DF-M1 audit;
+no new inference or task completion is claimed. Actual Qwen unit repair changed
+test predicates/loops as well as UT IDs, with mixed coverage additions/removals.
+Both protected sources and tool outcomes are preserved. It is not called an
+assertion-preserving repair or measured learning benefit. Original07:57:59UTC
+deadline, source0e/profile3/auditor303 and cumulative mission remain fixed.
+
 02:01UTC addendum: the [external source audit](../../evidence/014-durable-local-autonomy/native-edit-provenance-20261031/README.md)
 from separately tested auditor30371da5 confirms a successful native source write
 and six accepted edits reconstruct the frozen9aa11db1... candidate exactly.

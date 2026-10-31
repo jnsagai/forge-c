@@ -1,5 +1,24 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October 02:35 UTC
+
+Native05 remains RUNNING at SWE.4 inspection, source0e342eef, candidate9aa11db1...
+unchanged, independent attempt0 PASS. No job steering or runtime update.
+The three fresh orders06/07/08 are now preregistered, **NOT_SUBMITTED**, pending
+external terminal DF-M1 audit. Their identical launch hash3d0db25c... and
+cohortSHAa14bfe74... freeze source0e/profile3/auditor30371da5, same mission and
+original07:57:59UTC deadline. Admit only through existing AFO after an immutable
+binding to the qualifying M1 packet; no failed-case replacement or reset.
+
+The live unit repair was a broader test rewrite, unlike prior03's ID-only fix.
+Protected snapshots show45static CHECK calls/6IDs becoming7calls/7IDs, with
+added walking-bit loops/no-self-setup/startup checks and removed separate
+zero-read preservation/other-instance isolation checks. This is mixed coverage,
+not an assertion-preserving metadata fix or measured learning benefit. Product
+code is unchanged and independent functional tests remain separate.
+Read [prepared cohort and exact snapshots](../../evidence/014-durable-local-autonomy/repeatability-preregistration-20261031/README.md).
+No tasks newly closed: DA30/58, DF-M1pending, DF-T010NOT_RUN.
+
 ## Overnight checkpoint — 31 October02:01UTC
 
 Same active native **01M67R1HNE9TKPWCYJ2SVKEPJS** is at SWE.3 author;
