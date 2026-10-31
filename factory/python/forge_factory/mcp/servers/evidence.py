@@ -235,8 +235,24 @@ def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
 
 
 def build_package(ctx: ToolContext, a: PackageIn) -> dict:
+    from ...delivery_first import selected
     from ...release.finalize import finalize
 
+    cfg, _ = selected(ctx.workspace)
+    if cfg:
+        import json
+
+        final = ctx.workspace / ".forge-run/delivery-first/attempt-final/result.json"
+        try:
+            receipt = json.loads(final.read_text()) if not final.is_symlink() else {}
+        except (OSError, ValueError):
+            receipt = {}
+        if (not isinstance(receipt, dict) or receipt.get("attempt") != "final"
+                or receipt.get("verification_round") != "FINAL_RECHECK_NO_NEW_AUTHOR"
+                or receipt.get("status") not in ("PASS", "FAIL")):
+            return result(ctx, "BLOCKED", "Packaging deferred to the graph after final verification; no archive sealed",
+                          issues=["DELIVERY_FIRST_FINAL_VERIFICATION_PENDING"],
+                          metrics={"package_status": "NOT_BUILT"}, tool="forge-packager-v0.4")
     out = finalize(ctx.workspace, ctx.run_id)
     return result(ctx, "PASS" if out["package_status"] in ("READY_FOR_OFFLINE_REVIEW", "BLOCKED") else "FAIL",
                   f"package {out['package_status']} gaps={out['gap_count']}", [out["archive_ref"]],

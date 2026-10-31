@@ -358,6 +358,9 @@ def workflow(graph, nodes, manifest, command_env, python):
                     "The bounded implementation authoring sequence is finished. Candidate code is now frozen; "
                     "produce your phase documents/tests and record remaining defects without changing the driver. "
                     "Use the exact scoped function signatures in " + cfg["contract"] + ". ")
+            if name == "release_manager":
+                note += ("Inventory and report existing gaps only. Do not call build_package: the deterministic graph "
+                         "runs final independent verification after your visit, then seals the archive. ")
             text = graph[start:end].replace(legacy_access, _q(access))
             if name == "swe6_test_author":
                 for old, new in ((P.peripheralize(P.cmsisize(robot_steps[0])), robot_read),
