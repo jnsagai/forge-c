@@ -207,6 +207,11 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         attempts.append({"n": n, "input_hash": p["input_hash"], "accounting": p["accounting"], "usage": r["usage"],
                          "wall_ms": r["wall_ms"], "finish_reason": r["finish_reason"], "errors": errs[:20],
                          "schema_mode": budget["schema_mode"], "schema_mode_basis": budget.get("schema_mode_basis")})
+        rejected = r["doc"].get("findings") if errs and isinstance(r["doc"], dict) else None
+        if p.get("role", "").endswith("-inspector") and isinstance(rejected, list) and rejected:
+            # CAPA-076 (owner option A): a rejected inspector answer's findings stay auditable, so a repair that
+            # drops them is visible (lrtx.review reports them as withdrawn_in_repair)
+            attempts[-1]["rejected_findings"] = [str(f)[:600] for f in rejected[:10]]
         budget.setdefault("log", []).append({"task": task, **attempts[-1]})
         _save_calls(budget)
         # one line per model call: Fabro's stall watchdog ends a command node that shows no activity for 1800 s

@@ -235,7 +235,7 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
     items = [c for c in st.applicable(st.checklist(phase))["checks"]
              if c.get("required") and not c.get("deterministic_check")]
     paths = {s["path"] for s in srcs}
-    verdicts, issues, contested = {}, [], {}
+    verdicts, issues, contested, withdrawn = {}, [], {}, {}
     for it in items:
         # the checkpoint key binds the verdict to the baseline it judged: a new baseline is a new task
         task = f"inspect:{bl['baseline_hash'][:16]}:{it['id']}"
@@ -256,6 +256,14 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
         verdicts[it["id"]] = {"verdict": d["verdict"], "findings": list(d["findings"]),
                               "evidence_refs": [f"configuration/baselines/{phase}/{bl['baseline_id']}.json",
                                                 *d["evidence_checked"][:8]]}
+        # CAPA-076 (owner option A, 2026-10-31): findings a rejected answer stated and the accepted answer no longer
+        # carries are reported, not silently lost. Verdict and gate are unchanged.
+        kept = set(d["findings"])
+        dropped = []
+        for att in rec.get("attempts") or []:
+            dropped += [f for f in att.get("rejected_findings") or [] if f not in kept and f not in dropped]
+        if dropped:
+            withdrawn[it["id"]] = dropped
     if issues:  # incomplete: nothing is recorded (an aggregate never invents a verdict)
         return _reply(ws, phase, "FAILED", issues, budget)
     if st.latest_baseline(phase)["baseline_hash"] != bl["baseline_hash"]:
@@ -268,9 +276,11 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
                       budget)
     S.record(ws, f"{phase}/inspection-record.json", {"at": utc_now(), "baseline_id": bl["baseline_id"],
                                                      "result": res, "items": sorted(verdicts),
-                                                     "contested_findings": contested})
+                                                     "contested_findings": contested,
+                                                     "withdrawn_in_repair": withdrawn})
     status = "PASS" if res["status"] == "PASS" else "REWORK"
     notes = [f"LRTX_INSPECTOR_FINDING_CONTESTED:{i}: {c}" for i, cs in contested.items() for c in cs]
+    notes += [f"LRTX_INSPECTOR_FINDING_WITHDRAWN_IN_REPAIR:{i}: {f}" for i, fs in withdrawn.items() for f in fs]
     return _reply(ws, phase, status, list(res.get("issues") or []) + notes, budget,
                   list(res.get("artifact_refs") or []))
 
