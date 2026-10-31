@@ -2,6 +2,14 @@
 
 ## Overnight checkpoint — 31 October 05:05 UTC: fresh cohort 1/3
 
+Offline cohort reporter **8c7fb8e1d84e99f5018bc26072333673c066c651**, exact18PASS
+and changed-tool/test RuffPASS, preserves missing/failed trials and rejects
+hash/comparability/duplicate swaps. It summarizes pinned external assertions,
+not a new audit/qualification authority. Actual06audit yields1/3, not all3.
+[Tool commands and result](../../evidence/014-durable-local-autonomy/cohort-summary-8c7fb8e1/README.md).
+07advanced to SWE.2author by05:14remoteUTC; early303native source proofSHA
+02d37067b866831a6c85eb1e5726081af8e6ae4bb9e99a47ff9e1db1469889de.
+
 Inactive source fix **d2e083e322aeb3286e6d94bd0d51e532f7d66fb7** now keeps sole
 local-inference contention retry15s through existing Store/scheduler; mixed
 dependency faults retain exponential cooldown. Actual ledger/execution regression
