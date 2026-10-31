@@ -230,6 +230,9 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         p = build(errs[:12], r["doc"]) if r["doc"] is not None and not r["errors"] else p
     rec = {"task": task, "status": "VALID" if doc is not None and not errs else "INVALID", "doc": doc,
            "errors": errs, "base_hash": base["input_hash"], "attempts": attempts, "at": utc_now(), "reused": False}
+    earlier = ((prev or {}).get("history") or []) + ((prev or {}).get("attempts") or []) if findings else []
+    if earlier:  # CAPA-079: a repair round keeps the earlier rounds' attempts (errors, usage), bounded
+        rec["history"] = earlier[-12:]
     ck.parent.mkdir(parents=True, exist_ok=True)
     ck.write_text(pretty_json(rec))
     return rec

@@ -455,6 +455,11 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         for r in doc["requirements"]:
             # lrtx9 (2026-10-21): it rewrote the IWDG_KR/PR/RLR writes with effects, duplicating the register tasks
             for reg in sorted({e["register"] for e in r["effects"]} & tasked):
+                if r.get("obligations"):  # CAPA-079: never tell the author to delete what an owner obligation needs
+                    out.append(f"[{r['key']}] acts on {reg}, which the {reg} task covers: keep [{r['key']}] for owner "
+                               f"obligation(s) {', '.join(r['obligations'])}, but remove its effects on {reg} and state "
+                               f"it for all scoped functions without naming {reg}")
+                    continue
                 out.append(f"[{r['key']}] acts on {reg}, which the {reg} task covers - remove requirement "
                            f"[{r['key']}] from the cross-cutting task")
         if not any(STARTUP.match(r["statement"]) for r in doc["requirements"]):
@@ -465,9 +470,36 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         for r in doc["requirements"]:
             regs = sorted({f[0] for f in re.findall(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z0-9_]+)", r["statement"])
                            if f[0] in idx} - {e["register"] for e in r["effects"]})
-            if regs and not STARTUP.match(r["statement"]) and not r["effects"]:
+            if regs and not STARTUP.match(r["statement"]) and not r["effects"] and r.get("obligations"):
+                # CAPA-079 (run -03): "remove requirement" made the author delete the requirement an owner obligation
+                # needed; the rule stays (no register requirement here), the instruction says how to keep it
+                out.append(f"[{r['key']}] names {', '.join(regs)}, which its register task covers: keep [{r['key']}] for "
+                           f"owner obligation(s) {', '.join(r['obligations'])}, but state it for all scoped functions "
+                           f"without naming {', '.join(regs)} (e.g. 'the {sysname} shall leave every other register "
+                           f"and every other {pfx} instance unchanged')")
+            elif regs and not STARTUP.match(r["statement"]) and not r["effects"]:
                 out.append(f"[{r['key']}] is a requirement on {', '.join(regs)}, which its register task covers - remove "
                            f"requirement [{r['key']}] from the cross-cutting task")
+    return out
+
+
+def crosscut_obligation_findings(ws: Path, doc: dict, functional: list[dict]) -> list[str]:
+    """CAPA-079: the cross-cutting task (the last one, which sees every functional requirement) is checked for the
+    declared owner obligations without register effects, so their repair shares the task's own repair pass instead of
+    waiting for the post-assembly coverage check. Obligations with register effects belong to the register tasks."""
+    obl = owner_obligations(ws)
+    if obl is None:
+        return []
+    cited = {i for r in functional + doc["requirements"] for i in r.get("obligations") or []}
+    gaps = {g["id"] for g in doc.get("obligation_gaps") or []}
+    out = []
+    for o in obl["obligations"]:
+        if o.get("effects") or o["id"] in cited or (o["id"] in gaps and not o.get("critical")):
+            continue
+        kind = "critical owner obligation" if o.get("critical") else "owner obligation"
+        out.append(f"{kind} {o['id']} has no implementing requirement: write it here as a rule for all scoped "
+                   f"functions (owner: {o['statement'][:160]})" + ("" if o.get("critical") else
+                                                                     " or list it in obligation_gaps with the reason"))
     return out
 
 
@@ -830,6 +862,10 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     idx = index(ws / "inputs/sections/RM0486")
     sysname = system_name(ws)
     results = []
+
+    def cross_check(d: dict) -> list[str]:
+        return validate_group(ws, d, None, sysname, idx) + crosscut_obligation_findings(
+            ws, d, [r for _g, rec in results if rec["doc"] for r in rec["doc"]["requirements"]])
     for g in obligations:
         task = f"requirements:{g['id']}"
         rec = run_task(ws, task, lambda fi, pr, g=g: group_packet(ws, g, model, fi, pr),
@@ -839,7 +875,7 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     issues = [f"{rec['task']}: {e}" for _g, rec in results if rec["status"] != "VALID" for e in rec["errors"][:5]]
     functional = [r for _g, rec in results if rec["doc"] for r in rec["doc"]["requirements"]]
     cross = run_task(ws, "requirements:crosscutting", lambda fi, pr: crosscut_packet(ws, functional, model, fi, pr),
-                     lambda d: validate_group(ws, d, None, sysname, idx), budget, routed.get("requirements:crosscutting"))
+                     cross_check, budget, routed.get("requirements:crosscutting"))
     if cross["status"] != "VALID":
         issues += [f"requirements:crosscutting: {e}" for e in cross["errors"][:5]]
     if safety_text(ws) is None:
@@ -860,7 +896,7 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
                 results = [(gg, rec if gg is g else rr) for gg, rr in results]
             else:
                 cross = run_task(ws, task, lambda fi, pr: crosscut_packet(ws, functional, model, fi, pr),
-                                 lambda d: validate_group(ws, d, None, sysname, idx), budget, fs)
+                                 cross_check, budget, fs)
         bad = [rec for _g, rec in results + [(None, cross)] if rec["status"] != "VALID"]
         if bad:
             return reply(ws, "FAILED", [f"{r['task']}: {e}" for r in bad for e in r["errors"][:5]], budget)
@@ -879,7 +915,7 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
             else:
                 cross = run_task(ws, "requirements:crosscutting",
                                  lambda fi, pr: crosscut_packet(ws, functional, model, fi, pr),
-                                 lambda d: validate_group(ws, d, None, sysname, idx), budget, fs)
+                                 cross_check, budget, fs)
         bad = [rec for _g, rec in results + [(None, cross)] if rec["status"] != "VALID"]
         if bad:
             return reply(ws, "FAILED", [f"{r['task']}: {e}" for r in bad for e in r["errors"][:5]], budget)

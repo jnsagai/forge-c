@@ -15,7 +15,7 @@ from forge_factory.common import sha256_file
 from forge_factory.lrtx import structured as S
 from forge_factory.lrtx import swe1
 
-from test_lrtx_swe1 import ANSWERS, DS, _gate, _scripted, ws  # noqa: F401  (fixture reuse)
+from test_lrtx_swe1 import ANSWERS, DS, SYS, _gate, _scripted, ws  # noqa: F401  (fixture reuse)
 
 pytestmark = pytest.mark.skipif(not DS.is_file(), reason="owner datasheet input (git-ignored) not present")
 
@@ -87,7 +87,8 @@ def test_uncovered_obligation_is_repaired_by_the_crosscutting_task(ws, monkeypat
     base = answers(COVERED)  # OBL-no-polling: neither a requirement nor a gap
 
     def cross(p):
-        if any("SWE1_OBLIGATION_UNCOVERED:OBL-no-polling" in f for f in p.get("findings") or []):
+        # CAPA-079: the cross-cutting task's own check names the uncovered obligation (no post-assembly round)
+        if any("OBL-no-polling has no implementing requirement" in f for f in p.get("findings") or []):
             return {**base["requirements:crosscutting"], "obligation_gaps": POLL_GAP}
         return base["requirements:crosscutting"]
 
@@ -102,8 +103,9 @@ def test_persistently_uncovered_obligation_fails_and_nothing_freezes(ws, monkeyp
     declare(ws)
     monkeypatch.setattr(S, "call", _scripted(answers(COVERED), []))
     rep = swe1.visit(ws, "qwen3-coder:30b")
-    assert rep["status"] == "FAILED"  # the unchanged answer after the coverage finding is refused, never assembled
-    assert any(i.startswith("requirements:crosscutting: LRTX_FINDING_NOT_ADDRESSED") for i in rep["issues"]), rep
+    assert rep["status"] == "FAILED"  # the cross-cutting task stays INVALID on the uncovered obligation; nothing frozen
+    assert any(i.startswith("requirements:crosscutting: owner obligation OBL-no-polling has no implementing")
+               for i in rep["issues"]), rep
     assert _gate(ws, monkeypatch) != 0  # the gate honours the failed reply and finds the uncovered obligation itself
 
 
@@ -112,6 +114,7 @@ def test_gate_refuses_an_uncovered_obligation_from_any_author_path(ws, monkeypat
     declare(ws)
     monkeypatch.setattr(S, "call", _scripted(answers(COVERED), []))
     monkeypatch.setattr(swe1, "obligation_findings", lambda _ws: [])  # an author that does not self-check
+    monkeypatch.setattr(swe1, "crosscut_obligation_findings", lambda *_a: [])
     assert swe1.visit(ws, "qwen3-coder:30b")["status"] == "PASS"
     assert _gate(ws, monkeypatch) != 0
     log = [json.loads(x) for x in (ws / ".forge-run/gates/gate-log.jsonl").read_text().splitlines()]
@@ -199,3 +202,70 @@ def test_critical_gap_in_the_artifacts_is_a_finding(ws):
     assert [f.split(":")[1] for f in found if f.startswith("SWE1_OBLIGATION_CRITICAL_GAP")] == \
         ["OBL-start-key", "OBL-no-startup-writes"]
     assert not any("OBL-no-polling" in f for f in found)  # a non-critical gap with a reason stays allowed
+
+
+PRESERVE = {"id": "OBL-preserve-others", "statement": "Preserve every other register and other peripheral instances.",
+            "critical": True}
+DOC_P = {**DOC, "obligations": DOC["obligations"] + [PRESERVE]}
+
+
+def _preserving_cross(base_cross, literal):
+    """A scripted cross-cutting author that follows the findings literally (run -03 shape): it first names the task
+    register, and on 'remove requirement' it deletes the requirement; on 'without naming' it rephrases it."""
+    def cross(p):
+        fs = " ".join(p.get("findings") or [])
+        doc = json.loads(json.dumps(base_cross))
+        named = {"key": "preserve_others", "source_page": 2989, "verified_by": "host_unit_test", "effects": [],
+                 "obligations": ["OBL-preserve-others"], "verification": "Host unit test snapshots every IWDG register "
+                 "and passes when only the named field changed.",
+                 "statement": f"When an LL function is called, the {SYS} shall leave every register other than "
+                              "IWDG_KR.KEY unchanged."}
+        if "without naming" in fs:
+            named["statement"] = (f"When an LL function is called, the {SYS} shall leave every other register and "
+                                  "every other IWDG instance unchanged.")
+        elif "remove requirement [preserve_others]" in fs and literal:
+            return doc
+        doc["requirements"].append(named)
+        return doc
+    return cross
+
+
+def test_obligation_requirement_in_crosscutting_is_rephrased_not_removed(ws, monkeypatch):
+    """CAPA-079 (run -03): the validator told the author to remove the requirement an owner obligation needed."""
+    declare(ws, DOC_P)
+    base = answers(COVERED, POLL_GAP)
+    calls = []
+    monkeypatch.setattr(S, "call", _scripted({**base, "requirements:crosscutting":
+                                              _preserving_cross(base["requirements:crosscutting"], True)}, calls))
+    rep = swe1.visit(ws, "qwen3-coder:30b")
+    assert rep["status"] == "PASS", rep
+    cross = [p for p in calls if p["task"] == "requirements:crosscutting"]
+    assert len(cross) == 2  # one repair, within the task's own repair pass
+    sent = [f for p in cross for f in p.get("findings") or []]
+    assert not any("remove requirement [preserve_others]" in f for f in sent)
+    assert any("without naming IWDG_KR" in f for f in sent)
+    assert "OBL-preserve-others" in (ws / swe1.REQS).read_text()
+    assert _gate(ws, monkeypatch) == 0
+
+
+def test_crosscutting_findings_name_uncovered_no_effect_obligations(ws):
+    declare(ws, DOC_P)
+    doc = {"requirements": [{"key": "startup", "obligations": ["OBL-no-startup-writes"]}], "obligation_gaps": []}
+    functional = [{"key": "start", "obligations": ["OBL-start-key"]}]
+    found = swe1.crosscut_obligation_findings(ws, doc, functional)
+    assert [f.split(" has no")[0] for f in found] == ["owner obligation OBL-no-polling",
+                                                      "critical owner obligation OBL-preserve-others"]
+    doc["obligation_gaps"] = [{"id": "OBL-no-polling", "reason": "x" * 12}, {"id": "OBL-preserve-others", "reason": "y" * 12}]
+    assert [f.split(" has no")[0] for f in swe1.crosscut_obligation_findings(ws, doc, functional)] == \
+        ["critical owner obligation OBL-preserve-others"]  # a critical obligation is never satisfied by a gap
+
+
+def test_a_repair_round_keeps_the_earlier_attempts(ws, monkeypatch):
+    declare(ws, DOC_P)
+    base = answers(COVERED, POLL_GAP)
+    monkeypatch.setattr(S, "call", _scripted({**base, "requirements:crosscutting":
+                                              _preserving_cross(base["requirements:crosscutting"], True)}, []))
+    assert swe1.visit(ws, "qwen3-coder:30b")["status"] == "PASS"
+    ck = json.loads(swe1._ckpt(ws, "requirements:crosscutting").read_text())
+    every = (ck.get("history") or []) + ck["attempts"]
+    assert len(every) == 2 and any("without naming" in e for e in every[0]["errors"])
