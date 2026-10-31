@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 from forge_factory.mcp import sdk
-from forge_factory.mcp.servers import build
+from forge_factory.mcp.servers import build, evidence
 from pydantic import Field
 
 
@@ -56,3 +56,28 @@ def test_ticket_hashing_never_executes_custom_default_factories(monkeypatch):
     monkeypatch.setattr(sdk, "_op_model", lambda name: CustomInput)
     assert sdk.normalize_args("custom", {"labels": []}) == {"labels": []}
     assert sdk.normalize_args("custom", {}) == {}
+
+
+@pytest.mark.parametrize("only_evidence_refs_omitted", [False, True])
+def test_native_defect_declaration_keeps_ticket_after_empty_lists_are_injected(tmp_path, monkeypatch, only_evidence_refs_omitted):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "events"))
+    monkeypatch.setenv("FORGE_BINDING_ID", "defect-default-fixture")
+    monkeypatch.delenv("FORGE_MCP_TRUST", raising=False)
+    seen = []
+
+    def handler(ctx, args):
+        seen.append((ctx.role, ctx.phase, args.kind, args.requirement_ids, args.test_files, args.evidence_refs))
+        return sdk.result(ctx, "PASS", "Synthetic declaration, no defect or repair incident created")
+
+    server = sdk.build_server("forge-evidence-mcp", [sdk.Operation("report_defect", evidence.DefectIn, handler, "declaration probe")])
+    args = {"kind": "TEST", "summary": "Synthetic test setup correction declaration"}
+    if only_evidence_refs_omitted:
+        args.update(requirement_ids=["USPEC-01"], test_files=["software/tests/target/test_fixture.c"],
+                    requirement_quote="Synthetic setup quote, not an observed repair incident")
+    sdk.issue_ticket("defect-default-fixture", "mcp__forge_evidence_mcp__report_defect", args,
+                     "swe5-author", "swe5_target_author", "SWE.5", str(tmp_path))
+    asyncio.run(server.call_tool("report_defect", args))
+    expected_ids = ["USPEC-01"] if only_evidence_refs_omitted else []
+    expected_files = ["software/tests/target/test_fixture.c"] if only_evidence_refs_omitted else []
+    assert seen == [("swe5-author", "SWE.5", "TEST", expected_ids, expected_files, [])]
