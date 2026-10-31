@@ -1,5 +1,13 @@
 # Delivery-First implementation and evidence ledger
 
+02:50UTC: [target API prompt correction and actual Qwen test repair](../../evidence/014-durable-local-autonomy/target-api-prompt-20261031/README.md).
+Inactive source d0090099 fixes an observed target-author instruction to use
+unprovided array/offset macros (failed-before regression; exact95framework tests
+PASS; strict graph hashes unchanged). Current05 independently adapted its test
+files and reached33simulated checksPASS, driver unchanged, now SWE.5 author.
+Runtime/cohort remain0e/profile3/auditor303. No measured prompt-benefit, terminal
+DF-M1 or new DA completion claim. Historical failures and fixed deadline remain.
+
 02:35UTC: [fresh-cohort preregistration and current unit history](../../evidence/014-durable-local-autonomy/repeatability-preregistration-20261031/README.md).
 Current05 reached SWE.4 inspection with frozen9aa11db1... bytes. Three comparable
 orders06/07/08 are PREPARED_NOT_SUBMITTED, conditional on terminal DF-M1 audit;

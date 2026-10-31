@@ -1,0 +1,75 @@
+[
+  {
+    "at": "2026-10-31T02:41:17.914817761Z",
+    "result": {
+      "status": "FAIL",
+      "summary": "renode cortex-m55: 0 checks passed, 2 failed (2 images; behavioural CRC model)",
+      "artifact_refs": [
+        "artifact:sha256:64a35fd3fcad8454c1feb4537f60aba68035ebf6067561170e8acd821c4396f8"
+      ],
+      "issues": [
+        "BUILD_FAIL:test_crc_idr.c",
+        "software/tests/target/test_crc_idr.c:18:15: error: 'll_crc_regs' undeclared (first use in this function)",
+        "software/tests/target/test_crc_idr.c:18:27: error: 'LL_CRC_IDR_OFFSET' undeclared (first use in this function)",
+        "software/tests/target/test_crc_idr.c:20:27: error: 'LL_CRC_DR_OFFSET' undeclared (first use in this function)",
+        "software/tests/target/test_crc_idr.c:21:27: error: 'LL_CRC_INIT_OFFSET' undeclared (first use in this function)",
+        "software/tests/target/test_crc_idr.c:22:27: error: 'LL_CRC_POL_OFFSET' undeclared (first use in this function)",
+        "software/tests/target/test_crc_idr.c:23:27: error: 'LL_CRC_CR_OFFSET' undeclared (first use in this function)",
+        "software/tests/target/test_crc_idr.c:33:23: error: 'll_crc_regs' undeclared (first use in this function)",
+        "software/tests/target/test_crc_idr.c:33:35: error: 'LL_CRC_IDR_OFFSET' undeclared (first use in this function)",
+        "BUILD_FAIL:test_performance.c",
+        "software/tests/target/test_performance.c:31:15: error: 'll_crc_regs' undeclared (first use in this function)",
+        "software/tests/target/test_performance.c:31:27: error: 'LL_CRC_IDR_OFFSET' undeclared (first use in this function)",
+        "software/tests/target/test_performance.c:32:27: error: 'LL_CRC_CR_OFFSET' undeclared (first use in this function)"
+      ],
+      "provenance": {
+        "tool": "renode",
+        "version": "Renode v1.17.0",
+        "invocation_id": "inv-52abcd2cf7ea4619",
+        "input_sha256": "7c3d1082ca88270d5afe88f366a0cc054970519ad2b4998b6dc3a8d2cf8e95cf",
+        "output_sha256": "64a35fd3fcad8454c1feb4537f60aba68035ebf6067561170e8acd821c4396f8",
+        "exit_code": 1
+      },
+      "metrics": {
+        "passed": 0,
+        "failed": 2,
+        "cpu": "cortex-m55",
+        "platform": "forge-stm32n6-crc-min (CPU+NVIC+AXISRAM+behavioural CRC)",
+        "target_evidence": "simulated",
+        "silicon_verified": false
+      }
+    },
+    "tool_transport_error": false
+  },
+  {
+    "at": "2026-10-31T02:43:15.409176875Z",
+    "result": {
+      "status": "PASS",
+      "summary": "renode cortex-m55: 33 checks passed, 0 failed (2 images; behavioural CRC model)",
+      "artifact_refs": [
+        "artifact:sha256:1744e35f163044af18508d4eb61567a1497924ecdab511b685846f833c5eb41d",
+        "artifact:sha256:b393730631fcaff3bec20820af0f21fdd172bf93ae98f86faf25eb7db94a88de",
+        "artifact:sha256:fa67887870d5c9526d2a57309002a6cb6f5ef19ac7ed931c24d70367f97df50d"
+      ],
+      "issues": [],
+      "provenance": {
+        "tool": "renode",
+        "version": "Renode v1.17.0",
+        "invocation_id": "inv-f6386eb30f904667",
+        "input_sha256": "7c3d1082ca88270d5afe88f366a0cc054970519ad2b4998b6dc3a8d2cf8e95cf",
+        "output_sha256": "1744e35f163044af18508d4eb61567a1497924ecdab511b685846f833c5eb41d",
+        "exit_code": 0
+      },
+      "metrics": {
+        "passed": 33,
+        "failed": 0,
+        "cpu": "cortex-m55",
+        "platform": "forge-stm32n6-crc-min (CPU+NVIC+AXISRAM+behavioural CRC)",
+        "target_evidence": "simulated",
+        "silicon_verified": false,
+        "simulation_performance_report": "artifact:sha256:fa67887870d5c9526d2a57309002a6cb6f5ef19ac7ed931c24d70367f97df50d"
+      }
+    },
+    "tool_transport_error": false
+  }
+]

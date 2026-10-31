@@ -1,5 +1,24 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October 02:50 UTC
+
+Qwen passed33authored simulated target checks after two images initially failed
+to build on missing legacy array/offset declarations. It added local offsets and
+a wrapper over the simulator linker symbol; this was a test adaptation, not a
+driver change. Frozen9aa11db1... remains unchanged. It is now at SWE.5 author;
+SWE.1 gatePASS, SWE.2–4REWORK. Terminal package/final recheck remain pending.
+
+The old target-author prompt explicitly imposed those undefined interfaces.
+New inactive source **d0090099c2961c71aa28623b53eda03e790e3ea2** replaces that
+instruction only in selected Delivery-First graphs with the actual declared
+contract/device API and simulator fidelity. The new regression failed before;
+focused2PASS and exact95PASS/zero errors/skips. All five actual strict graph
+hashes are unchanged; inherited Feature009 golden failure remains open.
+Read [native target history, code snapshots and exact commands](../../evidence/014-durable-local-autonomy/target-api-prompt-20261031/README.md).
+Do NOT activate this fix during current05 or its comparison cohort: producer0e,
+profile3 and observer303 remain pinned. No benefit from the new prompt is yet
+measured. No task or DF-M1 condition is closed by framework tests alone.
+
 ## Overnight checkpoint — 31 October 02:35 UTC
 
 Native05 remains RUNNING at SWE.4 inspection, source0e342eef, candidate9aa11db1...
