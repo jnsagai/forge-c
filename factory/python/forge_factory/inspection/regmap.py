@@ -178,14 +178,24 @@ def generate(ws: Path) -> dict:
 
 def check_regmap(ws: Path) -> dict:
     """Every LL_RCC_<REG>_OFFSET/_<FIELD>_POS/_<FIELD>_MSK define in the LL header must match RM0486."""
+    from .typed_registers import check_selected
+
+    typed = check_selected(ws)
+    if typed is not None:
+        return typed
     i = _ident(ws)
     p = ws / i["header"]
     if not p.is_file():
         return {"verdict": "FAIL", "major_findings": ["REGMAP:NO_LL_HEADER"], "stats": {}}
     rm = {_short(k): v for k, v in rm_registers(ws).items()}
+    return check_defines(p.read_text(errors="replace"), rm, i["define"])
+
+
+def check_defines(text: str, rm: dict, define: str, *, require_defines: bool = True) -> dict:
+    """Existing numeric-definition checks, also used beside a declared typed layout."""
     findings, checked = [], 0
-    for m in re.finditer(rf"^\s*#\s*define\s+{re.escape(i['define'])}([A-Z0-9_]+?)_(OFFSET|POS|MSK)\s+\(?\s*"
-                         r"(0x[0-9A-Fa-f]+|\d+)U?L?\b", p.read_text(errors="replace"), re.M):
+    for m in re.finditer(rf"^\s*#\s*define\s+{re.escape(define)}([A-Z0-9_]+?)_(OFFSET|POS|MSK)\s+\(?\s*"
+                         r"(0x[0-9A-Fa-f]+|\d+)U?L?\b", text, re.M):
         key, kind, val = m.group(1), m.group(2), int(m.group(3), 0)
         if kind == "OFFSET":
             if key not in rm:
@@ -204,7 +214,7 @@ def check_regmap(ws: Path) -> dict:
         if val != want:
             findings.append(f"REGMAP:{kind}_MISMATCH:{key}:{val:#x}!={want:#x}")
         checked += 1
-    if checked == 0:
+    if checked == 0 and require_defines:
         findings.append("REGMAP:NO_REGISTER_DEFINES")
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings, "stats": {"defines_checked": checked}}
 

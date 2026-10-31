@@ -86,6 +86,10 @@
     {
       "path": "idr_target_oracle.c",
       "role": "delivery_first_independent_target_oracle"
+    },
+    {
+      "path": "IDR-API.h",
+      "role": "delivery_first_api_contract"
     }
   ],
   "layer": "LL",
@@ -157,6 +161,14 @@
       "host": "host-clang",
       "target": "target-cm55-gcc"
     },
-    "simulation_adapter": "stm32n6-cortex-m55-v1"
+    "simulation_adapter": "stm32n6-cortex-m55-v1",
+    "register_interface": {
+      "schema": "forge-c/typed-register-interface/1",
+      "device_header": "inputs/forge_crc_device.h",
+      "api_contract": "inputs/IDR-API.h",
+      "manual": "inputs/RM0486-rev4-ch26-crc.md",
+      "type_name": "CRC_TypeDef",
+      "members": [{"register": "CRC_IDR", "member": "IDR", "width_bits": 32}]
+    }
   }
 }

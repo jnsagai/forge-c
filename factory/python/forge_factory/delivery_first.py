@@ -58,6 +58,10 @@ def contract(man):
     if (not isinstance(value.get("include_dirs"), list) or not value["include_dirs"]
             or any(not isinstance(p, str) for p in paths + value["include_dirs"])):
         raise ValueError("DELIVERY_FIRST_PATHS_INVALID")
+    if "register_interface" in value:
+        from .inspection.typed_registers import validate_contract
+
+        validate_contract(value["register_interface"], man)
     return value
 
 
