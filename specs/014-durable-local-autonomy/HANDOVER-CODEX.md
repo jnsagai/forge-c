@@ -2,6 +2,16 @@
 
 ## Overnight checkpoint — 31 October 05:05 UTC: fresh cohort 1/3
 
+05:35UTC: inactive generic MCP fix **50a4813d8d66d6af31e61f78e7eb0678e2eb3e5d**
+normalizes injected empty builtin container defaults before hashing tickets.
+Actual07initial compile ALLOW hook→NO_AUTHORIZATION_TICKET is reproduced by
+runtime0e profile-only vs defines=[] hashes; native03/05/06 each had3such normal
+compile denials. This is a factory defect, separate from independent functional
+checks. Four tests fail before; exact77PASS/2disabled-live-FabroSKIP, zero errors/
+failures, changed-source/new-test RuffPASS. One-time/nondefault binding retained,
+arbitrary factories not executed. [Actual diagnosis, commands and receipts](../../evidence/014-durable-local-autonomy/mcp-default-tickets-50a4813d/README.md).
+Do not deploy/hotpatch mid-cohort; normal build benefit not yet measured.
+
 Offline cohort reporter **8c7fb8e1d84e99f5018bc26072333673c066c651**, exact18PASS
 and changed-tool/test RuffPASS, preserves missing/failed trials and rejects
 hash/comparability/duplicate swaps. It summarizes pinned external assertions,

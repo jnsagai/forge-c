@@ -1,0 +1,22 @@
+{
+  "native07-diagnosis": {
+    "original_sha256": "057222ec6fb3967e46e41daece3f0642dc5093328149550785ea28cb119c68cc",
+    "view_sha256": "65ed1f787f5e268650ad4e03d8a84ced024d001c1303463b58459f6a4325081f"
+  },
+  "historical-compile-outcomes": {
+    "original_sha256": "bf9504075367e07a2fbaaf917dd4549d2babf75d249c726f1ecb0d27c2abeb0a",
+    "view_sha256": "bae4af266dc2d5d3ff1ac2828d7ba34322967c91b58a5998b804d0a36fd5bf4c"
+  },
+  "mcp-default-red.xml": {
+    "decompressed_sha256": "8c13304582c64a77e813a885e6de6b075128a2fe46e0d95ea3090aa0f8c27f83"
+  },
+  "mcp-default-green.xml": {
+    "decompressed_sha256": "51dd7a2f1f2734f4e5a21d811ab8b47e18a3192077ae16ac29e77751f3c3fd8c"
+  },
+  "mcp-default-regression.xml": {
+    "decompressed_sha256": "32a981da87f080039f1e28770d9a0473c056614d90f136c78f2dceb0ba50861a"
+  },
+  "mcp-default-exact.xml": {
+    "decompressed_sha256": "98811c389d8f7b47af4e682f115893dc1c6b9c604f8709ba8b6be76ed1988384"
+  }
+}

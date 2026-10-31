@@ -1,5 +1,13 @@
 # Why functional delivery still has25strict release gaps
 
+05:35UTC follow-up: [actual normal compile denials and inactive generic SDK fix](../mcp-default-tickets-50a4813d/README.md)
+identify a factory argument-default ticket mismatch. Native03/05/06 each have
+3normal compile callsBLOCKED/NO_AUTHORIZATION_TICKET; actual07hash reproduction
+and failed-before MCP integration regressions bind the diagnosis. This helps
+explain absent normal objects/stack outputs, without changing historical gaps,
+claiming driver compile errors or retroactively supplying missing evidence.
+Fix50a4813d is not activated during the frozen cohort.
+
 Read-only triage of the retained native05 work products, gate failures and
 source checks. No Qwen artifact validator or candidate C was rerun locally, and
 no active cohort input/code/source was changed. Original findings stay intact.
