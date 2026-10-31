@@ -56,6 +56,44 @@ GROUP_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["r
                                "open_points": {"type": "array", "items": {"type": "string"}}}}
 
 
+# ---- owner obligations (docs/designs/swe1-owner-obligation-coverage.md; opt-in per work order) --------------------
+def owner_obligations(ws: Path) -> dict | None:
+    from ..assurance import owner_obligations as OO
+
+    return OO.declared(ws)
+
+
+def group_schema(obl: dict | None, crosscutting: bool = False) -> dict:
+    """GROUP_SCHEMA, unchanged when the work order declares no owner obligations; otherwise every requirement lists
+    the ids it implements, and the cross-cutting task may record obligation gaps."""
+    if obl is None:
+        return GROUP_SCHEMA
+    ids = [o["id"] for o in obl["obligations"]]
+    req = {**REQ_SCHEMA, "required": REQ_SCHEMA["required"] + ["obligations"],
+           "properties": {**REQ_SCHEMA["properties"],
+                          "obligations": {"type": "array", "items": {"type": "string", "enum": ids}}}}
+    out = {**GROUP_SCHEMA, "properties": {**GROUP_SCHEMA["properties"], "requirements": {"type": "array", "items": req}}}
+    if crosscutting:
+        out["required"] = GROUP_SCHEMA["required"] + ["obligation_gaps"]
+        out["properties"]["obligation_gaps"] = {"type": "array", "items": {
+            "type": "object", "additionalProperties": False, "required": ["id", "reason"],
+            "properties": {"id": {"type": "string", "enum": ids}, "reason": {"type": "string", "minLength": 10}}}}
+    return out
+
+
+def obligation_rule(obl: dict, crosscutting: bool) -> str:
+    rule = (f" Owner obligations ({obl['_path']}, a provided source): obligations lists the ids of the owner "
+            "obligations a requirement implements ([] if none). Cite an id only when the statement implements that "
+            "obligation; an obligation that names register effects is implemented only by a requirement with those "
+            "effects.")
+    if crosscutting:
+        rule += (" Write the requirements for every owner obligation that no CURRENT ARTIFACT requirement implements "
+                 "and that is not a single register field's behaviour (e.g. no status polling, no error code, other "
+                 "fields and registers preserved). An obligation the inputs cannot support goes into obligation_gaps "
+                 "with the reason; never drop an obligation silently. obligation_gaps stays empty otherwise.")
+    return rule
+
+
 # ---- inventory --------------------------------------------------------------------------------------------------------
 def _manifest(ws: Path) -> dict:
     return json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
@@ -243,10 +281,16 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
     crit = [f"every requirement's subject is exactly 'the {sysname}'", "every field of the task is covered or listed "
             "in not_covered", "every effect names a field of this task that its statement names",
             "a statement that sets, clears or writes a field has an effect for it"]
+    srcs = [S.source(ws, g["file"])]
+    obl = owner_obligations(ws)
+    if obl is not None:
+        instr += obligation_rule(obl, False)
+        srcs.append(S.source(ws, obl["_path"]))
+        crit.append("every cited obligation is implemented by its requirement")
     if note := for_workspace(ws):
         instr += " " + note
     return S.packet(phase="SWE.1", task=f"requirements:{g['id']}", role="swe1-author", instructions=instr,
-                    sources=[S.source(ws, g["file"])], criteria=crit, output_schema=GROUP_SCHEMA, model=model,
+                    sources=srcs, criteria=crit, output_schema=group_schema(obl), model=model,
                     findings=findings, previous=previous)
 
 
@@ -256,7 +300,9 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
 
     m = _manifest(ws)
     sysname = system_name(ws)
-    listing = "\n".join(f"- [{r['key']}] {r['statement']}" for r in functional)
+    obl = owner_obligations(ws)
+    listing = "\n".join(f"- [{r['key']}] {r['statement']}" + (f" (obligations: {', '.join(r.get('obligations') or [])})"
+                                                              if obl is not None else "") for r in functional)
     instr = (f"The register-level requirements of the {sysname} are already written (listed below as CURRENT "
              "ARTIFACT). Write only the requirements that do not belong to one register field: the reset/startup "
              f"behaviour (e.g. 'While no LL function has been called after reset, the {sysname} shall not write any "
@@ -279,12 +325,17 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
     chapter = str(profile(ws)["rm"]["chapter"])
     func = [n for n, s in secs.items() if n.startswith(chapter + ".") and "functional" in s["title"].lower()]
     srcs = [S.source(ws, secs[n]["file"], max_chars=20_000) for n in func[:1]]
+    crit = [f"subject exactly 'the {sysname}'", "no budget requirements"]
+    if obl is not None:
+        instr += obligation_rule(obl, True)
+        srcs.append(S.source(ws, obl["_path"]))
+        crit.append("every owner obligation is implemented by a requirement or listed in obligation_gaps")
     if note := for_workspace(ws):
         instr += " " + note
     return S.packet(phase="SWE.1", task="requirements:crosscutting", role="swe1-author", instructions=instr,
-                    sources=srcs, artifacts=[art], criteria=[f"subject exactly 'the {sysname}'",
-                                                             "no budget requirements"],
-                    output_schema=GROUP_SCHEMA, model=model, findings=findings, previous=previous)
+                    sources=srcs, artifacts=[art], criteria=crit,
+                    output_schema=group_schema(obl, crosscutting=True), model=model, findings=findings,
+                    previous=previous)
 
 
 # ---- deterministic validation of one answer -------------------------------------------------------------------------
@@ -492,6 +543,8 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
     from ..layer import profile
 
+    from ..assurance import owner_obligations as OO
+
     ws = Path(ws)
     m = _manifest(ws)
     sysname, pid = system_name(ws), profile(ws)["id"]
@@ -539,8 +592,10 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
           f"Software requirements of the {sysname} for this work order. Scope: " + " ".join(m["scope"]), ""]
     for r in rows:
         md += [f"- **{r['swr']}** {r['statement'].strip()}", f"  - Source: {r['source']}",
-               f"  - Verification: {r['verification'].strip()}"]
-    md += ["", "## Open points", ""] + [f"- {o}" for o in opens] + [""]
+               f"  - Verification: {r['verification'].strip()}"] + OO.render_lines(r.get("obligations") or [])
+    md += ["", "## Open points", ""] + [f"- {o}" for o in opens]
+    obl_gaps = cross["doc"].get("obligation_gaps") or []
+    md += OO.render_gaps(obl_gaps) + [""]
     effects, seen = [], set()
     for r in rows:
         for e in r["effects"]:
@@ -584,13 +639,17 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     files = {REQS: "\n".join(md), EFFECTS: json.dumps({"schema": "forge-c/register-effects/1", "effects": effects},
                                                       indent=2) + "\n",
              CSV: "\n".join(csv) + "\n", GAPS: "\n".join(gaps)}
+    obl = owner_obligations(ws)
+    if obl is not None:
+        files[OO.CSV] = OO.trace_csv(rows, obl_gaps)
     st = safety_text(ws)
     if st is not None:
         files[SAFETY] = st
     write_scoped(ws, files)
     amap = {"schema": "forge-c/lrtx-swe1-assembly/1", "at": utc_now(),
             "swr": {r["swr"]: {"task": r["task"], "key": r["key"]} for r in rows},
-            "case": {e["case"]: e["swr"] for e in effects}, "files": sorted(files), "open_points": open_points}
+            "case": {e["case"]: e["swr"] for e in effects}, "files": sorted(files), "open_points": open_points,
+            "owner_obligations": OO.status(ws)}
     S.record(ws, "SWE.1/assembly.json", amap)
     return amap
 
@@ -644,6 +703,30 @@ def self_check(ws: Path) -> list[str]:
     out += RC.check_effects(ws, "LL")
     out += startup_on_host(ws)
     out += workspace_scope_findings(ws, "SWE.1")
+    out += obligation_findings(ws)
+    return out
+
+
+def obligation_findings(ws: Path) -> list[str]:
+    """The owner-obligation coverage findings, each naming the task that repairs it: an uncovered obligation with
+    register effects goes to that register's task, any other uncovered obligation to the cross-cutting task."""
+    from ..assurance import owner_obligations as OO
+
+    found = OO.coverage_findings(ws)
+    if not found:
+        return []
+    try:
+        obl = owner_obligations(ws)
+        by_field = {(g["register"], f): f"requirements:{g['id']}" for g in groups(inventory(ws)) for f in g["fields"]}
+    except Exception:  # an invalid declaration is already a finding; inventory refusals fail the visit elsewhere
+        return found
+    effects = {o["id"]: {(e["register"], e["field"]) for e in o.get("effects") or []}
+               for o in (obl or {}).get("obligations", [])}
+    out = []
+    for f in found:
+        m = re.match(r"SWE1_OBLIGATION_UNCOVERED:(OBL-[a-z0-9-]+)", f)
+        tasks = sorted({by_field[k] for k in effects.get(m.group(1), set()) if k in by_field}) if m else []
+        out.append(f + "".join(f" (task {t})" for t in tasks))
     return out
 
 

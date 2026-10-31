@@ -1,0 +1,9 @@
+{
+  "schema": "forge-c/owner-obligations/1",
+  "status": "DRAFT_FOR_OWNER_REVIEW",
+  "owner": "owner",
+  "source_inputs": [
+    "IDR-CONTRACT.md"
+  ],
+  "obligations": []
+}

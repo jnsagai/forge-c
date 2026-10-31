@@ -92,6 +92,10 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     if phase != "SWE.1":
         files += [f for f in ("workproducts/SWE.1/software_requirements.md", "workproducts/SWE.1/register_effects.json")
                   if f not in files]
+    if phase == "SWE.1":  # owner 2026-10-31 (option 1): the declared owner obligations and the inputs they cite
+        from ..assurance.owner_obligations import source_paths
+
+        files += [f for f in source_paths(ws) if f not in files]
     limit = source_char_limit(ws)
     srcs = [S.source(ws, f, max_chars=limit) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
     for f in [f for f in files if f in ENGINE_FILES and (Path(ws) / f).is_file()]:

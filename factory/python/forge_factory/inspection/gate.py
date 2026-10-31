@@ -120,6 +120,9 @@ def step_author(store: Store, phase: str, text: str) -> int:
         from .test_mapping import startup_on_host  # CAPA-059: startup invariants are target-observed (Robot)
 
         generated += startup_on_host(store.workspace)
+        from ..assurance.owner_obligations import coverage_findings  # owner 2026-10-31: any author path, opt-in input
+
+        generated += coverage_findings(store.workspace)
     if phase == "SWE.2" and (store.workspace / "workproducts/SWE.2/architecture_static.puml").is_file():
         from .views import check_views  # PlantUML views: syntax/content checked and SVGs rendered before freeze
 

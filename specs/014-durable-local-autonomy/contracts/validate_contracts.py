@@ -30,6 +30,7 @@ RUNTIME_SCHEMAS = {
     "process-lab-experiment.schema.json",
     "model-swap.schema.json",
     "process-lab-disposition.schema.json",
+    "owner-obligations.schema.json",
 }
 CHECKER = FormatChecker()
 
