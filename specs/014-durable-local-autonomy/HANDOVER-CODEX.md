@@ -2,6 +2,13 @@
 
 ## Overnight checkpoint — 31 October 05:05 UTC: fresh cohort 1/3
 
+Inactive source fix **d2e083e322aeb3286e6d94bd0d51e532f7d66fb7** now keeps sole
+local-inference contention retry15s through existing Store/scheduler; mixed
+dependency faults retain exponential cooldown. Actual ledger/execution regression
+failed-before3600vs15s; exact117PASS, no failures/errors/skips. Two inherited Ruff
+import-order findings remain. [Commands/results/limits](../../evidence/014-durable-local-autonomy/local-capacity-retry-d2e083e3/README.md).
+Do not deploy mid-cohort; no native availability benefit is yet measured.
+
 First fresh06 is externally qualified scoped FUNCTIONAL_MILESTONE_PASS,
 audit3e73552f..., archive3aced187..., native01M67ZJWDYS7H33828MPTK6E6D.
 Initial/final independentPASS, all6phase attempts, sealed receipt and14inputs

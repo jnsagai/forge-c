@@ -1,0 +1,40 @@
+{
+  "source_revision": "d2e083e322aeb3286e6d94bd0d51e532f7d66fb7",
+  "checks": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "b6506f",
+        "wall_time_seconds": 0.163080965,
+        "exit_code": 0,
+        "original_token_count": 84,
+        "output": "{\n  \"result\": \"PASS\",\n  \"scope\": \"SPEC_CONTRACTS_ONLY_NOT_RUNTIME\",\n  \"requirements\": 58,\n  \"tasks\": 58,\n  \"acceptance_tests\": 58,\n  \"contracts\": {\n    \"result\": \"PASS\",\n    \"scope\": \"SPEC_CONTRACTS_ONLY_NOT_RUNTIME\",\n    \"schemas\": 6,\n    \"fixtures\": 38,\n    \"positive\": 16,\n    \"negative\": 22,\n    \"errors\": []\n  },\n  \"errors\": []\n}\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "b4e3d7",
+        "wall_time_seconds": 0.081295656,
+        "exit_code": 0,
+        "original_token_count": 39,
+        "output": "{\n  \"result\": \"PASS\",\n  \"scope\": \"SPEC_CONTRACTS_ONLY_NOT_RUNTIME\",\n  \"schemas\": 6,\n  \"fixtures\": 38,\n  \"positive\": 16,\n  \"negative\": 22,\n  \"errors\": []\n}\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "6594ee",
+        "wall_time_seconds": 0.108769413,
+        "exit_code": 0,
+        "original_token_count": 379,
+        "output": "test_all_agent_tools_in_mcp_registry (__main__.ForgeV04Design.test_all_agent_tools_in_mcp_registry) ... ok\ntest_all_twenty_role_skills (__main__.ForgeV04Design.test_all_twenty_role_skills) ... ok\ntest_audit_capture_and_view_policy (__main__.ForgeV04Design.test_audit_capture_and_view_policy) ... ok\ntest_dashboard_contract_and_filters (__main__.ForgeV04Design.test_dashboard_contract_and_filters) ... ok\ntest_editable_drawio (__main__.ForgeV04Design.test_editable_drawio) ... ok\ntest_example_contracts (__main__.ForgeV04Design.test_example_contracts) ... ok\ntest_legacy_workflow_not_mislabeled (__main__.ForgeV04Design.test_legacy_workflow_not_mislabeled) ... ok\ntest_model_free_supervisor (__main__.ForgeV04Design.test_model_free_supervisor) ... ok\ntest_project_constitution (__main__.ForgeV04Design.test_project_constitution) ... ok\ntest_readonly_roles_not_given_mutation (__main__.ForgeV04Design.test_readonly_roles_not_given_mutation) ... ok\ntest_release_package_survives (__main__.ForgeV04Design.test_release_package_survives) ... ok\ntest_spec_and_task_traceability (__main__.ForgeV04Design.test_spec_and_task_traceability) ... ok\ntest_swe_author_inspector_pairs (__main__.ForgeV04Design.test_swe_author_inspector_pairs) ... ok\ntest_token_policy_enforced_in_design (__main__.ForgeV04Design.test_token_policy_enforced_in_design) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.127s\n\nOK\nPASS: 14 static design tests. This does NOT validate runtime integrations.\n"
+      }
+    }
+  ],
+  "ruff": {
+    "result": "FAIL",
+    "findings": "Two inherited import ordering issues, scheduler.py:74 and185; changed retry lines have no reported diagnostic",
+    "not_runtime_qualification": true
+  }
+}
