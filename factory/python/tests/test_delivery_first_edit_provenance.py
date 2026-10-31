@@ -1,9 +1,14 @@
 """Synthetic native tool events; no model output or functional correctness claim."""
+# ruff: noqa: F811 - conventional imported pytest fixture
 import json
 
 import pytest
 from forge_factory import delivery_first as D
 from forge_factory.common import sha256_bytes
+from test_delivery_first import (
+    candidate,
+    prepared,  # noqa: F401 - shared isolated fixture
+)
 
 REL = "software/ll/fixture.h"
 BEFORE = "static inline unsigned fixture(void) { return 1U; }\n"
@@ -92,3 +97,39 @@ def test_every_declared_candidate_requires_its_own_complete_chain(tmp_path, seco
     hashes = {REL: sha256_bytes(AFTER.encode()), other: sha256_bytes(BEFORE.encode())}
     out = D.native_source_provenance(events, ROLES, tmp_path, hashes)
     assert out["authorship"] == ("CONFIRMED_NATIVE_WRITE_EDIT_CHAIN" if second_present else "UNVERIFIED_EDIT_CHAIN")
+
+
+@pytest.mark.parametrize("present", [True, False])
+def test_audit_cli_never_executes_candidate_or_mutates_workspace(prepared, monkeypatch, capsys, present):
+    ws, _ = prepared
+    if present:
+        candidate(ws)
+    monkeypatch.setattr(D, "native_record", lambda *a: {"status": "OBSERVED", "native_id": "FIXTURE_ONLY",
+                                                       "authorship": "CONFIRMED_NATIVE_WRITE_FILE"})
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("READ_ONLY_AUDIT_MUST_NOT_RUN_VERIFICATION_OR_PREFLIGHT")
+
+    monkeypatch.setattr(D, "verify", forbidden)
+    monkeypatch.setattr(D, "preflight", forbidden)
+    before = {str(p.relative_to(ws)): sha256_bytes(p.read_bytes()) for p in ws.rglob("*") if p.is_file()}
+    assert D.main(["--workspace", str(ws), "--step", "source-provenance"]) == (0 if present else 1)
+    out = json.loads(capsys.readouterr().out)
+    assert out["status"] == ("VERIFIED_SOURCE_PROVENANCE" if present else "UNVERIFIED_SOURCE_PROVENANCE")
+    assert out["functional_verification"] == "NOT_EVALUATED_BY_THIS_AUDIT"
+    assert before == {str(p.relative_to(ws)): sha256_bytes(p.read_bytes()) for p in ws.rglob("*") if p.is_file()}
+
+
+def test_audit_detects_candidate_change_during_metadata_collection(prepared, monkeypatch):
+    ws, _ = prepared
+    path = candidate(ws)
+
+    def changed(*args):
+        path.write_text("synthetic concurrent change")
+        return {"status": "OBSERVED", "authorship": "CONFIRMED_NATIVE_WRITE_FILE"}
+
+    monkeypatch.setattr(D, "native_record", changed)
+    out = D.source_provenance_audit(ws)
+    assert out["status"] == "UNVERIFIED_SOURCE_PROVENANCE"
+    assert out["candidate_unchanged_during_audit"] is False
+    assert out["candidate_hashes"] != out["candidate_hashes_after"]

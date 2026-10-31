@@ -651,13 +651,48 @@ def scorecard(record):
     return "\n".join(lines) + "\n"
 
 
+def source_provenance_audit(ws):
+    """Read-only qualification observation; never executes candidate code or changes a job."""
+    from .workorder import factory_revision
+
+    cfg, man = selected(ws)
+    if not cfg:
+        raise ValueError("DELIVERY_FIRST_NOT_SELECTED")
+    paths = checked_paths(ws, cfg)
+    current = {raw: sha256_file(path) if path.is_file() else None for raw, path in paths.items()}
+    native = native_record(ws, current)
+    after = {raw: sha256_file(path) if path.is_file() else None for raw, path in paths.items()}
+    verified = (bool(current) and all(current.values()) and current == after and native.get("status") == "OBSERVED"
+                and native.get("authorship") in ("CONFIRMED_NATIVE_WRITE_FILE", "CONFIRMED_NATIVE_WRITE_EDIT_CHAIN"))
+    keys = ("status", "native_id", "native_status", "authorship", "authorship_basis", "write_evidence",
+            "edit_chain_evidence")
+    binding = Path(ws) / ".forge-run/binding.json"
+    roles = json.loads(binding.read_text()).get("nodes", {}) if binding.is_file() else {}
+    return {"schema": "forge-c/delivery-first-source-provenance/1", "at": utc_now(),
+            "status": "VERIFIED_SOURCE_PROVENANCE" if verified else "UNVERIFIED_SOURCE_PROVENANCE",
+            "scope": "READ_ONLY_SOURCE_ORIGIN_NOT_FUNCTIONAL_OR_RELEASE_QUALIFICATION",
+            "work_order": man["work_order"], "producer_factory_revision": man.get("factory_revision"),
+            "auditor_factory_revision": factory_revision(), "auditor_module_sha256": sha256_file(Path(__file__)),
+            "candidate_hashes": current, "candidate_hashes_after": after,
+            "candidate_unchanged_during_audit": current == after,
+            "native_evidence": {key: native.get(key) for key in keys},
+            "source_author_nodes": {key: value for key, value in roles.items() if value.get("role") == "swe3-author"},
+            "functional_verification": "NOT_EVALUATED_BY_THIS_AUDIT",
+            "model_generation_calls_by_auditor": 0, "workspace_written_by_auditor": False,
+            "candidate_executed_by_auditor": False}
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--workspace", type=Path, required=True)
-    ap.add_argument("--step", choices=("preflight", "verify", "final-verify"), required=True)
+    ap.add_argument("--step", choices=("preflight", "verify", "final-verify", "source-provenance"), required=True)
     ap.add_argument("--attempt", type=int, default=0)
     args = ap.parse_args(argv)
     try:
+        if args.step == "source-provenance":
+            out = source_provenance_audit(args.workspace)
+            print(json.dumps(out))
+            return 0 if out["status"] == "VERIFIED_SOURCE_PROVENANCE" else 1
         out = preflight(args.workspace) if args.step == "preflight" else verify(
             args.workspace, "final" if args.step == "final-verify" else args.attempt)
     except (ValueError, OSError) as exc:
