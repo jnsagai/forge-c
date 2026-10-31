@@ -1,0 +1,19 @@
+{
+  "source_revision": "3788ace6b0c4dbfb6f3736e811998d5e900ca2fc",
+  "environment": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+  "command_suffix": "-m pytest factory/python/tests/test_mcp_ticket_factory_defaults.py factory/python/tests/test_mcp_input_schema_metadata.py factory/python/tests/test_m2_mcp.py factory/python/tests/test_t007_policy.py factory/python/tests/test_da014_integration.py -q --basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/mcp-defect-exact-tmp --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/mcp-defect-exact.xml",
+  "result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "2",
+    "tests": "81",
+    "time": "22.028",
+    "timestamp": "2026-10-31T06:22:28.240449+00:00",
+    "hostname": "master"
+  },
+  "passed": 79,
+  "ruff": "changed-test PASS",
+  "activation": "NOT_ACTIVATED; producer0e unchanged",
+  "fixture_correction": "First new declaration test used nonexistent swe5-target-author role and failed; changed fixture to actual swe5-author. No production role grant changed."
+}

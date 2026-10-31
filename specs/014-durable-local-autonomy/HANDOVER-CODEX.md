@@ -2,6 +2,17 @@
 
 ## Overnight checkpoint — 31 October 05:05 UTC: fresh cohort 1/3
 
+06:23UTC:07target harness initially buildFAIL, then13assertionsPASS/3FAIL.
+Qwen added volatile to its extern MMIO array in both target/performance tests;
+protected diffs contain no assertion change,16simulated assertions then execute
+PASS. Overall tool remainsFAIL/UNDECLARED_TEST_CHANGE. Its3TESTdeclaration calls
+are denied NO_AUTHORIZATION_TICKET: actual runtime hashes prove injected
+evidence_refs=[] mismatch, same inactive50a4813d SDK fix. This is an authored
+test repair blocked by factory protocol, not proven inability to diagnose or
+factory self-healing. [Actual events, four protected source versions, hashes and new regression](../../evidence/014-durable-local-autonomy/native-repair-ticket-3788ace6/README.md).
+New regression-only source3788ace6 exact79PASS/2disabled-live-FabroSKIP; no source
+activation/current job intervention. No model benefit or new qualification.
+
 Combined exact d49cf1ee qualification:171PASS/2disabled-live-FabroSKIP, zero
 failures/errors,173unique cases,29.224s. Joint capacity/MCP/default/reporting
 and inherited queue/mission/liveness/policy regressions; counts overlap earlier
