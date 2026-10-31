@@ -57,6 +57,48 @@ def profile_context_tokens(ws: Path | None) -> tuple[int, str]:
     return CONTEXT_TOKENS, "legacy:FORGE_LRTX_CONTEXT_TOKENS"
 
 
+def packet_identity(ws: Path | None, model: str, role: str) -> dict | None:
+    """G3/D10 (process-first design, owner 2026-10-31): the served-model identity a packet's answer depends on.
+
+    It is derived from the work order's selected local profile: the manifest's profile binding (id + config sha), the
+    pinned digest and precision of `model`, its reasoning settings (served mode and gateway efforts, the role's own
+    effort only), the probed schema mode for that digest and the context envelope. Part of `input_hash`, so a
+    checkpoint never crosses a model, precision, reasoning, schema-mode, context or profile change made under an
+    unchanged model alias. `adapter_revision` (the factory commit) is deliberately absent: code changes keep the
+    existing revision/revalidation handling. Without a selected profile there is no identity (legacy hash shape)."""
+    if ws is None:
+        return None
+    man = ws / ".forge-run/manifest.json"
+    selected = (json.loads(man.read_text()).get("local_profile") or {}) if man.is_file() else {}
+    if not selected.get("id"):
+        return None
+    from . import profile as lp
+
+    prof = lp.load(selected["id"])
+    allowed = ((prof.get("models") or {}).get("allowed") or {}).get(model) or {}
+    digest = allowed.get("digest")
+    served = (prof.get("runtime") or {}).get("llama_server") or {}
+    if served.get("model", model) != model:
+        served = {}
+    gateway = (((prof.get("gateway") or {}).get("reasoning") or {}).get(model)) or {}
+    return {
+        "profile_id": selected["id"],
+        "profile_config_sha256": selected.get("config_sha256") or prof["_sha256"],
+        "model_digest": digest,
+        "precision": allowed.get("quantization"),
+        "reasoning": {
+            "served": {k: served[k] for k in ("reasoning", "reasoning_effort", "reasoning_format", "mtp_draft")
+                       if k in served},
+            "effort": gateway.get("effort"),
+            "role_effort": (gateway.get("role_efforts") or {}).get(role),
+            "extra_output_tokens": gateway.get("extra_output_tokens"),
+        },
+        # only the selected profile's digest: "" disables the FORGE_LRTX_PROFILE fallback of schema_mode_for
+        "schema_mode": schema_mode_for(model, digest or "")[0],
+        "context_tokens": profile_context_tokens(ws)[0],
+    }
+
+
 SKILL_SECTIONS = ("Mission", "Work instruction", "Authoritative inputs")
 
 
@@ -183,6 +225,9 @@ def packet(
         p["lessons_offered"] = [x["lesson_id"] for x in exposed]
     if sampling:  # F011-T048: part of the input hash, so a checkpoint never crosses sampling settings
         p["sampling"] = {k: sampling[k] for k in ("temperature", "top_p", "seed") if sampling.get(k) is not None}
+    identity = packet_identity(ws, model, role)
+    if identity is not None:  # G3/D10: part of the input hash; never part of the prompt (messages() ignores it)
+        p["identity"] = identity
     scope_ws = assessment_workspace or ws
     if scope_ws is not None:
         from ..release import qm

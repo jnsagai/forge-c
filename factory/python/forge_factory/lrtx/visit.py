@@ -189,7 +189,10 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
             raise Continue(task)
         budget["calls"] += 1
         if "schema_mode" not in budget:  # LRTX-T012: the probed mode of the served model, recorded once per visit
-            budget["schema_mode"], budget["schema_mode_basis"] = S.schema_mode_for(p["model"])
+            # G3/D10: the digest the packet identity was hashed with, not the FORGE_LRTX_PROFILE default
+            digest = (p.get("identity") or {}).get("model_digest")
+            budget["schema_mode"], budget["schema_mode_basis"] = (
+                S.schema_mode_for(p["model"], digest) if digest else S.schema_mode_for(p["model"]))
         from ..brownfield.resume import remaining_seconds
 
         remaining = remaining_seconds(ws)
