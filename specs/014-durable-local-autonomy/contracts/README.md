@@ -117,3 +117,11 @@ bindings produced by the existing broker/worker, not semantic model fields or
 new capability/deployment grants. See afo.maintenance_rework and the retained
 maintenance section of data-model.md. All six qualification schemas and their
 structural fixtures remain distinct from native runtime qualification.
+
+## Runtime contracts (`runtime/`)
+
+The six schemas in `runtime/` belong to the process-first lab (`docs/designs/forge-c-process-first-ornith-qwen.md`,
+§1, §4, §8 and §9). Unlike the schemas above, the factory loads them at runtime through
+`forge_factory.process_lab.contracts`. `validate_contracts.py` checks them and their `process-lab-*` fixtures as well.
+The `SPEC_CONTRACTS_ONLY_NOT_RUNTIME` scope of the fixture manifest still describes the validator: it never runs
+production code.

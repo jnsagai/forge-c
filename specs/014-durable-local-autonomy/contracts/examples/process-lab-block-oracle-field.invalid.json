@@ -1,0 +1,18 @@
+{
+  "schema": "forge-c/process-lab/1",
+  "experiment_id": "crc-idr-a1",
+  "driver": "crc-idr",
+  "seq": 2,
+  "role": "INSPECT",
+  "profile": "local-rtx-v2-omniverse2-lab-qwen38-q8",
+  "model_profile": "qwen3.8:27b-q8_0",
+  "source_order_id": "afo-0123456789abcdef",
+  "input_handoff": {
+    "path": "lab-handoff--handoff.json",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "oracle": {
+    "path": "x",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+}

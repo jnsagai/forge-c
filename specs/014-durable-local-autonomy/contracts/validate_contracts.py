@@ -22,6 +22,15 @@ SCHEMAS = {
     "review-disposition.schema.json",
     "patch-bundle.schema.json",
 }
+# Process-first lab (design rev 4 §8-§9): loaded at runtime by forge_factory.process_lab.contracts; checked here too.
+RUNTIME_SCHEMAS = {
+    "process-lab.schema.json",
+    "process-handoff.schema.json",
+    "swe1-oracle.schema.json",
+    "process-lab-experiment.schema.json",
+    "model-swap.schema.json",
+    "process-lab-disposition.schema.json",
+}
 CHECKER = FormatChecker()
 
 
@@ -59,7 +68,10 @@ def main() -> int:
     actual = {p.name for p in ROOT.glob("*.schema.json")}
     if actual != SCHEMAS:
         errors.append(f"SCHEMA_INVENTORY:{sorted(actual)}")
-    for name in sorted(SCHEMAS):
+    actual_runtime = {p.name for p in (ROOT / "runtime").glob("*.schema.json")}
+    if actual_runtime != RUNTIME_SCHEMAS:
+        errors.append(f"RUNTIME_SCHEMA_INVENTORY:{sorted(actual_runtime)}")
+    for name in sorted(SCHEMAS) + sorted(f"runtime/{n}" for n in RUNTIME_SCHEMAS):
         try:
             schema = read(ROOT / name)
             Draft202012Validator.check_schema(schema)

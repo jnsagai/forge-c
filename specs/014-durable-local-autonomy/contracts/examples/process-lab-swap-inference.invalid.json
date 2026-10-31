@@ -1,0 +1,30 @@
+{
+  "schema": "forge-c/model-swap/1",
+  "swap_id": "activation-1",
+  "experiment_id": "crc-idr-a1",
+  "from": {
+    "profile_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "model_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "to": {
+    "profile_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "model_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "epochs": {
+    "E0": 111,
+    "E1": 112,
+    "E2": 113
+  },
+  "transitions": [
+    {
+      "step": "pause",
+      "utc": "2026-10-31T12:00:00Z"
+    }
+  ],
+  "load_and_control_start_seconds": 6.3,
+  "provider_instance": "pi-01",
+  "model_requests": 1,
+  "outcome": "RUNNING",
+  "operator": "owner",
+  "reason": "PROCESS_LAB_ROLE_BATCH"
+}

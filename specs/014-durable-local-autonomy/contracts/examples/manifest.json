@@ -228,6 +228,114 @@
       "schema": "patch-bundle.schema.json",
       "expected_valid": false,
       "purpose": "A patch cannot write into .git."
+    },
+    {
+      "file": "process-lab-block-inspect.valid.json",
+      "schema": "runtime/process-lab.schema.json",
+      "expected_valid": true,
+      "purpose": "INSPECT order (seq 2) bound to a sealed AUTHOR handoff by sha256."
+    },
+    {
+      "file": "process-lab-block-oracle-field.invalid.json",
+      "schema": "runtime/process-lab.schema.json",
+      "expected_valid": false,
+      "purpose": "An oracle reference in a lab block is refused (never exposed to an order)."
+    },
+    {
+      "file": "process-lab-block-seq2-no-handoff.invalid.json",
+      "schema": "runtime/process-lab.schema.json",
+      "expected_valid": false,
+      "purpose": "seq >= 2 without an input handoff is refused."
+    },
+    {
+      "file": "process-lab-handoff-author.valid.json",
+      "schema": "runtime/process-handoff.schema.json",
+      "expected_valid": true,
+      "purpose": "Sealed AUTHOR handoff with one RM-sourced requirement and group/scope files."
+    },
+    {
+      "file": "process-lab-handoff-release-claim.invalid.json",
+      "schema": "runtime/process-handoff.schema.json",
+      "expected_valid": false,
+      "purpose": "A lab handoff can never claim a release status."
+    },
+    {
+      "file": "process-lab-handoff-bad-id.invalid.json",
+      "schema": "runtime/process-handoff.schema.json",
+      "expected_valid": false,
+      "purpose": "Requirement IDs must match SWR-nnn."
+    },
+    {
+      "file": "process-lab-oracle.valid.json",
+      "schema": "runtime/swe1-oracle.schema.json",
+      "expected_valid": true,
+      "purpose": "Per-driver oracle with one critical behaviour obligation and a register predicate."
+    },
+    {
+      "file": "process-lab-oracle-empty.invalid.json",
+      "schema": "runtime/swe1-oracle.schema.json",
+      "expected_valid": false,
+      "purpose": "An oracle without obligations is refused."
+    },
+    {
+      "file": "process-lab-oracle-bad-kind.invalid.json",
+      "schema": "runtime/swe1-oracle.schema.json",
+      "expected_valid": false,
+      "purpose": "Obligation kinds are a closed set."
+    },
+    {
+      "file": "process-lab-experiment.valid.json",
+      "schema": "runtime/process-lab-experiment.schema.json",
+      "expected_valid": true,
+      "purpose": "Frozen experiment record binding the oracle hash before the first order."
+    },
+    {
+      "file": "process-lab-experiment-no-oracle.invalid.json",
+      "schema": "runtime/process-lab-experiment.schema.json",
+      "expected_valid": false,
+      "purpose": "An experiment must bind at least one oracle hash."
+    },
+    {
+      "file": "process-lab-experiment-bad-threshold.invalid.json",
+      "schema": "runtime/process-lab-experiment.schema.json",
+      "expected_valid": false,
+      "purpose": "Thresholds are fractions in [0, 1]."
+    },
+    {
+      "file": "process-lab-swap.valid.json",
+      "schema": "runtime/model-swap.schema.json",
+      "expected_valid": true,
+      "purpose": "Completed activation record."
+    },
+    {
+      "file": "process-lab-swap-inference.invalid.json",
+      "schema": "runtime/model-swap.schema.json",
+      "expected_valid": false,
+      "purpose": "Activation never sends a model request."
+    },
+    {
+      "file": "process-lab-swap-bad-outcome.invalid.json",
+      "schema": "runtime/model-swap.schema.json",
+      "expected_valid": false,
+      "purpose": "Outcomes are a closed set; there is no forced outcome."
+    },
+    {
+      "file": "process-lab-disposition.valid.json",
+      "schema": "runtime/process-lab-disposition.schema.json",
+      "expected_valid": true,
+      "purpose": "Owner disposition bound to the covering requirement statements."
+    },
+    {
+      "file": "process-lab-disposition-covered-empty.invalid.json",
+      "schema": "runtime/process-lab-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "COVERED needs at least one covering statement."
+    },
+    {
+      "file": "process-lab-disposition-extra-field.invalid.json",
+      "schema": "runtime/process-lab-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "No fields beyond the contract (not the learning-only review-disposition)."
     }
   ]
 }
