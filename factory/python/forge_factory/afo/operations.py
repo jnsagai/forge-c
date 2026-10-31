@@ -495,6 +495,7 @@ def _project_shutdown_orders(store, intent_record, *, limit=8):
             store._event(c, "operator_shutdown_projected", row["order_id"], job["attempt_id"], {
                 "job_id": job["job_id"], "execution_id": execution["execution_id"],
                 "execution_record_sha256": digest(execution),
+                "execution_record": execution,  # retain source after the lifecycle row advances
                 "outcome_evidence_ref": execution["outcome_evidence_ref"],
                 "operations_epoch": intent_record["epoch"],
                 "native_liveness": execution["execution_liveness"],

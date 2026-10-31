@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 import pytest
 from forge_factory.afo import operations
+from forge_factory.afo.durable import digest
 from forge_factory.lrtx import stack
 from test_afo_m3_reconcile import admitted  # noqa: F401
 from test_da014_product_outcomes import setup
@@ -57,6 +58,12 @@ def test_shutdown_projects_blocked_order_without_inventing_native_quiescence(adm
     assert len(records) == 1
     assert records[0]["payload"]["job_id"] == job["job_id"]
     assert records[0]["payload"]["operations_epoch"] == intent.read()["epoch"]
+    # Reconciliation may already have changed the mutable lifecycle row on the
+    # second call. The original event must retain the exact source bytes' data.
+    payload = records[0]["payload"]
+    assert digest(payload["execution_record"]) == payload["execution_record_sha256"]
+    assert payload["execution_record"]["task_outcome"] == "BLOCKED"
+    assert payload["execution_record"]["terminal_reason"] == "OPERATOR_SHUTDOWN"
 
 
 def test_crash_after_capacity_settlement_still_projects_the_stopped_order(admitted, tmp_path, monkeypatch):
