@@ -827,8 +827,10 @@ reproducers:
     root_cause: "visit.run_task kept only errors, usage and input_hash of a rejected attempt. When validate_verdict rejected an inspector answer 'PASS with findings' and the localized repair returned PASS without findings, the findings the model had stated were not recorded anywhere, so a repair could turn an observed problem into a clean PASS without a trace."
     remedy: "Owner option A: run_task keeps a rejected inspector answer's findings (rejected_findings) in the checkpoint attempt; lrtx.review reports findings that the accepted answer no longer carries as withdrawn_in_repair in inspection-record.json and as LRTX_INSPECTOR_FINDING_WITHDRAWN_IN_REPAIR reply notes. Verdict and gate are unchanged."
   - id: RPR-076
-    script: rpr076_owner_obligation_omitted.py
-    sha256: 4e994cf3831b14b5daf34b54ab8a25ea202e9300ef5e2907d9f065e8bb5b6a8e
+    script: rpr076v2_owner_obligation_omitted.py
+    sha256: ba6bd8413245a47cbe982444571c1ddfdb42acf15c41a986a0db18892ba3d094
+    revision: 2
+    supersedes: {script: rpr076_owner_obligation_omitted.py, sha256: 4e994cf3831b14b5daf34b54ab8a25ea202e9300ef5e2907d9f065e8bb5b6a8e, reason: "owner 2026-10-31 'Re-freeze v2 reproducers': CAPA-079 moved obligation coverage into the structured author's cross-cutting task, so v1's scripted author stopped before assembly and never reached the SWE.1 author gate it tests (REPRODUCER_ERROR); v2 bypasses only that author-side check (any author path), unchanged on code without it"}
     symptom_signature: "SWE.1 baseline that omits a declared owner obligation is frozen by the author gate"
     observed_in: "standalone SWE.1 inspector omission test on Omniverse2 2026-10-31 (evidence/014-durable-local-autonomy/swe1-inspector-omission-20261031, PROPOSAL-completeness.md options 3 and 1): the gate-frozen Ornith a02 CRC IDR baseline lacks no-polling, no-error-code and preserve-other-registers; Qwen medium, Qwen xhigh and qwen3-coder-next inspections did not name them"
     baseline_revision: 15218323b24a283e365adf590817656ae8675fbe
@@ -837,8 +839,10 @@ reproducers:
     root_cause: "No SWE.1 mechanism compared the requirements with the owner's obligations: the author gate checks structure only, no checklist item asks for completeness against the owner contract, and lrtx/review.evidence gives the inspector the baseline and manifest views but not the owner contract."
     remedy: "Global opt-in owner obligations (owner 2026-10-31: global mechanism): a work-order input with role owner_obligations (forge-c/owner-obligations/1). assurance/owner_obligations.coverage_findings requires every obligation to be implemented by a requirement ('  - Obligations:' lines, register effects checked) or recorded under '## Obligation gaps' with a reason; it runs in swe1.self_check (localized repair) and in the SWE.1 author gate (any author path). The structured author gets an obligation-aware schema and the obligations source; SWE.1 inspectors get the obligations and the inputs they cite. Orders without the input are unchanged."
   - id: RPR-077
-    script: rpr077_critical_obligation_gap.py
-    sha256: 55889ebdc4ba4eb87170811bec7dc4899b4e434a37b7543f099a07334ad20312
+    script: rpr077v2_critical_obligation_gap.py
+    sha256: c2d0367cf5e6f91d0bfc05e2df60fb8771652cb9899964d6ddf2e7b131db9c28
+    revision: 2
+    supersedes: {script: rpr077_critical_obligation_gap.py, sha256: 55889ebdc4ba4eb87170811bec7dc4899b4e434a37b7543f099a07334ad20312, reason: "owner 2026-10-31 'Re-freeze v2 reproducers': CAPA-079 moved obligation coverage into the structured author's cross-cutting task, so v1's scripted author stopped before assembly and never reached the SWE.1 author gate it tests (REPRODUCER_ERROR); v2 bypasses only that author-side check (any author path), unchanged on code without it"}
     symptom_signature: "SWE.1 baseline that records a critical owner obligation as a gap is frozen by the author gate"
     observed_in: "Fabro SWE.1 run WO-F014-SWE1-OBL-20261031-02 (01M69RYT6NP8Y8ZXB3MB173SDP) on Omniverse2 2026-10-31: Qwen3.8 medium recorded the critical OBL-preserve-other-registers as an obligation gap ('covered by the register-level task'); no requirement implements it; author gate FROZEN, inspection PASS 6/6"
     baseline_revision: 06914b8b84da095b1bd2f10c929e67cbd9460962
@@ -846,3 +850,13 @@ reproducers:
     operations: [assurance/owner_obligations.coverage_findings, inspection/gate.step_author, lrtx/swe1.group_schema]
     root_cause: "An obligation gap needed only a reason of at least 10 characters, whatever the obligation's criticality, so an author could close a critical obligation with an unverified justification; the deterministic check cannot judge the reason and the inspector accepted it."
     remedy: "Owner 2026-10-31: critical obligations can never be gaps. coverage_findings reports SWE1_OBLIGATION_CRITICAL_GAP (self-check routed repair and the SWE.1 author gate); the structured cross-cutting schema offers only non-critical ids in obligation_gaps and its instructions name the critical ids."
+  - id: RPR-078
+    script: rpr078_obligation_requirement_removed.py
+    sha256: a2172408fe754d11c440cb72e9f81847fb30845cb5c5390eb9a24c72b23a3e79
+    symptom_signature: "SWE.1 author told to remove a requirement that implements a declared owner obligation"
+    observed_in: "Fabro SWE.1 run WO-F014-SWE1-OBL-20261031-03 (01M69V139JKG14HMVVTT8GWNAH) on Omniverse2 2026-10-31: critical OBL-preserve-other-registers uncovered; cross-cutting task used its one development repair pass on validator findings, the coverage repair call was refused (DEVELOPMENT_PHASE_REPAIR_EXHAUSTED); author gate REJECTED, SWE.1 BLOCKED"
+    baseline_revision: b4b84933f8f8a130407edd20d98eac863a1537a8
+    error_codes: [SWE1_OBLIGATION_UNCOVERED, DEVELOPMENT_PHASE_REPAIR_EXHAUSTED]
+    operations: [lrtx/swe1.validate_group, lrtx/swe1._visit, lrtx/visit.run_task]
+    root_cause: "The cross-cutting validator refuses a requirement that names a register-task register with 'remove requirement [k] from the cross-cutting task'. A preservation obligation's natural requirement names that register, so the instruction contradicted the obligation; and obligation coverage was checked only after assembly, so its repair needed a second repair pass that the development policy does not grant. The earlier attempts' errors were overwritten in the checkpoint."
+    remedy: "A cross-cutting requirement that cites an owner obligation is told to restate the rule for all scoped functions without naming the register (the no-register-requirement rule is unchanged); the cross-cutting task's own check reports uncovered obligations without register effects, so they share the task's repair pass; task checkpoints keep earlier repair rounds' attempts (history, last 12)."
