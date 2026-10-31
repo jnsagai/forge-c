@@ -32,29 +32,38 @@ def test_default_graph_is_unchanged():
         build("WO-X", layer="LL", trace=True, peripheral="iwdg", stop_after=None)
 
 
-@pytest.mark.parametrize("structured", [None, {"phases": ["SWE.1"], "model": "qwen3.8:27b-q8_0"}])
-def test_stop_after_swe1_finalizes_after_the_swe1_inspection(structured):
-    full, n_full = build("WO-X", layer="LL", trace=True, peripheral="iwdg", structured=structured)
+NODE = re.compile(r"^  (\w+) \[", re.M)
+ALL = ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"]
+
+
+@pytest.mark.parametrize("structured", [None, {"phases": ALL, "inspect_phases": ALL, "model": "qwen3.8:27b-q8_0"}])
+def test_stop_after_swe1_graph_holds_only_swe1(structured):
     dot, nodes = build("WO-X", layer="LL", trace=True, peripheral="iwdg", structured=structured, stop_after="SWE.1")
-    assert nodes == n_full  # same nodes and role bindings: only the forward route changes
+    defined = set(NODE.findall(dot)) - {"graph"}
+    assert not [n for n in defined if re.match(r"(swe[2-6]_|upstream_swe[2-6]|return_swe)", n)], defined
+    assert {r.get("phase") for r in nodes.values()} <= {"SWE.1", None}  # role bindings: SWE.1 + release manager
     es = edges(dot)
+    assert not [(a, b) for a, b, _c in es if not {a, b} <= defined]  # no edge to a node that is not in the graph
     assert ("swe1_inspect_gate", "release_manager", "outcome=succeeded") in es
-    assert not any(a == "swe1_inspect_gate" and b.startswith("swe2") for a, b, _c in es)
-    assert not any(a == "swe6_inspect_gate" and b == "release_manager" for a, b, _c in es)
-    # SWE.2..SWE.6 are entered only through the ADR-0008 chains: the return chain and the upstream defect triage (both
-    # gated scripts that fall through to the finalizer when those phases never ran)
-    into_later = {(a, b) for a, b, _c in es if re.match(r"swe[2-6]_", b) and not re.match(r"swe[2-6]_", a)}
-    assert into_later == ({(f"return_swe{n}", "swe3_fix_author" if n == 3 else f"swe{n}_author") for n in range(2, 7)}
-                          | {("upstream_swe2", "swe2_triage"), ("upstream_swe3", "swe3_triage")})
-    removed = set(full.splitlines()) - set(dot.splitlines())
-    # every forward link after SWE.1 is gone, so a return into a later phase cannot run on into the phases after it
-    assert removed == {'  swe1_inspect_gate -> swe2_author [condition="outcome=succeeded"]',
-                       '  swe2_inspect_gate -> swe3_regmap [condition="outcome=succeeded"]',
-                       '  swe3_inspect_gate -> swe4_scaffold [condition="outcome=succeeded"]',
-                       '  swe4_inspect_gate -> swe5_target_author [condition="outcome=succeeded"]',
-                       '  swe5_inspect_gate -> swe6_scaffold [condition="outcome=succeeded"]',
-                       '  swe6_inspect_gate -> release_manager [condition="outcome=succeeded"]'}
-    assert {"swe1_author", "swe1_inspector", "release_manager", "finalize", "exit"} <= reachable(dot)
+    assert ("upstream_swe1", "finalize", "") in es and ("swe1_triage_gate", "finalize", "") in es
+    assert reachable(dot) == defined  # every node is reachable from start; none is dead
+    full, _ = build("WO-X", layer="LL", trace=True, peripheral="iwdg", structured=structured)
+    for n in ("swe1_author", "swe1_author_gate", "swe1_inspector", "swe1_inspect_gate", "swe1_route"):
+        stmt = lambda d: next(x for x in d.splitlines() if x.startswith(f"  {n} ["))  # noqa: E731
+        assert stmt(dot) == stmt(full)  # the SWE.1 nodes themselves are unchanged
+
+
+def test_stop_after_later_phase_keeps_the_phases_up_to_it():
+    dot, nodes = build("WO-X", layer="LL", trace=True, peripheral="iwdg", stop_after="SWE.3")
+    phases = {r.get("phase") for r in nodes.values()} - {None}
+    assert phases == {"SWE.1", "SWE.2", "SWE.3"}
+    assert ("swe3_inspect_gate", "release_manager", "outcome=succeeded") in edges(dot)
+    assert reachable(dot) == set(NODE.findall(dot)) - {"graph"}
+
+
+def test_stop_after_refuses_delivery_first():
+    with pytest.raises(ValueError, match="STOP_AFTER_DELIVERY_FIRST_UNSUPPORTED"):
+        build("WO-X", layer="LL", peripheral="iwdg", stop_after="SWE.1", assessment_manifest={"delivery_first": {"schema": "forge-c/delivery-first/1"}})
 
 
 def test_stop_after_must_be_a_phase_not_before_the_entry_phase():

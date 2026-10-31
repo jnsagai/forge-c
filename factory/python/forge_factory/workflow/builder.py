@@ -116,8 +116,9 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
     run as structured-task command nodes; None leaves the graph byte-identical (frozen compatibility fixtures).
-    `stop_after` (owner 2026-10-31, phase-scoped runs): after that phase's inspection gate the run goes to the Release
-    Manager and the finalizer instead of the next phase; None leaves the graph byte-identical."""
+    `stop_after` (owner 2026-10-31, phase-scoped runs: "we must test just the SWE.1"): the graph holds only the phases
+    up to that one (nodes, upstream/return chains, structured rewiring); after its inspection gate the run goes to the
+    Release Manager and the finalizer. None leaves the graph byte-identical."""
     from . import prompts
 
     prompts.CHUNK["lines"] = chunk_lines
@@ -135,7 +136,13 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     prompts.ASSESSMENT["manifest"] = assessment_manifest
     if execution_policy and execution_policy.get("purpose") == "QM" and not assessment_manifest:
         raise ValueError("QM_ASSESSMENT_MANIFEST_REQUIRED")
+    if stop_after is not None and assessment_manifest and assessment_manifest.get("delivery_first"):
+        raise ValueError("STOP_AFTER_DELIVERY_FIRST_UNSUPPORTED")  # delivery-first prepends SWE.3 code authoring
     dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest, stop_after)
+    if structured and stop_after is not None:  # rewire only the phases the scoped graph contains
+        kept = PHASES[:PHASES.index(stop_after) + 1]
+        structured = {**structured, **{k: [p for p in structured.get(k) or [] if p in kept]
+                                       for k in ("phases", "inspect_phases") if k in structured}}
     if structured and structured.get("c_parameter_list_note") is True:
         import re
 
@@ -375,9 +382,8 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
     if stop_after is not None and (stop_after not in PHASES or PHASES.index(stop_after) < PHASES.index(restart)):
         raise ValueError(f"STOP_AFTER_INVALID:{stop_after}")
     prev = "start"
-    for phase in PHASES:
-        # phases after `stop_after` stay in the graph (the ADR-0008 return chain names them) but are not entered
-        linked = stop_after is None or PHASES.index(phase) <= PHASES.index(stop_after)
+    kept = PHASES if stop_after is None else PHASES[:PHASES.index(stop_after) + 1]
+    for phase in kept:  # a phase-scoped graph holds no node of a later phase
         n = int(phase[-1])
         a, ag, ins, ig, rt = (f"swe{n}_author", f"swe{n}_author_gate", f"swe{n}_inspector", f"swe{n}_inspect_gate",
                               f"swe{n}_route")
@@ -461,9 +467,7 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                   f'script="{_q(robot_scaffold_cmd())}"]',
                   f'  {ta} [label="SWE.6 Robot test author (Renode)", max_visits={ONCE}, timeout="1500s", '
                   f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {ta}", f"  {ta} -> {a}"]
-        if not linked:
-            pass
-        elif prev != "start" and prompts.BROWNFIELD["mode"] and phase == "SWE.2":
+        if prev != "start" and prompts.BROWNFIELD["mode"] and phase == "SWE.2":
             # feature 008 (FR-007): the delivered code enters only after SWE.1 is frozen and inspected
             inj = "delivery_inject"
             L += [f'  {inj} [shape=parallelogram, label="Delivered code injected after SWE.1 (deterministic)", '
@@ -487,15 +491,19 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
         L += [f"  {ins} -> {ig}", f'  {ig} -> {rt}',
               f'  {rt} -> {"swe3_fix_author" if phase == "SWE.3" else a} [condition="outcome=succeeded"]',
               f'  {rt} -> upstream_swe1']
-        if linked:
-            prev = ig
+        prev = ig
     # ADR-0008 shared upstream chain (probe P1: outcome-only routing): earliest owner first, then the finalizer.
     # L12: the owner triages first (accept / reject_defect, no edits); a fully rejected loop returns to the phase
     # that reported it through the return chain, so nothing upstream is re-frozen (r70 cascade).
     from .prompts import triage_prompt
 
+    ups = [k for k in (1, 2, 3) if f"SWE.{k}" in kept]
+    rets = [n for n in range(2, 7) if f"SWE.{n}" in kept]
+    first_return = f"return_swe{rets[0]}" if rets else "finalize"
     for k, owner in ((1, "swe1_author"), (2, "swe2_author"), (3, "swe3_fix_author")):
-        up, nxt = f"upstream_swe{k}", (f"upstream_swe{k + 1}" if k < 3 else "finalize")
+        if k not in ups:
+            continue
+        up, nxt = f"upstream_swe{k}", (f"upstream_swe{k + 1}" if k + 1 in ups else "finalize")
         tri, tg = f"swe{k}_triage", f"swe{k}_triage_gate"
         nodes[tri] = {"role": f"swe{k}-author", "phase": f"SWE.{k}"}
         L += [f'  {up} [shape=parallelogram, label="Upstream loop to SWE.{k} (open defect, loop budget)", '
@@ -505,9 +513,9 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
               f'  {tg} [shape=parallelogram, label="SWE.{k} triage gate (fix | return)", '
               f'script="{_q(gate_cmd(f"SWE.{k}", "triage"))}"]',
               f'  {up} -> {tri} [condition="outcome=succeeded"]', f"  {up} -> {nxt}", f"  {tri} -> {tg}",
-              f'  {tg} -> {owner} [condition="outcome=succeeded"]', f"  {tg} -> return_swe2"]
-    for n in range(2, 7):
-        ret, nxt = f"return_swe{n}", (f"return_swe{n + 1}" if n < 6 else "finalize")
+              f'  {tg} -> {owner} [condition="outcome=succeeded"]', f"  {tg} -> {first_return}"]
+    for n in rets:
+        ret, nxt = f"return_swe{n}", (f"return_swe{n + 1}" if n + 1 in rets else "finalize")
         entry = "swe3_fix_author" if n == 3 else f"swe{n}_author"
         L += [f'  {ret} [shape=parallelogram, label="Return to SWE.{n} (its defects were rejected)", '
               f'script="{_q(gate_cmd(f"SWE.{n}", "return"))}"]',
