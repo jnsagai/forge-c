@@ -26,7 +26,10 @@ existing bounded Admission queue before durable reservation. Real07SWE.5stage
 ended while last provider response still draining; fast429retries skipped both
 SWE.6authors. New ASGI/ledger tests fail5before and pass5after, preserving
 one inference, stop/revocation fences, unknown-capacity holds and bounded wait.
-No live deployment/benefit claim. Exact broader source checks are being recorded.
+Exact source79PASS/zero failures/errors/skips, separate inherited gateway/full
+request-measurement22PASS. Counts overlap earlier cohorts; changed gateway/test
+RuffPASS. [Actual native timeout/request identity and exact tests](../../evidence/014-durable-local-autonomy/gateway-queue-60619be0/README.md).
+No live deployment/benefit claim. Producer0e unchanged.
 
 Hard end07:57:59toolUTC. Remote clock now trails tool~57seconds. At07:55capture
 partial facts/source proof while API lives; **request prepared stop by07:56:30**

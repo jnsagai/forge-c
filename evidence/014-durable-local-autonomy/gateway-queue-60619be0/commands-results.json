@@ -1,0 +1,51 @@
+{
+  "source_revision": "60619be076d36d50f42aef0c1b467aa2c2c14e76",
+  "environment": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+  "exact_command_suffix": "-m pytest factory/python/tests/test_durable_gateway_queue.py factory/python/tests/test_lrtx_admission.py factory/python/tests/test_da014_workflow_capacity.py factory/python/tests/test_da014_integration.py factory/python/tests/test_native_acp_capacity.py -q --basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/gateway-queue-exact-tmp --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/gateway-queue-exact.xml",
+  "inherited_command_suffix": "-m pytest factory/python/tests/test_llm_gateway.py factory/python/tests/test_lrtx_native_request_measurement.py -q --basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/gateway-queue-inherited-tmp --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/gateway-queue-inherited.xml",
+  "results": {
+    "gateway-queue-red.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "5",
+      "skipped": "0",
+      "tests": "5",
+      "time": "2.012",
+      "timestamp": "2026-10-31T07:09:28.295151+00:00",
+      "hostname": "master"
+    },
+    "gateway-queue-green.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "5",
+      "time": "2.334",
+      "timestamp": "2026-10-31T07:10:01.229833+00:00",
+      "hostname": "master"
+    },
+    "gateway-queue-exact.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "79",
+      "time": "10.227",
+      "timestamp": "2026-10-31T07:10:18.536286+00:00",
+      "hostname": "master"
+    },
+    "gateway-queue-inherited.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "22",
+      "time": "1.685",
+      "timestamp": "2026-10-31T07:11:48.017279+00:00",
+      "hostname": "master"
+    }
+  },
+  "ruff": "llm_gateway.py and new test PASS after initial new-test import ordering corrected",
+  "scope": "SYNTHETIC_ASGI_PROTOCOL/LEDGER/HTTP_PROVIDER; NO_REAL_MODEL_OR_NATIVE_FABRO_QUALIFICATION",
+  "activation": "NOT_ACTIVATED; current native source0e fixed cohort unchanged"
+}
