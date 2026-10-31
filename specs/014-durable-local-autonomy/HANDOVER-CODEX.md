@@ -2,6 +2,14 @@
 
 ## Overnight checkpoint — 31 October 05:05 UTC: fresh cohort 1/3
 
+05:50UTC read-only existing LessonStore observationSHA b83e4356... confirms
+completed03/05/06 JOB/all6phase facts and durable dispositions. Store totals
+33NO_NEW_LESSON/39DEFERRED_BUDGET, zero qualified lessons/transfers. These are
+observations, not extra jobs/independent quality/learning gain. Default zero
+lesson-synthesis inference allowance is separate from mission exhaustion;
+capture/supervision continues. [Actual SQL metadata and limits](../../evidence/014-durable-local-autonomy/ordinary-learning-20261031/README.md).
+No new DA completion; overhead-inclusive learning benefit remainsNOT_RUN.
+
 05:35UTC: inactive generic MCP fix **50a4813d8d66d6af31e61f78e7eb0678e2eb3e5d**
 normalizes injected empty builtin container defaults before hashing tickets.
 Actual07initial compile ALLOW hook→NO_AUTHORIZATION_TICKET is reproduced by
