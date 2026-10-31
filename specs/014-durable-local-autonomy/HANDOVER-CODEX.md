@@ -1,5 +1,19 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Local continuation — 31 October: assertion metadata repair
+
+Source `6a4721ecbef8c85326dfd101811c232f6258174e` fixes the existing host
+runner's numeric-only duplicate CHECK-ID scan and clarifies the native LL/HAL
+unit-author contract: preserve assertions/order and use distinct suffixes when
+only IDs fail. A reproduced duplicated suffixed ID incorrectly passed before;
+the final exact revision has **90 PASS / 1 live-Fabro-disabled SKIP**, zero
+failures/errors, plus Ruff and static checks PASS. No Qwen C was executed
+locally. [Commands, JUnit, limits and source hashes](../../evidence/014-durable-local-autonomy/assertion-identity-6a4721ec/README.md).
+This is inactive remotely; native model adherence/benefit NOT_RUN. Window remains
+closed, historical cohort2/3 and DA30/58 unchanged. Full LL/HAL remains open.
+The new Astra overnight report is on main in
+[`docs/reports/ASTRA-OVERNIGHT-REVIEW-20261030-31.md`](https://github.com/jnsagai/forge-c/blob/45190ebca727d28225e9ee61e0908fd0ffdae166/docs/reports/ASTRA-OVERNIGHT-REVIEW-20261030-31.md).
+
 ## Window CLOSED — 31 October07:57:19externalUTC
 
 **Do not resume inference or deploy under the expired grant.** Original10hwindow

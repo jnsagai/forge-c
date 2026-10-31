@@ -1902,3 +1902,16 @@ archive. DF-M1 remainsNOT_PROVEN. New source is active in a same-mission retry;
 initial independentPASS does not establish terminal qualification, and its
 write/edit provenance remains conservatively unverified. No original DA task
 checkbox changed; no repeatability, LL/HAL, production or24/7 claim.
+
+## 31 October — assertion identity and metadata-only repair guidance
+
+Exact source 6a4721ecbef8c85326dfd101811c232f6258174e: 90 PASS / 1 inherited
+live-Fabro-disabled SKIP / zero failures or errors, 34.320 s. The initial seven
+cases produced three passes and four failures; real MCP execution incorrectly
+accepted duplicate suffixed IDs before the fix. Three synthetic Robot execution
+cases are explicitly deselected, not claimed. Ruff and static 58-mapping /
+6-schema-38-fixture / 14-design checks PASS; these do not qualify runtime.
+[Raw JUnit, exact command/environment and source hashes](../../evidence/014-durable-local-autonomy/assertion-identity-6a4721ec/README.md).
+No inference, generated-Qwen-C execution locally, deployment, renewal, original
+DA task closure or live learning/model-benefit claim. Historical cohort stays
+2/3; full LL/HAL remains unproven.
