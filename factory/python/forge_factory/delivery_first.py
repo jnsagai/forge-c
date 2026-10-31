@@ -382,6 +382,115 @@ def workflow(graph, nodes, manifest, command_env, python):
     return graph[:pos] + "\n" + "\n".join(declarations) + graph[pos:], nodes
 
 
+def native_source_provenance(events, roles, ws, candidate_hashes):
+    """Replay accepted whole writes and unambiguous literal edits; never infer a functional PASS.
+
+    Complete chain material is source workproduct evidence, not model reasoning.
+    Opaque patches, unfinished calls and unmatched final bytes remain unverified.
+    """
+    from .common import sha256_bytes
+
+    ws = Path(ws).resolve()
+    pending, states, ambiguous = {}, {}, set()
+
+    def key(event, call):
+        p = event.get("properties") or {}
+        return event.get("node_id"), p.get("stream_id"), p.get("visit"), call
+
+    def arguments(start):
+        args = start.get("arguments")
+        if isinstance(args, str):
+            try:
+                args = json.loads(args)
+            except ValueError:
+                return None
+        return args if isinstance(args, dict) else None
+
+    def relative(args):
+        raw = (args or {}).get("file_path") or (args or {}).get("path")
+        if not isinstance(raw, str):
+            return None
+        try:
+            path = (Path(raw) if Path(raw).is_absolute() else ws / raw).resolve()
+        except (OSError, ValueError, RuntimeError):
+            return None
+        return path.relative_to(ws).as_posix() if path.is_relative_to(ws) else None
+
+    for index, event in enumerate(events):
+        payload = (event.get("properties") or {}).get("event")
+        if not isinstance(payload, dict):
+            continue
+        start = payload.get("ToolCallStarted")
+        if isinstance(start, dict) and start.get("tool_name") in ("write_file", "edit_file", "apply_patch"):
+            call = start.get("tool_call_id")
+            if not isinstance(call, str) or not call:
+                states.clear()
+                continue
+            identity = key(event, call)
+            if identity in pending:
+                ambiguous.add(identity)
+                states.clear()
+            pending[identity] = (start, index)
+        done = payload.get("ToolCallCompleted")
+        if not isinstance(done, dict):
+            continue
+        identity = key(event, done.get("tool_call_id"))
+        pair = pending.pop(identity, None)
+        if pair is None or identity in ambiguous or done.get("is_error") is not False:
+            continue
+        start, start_index = pair
+        args = arguments(start)
+        if args is None or start["tool_name"] == "apply_patch":
+            states.clear()  # no guessing at opaque mutation semantics
+            continue
+        rel = relative(args)
+        if rel not in candidate_hashes:
+            continue
+        node = event.get("node_id")
+        if roles.get(node, {}).get("role") != "swe3-author":
+            states.pop(rel, None)
+            continue
+        call = {"tool_call_id": start["tool_call_id"], "node": node}
+        if start["tool_name"] == "write_file" and isinstance(args.get("content"), str):
+            states[rel] = {"content": args["content"], "anchor_content": args["content"], "edits": [],
+                           "anchor": {**call, "path": rel, "sha256": sha256_bytes(args["content"].encode())},
+                           "anchor_event_index": start_index}
+        elif start["tool_name"] == "edit_file":
+            state = states.get(rel)
+            old, new = args.get("old_string"), args.get("new_string")
+            if (not state or not isinstance(old, str) or not old or not isinstance(new, str)
+                    or state["content"].count(old) != 1):
+                states.pop(rel, None)
+                continue
+            before = sha256_bytes(state["content"].encode())
+            state["content"] = state["content"].replace(old, new, 1)
+            state["edits"].append({**call, "event_index": start_index, "old_string": old, "new_string": new,
+                                   "before_sha256": before, "after_sha256": sha256_bytes(state["content"].encode())})
+        else:
+            states.pop(rel, None)
+    for start, _ in pending.values():
+        args = arguments(start)
+        if args is None or start["tool_name"] == "apply_patch":
+            states.clear()
+        else:
+            states.pop(relative(args), None)
+    writes, chains, covered = [], [], set()
+    for rel, state in states.items():
+        if sha256_bytes(state["content"].encode()) != candidate_hashes[rel]:
+            continue
+        covered.add(rel)
+        if state["edits"]:
+            chains.append({k: v for k, v in {**state, "path": rel, "final_sha256": candidate_hashes[rel]}.items()
+                           if k != "content"})
+        else:
+            writes.append(state["anchor"])
+    confirmed = bool(candidate_hashes) and covered == set(candidate_hashes)
+    status = ("CONFIRMED_NATIVE_WRITE_EDIT_CHAIN" if chains else "CONFIRMED_NATIVE_WRITE_FILE")
+    return {"authorship": status if confirmed else "UNVERIFIED_EDIT_CHAIN",
+            "write_evidence": writes, "edit_chain_evidence": chains,
+            "authorship_basis": "SUCCESSFUL_NATIVE_SOURCE_TOOL_PAYLOAD_REPLAY_AND_EXACT_FINAL_BYTES; NOT_FUNCTIONAL_VERIFICATION"}
+
+
 def native_record(ws, candidate_hashes):
     """Read actual native events/usage; never substitute fixture authorship or guessed tokens."""
     from .fabro.client import client_for_workspace
@@ -401,7 +510,7 @@ def native_record(ws, candidate_hashes):
             native_status = run_status(client.get_run(rid))
         binding = ws / ".forge-run/binding.json"
         roles = json.loads(binding.read_text()).get("nodes", {}) if binding.is_file() else {}
-        starts, completed, node_failures, phases = {}, {}, [], {}
+        node_failures, phases = [], {}
         for i in range(1, 7):
             phases["SWE." + str(i)] = {
                 kind + "_attempted": any(e["event"] == "stage.started" and e.get("node_id") == f"swe{i}_{kind}"
@@ -410,47 +519,13 @@ def native_record(ws, candidate_hashes):
             if event["event"] == "stage.failed":
                 node_failures.append({"node": event.get("node_id"), "failure":
                                       (event.get("properties") or {}).get("failure"), "at": event.get("ts")})
-            payload = (event.get("properties") or {}).get("event")
-            if not isinstance(payload, dict):
-                continue
-            done = payload.get("ToolCallCompleted")
-            if isinstance(done, dict):
-                completed[done.get("tool_call_id")] = done
-            start = payload.get("ToolCallStarted")
-            if (not isinstance(start, dict) or start.get("tool_name") != "write_file"
-                    or roles.get(event.get("node_id"), {}).get("role") != "swe3-author"):
-                continue
-            args = start.get("arguments") or {}
-            if isinstance(args, str):
-                try:
-                    args = json.loads(args)
-                except ValueError:
-                    continue
-            if not isinstance(args, dict) or not isinstance(args.get("content"), str):
-                continue
-            raw = args.get("file_path") or args.get("path")
-            if not isinstance(raw, str):
-                continue
-            path = (Path(raw) if Path(raw).is_absolute() else ws / raw).resolve()
-            if not path.is_relative_to(ws):
-                continue
-            rel = path.relative_to(ws).as_posix()
-            if rel in candidate_hashes:
-                from .common import sha256_bytes
-
-                starts[start["tool_call_id"]] = {"path": rel, "sha256": sha256_bytes(args["content"].encode()),
-                                                 "node": event.get("node_id")}
-        evidence = [{"tool_call_id": call, **item} for call, item in starts.items()
-                    if call in completed and completed[call].get("is_error") is False
-                    and candidate_hashes[item["path"]] == item["sha256"]]
-        confirmed = bool(candidate_hashes) and {item["path"] for item in evidence} == set(candidate_hashes)
+        provenance = native_source_provenance(events, roles, ws, candidate_hashes)
         output = usage.get("totals", {}).get("usage", {}).get("tokens", {})
         stages = usage.get("stages", [])
         author_tokens = [s.get("usage", {}).get("tokens", {}).get("output") for s in stages
                          if roles.get(s.get("stage", {}).get("id"), {}).get("role", "").endswith("-author")]
-        return {"status": "OBSERVED", "native_id": rid, "native_status": native_status, "authorship":
-                "CONFIRMED_NATIVE_WRITE_FILE" if confirmed else "UNVERIFIED_EDIT_CHAIN",
-                "write_evidence": evidence, "phase_attempts": phases, "node_failures": node_failures,
+        return {"status": "OBSERVED", "native_id": rid, "native_status": native_status, **provenance,
+                "phase_attempts": phases, "node_failures": node_failures,
                 "external_guidance_events": sum("steer" in e["event"] for e in events),
                 "model_requests": "UNKNOWN", "reported_tokens": output or "UNKNOWN",
                 "reported_author_output_tokens": sum(author_tokens) if author_tokens and all(

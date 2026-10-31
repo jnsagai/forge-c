@@ -331,13 +331,15 @@ def test_correction_bound_is_enforced_by_existing_tool_policy(prepared):
     assert auth.decide("swe3_author", "write_file", {"file_path": "workproducts/SWE.3/design.md", "content": "draft"}).allow
 
 
-@pytest.mark.parametrize("error,node,tamper,expected", [
-    (False, "df_author_0", False, "CONFIRMED_NATIVE_WRITE_FILE"),
-    (True, "df_author_0", False, "UNVERIFIED_EDIT_CHAIN"),
-    (False, "swe3_inspector", False, "UNVERIFIED_EDIT_CHAIN"),
-    (False, "df_author_0", True, "UNVERIFIED_EDIT_CHAIN"),
+@pytest.mark.parametrize("error,node,tamper,post_edit,expected", [
+    (False, "df_author_0", False, False, "CONFIRMED_NATIVE_WRITE_FILE"),
+    (True, "df_author_0", False, False, "UNVERIFIED_EDIT_CHAIN"),
+    (False, "swe3_inspector", False, False, "UNVERIFIED_EDIT_CHAIN"),
+    (False, "df_author_0", True, False, "UNVERIFIED_EDIT_CHAIN"),
+    (False, "df_author_0", False, True, "CONFIRMED_NATIVE_WRITE_EDIT_CHAIN"),
 ])
-def test_native_authorship_requires_success_role_and_exact_content(prepared, monkeypatch, error, node, tamper, expected):
+def test_native_authorship_requires_success_role_and_exact_content(prepared, monkeypatch, error, node, tamper,
+                                                                 post_edit, expected):
     from forge_factory.common import sha256_bytes
     from forge_factory.fabro import client as native
 
@@ -352,6 +354,15 @@ def test_native_authorship_requires_success_role_and_exact_content(prepared, mon
         "tool_call_id": "fixture-call", "tool_name": "write_file", "arguments": {"file_path": rel, "content": GOOD}}}}},
         {"event": "agent.event", "node_id": node, "properties": {"event": {"ToolCallCompleted": {
             "tool_call_id": "fixture-call", "is_error": error}}}}]
+    final_text = GOOD
+    if post_edit:
+        old, new = "return CRCx->IDR;", "return 0U;"
+        final_text = GOOD.replace(old, new)
+        events += [{"event": "agent.event", "node_id": node, "properties": {"event": {"ToolCallStarted": {
+            "tool_call_id": "fixture-edit", "tool_name": "edit_file", "arguments": {
+                "file_path": rel, "old_string": old, "new_string": new}}}}},
+            {"event": "agent.event", "node_id": node, "properties": {"event": {"ToolCallCompleted": {
+                "tool_call_id": "fixture-edit", "is_error": False}}}}]
     events += [{"event": "stage.started", "node_id": f"swe{i}_{role}"}
                for i in range(1, 7) for role in ("author", "inspector")]
 
@@ -373,7 +384,7 @@ def test_native_authorship_requires_success_role_and_exact_content(prepared, mon
                     "stages": [{"stage": {"id": "df_author_0"}, "usage": {"tokens": {"output": 13}}}]}
 
     monkeypatch.setattr(native, "client_for_workspace", lambda *a, **k: Client())
-    result = D.native_record(ws, {rel: sha256_bytes((GOOD + " " if tamper else GOOD).encode())})
+    result = D.native_record(ws, {rel: sha256_bytes((final_text + " " if tamper else final_text).encode())})
     assert result["authorship"] == expected, result
     assert result["reported_tokens"]["output"] == 13 and result["reported_author_output_tokens"] == 13
     assert result["model_requests"] == "UNKNOWN" and result["reasoning_token_breakdown"] == "UNKNOWN"
