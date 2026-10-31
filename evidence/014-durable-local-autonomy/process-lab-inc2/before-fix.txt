@@ -1,0 +1,4 @@
+# before loader exists
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_process_lab_contracts.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
