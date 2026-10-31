@@ -760,6 +760,13 @@ def _vram_free_mib() -> int | None:
         return None
 
 
+def _same_process(observed: dict | None, recorded: dict | None) -> bool:
+    """The same process as recorded: boot, start time and network namespace. The uid is left out: inside the stack's
+    user namespace the owner reads as 0 while `stack start` recorded it from outside (1000) - run -04 smoke test."""
+    keys = ("boot_id", "start_ticks", "netns")
+    return bool(observed and recorded) and all(observed.get(k) == recorded.get(k) and recorded.get(k) for k in keys)
+
+
 def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
     """Owner 2026-10-31 ("go ahead with the swap"): make the stack's llama-server serve `model`, one model at a time.
 
@@ -815,7 +822,7 @@ def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
         raise RuntimeError("MODEL_SWAP_REFUSED_GATEWAY_BUSY")
     vram_before = _vram_free_mib()
     if alive:
-        if cur.get("identity") and process_identity(cur["pid"]) != cur["identity"]:
+        if cur.get("identity") and not _same_process(process_identity(cur["pid"]), cur["identity"]):
             record("REFUSED", reason="OWNERSHIP_UNPROVEN")
             raise RuntimeError("MODEL_SWAP_OWNERSHIP_UNPROVEN")
         os.kill(cur["pid"], signal.SIGTERM)

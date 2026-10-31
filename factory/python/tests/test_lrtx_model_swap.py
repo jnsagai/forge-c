@@ -16,6 +16,7 @@ from forge_factory.lrtx import stack
 PID = "local-rtx-v2-omniverse2-ornith-author-q38-inspector"
 ORN = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
 QWEN = "qwen3.8:27b-q8_0"
+IDENT = {"boot_id": "b", "start_ticks": "100", "netns": "net:[1]", "uid": 1000}
 
 
 def _root(tmp_path):
@@ -125,7 +126,7 @@ class _Stack:
         self.served, self.killed, self.started = [current] if current else [], [], []
         self.s = {"profile": self.prof, "root": self.r, "ports": self.prof["deployment"]["ports"]}
         argv = ["llama-server", "--alias", current] if current else []
-        rec = {"processes": {"llama_server": {"pid": 4242, "argv": argv, "identity": {"x": 1}}} if current else {}}
+        rec = {"processes": {"llama_server": {"pid": 4242, "argv": argv, "identity": IDENT}} if current else {}}
         (self.r / "run/services.json").write_text(json.dumps(rec))
         mp = monkeypatch
         mp.setattr(stack, "_holder", lambda s: 1)
@@ -133,7 +134,7 @@ class _Stack:
         mp.setattr(stack, "envmap", lambda s: {})
         mp.setattr(stack, "managed_serving", lambda: False)
         mp.setattr(stack, "_alive", lambda pid, marker: pid in (4242, 5151) and pid not in self.killed)
-        mp.setattr(stack, "process_identity", lambda pid: {"x": 1})
+        mp.setattr(stack, "process_identity", lambda pid: {**IDENT, "uid": 0})  # seen from inside the userns
         mp.setattr(stack, "_vram_free_mib", lambda: 48000)
         mp.setattr(stack.os, "kill", lambda pid, sig: (self.killed.append(pid), self.served.clear()))
         mp.setattr(stack.time, "sleep", lambda s: None)
@@ -228,3 +229,11 @@ def test_graph_serves_each_model_before_the_node_that_uses_it(monkeypatch):
     monkeypatch.delenv("FORGE_LRTX_ROOT")
     with pytest.raises(ValueError, match="MODEL_SWAP_REQUIRES_LRTX_ROOT"):
         build("WO-X", layer="LL", trace=True, peripheral="crc", structured=st, stop_after="SWE.1")
+
+
+def test_process_ownership_ignores_only_the_user_namespace_view_of_the_uid():
+    rec = {"boot_id": "b", "start_ticks": "100", "netns": "net:[1]", "uid": 1000}
+    assert stack._same_process({**rec, "uid": 0}, rec)  # the same process seen from inside the stack's user namespace
+    assert not stack._same_process({**rec, "start_ticks": "101"}, rec)  # another process under a reused PID
+    assert not stack._same_process({**rec, "netns": "net:[2]"}, rec)
+    assert not stack._same_process(None, rec) and not stack._same_process(rec, {"uid": 1000})
