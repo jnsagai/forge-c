@@ -1,5 +1,13 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## 31 October — owner requested stop and Claude handoff
+
+Read [HANDOVER-CLAUDE-20261031.md](HANDOVER-CLAUDE-20261031.md) first. It records
+the completed typed-register increment, exact-revision evidence and prioritized
+continuation steps. This supersedes the parked-draft adapter status below.
+The broader goal is incomplete and is being paused at the owner's request.
+No new remote run, grant renewal or deployment was started at this handoff.
+
 ## 31 October — owner-requested Ornith Q8 speed study completed
 
 New explicit owner request authorized a standalone Ornith-1.5-35B-A3B Q8
