@@ -110,11 +110,14 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           isolation: bool = False, brownfield: str | None = None, peripheral: str | None = None,
           delivery_style: str | None = None, structured: dict | None = None,
           recovery_plan: dict | None = None, operation_scope: dict | None = None,
-          execution_policy: dict | None = None, assessment_manifest: dict | None = None) -> tuple[str, dict]:
+          execution_policy: dict | None = None, assessment_manifest: dict | None = None,
+          stop_after: str | None = None) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
-    run as structured-task command nodes; None leaves the graph byte-identical (frozen compatibility fixtures)."""
+    run as structured-task command nodes; None leaves the graph byte-identical (frozen compatibility fixtures).
+    `stop_after` (owner 2026-10-31, phase-scoped runs): after that phase's inspection gate the run goes to the Release
+    Manager and the finalizer instead of the next phase; None leaves the graph byte-identical."""
     from . import prompts
 
     prompts.CHUNK["lines"] = chunk_lines
@@ -132,7 +135,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     prompts.ASSESSMENT["manifest"] = assessment_manifest
     if execution_policy and execution_policy.get("purpose") == "QM" and not assessment_manifest:
         raise ValueError("QM_ASSESSMENT_MANIFEST_REQUIRED")
-    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest, stop_after)
     if structured and structured.get("c_parameter_list_note") is True:
         import re
 
@@ -352,7 +355,8 @@ def structured_authors(dot: str, structured: dict) -> str:
 
 
 def _build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
-           sections: dict[str, str] | None = None, assessment_manifest: dict | None = None) -> tuple[str, dict]:
+           sections: dict[str, str] | None = None, assessment_manifest: dict | None = None,
+           stop_after: str | None = None) -> tuple[str, dict]:
     from . import prompts
 
     prompts.SECTIONS.clear()
@@ -368,8 +372,12 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
     # All six phases are always in the graph so that upstream loops (ADR-0008) can reach phases a resumed run
     # carried over; `start` enters at the first phase still to run.
     restart = phases[0]
+    if stop_after is not None and (stop_after not in PHASES or PHASES.index(stop_after) < PHASES.index(restart)):
+        raise ValueError(f"STOP_AFTER_INVALID:{stop_after}")
     prev = "start"
     for phase in PHASES:
+        # phases after `stop_after` stay in the graph (the ADR-0008 return chain names them) but are not entered
+        linked = stop_after is None or PHASES.index(phase) <= PHASES.index(stop_after)
         n = int(phase[-1])
         a, ag, ins, ig, rt = (f"swe{n}_author", f"swe{n}_author_gate", f"swe{n}_inspector", f"swe{n}_inspect_gate",
                               f"swe{n}_route")
@@ -453,7 +461,9 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                   f'script="{_q(robot_scaffold_cmd())}"]',
                   f'  {ta} [label="SWE.6 Robot test author (Renode)", max_visits={ONCE}, timeout="1500s", '
                   f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {ta}", f"  {ta} -> {a}"]
-        if prev != "start" and prompts.BROWNFIELD["mode"] and phase == "SWE.2":
+        if not linked:
+            pass
+        elif prev != "start" and prompts.BROWNFIELD["mode"] and phase == "SWE.2":
             # feature 008 (FR-007): the delivered code enters only after SWE.1 is frozen and inspected
             inj = "delivery_inject"
             L += [f'  {inj} [shape=parallelogram, label="Delivered code injected after SWE.1 (deterministic)", '
@@ -477,7 +487,8 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
         L += [f"  {ins} -> {ig}", f'  {ig} -> {rt}',
               f'  {rt} -> {"swe3_fix_author" if phase == "SWE.3" else a} [condition="outcome=succeeded"]',
               f'  {rt} -> upstream_swe1']
-        prev = ig
+        if linked:
+            prev = ig
     # ADR-0008 shared upstream chain (probe P1: outcome-only routing): earliest owner first, then the finalizer.
     # L12: the owner triages first (accept / reject_defect, no edits); a fully rejected loop returns to the phase
     # that reported it through the return chain, so nothing upstream is re-frozen (r70 cascade).

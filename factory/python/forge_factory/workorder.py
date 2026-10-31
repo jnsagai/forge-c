@@ -704,6 +704,7 @@ def run(
     recovery_exhausted: dict | None = None,
     purpose: str = "DEVELOPMENT",
     evaluation_holdout: bool = False,
+    stop_after: str | None = None,
 ) -> dict:
     from .release import qm
     from .release.aspice import PURPOSE as ASPICE_PURPOSE
@@ -868,6 +869,10 @@ def run(
     if fresh_origin is not None:
         manifest["fresh_recovery_from"] = fresh_origin
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if stop_after is not None:  # owner 2026-10-31: phase-scoped run, recorded in the manifest
+        manifest["phase_scope"] = {"stop_after": stop_after, "rule": "later phases are not run; the finalizer "
+                                   "reports them as gaps (no READY package from a phase-scoped run)"}
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     graph, nodes = build(
         wo,
         goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
@@ -886,6 +891,7 @@ def run(
         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
         structured=local_profile_structured(local, manifest, model),
         recovery_plan=recovery_plan,
+        stop_after=stop_after,
     )
     if timeout_scale != 1:  # opt-in slower-model trial: node timeouts scaled, recorded in manifest and model profile
         from .workflow.builder import scale_timeouts
@@ -994,6 +1000,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="development defers SSA/TAA signatures; QM selects owner-classified quality management; ASPICE_ONLY excludes safety assurance; "
                          "formal review retains strict policy")
     ap.add_argument("--wo", required=True)
+    ap.add_argument("--stop-after", choices=("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"), default=None,
+                    help="owner 2026-10-31: phase-scoped run; after this phase the run is finalized (later phases = gaps)")
     ap.add_argument("--detach", action="store_true")
     ap.add_argument("--code-model", default=None, help="local model for the C code/test author nodes (trial profile)")
     ap.add_argument("--model", default="qwen3:8b", help="run-level model (default local qwen3:8b)")
@@ -1066,6 +1074,7 @@ def main(argv: list[str] | None = None) -> int:
             resume_max_attempts=a.resume_max_attempts,
             resume_max_wall_seconds=a.resume_max_wall_seconds,
             purpose=a.purpose,
+            stop_after=a.stop_after,
         )
     except ResumeRefused as exc:
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "validated_resume", "issues": [str(exc)]}))
