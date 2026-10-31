@@ -11,6 +11,7 @@ import fcntl
 import hashlib
 import json
 import os
+import sqlite3
 import subprocess
 import tempfile
 import time
@@ -445,6 +446,62 @@ def _settle_shutdown_locked(store, intent, intent_record, *, probe, stop_runner,
             rec["pending_start"] = False
         result["service_manager_settled"] = manager_settled
     result["settled"] = not unresolved and manager_settled and serving_settled
+    # Business outcome and native liveness are separate. The Conductor exits on
+    # a settled STOP, so its ordinary scheduler cycle cannot project these later.
+    # Metadata failure must not delay a physical stop or falsely certify cleanup.
+    try:
+        result["order_projection"] = _project_shutdown_orders(store, rec)
+    except (OSError, ValueError, sqlite3.Error) as exc:
+        result["order_projection"] = {"status": "PENDING", "error_type": type(exc).__name__}
     rec.update(effective_stop=result["settled"], stop_settlement=result)
     intent._write(rec)
     return result
+
+
+def _project_shutdown_orders(store, intent_record, *, limit=8):
+    """Under the caller's STOPPED intent lock, project bound current jobs only.
+
+    No native status, resource ownership, package verdict or attempt is changed.
+    Reconcile released executions too: a crash after physical settlement must
+    not leave their business orders permanently RUNNING. All queue changes and
+    their source binding share the existing durable queue transaction.
+    """
+    if intent_record["mode"] != "STOPPED" or not 1 <= limit <= 32:
+        raise Refused("SHUTDOWN_PROJECTION_CONTEXT_INVALID")
+    out = {"status": "COMPLETE", "projected_order_ids": [], "pending_more": False, "binding_errors": []}
+    with store.tx() as c:
+        rows = c.execute(
+            "SELECT p.job_id,p.record AS product,e.record AS execution,o.order_id,o.version "
+            "FROM afo_product_jobs p JOIN afo_execution_liveness e ON e.job_id=p.job_id "
+            "JOIN afo_work_orders o ON o.order_id=json_extract(p.record,'$.order_id') "
+            "WHERE o.state IN ('ADMITTED','RUNNING','WAITING_RECOVERY','VALIDATING') "
+            "AND json_extract(e.record,'$.task_outcome')='BLOCKED' "
+            "AND json_extract(e.record,'$.terminal_reason')='OPERATOR_SHUTDOWN' "
+            "AND json_extract(p.record,'$.attempt_id')=(SELECT a.attempt_id FROM afo_attempts a "
+            "WHERE a.order_id=o.order_id ORDER BY a.seq DESC LIMIT 1) "
+            "ORDER BY p.job_id LIMIT ?", (limit + 1,),
+        ).fetchall()
+        out["pending_more"] = len(rows) > limit
+        for row in rows[:limit]:
+            job, execution = json.loads(row["product"]), json.loads(row["execution"])
+            if (job.get("job_id") != row["job_id"] or execution.get("job_id") != row["job_id"]
+                    or job.get("mission_id") != execution.get("mission_id")
+                    or job.get("nonce") != execution.get("launch_nonce")
+                    or not execution.get("outcome_evidence_ref")):
+                out["binding_errors"].append(row["job_id"])
+                continue
+            store._transition(c, row["order_id"], "BLOCKED", "operator shutdown: bound execution outcome",
+                              expect_version=row["version"], terminal_reason="OPERATOR_SHUTDOWN")
+            store._event(c, "operator_shutdown_projected", row["order_id"], job["attempt_id"], {
+                "job_id": job["job_id"], "execution_id": execution["execution_id"],
+                "execution_record_sha256": digest(execution),
+                "outcome_evidence_ref": execution["outcome_evidence_ref"],
+                "operations_epoch": intent_record["epoch"],
+                "native_liveness": execution["execution_liveness"],
+                "resource_lease": execution["resource_lease"],
+                "product_acceptance": "NOT_ESTABLISHED_BY_OPERATOR_STOP",
+            })
+            out["projected_order_ids"].append(row["order_id"])
+    if out["pending_more"] or out["binding_errors"]:
+        out["status"] = "PENDING"
+    return out
