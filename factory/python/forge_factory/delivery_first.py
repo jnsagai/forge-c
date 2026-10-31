@@ -349,6 +349,18 @@ def workflow(graph, nodes, manifest, command_env, python):
                 "and use int main(void) with FORGE_TEST_BEGIN(), TCHECK(number, actual_condition), FORGE_TEST_END(), "
                 "then return 0. " + access + " Pass valid instance arguments exactly as the scoped prototypes require. "
                 "Keep real behavioral assertions and the frozen implementation unchanged. No printf or stdlib.")
+    target_steps = P.LL_TARGET_STEPS if manifest.get("layer") == "LL" else P.TARGET_STEPS
+    target_read = ("Read " + cfg["contract"] + ", " + ", ".join(cfg["candidate_files"]) +
+                   " and the declared device inputs for the exact API and target contract. "
+                   "forge_target_test.h (TCHECK, FORGE_TEST_BEGIN/END, mailbox) is provided by the factory tools. "
+                   "Use the declared simulation adapter and its documented fidelity; do not invent hardware effects.")
+    target_write = ("Write self-checking target programs under software/tests/target/ for the declared functions "
+                    "and requirements only. Include the actual candidate header(s) and forge_target_test.h, "
+                    "declare FORGE_MAILBOX_DEFINE, and use int main(void) with FORGE_TEST_BEGIN(), "
+                    "TCHECK(number, actual_condition), FORGE_TEST_END(), then return 0. " + access +
+                    " Pass valid instance arguments exactly as the scoped prototypes require. "
+                    "Preserve real assertions and the frozen implementation; record unsupported checks explicitly. "
+                    "No printf or stdlib.")
 
     edits = []
     for start, end, _, name, attrs in statements(graph):
@@ -367,6 +379,12 @@ def workflow(graph, nodes, manifest, command_env, python):
                                  (P.peripheralize(P.cmsisize(robot_steps[1])), scenario)):
                     if _q(old) not in text:
                         raise ValueError("DELIVERY_FIRST_SCENARIO_PROMPT_BOUNDARY_CHANGED")
+                    text = text.replace(_q(old), _q(new))
+            if name == "swe5_target_author":
+                for old, new in zip(target_steps[:2], (target_read, target_write), strict=True):
+                    old = P.peripheralize(P.cmsisize(old))
+                    if _q(old) not in text:
+                        raise ValueError("DELIVERY_FIRST_TARGET_PROMPT_BOUNDARY_CHANGED")
                     text = text.replace(_q(old), _q(new))
             edits.append((start, end, text.replace('prompt="', 'prompt="' + _q(note), 1)))
     for start, end, text in reversed(edits):

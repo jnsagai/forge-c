@@ -10,6 +10,23 @@ from forge_factory.workflow.builder import build
 from test_delivery_first import prepared  # noqa: F401 - shared isolated fixture
 
 
+def test_target_author_uses_declared_api_instead_of_unprovided_array(prepared):
+    _, man = prepared
+    graph, _ = build(man["work_order"], layer="LL", peripheral="crc", sections={
+        "26.4.2": "inputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md"},
+        operation_scope=man["operation_scope"], assessment_manifest=man,
+        execution_policy=man["development_execution"])
+    prompt = re.search(r'swe5_target_author \[[^\n]*prompt="((?:\\.|[^"\\])*)"', graph)[1]
+    assert "ll_crc_regs" not in prompt
+    assert "LL_CRC_<REG>_OFFSET" not in prompt
+    assert "Register access follows " + man["delivery_first"]["contract"] in prompt
+    assert "declared simulation adapter" in prompt
+    assert "valid instance arguments" in prompt
+    assert "FORGE_MAILBOX_DEFINE" in prompt and "TCHECK" in prompt
+    assert "mcp__forge_sim_mcp__run_renode" in prompt
+    assert "fix failing checks or build errors" in prompt
+
+
 def test_robot_author_has_no_unprovided_register_array_instructions(prepared):
     ws, man = prepared
     graph, _ = build(man["work_order"], layer="LL", peripheral="crc", sections={
