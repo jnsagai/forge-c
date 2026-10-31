@@ -1,5 +1,69 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October02:01UTC
+
+Same active native **01M67R1HNE9TKPWCYJ2SVKEPJS** is at SWE.3 author;
+factory source remains **0e342eef**, operationsRUNNING6, guard2564269,
+Conductor2567516, holder2564275 and host API32404. Candidate9aa11db1...
+remains unchanged from its initial independentPASS. No live code, model, input,
+candidate or steering changes were supplied. Original deadline07:57:59UTC.
+
+New source-origin implementation **13d734afb64da594d9694b72ba5ce4ac0e906360**
+passed85exact framework tests. New read-only CLI **30371da548bad2790a9f3c21dafc8964047ce06d**
+passed88exact combined tests, zero failures/errors/skips. These cohorts overlap.
+The runtime was NOT upgraded. Tested auditor is staged separately at
+E/control/source-auditor-30371da5 and is used only as an external observer.
+The original exact-write-only baseline reproduced2false-negative cases; a
+pending-unrelated-document regression was also fixed. Wrong roles, unfinished/
+ambiguous edits, incomplete candidate coverage, changed bytes and opaque patches
+remain unverified. The inherited RCC graph-golden failure remains open.
+
+Read [source-origin evidence and limits](../../evidence/014-durable-local-autonomy/native-edit-provenance-20261031/README.md).
+At01:45:00UTC the actual read-only audit inside the correct native namespace
+returned **VERIFIED_SOURCE_PROVENANCE / CONFIRMED_NATIVE_WRITE_EDIT_CHAIN**.
+A source write plus six accepted literal edits reproduces exactly9aa11db1...
+with stable before/after hashes. Producer revision0e342eef and auditor30371da5
+are recorded separately. Raw receipt E/control/source-provenance-audit-01M67R1HNE9TKPWCYJ2SVKEPJS-20261031-0145.json,
+SHAca5c850abd20f6ad9ce12fa1ffee38b1ae069f0fda67649de2a78ea62e80e0f7,
+matches its local copy. A separate source-event extract preserves BOTH whole
+writes and six edits (all eight accepted in df_author_0), including overwritten
+source, at control/native-source-mutations-05-20261031-0200.json,
+SHAcd7a57933630ae7348ae7e61e0fbfd85ed4dcbe61bba92fef5600a7b1441c265.
+
+This external observation does not relabel the old runtime reporter: its
+internalUNVERIFIED_EDIT_CHAIN remains. It makes no inference request, executes
+no candidate C and changes no job workspace. It proves source origin, not
+functional correctness or release. The independent functional verifier remains
+separate. Repeat source audit after terminal packaging and bind all evidence to
+the archived final bytes before assessing all nine DF-M1 conditions.
+
+Reusable command on Omniverse (inside the actual native namespace), using
+PYTHONPATH=E/control/source-auditor-30371da5/factory/python and
+FORGE_REPO_ROOT=E/control/source-auditor-30371da5:
+`E/venv/bin/python -m forge_factory.delivery_first --workspace <workspace> --step source-provenance`.
+The exact case05 host wrapper is retained in evidence/014-durable-local-autonomy/native-edit-provenance-20261031/run-native05-source-audit.py.
+For other orders resolve their actual workspace/native identity; do not reuse case05 facts.
+It verifies auditor moduleSHA8ceca6bd... and producer source0e342eef.
+Keep observer output outside the active job. Existing local collector remains
+read-only and continues copying terminal outcomes on loop10.
+
+SWE.2 deterministic tools now record numeric-offset correctionFAIL→PASS and
+valid static/dynamic diagrams covering both APIs. Semantic inspection first
+recordedPASS then anotherFAIL with two major findings; retain both, no phase
+acceptance claim. Process drafts have12SWRs; independent functional claims stay
+bound to the preregistered scope. No measured learning or factory self-healing.
+
+Next: finish this same native, verify the final recheck receipt is INSIDE its
+unmodified sealed archive, check integrity/all-six outcomes/scope/model origin/
+source provenance/interventions, then record the external DF-M1 audit honestly.
+Only then preregister three fresh comparable unused orders, e.g.06/07/08. Their
+existing V4B role trial permits source0e342eef; keeping that runtime/profile3
+and separately pinned auditor30371da5 avoids a controller handoff or a new
+comparison variable. Do not deploy latest metadata code mid-cohort or count
+retry05/prelaunch block04 as fresh trials. Never extend the original window;
+host clock trails tool UTC by about47seconds, so stop with a margin if needed.
+DA ledger30/58, DF-M1pending/DF-T010NOT_RUN, full LL/HAL and24/7 unproven.
+
 ## Overnight checkpoint — 31 October01:17UTC
 
 Active retry **01M67R1HNE9TKPWCYJ2SVKEPJS**, orderafo-ee4282b25001a15d,

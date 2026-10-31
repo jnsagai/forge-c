@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.162" timestamp="2026-10-31T01:31:47.762747+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_unfinished_unrelated_document_does_not_erase_source_proof" time="0.011"><failure message="AssertionError: assert 'UNVERIFIED_EDIT_CHAIN' == 'CONFIRMED_NATIVE_WRITE_FILE'&#10;  &#10;  - CONFIRMED_NATIVE_WRITE_FILE&#10;  + UNVERIFIED_EDIT_CHAIN">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-282/test_unfinished_unrelated_docu0')
+
+    def test_unfinished_unrelated_document_does_not_erase_source_proof(tmp_path):
+        events = call("write", "write_file", {"file_path": REL, "content": BEFORE})
+        events += call("doc", "write_file", {"file_path": "workproducts/SWE.1/requirements.md", "content": "draft"},
+                       complete=False)
+        out = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(BEFORE.encode())})
+&gt;       assert out["authorship"] == "CONFIRMED_NATIVE_WRITE_FILE"
+E       AssertionError: assert 'UNVERIFIED_EDIT_CHAIN' == 'CONFIRMED_NATIVE_WRITE_FILE'
+E
+E         - CONFIRMED_NATIVE_WRITE_FILE
+E         + UNVERIFIED_EDIT_CHAIN
+
+factory/python/tests/test_delivery_first_edit_provenance.py:82: AssertionError</failure></testcase></testsuite></testsuites>

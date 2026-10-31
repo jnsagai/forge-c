@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-31T01:43:34.828023Z",
+  "auditor_checkout": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/source-auditor-30371da5",
+  "auditor_source": "30371da548bad2790a9f3c21dafc8964047ce06d",
+  "bundle_sha256": "433469e9054bad0794e72259cb4a46b9c9246f57493f9634beb717ce0052ec05",
+  "jobs_submitted": 0,
+  "model_generation_calls_by_staging": 0,
+  "operator_intent_unchanged": true,
+  "runtime_source": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "runtime_source_unchanged": true,
+  "status": "ISOLATED_READ_ONLY_AUDITOR_STAGED_NOT_RUNTIME_ACTIVATED"
+}

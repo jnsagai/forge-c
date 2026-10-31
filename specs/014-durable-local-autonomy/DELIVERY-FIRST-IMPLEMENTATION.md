@@ -1,5 +1,14 @@
 # Delivery-First implementation and evidence ledger
 
+02:01UTC addendum: the [external source audit](../../evidence/014-durable-local-autonomy/native-edit-provenance-20261031/README.md)
+from separately tested auditor30371da5 confirms a successful native source write
+and six accepted edits reconstruct the frozen9aa11db1... candidate exactly.
+The active producer remains0e342eef and its internal exact-write-only reporter
+keepsUNVERIFIED_EDIT_CHAIN. Auditor88exact framework testsPASS; no runtime
+hotpatch, candidate execution or job modification. This resolves the external
+source-origin observation only; final package/receipt/all-six conditions and
+full DF-M1 audit are still pending. Retry05 is not a fresh repeatability trial.
+
 31October update: [terminal audit and active retry](../../evidence/014-durable-local-autonomy/package-order-20261031/README.md).
 Prior AFO native01M67ETTPXS1Q73QPMQ98DNJX0 finished with all six phases,
 functional initial/finalPASS, SWE.5 gatePASS, productBLOCKED30/integrityPASS.
