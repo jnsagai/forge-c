@@ -1,6 +1,17 @@
 # Delivery-First implementation and evidence ledger
 
-Latest execution: [ten-hour AFO qualification](../../evidence/014-durable-local-autonomy/afo-delivery-overnight-20261030/README.md).
+31October update: [terminal audit and active retry](../../evidence/014-durable-local-autonomy/package-order-20261031/README.md).
+Prior AFO native01M67ETTPXS1Q73QPMQ98DNJX0 finished with all six phases,
+functional initial/finalPASS, SWE.5 gatePASS, productBLOCKED30/integrityPASS.
+Its archive was sealed before the final recheck receipt, so DF-M1 remains
+NOT_PROVEN. Source0e342eef fixes early MCP sealing (68exact framework testsPASS)
+and is installed. Fresh-identity retry01M67R1HNE9TKPWCYJ2SVKEPJS passed initial
+independent verification at01:15:07, then entered SWE.1. Its write/edit provenance
+is conservativelyUNVERIFIED_EDIT_CHAIN pending a complete native-chain audit;
+terminal packaging and final verification remain pending. This retry is not
+DF-T010. No task/acceptance is retrospectively promoted by these observations.
+
+Historical launch checkpoint: [ten-hour AFO qualification](../../evidence/014-durable-local-autonomy/afo-delivery-overnight-20261030/README.md).
 Clean sourcea34fdd85 now runs through real AFO admission/accounting. Native
 01M67ETTPXS1Q73QPMQ98DNJX0 passed the preregistered full functional slice at
 22:31:19UTC, correction0, and continues its six-phase journey. Terminal DF-M1
@@ -47,11 +58,11 @@ separate. No budget or oracle was relaxed to make this control pass.
 | DF-T002 | Separate CRC scope and immutable host/target fixtures implemented; positive and behavioral/cost negative controls executed. Target simulation oracle is preregistered for **future** runs; first-candidate simulation was explicitly external/post-hoc. |
 | DF-T003 | FIXTURE_ONLY native `01M6785DZFM30CS67KYZ9JNVWR`: all six author/inspector attempts, terminal SUCCEEDED; product BLOCKED51, integrity PASS. Zero Qwen generations. |
 | DF-T004 | Opt-in manifest/profile implemented; strict/demonstration/policy regressions exercised. No global behavior switch or production activation. |
-| DF-T005 | Real Omniverse Qwen authored new headers in both the earlier standalone native and current AFO native `01M67ETTPXS1Q73QPMQ98DNJX0`. Current successful write and in-loop verified bytes share SHA256 `855f53a6b3f90d83e60e03aacba50e953e9e3a2827c3730d6ae6746fff46b173`; initial candidate was absent. |
-| DF-T006 | Current AFO native passed the preregistered host/target compile, 630 host assertions, 351 target assertions, simulation cost and resource checks in-loop at 22:31:19UTC, correction0. Final-byte recheck remains pending. Earlier standalone post-hoc checks retain their original external status. |
-| DF-T007 | Six-stage truthful recording complete for the first native job: all author/inspector attempts retained; phase files 6/3/3/3/0/6. SWE.5 produced no phase files and remains an explicit gap. |
-| DF-T008 | Packaging implemented/tested and real terminal archive verified: native SUCCEEDED, product BLOCKED57, archive integrity PASS; legacy functional report INCONCLUSIVE. Updated-source JSON/scorecard verified separately on Omniverse. |
-| DF-T009 | Earlier unsuccessful qualifications and negative controls retained. Current clean-source `a34fdd85` trial uses actual AFO admission and has a full in-loop functional PASS; **DF-M1 NOT_PROVEN** until all-six-phase terminal packaging, final-byte recheck, integrity and external intervention audit are observed. |
+| DF-T005 | Real Qwen C authorship confirmed for prior sourcea34 native01M67ETTPXS1Q73QPMQ98DNJX0/header855f53a6... . New source0e342eef retry wrote/edited header9aa11db1...; the current exact-write matcher conservatively returnsUNVERIFIED_EDIT_CHAIN pending a complete native edit audit. |
+| DF-T006 | Prior AFO sourcea34 passed initial and final independent full-scope checks; the final receipt was outside its prematurely sealed archive. Retry01M67R1HNE9TKPWCYJ2SVKEPJS/source0e342eef passed initial host/target/630host/351target/simulation/resource checks at01:15:07UTC, correction round0. New final-byte recheck remains pending. |
+| DF-T007 | Prior AFO native completed all six author/inspector attempts, with phase files3/8/12/3/3/3 and SWE.5 gatePASS. Earlier standalone first-job files6/3/3/3/0/6 remain historical; its missing SWE.5 is not repaired retrospectively. |
+| DF-T008 | Implemented/tested; actual AFO archive BLOCKED30/integrityPASS was sealed before final recheck and omits that receipt. Source0e342eef defers early model sealing;68exact framework casesPASS. New native terminal packaging remains pending; old archives stay unchanged. |
+| DF-T009 | Prior terminal auditNOT_PROVEN because final verifier evidence was absent from its sealed archive. Active same-mission retry01M67R1HNE9TKPWCYJ2SVKEPJS has initial independentPASS but conservatively unverified write/edit provenance. DF-M1 remainsNOT_PROVEN pending terminal package, final-receipt inclusion, integrity and external provenance/intervention audit. |
 | DF-T010 | NOT_RUN; blocked on DF-M1, not satisfied by fixture calls, copied candidates or resumed jobs. |
 | DF-T011 | DEFERRED by specification until DF-T010; no new provisional dependency implementation. |
 | DF-T012 | DEFERRED by specification until DF-T010; strict release remains unchanged meanwhile. |

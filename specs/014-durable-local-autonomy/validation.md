@@ -1886,3 +1886,19 @@ malformed/missing/corrupt/unsafe history yields an explicit major finding and
 BLOCKED package, with existing valid historical failures retained. No task
 checkbox changed. The code is not deployed; live sourcea34fdd85 reached SWE.5
 target author. Terminal milestone/repeatability/full LL/HAL stay unproven.
+# 31 October: package-order fix and preserved terminal qualification failure
+
+Exact source0e342eef3c68786d29e5b9843606892c4ab68b60:68deterministic framework
+testsPASS, zero failures/errors/skips. Two before-change counterexamples show
+premature sealing. The Delivery-First MCP path now defers sealing until final
+graph verification; finalPASS and finalFAIL, malformed receipts, strict packaging
+and write-once behavior are covered. Known inherited Feature009 graph-golden
+failure is retained; strict normalized hashes are unchanged. Static/spec checks
+are not runtime qualification. [Evidence and current limits](../../evidence/014-durable-local-autonomy/package-order-20261031/README.md).
+
+Actual earlier native completed all six phases and both independent checks,
+with BLOCKED30/integrityPASS, but the final receipt is missing from its sealed
+archive. DF-M1 remainsNOT_PROVEN. New source is active in a same-mission retry;
+initial independentPASS does not establish terminal qualification, and its
+write/edit provenance remains conservatively unverified. No original DA task
+checkbox changed; no repeatability, LL/HAL, production or24/7 claim.

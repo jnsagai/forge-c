@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-31T01:02:53.505874Z",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "guard_pid": 2564269,
+  "launch_records_preserved": {
+    ".forge-run/delivery-first-afo/launch-DF-AFO-CRC-IDR-20261030-02.json": "e29b965ab3f0537d7c93445fa4fe980372c56ba0ef8b7555511e928dedaa2f1f",
+    ".forge-run/delivery-first-afo/launch-DF-AFO-CRC-IDR-20261030-03.json": "4d19dd756832eed52ac43e236a97dcb7663f64edaa665cf801944b7e5ce0d460"
+  },
+  "new_model_requests": 0,
+  "old_namespace_quiet": true,
+  "operations_epoch": 6,
+  "previous_source": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60"
+}

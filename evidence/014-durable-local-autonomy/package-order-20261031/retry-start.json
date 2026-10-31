@@ -1,0 +1,90 @@
+{
+  "at": "2026-10-31T01:10:28.478909Z",
+  "order": {
+    "order_id": "afo-ee4282b25001a15d",
+    "state": "RUNNING",
+    "terminal_reason": null
+  },
+  "attempts": [
+    {
+      "attempt_id": "afo-ee4282b25001a15d-a1",
+      "native_id": "01M67R1HNE9TKPWCYJ2SVKEPJS",
+      "workspace_ref": "workorder:WO-AFO-ee4282b25001a15d-a1"
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "afo-product-0fbf506c5889f9f7faa87f04",
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "dirty": false
+      },
+      "profile": "local-rtx-v2-omniverse2-q38-delivery-first",
+      "model": "qwen3.8:27b-q8_0",
+      "reserved_tokens": 67108864
+    }
+  ],
+  "request_states": [
+    {
+      "state": "QUIESCENT",
+      "n": 8
+    }
+  ],
+  "heartbeat": {
+    "ts": "2026-10-31T01:10:13.116404Z",
+    "epoch": 1793409013.1164265,
+    "pid": 2567516,
+    "cycle": 4,
+    "mode": "PILOT",
+    "ok": true,
+    "detail": "idle"
+  },
+  "scope_source": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "native_status": "RUNNING",
+  "last_stages": [
+    {
+      "event": "stage.completed",
+      "node": "start",
+      "at": "2026-10-31T01:09:04.146130214Z",
+      "failure": null
+    },
+    {
+      "event": "stage.started",
+      "node": "df_preflight",
+      "at": "2026-10-31T01:09:04.213112726Z",
+      "failure": null
+    },
+    {
+      "event": "stage.completed",
+      "node": "df_preflight",
+      "at": "2026-10-31T01:09:04.528466489Z",
+      "failure": null
+    },
+    {
+      "event": "stage.started",
+      "node": "df_author_0",
+      "at": "2026-10-31T01:09:04.598504919Z",
+      "failure": null
+    }
+  ],
+  "workspace": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-ee4282b25001a15d-a1/workspace",
+  "verifier": [],
+  "candidate": {
+    "present": false,
+    "sha256": null
+  },
+  "execution": [
+    {
+      "job_id": "afo-product-0fbf506c5889f9f7faa87f04",
+      "task_outcome": "ACTIVE",
+      "execution_liveness": "LIVE",
+      "resource_lease": "HELD",
+      "native_run_ids": [
+        "01M67R1HNE9TKPWCYJ2SVKEPJS"
+      ]
+    }
+  ]
+}

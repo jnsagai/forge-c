@@ -1,5 +1,63 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October01:17UTC
+
+Active retry **01M67R1HNE9TKPWCYJ2SVKEPJS**, orderafo-ee4282b25001a15d,
+jobafo-product-0fbf506c5889f9f7faa87f04, WO-AFO-ee4282b25001a15d-a1.
+Source **0e342eef3c68786d29e5b9843606892c4ab68b60** is now installed.
+Qwen wrote/edited a fresh header; attempt0 passed all declared independent host/
+target/simulation/resource checks at01:15:07UTC, correction round0. HeaderSHA
+9aa11db10b4547cc4f440f91e3d4e513f006906b83a1c1a77e26fbf9ebedf76e.
+It is now at SWE.1. Native authorship reporter remainsUNVERIFIED_EDIT_CHAIN:
+final bytes follow accepted whole writes plus edit_file operations, which the
+current exact-write matcher does not reconstruct. Preserve that uncertainty;
+audit the actual native edit chain without altering or steering this job.
+Final recheck, terminal package and DF-M1 remain pending.
+
+Prior native01M67ETTPXS1Q73QPMQ98DNJX0 completedSUCCEEDED/productBLOCKED30/
+integrityPASS at00:51:38, all six phases with artifacts, SWE.5 gatePASS. Both
+initial/final independent verification passed unchanged855f53a6... bytes.
+But the release-manager sealed its write-once archive BEFORE final verification;
+the terminal receipt is outside it. **DF-M1 NOT_PROVEN**, no archive rewrite.
+Exact new source tests68PASS/no skips/errors; two failed-before cases retained.
+The MCP guard now defers early sealing, and the opt-in release prompt inventories
+only. Failed final checks remain packageable. Known inherited RCC graph-golden
+failure remains outside this cohort; all five strict graph hashes are unchanged.
+Read [terminal audit, tests, prelaunch failures and retry](../../evidence/014-durable-local-autonomy/package-order-20261031/README.md).
+
+Runtime E unchanged root; **env control/runtime-env-v6.json**,
+policy control/policy-v4.yaml, primary scope control/delivery-first-afo-authority-20261031-v4.
+Effective role scope/addendum **control/delivery-first-afo-authority-20261031-v4b**,
+trialSHAcdaab4b07799909a54f0d30050008f4ebf483d34a1593160af4e26c7fdafc7f6.
+Existing ConductorPID2567516, holder2564275, actual gateway worker2564469,
+guard2564269, operationsRUNNING6; revalidate identities. Corrected guard script
+control/guard-delivery-first-afo-window-20261031-v4b.py; current handle
+control/window-guard-process.json. Native/API32402 in namespace, host bridge32404.
+Dashboard8786 and existing read-only collector remain. Actual networkDENIED,
+modelMATCH, one262144 f16KV slot, Q8/MTP3/medium. Production staysPAUSED111.
+Remote clock is about47seconds behind tool/local clock: enforce the owner window
+against tool UTC with a stop margin if needed; do not extend nominal scope.
+
+Handoff preserved old private namespace termination and mission counters.
+Disclosed external setup failures: first guard collided with an immutable record
+(no model started); order04 retainedBLOCKED/zero native attempts after stale
+adapter_revision identities; corrected signed role addendum keeps primary grant,
+policy, source and expiry unchanged and narrows to unused05–10. Brief
+AUTH_NOT_CURRENT caused by clock skew was resolved by waiting/idempotent replay,
+not backdating. None is Qwen autonomous healing. Current mission snapshot:
+four admitted executions,591requests/1007tools,265814016tokens conservatively
+reserved/charged, historical unknown usage retained; these are not generated
+tokens. All allowances and failures remain. Old cohort04/05/06 is superseded:
+04 prelaunch-blocked,05 this DF-M1 retry; do not count either as fresh trials.
+
+Next: let this same job finish without hotpatch/source/model steering. Validate
+its final receipt is INSIDE the sealed archive, hashes/integrity, all-six outcomes,
+local-model origin, whole native write/edit provenance and observed interventions.
+Only after external DF-M1 auditPASS preregister three new comparable unused
+orders (e.g.06/07/08) and run serially, with original mission and deadline
+**07:57:59UTC**. No HAL expansion before repeatability. Original DA ledger30/58;
+no full LL/HAL, production, assessed ASPICE, learning or24/7 claim.
+
 ## Overnight checkpoint — 31 October00:43UTC
 
 Same native01M67ETTPXS1Q73QPMQ98DNJX0 has reached **SWE.6 inspection**;

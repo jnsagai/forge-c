@@ -1,0 +1,14 @@
+{
+  "status": "SIGNED_ROLE_ADDENDUM_ONLY",
+  "trial_sha256": "cdaab4b07799909a54f0d30050008f4ebf483d34a1593160af4e26c7fdafc7f6",
+  "addendum_sha256": "e43742bd265c74fbfdb2560e627400c08e81cbe78e03a64d4ac826a9d3166185",
+  "primary_grant_unchanged": true,
+  "policy_unchanged": true,
+  "first_order": {
+    "request_id": "DF-AFO-CRC-IDR-20261030-05",
+    "order_id": "afo-ee4282b25001a15d"
+  },
+  "role_identities": 39,
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "qualified_roles": false
+}

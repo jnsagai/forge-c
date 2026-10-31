@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-31T01:02:52.947782Z",
+  "deadline_extended": false,
+  "failed_script_sha256": "87e6adaa342f377ee7cda81bd9b5a730264cce1c9503d642e75a025257fa0b32",
+  "model_started": false,
+  "new_jobs_submitted": 0,
+  "operations_epoch": 6,
+  "reason": "IMMUTABLE_ARTIFACT_CHANGED: reused window-guard-start.json",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60"
+}

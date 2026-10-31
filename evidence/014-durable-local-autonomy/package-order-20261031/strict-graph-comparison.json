@@ -1,0 +1,20 @@
+{
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "comparison_revision": "95250cf902afe404dc85d8337b05b98ebda77651",
+  "before": {
+    "graph:ll": "78a5487b67b3ad2ae2d65957f81df0f13bfd63c51cd39582df9dc0d323f93b3f",
+    "graph:hal": "464151a4061623227e144aad68f8284a52a1fc09be122de85236f9e19daf43c0",
+    "graph:ll_brownfield": "e19bd23270d2f1aadcb3d4e06305723b83b516403cc239672fa171311647d52f",
+    "graph:hal_fix_allowed": "7883902463ce9ecf1bd7c31f34527b9e5369f9fa04122c3538aa1e75b4cffee6",
+    "graph:legacy": "d2b7d8e9e8b3cd1329ef5be0114c63ee63dd3896644e49e602bec21d7efa9847"
+  },
+  "after": {
+    "graph:ll": "78a5487b67b3ad2ae2d65957f81df0f13bfd63c51cd39582df9dc0d323f93b3f",
+    "graph:hal": "464151a4061623227e144aad68f8284a52a1fc09be122de85236f9e19daf43c0",
+    "graph:ll_brownfield": "e19bd23270d2f1aadcb3d4e06305723b83b516403cc239672fa171311647d52f",
+    "graph:hal_fix_allowed": "7883902463ce9ecf1bd7c31f34527b9e5369f9fa04122c3538aa1e75b4cffee6",
+    "graph:legacy": "d2b7d8e9e8b3cd1329ef5be0114c63ee63dd3896644e49e602bec21d7efa9847"
+  },
+  "equal": true,
+  "scope": "STRICT_GRAPHS; HISTORICAL_GOLDEN_FAILURE_RETAINED"
+}
