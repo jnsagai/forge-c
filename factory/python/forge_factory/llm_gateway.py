@@ -533,6 +533,24 @@ def create_app(
         return JSONResponse(data, status_code=r.status_code)
 
     async def durable_request(request, binding, body, headers):
+        # A timed-out native stage can leave its provider request draining.
+        # Serialize through the existing bounded queue before trying to reserve
+        # the next request; otherwise the authoritative busy ledger makes its
+        # rapid provider retries fail before this queue is ever reached.
+        ticket = None
+        try:
+            if adm is not None:
+                ticket = await adm.enter(request.is_disconnected)
+                if ticket.refused:
+                    code = "admission_" + ticket.refused
+                    meter.refusal(body.get("model"), code)
+                    return JSONResponse({"error": {"type": code}}, status_code=429)
+            return await durable_admitted(request, binding, body, headers)
+        finally:
+            if ticket is not None and not ticket.refused:
+                adm.leave(ticket)
+
+    async def durable_admitted(request, binding, body, headers):
         from .afo import request_admission as durable
         from .afo.durable import Refused
         from .afo.queue import Store
@@ -558,12 +576,7 @@ def create_app(
             return JSONResponse({"error": {"type": code}}, status_code=429)
         # No transparent retry: each new generation needs its own durable reservation.
         usage, completed, started = None, False, False
-        ticket = None
         try:
-            if adm is not None:
-                ticket = await adm.enter(request.is_disconnected)
-                if ticket.refused:
-                    return JSONResponse({"error": {"type": "admission_" + ticket.refused}}, status_code=429)
             durable.start(store, rec, body)
             started = True
             status, payload, usage, stripped, shape, timing = await _timed(body, headers, bool(body.get("stream")))
@@ -603,8 +616,6 @@ def create_app(
             return JSONResponse({"error": {"type": code}}, status_code=502)
         finally:
             durable.reconcile(store, rec["request_id"], usage, completed=completed or not started)
-            if ticket is not None and not ticket.refused:
-                adm.leave(ticket)
 
     async def admitted(request: Request, body: dict, headers: dict | None):
         """Feature 010 (LRTX-FR-006/FR-007): one request at a time, bounded waiting, cancellation, separate timings.
