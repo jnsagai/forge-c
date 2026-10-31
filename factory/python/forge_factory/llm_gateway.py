@@ -425,6 +425,20 @@ def create_app(
 
             if not unbound_allowed(Store()):
                 return JSONResponse({"error": {"type": "durable_execution_busy_or_unbound"}}, status_code=429)
+        if os.environ.get("FORGE_GATEWAY_VERIFY_SERVED") == "1" and body.get("model") in routed:
+            # in-run model swap (owner 2026-10-31): the llama-server answers whatever it serves, so a request is
+            # forwarded only while it serves exactly the requested model - never silently another one
+            try:
+                listed = (await routed[body["model"]].get("/v1/models", timeout=10)).json()
+                ids = [m.get("id") for m in listed.get("data") or []]
+            except (httpx.HTTPError, ValueError, AttributeError):
+                ids = None
+            if ids != [body["model"]]:
+                meter.refusal(body.get("model"), f"SERVED_MODEL_MISMATCH:{ids}")
+                return JSONResponse({"error": {"type": "served_model_mismatch", "message":
+                                               f"SERVED_MODEL_MISMATCH: {body['model']} is not the served model "
+                                               f"({ids}); the forge gateway did not forward the request"}},
+                                    status_code=503)
         if os.environ.get("FORGE_GATEWAY_MEASURE_UNBOUND") == "1" and body.get("model") in measurement_policy:
             # Standalone native development still measures its entire effective
             # request. This is metadata, not a durable mission reservation or

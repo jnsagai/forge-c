@@ -42,7 +42,7 @@ class PacketRefused(ValueError):
     pass
 
 
-def profile_context_tokens(ws: Path | None) -> tuple[int, str]:
+def profile_context_tokens(ws: Path | None, model: str | None = None) -> tuple[int, str]:
     """The serialized-prompt envelope of this packet: the selected local profile's OLLAMA_CONTEXT_LENGTH, else the
     legacy env/default. The profile is the same selection every structured role of the work order uses, so all of
     its packets share one consistent context; without a selection the preserved legacy default applies."""
@@ -53,6 +53,9 @@ def profile_context_tokens(ws: Path | None) -> tuple[int, str]:
             from . import profile as lp
 
             prof = lp.load(prof_id)
+            alt = ((prof["runtime"].get("llama_server_alternates") or {}).get(model) or {}) if model else {}
+            if alt.get("context_tokens"):  # an alternate served model has its own context (in-run swap)
+                return int(alt["context_tokens"]), f"profile:{prof_id}:{model}"
             return int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"]), f"profile:{prof_id}"
     return CONTEXT_TOKENS, "legacy:FORGE_LRTX_CONTEXT_TOKENS"
 
@@ -79,7 +82,7 @@ def packet_identity(ws: Path | None, model: str, role: str) -> dict | None:
     digest = allowed.get("digest")
     served = (prof.get("runtime") or {}).get("llama_server") or {}
     if served.get("model", model) != model:
-        served = {}
+        served = ((prof.get("runtime") or {}).get("llama_server_alternates") or {}).get(model) or {}
     gateway = (((prof.get("gateway") or {}).get("reasoning") or {}).get(model)) or {}
     return {
         "profile_id": selected["id"],
@@ -95,7 +98,7 @@ def packet_identity(ws: Path | None, model: str, role: str) -> dict | None:
         },
         # only the selected profile's digest: "" disables the FORGE_LRTX_PROFILE fallback of schema_mode_for
         "schema_mode": schema_mode_for(model, digest or "")[0],
-        "context_tokens": profile_context_tokens(ws)[0],
+        "context_tokens": profile_context_tokens(ws, model)[0],
     }
 
 
@@ -244,7 +247,7 @@ def packet(
     msgs = messages(p, sk, sources, artifacts or [], previous)
     chars = sum(len(m["content"]) for m in msgs)
     est = int(chars / CHARS_PER_TOKEN) + 64
-    context_tokens, context_basis = profile_context_tokens(ws)
+    context_tokens, context_basis = profile_context_tokens(ws, model)
     p["accounting"] = {
         "serialized_chars": chars,
         "estimated_prompt_tokens": est,

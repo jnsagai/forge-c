@@ -663,6 +663,9 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         "timeout_s": st.get("timeout_s", 3600),
         "visit_time_s": st.get("visit_time_s", 1200),
     }
+    if st.get("role_models"):  # in-run model swap (owner 2026-10-31): author and inspector models per role
+        out["author_model"] = st["role_models"]["author"]
+        out["inspector_model"] = st["role_models"]["inspector"]
     from .lrtx.c_language_context import selected as c_language_selected
 
     if c_language_selected({"structured": st}):

@@ -96,7 +96,19 @@ def selection_issues(prof: dict, *, model: str, provider: str, code_model: str |
     for m in {model, code_model} - {None}:
         if m not in prof["models"]["allowed"]:
             issues.append(f"PROFILE_MODEL_NOT_ALLOWED:{m}")
+    roles = role_models(prof)
+    for m in sorted(set(roles.values()) | set((prof.get("runtime") or {}).get("llama_server_alternates") or {})):
+        if m not in prof["models"]["allowed"]:  # owner 2026-10-31: every swapped-in model is a pinned model
+            issues.append(f"PROFILE_SERVED_MODEL_NOT_ALLOWED:{m}")
+    if roles and (set(roles) - {"author", "inspector"} or not all(isinstance(v, str) for v in roles.values())):
+        issues.append("PROFILE_ROLE_MODELS_INVALID")
     return issues
+
+
+def role_models(prof: dict) -> dict:
+    """structured.role_models {author, inspector} (in-run model swap, owner 2026-10-31); {} when not declared."""
+    rm = (prof.get("structured") or {}).get("role_models") or {}
+    return rm if isinstance(rm, dict) else {"invalid": rm}
 
 
 def _overlap(a: Path, b: Path) -> bool:
@@ -235,7 +247,8 @@ def select(profile_id: str, *, model: str, provider: str, code_model: str | None
     if require_network_denied and prof.get("network", {}).get("required") == "namespace_denied" \
             and net["status"] != "DENIED_VERIFIED":
         issues.append(f"NETWORK_NOT_DENIED:{net['status']}")
-    models = [model_identity(prof, m, env.get("FORGE_OLLAMA_URL", "")) for m in sorted({model, code_model} - {None})]
+    models = [model_identity(prof, m, env.get("FORGE_OLLAMA_URL", ""))
+              for m in sorted({model, code_model, *role_models(prof).values()} - {None})]
     issues += [f"MODEL_IDENTITY_{m['status']}:{m['model']}" for m in models if m["status"] != "MATCH"]
     if issues:
         raise ProfileRefused(issues)

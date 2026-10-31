@@ -265,7 +265,8 @@ def continuation(dot: str, node: str, gate_node: str, step: str, phase: str, str
         return dot
     run, t, box = runner_cmd(), structured.get("timeout_s", 3600), int(structured.get("visit_time_s", 1200))
     chk, more = f"{node}_cont", f"{node}_more"
-    cmd = f"{run} {step} --phase {phase} --workspace . --model {structured['model']} --time-budget {box} --resume"
+    model = structured.get("inspector_model" if step == "inspect" else "author_model") or structured["model"]
+    cmd = f"{run} {step} --phase {phase} --workspace . --model {model} --time-budget {box} --resume"
     edge = f"  {node} -> {gate_node}\n"
     if edge not in dot:
         raise ValueError(f"STRUCTURED_EDGE_MISSING:{node}->{gate_node}")
@@ -290,6 +291,8 @@ def structured_authors(dot: str, structured: dict) -> str:
     import re
 
     run = runner_cmd()
+    am = structured.get("author_model") or structured["model"]  # in-run model swap: per-role models (owner 2026-10-31)
+    im = structured.get("inspector_model") or structured["model"]
     t = structured.get("timeout_s", 3600)
     box = int(structured.get("visit_time_s", 1200))
 
@@ -305,7 +308,7 @@ def structured_authors(dot: str, structured: dict) -> str:
     for phase in structured.get("phases", []):
         n = phase[-1]
         if phase == "SWE.3":  # code tasks in the LL author / fix author nodes, then the deterministic design author
-            code = f"{run} code --phase SWE.3 --workspace . --model {structured['model']} --time-budget {box}"
+            code = f"{run} code --phase SWE.3 --workspace . --model {am} --time-budget {box}"
             dot = swap(dot, "swe3_ll_author", "SWE.3 structured unit code (local profile)", code, t)
             dot = swap(dot, "swe3_fix_author", "SWE.3 structured unit code: resume or rework (local profile)",
                        code + " --resume", t)
@@ -313,18 +316,18 @@ def structured_authors(dot: str, structured: dict) -> str:
             dot = cont(dot, "swe3_fix_author", nxt, "code", phase)
         if phase in ("SWE.4", "SWE.5", "SWE.6"):  # test tasks in the test author node; the author node resumes + report
             node = {"SWE.4": "swe4_test_author", "SWE.5": "swe5_target_author", "SWE.6": "swe6_test_author"}[phase]
-            tests = f"{run} tests --phase {phase} --workspace . --model {structured['model']} --time-budget {box}"
+            tests = f"{run} tests --phase {phase} --workspace . --model {am} --time-budget {box}"
             dot = swap(dot, node, f"{phase} structured tests (local profile)", tests, t)
             dot = cont(dot, node, f"swe{n}_author", "tests", phase)
         dot = swap(dot, f"swe{n}_author", f"{phase} structured author (local profile)",
-                   f"{run} author --phase {phase} --workspace . --model {structured['model']} --time-budget {box}", t)
+                   f"{run} author --phase {phase} --workspace . --model {am} --time-budget {box}", t)
         dot = pipe(dot, f"swe{n}_author_gate", f"swe{n}_author", f"{phase} freeze gate",
                    f".forge-run/lrtx/{phase}/reply.json", phase, "author")
         dot = cont(dot, f"swe{n}_author", f"swe{n}_author_gate", "author", phase)
     for phase in structured.get("inspect_phases", []):
         n = phase[-1]
         dot = swap(dot, f"swe{n}_inspector", f"{phase} structured inspector (local profile)",
-                   f"{run} inspect --phase {phase} --workspace . --model {structured['model']} --time-budget {box}", t)
+                   f"{run} inspect --phase {phase} --workspace . --model {im} --time-budget {box}", t)
         dot = pipe(dot, f"swe{n}_inspect_gate", f"swe{n}_inspector", f"{phase} inspection gate",
                    f".forge-run/lrtx/{phase}/inspect-reply.json", phase, "inspect")
         dot = cont(dot, f"swe{n}_inspector", f"swe{n}_inspect_gate", "inspect", phase)
@@ -360,7 +363,49 @@ def structured_authors(dot: str, structured: dict) -> str:
                 f'  {adv} [shape=parallelogram, label="{phase} advisory continue check (gap registered)", '
                 f'max_visits={MAX_VISITS}, script="{_q(gate_cmd(phase, "advisory"))}"]',
                 f'  {adv} -> {nxt.group(1)} [condition="outcome=succeeded"]', f"  {adv} -> upstream_swe1"]) + "\n", 1)
+    if structured.get("author_model") or structured.get("inspector_model"):
+        dot = serve_swaps(dot, structured)
     return dot
+
+
+def serve_swaps(dot: str, structured: dict) -> str:
+    """Owner 2026-10-31 ("go ahead with the swap"): before every node that calls a model, a deterministic node makes the
+    stack's llama-server serve that node's model (`lrtx.stack serve`, a no-op when it already does). Structured author
+    nodes use the author model, inspector nodes the inspector model, native agent nodes the run model. A failed
+    swap goes to the finalizer: the run ends closed, never on another model."""
+    import os
+    import re
+    import shlex
+
+    from ..acp import native_agent_nodes, statements
+
+    root = os.environ.get("FORGE_LRTX_ROOT")
+    if not root:
+        raise ValueError("MODEL_SWAP_REQUIRES_LRTX_ROOT")
+    am = structured.get("author_model") or structured["model"]
+    im = structured.get("inspector_model") or structured["model"]
+    models: dict[str, str] = {}
+    for _st, _en, _i, name, attrs in statements(dot):
+        if "forge_factory.lrtx.runner inspect " in attrs:
+            models[name] = im
+        elif re.search(r"forge_factory\.lrtx\.runner (?:author|code|tests) ", attrs):
+            models[name] = am
+    for name in native_agent_nodes(dot):
+        models.setdefault(name, structured["model"])
+    if not dot.endswith("}\n"):
+        raise ValueError("MODEL_SWAP_GRAPH_END_MISSING")
+    added = []
+    for node, model in sorted(models.items()):
+        sv = f"{node}_serve"
+        dot = re.sub(rf'^  (\w+) -> {node}( \[condition="[^"]*"\])?$',
+                     lambda m: m.group(0) if m.group(1) == sv else f"  {m.group(1)} -> {sv}{m.group(2) or ''}",
+                     dot, flags=re.M)
+        cmd = (f"{_env()} FORGE_LRTX_ROOT={shlex.quote(root)} {sys.executable} -m forge_factory.lrtx.stack serve "
+               f"--model {shlex.quote(model)} --workspace .")
+        added += [f'  {sv} [shape=parallelogram, label="Serve {_q(model)} for {node} (in-run model swap)", '
+                  f'max_visits={8 * MAX_VISITS}, timeout="900s", script="{_q(cmd)}"]',
+                  f'  {sv} -> {node} [condition="outcome=succeeded"]', f"  {sv} -> finalize"]
+    return dot[:-2] + "\n".join(added) + "\n}\n"
 
 
 def _build(work_order: str, phases: list[str] | None = None, goal: str | None = None,

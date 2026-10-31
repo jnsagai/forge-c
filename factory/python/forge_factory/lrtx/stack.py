@@ -14,6 +14,7 @@ that the PID still runs the recorded command.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -367,7 +368,28 @@ def start(s: dict, *, recovery=False) -> dict:
     return _start(s)
 
 
-def llama_server_spec(r: Path, prof: dict, p: dict, env: dict) -> tuple | None:
+def _manifest(mdir: Path, model: str) -> Path:
+    """The Ollama manifest of a pinned model: library names (qwen3.8:27b-q8_0) or registry-qualified names such as
+    hf.co/<org>/<repo>:<tag> (owner 2026-10-31: Ornith is pinned by its hf.co name)."""
+    name, tag = model.split(":", 1)
+    parts = name.split("/")
+    if any(x in ("", ".", "..") for x in parts + [tag]):
+        raise RuntimeError(f"LLAMA_SERVER_MODEL_NAME_INVALID:{model}")
+    if len(parts) > 1:
+        return mdir / "manifests" / Path(*parts) / tag
+    return mdir / "manifests/registry.ollama.ai/library" / name / tag
+
+
+def served_models(prof: dict) -> list[str]:
+    """The models this stack's llama-server may serve: the one started with the stack, then the profile's alternates
+    (one at a time; `serve` swaps between them)."""
+    ls = (prof.get("runtime") or {}).get("llama_server")
+    if not ls:
+        return []
+    return [ls["model"], *((prof["runtime"].get("llama_server_alternates") or {}).keys())]
+
+
+def llama_server_spec(r: Path, prof: dict, p: dict, env: dict, model: str | None = None) -> tuple | None:
     """F014 (owner 2026-10-26: "install a new runtime on Omniverse2 to allow parallel model calls"). Ollama 0.34 serves
     qwen35moe with one request slot ("model architecture does not currently support parallel requests"); its bundled
     llama.cpp server serves the same model file with N slots. The model is the one the profile pins: the Ollama
@@ -376,23 +398,30 @@ def llama_server_spec(r: Path, prof: dict, p: dict, env: dict) -> tuple | None:
     ls = (prof.get("runtime") or {}).get("llama_server")
     if not ls:
         return None
+    if model is not None and model != ls["model"]:  # an alternate served model (in-run swap, owner 2026-10-31)
+        alt = (prof["runtime"].get("llama_server_alternates") or {}).get(model)
+        if not isinstance(alt, dict):
+            raise RuntimeError(f"LLAMA_SERVER_MODEL_NOT_SERVED:{model}")
+        ls = {**alt, "model": model}
     from ..common import sha256_file
 
     model, mdir = ls["model"], r / "ollama-models"
-    name, tag = model.split(":", 1)
-    man = mdir / "manifests/registry.ollama.ai/library" / name / tag
+    man = _manifest(mdir, model)
     if not man.is_file() or sha256_file(man) != prof["models"]["allowed"][model]["digest"]:
         raise RuntimeError(f"LLAMA_SERVER_MODEL_DIGEST_MISMATCH:{model}")
     layer = next(x for x in json.loads(man.read_text())["layers"] if x["mediaType"].endswith(".image.model"))
     blob = mdir / "blobs" / layer["digest"].replace(":", "-")
     if not blob.is_file() or blob.stat().st_size != layer["size"]:
         raise RuntimeError(f"LLAMA_SERVER_MODEL_BLOB_MISSING:{layer['digest'][:19]}")
+    if ls.get("model_blob_sha256") and layer["digest"] != "sha256:" + ls["model_blob_sha256"]:
+        raise RuntimeError(f"LLAMA_SERVER_MODEL_BLOB_PIN_MISMATCH:{model}")
     lib, slots = r / "ollama-0.34.0/lib/ollama", int(ls["slots"])
     reasoning = ls.get("reasoning", "off")
     effort = ls.get("reasoning_effort")
     if reasoning not in ("on", "off", "auto") or effort not in (None, "low", "medium", "high", "xhigh"):
         raise RuntimeError("LLAMA_SERVER_REASONING_CONFIGURATION_INVALID")
-    ctx, kv = int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"]), prof["runtime"]["ollama"]["OLLAMA_KV_CACHE_TYPE"]
+    ctx = int(ls.get("context_tokens") or prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"])
+    kv = ls.get("kv_cache_type") or prof["runtime"]["ollama"]["OLLAMA_KV_CACHE_TYPE"]
     batch, microbatch = ls.get("batch_tokens", 2048), ls.get("microbatch_tokens", 2048)
     if (type(batch) is not int or type(microbatch) is not int
             or not 1 <= microbatch <= batch <= 65536):
@@ -405,10 +434,14 @@ def llama_server_spec(r: Path, prof: dict, p: dict, env: dict) -> tuple | None:
         if type(ls["mtp_draft"]) is not int or not 1 <= ls["mtp_draft"] <= 8:
             raise RuntimeError("LLAMA_SERVER_MTP_CONFIGURATION_INVALID")
         argv += ["--spec-type", "draft-mtp", "--spec-draft-n-max", str(int(ls["mtp_draft"]))]
+    elif ls.get("spec_type") == "none":
+        argv += ["--spec-type", "none"]
     if effort:
         argv += ["--reasoning-effort", effort, "--reasoning-format", "deepseek"]
     if ls.get("gpu_layers") == "all":
         argv += ["--gpu-layers", "all"]
+    if ls.get("fit") in ("on", "off"):
+        argv += ["--fit", ls["fit"]]
     penv = {**env, "LD_LIBRARY_PATH": f"{lib}:{lib}/cuda_v13", "GGML_BACKEND_PATH": f"{lib}/cuda_v13/libggml-cuda.so"}
     return argv, penv, f"http://127.0.0.1:{p['llama']}/health", [model]
 
@@ -611,7 +644,10 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         gw_env["FORGE_GATEWAY_DROP_RETRIES"] = str(retries)
     ls = llama_server_spec(r, prof, p, env)
     if ls is not None:  # the served model's chat requests go to the llama.cpp server, every other model to Ollama
-        gw_env["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"http://127.0.0.1:{p['llama']}" for m in ls[3]})
+        served = served_models(prof)
+        gw_env["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"http://127.0.0.1:{p['llama']}" for m in served})
+        if len(served) > 1:  # in-run swap: a request is answered only by the model it names (never another one)
+            gw_env["FORGE_GATEWAY_VERIFY_SERVED"] = "1"
     specs = {
         "ollama": ([str(r / "ollama-0.34.0/bin/ollama"), "serve"], ollama_env, f"http://127.0.0.1:{p['ollama']}/api/version"),
         "gateway": (
@@ -687,6 +723,149 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
     }
     _save_services(r, rec)
     return rec
+
+
+def _get(url: str, holder: int, env: dict, inside: bool) -> str | None:
+    if inside:
+        try:
+            with urllib.request.urlopen(url, timeout=5) as resp:  # noqa: S310 - loopback
+                return resp.read().decode()
+        except OSError:
+            return None
+    code = f"import urllib.request,sys; sys.stdout.write(urllib.request.urlopen('{url}', timeout=5).read().decode())"
+    p = subprocess.run(_nsenter(holder) + [env["FORGE_VENV"] + "/bin/python", "-c", code], env=env,
+                       capture_output=True, text=True, timeout=30)
+    return p.stdout if p.returncode == 0 else None
+
+
+def _serves(port: int, model: str, holder: int, env: dict, inside: bool) -> bool:
+    """llama-server is healthy and its /v1/models lists exactly `model` (the --alias)."""
+    if _get(f"http://127.0.0.1:{port}/health", holder, env, inside) is None:
+        return False
+    raw = _get(f"http://127.0.0.1:{port}/v1/models", holder, env, inside)
+    try:
+        ids = [m.get("id") for m in json.loads(raw or "{}").get("data") or []]
+    except ValueError:
+        return False
+    return ids == [model]
+
+
+def _vram_free_mib() -> int | None:
+    try:
+        out = subprocess.run(["nvidia-smi", "--query-gpu=memory.total,memory.used", "--format=csv,noheader,nounits"],
+                             capture_output=True, text=True, timeout=20)
+        total, used = (int(x) for x in out.stdout.strip().splitlines()[0].split(","))
+        return total - used
+    except (OSError, ValueError, IndexError, subprocess.SubprocessError):
+        return None
+
+
+def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
+    """Owner 2026-10-31 ("go ahead with the swap"): make the stack's llama-server serve `model`, one model at a time.
+
+    A no-op when it already serves that model. Otherwise, in order: refuse under managed serving or while the gateway
+    has a request in flight or queued; stop the recorded llama-server (process identity checked); wait for the GPU
+    memory the profile states for the model; start it with its pinned spec; wait for health and require /v1/models
+    to list exactly that model. Any failure leaves no llama-server running and raises: the graph's serve node then
+    goes to the finalizer (fail closed, never a fallback to the other model). Every swap is recorded."""
+    prof, r, p = s["profile"], s["root"], s["ports"]
+    if managed_serving():
+        raise RuntimeError("MODEL_SWAP_REFUSED_MANAGED_SERVING")
+    if model not in served_models(prof):
+        raise RuntimeError(f"MODEL_SWAP_MODEL_NOT_SERVED:{model}")
+    holder = _holder(s)
+    if holder is None:
+        raise RuntimeError("MODEL_SWAP_STACK_NOT_RUNNING")
+    env = envmap(s)
+    inside = os.readlink("/proc/self/ns/net") == os.readlink(f"/proc/{holder}/ns/net")
+    f = r / "run/services.json"
+    rec = json.loads(f.read_text())
+    procs = rec.setdefault("processes", {})
+    cur = procs.get("llama_server")
+    alive = bool(cur) and _alive(cur["pid"], "llama-server")
+    current = cur["argv"][cur["argv"].index("--alias") + 1] if alive and "--alias" in cur["argv"] else None
+    swap_cfg = (prof["runtime"].get("llama_server_swap") or {})
+    out = {"schema": "forge-c/model-swap/1", "at": utc_now(), "profile": prof["id"], "from": current, "to": model,
+           "digest": prof["models"]["allowed"][model]["digest"]}
+    t0 = time.monotonic()
+
+    def record(result: str, **extra) -> dict:
+        out.update(result=result, seconds=round(time.monotonic() - t0, 2), **extra)
+        line = json.dumps(out, sort_keys=True) + "\n"
+        for path in [r / "run/model-swaps.jsonl"] + ([Path(workspace) / ".forge-run/lrtx/serving/model-swaps.jsonl"]
+                                                     if workspace else []):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("a") as fh:
+                fh.write(line)
+        return out
+
+    if current == model and _serves(p["llama"], model, holder, env, inside):
+        return record("ALREADY_SERVED")
+    raw = _get(f"http://127.0.0.1:{p['gateway']}/health", holder, env, inside)
+    try:
+        adm = (json.loads(raw or "{}").get("admission") or {}) if raw else None
+    except ValueError:
+        adm = None
+    if adm is None:
+        record("REFUSED", reason="GATEWAY_STATE_UNKNOWN")
+        raise RuntimeError("MODEL_SWAP_REFUSED_GATEWAY_STATE_UNKNOWN")
+    busy = {k: adm.get(k) for k in ("inflight", "waiting") if adm.get(k)}  # Admission.snapshot fields
+    if busy:
+        record("REFUSED", reason="GATEWAY_BUSY", gateway=busy)
+        raise RuntimeError("MODEL_SWAP_REFUSED_GATEWAY_BUSY")
+    vram_before = _vram_free_mib()
+    if alive:
+        if cur.get("identity") and process_identity(cur["pid"]) != cur["identity"]:
+            record("REFUSED", reason="OWNERSHIP_UNPROVEN")
+            raise RuntimeError("MODEL_SWAP_OWNERSHIP_UNPROVEN")
+        os.kill(cur["pid"], signal.SIGTERM)
+        for _ in range(60):
+            if not _alive(cur["pid"], "llama-server"):
+                break
+            time.sleep(1)
+        else:
+            os.kill(cur["pid"], signal.SIGKILL)
+            time.sleep(2)
+    procs.pop("llama_server", None)
+    _save_services(r, {**rec, "updated_at": utc_now()})
+    argv, penv, health, _models = llama_server_spec(r, prof, p, env, model)
+    spec = prof["runtime"]["llama_server"] if model == prof["runtime"]["llama_server"]["model"] else \
+        prof["runtime"]["llama_server_alternates"][model]
+    need = int(spec.get("vram_required_mib") or 0)
+    free = _vram_free_mib()
+    for _ in range(int(swap_cfg.get("vram_wait_s", 120))):
+        if free is not None and free >= need:
+            break
+        time.sleep(1)
+        free = _vram_free_mib()
+    if free is None or free < need:
+        record("FAILED", reason="VRAM_NOT_AVAILABLE", vram_free_mib=free, vram_required_mib=need)
+        raise RuntimeError("MODEL_SWAP_VRAM_NOT_AVAILABLE")
+    log = r / "logs/llama_server.log"
+    if inside:
+        with log.open("ab") as fh:
+            proc = subprocess.Popen(argv, env=penv, stdout=fh, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+                                    cwd=r, start_new_session=True)
+    else:
+        proc = _in_ns(holder, argv, penv, log, r)
+    deadline = time.monotonic() + float(swap_cfg.get("health_timeout_s", 600))
+    ok = False
+    while time.monotonic() < deadline and proc.poll() is None:
+        if _serves(p["llama"], model, holder, env, inside):
+            ok = True
+            break
+        time.sleep(1)
+    if not ok:
+        if proc.poll() is None:
+            proc.kill()
+        record("FAILED", reason="NOT_HEALTHY_OR_WRONG_MODEL", exit=proc.poll())
+        raise RuntimeError("MODEL_SWAP_NOT_SERVED")
+    procs["llama_server"] = {"pid": proc.pid, "argv": argv, "health": health, "identity": process_identity(proc.pid),
+                             "model": model}
+    rec["health"] = {**(rec.get("health") or {}), "llama_server": True}
+    _save_services(r, {**rec, "updated_at": utc_now()})
+    return record("SWAPPED", pid=proc.pid, argv_sha256=hashlib.sha256("\0".join(argv).encode()).hexdigest(),
+                  vram_free_mib_before=vram_before, vram_free_mib_at_start=free)
 
 
 def stop(s: dict) -> dict:
@@ -860,7 +1039,9 @@ def exec_in(s: dict, argv: list[str]) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["init", "start", "stop", "status", "env", "exec", "expose-api"])
+    ap.add_argument("cmd", choices=["init", "start", "stop", "status", "env", "exec", "expose-api", "serve"])
+    ap.add_argument("--model", help="serve only: the profile model the llama-server must serve (in-run swap)")
+    ap.add_argument("--workspace", type=Path, help="serve only: also record the swap in this work-order workspace")
     ap.add_argument("--profile", default=os.environ.get("FORGE_LRTX_PROFILE", "local-rtx-v1"))
     ap.add_argument("--host-port", type=int, help="expose-api only: host loopback port when the profile port is taken")
     # Parse stack options before the explicit command separator. REMAINDER
@@ -882,6 +1063,16 @@ def main(argv: list[str] | None = None) -> int:
         return exec_in(s, rest)
     if shutil.which("unshare") is None or shutil.which("nsenter") is None:
         raise SystemExit("util-linux unshare/nsenter required")
+    if a.cmd == "serve":
+        if not a.model:
+            ap.error("serve needs --model")
+        try:
+            out = serve(s, a.model, a.workspace)
+        except RuntimeError as exc:  # fail closed: the serve node's failure edge goes to the finalizer
+            print(json.dumps({"model_swap": "FAILED", "model": a.model, "error": str(exc)}))
+            return 1
+        print(json.dumps(out, default=str))
+        return 0
     if a.cmd == "expose-api":
         out = expose_api(s, a.host_port)
     else:
