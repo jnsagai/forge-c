@@ -25,6 +25,7 @@ from .policy import load, record
 from .queue import QueueError, Store
 
 SCOPE = "scheduler"
+LOCAL_CAPACITY_RETRY_SECONDS = 15
 
 
 def _healthy(url: str, timeout: float = 3.0) -> bool:
@@ -224,7 +225,16 @@ def cycle(store: Store, owner: str, *, eff=None, probes: dict | None = None, now
             store.transition(cand["order_id"], "BLOCKED", "; ".join(issues), terminal_reason=issues[0])
             rec = {**out, "action": "blocked", "issues": issues}
         else:
-            wait = store.defer(cand["order_id"], "; ".join(issues), now=now)
+            # A healthy local inference owner is normal serialization, not a
+            # failing external dependency. Long exponential waits strand queued
+            # work after it releases. Recheck through all ordinary gates; never
+            # release a lease here or shorten a mixed dependency-failure wait.
+            retry = (
+                {"base_s": LOCAL_CAPACITY_RETRY_SECONDS, "cap_s": LOCAL_CAPACITY_RETRY_SECONDS}
+                if issues == ["NATIVE_INFERENCE_CAPACITY_HELD"]
+                else {}
+            )
+            wait = store.defer(cand["order_id"], "; ".join(issues), now=now, **retry)
             rec = {**out, "action": "deferred", "issues": issues, "wait_s": wait}
         record(rec)
         return rec

@@ -182,6 +182,52 @@ def test_scheduler_by_mode_with_authority_preflight_backoff_and_budget(repo, tmp
     assert r4["action"] in ("refused", "blocked") and s.order(oid3)["state"] in ("QUEUED", "BLOCKED")
 
 
+@pytest.mark.parametrize("dependency_down", [False, True])
+def test_local_capacity_wait_stays_short_without_releasing_terminal_execution(repo, tmp_path, monkeypatch, dependency_down):
+    from forge_factory.afo.execution_lifecycle import Executions
+    from forge_factory.afo.mission_ledger import MissionLedger
+    from test_da014_protocol import limits
+
+    monkeypatch.delenv("FORGE_OPERATIONS_INTENT", raising=False)
+    monkeypatch.setenv("FORGE_DURABLE_AUTONOMY", "1")
+    store = Store()
+    oid, _ = store.submit(_env(repo), repo=repo, max_queued=10)
+    eff = _pilot(tmp_path, monkeypatch)
+    monkeypatch.setattr(scheduler, "launch_manifest", lambda order: json.loads((repo / order["input_manifest_ref"]).read_text()))
+    ledger = MissionLedger(store)
+    ledger.register("capacity-fixture", "fixture:capacity-wait", limits(), "AUTH-1", authorize=lambda *_: True)
+    ledger.link("capacity-fixture", oid)
+    ledger.execution("capacity-fixture", "other-job", "PRODUCT", reserved_tokens=32, imported=True)
+    execution = Executions(store)
+    execution.reserve("other-job", "capacity-fixture", "a" * 32)
+    execution.dispatch_intent("other-job")
+    execution.outcome("other-job", "BLOCKED", "Synthetic terminal outcome without native quiescence")
+    snapshot = ledger.snapshot("capacity-fixture")
+    # Real repeated busy deferrals: history is retained, never cleared to admit.
+    now = time.time()
+    for _ in range(7):
+        store.defer(oid, "NATIVE_INFERENCE_CAPACITY_HELD", base_s=0, cap_s=0, now=now)
+    probes = {**OK, "capacity": lambda: True, "fabro": lambda: not dependency_down}
+    first = scheduler.cycle(store, "capacity-owner", eff=eff, probes=probes, now=now)
+    assert first["action"] == "deferred" and "NATIVE_INFERENCE_CAPACITY_HELD" in first["issues"]
+    assert first["wait_s"] == (3600 if dependency_down else 15)
+    assert store.order(oid)["defer_count"] == 8 and store.order(oid)["state"] == "QUEUED"
+    assert execution.get("other-job")["resource_lease"] == "HELD"
+    assert ledger.snapshot("capacity-fixture") == snapshot
+    assert scheduler.cycle(store, "capacity-owner", eff=eff, probes=probes, now=now + 14)["action"] == "idle"
+    if dependency_down:
+        return  # Mixed dependency failure keeps the ordinary exponential cooldown.
+    again = scheduler.cycle(store, "capacity-owner", eff=eff, probes=probes, now=now + 15)
+    assert again["wait_s"] == 15 and store.order(oid)["defer_count"] == 9
+    assert execution.get("other-job")["resource_lease"] == "HELD"
+    # Synthetic local boundary proof: this test launched no native/provider.
+    assert execution.not_dispatched("other-job", failure_type="FIXTURE_NO_NATIVE_LAUNCH")["resource_lease"] == "RELEASED"
+    assert scheduler.cycle(store, "capacity-owner", eff=eff, probes=probes, now=now + 29)["action"] == "idle"
+    admitted = scheduler.cycle(store, "capacity-owner", eff=eff, probes=probes, now=now + 30)
+    assert admitted["action"] == "admitted" and store.order(oid)["state"] == "ADMITTED"
+    assert store.order(oid)["defer_count"] == 9 and ledger.snapshot("capacity-fixture") == snapshot
+
+
 def test_priority_aging_prevents_starvation(repo):
     s = Store()
     low, _ = s.submit(_env(repo, rid="LOW", name="l", prio="LOW"), repo=repo, max_queued=10)
