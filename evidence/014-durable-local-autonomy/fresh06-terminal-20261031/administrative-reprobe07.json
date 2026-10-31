@@ -1,0 +1,80 @@
+{
+  "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/cohort/capacity-reprobe-eeb3ec960c917a9547a81454b1699f2e11fce0f7421705ac73fe9a2f69471cf5.json",
+  "record": {
+    "after": {
+      "defer_count": 8,
+      "not_before_epoch": 1793422709.76644,
+      "order_id": "afo-f83452175591716f",
+      "state": "QUEUED"
+    },
+    "at": "2026-10-31T04:58:29.849722Z",
+    "before": {
+      "defer_count": 7,
+      "not_before_epoch": 1793424297.8140273,
+      "order_id": "afo-f83452175591716f",
+      "state": "QUEUED"
+    },
+    "deadline_utc": "2026-10-31T07:57:59Z",
+    "factory_self_healing_claim": false,
+    "kind": "EXTERNAL_BETWEEN_JOBS_ADMINISTRATIVE_REPROBE",
+    "method": "Existing Store.defer withzero wait, preserving/incrementing defer history; ordinary Conductor rechecks all admission gates",
+    "mission_after": {
+      "attempts": 5,
+      "authorization_ref": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+      "charged_tokens": 332922880,
+      "corrections": 0,
+      "created_at": "2026-10-30T22:02:18.150036Z",
+      "jobs": 0,
+      "limits": {
+        "deadline": 1793433479,
+        "max_attempts": 10,
+        "max_corrections": 20,
+        "max_jobs": 1,
+        "max_requests": 8000,
+        "max_tokens": 1073741824,
+        "max_tools": 100000
+      },
+      "lineage": "CRC-IDR-native-20261030-shared-lineage",
+      "mission_id": "mission-feature014-delivery-first-20261030",
+      "requests": 1114,
+      "tools": 1920,
+      "unbounded_historical_usage": false,
+      "unique_executions": 5,
+      "usage_unknown": true
+    },
+    "mission_before": {
+      "attempts": 5,
+      "authorization_ref": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+      "charged_tokens": 332922880,
+      "corrections": 0,
+      "created_at": "2026-10-30T22:02:18.150036Z",
+      "jobs": 0,
+      "limits": {
+        "deadline": 1793433479,
+        "max_attempts": 10,
+        "max_corrections": 20,
+        "max_jobs": 1,
+        "max_requests": 8000,
+        "max_tokens": 1073741824,
+        "max_tools": 100000
+      },
+      "lineage": "CRC-IDR-native-20261030-shared-lineage",
+      "mission_id": "mission-feature014-delivery-first-20261030",
+      "requests": 1114,
+      "tools": 1920,
+      "unbounded_historical_usage": false,
+      "unique_executions": 5,
+      "usage_unknown": true
+    },
+    "model": "qwen3.8:27b-q8_0",
+    "model_calls_by_this_script": 0,
+    "native_signal_sent": false,
+    "new_attempts_by_this_script": 0,
+    "new_orders": 0,
+    "order_id": "afo-f83452175591716f",
+    "reason": "Latest wait was NATIVE_INFERENCE_CAPACITY_HELD with3600s backoff; all native ownership now proven quiescent/released",
+    "runtime_or_profile_changed": false,
+    "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60"
+  },
+  "sha256": "eeb3ec960c917a9547a81454b1699f2e11fce0f7421705ac73fe9a2f69471cf5"
+}

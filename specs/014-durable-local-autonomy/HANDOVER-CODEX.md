@@ -1,5 +1,38 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October 05:05 UTC: fresh cohort 1/3
+
+First fresh06 is externally qualified scoped FUNCTIONAL_MILESTONE_PASS,
+audit3e73552f..., archive3aced187..., native01M67ZJWDYS7H33828MPTK6E6D.
+Initial/final independentPASS, all6phase attempts, sealed receipt and14inputs
+verified, external303native source provenance confirmed, private loop10copy
+verified. SWE.1/2/4/5/6PASS, SWE.3REWORK, strict releaseBLOCKED16. DF-T010
+RUNNING1/3; all3denominator. DF-T001–009 scoped completion unchanged;
+originalDA30/58, fullLL/HAL and24/7 not established.
+
+Read [terminal evidence and handoff diagnosis](../../evidence/014-durable-local-autonomy/fresh06-terminal-20261031/README.md).
+Read-only observere5 terminal branch now exercised on actual06; earlier
+NOT_RUN notes are superseded for this branch. Source0e/profile3/auditor303
+remain pinned. Native07 **01M6855WHNYHGCV6PFB5HPHAVH**, orderafo-f83452175591716f,
+job afo-product-f10b3072a163ab219641cbd8,
+WO-AFO-f83452175591716f-a1, is at SWE.1 author with new70d55587... header and
+initial independentPASS.08afo-48b5f7eb60495e69 remainsQUEUED.
+
+Automatic handoff is NOT qualified: normal singleton GPU contention had
+accumulated3600s defer cooldown despite06being provenQUIESCENT/RELEASED.
+At04:58:29remoteUTC a disclosed between-jobs administrative retry of07 used
+existing Store.defer zero wait under intent fence; no pending execution/holder,
+authorityALLOW, no budget/source/profile/expiry change, history7→8preserved.
+Ordinary Conductor then launched07; no post-launch job intervention. Immutable
+reprobe recordeeb3ec96... and before/after accounting are published. Prepare
+precise inactive constant local-capacity retry fix with failing-before test;
+do not deploy mid-cohort. If08needs waking after07terminal, use same existing
+path only after proven physical capacity release; disclose intervention.
+
+Deadline07:57:59UTC and prepared guard-stop instructions below remain binding.
+Collect partial proof near07:55; request existing intent shutdown by07:56:30
+toolUTC (remote clock ~49seconds behind), then verify physical settlement.
+
 ## Overnight checkpoint — 31 October 04:19 UTC
 
 Scoped M1audit9ffc4f56... remainsPASS; original DA30/58/full LL/HAL/24/7 remain
