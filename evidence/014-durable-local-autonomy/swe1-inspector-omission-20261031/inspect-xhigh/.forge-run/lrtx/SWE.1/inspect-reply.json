@@ -1,0 +1,10 @@
+{
+ "artifacts": [
+  "inspection/SWE.1/INS-SWE.1-001.json"
+ ],
+ "issues": [
+  "SWE1-02:major"
+ ],
+ "next_action": "rework",
+ "status": "REWORK"
+}

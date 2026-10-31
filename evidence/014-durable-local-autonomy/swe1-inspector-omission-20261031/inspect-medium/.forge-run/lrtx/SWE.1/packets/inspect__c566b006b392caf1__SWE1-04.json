@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-31T16:30:15.845924Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 17345,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 17217,
+          "sha256": "9d7dc10b8d83cd3cd7ae4e649505ad5fc87d94fa46e15a4989a3ea971d5e1384"
+        },
+        "context_basis": "profile:local-rtx-v2-omniverse2-q38-delivery-first",
+        "context_tokens": 262144,
+        "estimated_prompt_tokens": 5954,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 16200
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "2f88f71c921947697ded88c4eae15c969f38e2dd0a91ba37263d797a0d5f30be",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 955,
+        "prompt_tokens": 4510,
+        "prompt_tokens_details": {
+          "cached_tokens": 499
+        },
+        "total_tokens": 5465
+      },
+      "wall_ms": 16787.3
+    }
+  ],
+  "base_hash": "2f88f71c921947697ded88c4eae15c969f38e2dd0a91ba37263d797a0d5f30be",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      ".forge-run/manifest.json#scope-target-budgets",
+      "traceability/upstream_gaps.md",
+      "workproducts/SWE.1/register_effects.json",
+      "safety/software_safety_requirements.md",
+      "traceability/requirements_to_tests.csv"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:c566b006b392caf1:SWE1-04"
+}
