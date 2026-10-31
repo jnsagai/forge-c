@@ -237,3 +237,31 @@ def test_process_ownership_ignores_only_the_user_namespace_view_of_the_uid():
     assert not stack._same_process({**rec, "start_ticks": "101"}, rec)  # another process under a reused PID
     assert not stack._same_process({**rec, "netns": "net:[2]"}, rec)
     assert not stack._same_process(None, rec) and not stack._same_process(rec, {"uid": 1000})
+
+
+def test_identity_accepts_the_reported_quantization_label_but_still_pins_the_digest(monkeypatch):
+    prof = lp.load(PID)
+    want = prof["models"]["allowed"][ORN]
+    assert want["quantization"] == "Q8_0" and want["reported_quantization"] == "unknown"
+    tags = {"models": [{"name": ORN, "digest": want["digest"], "details": {"quantization_level": "unknown"}}]}
+
+    class R:
+        def __init__(self, body):
+            self.body = body
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return json.dumps(self.body).encode()
+    monkeypatch.setattr(lp.urllib.request, "urlopen", lambda *a, **k: R(tags))
+    assert lp.model_identity(prof, ORN, "http://o")["status"] == "MATCH"
+    tags["models"][0]["digest"] = "0" * 64
+    assert lp.model_identity(prof, ORN, "http://o")["status"] == "MISMATCH"
+    tags["models"][0]["digest"] = prof["models"]["allowed"][QWEN]["digest"]
+    tags["models"][0]["name"] = QWEN
+    tags["models"][0]["details"]["quantization_level"] = "unknown"
+    assert lp.model_identity(prof, QWEN, "http://o")["status"] == "MISMATCH"  # Qwen keeps its strict Q8_0 label

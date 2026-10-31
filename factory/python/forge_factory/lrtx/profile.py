@@ -218,7 +218,9 @@ def model_identity(prof: dict, model: str, ollama_url: str) -> dict:
     if got is None:
         return {"model": model, "status": "MISSING"}
     q = (got.get("details") or {}).get("quantization_level")
-    ok = got.get("digest") == want["digest"] and q == want["quantization"]
+    # Ollama 0.34 reports quantization_level 'unknown' for some GGUFs (Ornith Q8_0: llama-server reads model_ftype Q8_0);
+    # a profile may record that reported label - the manifest digest (and the stack's blob pin) still identify the model
+    ok = got.get("digest") == want["digest"] and q == want.get("reported_quantization", want["quantization"])
     return {"model": model, "status": "MATCH" if ok else "MISMATCH", "digest": got.get("digest"), "quantization": q,
             "size": got.get("size"), "expected_digest": want["digest"], "role_qualification": want["role_qualification"]}
 

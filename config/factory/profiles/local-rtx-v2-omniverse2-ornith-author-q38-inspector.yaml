@@ -24,6 +24,7 @@ models:
     hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0:
       digest: c7c57f189918400a4b4193530cceec9136f95c019357de02abc61018f8bad485
       quantization: Q8_0
+      reported_quantization: unknown
       license: MIT
       license_source: owner 2026-10-31
       role_qualification: NOT_QUALIFIED; author experiment (standalone SWE.1 arms 2026-10-31)
