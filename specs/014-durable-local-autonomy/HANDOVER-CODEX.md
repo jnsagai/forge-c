@@ -2,6 +2,12 @@
 
 ## Overnight checkpoint — 31 October 05:05 UTC: fresh cohort 1/3
 
+Combined exact d49cf1ee qualification:171PASS/2disabled-live-FabroSKIP, zero
+failures/errors,173unique cases,29.224s. Joint capacity/MCP/default/reporting
+and inherited queue/mission/liveness/policy regressions; counts overlap earlier
+cohorts. [Exact command and raw JUnit](../../evidence/014-durable-local-autonomy/combined-regression-d49cf1ee/README.md).
+No runtime deployment or actual Qwen C execution locally.
+
 06:03remoteUTC:07native01M6855WHNYHGCV6PFB5HPHAVH reached SWE.4inspection,
 146completed requests/oneSENT; source70d55587... and initialPASS unchanged.
 Actual unit metadataFAIL→PASS followed predicate aggregation27quoted CHECKs/
