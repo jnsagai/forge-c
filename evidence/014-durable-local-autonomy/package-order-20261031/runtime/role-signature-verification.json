@@ -1,0 +1,9 @@
+{
+  "authorization_id": "AUTH-014-DF-AFO-ROLES-20261031-V4B",
+  "signature_valid": true,
+  "signed_runbook_ref": "qualification-product-014:cdaab4b07799909a54f0d30050008f4ebf483d34a1593160af4e26c7fdafc7f6",
+  "policy_sha256": "36d4b97e3a0d66360a94224a9f717e3f8ecfdc34aa292fe54ac039b45aa33caf",
+  "approval_evidence_ref": "owner-ten-hour-014-20261030:e43742bd265c74fbfdb2560e627400c08e81cbe78e03a64d4ac826a9d3166185",
+  "issued_utc": "2026-10-31T01:07:47.760368Z",
+  "expires_utc": "2026-10-31T07:57:59Z"
+}

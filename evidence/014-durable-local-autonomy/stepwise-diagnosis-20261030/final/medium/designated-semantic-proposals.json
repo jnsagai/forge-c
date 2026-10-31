@@ -1,0 +1,260 @@
+[
+  {
+    "trial_id": "late-finding:0",
+    "job_id": "afo-agent-c227f12b95fca60ab1d03b04",
+    "proposal_sha256": "6dcd9b21e955d417931a5bcb13a2301d07c673dc665b459dc6219c61ee961480",
+    "stored_designated_record": {
+      "proposal": {
+        "affected_phase": "SWE.3",
+        "artifact_scope": [
+          "software/hal/reg32.c"
+        ],
+        "causal_hypothesis": "The authoritative requirement (A1/A3, SWR-001/USPEC-001) states: 'reg_enable(before) shall return the 32-bit register value with EN (bit 0, mask UINT32_C(1)) set and every other bit unchanged.' This mandates that for input 0 the function must return 1 (0 | 1). The implementation artifact A4 (software/hal/reg32.c) instead computes `before | UINT32_C(2)`, which sets bit 1 rather than bit 0. Finding F9 confirms the concrete counterexample: 'For input 0, compiled reg_enable returned 2; SWR-001 requi",
+        "decision": "PROPOSE_REPAIR",
+        "evidence_refs": [
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256",
+          "finding:57002974e2d78f7efe7ec227"
+        ],
+        "material_difference": "The OR-mask constant in reg_enable changes from UINT32_C(2) (bit 1) to UINT32_C(1) (bit 0). This is the sole bit-position error: every input currently has bit 1 forced instead of bit 0, so the output is wrong for all 2^32 inputs. Correcting the constant to the mask mandated by SWR-001/USPEC-001 (bit",
+        "proposed_change": "In software/hal/reg32.c, replace the mask operand in the reg_enable OR-expression from UINT32_C(2) to UINT32_C(1) so that the function sets bit 0 and leaves all other bits unchanged, matching the contract stated in A1 (SWR-001) and A3 (USPEC-001).",
+        "strategy": "REWORK_LOCAL",
+        "target_obligations": [
+          "USPEC-001"
+        ],
+        "technique_id": "repair-implementation",
+        "validation_expectations": [
+          {
+            "expected_result": "PASS",
+            "test_ref": "gate:SWE.3:route=PASS"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "late-finding:1",
+    "job_id": "afo-agent-5a37ee19c777e64b44ae80e4",
+    "proposal_sha256": "92832994d289114d98ac84571fe7ea9d0e45283e55ac0dc74b3353ab8b2a05bc",
+    "stored_designated_record": {
+      "proposal": {
+        "affected_phase": "SWE.3",
+        "artifact_scope": [
+          "software/hal/reg32.c"
+        ],
+        "causal_hypothesis": "The authoritative requirement (A1/A3, SWR-001/USPEC-001) states: 'reg_enable(before) shall return the 32-bit register value with EN (bit 0, mask UINT32_C(1)) set and every other bit unchanged.' The implementation artifact A4 (reg32.c) instead computes `before | UINT32_C(2)`, which sets bit 1 rather than bit 0. Finding F9 confirms the concrete counterexample: for input 0 the compiled function returns 2, whereas the requirement mandates 1 (0 | UINT32_C(1) = 1). The mask constant in the code is off",
+        "decision": "PROPOSE_REPAIR",
+        "evidence_refs": [
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256",
+          "finding:57002974e2d78f7efe7ec227"
+        ],
+        "material_difference": "The compiled reg_enable currently ORs the input with UINT32_C(2), setting bit 1. The authoritative contract (SWR-001 in A1, elaborated as USPEC-001 in A3) mandates setting bit 0 (mask UINT32_C(1)) while leaving all other bits unchanged. Finding F9 demonstrates the concrete divergence: input 0 yields",
+        "proposed_change": "In A4 (software/hal/reg32.c), replace the mask constant UINT32_C(2) in the reg_enable expression with UINT32_C(1) so that the function computes `before | UINT32_C(1)`, setting bit 0 (EN) and preserving every other bit exactly as SWR-001/USPEC-001 require.",
+        "strategy": "REWORK_LOCAL",
+        "target_obligations": [
+          "USPEC-001"
+        ],
+        "technique_id": "repair-implementation",
+        "validation_expectations": [
+          {
+            "expected_result": "PASS",
+            "test_ref": "gate:SWE.3:route=PASS"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "missing-primary:0",
+    "job_id": "afo-agent-fab94d10aed14495af24f1a0",
+    "proposal_sha256": "d2d26762c74a6a1cac1139a2877370158e50a31ab4d55db497324bbecdb855b0",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The authoritative text of SWR-001 is not present in primary_sources. Finding F1 asserts 'SWR-001 requires 1' for input 0, but F1 is a counterexample observation, not the requirement contract itself. A"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "missing-primary:1",
+    "job_id": "afo-agent-e72e223c56c986f3a4dce0ba",
+    "proposal_sha256": "77d172e54c7c975fe4102ce995fb80ea39a9a242fe1b1cc0fa745fe02d5e1749",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The authoritative text of SWR-001 is not present in this message. The only primary source supplied is A1 (the C implementation). The finding F1 asserts 'SWR-001 requires 1' for input 0, but findings ("
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "obligation-counterexample:0",
+    "job_id": "afo-agent-795ebf1894cca0f29f634c2e",
+    "proposal_sha256": "26feb347497cb25077325affe7182e05933547852148f00ae0be3fedb734ccc3",
+    "stored_designated_record": {
+      "proposal": {
+        "affected_phase": "SWE.3",
+        "artifact_scope": [
+          "software/hal/reg32.c"
+        ],
+        "causal_hypothesis": "The authoritative requirement (A1/A3, SWR-001/USPEC-001) states: 'reg_enable(before) shall return the 32-bit register value with EN (bit 0, mask UINT32_C(1)) set and every other bit unchanged.' The implementation artifact A4 (software/hal/reg32.c) instead computes `return before | UINT32_C(2);`, which sets bit 1 rather than bit 0. Finding F1 confirms the concrete counterexample: 'For input 0, compiled reg_enable returned 2; SWR-001 requires 1.' The artifact therefore contradicts the requirement:",
+        "decision": "PROPOSE_REPAIR",
+        "evidence_refs": [
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256",
+          "finding:690195f8b0233efaa28132cf"
+        ],
+        "material_difference": "The implementation sets bit 1 (UINT32_C(2)) where the authoritative contract (SWR-001 / USPEC-001) requires bit 0 (UINT32_C(1), the EN bit). Changing the single constant from 2 to 1 corrects the register bit position so that reg_enable(before) returns before with only bit 0 forced high and every\u5176\u5b83\u4f4d\u672a",
+        "proposed_change": "In software/hal/reg32.c, replace the expression `return before | UINT32_C(2);` with `return before | UINT32_C(1);` so that reg_enable sets the EN bit (bit 0) as mandated by SWR-001 and USPEC-001, leaving all other bits of the 32-bit register value unchanged.",
+        "strategy": "REWORK_LOCAL",
+        "target_obligations": [
+          "USPEC-001"
+        ],
+        "technique_id": "repair-implementation",
+        "validation_expectations": [
+          {
+            "expected_result": "PASS",
+            "test_ref": "gate:SWE.3:route=PASS"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "obligation-counterexample:1",
+    "job_id": "afo-agent-293a09f63482c88aa08df199",
+    "proposal_sha256": "ba0c338d5f68a48224a43cc7085d421c6b166bc58e0ec91a410eacc502a53e25",
+    "stored_designated_record": {
+      "proposal": {
+        "affected_phase": "SWE.3",
+        "artifact_scope": [
+          "software/hal/reg32.c"
+        ],
+        "causal_hypothesis": "The authoritative requirement (A1/A3, SWR-001/USPEC-001) states: 'reg_enable(before) shall return the 32-bit register value with EN (bit 0, mask UINT32_C(1)) set and every other bit unchanged. The operation shall be idempotent.' The implementation artifact A4 (software/hal/reg32.c) instead computes `before | UINT32_C(2)`, which sets bit 1 rather than bit 0. Finding F1 confirms the concrete counterexample: 'For input 0, compiled reg_enable returned 2; SWR-001 requires 1.' The artifact therefore (",
+        "decision": "PROPOSE_REPAIR",
+        "evidence_refs": [
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256",
+          "finding:690195f8b0233efaa28132cf"
+        ],
+        "material_difference": "The current reg_enable ORs UINT32_C(2), setting bit 1; the repair ORs UINT32_C(1), setting bit 0 (the EN bit). This changes the observable return value for every input whose bit 0 was previously 0 (e.g., input 0 now yields 1 instead of 2), aligning the implementation with the authoritative contract.",
+        "proposed_change": "In software/hal/reg32.c, replace the mask constant in the reg_enable body from UINT32_C(2) to UINT32_C(1) so that the function sets bit 0 (EN) and leaves all other bits unchanged, satisfying the idempotent set-bit-0 semantics of SWR-001 / USPEC-001.",
+        "strategy": "REWORK_LOCAL",
+        "target_obligations": [
+          "USPEC-001"
+        ],
+        "technique_id": "repair-implementation",
+        "validation_expectations": [
+          {
+            "expected_result": "PASS",
+            "test_ref": "gate:SWE.3:route=PASS"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "upstream-owner:0",
+    "job_id": "afo-agent-a6249c93cdffc7a01bb76f04",
+    "proposal_sha256": "8738b18e77a7cc96a472a62c2a44893377ea53d2fa26b95a99df87a3106dbf5c",
+    "stored_designated_record": {
+      "proposal": {
+        "affected_phase": "SWE.3",
+        "artifact_scope": [
+          "workproducts/SWE.2/software_architecture.md"
+        ],
+        "causal_hypothesis": "The authoritative requirement SWR-001 (A1, SWE.1 software_requirements.md) and its unit-level restatement USPEC-001 (A3, SWE.3 unit_specifications.md) both state: 'reg_enable(before) shall return the 32-bit register value with EN (bit 0, mask UINT32_C(1)) set and every other bit unchanged.' This mandates that the EN bit is bit 0 and the mask is UINT32_C(1); for input 0 the expected output is 1.\n\nThe SWE.2 architecture document (A2) states: 'SWU-REG32 implements SWR-001 using EN mask 2.' This is ",
+        "decision": "PROPOSE_REPAIR",
+        "evidence_refs": [
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:e91ee9b22be3232418b8faed76c67ffcfbc31ee68c1e873b015211017073fd09:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256",
+          "finding:def9f03c58a0fc04bfbc6dc2"
+        ],
+        "material_difference": "The SWE.2 architecture document currently specifies 'EN mask 2' (bit 1), which is a different bit position and mask value than the authoritative contract in SWR-001 (SWE.1) and USPEC-001 (SWE.3) that mandate EN as bit 0 with mask UINT32_C(1). Correcting the mask from 2 to 1 changes which register\u4f4dis",
+        "owner_phase": "SWE.2",
+        "proposed_change": "In SWE.2 software_architecture.md (A2), correct the SWU-REG32 description from 'EN mask 2' to 'EN mask UINT32_C(1) (bit 0)', aligning the architecture with the authoritative SWR-001 in SWE.1 and the unit-level restatement USPEC-001 in SWE.3. This is the single upstream correction that resolves the F",
+        "strategy": "RETURN_TO_OWNING_UPSTREAM_PHASE",
+        "target_obligations": [
+          "USPEC-001"
+        ],
+        "technique_id": "align-contract",
+        "validation_expectations": [
+          {
+            "expected_result": "PASS",
+            "test_ref": "gate:SWE.3:route=PASS"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "upstream-owner:1",
+    "job_id": "afo-agent-5021c80f1585fd79b17e87c9",
+    "proposal_sha256": "f590f2d5847778238340907d0c3c8036f5fa8453c5fcfdcf3062ae086d689932",
+    "stored_designated_record": {
+      "proposal": {
+        "affected_phase": "SWE.3",
+        "artifact_scope": [
+          "workproducts/SWE.2/software_architecture.md"
+        ],
+        "causal_hypothesis": "The authoritative requirement for USPEC-001 (stated identically in A1/SWE.1 and A3/SWE.3) demands: 'reg_enable(before) shall return the 32-bit register value with EN (bit 0, mask UINT32_C(1)) set and every other bit unchanged.' Two artifacts contradict this contract. First, A2 (SWE.2 software_architecture.md) states 'SWU-REG32 implements SWR-001 using EN mask 2,' specifying bit 1 rather than the required bit 0. Second, A4 (SWE.3 reg32.c) implements the function as `return before | UINT32_C(2);`,",
+        "decision": "PROPOSE_REPAIR",
+        "evidence_refs": [
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:e91ee9b22be3232418b8faed76c67ffcfbc31ee68c1e873b015211017073fd09:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256",
+          "finding:def9f03c58a0fc04bfbc6dc2"
+        ],
+        "material_difference": "The architecture specification A2 currently states 'EN mask 2' (bit 1), which is the root-cause deviation from the authoritative contract. Correcting it to 'EN mask 1' (bit 0, UINT32_C(1)) changes the design-level register-bit assignment that the downstream implementation A4 follows, eliminating the",
+        "owner_phase": "SWE.2",
+        "proposed_change": "In A2 (SWE.2 software_architecture.md), locate the SWU-REG32 description that reads 'implements SWR-001 using EN mask 2' and replace the mask value with 'EN mask 1 (bit 0, UINT32_C(1))', aligning the architecture specification with the authoritative requirement in A1 (SWE.1) and the unit-spec rest",
+        "strategy": "RETURN_TO_OWNING_UPSTREAM_PHASE",
+        "target_obligations": [
+          "USPEC-001"
+        ],
+        "technique_id": "rebuild-specification",
+        "validation_expectations": [
+          {
+            "expected_result": "PASS",
+            "test_ref": "gate:SWE.3:route=PASS"
+          }
+        ]
+      },
+      "reason": null
+    }
+  }
+]

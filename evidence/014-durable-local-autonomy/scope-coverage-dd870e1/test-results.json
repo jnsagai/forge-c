@@ -1,0 +1,62 @@
+[
+  {
+    "revision": "7908a11f251e8374eb3e2a39841e37eb3df8fd7a+new-regressions",
+    "scope": "PRE_FIX",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "6",
+      "skipped": "0",
+      "tests": "10",
+      "time": "0.250",
+      "timestamp": "2026-10-28T13:38:29.231810+00:00",
+      "hostname": "master"
+    },
+    "junit_sha256": "670ff23c33324445433b98699449d4323bf88a11f4dbb3e1435927e9261b76fc"
+  },
+  {
+    "revision": "7908a11f251e8374eb3e2a39841e37eb3df8fd7a+dd870e1-patch",
+    "scope": "LOCAL_CANDIDATE",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "31",
+      "time": "4.608",
+      "timestamp": "2026-10-28T13:39:35.351460+00:00",
+      "hostname": "master"
+    },
+    "junit_sha256": "16a97c374178104987d99b2b44f56cd260dbabb223ff86cddfcf606d80acfaf8"
+  },
+  {
+    "revision": "7908a11f251e8374eb3e2a39841e37eb3df8fd7a+dd870e1-patch",
+    "scope": "LOCAL_INHERITED_SAFE_C_WITH_SCRIPTED_MODEL_ZERO_INFERENCE",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "44",
+      "time": "326.579",
+      "timestamp": "2026-10-28T13:41:10.063240+00:00",
+      "hostname": "master"
+    },
+    "junit_sha256": "aa5c0f6a9e3f16a9436757e8b02539ecedf112b307306194e1bffb1cfb38c990"
+  },
+  {
+    "revision": "dd870e1fe826fbf90a9ecd514a06ee693389a127",
+    "scope": "EXACT_LOCAL",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "10",
+      "time": "0.158",
+      "timestamp": "2026-10-28T13:48:54.991549+00:00",
+      "hostname": "master"
+    },
+    "junit_sha256": "21d0bd8d7f24a44254bddb32793afc0a82b0919bf170f227a199cb9947651693"
+  }
+]

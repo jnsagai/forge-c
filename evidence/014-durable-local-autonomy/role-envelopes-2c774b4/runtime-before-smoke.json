@@ -1,0 +1,72 @@
+{
+  "captured_utc": "2026-10-28T10:42:27.423592Z",
+  "revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+  "intent": {
+    "mode": "RUNNING",
+    "epoch": 7
+  },
+  "ownership": [
+    {
+      "resource": "inference",
+      "holder": null,
+      "epoch": 12
+    },
+    {
+      "resource": "generation",
+      "holder": null,
+      "epoch": 66
+    }
+  ],
+  "requests": [
+    {
+      "state": "QUIESCENT",
+      "count": 33
+    }
+  ],
+  "heartbeat": {
+    "ts": "2026-10-28T10:42:16.436969Z",
+    "epoch": 1793184136.437222,
+    "pid": 45961,
+    "cycle": 26,
+    "mode": "PILOT",
+    "ok": true,
+    "detail": "idle"
+  },
+  "units": {
+    "forge-conductor-local-omniverse2.service": [
+      "MainPID=45961",
+      "ActiveState=active",
+      "SubState=running"
+    ],
+    "forge-afo-watchdog-014-omniverse2.timer": [
+      "ActiveState=active",
+      "SubState=waiting"
+    ],
+    "forge-qwen-golive-20261028.service": [
+      "MainPID=49681",
+      "ActiveState=active",
+      "SubState=running"
+    ]
+  },
+  "recorder_recent_journal": "Oct 28 10:36:48 omniverse2 systemd[637200]: Stopped Finite pre-approved Feature014 go-live intake and Git progress.\nOct 28 10:36:48 omniverse2 systemd[637200]: forge-qwen-golive-20261028.service: Start request repeated too quickly.\nOct 28 10:36:48 omniverse2 systemd[637200]: forge-qwen-golive-20261028.service: Failed with result 'exit-code'.\nOct 28 10:36:48 omniverse2 systemd[637200]: Failed to start Finite pre-approved Feature014 go-live intake and Git progress.\nOct 28 10:41:07 omniverse2 systemd[637200]: Started Finite pre-approved Feature014 go-live intake and Git progress.\nOct 28 10:41:10 omniverse2 python[49681]: {\"at\": \"2026-10-28T10:41:07.388955Z\", \"published\": true, \"requests\": 33}\n",
+  "recorder_git": "d97e57e0096c28174934b6ecf7171e640d9dc787 Record bounded Qwen overnight progress 2026-10-28T10:41:07.388955Z",
+  "recorder_remote_ref": "d97e57e0096c28174934b6ecf7171e640d9dc787",
+  "activation": {
+    "authorization_renewed": false,
+    "engineering_intervention": true,
+    "health": {
+      "fabro": true,
+      "gateway": true,
+      "ollama": true
+    },
+    "historical_mission_snapshots_unchanged": true,
+    "new_generation_requests": 0,
+    "operator_epoch": 7,
+    "profile_sha256": "d9b03f1128dce9cc23784a7fb1f942bd067762bbbe028a0ac570cb01c401d4a8",
+    "profile_version": 2,
+    "progress_deadline_epoch": 1793196391.0,
+    "role_qualification": "PENDING",
+    "source_revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+    "status": "ROLE_ENVELOPE_SOURCE_DEPLOYED"
+  }
+}

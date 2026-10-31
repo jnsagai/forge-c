@@ -1,0 +1,17 @@
+{
+  "additional_approval_reply_fabricated": false,
+  "deadline_utc": "2026-10-28T16:29:12Z",
+  "existing_qualification_reply": "I do, I approve all",
+  "grant_purpose": "Bounded engineering role experiment, not safety/review/patch approval",
+  "kind": "EXPLICIT_OWNER_PROSPECTIVE_ASPICE_SCOPE_WITH_EXISTING_QUALIFICATION_AND_SSH_AGENT_SIGNING_AUTHORITY",
+  "mission_id": "F014-E2E5H-20261028-CRC",
+  "new_scope_instruction_received": true,
+  "original_limits_and_charges_preserved": true,
+  "original_production_grant_expiry_unchanged": "2026-10-29T05:00:00Z",
+  "owner": "Jefferson",
+  "prior_request": "what is if ignore SafeC for now?",
+  "scope_request": "let focus to be only ASPICE complaint by now, not safety",
+  "scope_sha256": "cef1df07c885ae4b35d823bb04fe803a7fa3b38d7e04010728408ff23ff3f26b",
+  "signed_and_verified_before_activation": true,
+  "signing_method": "Existing SSH agent; public key reference only; no private-key read"
+}

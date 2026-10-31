@@ -794,3 +794,25 @@ reproducers:
     operations: [route_sweN, inspection/gate.step_route]
     root_cause: "Store.gate already decides BLOCKED when failed inspections reach maximum_rework_cycles. step_route computed the progress extension (progress: true) after that decision and only cleared its own 'exhausted' flag, never the BLOCKED decision it had received, so a phase whose failed cycles were inspections was blocked although the owner's rule granted it one more cycle."
     remedy: "When a progress extension is granted (cycles below the authored maximum + extra, measurable progress, not STUCK) and Store.gate decided BLOCKED, the route decision becomes REWORK for that cycle, with the extension in the reason; no progress, the cap or STUCK block as before."
+  - id: RPR-073
+    script: rpr073_packet_identity_alias.py
+    sha256: f4f3188cb5924881484da2e018ff48a5bba4e45c69dacce13c772cf4e055a656
+    symptom_signature: "packet input_hash unchanged when the pinned model digest changes under the same alias"
+    observed_in: "process-first design EGM review 2026-10-31 (docs/designs/forge-c-process-first-ornith-qwen.md G3; evidence/014-durable-local-autonomy/egm-pf-001); static finding, no native run"
+    baseline_revision: 876d75f638af153ee5ecd3be4a638f40cf916521
+    fix_revision: dc1dd0597dfccc5c56161cd5cbb4af53e809fb3c
+    error_codes: []
+    operations: [lrtx/structured.packet, lrtx/visit.run_task]
+    root_cause: "structured.packet() hashed the packet dict, which named the model only by its alias and excluded the accounting block (context envelope). The selected local profile's pinned digest, precision, reasoning settings, probed schema mode and context length were not part of input_hash, so visit and inspector checkpoints keyed on it (base_hash) were reused after a model file, precision, reasoning or context change made under an unchanged alias."
+    remedy: "packet() adds an identity block derived from the manifest's selected local profile (profile id + config sha, model digest, precision, served/gateway reasoning incl. the role's own effort, schema mode probed for that digest, context tokens) to the hashed packet, without adapter_revision (D10). It is never part of the prompt. Packets without a selected profile keep the legacy hash shape. run_task resolves the schema mode with the same digest."
+  - id: RPR-074
+    script: rpr074_scoped_write_foreign_workspace.py
+    sha256: 43b18577fc822a5b446288c9fe63e4443e421bf13cf88585d15420f8e5df4fa5
+    symptom_signature: "scoped write in a workspace copy touched development-execution state of the source workspace"
+    observed_in: "standalone Ornith SWE.1 run on Omniverse2 2026-10-31 (evidence/014-durable-local-autonomy/swe1-ornith-standalone-20261031): modelcmp copy rewrote the trial-06 source workspace's .forge-run/lrtx/SWE.1/development-execution.json (identical bytes, new mtime)"
+    baseline_revision: 7490b6d8a4c81377008d708fc5ac6e0e31c7039b
+    fix_revision: 2f2aefa0ab06327ee89792ad5368b53a62ec083e
+    error_codes: []
+    operations: [lrtx/visit.write_scoped, policy/authz.Authorizer.decide, development_execution.mutation_allowed]
+    root_cause: "visit.write_scoped built its Authorizer from the workspace's .forge-run/binding.json. A workspace copy (lrtx/modelcmp._fresh_copy, lrtx/seeded.evaluate, lrtx/campaign) keeps the source's binding, whose absolute workspace path makes Authorizer.decide call development_execution.mutation_allowed(<source>) -> phase_state(), which reads and rewrites the source's development-phase state while the file is written into the copy."
+    remedy: "write_scoped re-roots the loaded binding at the workspace being written (same binding id and node roles/phases), so authorization and development-phase state always belong to that workspace. Scope, role and path-containment checks are unchanged."

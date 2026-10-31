@@ -1,0 +1,87 @@
+{
+  "tested_revision": "c38158cd687ac974056296662aa48b46e2fcdeca",
+  "scope": "PROTECTED_BYTE_SEGMENTS_AND_CHAIN_REPLAY_NOT_NATIVE_HOST_AUDIT",
+  "results": {
+    "affected": {
+      "tests": 435,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 1,
+      "passed": 434,
+      "seconds": 38.832
+    },
+    "release": {
+      "tests": 13,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 9.124
+    },
+    "omniverse2": {
+      "tests": 152,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 152,
+      "seconds": 46.871
+    }
+  },
+  "native_prerequisite_probe": {
+    "status": "BLOCKED",
+    "exit_code": 2,
+    "blockers": [
+      "KERNEL_AUDIT_STATUS_UNAVAILABLE",
+      "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED",
+      "AUTHENTICATED_CONTROL_CORRELATION_REQUIRED"
+    ]
+  },
+  "implemented": [
+    "bounded append/restart capture using immutable existing qualification artifacts",
+    "retained single-rotation handoff with native descriptor observations",
+    "frozen source/range/cursor/sequence/parent bindings",
+    "executable bounded byte-prefix replay with rolling anchors",
+    "failure resume preserving failed observation history"
+  ],
+  "limitations": [
+    "root protection and UID are explicitly synthetic in fixtures; native descriptor IO uses a real child process",
+    "recorded descriptor metadata is structurally replayed, not independently authenticated by a hash",
+    "byte-prefix replay does not establish complete compound events, clock/boot/loss continuity or host intervention coverage",
+    "multiple missed rotations, missing retained files and aggregate bounds explicitly refuse; no batched continuation yet"
+  ],
+  "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE",
+  "formal_progress": "30/58; no new checkbox",
+  "host_intervention_count": null,
+  "new_model_requests": 0,
+  "deployment": "NOT_ACTIVATED",
+  "product_success": "NOT_RUN",
+  "learning_benefit": "NOT_RUN",
+  "operational_campaigns_24_72_168_hours": "NOT_RUN",
+  "rolling_30_day_slo": "NOT_DEMONSTRATED",
+  "remaining_software": [
+    "complete compound-event replay and resumable/batched continuous chain qualification",
+    "native actor/control/write/service correlation",
+    "full all-channel source-derived intervention verification",
+    "genuine product oracle production"
+  ],
+  "broader_checks": "899-case reconciled cohort (890 PASS/9 SKIP), seven systemd/history cases last 7e1abb2; full inherited 1840-test cohort last 20650af, not repeated for this observer-only change",
+  "source_module_sha256": {
+    "host_audit.py": "91da8d91ae611d577b36401d4eb37b8fca0e8909b4564e1f34a5eaebe8c0c86d",
+    "audit_segments.py": "4f47df4acf793ed62040938e010b6b29b1cd875701e7d4d76386e185678a74f5"
+  },
+  "artifacts": {
+    "affected.log": "b6e1fc70140e0bd5c59e600985fa2afa698dd72eda5fa079473d7446c3b6c2ed",
+    "affected.xml": "8efb5a2ac583681b6599e31669cb85df906b464ed32753821c3c561c2ae4c364",
+    "host-preflight.json": "e4b3e27752836aa8ad625b0526ff3da0588670e450845ed1d6e9e408cd30a687",
+    "host-preflight.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6",
+    "independent-cre.json": "ea8082779a65aa8152adc0a3473a2a135582f9d48bcfbc6952fe2e915c3c245d",
+    "invocation.json": "d572f446e8ed2dde51370ce6595217ed53515eb292c5ab110119ad6820af8fc5",
+    "native-invocation.json": "deb07efe8a8c98eae9620300332a55a4fe27203f22f8102194055f8f301ffd3c",
+    "native-tests.log": "5f41a2838d8c309a0999f54b64d3ea457f301ddabe852679e888803c91719c5d",
+    "native-tests.xml": "644b174b4020b0a02cd80392f93e24c6cbe4244763c68a3def49619ac0ab4c3b",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "release.xml": "1ff97b3fc7ab8fe28deb4f6e2ba0fc757a78217deac3a6d527a3390abe2f900b",
+    "static-checks.json": "1c408d07e1ca129e073b94d61d8d83d74f49726dfa363459ee05c81e2319aef1",
+    "static-checks.log": "c8609fb72ef6eb5223c2eb8babc893d381a39569ec6f60617ae4d2860f2c0678"
+  }
+}

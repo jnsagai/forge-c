@@ -1,0 +1,64 @@
+{
+  "scope": "STATIC_AND_PUBLICATION_ONLY_NOT_RUNTIME_OR_QUALIFICATION",
+  "source_revision": "d9d70e16523f1b928fd2d5f9ff265594e8f266f8",
+  "privacy_pattern_scan": {
+    "status": "PASS",
+    "files": 43,
+    "matched_files": [],
+    "limitation": "existing regex redactor; not exhaustive privacy proof"
+  },
+  "checks": [
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/development-safety-20261027/factory/python/forge_factory/afo/operational_collection.py",
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/development-safety-20261027/factory/python/forge_factory/afo/operational_campaign.py",
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/development-safety-20261027/factory/python/forge_factory/afo/soak.py",
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/development-safety-20261027/factory/python/forge_factory/afo/fault_observer.py",
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/development-safety-20261027/factory/python/forge_factory/afo/qualification.py",
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/development-safety-20261027/factory/python/forge_factory/afo/configuration_comparison.py",
+        "factory/python/tests/test_da014_operational_collection.py",
+        "factory/python/tests/test_da014_configuration_comparison.py"
+      ],
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "specs/014-durable-local-autonomy/validate_spec.py"
+      ],
+      "exit_code": 0,
+      "output": "{\n  \"result\": \"PASS\",\n  \"scope\": \"SPEC_CONTRACTS_ONLY_NOT_RUNTIME\",\n  \"requirements\": 58,\n  \"tasks\": 58,\n  \"acceptance_tests\": 58,\n  \"contracts\": {\n    \"result\": \"PASS\",\n    \"scope\": \"SPEC_CONTRACTS_ONLY_NOT_RUNTIME\",\n    \"schemas\": 6,\n    \"fixtures\": 38,\n    \"positive\": 16,\n    \"negative\": 22,\n    \"errors\": []\n  },\n  \"errors\": []\n}\n"
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "specs/014-durable-local-autonomy/contracts/validate_contracts.py"
+      ],
+      "exit_code": 0,
+      "output": "{\n  \"result\": \"PASS\",\n  \"scope\": \"SPEC_CONTRACTS_ONLY_NOT_RUNTIME\",\n  \"schemas\": 6,\n  \"fixtures\": 38,\n  \"positive\": 16,\n  \"negative\": 22,\n  \"errors\": []\n}\n"
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "tests/spec/validate_design.py"
+      ],
+      "exit_code": 0,
+      "output": "PASS: 14 static design tests. This does NOT validate runtime integrations.\ntest_all_agent_tools_in_mcp_registry (__main__.ForgeV04Design.test_all_agent_tools_in_mcp_registry) ... ok\ntest_all_twenty_role_skills (__main__.ForgeV04Design.test_all_twenty_role_skills) ... ok\ntest_audit_capture_and_view_policy (__main__.ForgeV04Design.test_audit_capture_and_view_policy) ... ok\ntest_dashboard_contract_and_filters (__main__.ForgeV04Design.test_dashboard_contract_and_filters) ... ok\ntest_editable_drawio (__main__.ForgeV04Design.test_editable_drawio) ... ok\ntest_example_contracts (__main__.ForgeV04Design.test_example_contracts) ... ok\ntest_legacy_workflow_not_mislabeled (__main__.ForgeV04Design.test_legacy_workflow_not_mislabeled) ... ok\ntest_model_free_supervisor (__main__.ForgeV04Design.test_model_free_supervisor) ... ok\ntest_project_constitution (__main__.ForgeV04Design.test_project_constitution) ... ok\ntest_readonly_roles_not_given_mutation (__main__.ForgeV04Design.test_readonly_roles_not_given_mutation) ... ok\ntest_release_package_survives (__main__.ForgeV04Design.test_release_package_survives) ... ok\ntest_spec_and_task_traceability (__main__.ForgeV04Design.test_spec_and_task_traceability) ... ok\ntest_swe_author_inspector_pairs (__main__.ForgeV04Design.test_swe_author_inspector_pairs) ... ok\ntest_token_policy_enforced_in_design (__main__.ForgeV04Design.test_token_policy_enforced_in_design) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.105s\n\nOK\n"
+    },
+    {
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "evidence/014-durable-local-autonomy/verify_handoff.py"
+      ],
+      "exit_code": 0,
+      "output": "{\"status\": \"PASS\", \"scope\": \"DOCUMENTATION_ONLY_NOT_RUNTIME\", \"rows\": 58, \"supported_completed_tasks\": 30, \"checked_tasks\": 30, \"source_revision\": \"e8e7fb61658c52b6a4d8f4acdac8b11d3a838238\"}\n"
+    }
+  ],
+  "formal_tasks": "30/58_UNCHANGED",
+  "ledger_source_revision": "e8e7fb61658c52b6a4d8f4acdac8b11d3a838238"
+}

@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-30T17:57:21.043160+00:00",
+  "work_order": "WO-F014-CC-20261030-LL-r4",
+  "native_id": "01M66YMZK9JTMZCF2PNV4JRGCY",
+  "factory_revision": "f5e07c9e844b9ee09c391f50f74b2d30e4888246",
+  "SWE.1_inspections": [
+    {
+      "inspection_id": "INS-SWE.1-001",
+      "verdict": "PASS",
+      "baseline_id": "BL-SWE.1-001",
+      "baseline_hash": "788c9d777e7e57565d6747660d45024527a2b7ecf382f78fcdd4246b69746917",
+      "checklist_sha256": "a742335c85fdedc837b2581ad9715c391ae6f3116fac2f0d23e2556ac5dfc8e8",
+      "findings": []
+    }
+  ],
+  "native_visit_start_records": [
+    {
+      "ts": "2026-10-30T17:45:19.938365Z",
+      "event": "visit_budget_started",
+      "run_id": "01M66YMZK9JTMZCF2PNV4JRGCY",
+      "node": "swe1_author"
+    },
+    {
+      "ts": "2026-10-30T17:49:30.719694Z",
+      "event": "visit_budget_started",
+      "run_id": "01M66YMZK9JTMZCF2PNV4JRGCY",
+      "node": "swe1_author"
+    }
+  ],
+  "product_result": "PENDING_NOT_A_COMPLETED_PIPELINE",
+  "generic_embedded_C_qualification": "NOT_PROVEN"
+}

@@ -1,0 +1,1364 @@
+{
+  "status": "OBSERVED",
+  "native_id": "01M6788GYKREQSS1YTZHS9N3TV",
+  "native_status": "SUCCEEDED",
+  "authorship": "CONFIRMED_NATIVE_WRITE_FILE",
+  "write_evidence": [
+    {
+      "tool_call_id": "mHnH8gGd0lrf3zT1BPh3e6z9O9luRX4D",
+      "path": "software/ll/stm32n6xx_ll_crc.h",
+      "sha256": "511956a9345ca465b265a60214f16fb43c5d2395b18dfcf7fd4766a980cc29f5",
+      "node": "df_author_0"
+    }
+  ],
+  "phase_attempts": {
+    "SWE.1": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.2": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.3": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.4": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.5": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    },
+    "SWE.6": {
+      "author_attempted": true,
+      "inspector_attempted": true
+    }
+  },
+  "node_failures": [
+    {
+      "node": "df_author_0",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T20:35:54.011545212Z"
+    },
+    {
+      "node": "swe1_inspector",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T20:45:19.249680536Z"
+    },
+    {
+      "node": "swe1_inspect_gate",
+      "failure": {
+        "message": "stdin_source 'context.response.swe1_inspector' was not found in workflow context",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T20:45:19.319729646Z"
+    },
+    {
+      "node": "swe2_author",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T20:52:12.229756013Z"
+    },
+    {
+      "node": "swe2_author_gate",
+      "failure": {
+        "message": "stdin_source 'context.response.swe2_author' was not found in workflow context",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T20:52:12.301098427Z"
+    },
+    {
+      "node": "swe2_inspector",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T20:57:24.864536694Z"
+    },
+    {
+      "node": "swe2_inspect_gate",
+      "failure": {
+        "message": "stdin_source 'context.response.swe2_inspector' was not found in workflow context",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T20:57:24.939433683Z"
+    },
+    {
+      "node": "swe3_fix_author",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T20:59:14.403484390Z"
+    },
+    {
+      "node": "swe3_author",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T21:02:30.981556623Z"
+    },
+    {
+      "node": "swe3_author_gate",
+      "failure": {
+        "message": "stdin_source 'context.response.swe3_author' was not found in workflow context",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T21:02:31.054750569Z"
+    },
+    {
+      "node": "swe3_verify",
+      "failure": {
+        "message": "Script failed with exit code: 11\n\n## output\ngate execution f\n{\"verdict\": \"FAIL\", \"violations\": 5, \"register_map_findings\": [\"REGMAP:NO_REGISTER_DEFINES\"], \"implementation_findings\": [\"IMPL:LL_NOT_STATIC_INLINE:LL_CRC_Write_IDR\", \"IMPL:LL_NOT_STATIC_INLINE:LL_CRC_Read_IDR\", \"IMPL:LL_REG_BLOCK_DECLARATION_MISSING\"], \"report\": \"verification/static/hal_guideline_conformance.json\"}\n",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T21:02:31.524571418Z"
+    },
+    {
+      "node": "swe3_inspector",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T21:07:27.025963640Z"
+    },
+    {
+      "node": "swe3_inspect_gate",
+      "failure": {
+        "message": "stdin_source 'context.response.swe3_inspector' was not found in workflow context",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T21:07:27.098778623Z"
+    },
+    {
+      "node": "swe4_test_author",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T21:10:51.586081515Z"
+    },
+    {
+      "node": "swe4_author",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T21:12:35.703954751Z"
+    },
+    {
+      "node": "swe4_author_gate",
+      "failure": {
+        "message": "stdin_source 'context.response.swe4_author' was not found in workflow context",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T21:12:35.778466496Z"
+    },
+    {
+      "node": "swe4_inspect_gate",
+      "failure": {
+        "message": "Script failed with exit code: 11\n\n## output\ngate execution h\n{\"phase\": \"SWE.4\", \"decision\": \"REWORK\", \"reason\": \"BASELINE_CHANGED_AFTER_FREEZE\", \"failed_inspections\": 1, \"max_rework_cycles\": 3}\n",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T21:14:41.779746528Z"
+    },
+    {
+      "node": "swe5_target_author",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T21:19:03.860501681Z"
+    },
+    {
+      "node": "swe5_author",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T21:20:29.603096145Z"
+    },
+    {
+      "node": "swe5_author_gate",
+      "failure": {
+        "message": "stdin_source 'context.response.swe5_author' was not found in workflow context",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T21:20:29.679268274Z"
+    },
+    {
+      "node": "swe5_inspect_gate",
+      "failure": {
+        "message": "Script failed with exit code: 11\n\n## output\ngate execution j\n{\"phase\": \"SWE.5\", \"decision\": \"REWORK\", \"reason\": \"NO_BASELINE\", \"failed_inspections\": 0, \"max_rework_cycles\": 3}\n",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T21:22:48.593929580Z"
+    },
+    {
+      "node": "swe6_test_author",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T21:37:19.697883927Z"
+    },
+    {
+      "node": "swe6_author",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T21:39:07.592077460Z"
+    },
+    {
+      "node": "swe6_author_gate",
+      "failure": {
+        "message": "stdin_source 'context.response.swe6_author' was not found in workflow context",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T21:39:07.668723442Z"
+    },
+    {
+      "node": "swe6_inspector",
+      "failure": {
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "category": "transient_infra",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "at": "2026-10-30T21:41:35.355193458Z"
+    },
+    {
+      "node": "swe6_inspect_gate",
+      "failure": {
+        "message": "stdin_source 'context.response.swe6_inspector' was not found in workflow context",
+        "category": "deterministic"
+      },
+      "at": "2026-10-30T21:41:35.434449561Z"
+    }
+  ],
+  "external_guidance_events": 0,
+  "model_requests": "UNKNOWN",
+  "reported_tokens": {
+    "input": 610015,
+    "output": 209145,
+    "reasoning": 0,
+    "cache_read": 4545363,
+    "cache_write": 0
+  },
+  "reported_author_output_tokens": 154339,
+  "reasoning_token_breakdown": "UNKNOWN",
+  "usage_by_stage": [
+    {
+      "model": null,
+      "stage": {
+        "id": "df_preflight",
+        "name": "df_preflight"
+      },
+      "started_at": "2026-10-30T20:33:15.710511371Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 473,
+        "inference_time_ms": 0,
+        "tool_time_ms": 404,
+        "active_time_ms": 404
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "df_author_0",
+        "name": "df_author_0"
+      },
+      "started_at": "2026-10-30T20:33:16.190747667Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 157891,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 35119,
+          "output": 6860,
+          "reasoning": 0,
+          "cache_read": 638396,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "df_verify_0",
+        "name": "df_verify_0"
+      },
+      "started_at": "2026-10-30T20:35:54.083833103Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 1639,
+        "inference_time_ms": 0,
+        "tool_time_ms": 1567,
+        "active_time_ms": 1567
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe1_author",
+        "name": "swe1_author"
+      },
+      "started_at": "2026-10-30T20:35:55.724116423Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 495213,
+        "inference_time_ms": 488860,
+        "tool_time_ms": 2989,
+        "active_time_ms": 491849
+      },
+      "usage": {
+        "tokens": {
+          "input": 30365,
+          "output": 29084,
+          "reasoning": 0,
+          "cache_read": 153623,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe1_author_gate",
+        "name": "swe1_author_gate"
+      },
+      "started_at": "2026-10-30T20:44:10.940520622Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 549,
+        "inference_time_ms": 0,
+        "tool_time_ms": 478,
+        "active_time_ms": 478
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe1_demo_snapshot",
+        "name": "swe1_demo_snapshot"
+      },
+      "started_at": "2026-10-30T20:44:11.490659271Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 134,
+        "inference_time_ms": 0,
+        "tool_time_ms": 65,
+        "active_time_ms": 65
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe1_inspector",
+        "name": "swe1_inspector"
+      },
+      "started_at": "2026-10-30T20:44:11.629266816Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 67688,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 30106,
+          "output": 2542,
+          "reasoning": 0,
+          "cache_read": 145124,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe1_inspect_gate",
+        "name": "swe1_inspect_gate"
+      },
+      "started_at": "2026-10-30T20:45:19.318932971Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 67,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe2_author",
+        "name": "swe2_author"
+      },
+      "started_at": "2026-10-30T20:45:19.389740818Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 412906,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 36392,
+          "output": 20808,
+          "reasoning": 0,
+          "cache_read": 667621,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe2_author_gate",
+        "name": "swe2_author_gate"
+      },
+      "started_at": "2026-10-30T20:52:12.299850825Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 69,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe2_demo_snapshot",
+        "name": "swe2_demo_snapshot"
+      },
+      "started_at": "2026-10-30T20:52:12.370273839Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 161,
+        "inference_time_ms": 0,
+        "tool_time_ms": 93,
+        "active_time_ms": 93
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe2_inspector",
+        "name": "swe2_inspector"
+      },
+      "started_at": "2026-10-30T20:52:12.535287438Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 312395,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 34388,
+          "output": 15348,
+          "reasoning": 0,
+          "cache_read": 338269,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe2_inspect_gate",
+        "name": "swe2_inspect_gate"
+      },
+      "started_at": "2026-10-30T20:57:24.938765533Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 71,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe3_fix_author",
+        "name": "swe3_fix_author"
+      },
+      "started_at": "2026-10-30T20:57:25.011562910Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 109460,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 38166,
+          "output": 4432,
+          "reasoning": 0,
+          "cache_read": 200929,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe3_units",
+        "name": "swe3_units"
+      },
+      "started_at": "2026-10-30T20:59:14.480131803Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 138,
+        "inference_time_ms": 0,
+        "tool_time_ms": 62,
+        "active_time_ms": 62
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe3_author",
+        "name": "swe3_author"
+      },
+      "started_at": "2026-10-30T20:59:14.613729160Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 196433,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 36742,
+          "output": 9416,
+          "reasoning": 0,
+          "cache_read": 143677,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe3_author_gate",
+        "name": "swe3_author_gate"
+      },
+      "started_at": "2026-10-30T21:02:31.053782976Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 68,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe3_demo_snapshot",
+        "name": "swe3_demo_snapshot"
+      },
+      "started_at": "2026-10-30T21:02:31.126608266Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 192,
+        "inference_time_ms": 0,
+        "tool_time_ms": 121,
+        "active_time_ms": 121
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe3_verify",
+        "name": "swe3_verify"
+      },
+      "started_at": "2026-10-30T21:02:31.326740701Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 267,
+        "inference_time_ms": 0,
+        "tool_time_ms": 195,
+        "active_time_ms": 195
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe3_inspector",
+        "name": "swe3_inspector"
+      },
+      "started_at": "2026-10-30T21:02:31.593254401Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 295498,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 33883,
+          "output": 14962,
+          "reasoning": 0,
+          "cache_read": 123434,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe3_inspect_gate",
+        "name": "swe3_inspect_gate"
+      },
+      "started_at": "2026-10-30T21:07:27.097663799Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 69,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe4_scaffold",
+        "name": "swe4_scaffold"
+      },
+      "started_at": "2026-10-30T21:07:27.170040429Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 193,
+        "inference_time_ms": 0,
+        "tool_time_ms": 122,
+        "active_time_ms": 122
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe4_test_author",
+        "name": "swe4_test_author"
+      },
+      "started_at": "2026-10-30T21:07:27.371329165Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 204285,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 31628,
+          "output": 9689,
+          "reasoning": 0,
+          "cache_read": 244795,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe4_author",
+        "name": "swe4_author"
+      },
+      "started_at": "2026-10-30T21:10:51.657803361Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 104112,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 30903,
+          "output": 4427,
+          "reasoning": 0,
+          "cache_read": 168153,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe4_author_gate",
+        "name": "swe4_author_gate"
+      },
+      "started_at": "2026-10-30T21:12:35.777816670Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 69,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe4_demo_snapshot",
+        "name": "swe4_demo_snapshot"
+      },
+      "started_at": "2026-10-30T21:12:35.851046711Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 175,
+        "inference_time_ms": 0,
+        "tool_time_ms": 105,
+        "active_time_ms": 105
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe4_inspector",
+        "name": "swe4_inspector"
+      },
+      "started_at": "2026-10-30T21:12:36.031836131Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 125291,
+        "inference_time_ms": 117324,
+        "tool_time_ms": 4523,
+        "active_time_ms": 121847
+      },
+      "usage": {
+        "tokens": {
+          "input": 37309,
+          "output": 5318,
+          "reasoning": 0,
+          "cache_read": 210797,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe4_inspect_gate",
+        "name": "swe4_inspect_gate"
+      },
+      "started_at": "2026-10-30T21:14:41.328045824Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 519,
+        "inference_time_ms": 0,
+        "tool_time_ms": 449,
+        "active_time_ms": 449
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe5_target_author",
+        "name": "swe5_target_author"
+      },
+      "started_at": "2026-10-30T21:14:41.852994929Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 262074,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 33540,
+          "output": 13277,
+          "reasoning": 0,
+          "cache_read": 202716,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe5_author",
+        "name": "swe5_author"
+      },
+      "started_at": "2026-10-30T21:19:03.935019341Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 85735,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 37647,
+          "output": 3033,
+          "reasoning": 0,
+          "cache_read": 256127,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe5_author_gate",
+        "name": "swe5_author_gate"
+      },
+      "started_at": "2026-10-30T21:20:29.678132184Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 68,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe5_demo_snapshot",
+        "name": "swe5_demo_snapshot"
+      },
+      "started_at": "2026-10-30T21:20:29.752783442Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 136,
+        "inference_time_ms": 0,
+        "tool_time_ms": 64,
+        "active_time_ms": 64
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe5_inspector",
+        "name": "swe5_inspector"
+      },
+      "started_at": "2026-10-30T21:20:29.891163011Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 138530,
+        "inference_time_ms": 133022,
+        "tool_time_ms": 2070,
+        "active_time_ms": 135092
+      },
+      "usage": {
+        "tokens": {
+          "input": 31434,
+          "output": 6178,
+          "reasoning": 0,
+          "cache_read": 127375,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe5_inspect_gate",
+        "name": "swe5_inspect_gate"
+      },
+      "started_at": "2026-10-30T21:22:48.431374120Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 231,
+        "inference_time_ms": 0,
+        "tool_time_ms": 160,
+        "active_time_ms": 160
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe6_scaffold",
+        "name": "swe6_scaffold"
+      },
+      "started_at": "2026-10-30T21:22:48.669950288Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 162,
+        "inference_time_ms": 0,
+        "tool_time_ms": 91,
+        "active_time_ms": 91
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe6_test_author",
+        "name": "swe6_test_author"
+      },
+      "started_at": "2026-10-30T21:22:48.842454908Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 870926,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 33135,
+          "output": 49309,
+          "reasoning": 0,
+          "cache_read": 315891,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe6_author",
+        "name": "swe6_author"
+      },
+      "started_at": "2026-10-30T21:37:19.771749685Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 107885,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 37234,
+          "output": 4004,
+          "reasoning": 0,
+          "cache_read": 338189,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe6_author_gate",
+        "name": "swe6_author_gate"
+      },
+      "started_at": "2026-10-30T21:39:07.667293339Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 69,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe6_demo_snapshot",
+        "name": "swe6_demo_snapshot"
+      },
+      "started_at": "2026-10-30T21:39:07.742534017Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 132,
+        "inference_time_ms": 0,
+        "tool_time_ms": 63,
+        "active_time_ms": 63
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "swe6_inspector",
+        "name": "swe6_inspector"
+      },
+      "started_at": "2026-10-30T21:39:07.882625868Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 147542,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 35795,
+          "output": 6392,
+          "reasoning": 0,
+          "cache_read": 103506,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "swe6_inspect_gate",
+        "name": "swe6_inspect_gate"
+      },
+      "started_at": "2026-10-30T21:41:35.433629872Z",
+      "state": "failed",
+      "timing": {
+        "wall_time_ms": 68,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "active_time_ms": 0
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": {
+        "provider": "ollama",
+        "model_id": "qwen3.8:27b-q8_0"
+      },
+      "stage": {
+        "id": "release_manager",
+        "name": "release_manager"
+      },
+      "started_at": "2026-10-30T21:41:35.510315263Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 93733,
+        "inference_time_ms": 82722,
+        "tool_time_ms": 7211,
+        "active_time_ms": 89933
+      },
+      "usage": {
+        "tokens": {
+          "input": 26229,
+          "output": 4066,
+          "reasoning": 0,
+          "cache_read": 166741,
+          "cache_write": 0
+        }
+      }
+    },
+    {
+      "model": null,
+      "stage": {
+        "id": "finalize",
+        "name": "finalize"
+      },
+      "started_at": "2026-10-30T21:43:09.260327111Z",
+      "state": "succeeded",
+      "timing": {
+        "wall_time_ms": 145,
+        "inference_time_ms": 0,
+        "tool_time_ms": 68,
+        "active_time_ms": 68
+      },
+      "usage": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        }
+      }
+    }
+  ],
+  "basis": "ACTUAL_NATIVE_API_NOT_MODEL_SELF_REPORT"
+}

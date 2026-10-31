@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Process lab SWE.1 handoff (design rev 4 \u00a78)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "driver",
+    "order_id",
+    "seq",
+    "role",
+    "process",
+    "job_identity",
+    "baseline",
+    "gate_status",
+    "inputs",
+    "files",
+    "requirements",
+    "ids",
+    "retired",
+    "trace",
+    "gaps",
+    "downstream_constraints",
+    "strict_release_status"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/process-handoff/1"
+    },
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,31}$"
+    },
+    "driver": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,31}$"
+    },
+    "order_id": {
+      "type": "string",
+      "pattern": "^afo-[0-9a-f]{16}$"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "role": {
+      "enum": [
+        "AUTHOR",
+        "INSPECT",
+        "REWORK"
+      ]
+    },
+    "process": {
+      "const": "SWE.1"
+    },
+    "job_identity": {
+      "type": "object"
+    },
+    "baseline": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "baseline_hash"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^BL-SWE\\.1-[0-9]{3,}$"
+            },
+            "baseline_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        }
+      ]
+    },
+    "gate_status": {
+      "enum": [
+        "PASSED",
+        "FAILED"
+      ]
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256",
+          "role"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "input_handoff_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "sha256",
+          "kind"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^lab-handoff--[A-Za-z0-9_.-]{1,160}$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "kind": {
+            "enum": [
+              "artifact",
+              "group",
+              "scope"
+            ]
+          }
+        }
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "task",
+          "key",
+          "statement_sha256",
+          "source_refs",
+          "source_kind",
+          "criterion",
+          "inspector_outcome"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^SWR-[0-9]{3}$"
+          },
+          "task": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "statement_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          "source_kind": {
+            "enum": [
+              "RM",
+              "BUDGET",
+              "SIM"
+            ]
+          },
+          "criterion": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "verified_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200
+          },
+          "inspector_outcome": {
+            "enum": [
+              "FINDINGS",
+              "NO_FINDING",
+              "NOT_INSPECTED",
+              "UNINSPECTED_ROLE"
+            ]
+          }
+        }
+      }
+    },
+    "ids": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^SWR-[0-9]{3}$"
+      }
+    },
+    "retired": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^SWR-[0-9]{3}$"
+      }
+    },
+    "trace": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "swr",
+          "test_id"
+        ],
+        "properties": {
+          "swr": {
+            "type": "string",
+            "pattern": "^SWR-[0-9]{3}$"
+          },
+          "test_id": {
+            "type": "string",
+            "maxLength": 120
+          }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 200
+      }
+    },
+    "downstream_constraints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 2000
+      }
+    },
+    "strict_release_status": {
+      "const": "NOT_APPLICABLE_PROCESS_LAB"
+    }
+  }
+}

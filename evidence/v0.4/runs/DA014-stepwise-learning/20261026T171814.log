@@ -1,0 +1,5 @@
+start 2026-10-26T15:19:43Z 9f001edb200ee19f48b8c0b9f3032fa943ba8a8c
+unit tests: sssssssssssssssssssssssssssssssssssssssssss......                        [100%]
+{"preflight": "PASS", "failed": []}
+{"schema": "forge-c/lrtx-seeded/1", "catalogue": "lrtx-seeded-2", "catalogue_sha256": "3371270ce0b238dd55518ec619b26f8fa65cd0851786ae5b7ca3531078ce60f7", "model": "qwen3.6:35b-a3b", "inspector": "semantic", "generated_at": "2026-10-26T15:57:49.338500Z", "deterministic_detection": 8, "semantic_detection_on_target": 34, "inspection_fail_off_target": 0, "missed": 0, "seeded": 42, "false_rejections": 0, "baselines": 7, "no_inspection": 0, "inspection_lessons": null, "inspector_options": {"profile": "local-rtx-v2-omniverse2-q36-noreason", "sampling": {"temperature": 0, "seed": 1}, "coverage": true, "entries": false, "stepwise": true}, "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification."}
+exit=0 2026-10-26T15:57:49Z

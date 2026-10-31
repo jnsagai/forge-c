@@ -1,0 +1,69 @@
+{
+  "command": [
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_da014_host_audit.py",
+      "factory/python/tests/test_da014_operational_work.py",
+      "factory/python/tests/test_da014_operational_report.py",
+      "factory/python/tests/test_da014_read_snapshot.py",
+      "factory/python/tests/test_da014_fault_observer.py",
+      "factory/python/tests/test_da014_operational_facts.py",
+      "factory/python/tests/test_da014_qualification.py",
+      "factory/python/tests/test_da014_qualification_audit.py",
+      "factory/python/tests/test_da014_qualification_state.py",
+      "factory/python/tests/test_da014_integration.py",
+      "factory/python/tests/test_afo_m2_queue.py",
+      "factory/python/tests/test_afo_m3_reconcile.py",
+      "factory/python/tests/test_afo_m6_operations.py",
+      "factory/python/tests/test_afo_m8_acceptance.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-2928a93-affected",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-2928a93-affected.xml"
+    ],
+    [
+      "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "factory/python/tests/test_m7_governance_release.py",
+      "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/work-2928a93-release",
+      "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/work-2928a93-release.xml"
+    ]
+  ],
+  "evidence": "evidence/014-durable-local-autonomy/host-audit-2928a93/summary.json",
+  "evidence_sha256": "2d16cf8ca4080189ed1001f5b0ade88e2394e3176f57f3b3829b29a744c899ba",
+  "exit_code": 0,
+  "git_head": "2928a9377c3ef96aab7cef7cf94355b96bdaa381",
+  "native_preflight_exit_code": 2,
+  "native_preflight_status": "BLOCKED",
+  "new_task_checkboxes": [],
+  "results": {
+    "affected": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 273,
+      "seconds": 27.347,
+      "skipped": 1,
+      "skips": [
+        {
+          "reason": "HAL r154 workspace not on this host",
+          "test": "factory.python.tests.test_afo_m3_reconcile::test_checkpoints_from_a_real_passing_workspace"
+        }
+      ],
+      "tests": 274
+    },
+    "release": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 13,
+      "seconds": 10.301,
+      "skipped": 0,
+      "skips": [],
+      "tests": 13
+    }
+  },
+  "scope": "BOUNDED_KERNEL_AUDIT_SOURCE_ADAPTER_AND_NATIVE_PREREQUISITES_NOT_FULL_HOST_AUDIT",
+  "status": "PASS_DETERMINISTIC"
+}

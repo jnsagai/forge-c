@@ -83,7 +83,8 @@ def _as_stated(op: dict) -> dict:
 
 
 def verify(doc: dict, contract: ValidatedContract, domain_bytes: bytes) -> list[str]:
-    issues = [f"OBLIGATIONS_SCHEMA:{e}" for e in C.schema_errors("obligations", doc)]
+    profile = contract.raw.get("profile", "register-io-0.1")
+    issues = [f"OBLIGATIONS_SCHEMA:{e}" for e in C.schema_errors("obligations", doc, profile=profile)]
     if issues:
         return issues
     body = {k: v for k, v in doc.items() if k != "obligations_digest"}
@@ -100,7 +101,7 @@ def verify(doc: dict, contract: ValidatedContract, domain_bytes: bytes) -> list[
     ref = reference(contract.operations)
     if len(ref) != len(doc["operations"]):
         return [f"OBLIGATIONS_OPERATION_COUNT: safec={len(doc['operations'])} forge-c={len(ref)}"]
-    for got, want in zip(doc["operations"], ref):
+    for got, want in zip(doc["operations"], ref, strict=True):
         got = _as_stated(got)
         for k, v in want.items():
             if got.get(k) != v:

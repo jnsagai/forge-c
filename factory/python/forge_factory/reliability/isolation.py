@@ -202,7 +202,8 @@ def execute(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str], writab
     """Run `cmd` as the role's OS identity when the sandbox is available, otherwise as a plain subprocess."""
     if not available():
         return subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, timeout=timeout)
-    env = {**env, "HOME": str(writable[0]) if writable else "/tmp"}
+    env = {**env, "HOME": str(writable[0]) if writable else "/tmp",
+           "TMPDIR": str(writable[0]) if writable else "/tmp"}
     return run(role, cmd, cwd=cwd, env=env, writable=writable, ro_extra=list(readable), timeout=timeout)
 
 

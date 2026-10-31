@@ -1,0 +1,23 @@
+......................F......................................            [100%]
+=================================== FAILURES ===================================
+________ test_case_exposes_exact_controller_profile_not_incident_claim _________
+
+case = {'allow': ['factory/python/forge_factory/**', 'factory/python/tests/afo_candidate/**'], 'base': 'd0c163a24535e080f254e...sdk.py', 'factory/python/forge_factory/mcp/servers/maintainer.py', 'factory/python/forge_factory/repair/**', ...], ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a8dd4b43540>
+
+    def test_case_exposes_exact_controller_profile_not_incident_claim(case, monkeypatch):
+        import json
+        from forge_factory.common import REPO_ROOT, sha256_file
+        from forge_factory.lrtx.profile import load
+        from forge_factory.mcp.sdk import ToolContext
+    
+        monkeypatch.setenv('FORGE_AFO_MAINT_CASE', str(M.case_dir(case['proposal_id']) / 'case.json'))
+        monkeypatch.setenv('FORGE_LRTX_PROFILE', 'local-rtx-v2-omniverse2-q38-aspice-max-mtp')
+        case['incident']['profile'] = 'INJECTED_PROFILE'
+>       ctx = ToolContext(role='afo-factory-maintainer', work_order='fixture', node='agent', workspace=Path(case['src']))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: ToolContext.__init__() got an unexpected keyword argument 'work_order'
+
+factory/python/tests/test_afo_source_edits.py:188: TypeError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_afo_source_edits.py::test_case_exposes_exact_controller_profile_not_incident_claim

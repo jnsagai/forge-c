@@ -1,0 +1,42 @@
+{
+  "git_head": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "start_head": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "start_dirty": "",
+  "started_at": 1793114660.3295796,
+  "scope": "ISOLATED_DETERMINISTIC_SOURCE_TESTS_NOT_NATIVE_HOST_AUDIT",
+  "new_model_requests": 0,
+  "factory_deployment": "NOT_ACTIVATED",
+  "command": [
+    "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_development_safety_policy.py",
+    "factory/python/tests/test_owner_safety_documents.py",
+    "factory/python/tests/test_m7_governance_release.py",
+    "factory/python/tests/test_easa_scope_decision.py",
+    "--basetemp=/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tmp/tests",
+    "--junitxml=/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/tests.xml"
+  ],
+  "exit_code": 1,
+  "preflight": {
+    "command": [
+      "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+      "-m",
+      "forge_factory.afo.host_audit",
+      "preflight",
+      "--out",
+      "/mnt/data/forge-c/inspector-014-b309039/development-safety-1b32534/host-preflight.json"
+    ],
+    "exit_code": 2
+  },
+  "end_head": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "end_dirty": "",
+  "ended_at": 1793114678.3748105,
+  "artifacts": {
+    "tests.xml": "f30ba13295e515fb1da2e3005a425b0736e7f94d5590215ec52bb8a5a56d3d09",
+    "tests.log": "14efe3816b6df573414d955c9cb55535425903a0a2e77f332bb772b324535ec8",
+    "host-preflight.json": "e4370f930c48dcd61bf803dacb4738515b5e4230817b23a1ca0711d0d8f9dc9b",
+    "host-preflight.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6"
+  }
+}

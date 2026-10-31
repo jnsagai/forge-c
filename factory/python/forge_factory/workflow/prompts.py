@@ -13,13 +13,17 @@ from ..inspection.engine import load_checklist
 READ = ("When you write_file, put real line breaks in the content (one C statement per line); never write \\n escape "
         "sequences as text. Work step by step. After every tool result, immediately continue with the next numbered step; never summarize or "
         "explain tool output. Never read inputs/index.md or the large inputs/*.md documents; read only the section files "
-        "named in these steps, each at most once.")
+        "named in these steps, each at most once. For existing artifacts, use edit_file or apply_patch directly on "
+        "the affected output files and retain the other content. These file tools write or patch text; they do not "
+        "execute Python helpers. Use the tools actually exposed to your role for the complete transformation.")
 SECTIONS: dict[str, str] = {}  # section number -> section file path, set by the workflow builder per work order
 
 
 def sec(*nums: str) -> str:
     return ", ".join(SECTIONS.get(n, f"(section {n} unavailable)") for n in nums)
-REPLY = 'Finish with ONLY this JSON (no other text): {"status":"PASS","artifacts":["<paths you wrote>"],"issues":[],"next_action":"next"}'
+REPLY = ('Finish with ONLY this JSON (no other text): {"status":"PASS","artifacts":["<paths you wrote>"],'
+         '"issues":[],"next_action":"next"}. next_action is one literal enum value: next, rework, halt, package, '
+         'escalate, none or retry; put any explanation in issues.')
 FIX = "If inspection/{p}/ has INS-*.json files or .forge-run/gates/gate-log.jsonl has {p} entries, read the newest and fix every listed finding first."
 # ADR-0008 loopbacks. Upstream owners (SWE.1-3) fix defects routed to them; downstream roles report instead of bending.
 FIX_DEFECTS = ("glob .forge-run/defects/DEF-*.json and read every defect with target_phase {p} and status IN_FIX: "
@@ -228,7 +232,8 @@ def small() -> str:
                 "function group and continue with the next group after each result. Never call freeze_baseline in "
                 "this step.")
     return (f"Keep every write_file/edit_file content under {n} lines and put SEVERAL function groups into one call "
-            "(you have at most 20 tool calls in this step). Never call freeze_baseline in this step.")
+            "when coherent. Continue until the complete assigned scope is covered; the active role policy supplies "
+            "the tool-call allowance. Never call freeze_baseline in this step.")
 REENTRY = ("If the file you are about to write already contains functions (an upstream defect sent the run back "
            "here), keep every existing function: only add or change what the defects in .forge-run/defects (status "
            "IN_FIX) and the changed architecture require; never duplicate a function.")
@@ -320,7 +325,11 @@ UT_STEPS = [
     "peripheral enable/reset functions check the bit in RCC_AHB1ENR / RCC_AHB1RSTR.",
     "Make ONE edit_file call with old_string exactly '{calls}' and new_string = one call line per test function "
     "(e.g. 'ut_hsi_enable();') followed by the marker again.",
-    "Call mcp__forge_tests_mcp__run_unit once and report its summary.",
+    "Each CHECK call site needs its own complete id across all test files. Keep one base UT id per test and use "
+    "unique suffixes for its other assertions, e.g. UT-007, UT-007-RESULT, UT-007-PRESERVED, in the same @test "
+    "UT-007 function; retain its requirement and unit-spec trace links. If only duplicate ids fail, change ids only. "
+    "Preserve every existing predicate and its evaluation order; do not combine checks or remove assertions to "
+    "satisfy metadata. Call mcp__forge_tests_mcp__run_unit once and report its summary.",
     "Reply with the list of UT ids you wrote.",
 ]
 
@@ -728,7 +737,19 @@ def contract_step(phase: str) -> list[str]:
               '\"op\":\"set\",\"ready\":\"RCC_SR.HSERDY\",\"status\":\"HAL_OK\"}' if hal else
               '{\"case\":\"HSI_ENABLE\",\"swr\":\"SWR-001\",\"register\":\"RCC_CR\",\"field\":\"HSION\",'
               '\"op\":\"set\"}')
-        return [CONTRACT_SWE1.format(example=ex, extra=CONTRACT_SWE1_HAL if hal else CONTRACT_SWE1_LL)]
+        extra = CONTRACT_SWE1_HAL if hal else CONTRACT_SWE1_LL
+        if (ASSESSMENT["manifest"] or {}).get("purpose") in ("ASPICE_ONLY", "QM"):
+            if not hal:
+                extra = (" Function return types and values come from the requirements: queries return the specified "
+                         "value, not void. Do not add HAL status or ready contract fields to an LL case. Reset assert "
+                         "is set and release is clear.")
+                pr = PERIPHERAL["profile"]
+                if pr and pr["id"] != "rcc":
+                    extra += " " + (pr.get("prompt") or {}).get("swe1_effect_rule", "")
+            extra += (" Include every read/query requirement too: use op no_write WITH the exact named register and "
+                      "field. That case checks preservation of register state; return values require the separate "
+                      "requirement-based tests. Each case must name a register/field present in its own SWR text.")
+        return [CONTRACT_SWE1.format(example=ex, extra=extra)]
     if phase == "SWE.2":
         ex = (', e.g. \"&(const hal_rcc_osc_config_t){ .oscillator = HAL_RCC_OSC_HSE }\" and \"{timeout}\" where '
               'the caller passes the timeout; invalid cases pass the invalid value (NULL, 0U, HAL_RCC_TIMEOUT_VALUE + 1U, '
@@ -828,13 +849,64 @@ def brownfield_fix3_steps() -> list[str]:
             "for the owner, never a code change).", "Reply PASS when every work-product finding is fixed."]
 
 
+ASSESSMENT = {"manifest": None}
+
+
+def complete_scope_sections(keys: list[str]) -> list[str]:
+    manifest = ASSESSMENT["manifest"] or {}
+    if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
+        return keys
+    from ..lrtx.obligations import scope_sections
+    from ..peripheral import load
+
+    pr = PERIPHERAL["profile"] or load("rcc")  # Existing RCC work orders omit the default peripheral key.
+    selected = scope_sections(manifest.get("scope", []), pr["rm"]["doc"], keys)
+    missing = [key for key in selected if key not in SECTIONS]
+    if missing and manifest.get("purpose") == "ASPICE_ONLY":
+        raise ValueError("WORKFLOW_SCOPE_SECTION_MISSING:" + ",".join(missing))
+    return selected
+
+
+def assessment_scope_note() -> str:
+    manifest = ASSESSMENT["manifest"] or {}
+    if manifest.get("purpose") not in ("ASPICE_ONLY", "QM"):
+        return ""
+    note = ("The full work-order scope in .forge-run/manifest.json is authoritative. Catalog seed sections and "
+            "example requirement counts do not narrow it. Account for every requested source section and field; "
+            "record justified exclusions against the actual out-of-scope text, never an omitted catalog entry. "
+            "Missing coverage is a finding, not a completed reduced product. ")
+    from ..simulation_performance import FIELD, validate
+
+    if FIELD in manifest:
+        perf = validate(manifest[FIELD])
+        return note + (f"Use the explicit simulation_performance allocation: at most {perf['instructions_per_call']} "
+                       f"executed target instructions and {perf['microseconds_per_call']} microseconds of virtual "
+                       f"time per measured API call at {perf['performance_mips']} MIPS. State the measured scenario "
+                       "inputs; this is not a bound for unmeasured timeout paths or physical hardware WCET. "
+                       "SWE.6 must run the declared instrumented target test and Simulation Performance Should Meet "
+                       "Budget. Independent instruction/time records must cover every scoped API; missing or "
+                       "over-budget measurements fail. Preserve the separate functional timeout tests.")
+    return note + ("CPU/timing limits must come from an explicit work-order allocation; never invent a target cycle "
+                   "bound or substitute a host watchdog. Record a missing allocation as an unresolved input gap; "
+                   "do not claim its verification passed.")
+
+
 def author_prompt(phase: str) -> str:
     n = phase[-1]
     pr = PERIPHERAL["profile"]  # feature 009 (i001): the work order's key RM sections (RCC: 14.10.1/2/79/64)
     keys = pr["rm"]["key_sections"] if pr else ["14.10.1", "14.10.2", "14.10.79", "14.10.64"]
+    keys = complete_scope_sections(keys)
     fills = {"s1": sec(*keys)}
     table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
     body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
+    scope_note = assessment_scope_note()
+    if scope_note and phase == "SWE.1":
+        body = [x.replace("then 12-26 requirements", "then enough atomic requirements to cover the full scope")
+                .replace("then 8-15 requirements", "then enough atomic requirements to cover the full scope")
+                .replace("RCC_AHB1ENR and RCC_AHB1RSTR section files",
+                         "in-scope clock-enable and reset register section files" if not pr or pr["id"] == "rcc"
+                         else "RCC_AHB1ENR and RCC_AHB1RSTR section files")
+                for x in body]
     if BROWNFIELD["mode"] and phase == "SWE.3":  # feature 008: describe the delivered code, never write it
         body = brownfield_swe3_steps()
     elif BROWNFIELD["mode"] and phase == "SWE.2":
@@ -859,22 +931,23 @@ def author_prompt(phase: str) -> str:
         body = body[:-1] + trace_step(tr) + body[-1:]
     if contract_step(phase):  # owner decision 2026-10-19 (B), also before the final step
         body = body[:-1] + contract_step(phase) + body[-1:]
-    steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + manifest + [FIX.format(p=phase)] + extra + body \
+    steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + ([scope_note] if scope_note else []) + manifest + [FIX.format(p=phase)] + extra + body \
         + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
-def inspector_prompt(phase: str) -> str:
+def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
     n = phase[-1]
-    checks = load_checklist(phase, brownfield=bool(BROWNFIELD["mode"]))["checks"]  # OD-2026-10-20-02
+    checks = (checklist or load_checklist(phase, brownfield=bool(BROWNFIELD["mode"])))["checks"]  # OD-2026-10-20-02
     items = "; ".join(f"{c['id']}: {c['criterion'][:70]}" for c in checks)
     example = "; ".join(f"{c['id']}=PASS" for c in checks[:2])
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",
              f"glob configuration/baselines/{phase}/BL-*.json and read the newest one: note its baseline_id and files.",
-             "read_file each listed workproduct (use offset/limit for long files). Never edit any file. You have at most 20 "
-             "tool calls: do not re-run analyzers or validators (items with a deterministic_check are recomputed "
-             "automatically; their reports are in verification/static/ and inspection/<phase>/deterministic/), and call "
-             "check_inspection no later than your 15th tool call.",
+             "read_file each listed workproduct (use offset/limit for long files). Never edit any file. Use the active "
+             "role policy's tool-call allowance, reserving calls to submit the complete inspection. Reuse recorded "
+             "analyzer/validator results: items with a deterministic_check are recomputed automatically; their reports "
+             "are in verification/static/ and inspection/<phase>/deterministic/. Call check_inspection after examining "
+             "the required evidence; retain an explicit finding for evidence you could not examine.",
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
              *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),
@@ -887,6 +960,8 @@ def inspector_prompt(phase: str) -> str:
              "Items decided by deterministic tools are recomputed automatically.",
              'Finish with ONLY JSON: {"status":"PASS" or "REWORK","artifacts":["inspection/' + phase +
              '/<INS id>.json"],"issues":["<item id: finding>"],"next_action":"next" or "rework"}']
+    if phase == "SWE.1" and assessment_scope_note():
+        steps.insert(1, assessment_scope_note())
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 

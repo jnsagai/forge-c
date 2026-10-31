@@ -1,0 +1,18 @@
+{
+  "source_revision": "a32d87a311cc4a46cd12b6f00d1aea8a210c305c",
+  "status": "LOCAL_AND_NATIVE_REGRESSION_PASS_NOT_DEPLOYED",
+  "tests": 148,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "formal_feature_tasks": "30/58 unchanged",
+  "runtime_source": "12e601e4f53ab71b6d184ae19379faa1dd8f6e97",
+  "profile": "local-rtx-v2-omniverse2-q38-aspice-stepwise-medium",
+  "semantics": "Experimental signed trial adapter, not a capability receipt; bounded engineering jobs; ordinary blocking ASPICE gates and recovery enabled; physical context unchanged",
+  "native_tests": 333,
+  "native_failures": 0,
+  "native_errors": 0,
+  "native_skipped": 0,
+  "operator_epoch_after": 100,
+  "model_requests_in_qualification": 0
+}

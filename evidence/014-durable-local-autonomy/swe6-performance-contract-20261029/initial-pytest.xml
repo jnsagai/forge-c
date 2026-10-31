@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="24" time="105.368" timestamp="2026-10-29T16:31:51.985134+00:00" hostname="master"><testcase classname="factory.python.tests.test_simulation_performance" name="test_new_allocations_have_project_provenance_and_reject_old_review" time="1.605" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_bad_performance_allocations_refuse[change0]" time="0.001" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_bad_performance_allocations_refuse[change1]" time="0.000" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_bad_performance_allocations_refuse[change2]" time="0.000" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_bad_performance_allocations_refuse[change3]" time="0.000" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_bad_performance_allocations_refuse[change4]" time="0.000" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_real_simulator_reports_each_function_and_robot_uses_the_measurement" time="7.679" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario[False]" time="6.821"><failure message="KeyError: 'simulation_performance_contract'">measured = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x72289d767980&gt;
+declared_source = False
+
+    @pytest.mark.parametrize("declared_source", [False, True])
+    def test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario(measured, monkeypatch, declared_source):
+        """Actual Robot/compiler/Renode, synthetic two-budget requirement fixture; no model or live review."""
+        ws, _ = measured
+        from forge_factory.lrtx.swe1 import system_name
+        from forge_factory.mcp.servers import tests
+        from forge_factory.workflow.robot_scaffold import build_suite
+    
+        reqs = [r for r in swe1.budget_requirements(ws, system_name(ws))
+                if r["upstream"] == "WO-SIMULATION-PERFORMANCE"]
+        markdown = "\n".join(f"- **SWR-{i:03d}** {r['statement']}" for i, r in enumerate(reqs, 1)) + "\n"
+        req = ws / "workproducts/SWE.1/software_requirements.md"
+        req.chmod(0o644)
+        req.write_text(markdown)
+        source = F.TEST if declared_source else "software/tests/software/scn_performance.c"
+        # Same functional checks in a different file are not an instrumented measurement.
+        other = ws / "software/tests/software/scn_performance.c"
+        other.parent.mkdir(parents=True, exist_ok=True)
+        other.write_text(TEST.replace('"forge_performance_calls.h"', '"stm32n6xx_ll_crc.h"')
+                        .replace("forge_measure_LL_", "LL_"))
+        suite = build_suite(markdown, ws)
+        for i in range(1, 3):
+            suite = suite.replace(f"Fail    NOT IMPLEMENTED: SWR-{i:03d}",
+                                  f"Run Target Scenario    {source}\n    Simulation Performance Should Meet Budget")
+        (other.parent / "test_crc_requirements.robot").write_text(suite)
+        for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws),
+                           "FORGE_ROLE": "swe6-author", "FORGE_PHASE": "SWE.6"}.items():
+            monkeypatch.setenv(key, value)
+        result = sdk.invoke("forge-tests-mcp", next(o for o in tests.OPERATIONS if o.name == "run_robot"), {})
+&gt;       contract = result["metrics"]["simulation_performance_contract"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'simulation_performance_contract'
+
+factory/python/tests/test_simulation_performance.py:149: KeyError</failure></testcase><testcase classname="factory.python.tests.test_simulation_performance" name="test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario[True]" time="6.958"><failure message="KeyError: 'simulation_performance_contract'">measured = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x72289bd44230&gt;
+declared_source = True
+
+    @pytest.mark.parametrize("declared_source", [False, True])
+    def test_robot_exposes_the_bound_contract_and_rejects_the_wrong_scenario(measured, monkeypatch, declared_source):
+        """Actual Robot/compiler/Renode, synthetic two-budget requirement fixture; no model or live review."""
+        ws, _ = measured
+        from forge_factory.lrtx.swe1 import system_name
+        from forge_factory.mcp.servers import tests
+        from forge_factory.workflow.robot_scaffold import build_suite
+    
+        reqs = [r for r in swe1.budget_requirements(ws, system_name(ws))
+                if r["upstream"] == "WO-SIMULATION-PERFORMANCE"]
+        markdown = "\n".join(f"- **SWR-{i:03d}** {r['statement']}" for i, r in enumerate(reqs, 1)) + "\n"
+        req = ws / "workproducts/SWE.1/software_requirements.md"
+        req.chmod(0o644)
+        req.write_text(markdown)
+        source = F.TEST if declared_source else "software/tests/software/scn_performance.c"
+        # Same functional checks in a different file are not an instrumented measurement.
+        other = ws / "software/tests/software/scn_performance.c"
+        other.parent.mkdir(parents=True, exist_ok=True)
+        other.write_text(TEST.replace('"forge_performance_calls.h"', '"stm32n6xx_ll_crc.h"')
+                        .replace("forge_measure_LL_", "LL_"))
+        suite = build_suite(markdown, ws)
+        for i in range(1, 3):
+            suite = suite.replace(f"Fail    NOT IMPLEMENTED: SWR-{i:03d}",
+                                  f"Run Target Scenario    {source}\n    Simulation Performance Should Meet Budget")
+        (other.parent / "test_crc_requirements.robot").write_text(suite)
+        for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws),
+                           "FORGE_ROLE": "swe6-author", "FORGE_PHASE": "SWE.6"}.items():
+            monkeypatch.setenv(key, value)
+        result = sdk.invoke("forge-tests-mcp", next(o for o in tests.OPERATIONS if o.name == "run_robot"), {})
+&gt;       contract = result["metrics"]["simulation_performance_contract"]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'simulation_performance_contract'
+
+factory/python/tests/test_simulation_performance.py:149: KeyError</failure></testcase><testcase classname="factory.python.tests.test_simulation_performance" name="test_incomplete_and_over_budget_measurements_are_not_passes" time="1.413" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_no_actual_calls_refuse_even_when_symbols_are_present" time="1.458" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_measurement_plan_handles_a_different_driver_namespace" time="0.001" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_changed_inputs_refuse_before_execution" time="1.612" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_real_slow_probe_fails_time_budget_while_functional_checks_pass[measured0]" time="4.077" /><testcase classname="factory.python.tests.test_simulation_performance" name="test_nine_requirement_real_tool_anchor_and_tampered_proof_block_release" time="47.632" /><testcase classname="factory.python.tests.test_robot_swe6" name="test_robot_suite_verifies_every_requirement_on_target_model" time="5.329" /><testcase classname="factory.python.tests.test_robot_swe6" name="test_robot_fails_on_failing_test_and_uncovered_requirement" time="5.513" /><testcase classname="factory.python.tests.test_robot_swe6" name="test_robot_policy_rejects_suites_that_could_run_arbitrary_code" time="0.007" /><testcase classname="factory.python.tests.test_robot_swe6" name="test_run_robot_refuses_policy_violation_before_running" time="0.030" /><testcase classname="factory.python.tests.test_robot_swe6" name="test_robot_scaffold_one_tagged_placeholder_per_requirement_never_passes" time="0.360" /><testcase classname="factory.python.tests.test_robot_swe6" name="test_requirement_must_be_observed_by_its_tagged_checks_r63" time="0.004" /><testcase classname="factory.python.tests.test_robot_swe6" name="test_build_failures_come_first_once_per_scenario_with_compiler_hint_r67" time="0.622" /><testcase classname="factory.python.tests.test_robot_swe6" name="test_check_expr_shows_the_call_that_set_the_checked_variable_r68" time="2.891" /><testcase classname="factory.python.tests.test_robot_swe6" name="test_undefined_check_id_never_passes_and_stack_bound_is_measured_r72" time="10.793" /></testsuite></testsuites>

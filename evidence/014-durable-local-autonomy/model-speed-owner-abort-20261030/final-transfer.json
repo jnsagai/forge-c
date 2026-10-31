@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "complete": {
+    "xhigh": true,
+    "medium": true
+  },
+  "verified_files": 263,
+  "archive_sha256": "ed114e5292b1b3d4122545bd09a6049183a987c0eb7d6e04236ac7e44a0b9a98",
+  "archive_bytes": 61899,
+  "destination": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/model-speed-pilot"
+}

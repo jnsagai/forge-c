@@ -1,0 +1,9 @@
+{
+  "observed_utc": "2026-10-28T22:05:48Z",
+  "recorder_reported_utc": "2026-10-28T22:05:35.679614Z",
+  "published": true,
+  "progress_branch": "e2e/2026-10-28-idr-m1-high",
+  "progress_commit_prefix": "870ca10",
+  "requests_counter_scope": "GLOBAL_HISTORY_NOT_THIS_M1_ONLY",
+  "inference_requests_created_by_recorder": 0
+}

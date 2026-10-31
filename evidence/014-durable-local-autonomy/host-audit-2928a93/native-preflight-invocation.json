@@ -1,0 +1,23 @@
+{
+  "git_head": "2928a9377c3ef96aab7cef7cf94355b96bdaa381",
+  "command": [
+    "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+    "-m",
+    "forge_factory.afo.host_audit",
+    "preflight",
+    "--out",
+    "/mnt/data/forge-c/inspector-014-b309039/host-audit-2928a93/native-preflight-r2.json"
+  ],
+  "cwd": "/mnt/data/forge-c/inspector-014-b309039/host-audit-2928a93/repo",
+  "start_dirty": "",
+  "started_at_epoch": 1793099879.2985744,
+  "scope": "READ_ONLY_HOST_AUDIT_PREREQUISITES_NOT_NATIVE_QUALIFICATION",
+  "new_model_requests": 0,
+  "exit_code": 2,
+  "ended_at_epoch": 1793099879.5132594,
+  "end_dirty": "",
+  "artifacts": {
+    "native-preflight-r2.json": "efa114206af9f724d00a560471e20f799dac6aa190ae3d244b31dfb9c1871486",
+    "native-preflight-r2.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6"
+  }
+}

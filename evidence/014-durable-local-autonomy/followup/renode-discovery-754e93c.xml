@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="0.561" timestamp="2026-10-25T11:29:49.497806+00:00" hostname="master"><testcase classname="factory.python.tests.test_sim_renode" name="test_renode_found_from_mcp_server_environment" time="0.002" /></testsuite></testsuites>

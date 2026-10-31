@@ -1,0 +1,30 @@
+{
+  "scope": "DOCUMENTATION_ONLY_NOT_RUNTIME",
+  "source_parent": "54707a6aeddd4fdfa345a01361e7f335c76d9648",
+  "commands": [
+    {
+      "command": "python specs/014-durable-local-autonomy/validate_spec.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python specs/014-durable-local-autonomy/contracts/validate_contracts.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python tests/spec/validate_design.py",
+      "exit_code": 0,
+      "tests": 14
+    },
+    {
+      "command": "python evidence/014-durable-local-autonomy/verify_handoff.py",
+      "exit_code": 0,
+      "completed_tasks": 30
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "native_tested_runtime": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+  "new_completed_task_ids": []
+}

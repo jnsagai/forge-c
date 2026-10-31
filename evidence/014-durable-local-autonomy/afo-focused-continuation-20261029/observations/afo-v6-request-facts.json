@@ -1,0 +1,133 @@
+{
+  "at": "2026-10-29T22:46:07.914600Z",
+  "job_id": "afo-agent-d36861d7eff8a7369497c014",
+  "state": "RUNNING",
+  "work_unit": {
+    "base": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "case_sha256": "9e40f59cc87f728959532d51be4df35505c27e09fcd56681615662cf57acbd33",
+    "files": [
+      {
+        "bytes": 6229,
+        "path": "factory/python/forge_factory/fabro/runconfig.py",
+        "sha256": "27a0e9466448d059e77d614254a1c7edc9eef992126cd6fb574b4cc61979b8eb"
+      },
+      {
+        "bytes": 6327,
+        "path": "factory/python/tests/afo_candidate/test_swe3_10_data_root.py",
+        "sha256": "1325ef6993f2a54d4d846645f4e2856be2c8b36358aa7b5f0777ee99207b95a9"
+      }
+    ],
+    "kind": "REWORK_RETAINED_CANDIDATE",
+    "proposal_id": "mnt-48c5fa011f42b339-a1",
+    "schema": "forge-c/maintenance-work-unit/1"
+  },
+  "work_unit_sha256": "4d4e5570045ce30dbcbd74a918834b91c52b66706cabbaf03e14bbf7a6719d55",
+  "complete_request_metadata": [
+    {
+      "body_sha256": "0e878e4a9fc95d51d2031398ae949ae686b7cd76524a7f6d103b0d606998a2cb",
+      "measurement": {
+        "input_tokens": 26224,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 26096,
+        "sha256": "0e878e4a9fc95d51d2031398ae949ae686b7cd76524a7f6d103b0d606998a2cb"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "9b722152960644ec11ee85914f7be91e564698e7f4521ea2925ff0c3d4de1867",
+      "request_id": "native-request-4e872621091743f087318039a09960ba",
+      "role": "afo-factory-maintainer",
+      "schema_mode": null
+    },
+    {
+      "body_sha256": "db7248df823fd883b98272d067e55ec9b5618716784ae23b356543d543bed5cd",
+      "measurement": {
+        "input_tokens": 42288,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 42160,
+        "sha256": "db7248df823fd883b98272d067e55ec9b5618716784ae23b356543d543bed5cd"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "9b722152960644ec11ee85914f7be91e564698e7f4521ea2925ff0c3d4de1867",
+      "request_id": "native-request-8a16ea4bd07b49d2993a90b14ba370ba",
+      "role": "afo-factory-maintainer",
+      "schema_mode": null
+    },
+    {
+      "body_sha256": "d03803faa4fe1cd69d8e59785dcb7b28d0402ff2a440ee37bf648b9a85666cea",
+      "measurement": {
+        "input_tokens": 16147,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 16019,
+        "sha256": "d03803faa4fe1cd69d8e59785dcb7b28d0402ff2a440ee37bf648b9a85666cea"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "9b722152960644ec11ee85914f7be91e564698e7f4521ea2925ff0c3d4de1867",
+      "request_id": "native-request-f02c57f74d3a46a99e51b4bd0103dd84",
+      "role": "afo-factory-maintainer",
+      "schema_mode": null
+    }
+  ],
+  "v5_refusals": [
+    {
+      "body_sha256": "0b580164bc72b42b330d091c2a1e0820891f74b5e8ef4c84c96256b23711428e",
+      "code": "CAPABILITY_LIMIT",
+      "detail": "complete serialized request 218169+49152 exceeds qualified context allowance 262144",
+      "measurement": {
+        "input_tokens": 218169,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 218041,
+        "sha256": "0b580164bc72b42b330d091c2a1e0820891f74b5e8ef4c84c96256b23711428e"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "c4c09a2142df5ccc0dd0e4ac88b4c71193d0bbdb0ab41f20218a67b33e9e0667",
+      "request_id": "native-request-355f102953ea4f7ea5f02551dd8a95ec",
+      "role": "afo-factory-maintainer",
+      "upstream_called": false
+    },
+    {
+      "body_sha256": "0b580164bc72b42b330d091c2a1e0820891f74b5e8ef4c84c96256b23711428e",
+      "code": "CAPABILITY_LIMIT",
+      "detail": "complete serialized request 218169+49152 exceeds qualified context allowance 262144",
+      "measurement": {
+        "input_tokens": 218169,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 218041,
+        "sha256": "0b580164bc72b42b330d091c2a1e0820891f74b5e8ef4c84c96256b23711428e"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "c4c09a2142df5ccc0dd0e4ac88b4c71193d0bbdb0ab41f20218a67b33e9e0667",
+      "request_id": "native-request-d69e84eae0a24903a55884f4c5e2daef",
+      "role": "afo-factory-maintainer",
+      "upstream_called": false
+    },
+    {
+      "body_sha256": "0b580164bc72b42b330d091c2a1e0820891f74b5e8ef4c84c96256b23711428e",
+      "code": "CAPABILITY_LIMIT",
+      "detail": "complete serialized request 218169+49152 exceeds qualified context allowance 262144",
+      "measurement": {
+        "input_tokens": 218169,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 218041,
+        "sha256": "0b580164bc72b42b330d091c2a1e0820891f74b5e8ef4c84c96256b23711428e"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "output_cap": 49152,
+      "policy_sha256": "c4c09a2142df5ccc0dd0e4ac88b4c71193d0bbdb0ab41f20218a67b33e9e0667",
+      "request_id": "native-request-e9c6f4f3ba1d44f6b5b63ffc21b42043",
+      "role": "afo-factory-maintainer",
+      "upstream_called": false
+    }
+  ],
+  "raw_prompts_or_reasoning_saved": false,
+  "model_requests": 0
+}

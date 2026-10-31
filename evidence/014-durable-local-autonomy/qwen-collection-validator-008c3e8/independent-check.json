@@ -1,0 +1,14 @@
+{
+  "status": "RAW_CANDIDATE_CONTRACT_FAIL",
+  "source_sha256": "aa8611f73023987d581547df7ca54368ecd11f138cd585fe91188b14b8726c7b",
+  "normal_configuration": "PASS",
+  "copy_nonmutation": "PASS",
+  "strict_integer_subclass_rejection": "FAIL",
+  "disposition": "ADAPTED_AFTER_INDEPENDENT_REVIEW",
+  "corrections": [
+    "strict type(v) is int for numeric fields",
+    "explicit string type for supplied source hashes"
+  ],
+  "qualification": "NOT_ROLE_QUALIFICATION",
+  "benefit": "NOT_MEASURED"
+}

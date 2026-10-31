@@ -1,0 +1,41 @@
+{
+  "command": "pytest -q -rs factory/python/tests/{test_da014_advisory,test_da014_advisory_recovery,test_rework_progress_extension,test_da014_lesson_delivery}.py",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/ladder-5f6d540",
+  "duration_s": 2.3,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "5f6d540dacb090d789a6809d476e791ae373a054",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "junit": {
+    "path": "evidence/v0.4/runs/DA014-ladder/20261026T173329.xml",
+    "sha256": "8b250b2fe130e621e1be57b64e5e1ca68bbcabbae6c59082cccf85593fa936a0"
+  },
+  "log": "evidence/v0.4/runs/DA014-ladder/20261026T173329.log",
+  "log_sha256": "c5a4393fe8783cacab80fdd260665743d153c458199b212b4ad08c89034ffc79",
+  "results": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 2.3,
+    "skipped": 0,
+    "tests": 26,
+    "timestamp": "2026-10-26T17:33:11.926327+00:00"
+  },
+  "rungs": [
+    "rework_with_findings",
+    "progress_extension",
+    "validated_lessons",
+    "capa_retrieval",
+    "diagnosis_repair",
+    "stall_detection"
+  ],
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
+  "skipped_tests": 0,
+  "status": "PASS",
+  "task": "DA014-ladder",
+  "ts_utc": "2026-10-26T17:33:29.968095+00:00"
+}

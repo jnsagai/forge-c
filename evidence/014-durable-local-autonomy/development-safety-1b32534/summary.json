@@ -1,0 +1,206 @@
+{
+  "tested_revision": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "scope": "OWNER_AUTHORIZED_DEVELOPMENT_SSA_TAA_SIGNATURE_DEFERRAL_NOT_PRODUCT_OR_SAFETY_QUALIFICATION",
+  "owner_decision": "OD-2026-10-27-02",
+  "new_work_order_default": "DEVELOPMENT",
+  "formal_review": "STRICT_UNCHANGED_POLICY",
+  "results": {
+    "core": {
+      "tests": 1247,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 15,
+      "passed": 1232,
+      "seconds": 580.655
+    },
+    "release": {
+      "tests": 13,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 9.066
+    },
+    "omniverse2_final": {
+      "tests": 49,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 49,
+      "seconds": 47.171
+    }
+  },
+  "core_skips": [
+    {
+      "test": "factory.python.tests.test_easa_corpus::test_t066_corpus_detection_and_no_false_positives",
+      "reason": "sealed archive/RM inputs absent"
+    },
+    {
+      "test": "factory.python.tests.test_easa_m3_m4::test_real_rm_index_matches_independent_audit",
+      "reason": "baselined RM sections not on this host"
+    },
+    {
+      "test": "factory.python.tests.test_easa_m8::test_t064_shadow_audit_is_read_only_and_reproduces_the_manual_findings",
+      "reason": "sealed archive/RM inputs absent"
+    },
+    {
+      "test": "factory.python.tests.test_easa_m8::test_at065_tampered_copy_gives_diff_linked_audit_original_untouched",
+      "reason": "sealed archive/RM inputs absent"
+    },
+    {
+      "test": "factory.python.tests.test_afo_m3_reconcile::test_checkpoints_from_a_real_passing_workspace",
+      "reason": "HAL r154 workspace not on this host"
+    },
+    {
+      "test": "factory.python.tests.test_afo_m4_recovery::test_bundles_from_real_failed_runs_and_none_for_a_passing_one",
+      "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host"
+    },
+    {
+      "test": "factory.python.tests.test_afo_m4_recovery::test_conductor_recovery_path_end_to_end_with_a_real_failed_workspace",
+      "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host"
+    },
+    {
+      "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r153-SWE.1]",
+      "reason": "WO-0002B-STM32N6-RCC-HAL-r153 not on this host"
+    },
+    {
+      "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r142-SWE.2]",
+      "reason": "WO-0002B-STM32N6-RCC-HAL-r142 not on this host"
+    },
+    {
+      "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r148-SWE.3]",
+      "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host"
+    },
+    {
+      "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r146-SWE.4]",
+      "reason": "WO-0002B-STM32N6-RCC-HAL-r146 not on this host"
+    },
+    {
+      "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002A-STM32N6-RCC-LL-r153-SWE.3]",
+      "reason": "WO-0002A-STM32N6-RCC-LL-r153 not on this host"
+    },
+    {
+      "test": "factory.python.tests.test_t009_workflow_gates::test_installed_fabro_validates_generated_workflow",
+      "reason": "live Fabro disabled"
+    },
+    {
+      "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[verifier-2001]",
+      "reason": "no 0600 owner file to probe"
+    },
+    {
+      "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[repair-2002]",
+      "reason": "no 0600 owner file to probe"
+    }
+  ],
+  "native_attempts": [
+    {
+      "label": "initial",
+      "exit_code": 1,
+      "results": {
+        "tests": 49,
+        "errors": 0,
+        "failures": 5,
+        "skipped": 0,
+        "passed": 44,
+        "seconds": 17.706
+      }
+    },
+    {
+      "label": "corrected-env",
+      "exit_code": 1,
+      "results": {
+        "tests": 49,
+        "errors": 0,
+        "failures": 1,
+        "skipped": 0,
+        "passed": 48,
+        "seconds": 54.776
+      }
+    },
+    {
+      "label": "final-tool-env",
+      "exit_code": 0,
+      "results": {
+        "tests": 49,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "passed": 49,
+        "seconds": 47.171
+      }
+    }
+  ],
+  "native_environment_history": [
+    "initial omitted FORGE_DATA_ROOT and explicit Fabro binary: 44 pass, 5 fail",
+    "second fixed data root, but Fabro path named unpacked directory: 48 pass, 1 fail",
+    "final selected the verified executable and existing tools with private state/home/archives: 49 pass"
+  ],
+  "native_test_seconds_including_failed_attempts": 119.653,
+  "quality_gates": "ALL_OTHER_REQUIREMENTS_RETAINED",
+  "target_asil": "UNCHANGED",
+  "safety_approval": null,
+  "synthetic_ready_fixture": "MECHANICAL_FINALIZER_TEST_ONLY_NOT_A_REAL_DRIVER_RESULT",
+  "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE",
+  "formal_progress": "30/58; no new task checkbox",
+  "runtime_deployment": "NOT_ACTIVATED",
+  "product_success": "NOT_RUN",
+  "learning_benefit": "NOT_RUN",
+  "operational_campaigns_24_72_168": "NOT_RUN",
+  "rolling_30_day_slo": "NOT_DEMONSTRATED",
+  "new_model_requests_in_tests": 0,
+  "separate_qwen_study": "One bounded remote engineering review in qwen-development-safety-review-1b32534; separate accounting and outcomes",
+  "host_prerequisite_probe": {
+    "at": 1793116483.5610342,
+    "auditctl_available": false,
+    "blockers": [
+      "KERNEL_AUDIT_STATUS_UNAVAILABLE",
+      "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED",
+      "AUTHENTICATED_CONTROL_CORRELATION_REQUIRED"
+    ],
+    "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+    "host": "omniverse2",
+    "kernel_status": null,
+    "mono": 2868073.070925728,
+    "required_channels": [
+      "KERNEL_AUDIT",
+      "SYSTEMD_BUS",
+      "AUTHENTICATED_CONTROLS"
+    ],
+    "schema": "forge-c/host-audit-preflight/1",
+    "scope": "HOST_AUDIT_PREREQUISITES_ONLY",
+    "source_sha256": "7d74a6f7e177f2509c2669b64ffc1346fb5d2351d3f32ef6015e0a6a5be88f74",
+    "status": "BLOCKED",
+    "status_probe": {
+      "error": "AUDITCTL_UNAVAILABLE",
+      "returncode": null
+    },
+    "uid": 1000,
+    "unexpected_interventions": null
+  },
+  "full_inherited_suite": "Last full 1840-test cohort 20650af; current 1247-case expanded core/assurance cohort plus release is recorded here",
+  "artifacts": {
+    "core.log": "fb451c6e08047cc1130de3c9b4970c301cf96f0d25a455161d5caab06f401f71",
+    "core.xml": "6a087c58d62c6fa081960d586ff4495554d18df8df05399e30b9f450e85c3bc3",
+    "independent-cre.json": "21be7636208eca1eb301f365e07b152130d8bf34815ce24703070bb64f3f3cb9",
+    "invocation.json": "e1d521bf8da1241ae17e0265eec56005bb224469eb4fac90518f4bc7e84bca19",
+    "native-corrected-env/host-preflight.json": "d3eef193a7aa2ff25221a5daaf60aca7f9b2d28338acbed5390bd1bc3625b4b0",
+    "native-corrected-env/host-preflight.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6",
+    "native-corrected-env/invocation.json": "9d10dbb258ea252c637a1d493036ff4a992147f675604ac1e559c4984c292e29",
+    "native-corrected-env/tests.log": "c81cbbd2e2f4ad3eb029cf716d6351752056798326f70c2c97997f84db2cff06",
+    "native-corrected-env/tests.xml": "4eb57e60db6f60242f978411306b68673ac1acb66fe97f17ae2818d2e85afa66",
+    "native-final-tool-env/host-preflight.json": "dd9ee2214c58b18c8dd6f90ad041f3de931759ea72715b34590e98fee2a62612",
+    "native-final-tool-env/host-preflight.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6",
+    "native-final-tool-env/invocation.json": "114d54e0ca4d960b9f681ce9788b945617d355c62f399ad893e20e3cd730772f",
+    "native-final-tool-env/tests.log": "34885ca5b1ff763fc403eb9bf08eedee994f23728fbc41b590539facb3650164",
+    "native-final-tool-env/tests.xml": "c16adb8ea7bcdc687d788f7e1b9298e77c5c2a627f4f3b34a5f0aafad2498480",
+    "native-initial/host-preflight.json": "e4370f930c48dcd61bf803dacb4738515b5e4230817b23a1ca0711d0d8f9dc9b",
+    "native-initial/host-preflight.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6",
+    "native-initial/invocation.json": "09c30f510b8ee1a3e0fddeeaa82c05c6702e7680ea71dcdcb3b5b6bd7f4cc25e",
+    "native-initial/tests.log": "14efe3816b6df573414d955c9cb55535425903a0a2e77f332bb772b324535ec8",
+    "native-initial/tests.xml": "f30ba13295e515fb1da2e3005a425b0736e7f94d5590215ec52bb8a5a56d3d09",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "release.xml": "360194b6fd8f2ceedc6387e6dd89e5d60dbfd4e9254bd64b86e8fd53c27f2aeb",
+    "static-checks.json": "83c0bf3c1af842359d6e003f406e1b00a76ba93b7914a9f0cbb14f006235b4e5",
+    "static-checks.log": "95ce06cf1dd5959a16b8317ef524eb050171c96532409bd47f3afc3c6e6de252"
+  }
+}

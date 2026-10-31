@@ -115,7 +115,7 @@ def _source(document: str, s: dict, ext: str) -> dict:
 
 def from_sections(sections: list[dict], *, prefix: str, peripheral: str, document: str,
                   out_of_scope: list[str] | None = None, errata: list[dict] | None = None,
-                  functional: list[dict] | None = None) -> dict:
+                  functional: list[dict] | None = None, semantic_profile: str = "register-io-0.1") -> dict:
     """sections: [{"section", "file" (relative), "path" (readable), "pages": [int]}] in manual order; functional:
     the functional-description sections (same shape) searched for values written to key registers."""
     ext = _extractor_sha()
@@ -144,14 +144,15 @@ def from_sections(sections: list[dict], *, prefix: str, peripheral: str, documen
         if used:
             sources.append(src)
     errata = errata or []
-    return {"schema": SCHEMA, "profile": "register-io-0.1", "peripheral": peripheral, "register_width": 32,
+    return {"schema": C.domain_schema(semantic_profile), "profile": semantic_profile,
+            "peripheral": peripheral, "register_width": 32,
             "sources": sources + errata,
             "errata": {"status": "PROVIDED" if errata else "NOT_PROVIDED",
                        "source_ids": [e["source_id"] for e in errata]},
             "registers": registers, "out_of_scope_registers": sorted(set(out_of_scope or []))}
 
 
-def build(ws: Path) -> tuple[dict, bytes]:
+def build(ws: Path, *, semantic_profile: str = "register-io-0.1") -> tuple[dict, bytes]:
     """The domain of a prepared work order: its key RM sections and the registers its scope names out of scope."""
     from ..layer import profile, register_prefix
     from ..lrtx.swe1 import _manifest, _section_files
@@ -179,5 +180,5 @@ def build(ws: Path) -> tuple[dict, bytes]:
     oos = sorted({r for line in scope if line.lower().startswith("out of scope")
                   for r in re.findall(rf"\b{pfx}_[A-Z0-9_]+\b", line)})
     doc = from_sections(sections, prefix=pfx, peripheral=pfx, document="RM0486 Rev 4", out_of_scope=oos,
-                        functional=functional)
+                        functional=functional, semantic_profile=semantic_profile)
     return doc, C.canonical_bytes(doc)

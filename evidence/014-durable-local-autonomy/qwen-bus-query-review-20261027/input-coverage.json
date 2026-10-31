@@ -1,0 +1,23 @@
+{
+  "original_source_sha256": "6f4f9e1841d09e06a12d7d8d2672a0bf0578b225084bbb054f5e6974b49aadb4",
+  "selected_complete_functions": [
+    "environment",
+    "_limits",
+    "_query"
+  ],
+  "obligation": "bounded fixed read-only query subprocess and constrained reply parsing",
+  "caller_contract": "source() validates scope via environment(), resolves tool from fixed system PATH, and permits only GetId/GetNameOwner",
+  "dependencies": {
+    "BUS": "org.freedesktop.DBus",
+    "SYSTEMD": "org.freedesktop.systemd1",
+    "PATH": "/usr/sbin:/usr/bin:/sbin:/bin",
+    "UNIQUE": ":[0-9]{1,20}\\.[0-9]{1,20}",
+    "stdlib": "hashlib/math/os/re/selectors/shutil/socket/subprocess/time/pathlib; Refused is a ValueError"
+  },
+  "global_boundaries": {
+    "profile_parser": "out of this review; deterministic tests already exist",
+    "monitor_lifecycle": "out of this review; deterministic tests already exist",
+    "authenticated_actor_and_continuous_coverage": "unimplemented; not claimed by the helper",
+    "host_interventions": "UNKNOWN"
+  }
+}

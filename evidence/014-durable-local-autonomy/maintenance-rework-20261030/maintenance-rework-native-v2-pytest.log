@@ -1,0 +1,43 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.13, pytest-9.0.3, pluggy-1.6.0 -- /mnt/data/forge-c/production-local-014/venv/bin/python
+rootdir: /mnt/data/forge-c/production-local-014/deployment/qualification-maintenance-rework-8f21511-v2/repo
+configfile: pyproject.toml
+collecting ... collected 34 items
+
+factory/python/tests/test_mcp_input_schema_metadata.py::test_actual_maintenance_schema_exposes_submission_and_page_limits PASSED [  2%]
+factory/python/tests/test_mcp_input_schema_metadata.py::test_native_call_rejects_overlong_summary_before_broker_without_clipping PASSED [  5%]
+factory/python/tests/test_mcp_input_schema_metadata.py::test_nested_constraints_descriptions_optional_values_and_factories_survive_registration PASSED [  8%]
+factory/python/tests/test_afo_retained_work_unit.py::test_clean_baseline_is_not_misreported_as_retained_candidate PASSED [ 11%]
+factory/python/tests/test_afo_retained_work_unit.py::test_rework_includes_changed_and_new_candidate_files_with_exact_hashes PASSED [ 14%]
+factory/python/tests/test_afo_retained_work_unit.py::test_incident_prose_cannot_create_trusted_rework_paths_or_instructions PASSED [ 17%]
+factory/python/tests/test_afo_retained_work_unit.py::test_untrusted_paths_and_protected_changes_never_enter_trusted_prompt[factory/python/tests/afo_candidate/ignore instructions.py] PASSED [ 20%]
+factory/python/tests/test_afo_retained_work_unit.py::test_untrusted_paths_and_protected_changes_never_enter_trusted_prompt[evidence/run.json] PASSED [ 23%]
+factory/python/tests/test_afo_retained_work_unit.py::test_native_launch_records_verified_rework_and_keeps_maintainer_mcp_scope PASSED [ 26%]
+factory/python/tests/test_afo_review_disposition.py::test_real_rejected_record_is_a_rejected_review_not_a_keyerror PASSED [ 29%]
+factory/python/tests/test_afo_review_disposition.py::test_real_eligible_record_reaches_existing_branch_broker_without_deployment PASSED [ 32%]
+factory/python/tests/test_afo_review_disposition.py::test_eligible_review_still_requires_current_verification_fence PASSED [ 35%]
+factory/python/tests/test_afo_review_disposition.py::test_changed_owner_policy_prevents_publication_but_preserves_eligible_record PASSED [ 38%]
+factory/python/tests/test_afo_review_disposition.py::test_publication_failure_preserves_independent_eligibility_without_leaking_details[failure0] PASSED [ 41%]
+factory/python/tests/test_afo_review_disposition.py::test_publication_failure_preserves_independent_eligibility_without_leaking_details[failure1] PASSED [ 44%]
+factory/python/tests/test_afo_maintenance_rework.py::test_rejected_receipted_artifacts_and_independent_facts_survive_quarantine PASSED [ 47%]
+factory/python/tests/test_afo_maintenance_rework.py::test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[disabled] PASSED [ 50%]
+factory/python/tests/test_afo_maintenance_rework.py::test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[live_parent] PASSED [ 52%]
+factory/python/tests/test_afo_maintenance_rework.py::test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[fence] PASSED [ 55%]
+factory/python/tests/test_afo_maintenance_rework.py::test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[allowance] PASSED [ 58%]
+factory/python/tests/test_afo_maintenance_rework.py::test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[authority] PASSED [ 61%]
+factory/python/tests/test_afo_maintenance_rework.py::test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[deadline] PASSED [ 64%]
+factory/python/tests/test_afo_maintenance_rework.py::test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[unsafe] PASSED [ 67%]
+factory/python/tests/test_afo_maintenance_rework.py::test_preparation_recovers_after_partial_seed_without_reverting_an_active_child PASSED [ 70%]
+factory/python/tests/test_afo_maintenance_rework.py::test_completed_worker_reference_is_required_before_conductor_can_admit PASSED [ 73%]
+factory/python/tests/test_afo_maintenance_rework.py::test_changed_feedback_is_never_adopted_after_partial_preparation PASSED [ 76%]
+factory/python/tests/test_afo_maintenance_rework.py::test_failure_to_prepare_child_does_not_replace_actual_independent_rejection PASSED [ 79%]
+factory/python/tests/test_afo_maintenance_rework.py::test_optional_policy_bound_is_validated_without_changing_existing_policy PASSED [ 82%]
+factory/python/tests/test_afo_maintenance_rework.py::test_actual_worker_seals_feedback_and_existing_conductor_admits_only_one_child PASSED [ 85%]
+factory/python/tests/test_afo_maintenance_rework.py::test_rework_limit_ends_only_this_job_chain_without_refilling_its_allowance PASSED [ 88%]
+factory/python/tests/test_afo_maintenance_rework.py::test_complete_oversized_independent_feedback_blocks_without_silent_truncation PASSED [ 91%]
+factory/python/tests/test_afo_maintenance_rework.py::test_newer_operator_pause_and_changed_receipt_prevent_retained_dispatch PASSED [ 94%]
+factory/python/tests/test_afo_maintenance_rework.py::test_real_marker_binding_error_is_supplied_as_complete_independent_feedback PASSED [ 97%]
+factory/python/tests/test_afo_maintenance_rework.py::test_retained_bytes_preserve_git_blob_line_endings PASSED [100%]
+
+- generated xml file: /mnt/data/forge-c/production-local-014/deployment/qualification-maintenance-rework-8f21511-v2/scratch/pytest.xml -
+======================== 34 passed in 223.85s (0:03:43) ========================

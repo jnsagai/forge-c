@@ -1,0 +1,16 @@
+{
+  "shutdown_record": {
+    "pid": 2267231,
+    "terminated": true
+  },
+  "server_process_state": "ABSENT",
+  "endpoint_closed": true,
+  "gpu_compute_processes": [],
+  "gpu_query_exit": 0,
+  "factory_intent": {
+    "effective_stop": true,
+    "epoch": 7,
+    "mode": "STOPPED"
+  },
+  "scope": "POST_BENCHMARK_READ_ONLY_NOT_FACTORY_AVAILABILITY_QUALIFICATION"
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "run_id": "rr-e1933944cf1fc004bb04",
+    "reproducer_id": "RPR-041",
+    "revision": "918c6a4a2577a0b7a6fbe6493e84351b5039e238",
+    "role": "verification",
+    "exit_code": 0,
+    "verdict": "SYMPTOM_ABSENT",
+    "signature": null,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "at": "2026-10-25T11:03:29.102200Z"
+  },
+  {
+    "run_id": "rr-5d5b5925475b767bf3b2",
+    "reproducer_id": "RPR-044",
+    "revision": "918c6a4a2577a0b7a6fbe6493e84351b5039e238",
+    "role": "verification",
+    "exit_code": 0,
+    "verdict": "SYMPTOM_ABSENT",
+    "signature": null,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "at": "2026-10-25T11:03:30.256209Z"
+  },
+  {
+    "run_id": "rr-92c1c55be115d82746cf",
+    "reproducer_id": "RPR-047",
+    "revision": "918c6a4a2577a0b7a6fbe6493e84351b5039e238",
+    "role": "verification",
+    "exit_code": 0,
+    "verdict": "SYMPTOM_ABSENT",
+    "signature": null,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "at": "2026-10-25T11:03:31.345082Z"
+  },
+  {
+    "run_id": "rr-c9569ab1880194362021",
+    "reproducer_id": "RPR-041",
+    "revision": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+    "role": "verification",
+    "exit_code": 0,
+    "verdict": "SYMPTOM_ABSENT",
+    "signature": null,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "at": "2026-10-25T11:03:32.949217Z"
+  },
+  {
+    "run_id": "rr-1962d1be7e09d59dd14a",
+    "reproducer_id": "RPR-044",
+    "revision": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+    "role": "verification",
+    "exit_code": 0,
+    "verdict": "SYMPTOM_ABSENT",
+    "signature": null,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "at": "2026-10-25T11:03:34.015414Z"
+  },
+  {
+    "run_id": "rr-316508ebeb8152ff2307",
+    "reproducer_id": "RPR-047",
+    "revision": "cb9f2e7a719a16098617b44242fcec42e60545ea",
+    "role": "verification",
+    "exit_code": 0,
+    "verdict": "SYMPTOM_ABSENT",
+    "signature": null,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "at": "2026-10-25T11:03:35.080984Z"
+  }
+]

@@ -90,6 +90,15 @@ def phase_claims(gates: dict, gate_log: list[dict]) -> list[dict]:
 
 
 def scope_dispositions(ws: Path, stage: Path) -> dict:
+    from ..release.qm import workspace_record as qm_record
+
+    qm = qm_record(ws)
+    from ..release.aspice import workspace_record
+
+    aspice = workspace_record(ws)
+    if aspice:
+        return {"status": "NOT_ASSESSED_ASPICE_ONLY", "issues": [], "safety_approval": None,
+                "assessed_aspice_compliance": None, "owner_scope_binding": aspice}
     p = ws / SCOPE_FILE
     if not p.is_file():
         return {"status": "NO_APPROVED_SCOPE", "note": "product ASIL/QM scope not recorded by the owner; safety "
@@ -106,6 +115,17 @@ def scope_dispositions(ws: Path, stage: Path) -> dict:
         ok = f.is_file() and f.stat().st_size and (signed is None or sha256_bytes(f.read_bytes()) == signed.get(rel))
         docs[key] = rel if ok else None
     ev = scope.evaluate(sc, docs, na)
+    from ..release.development import selected
+
+    development = selected(wo)
+    if development:
+        deferred = {f"{code}:{name}" for name in scope.DOC_FILES
+                    for code in ("SAFETY_EVIDENCE_MISSING", "QM_NA_WITHOUT_RATIONALE")}
+        ev["issues"] = [issue for issue in ev["issues"] if issue not in deferred]
+        for key in scope.DOC_FILES:
+            if not docs.get(key):
+                ev["dispositions"][key] = "DEFERRED_DEVELOPMENT"
+        ev["state"] = "BLOCKED" if ev["issues"] else "DEVELOPMENT_DEFERRED"
     if sc.get("target_asil") == "QM" and ev["state"] == "SATISFIED":
         for key, rel in SAFETY_FILES.items():
             if ev["dispositions"].get(key) == "NOT_APPLICABLE_QM" and not docs[key]:
@@ -119,7 +139,10 @@ def scope_dispositions(ws: Path, stage: Path) -> dict:
                              "This statement records an owner-approved scope decision. It is not a safety analysis "
                              "and not a safety approval.\n")
     return {"status": ev["state"], "issues": ev["issues"], "dispositions": ev["dispositions"],
-            "target_asil": sc.get("target_asil")}
+            "target_asil": sc.get("target_asil"),
+            **({"classification": "QM", "owner_scope_binding": qm, "assessed_aspice_compliance": None,
+                "safety_approval": None} if qm else {}),
+            **({"development_signature_deferral": development, "safety_approval": None} if development else {})}
 
 
 def bundle_into(ws: Path, stage: Path, dry_status: str) -> dict:

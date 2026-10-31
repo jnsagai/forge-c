@@ -4,6 +4,8 @@ provider: ollama
 max_concurrent_model_agents: 1
 no_model_supervisor_poll: true
 max_tool_result_bytes: 2048
+# Larger bounded evidence/source pages for the explicitly registered AFO overlay.
+afo_max_tool_result_bytes: 65536
 max_tool_log_lines_in_prompt: 30
 max_validated_lessons: 3
 max_lesson_payload_tokens: 700
@@ -17,5 +19,8 @@ compact_response_top_level_keys:
 suppress_explanatory_narrative: true
 always_count_model_usage: true
 reject_on_budget_exhaustion: true
+# Explicit native ASPICE controls cover the full owner scope, rather than the
+# historical small example. Other lanes keep their authored registry limits.
+native_aspice_author_tool_calls_per_visit: 4096
 notes: Total budgets per role in agents.yaml; provider token counters may be unavailable
   and must be explicitly labeled estimated/unknown.

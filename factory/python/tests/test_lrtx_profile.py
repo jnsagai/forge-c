@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import errno
 import json
+import time
 
 import pytest
 from forge_factory import workorder
@@ -149,3 +150,31 @@ def test_api_bridge_is_inbound_only_on_host_loopback(tmp_path):
     assert inner[1].startswith(f"UNIX-LISTEN:{sock},") and "mode=600" in inner[1]
     assert inner[2] == f"TCP:127.0.0.1:{port}"
     assert outer[1] == f"TCP-LISTEN:{port},bind=127.0.0.1,reuseaddr,fork" and outer[2] == f"UNIX-CONNECT:{sock}"
+    inner2, outer2, _ = stack.bridge_argv(s, 32394)
+    # A second stack of the same profile keeps its namespace port; only the host loopback listener moves.
+    assert inner2 == inner and outer2[1] == "TCP-LISTEN:32394,bind=127.0.0.1,reuseaddr,fork"
+
+
+def test_managed_stop_signals_an_exposed_bridge_only_with_its_recorded_identity(tmp_path):
+    """Omniverse2 2026-10-25: expose-api recorded no identity, so a managed stop refused the bridge."""
+    import subprocess
+
+    from forge_factory.afo.durable import Refused
+
+    s = {**stack.settings(), "root": tmp_path}
+    (tmp_path / "run").mkdir()
+    bridge = subprocess.Popen(["bash", "-c", "exec -a socat sleep 30"])
+    try:
+        time.sleep(0.2)
+        entry = {"pid": bridge.pid, "argv": ["socat", "x"]}
+        (tmp_path / "run/services.json").write_text(json.dumps({"processes": {}, "api_bridge": {"outer": entry}}))
+        with pytest.raises(Refused, match="LOCAL_PROCESS_OWNERSHIP_UNPROVEN"):
+            stack._stop(s, managed=True)
+        assert bridge.poll() is None
+        entry["identity"] = stack.process_identity(bridge.pid)
+        (tmp_path / "run/services.json").write_text(json.dumps({"processes": {}, "api_bridge": {"outer": entry}}))
+        assert stack._stop(s, managed=True)["stopped"] == ["api-bridge-outer"]
+        assert bridge.wait(timeout=5) == -15
+    finally:
+        if bridge.poll() is None:
+            bridge.kill()

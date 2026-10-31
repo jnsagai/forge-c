@@ -1,0 +1,9 @@
+# OD-2026-10-27-02: explicit owner instruction, not an SSA/TAA signature or safety approval.
+schema: forge-c/development-safety-policy/1
+enabled: true
+purpose: DEVELOPMENT
+deferred_documents: [software_safety_analysis, tool_assurance_assessment]
+approved_by: Jefferson Nascimento
+approved_at: '2026-10-27'
+decision: OD-2026-10-27-02
+instruction: 'about the safety signature, I want it to be ignored during the development of forge-c'

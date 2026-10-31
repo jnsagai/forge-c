@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.423" timestamp="2026-10-30T20:48:52.216303+00:00" hostname="master"><testcase classname="factory.python.tests.test_native_standalone_measurement" name="test_unmeasurable_or_overflow_never_dispatches_or_truncates[100-False-NATIVE_CONTEXT_DOES_NOT_FIT]" time="0.092"><failure message="assert (429 == 400)&#10; +  where 429 = &lt;Response [429 Too Many Requests]&gt;.status_code">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-230/test_unmeasurable_or_overflow_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x712762985940&gt;
+ceiling = '100', invalid = False, expected = 'NATIVE_CONTEXT_DOES_NOT_FIT'
+
+    @pytest.mark.parametrize("ceiling,invalid,expected", [
+        ("100", False, "NATIVE_CONTEXT_DOES_NOT_FIT"),
+        ("65536", True, "NATIVE_MEASUREMENT_TEMPLATE_INVALID"),
+    ])
+    def test_unmeasurable_or_overflow_never_dispatches_or_truncates(tmp_path, monkeypatch, ceiling, invalid, expected):
+        monkeypatch.setenv("FORGE_GATEWAY_ROUTES", json.dumps({MODEL: "http://native"}))
+        monkeypatch.setenv("FORGE_GATEWAY_REQUEST_MEASUREMENT", json.dumps({MODEL: METHOD}))
+        monkeypatch.setenv("FORGE_GATEWAY_MEASURE_UNBOUND", "1")
+        monkeypatch.setenv("FORGE_GATEWAY_NATIVE_CONTEXT_LIMIT", ceiling)
+        monkeypatch.setattr(queue, "default_path", lambda: tmp_path / "absent-db")
+        seen = []
+    
+        def handle(request):
+            seen.append(request.url.path)
+            assert request.url.path != "/v1/chat/completions", "must refuse before inference"
+            if request.url.path == "/apply-template":
+                return httpx.Response(200, json={} if invalid else {"prompt": "complete"})
+            return httpx.Response(200, json={"tokens": list(range(20))})
+    
+        app = G.create_app(upstream="http://native", meter_path=tmp_path / "usage.jsonl",
+                           transport=httpx.MockTransport(handle))
+        with TestClient(app) as client:
+            r = client.post("/v1/chat/completions", json={"model": MODEL, "max_tokens": 4096,
+                            "messages": [{"role": "user", "content": "retain this entire evidence"}]})
+&gt;       assert r.status_code == 400 and r.json()["error"]["type"] == expected
+E       assert (429 == 400)
+E        +  where 429 = &lt;Response [429 Too Many Requests]&gt;.status_code
+
+factory/python/tests/test_native_standalone_measurement.py:94: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_native_standalone_measurement" name="test_unmeasurable_or_overflow_never_dispatches_or_truncates[65536-True-NATIVE_MEASUREMENT_TEMPLATE_INVALID]" time="0.006"><failure message="assert (429 == 400)&#10; +  where 429 = &lt;Response [429 Too Many Requests]&gt;.status_code">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-230/test_unmeasurable_or_overflow_1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x712762985a70&gt;
+ceiling = '65536', invalid = True
+expected = 'NATIVE_MEASUREMENT_TEMPLATE_INVALID'
+
+    @pytest.mark.parametrize("ceiling,invalid,expected", [
+        ("100", False, "NATIVE_CONTEXT_DOES_NOT_FIT"),
+        ("65536", True, "NATIVE_MEASUREMENT_TEMPLATE_INVALID"),
+    ])
+    def test_unmeasurable_or_overflow_never_dispatches_or_truncates(tmp_path, monkeypatch, ceiling, invalid, expected):
+        monkeypatch.setenv("FORGE_GATEWAY_ROUTES", json.dumps({MODEL: "http://native"}))
+        monkeypatch.setenv("FORGE_GATEWAY_REQUEST_MEASUREMENT", json.dumps({MODEL: METHOD}))
+        monkeypatch.setenv("FORGE_GATEWAY_MEASURE_UNBOUND", "1")
+        monkeypatch.setenv("FORGE_GATEWAY_NATIVE_CONTEXT_LIMIT", ceiling)
+        monkeypatch.setattr(queue, "default_path", lambda: tmp_path / "absent-db")
+        seen = []
+    
+        def handle(request):
+            seen.append(request.url.path)
+            assert request.url.path != "/v1/chat/completions", "must refuse before inference"
+            if request.url.path == "/apply-template":
+                return httpx.Response(200, json={} if invalid else {"prompt": "complete"})
+            return httpx.Response(200, json={"tokens": list(range(20))})
+    
+        app = G.create_app(upstream="http://native", meter_path=tmp_path / "usage.jsonl",
+                           transport=httpx.MockTransport(handle))
+        with TestClient(app) as client:
+            r = client.post("/v1/chat/completions", json={"model": MODEL, "max_tokens": 4096,
+                            "messages": [{"role": "user", "content": "retain this entire evidence"}]})
+&gt;       assert r.status_code == 400 and r.json()["error"]["type"] == expected
+E       assert (429 == 400)
+E        +  where 429 = &lt;Response [429 Too Many Requests]&gt;.status_code
+
+factory/python/tests/test_native_standalone_measurement.py:94: AssertionError</failure></testcase></testsuite></testsuites>

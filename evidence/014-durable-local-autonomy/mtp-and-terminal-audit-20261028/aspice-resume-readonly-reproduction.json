@@ -1,0 +1,8 @@
+{
+  "source_check": "PASS_NATIVE_TERMINAL_AND_LINEAGE_CURRENT",
+  "identity_guard": "RESUME_CONTRACT_OR_RUNTIME_CHANGED",
+  "read_only": true,
+  "resume_called": false,
+  "native_launch_called": false,
+  "artifact_or_budget_changes": false
+}

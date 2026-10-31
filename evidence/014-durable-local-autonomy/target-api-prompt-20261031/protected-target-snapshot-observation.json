@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-31T02:45:40.605264Z",
+  "native_id": "01M67R1HNE9TKPWCYJ2SVKEPJS",
+  "failed": {
+    "assert_failed": [],
+    "code_sha": "6e31f80721b8bf16434a26cc907682b0a26e4c934ead81f96d3c6c0741096020",
+    "files": {
+      "software/tests/target/test_crc_idr.c": "c734e55f1bd95ef4b3fcf6595d0c43c67ccb59a674b2fff1aeeea508240ee202",
+      "software/tests/target/test_performance.c": "28793a4ce7a0c3372084e1b2b89360858230eb7f063d6b97e822f3bcde62d0a9"
+    },
+    "op": "run_renode",
+    "phase": "SWE.5",
+    "status": "FAIL",
+    "ts_utc": "2026-10-31T02:41:17.723265Z"
+  },
+  "passed": {
+    "assert_failed": [],
+    "code_sha": "6e31f80721b8bf16434a26cc907682b0a26e4c934ead81f96d3c6c0741096020",
+    "files": {
+      "software/tests/target/test_crc_idr.c": "40c9e8846078e8daa95da65eb95b7662a48338ceeeb0ce2feb78436009fc446a",
+      "software/tests/target/test_performance.c": "c7b8cb3382139ce9b1fbcf6f086a743c200dee0579e7c6e44344b92d4fba9ee1"
+    },
+    "op": "run_renode",
+    "phase": "SWE.5",
+    "status": "PASS",
+    "ts_utc": "2026-10-31T02:43:15.078554Z"
+  },
+  "files": [
+    {
+      "path": "software/tests/target/test_crc_idr.c",
+      "failed_sha256": "c734e55f1bd95ef4b3fcf6595d0c43c67ccb59a674b2fff1aeeea508240ee202",
+      "passed_sha256": "40c9e8846078e8daa95da65eb95b7662a48338ceeeb0ce2feb78436009fc446a"
+    },
+    {
+      "path": "software/tests/target/test_performance.c",
+      "failed_sha256": "28793a4ce7a0c3372084e1b2b89360858230eb7f063d6b97e822f3bcde62d0a9",
+      "passed_sha256": "c7b8cb3382139ce9b1fbcf6f086a743c200dee0579e7c6e44344b92d4fba9ee1"
+    }
+  ],
+  "read_only": true,
+  "candidate_execution_by_observer": false,
+  "product_code_hash_unchanged": true
+}

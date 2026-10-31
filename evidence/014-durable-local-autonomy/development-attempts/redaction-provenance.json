@@ -1,0 +1,203 @@
+{
+  "scope": "REDACTED_COPIES_RAW_PRIVATE_ON_LOOP10",
+  "artifacts": [
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/history-instrumentation.log",
+      "published_sha256": "585ba42829657b9e2d56f8614be6c3365a8405474eed008559511ab50f2ffcfb",
+      "private_original_sha256": "585ba42829657b9e2d56f8614be6c3365a8405474eed008559511ab50f2ffcfb",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/broad-failures.xml",
+      "published_sha256": "1e1fabbd95f70405b896caf6a96fe870bc58de69f0bd2c9b75d08728dbb34fab",
+      "private_original_sha256": "1e1fabbd95f70405b896caf6a96fe870bc58de69f0bd2c9b75d08728dbb34fab",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/baseline-combined.xml",
+      "published_sha256": "0f63245327ddca0995454797da5c1bb433449da2b845a7e3fa1d10ced718b7f2",
+      "private_original_sha256": "7ab0b0a5a9fae4a8b414540a1270e468197924a5b09773f8ac2276848adf2d3d",
+      "redaction_applied": true
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/regression-e0b340b.log",
+      "published_sha256": "99d8f4142f0d2507109c8a820798d50e49ef80c4dbc09354ea32423fb0523a74",
+      "private_original_sha256": "99d8f4142f0d2507109c8a820798d50e49ef80c4dbc09354ea32423fb0523a74",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/history-c5a88d3.json",
+      "published_sha256": "a147ec24d5638ae55e5833a83407c2fd6e1d440bbf07af46a798960f7b07f10d",
+      "private_original_sha256": "a147ec24d5638ae55e5833a83407c2fd6e1d440bbf07af46a798960f7b07f10d",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/broad-failures.log",
+      "published_sha256": "67e97c1be94fa932a6c751e651f2aed011d216de257b3da3c30a43e521910951",
+      "private_original_sha256": "67e97c1be94fa932a6c751e651f2aed011d216de257b3da3c30a43e521910951",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/maintenance-integrated.log",
+      "published_sha256": "3ca63df1dde3ba9e2d2084a8facf905367fe65246c76bc33b3d06e0024ecdfa9",
+      "private_original_sha256": "3ca63df1dde3ba9e2d2084a8facf905367fe65246c76bc33b3d06e0024ecdfa9",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/maintenance-extra.xml",
+      "published_sha256": "37da9f2929b88f42f82910c6952050fea410d09331ff383a761f3c3fffc4eb41",
+      "private_original_sha256": "37da9f2929b88f42f82910c6952050fea410d09331ff383a761f3c3fffc4eb41",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/source-candidate.xml",
+      "published_sha256": "9d42b8636b529b8d794edaed34fe00fe5738f391e90f217ab8bde40a99637d46",
+      "private_original_sha256": "4195b2f02e3f066f6eee34d0e7f7f1971721225285205a7501f56c17d0d1db84",
+      "redaction_applied": true
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/systemd-isolated-report.json",
+      "published_sha256": "c29f2df9e23b54dd152e201b643e1d10f27d248a61577598f7b1abc9056b9131",
+      "private_original_sha256": "c29f2df9e23b54dd152e201b643e1d10f27d248a61577598f7b1abc9056b9131",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/source-candidate.log",
+      "published_sha256": "23dca34aa96893c5ef04bb924ca71edd2b96678e86b5f03060c9b7af755bf5f4",
+      "private_original_sha256": "5bdd8f896f216bd49f28111e4fadff9c1c67f68597c81f0b92c5f1a89ad3afd0",
+      "redaction_applied": true
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/real-controller-v3.log",
+      "published_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "private_original_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/maintenance-second.log",
+      "published_sha256": "12784721e0280443291002b595b03384e8588476665647b621a862f07297e08f",
+      "private_original_sha256": "12784721e0280443291002b595b03384e8588476665647b621a862f07297e08f",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/remaining-d2e71bf.log",
+      "published_sha256": "a380cb050a25f731cf6709d432a56b1cfed6fc626161cecf1abe66c679f2c95a",
+      "private_original_sha256": "2b22962aa343eadf1fc2ec6a60d293c5335f562a471dca5ed8be32c81f4171f1",
+      "redaction_applied": true
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/regression-e5de7ad.log",
+      "published_sha256": "d172960bff4fada9f45c3a4eb7aee789d332cd9df0815890521061a93a7fe761",
+      "private_original_sha256": "d172960bff4fada9f45c3a4eb7aee789d332cd9df0815890521061a93a7fe761",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/cre-c5a88d3.json",
+      "published_sha256": "d921070eeb2b666cabb5ca00183ce85976dbeaf20f23b857cc4314bea319e979",
+      "private_original_sha256": "d921070eeb2b666cabb5ca00183ce85976dbeaf20f23b857cc4314bea319e979",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/baseline-broad-failures.xml",
+      "published_sha256": "29a6cd1e9bf1d50fa66482f8defcea8c49e20a0f4fa89e778c65bf59213c0c61",
+      "private_original_sha256": "29a6cd1e9bf1d50fa66482f8defcea8c49e20a0f4fa89e778c65bf59213c0c61",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/baseline-broad-failures.log",
+      "published_sha256": "efad74dd8e9cd649cd618b6c561bda2de917922ec6c4805f42e5cfb17c8b2479",
+      "private_original_sha256": "efad74dd8e9cd649cd618b6c561bda2de917922ec6c4805f42e5cfb17c8b2479",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/maintenance-first.xml",
+      "published_sha256": "4ca7aac2e0a625acaa3eaa56068bbbfea152892e5536deefc857c22b7944718b",
+      "private_original_sha256": "4ca7aac2e0a625acaa3eaa56068bbbfea152892e5536deefc857c22b7944718b",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/remaining-d2e71bf.xml",
+      "published_sha256": "9e4e468fe3453f594ae2418f7a45a164e5d718324c21109310878a12decc35e5",
+      "private_original_sha256": "b7aeb16c681e01640bb64109cb7fc05d6824b067174dd545d019e60c461545f7",
+      "redaction_applied": true
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/final-clean.xml",
+      "published_sha256": "54f507d0d1765701de9e353f4d7c58efc892770642dc1da5a41f9670634d9e45",
+      "private_original_sha256": "28c90f35f58d1e3e3cdbe4968676027076b7aed86f331cd9fce4b87295f59611",
+      "redaction_applied": true
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/baseline-combined.log",
+      "published_sha256": "b1c41953049077e01fdab031c37143850822b366e0de74affa2884375424748e",
+      "private_original_sha256": "55298a8a1ae313ff9417720d19b3119d66773b5c0df3f1b8ca00a5b959158dc2",
+      "redaction_applied": true
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/real-controller-v2.log",
+      "published_sha256": "455f5e1b01b930b1eb566252d8336001d5538648a5b7ee88fb0ef9837caf03dd",
+      "private_original_sha256": "455f5e1b01b930b1eb566252d8336001d5538648a5b7ee88fb0ef9837caf03dd",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/final-78c1285.log",
+      "published_sha256": "d3a19ae8bc223e350eb713f280718c507e265a4e58deb9a4a8dbc55591493bb2",
+      "private_original_sha256": "d3a19ae8bc223e350eb713f280718c507e265a4e58deb9a4a8dbc55591493bb2",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/real-controller-v3.xml",
+      "published_sha256": "31d3c0c77428a58aee903971d5dcb48416da3a3569378e55a0988a8aa8383f73",
+      "private_original_sha256": "31d3c0c77428a58aee903971d5dcb48416da3a3569378e55a0988a8aa8383f73",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/maintenance-integrated.xml",
+      "published_sha256": "2f1b44b27619aec2408a9315b52fb9c3fcaf5734b3754d11229c95a820b47520",
+      "private_original_sha256": "2f1b44b27619aec2408a9315b52fb9c3fcaf5734b3754d11229c95a820b47520",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/history-instrumentation.xml",
+      "published_sha256": "203ef3c62a886c70c25c16e4dd6b512aa59d47576de3723ddc23a18ae1dab584",
+      "private_original_sha256": "203ef3c62a886c70c25c16e4dd6b512aa59d47576de3723ddc23a18ae1dab584",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/final-clean.log",
+      "published_sha256": "2882426c3435fb68699414c6fa9481df6cadb1e92342a74755882e89a8cd7195",
+      "private_original_sha256": "9f4d5a5bdaff9fda91d046023136987ec1e9529181cf0483653840957849b7a1",
+      "redaction_applied": true
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/final-78c1285.xml",
+      "published_sha256": "f423d1d3992a75732183bad8fcf6cdf028e80420fb858b8178fbff0389d38c47",
+      "private_original_sha256": "0096550dc2b3bacb2c3b3a781088d018336c39e2b64930a3412f3c2574067ecf",
+      "redaction_applied": true
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/maintenance-second.xml",
+      "published_sha256": "29c490aff047231e530cfd2d219254696520f77f63158f567959bf3859842829",
+      "private_original_sha256": "29c490aff047231e530cfd2d219254696520f77f63158f567959bf3859842829",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/real-controller-v2.xml",
+      "published_sha256": "512f0ff135c39f48e30a184ca776de3e208e3326ef459bcd9978a31cdf277173",
+      "private_original_sha256": "512f0ff135c39f48e30a184ca776de3e208e3326ef459bcd9978a31cdf277173",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/maintenance-extra.log",
+      "published_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "private_original_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "redaction_applied": false
+    },
+    {
+      "published_path": "evidence/014-durable-local-autonomy/development-attempts/maintenance-first.log",
+      "published_sha256": "58f4c071e6e342ab64f48342909d71247979afbf9d6e559f1ef9552fa0c1ba96",
+      "private_original_sha256": "58f4c071e6e342ab64f48342909d71247979afbf9d6e559f1ef9552fa0c1ba96",
+      "redaction_applied": false
+    }
+  ]
+}

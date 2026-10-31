@@ -1,0 +1,119 @@
+# Peripheral profile (feature 014 operation-24 campaign, owner 2026-10-27 "RNG, LPTIM, WWDG"): system window watchdog,
+# RM0486 Rev 4 chapter 60 (pp. 2995-3001); secure base 0x50002C00, 1 KB (RM0486 p.181, Table 3).
+schema: forge-c/peripheral-profile/0.1
+id: wwdg
+name: System window watchdog (WWDG)
+register_prefix: WWDG
+base_address: "0x50002C00"
+mm_page: 181
+window_bytes: 1024
+system_name: WWDG LL driver
+rm:
+  doc: RM0486
+  chapter: 60
+  key_sections: ["60.6.1", "60.6.2", "60.6.3"]
+ll:
+  header: stm32n6xx_ll_wwdg.h
+  compile_unit: stm32n6xx_ll_wwdg.c
+  function_prefix: LL_WWDG_
+  register_block: ll_wwdg_regs
+  register_count: 256
+  void_signatures: false   # LL_WWDG_SetCounter(WWDG_TypeDef *, uint32_t), LL_WWDG_SetWindow(WWDG_TypeDef *, uint32_t)
+hal:
+  header: stm32n6xx_hal_wwdg.h
+  source: stm32n6xx_hal_wwdg.c
+  function_prefix: HAL_WWDG_
+sim:
+  model: wwdg_model.py
+  platform: stm32n6_wwdg.repl
+# Prompt texts that replace the RCC domain content of the generic LL prompts (feature 009 mechanism). They describe the
+# WWDG work-order scope; hardware facts stay in the RM0486 chapter 60 inputs (cite RM0486 p.N).
+prompt:
+  swe1_cover: >-
+    Cover (only what the WWDG scope names): activating the watchdog (set WWDG_CR.WDGA; WDGA is set by software and
+    cleared only by a reset, RM0486 60.6.1, so there is no disable function) and the activation query (return 1U when
+    WWDG_CR.WDGA is set, else 0U); writing the counter (write the requested value to WWDG_CR.T, preserving
+    WWDG_CR.WDGA) and reading it (return WWDG_CR.T); the timer base prescaler (write the requested encoding to
+    WWDG_CFR.WDGTB) and its query; the window value (write the requested value to WWDG_CFR.W) and its query, each
+    preserving the other WWDG_CFR fields; the early wake-up interrupt enable (set WWDG_CFR.EWI, cleared only by a
+    reset) and its query; the early wake-up flag query (return 1U when WWDG_SR.EWIF is set, else 0U) and its clear
+    (WWDG_SR.EWIF is cleared by writing 0, writing 1 has no effect: write 0 to WWDG_SR.EWIF); one requirement per
+    function and value, naming the register field (e.g. WWDG_CFR.WDGTB); then a reset/startup requirement (e.g. '-
+    **SWR-0nn** While no LL function has been called after reset, the WWDG LL driver shall not write any WWDG
+    register.'). The watchdog reset generation itself, the early wake-up interrupt handler, the WWDG bus clock enable
+    (RCC) and the HAL are out of scope.
+  swe1_effect_example: '{"case":"SET_WINDOW_0x50","swr":"SWR-007","register":"WWDG_CFR","field":"W","op":"write","value":"0x50"}'
+  swe1_effect_rule: >-
+    Use op "set" for the set-only bits (WWDG_CR.WDGA, WWDG_CFR.EWI) and op "write" with "value" (an integer or "0x..."
+    string) for the multi-bit fields (WWDG_CR.T, WWDG_CFR.WDGTB, WWDG_CFR.W); a function that writes a caller-supplied
+    value gets one entry with a representative value and the api_calls args pass that value (the counter and window
+    take a 7-bit value from 0x40 to 0x7F, the prescaler an encoding LL_WWDG_PRESCALER_1..128); the flag clear gets op
+    "write" of value 0 on WWDG_SR.EWIF. Queries get op no_write with register/field.
+  ll_api: >-
+    the ST CubeN6 functions as delivered (each takes the WWDG_TypeDef instance pointer first): LL_WWDG_Enable,
+    LL_WWDG_IsEnabled, LL_WWDG_SetCounter, LL_WWDG_GetCounter, LL_WWDG_SetPrescaler, LL_WWDG_GetPrescaler,
+    LL_WWDG_SetWindow, LL_WWDG_GetWindow, LL_WWDG_IsActiveFlag_EWKUP, LL_WWDG_ClearFlag_EWKUP, LL_WWDG_EnableIT_EWKUP
+    and LL_WWDG_IsEnabledIT_EWKUP; list in Interfaces exactly the functions of the allocation table
+  swe2_static_view: >-
+    a Caller, the component stm32n6xx_ll_wwdg (LL, header-only) and the WWDG register block (0x50002C00, RM0486 p.181)
+    and their dependencies (Caller -> LL -> registers)
+  swe2_dynamic_view: >-
+    participants Caller, stm32n6xx_ll_wwdg, WWDG, showing the configuration (prescaler, window, early wake-up interrupt
+    enabled), the counter written and the watchdog activated, the caller polling the early wake-up flag (the caller
+    bounds the loop), the flag cleared and the counter refreshed inside the window, using the allocated LL_WWDG_
+    function names
+  ut_example: |-
+    static void ut_wwdg_window(void)
+    {
+        ut_reset_regs();
+        forge_host_wwdg.CFR = WWDG_CFR_EWI | 0x7FU;
+        LL_WWDG_SetWindow(WWDG, 0x50U);
+        CHECK("UT-001", (forge_host_wwdg.CFR & WWDG_CFR_W) == 0x50U);
+        CHECK("UT-002", (forge_host_wwdg.CFR & WWDG_CFR_EWI) == WWDG_CFR_EWI);
+        forge_host_wwdg.SR = WWDG_SR_EWIF;
+        CHECK("UT-003", LL_WWDG_IsActiveFlag_EWKUP(WWDG) == 1U);
+        forge_host_wwdg.SR = 0U;
+        CHECK("UT-004", LL_WWDG_IsActiveFlag_EWKUP(WWDG) == 0U);
+    }
+  ut_rule: >-
+    Host unit tests pass the generated host instance WWDG (forge_host_device.h maps it to the RAM struct
+    forge_host_wwdg; 0x50002C00 is the device address and is used on the target only). Set and value functions check the
+    written field and that a preset unrelated field of the same register is preserved (WWDG_CR.WDGA across a counter
+    write; WWDG_CFR.EWI across a window or prescaler write); the flag clear checks that WWDG_SR.EWIF is written 0;
+    queries get a set and a clear case.
+  target_model: >-
+    The simulated WWDG (factory/sim/stm32n6/wwdg_model.py) is behavioural: WWDG_CR and WWDG_CFR reset to 0x7F and
+    WWDG_SR to 0; WWDG_CR.WDGA and WWDG_CFR.EWI are set by writing 1 and keep their value on a write of 0 (cleared only
+    by a reset); WWDG_SR.EWIF is cleared by writing 0 and unchanged by writing 1. While WDGA is set, time advances by one
+    counter step on every read of WWDG_CR (deterministic polling): the counter WWDG_CR.T decrements by one down to 0x40,
+    where it stops and sets WWDG_SR.EWIF; the watchdog reset (T decremented from 0x40 to 0x3F, or a refresh outside the
+    window) is not modelled. Expected values in target checks follow this model.
+  target_tests: >-
+    write software/tests/target/test_wwdg_target.c (after reset WWDG_CR and WWDG_CFR read 0x7F and the early wake-up
+    flag is clear; the prescaler, window and counter values written reach WWDG_CFR and WWDG_CR; activation sets
+    WWDG_CR.WDGA and the activation query returns 1U) and software/tests/target/test_wwdg_target_flag.c (with the counter
+    written to 0x42 and the watchdog active, polling the counter reaches 0x40 and the early wake-up flag sets; the flag
+    clear makes the query return 0U; a counter refresh to 0x7F is read back)
+  field_mask_example: WWDG_CFR_W
+  query_example: LL_WWDG_GetCounter(WWDG)
+  integration: >-
+    a configuration of the prescaler and window with the early wake-up interrupt enabled, the counter written and the
+    watchdog activated, then the early wake-up flag queried and cleared and the counter refreshed (on the host the
+    registers keep the written values; there is no countdown)
+  requirement_example: When LL_WWDG_SetWindow is called with a window value, the WWDG LL driver shall write the window value to WWDG_CFR.W.
+
+# Source-bound mandatory forms; preflight uses the actual engine, before inference.
+# This does not replace authored requirements, full coverage or any quality gate.
+semantic_required_operations:
+  - {register: WWDG_CR, field: WDGA, action: set_field}
+  - {register: WWDG_CR, field: WDGA, action: read_field}
+  - {register: WWDG_CR, field: T, action: write_field, logical_value: "127"}
+  - {register: WWDG_CR, field: T, action: read_field}
+  - {register: WWDG_CFR, field: WDGTB, action: write_field, logical_value: "0"}
+  - {register: WWDG_CFR, field: WDGTB, action: read_field}
+  - {register: WWDG_CFR, field: W, action: write_field, logical_value: "80"}
+  - {register: WWDG_CFR, field: W, action: read_field}
+  - {register: WWDG_CFR, field: EWI, action: set_field}
+  - {register: WWDG_CFR, field: EWI, action: read_field}
+  - {register: WWDG_SR, field: EWIF, action: write_field, logical_value: "0"}
+  - {register: WWDG_SR, field: EWIF, action: read_field}

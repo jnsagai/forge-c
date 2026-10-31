@@ -1,0 +1,14 @@
+{
+  "test-rewrite-observation": {
+    "original_sha256": "1a363b9bc5649ef0f03e55c0601a193e921741550a61ab9053c9979ac2541328",
+    "view_sha256": "bfef5cfabc3ab932f1eaa40edeca4f8a9fe4352e5a69f6bfd3b688c165d50b35"
+  },
+  "initial-narrow-counter-observation": {
+    "original_sha256": "a66800dda88c8ea5c795772b04f6bee5f7431a04a0947491269a9c41e038dfb8",
+    "view_sha256": "6fc649ce3fa4bbd1560b911b840614873de76eae5c4f30a7b0e700a22bfd999f"
+  },
+  "tool-observations": {
+    "original_sha256": "a40229a9e060592eac0ee6317d94ec670915cbeafcb17be6b43121839d5bab6d",
+    "view_sha256": "1088beb7224772ea74693d0d21417fac516900ac84001bf7f429b590d2d2cc64"
+  }
+}

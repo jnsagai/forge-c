@@ -1,0 +1,7 @@
+{"lrtx_progress": "requirements:CRC_IDR", "attempt": 0, "errors": 0, "wall_ms": 3748.3}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 3, "wall_ms": 6054.1}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 0, "wall_ms": 4389.0}
+{"lrtx_progress": "requirements:CRC_IDR", "attempt": 0, "errors": 0, "wall_ms": 3317.8}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 4, "wall_ms": 4141.3}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 0, "wall_ms": 1872.6}
+{"ornith-1.5-35b-a3b-q8": {"attempts": 2, "visit_pass": 2, "gate_frozen": 2, "wall_s_median": 12.399999999999999, "calls_median": 3.0, "load_ms_median": "UNKNOWN (no load observed)"}}

@@ -1,0 +1,18 @@
+{
+  "revision": "95250cf902afe404dc85d8337b05b98ebda77651",
+  "command": "PATH='/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/formal/bin:/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable':\"$PATH\" FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONPATH=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python FORGE_DATA_ROOT=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c FORGE_FABRO_LIVE=0 TMPDIR=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029 /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python -m pytest -q factory/python/tests/test_delivery_first_scenario_contract.py factory/python/tests/test_robot_swe6.py factory/python/tests/test_peripheral_prompts.py factory/python/tests/test_peripheral_rcc_equivalence.py factory/python/tests/test_peripheral_crc.py factory/python/tests/test_delivery_first.py factory/python/tests/test_pipeline_demonstration.py factory/python/tests/test_release_test_history.py factory/python/tests/test_m7_governance_release.py factory/python/tests/test_da014_product_outcomes.py factory/release-manager/tests/test_packager.py --junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/scenario-contract-exact-95250cf9.xml",
+  "results": {
+    "tests": 88,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 87
+  },
+  "scope": "DETERMINISTIC_FRAMEWORK_REGRESSION_NOT_QWEN",
+  "remaining_failure": "test_rcc_workflow_graphs_unchanged; identical hashes before and after this increment",
+  "focused_regressions": {
+    "tests": 6,
+    "passed": 6
+  },
+  "runtime_activated": false
+}

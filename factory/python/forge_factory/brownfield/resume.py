@@ -8,6 +8,7 @@ identity record must start fresh. No compatibility override exists.
 """
 from __future__ import annotations
 
+import copy
 import importlib.metadata
 import json
 import os
@@ -27,7 +28,7 @@ TOOLS = ("clang", "gcc", "arm-none-eabi-gcc", "cppcheck", "cmake", "ninja", "gco
 CONTRACT_FIELDS = ("driver", "layer", "target", "scope", "budgets", "system_names", "guideline", "trace_profile",
                    "register_contract", "hal_unit_isolation", "upstream", "owner_dispositions", "safety_target",
                    "owner_safety_documents", "owner_safety_document_issues", "peripheral", "peripheral_profile_sha256",
-                   "delivery", "code_mode")
+                   "delivery", "code_mode", "purpose", "development_safety")
 TABLES = ("CREATE TABLE IF NOT EXISTS lineages (root TEXT PRIMARY KEY, started REAL, limits TEXT)",
           "CREATE TABLE IF NOT EXISTS attempts (wo TEXT PRIMARY KEY, root TEXT, parent TEXT, reserved REAL)")
 
@@ -78,7 +79,42 @@ def runtime_identity() -> dict:
 
 
 def contract(man: dict) -> dict:
+    historical = man.get("historical_safety_scope")
+    version = {}
+    if "qm_resume_contract_version" in man:
+        if (type(man["qm_resume_contract_version"]) is not int or man["qm_resume_contract_version"] != 1
+                or man.get("purpose") != "QM" or not isinstance(man.get("qm_development"), dict)
+                or "aspice_resume_contract_version" in man):
+            raise ResumeRefused("RESUME_QM_CONTRACT_VERSION_INVALID")
+        version["qm_resume_contract_version"] = 1
+        if historical is not None:
+            historical = copy.deepcopy(historical)
+            scope = historical.get("scope") if isinstance(historical, dict) else None
+            if not isinstance(scope, dict) or scope.get("work_order_id") != man.get("work_order") or not man.get("work_order"):
+                raise ResumeRefused("RESUME_HISTORICAL_SCOPE_IDENTITY_MISMATCH")
+            del scope["work_order_id"]
+    if "aspice_resume_contract_version" in man:
+        if type(man["aspice_resume_contract_version"]) is not int or man["aspice_resume_contract_version"] != 2 or \
+                man.get("purpose") != "ASPICE_ONLY" or not isinstance(man.get("aspice_development"), dict):
+            raise ResumeRefused("RESUME_ASPICE_CONTRACT_VERSION_INVALID")
+        version["aspice_resume_contract_version"] = 2
+        if historical is not None:
+            historical = copy.deepcopy(historical)
+            scope = historical.get("scope") if isinstance(historical, dict) else None
+            if not isinstance(scope, dict) or not man.get("work_order") or \
+                    scope.get("work_order_id") != man["work_order"]:
+                raise ResumeRefused("RESUME_HISTORICAL_SCOPE_IDENTITY_MISMATCH")
+            # This record remains intact in the manifest. Only its own administrative
+            # attempt ID is excluded from compatibility; allocation/policy/input provenance stays bound.
+            del scope["work_order_id"]
     return {**{k: man.get(k) for k in CONTRACT_FIELDS},
+            **{k: man[k] for k in ("aspice_development", "qm_development") if k in man},
+            **({"historical_safety_scope": historical} if "historical_safety_scope" in man else {}),
+            **version,
+            **{k: man[k] for k in ("development_execution", "operation_scope", "provided_requirements",
+                                  "inspection_assessment_context", "simulation_performance") if k in man},
+            **({"semantic_required_operations": man["semantic_required_operations"]}
+               if "semantic_required_operations" in man else {}),
             "inputs": sorted((r["path"], r["role"], r["sha256"]) for r in man.get("inputs", [])),
             "provided": sorted((r["path"], r["sha256"]) for r in man.get("provided", [])),
             "delivered": sorted((r["path"], r["role"], r["sha256"]) for r in man.get("delivered", []))}
@@ -267,7 +303,8 @@ def resume(ws: Path, man: dict, source_wo: str, upto: str | None = None) -> list
     if upto is not None and upto not in PHASES:
         raise ResumeRefused(f"RESUME_INVALID_PHASE:{upto}")
     a, b = old["resume_identity"], man.get("resume_identity")
-    if b is None or a["contract_sha256"] != sha256_bytes(canonical_json(contract(old))) or a != b:
+    if b is None or a["contract_sha256"] != sha256_bytes(canonical_json(contract(old))) or \
+            b["contract_sha256"] != sha256_bytes(canonical_json(contract(man))) or a != b:
         raise ResumeRefused("RESUME_CONTRACT_OR_RUNTIME_CHANGED")
     revision = old.get("factory_revision", {})
     if revision.get("dirty") or not revision.get("commit") or revision.get("commit") == "UNKNOWN" or \

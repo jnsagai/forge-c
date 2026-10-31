@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-30T04:32:10.748151Z",
+  "native_run_id": "01M65G3CG47YKS11GRQEATNB10",
+  "source_revision": "e21aa74411d01458bab45fee8af6d59f710fad03",
+  "task": "inspect:3f1de8adb287ebfb:SWE1-01",
+  "packet_status": "VALID",
+  "verdict": "PASS",
+  "findings_count": 0,
+  "evidence_checked_count": 5,
+  "input_tokens_reserved": 38861,
+  "output_cap": 34816,
+  "conservative_request_reservation": 73677,
+  "old_internal_context_limit": 24576,
+  "selected_context_limit": 262144,
+  "reported_total_tokens": 14937,
+  "full_SWE1_acceptance": "NOT_YET_DECIDED",
+  "full_pipeline": "RUNNING_UNACCEPTED",
+  "independent_correctness_claim": "NOT_ESTABLISHED_BY_SAME_MODEL_INSPECTOR_AGREEMENT"
+}

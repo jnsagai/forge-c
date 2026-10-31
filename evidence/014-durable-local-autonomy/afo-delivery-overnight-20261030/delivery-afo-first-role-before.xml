@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.800" timestamp="2026-10-30T22:10:45.290950+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first" name="test_fast_authors_bind_existing_afo_request_role_before_first_tool_call" time="0.551"><failure message="assert None == 'swe3-author'&#10; +  where None = &lt;function detect_role at 0x788fb9b160c0&gt;([{'content': 'LOCAL QWEN DELIVERY-FIRST DEVELOPMENT. Use your swe3-author skill. Read inputs/IDR-CONTRACT.md and the d...next_action&quot;:&quot;next&quot;} if written; otherwise honest BLOCKED. Your status does not decide test success.', 'role': 'user'}])">prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...60b78de169c08a20aba'}, 'demonstration_only': True, 'factory_maintenance': 'DEFERRED_BY_DEVELOPMENT_POLICY', ...}, ...})
+
+    def test_fast_authors_bind_existing_afo_request_role_before_first_tool_call(prepared):
+        import re
+    
+        from forge_factory.llm_gateway import detect_role
+    
+        ws, man = prepared
+        graph, _ = build(man["work_order"], layer="LL", peripheral="crc", sections=W.section_map(ws),
+                         operation_scope=man["operation_scope"], assessment_manifest=man,
+                         execution_policy=man["development_execution"])
+        for i in range(3):
+            match = re.search(r'df_author_' + str(i) + r' \[[^\n]*prompt="((?:\\.|[^"\\])*)"', graph)
+            assert match
+            prompt = json.loads('"' + match[1] + '"')
+&gt;           assert detect_role([{"role": "user", "content": prompt}]) == "swe3-author"
+E           assert None == 'swe3-author'
+E            +  where None = &lt;function detect_role at 0x788fb9b160c0&gt;([{'content': 'LOCAL QWEN DELIVERY-FIRST DEVELOPMENT. Use your swe3-author skill. Read inputs/IDR-CONTRACT.md and the d...next_action":"next"} if written; otherwise honest BLOCKED. Your status does not decide test success.', 'role': 'user'}])
+
+factory/python/tests/test_delivery_first.py:215: AssertionError</failure></testcase></testsuite></testsuites>

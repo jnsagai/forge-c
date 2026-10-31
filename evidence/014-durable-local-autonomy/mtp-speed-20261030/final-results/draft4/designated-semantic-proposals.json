@@ -1,0 +1,194 @@
+[
+  {
+    "trial_id": "late-finding:0",
+    "job_id": "afo-agent-6515a2bbb854f9822e01618f",
+    "proposal_sha256": "ccd956e83ed3f504cfd5c4c9cf3f2a55a21b3110be227c7fb0ee5b16ba27a7fd",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:57002974e2d78f7efe7ec227",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "TEST_DIAGNOSTIC",
+            "obligation_ref": "USPEC-001",
+            "reason": "The decisive register-effect counterexample is not resolved by the supplied fixture inventory context; a decisive diagnostic is required to distinguish an implementation defect from an unresolved test"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "late-finding:1",
+    "job_id": "afo-agent-a80f08d083856131be21ecdb",
+    "proposal_sha256": "6aac24c182b738c6d2928ba3ad033d3c57e8ee0048a7c3e47fdcbb04d3208a3b",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:57002974e2d78f7efe7ec227",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "TEST_DIAGNOSTIC",
+            "obligation_ref": "USPEC-001",
+            "reason": "The decisive register-effect counterexample is not resolved by the supplied fixture inventory context; a decisive diagnostic is required to determine whether the failure is an implementation defect, a"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "missing-primary:0",
+    "job_id": "afo-agent-3a75d6640c95a1f0f76a1478",
+    "proposal_sha256": "de99b8b0869d2a0a2189c56fc6fa8a6df9847e60b7abb9aee342b575ce5dd753",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The authoritative EN ownership contract is unavailable, so the decisive requirement authority for the reported SWR-001 behavior cannot be verified from the supplied primary sources."
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "missing-primary:1",
+    "job_id": "afo-agent-734484ff14659d31e281b3a6",
+    "proposal_sha256": "a76a41c9b1a5c6462c512816590f8168cf710d1e9fed1c0713c41de780e22516",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The authoritative EN ownership contract is unavailable, so the decisive requirement authority for the reported SWR-001 conflict cannot be confirmed from the supplied primary sources."
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "obligation-counterexample:0",
+    "job_id": "afo-agent-1a20f3c0a7db7ac1075da34f",
+    "proposal_sha256": "8e3cd12c8fbe3b170e15f734653c5220524eec6c4c8d32b00ae923ede3dd5775",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:d5b9dbf11b26adf7fbb58ad9e8468a97bfb6cffc936c53343d603c7e0a80d0da:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The authoritative requirement text is not present in the supplied primary sources; only the implementation artifact and a counterexample are available."
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "obligation-counterexample:1",
+    "job_id": "afo-agent-e6dfbe14cf71eb656244fab7",
+    "proposal_sha256": "0f0df68afc959103899dc4b6d1656bcbb07d676971dbcdd60768f11dadc151f3",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:690195f8b0233efaa28132cf",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:d5b9dbf11b26adf7fbb58ad9e8468a97bfb6cffc936c53343d603c7e0a80d0da:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "TEST_DIAGNOSTIC",
+            "obligation_ref": "USPEC-001",
+            "reason": "The counterexample reports a compiled return value of 2 for input 0, but the supplied source A4 shows reg_enable returning before | UINT32_C(2), which is consistent with that result. A decisive fact, "
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "upstream-owner:0",
+    "job_id": "afo-agent-539d1d38f66894ae9155d62e",
+    "proposal_sha256": "bd265c94d34f76e77bc21c7130590ed7f27fcc9a1c6f59395e28df1d8cdd8b08",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:def9f03c58a0fc04bfbc6dc2",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:e91ee9b22be3232418b8faed76c67ffcfbc31ee68c1e873b015211017073fd09:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The packet contains conflicting authoritative-looking inputs: A1 and A3 require EN bit 0 with mask UINT32_C(1), while A2 specifies EN mask 2. A decisive authoritative source is needed to determine the"
+          }
+        ]
+      },
+      "reason": null
+    }
+  },
+  {
+    "trial_id": "upstream-owner:1",
+    "job_id": "afo-agent-3e5b613511bddb32546481d6",
+    "proposal_sha256": "1c833bf280a6d22bd34f4eb8da4fd14d5358283fbab234dbe6b34bd2f111e410",
+    "stored_designated_record": {
+      "proposal": {
+        "decision": "NEEDS_EVIDENCE",
+        "evidence_refs": [
+          "finding:def9f03c58a0fc04bfbc6dc2",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:88dacd0c1f117306",
+          "artifact:e91ee9b22be3232418b8faed76c67ffcfbc31ee68c1e873b015211017073fd09:ec9370e3e3fa88d4",
+          "artifact:a22ef6862ff99d2a4e849434ae71be27d2b911d449fa7f0ede2770d77c9c77c2:2830619dafa5e48c",
+          "artifact:cd125423eeeb4c37e400e856967d367244011da72fc8f4bfd6ebad20a8c0d318:54bea9a624db4256"
+        ],
+        "missing_evidence": [
+          {
+            "evidence_kind": "AUTHORITATIVE_INPUT",
+            "obligation_ref": "USPEC-001",
+            "reason": "The packet contains conflicting authoritative-looking inputs: A1/A3 require EN mask UINT32_C(1), while A2 specifies EN mask 2 and A4 implements mask 2. A decisive authoritative source is needed to dis"
+          }
+        ]
+      },
+      "reason": null
+    }
+  }
+]

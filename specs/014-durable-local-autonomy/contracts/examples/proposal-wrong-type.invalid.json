@@ -1,0 +1,23 @@
+{
+  "decision": "PROPOSE_REPAIR",
+  "evidence_refs": [
+    "case-evidence:ins-001",
+    "case-evidence:counterexample-001"
+  ],
+  "strategy": "REWORK_LOCAL",
+  "target_obligations": "SWR-001",
+  "affected_phase": "SWE.3",
+  "causal_hypothesis": "The unit reference names a symbol absent from the accepted unit allocation.",
+  "technique_id": "unit-reference-reconciliation",
+  "material_difference": "Reconcile each reference against the accepted allocation before modifying the implicated unit.",
+  "proposed_change": "Correct the implicated unit reference and preserve the public interface.",
+  "artifact_scope": [
+    "software/ll"
+  ],
+  "validation_expectations": [
+    {
+      "test_ref": "case-test:allocation-reference-check",
+      "expected_result": "No unresolved unit references; prior passing obligations remain passing."
+    }
+  ]
+}

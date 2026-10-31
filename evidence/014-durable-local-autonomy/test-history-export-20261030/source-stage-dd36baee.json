@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-31T00:04:07.968696Z",
+  "status": "STAGED_NOT_ACTIVATED",
+  "source_revision": "dd36baee87a6a9ea01ae827bc0eec7b9f5ae0ef6",
+  "staged_source_path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/source-stage-dd36baee",
+  "bundle_sha256": "7186a5e9ebf9dbd187960cdf61673a88ef3cb9c812423d76cbbc370facdd51f4",
+  "runtime_source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "runtime_source_clean_and_unchanged": true,
+  "operations_intent_unchanged": true,
+  "operations_epoch": 4,
+  "new_model_calls": 0,
+  "new_jobs_submitted": 0,
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "authorization_renewed": false
+}

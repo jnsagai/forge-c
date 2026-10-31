@@ -1,0 +1,87 @@
+{
+  "read_only": true,
+  "environment_fields": "only root/state/role/java lookup, never credentials",
+  "processes": [
+    {
+      "pid": 1345470,
+      "role": null,
+      "FORGE_DATA_ROOT": null,
+      "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/state",
+      "java_available": true,
+      "jars_at_explicit_root": null,
+      "jars_at_state_parent": 1
+    },
+    {
+      "pid": 1345496,
+      "role": null,
+      "FORGE_DATA_ROOT": null,
+      "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/state",
+      "java_available": true,
+      "jars_at_explicit_root": null,
+      "jars_at_state_parent": 1
+    },
+    {
+      "pid": 1345510,
+      "role": null,
+      "FORGE_DATA_ROOT": null,
+      "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/state",
+      "java_available": true,
+      "jars_at_explicit_root": null,
+      "jars_at_state_parent": 1
+    },
+    {
+      "pid": 1345556,
+      "role": null,
+      "FORGE_DATA_ROOT": null,
+      "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/state",
+      "java_available": true,
+      "jars_at_explicit_root": null,
+      "jars_at_state_parent": 1
+    },
+    {
+      "pid": 1345582,
+      "role": null,
+      "FORGE_DATA_ROOT": null,
+      "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/state",
+      "java_available": true,
+      "jars_at_explicit_root": null,
+      "jars_at_state_parent": 1
+    },
+    {
+      "pid": 1345606,
+      "role": null,
+      "FORGE_DATA_ROOT": null,
+      "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/state",
+      "java_available": true,
+      "jars_at_explicit_root": null,
+      "jars_at_state_parent": 1
+    },
+    {
+      "pid": 1345641,
+      "role": null,
+      "FORGE_DATA_ROOT": null,
+      "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/state",
+      "java_available": true,
+      "jars_at_explicit_root": null,
+      "jars_at_state_parent": 1
+    },
+    {
+      "pid": 1345680,
+      "role": null,
+      "FORGE_DATA_ROOT": null,
+      "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/state",
+      "java_available": true,
+      "jars_at_explicit_root": null,
+      "jars_at_state_parent": 1
+    },
+    {
+      "pid": 1345691,
+      "role": null,
+      "FORGE_DATA_ROOT": null,
+      "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/state",
+      "java_available": true,
+      "jars_at_explicit_root": null,
+      "jars_at_state_parent": 1
+    }
+  ]
+}

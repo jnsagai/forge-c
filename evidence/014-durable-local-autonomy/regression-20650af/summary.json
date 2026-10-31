@@ -1,0 +1,107 @@
+{
+ "schema": "forge-c/feature014-regression/1",
+ "source_revision": "20650af67953220737166062e857e06b1a48081f",
+ "candidate": "merge of main 38e2740 into feat/014 (247562c) + 20650af (stage catalogue refusal)",
+ "whole_inherited_suite": {
+  "files": 215,
+  "tests": 1840,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 49,
+  "per_file_exit_codes_ok": true,
+  "runner_status": "PARTIAL_FAILURES_OR_TIMEOUTS",
+  "runner_status_reason": "end_dirty only: test_t050_t051_docs_status rewrites the generated timestamp/commit line of docs/IMPLEMENTATION-STATUS-v0.4.md and evidence/v0.4/implementation-status.json (content otherwise identical; verified by diff)",
+  "skipped_by_file": {
+   "factory/python/tests/test_001_build_pins.py": 1,
+   "factory/python/tests/test_afo_m3_reconcile.py": 1,
+   "factory/python/tests/test_afo_m4_recovery.py": 7,
+   "factory/python/tests/test_brownfield_conformance.py": 1,
+   "factory/python/tests/test_brownfield_generic_prefix.py": 2,
+   "factory/python/tests/test_cre_d7_drill.py": 1,
+   "factory/python/tests/test_cre_d7_final.py": 1,
+   "factory/python/tests/test_cre_d7_isolation.py": 2,
+   "factory/python/tests/test_easa_corpus.py": 1,
+   "factory/python/tests/test_easa_m3_m4.py": 1,
+   "factory/python/tests/test_easa_m8.py": 2,
+   "factory/python/tests/test_kpi_003.py": 1,
+   "factory/python/tests/test_lrtx_drill.py": 1,
+   "factory/python/tests/test_lrtx_p3.py": 1,
+   "factory/python/tests/test_m2_mcp.py": 1,
+   "factory/python/tests/test_m6_observability.py": 1,
+   "factory/python/tests/test_peripheral_tim.py": 1,
+   "factory/python/tests/test_safec_bridge.py": 2,
+   "factory/python/tests/test_safec_bridge_engine_corpus.py": 2,
+   "factory/python/tests/test_safec_bridge_m2.py": 9,
+   "factory/python/tests/test_safec_bridge_obligations.py": 1,
+   "factory/python/tests/test_safec_bridge_oracle.py": 2,
+   "factory/python/tests/test_safec_bridge_reset_seal.py": 2,
+   "factory/python/tests/test_t004_fabro_capabilities.py": 1,
+   "factory/python/tests/test_t007_policy.py": 1,
+   "factory/python/tests/test_t009_workflow_gates.py": 1,
+   "factory/python/tests/test_t024_systemd.py": 1,
+   "factory/python/tests/test_t050_t051_docs_status.py": 1
+  },
+  "progress_sha256": "a01f8f6842efc711ff404699b58edf86ca53401c36e32396a396b988da096056"
+ },
+ "core": {
+  "tests": 645,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 1,
+  "start_dirty": "",
+  "end_dirty": ""
+ },
+ "release": {
+  "tests": 13,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+ },
+ "auxiliary": {
+  "history_replay": "PASS",
+  "systemd_semantics": "PASS",
+  "stage_dry_runs": {
+   "benchmark": [
+    "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",
+    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED"
+   ],
+   "operation-168": [
+    "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",
+    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED"
+   ],
+   "operation-24": [
+    "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",
+    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED"
+   ],
+   "operation-72": [
+    "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",
+    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED"
+   ],
+   "protocol": [
+    "APPROVED_100_JOB_BINDINGS_NOT_PROVISIONED",
+    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED"
+   ],
+   "rcc": [
+    "APPROVED_PRODUCT_JOB_BINDINGS_NOT_PROVISIONED",
+    "FROZEN_PRIMARY_INPUTS_NOT_PROVISIONED"
+   ],
+   "targeted": [
+    "STAGE_CATALOGUE_NOT_AUTHORED:targeted"
+   ]
+  }
+ },
+ "independent_cre": {
+  "decision": "REJECTED",
+  "evaluator_id": "cre-promotion-runner@918c6a4a2577",
+  "first_hard_gate": {
+   "name": "protected_files",
+   "result": "FAIL",
+   "evidence_refs": [
+    "git-diff:918c6a4a2577..20650af67953"
+   ],
+   "reason_code": "PROTECTED_PATH_CHANGE"
+  },
+  "known_issue": "KI-014-010 (owner review of PR #42)"
+ },
+ "live_checks": "NOT_RUN here (no inference): protocol/product/operation stages stay blocked without bindings"
+}

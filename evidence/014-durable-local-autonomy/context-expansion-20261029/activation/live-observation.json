@@ -1,0 +1,158 @@
+{
+  "captured_utc": "2026-10-29T14:08:44.989263Z",
+  "order_id": "afo-774900b297bdde37",
+  "order_state": "RUNNING",
+  "terminal_reason": null,
+  "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "native": [
+    {
+      "run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
+      "status": "RUNNING",
+      "labels_match_job_and_nonce": true,
+      "event_count_first_page": 38,
+      "event_types": [
+        "checkpoint.completed",
+        "command.completed",
+        "command.started",
+        "edge.selected",
+        "git.identity.resolved",
+        "run.created",
+        "run.runnable",
+        "run.running",
+        "run.start_requested",
+        "run.started",
+        "run.starting",
+        "run.submitted",
+        "sandbox.create.completed",
+        "sandbox.create.progress",
+        "sandbox.create.started",
+        "sandbox.initialized",
+        "sandbox.initializing",
+        "sandbox.ready",
+        "stage.completed",
+        "stage.started"
+      ],
+      "event_shapes": [
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "node_id": "str",
+          "node_label": "str",
+          "stage_id": "str",
+          "actor": "dict",
+          "properties": "dict"
+        },
+        {
+          "seq": "int",
+          "id": "str",
+          "ts": "str",
+          "run_id": "str",
+          "event": "str",
+          "node_id": "str",
+          "node_label": "str",
+          "stage_id": "str",
+          "actor": "dict",
+          "properties": "dict"
+        }
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "afo-product-b715f920180f440b708e55a0",
+      "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-774900b297bdde37-a1/workspace",
+      "execution": {
+        "native_run_ids": [
+          "01M63ZTJ5QM1R96484Y2KN97H6"
+        ],
+        "execution_liveness": "LIVE",
+        "resource_lease": "HELD",
+        "task_outcome": "ACTIVE",
+        "identity_state": "CONFIRMED",
+        "last_reconciled_at": "2026-10-29T14:08:41.213538Z"
+      },
+      "requests": [
+        {
+          "request_id": "structured-request-69a4760f2dff4058bd2bc278b49336f5",
+          "state": "SENT",
+          "charge": 54639,
+          "reported_tokens": null
+        }
+      ],
+      "inspections": {
+        "SWE.1": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.2": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.3": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.4": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.5": {
+          "count": 0,
+          "latest": []
+        },
+        "SWE.6": {
+          "count": 0,
+          "latest": []
+        }
+      },
+      "structured_result_files": []
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+    "created_at": "2026-10-28T21:47:01.560150Z",
+    "limits": {
+      "deadline": 1793297139.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "new:stm32n6:idr:assisted:09aa9891c5875905",
+    "mission_id": "F014-IDR-M1-HIGH-20261028",
+    "initial_limits": {
+      "deadline": 1793250000.0,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "initial_authorization_ref": "AUTH-014-IDR-M1-HIGH-20261028-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793250000.0,
+        "deadline_epoch": 1793297139.0,
+        "authorization_ref": "AUTH-014-IDR-TIME-F206E3A-20261029-V1",
+        "accepted_at": "2026-10-29T10:11:12.483187Z"
+      }
+    ],
+    "attempts": 4,
+    "jobs": 0,
+    "requests": 70,
+    "tools": 193,
+    "corrections": 0,
+    "charged_tokens": 400000000,
+    "usage_unknown": true,
+    "unique_executions": 4,
+    "unbounded_historical_usage": false
+  },
+  "read_only_snapshot": true,
+  "request_or_restart_performed": false
+}

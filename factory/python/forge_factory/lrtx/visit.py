@@ -11,9 +11,41 @@ from pathlib import Path
 from ..common import pretty_json, utc_now
 from . import structured as S
 
+# Admission facts are not malformed model answers. Retrying an identical denied
+# request inside its semantic repair loop cannot supply engineering evidence.
+# Busy/transport refusals retain their existing bounded retry behavior.
+NON_REPAIRABLE_REFUSALS = frozenset("CALL_REFUSED:" + code for code in (
+    "JOB_TOKEN_ENVELOPE_EXHAUSTED", "MISSION_TOKEN_CAPACITY_EXHAUSTED", "MISSION_REQUESTS_EXHAUSTED",
+    "MISSION_DEADLINE_EXHAUSTED", "REQUEST_NOT_AUTHORIZED", "GENERATION_RETIREMENT_FENCED",
+    "EXECUTION_INFERENCE_LEASE_REQUIRED", "REQUEST_START_FENCED", "REQUEST_ORDER_NOT_ACTIVE",
+    "REQUEST_AUTHORITY_CHANGED_BEFORE_PROVIDER_SEND",
+    "DEVELOPMENT_PHASE_REPAIR_EXHAUSTED",
+))
 
 def _ckpt(ws: Path, phase: str, task: str) -> Path:
     return Path(ws) / ".forge-run/lrtx" / phase / "packets" / (task.replace(":", "__") + ".json")
+
+
+def author_call_limit(ws: Path, phase: str, default: int, explicit: int | None = None) -> int:
+    """A pinned profile may size this existing visit for more coherent obligations.
+
+    The request/job/mission admission limits still apply independently. This does
+    not change the role registry, individual context, inference slots or retries.
+    """
+    manifest = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+    selected = manifest.get("local_profile") or {}
+    limits = {}
+    if selected.get("id"):
+        from .profile import load
+
+        limits = (load(selected["id"]).get("structured") or {}).get("author_max_calls_by_phase") or {}
+    if (not isinstance(limits, dict) or any(k not in {f"SWE.{n}" for n in range(1, 7)}
+            or type(v) is not int or not 1 <= v <= 4096 for k, v in limits.items())):
+        raise ValueError("PROFILE_AUTHOR_CALL_LIMIT_INVALID")
+    value = explicit if explicit is not None else limits.get(phase, default)
+    if type(value) is not int or not 1 <= value <= 4096:
+        raise ValueError("PROFILE_AUTHOR_CALL_LIMIT_INVALID")
+    return value
 
 
 class Continue(Exception):  # noqa: N818 - control flow: the visit's time box is used up, resume in a new node
@@ -69,6 +101,54 @@ def last_finished(ws: Path, phase: str, log: str = "visits.jsonl") -> str:
     return done[-1]["at"] if done else ""
 
 
+def inherited_task(ws: Path, phase: str, task: str, base: dict, check) -> dict | None:
+    """Reuse a validated author task, never an incomplete phase's PASS or inspector.
+
+    The existing resume lineage supplies the sole source workspace. Full packet
+    identity, current output schema and current task validator must all match.
+    Old attempts/usage remain in their own evidence and the shared mission ledger;
+    importing one output neither creates model usage nor grants a phase verdict.
+    """
+    if base.get("role") != f"swe{phase[-1]}-author":
+        return None
+    from ..brownfield.resume import source_workspace
+    from ..common import sha256_bytes, sha256_file, state_dir
+
+    manifest = Path(ws) / ".forge-run/manifest.json"
+    metadata = json.loads(manifest.read_text()) if manifest.is_file() else {}
+    lineage = metadata.get("resumed_from")
+    fresh = metadata.get("fresh_recovery_from") or {}
+    source = (lineage or {}).get("source_work_order")
+    fresh_bound = None
+    if not source and fresh.get("revalidate_author_tasks") is True:
+        source, fresh_bound = fresh.get("work_order"), fresh.get("source_manifest_sha256")
+        if not isinstance(fresh_bound, str) or len(fresh_bound) != 64:
+            return None
+    if not source:
+        return None
+    try:
+        parent = source_workspace(source)
+        candidate = _ckpt(parent, phase, task)
+        if parent.resolve() == Path(ws).resolve() or not candidate.is_file():
+            return None
+        root = state_dir() / "workorders"
+        if (not parent.resolve().is_relative_to(root.resolve()) or not candidate.resolve().is_relative_to(parent.resolve())
+                or any(p.is_symlink() for p in [candidate, *candidate.parents] if p == root or root in p.parents)):
+            return None
+        if fresh_bound and sha256_file(parent / ".forge-run/manifest.json") != fresh_bound:
+            return None
+        raw = candidate.read_bytes()
+        old = json.loads(raw)
+        if (old.get("task") != task or old.get("status") != "VALID" or old.get("base_hash") != base["input_hash"]
+                or S.validate(old.get("doc"), base["output_schema"]) or check(old["doc"])):
+            return None
+    except (OSError, ValueError, KeyError, TypeError):
+        return None  # Unusable old evidence is not authority to skip the current task.
+    return {**old, "inherited_from": {"source_work_order": source,
+                                      "record_path": str(candidate.relative_to(parent)),
+                                      "record_sha256": sha256_bytes(raw), "validated_at": utc_now()}}
+
+
 def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findings: list[str] | None = None,
              max_repairs: int = 2) -> dict:
     """Build -> call -> validate -> localized repair, with checkpoint reuse. `build(findings, previous)` returns the
@@ -78,8 +158,16 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
     ck = _ckpt(ws, phase, task)
     prev = json.loads(ck.read_text()) if ck.is_file() else None
     base = build(None, None)
+    if prev is None and not findings:
+        prev = inherited_task(ws, phase, task, base, check)
+        if prev is not None:
+            ck.parent.mkdir(parents=True, exist_ok=True)
+            ck.write_text(pretty_json(prev))
     if prev and not findings and prev.get("base_hash") == base["input_hash"] and prev.get("status") == "VALID":
-        return {**prev, "reused": True}
+        errors = S.validate(prev.get("doc"), base["output_schema"]) or check(prev["doc"])
+        if not errors:
+            return {**prev, "reused": True}
+        prev = {**prev, "status": "INVALID", "errors": errors}
     if prev and not findings and prev.get("base_hash") == base["input_hash"] and prev.get("doc") is not None:
         findings = prev.get("errors") or None  # an INVALID checkpoint on unchanged inputs: repair it, not restart
     start = prev["doc"] if (prev and findings and prev.get("doc") is not None) else None
@@ -101,7 +189,10 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
             raise Continue(task)
         budget["calls"] += 1
         if "schema_mode" not in budget:  # LRTX-T012: the probed mode of the served model, recorded once per visit
-            budget["schema_mode"], budget["schema_mode_basis"] = S.schema_mode_for(p["model"])
+            # G3/D10: the digest the packet identity was hashed with, not the FORGE_LRTX_PROFILE default
+            digest = (p.get("identity") or {}).get("model_digest")
+            budget["schema_mode"], budget["schema_mode_basis"] = (
+                S.schema_mode_for(p["model"], digest) if digest else S.schema_mode_for(p["model"]))
         from ..brownfield.resume import remaining_seconds
 
         remaining = remaining_seconds(ws)
@@ -125,6 +216,8 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
             doc = r["doc"]
         if not errs:
             break
+        if any(error in NON_REPAIRABLE_REFUSALS for error in errs):
+            break
         # bounded extension (at most 2 extra repairs, inside the visit's shared budget) while the answer improves
         if n + 1 == limit and limit < max_repairs + 3 and len(attempts) > 1 and \
                 len(attempts[-1]["errors"]) < len(attempts[-2]["errors"]):
@@ -138,10 +231,15 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
 
 
 def write_scoped(ws: Path, files: dict[str, str], node: str) -> None:
-    """Every write is decided by the same role authorization the Fabro policy hook applies to the author node."""
+    """Every write is decided by the same role authorization the Fabro policy hook applies to the author node.
+
+    CAPA-075: the decision is made against the workspace being WRITTEN. A workspace copy (lrtx/modelcmp, lrtx/seeded,
+    lrtx/campaign) keeps the source's binding.json, whose absolute `workspace` would otherwise make the Authorizer
+    read and update the source's development-phase state. Node roles and phases still come from the binding."""
     from ..policy.authz import Authorizer, Binding
 
-    auth = Authorizer(Binding.load(Path(ws) / ".forge-run/binding.json"))
+    bound = Binding.load(Path(ws) / ".forge-run/binding.json")
+    auth = Authorizer(Binding(bound.binding_id, str(Path(ws)), bound.nodes))
     for rel, text in files.items():
         d = auth.decide(node, "write_file", {"path": rel, "content": ""})
         if not d.allow:
@@ -165,7 +263,16 @@ def rework_findings(ws: Path, phase: str, since: str) -> list[str]:
     if ins:
         d = json.loads(ins[-1].read_text())
         if d.get("recorded_at", "") > since and d.get("verdict") != "PASS":
-            out += [f"{f.get('id')}: {f.get('detail', '')}" for f in d.get("findings") or []]
+            # Published item findings are the repair evidence; detail is a compact display summary.
+            # Old inspections and separately supplied findings retain their legacy summary fallback.
+            items = d.get("items") or {}
+            for finding in d.get("findings") or []:
+                item = items.get(finding.get("id"))
+                full = item.get("findings") if isinstance(item, dict) and item.get("verdict") == "FAIL" else None
+                if isinstance(full, list) and full and all(isinstance(text, str) for text in full):
+                    out += [f"{finding.get('id')}: {text}" for text in full]
+                else:
+                    out.append(f"{finding.get('id')}: {finding.get('detail', '')}")
             if d.get("stale_reason"):
                 out.append(f"inspection stale: {d['stale_reason']}")
     for p in sorted((ws / ".forge-run/defects").glob("DEF-*.json")) if (ws / ".forge-run/defects").is_dir() else []:
@@ -190,6 +297,18 @@ def route_findings(findings: list[str], amap: dict | None, default: str) -> dict
         for case, swr in (amap or {}).get("case", {}).items():
             if re.search(rf"\b{re.escape(case)}\b", f) and swr in (amap or {}).get("swr", {}):
                 tasks.add(amap["swr"][swr]["task"])
+        points = (amap or {}).get("open_points") or {}
+        mentions_points = re.search(r"\bopen[\s_-]+points?\b", f, re.I)
+        owners = set()
+        for ident, origin in points.items():
+            register = origin.get("register")
+            if (ident in f or origin.get("text") and origin["text"] in f
+                    or mentions_points and register and re.search(rf"\b{re.escape(register)}\b", f)):
+                owners.add(origin["task"])
+        if mentions_points and not owners:
+            # Unknown note location conservatively reaches all known note origins, never just a cited SWR task.
+            owners = {origin["task"] for origin in points.values()}
+        tasks.update(owners)
         for t in tasks or {default}:
             if t != "budgets":
                 out.setdefault(t, []).append(f)

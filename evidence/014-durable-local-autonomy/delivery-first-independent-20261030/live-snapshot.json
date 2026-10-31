@@ -1,0 +1,125 @@
+{
+  "at": "2026-10-30T21:43:25.072714Z",
+  "native_id": "01M6788GYKREQSS1YTZHS9N3TV",
+  "native_status": "SUCCEEDED",
+  "source_revision": "beb48b49d4ed7588798b964bc9da99ec47ff7251",
+  "stages": [
+    {
+      "at": "2026-10-30T21:41:35.433629872Z",
+      "event": "stage.started",
+      "node": "swe6_inspect_gate"
+    },
+    {
+      "at": "2026-10-30T21:41:35.434449561Z",
+      "event": "stage.failed",
+      "node": "swe6_inspect_gate"
+    },
+    {
+      "at": "2026-10-30T21:41:35.510315263Z",
+      "event": "stage.started",
+      "node": "release_manager"
+    },
+    {
+      "at": "2026-10-30T21:43:09.176080724Z",
+      "event": "stage.completed",
+      "node": "release_manager"
+    },
+    {
+      "at": "2026-10-30T21:43:09.260327111Z",
+      "event": "stage.started",
+      "node": "finalize"
+    },
+    {
+      "at": "2026-10-30T21:43:09.330561326Z",
+      "event": "stage.completed",
+      "node": "finalize"
+    },
+    {
+      "at": "2026-10-30T21:43:09.331585155Z",
+      "event": "stage.started",
+      "node": "exit"
+    },
+    {
+      "at": "2026-10-30T21:43:09.331593785Z",
+      "event": "stage.completed",
+      "node": "exit"
+    }
+  ],
+  "tool_calls": 439,
+  "tools_used": [
+    "glob",
+    "grep",
+    "mcp__forge_build_mcp__compile",
+    "mcp__forge_build_mcp__configure",
+    "mcp__forge_docs_mcp__validate_artifact",
+    "mcp__forge_evidence_mcp__build_package",
+    "mcp__forge_evidence_mcp__check_inspection",
+    "mcp__forge_evidence_mcp__validate_trace",
+    "mcp__forge_knowledge_mcp__find_lessons",
+    "mcp__forge_observer_mcp__get_kpis",
+    "mcp__forge_observer_mcp__get_status",
+    "mcp__forge_observer_mcp__query_events",
+    "mcp__forge_repo_mcp__get_commit",
+    "mcp__forge_sim_mcp__run_renode",
+    "mcp__forge_tests_mcp__run_robot",
+    "mcp__forge_tests_mcp__run_unit",
+    "read_file",
+    "shell",
+    "update_plan",
+    "use_skill",
+    "write_file"
+  ],
+  "tool_errors": 19,
+  "candidate": {
+    "exists": true,
+    "sha256": "511956a9345ca465b265a60214f16fb43c5d2395b18dfcf7fd4766a980cc29f5",
+    "bytes": 2724,
+    "native_write_submissions": [
+      {
+        "tool_call_id": "mHnH8gGd0lrf3zT1BPh3e6z9O9luRX4D",
+        "node": "df_author_0",
+        "submitted_content_sha256": "511956a9345ca465b265a60214f16fb43c5d2395b18dfcf7fd4766a980cc29f5"
+      }
+    ]
+  },
+  "reported_responses": 246,
+  "reported_output_tokens": 209145,
+  "measured_requests": 246,
+  "last_measurement": {
+    "context_limit_tokens": 65536,
+    "fits": true,
+    "generation_dispatched": false,
+    "kind": "REQUEST_MEASUREMENT",
+    "measurement": {
+      "chat_template_sha256": "a321c9417f942ed291e2fb13134a3538ad9733b275537eabc85b0d6a590f8606",
+      "counts": {
+        "chat_template": 26197,
+        "non_message_controls": 1443,
+        "serialized_request": 27392
+      },
+      "framing_reserve_tokens": 128,
+      "input_tokens": 27768,
+      "method": "native_template_plus_serialized",
+      "native_measured": true,
+      "serialized_bytes": 74356,
+      "sha256": "748bc77d45018a7d4401784db10fb62273627448df675f8e3dbe7f0dec93b6ac",
+      "wall_ms": 47.311
+    },
+    "model": "qwen3.8:27b-q8_0",
+    "output_reserve_tokens": 24576,
+    "scope": "STANDALONE_NO_DURABLE_ACCOUNTING",
+    "ts_utc": "2026-10-30T21:42:52.928174Z"
+  },
+  "independent_checks": [
+    {
+      "status": "PASS",
+      "attempt": 0
+    }
+  ],
+  "package": {
+    "archive": "/mnt/data/forge-c/delivery-first-014-20261030-v1/archives/WO-F014-QWEN-CRC-IDR-DELIVERY-20261030-01/forge-c-WO-F014-QWEN-CRC-IDR-DELIVERY-20261030-01-review.zip",
+    "archive_sha256": "f953209eefcf3c06a88281c93f4771653f9e01715e66875c9f6a4213557c93dd",
+    "gap_count": 57,
+    "package_status": "BLOCKED"
+  }
+}

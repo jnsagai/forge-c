@@ -380,3 +380,66 @@ def test_verdict_string_parsed_by_item_ids_any_separator():
     r = parse_verdict_string("SWE5-04=PASS (ok); SWE5-05=Rework finding: SWR-012 has no SWE.5 measure; SWE5-06=PASS")
     assert r["SWE5-05"]["verdict"] == "FAIL" and "SWR-012" in r["SWE5-05"]["findings"][0]
     assert parse_verdict_string("SWE5-01=Looks fine") == {}
+
+
+def test_t016_native_flat_inspection_keeps_late_findings_in_durable_record(ws):
+    """A summary may be short; the actual source IDs for rework must survive."""
+    (ws / "workproducts/SWE.1").mkdir(parents=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** The RCC driver shall enable the selected peripheral clock.\n")
+    from test_swe2_architecture import add_reqif
+
+    add_reqif(ws)
+    frozen = call(evidence, "forge-evidence-mcp", "freeze_baseline", {"phase": "SWE.1"}, "swe1-author", "SWE.1")
+    assert frozen["status"] == "PASS"
+    note = "Source mapping omitted: " + "factual context α; " * 300 + "late required source HW-TAIL-042"
+    text = "; ".join(f"SWE1-0{i}=" + ("FAIL:" + note if i == 5 else "PASS") for i in range(1, 7))
+    assert len(text) > 4000  # full multi-criterion findings exceeded the former request bound
+    out = call(evidence, "forge-evidence-mcp", "check_inspection",
+               {"phase": "SWE.1", "baseline_id": "BL-SWE.1-001", "verdicts": text}, "swe1-inspector", "SWE.1")
+    assert out["status"] == "FAIL" and out["artifact_refs"]
+    record = json.loads((ws / out["artifact_refs"][0]).read_text())
+    assert record["items"]["SWE1-05"]["findings"] == [note]
+    assert "HW-TAIL-042" in record["items"]["SWE1-05"]["findings"][0]
+    # Display summaries stay bounded; the complete item above is the authoritative feedback.
+    summary = next(f["detail"] for f in record["findings"] if f["id"] == "SWE1-05")
+    assert len(summary) == 200 and summary == note[:200]
+
+
+def test_native_verdict_string_remains_bounded_and_legacy_map_limit_is_unchanged():
+    from pydantic import ValidationError
+
+    base = {"phase": "SWE.1", "baseline_id": "BL-SWE.1-001"}
+    assert evidence.InspectIn(**base, verdicts="x" * 65536).verdicts == "x" * 65536
+    with pytest.raises(ValidationError):
+        evidence.InspectIn(**base, verdicts="x" * 65537)
+    with pytest.raises(ValidationError):
+        evidence.InspectIn(**base, verdicts={f"item-{i}": "PASS" for i in range(4001)})
+
+
+def test_an_analyzer_warning_in_frozen_delivered_code_is_a_dispositionable_delivered_finding(ws, monkeypatch):
+    """Owner 2026-10-26 ("Dispositionable"): BENCH-GPIO-ST-R4 - clang flags ST's LL_GPIO_SetAFPin_8_15 (shift by 128 for
+    an out-of-contract pin below 8). In FROZEN/vendor delivered code such a warning is a DELIVERED_CODE finding the
+    owner may disposition, not a failure of the factory's analysis; errors and the factory's own code still fail."""
+    from forge_factory.brownfield import package as BP
+
+    (ws / "software/src/vendor.c").write_text("int f(int *p){ if (!p) { return *p; } return 0; }\n")
+    monkeypatch.setattr(analysis, "vendor_paths", lambda w: {"software/src/vendor.c"})
+    r = call(analysis, "forge-analysis-mcp", "clang_analyze", {}, "swe3-inspector", "SWE.3")
+    assert r["status"] == "PASS" and r["metrics"]["delivered_findings"] == 1, r
+    (fid,) = BP.static_findings(ws)
+    assert fid.startswith("STATIC_ANALYSIS:core.NullDereference:software/src/vendor.c:1") and r["issues"][0].endswith(fid)
+    monkeypatch.setattr(BP, "manifest_of", lambda w: {"delivery": {"build": {"style": "cmsis"}}, "code_mode": "FROZEN"})
+    monkeypatch.setattr(BP, "is_brownfield", lambda m: True)
+    monkeypatch.setattr("forge_factory.brownfield.verify.verify", lambda w, p: {"issues": []})
+    monkeypatch.setattr("forge_factory.brownfield.conformance.check", lambda w, p: {"status": "CONFORMANT",
+                                                                                   "findings": [], "issues": []})
+    (ws / BP.DELIVERY_DIR).mkdir(parents=True, exist_ok=True)
+    (ws / BP.DELIVERY_DIR / "injection.json").write_text("{}")
+    assert [f["id"] for f in BP.findings(ws)] == [f"DELIVERED_CODE:{fid}"]           # a package gap ...
+    monkeypatch.setattr("forge_factory.inspection.defects.owner_dispositions", lambda w: [
+        {"id": "OD-T", "delivered_finding_regex": r"^STATIC_ANALYSIS:core\.NullDereference:software/src/vendor\.c:1$",
+         "disposition": "ACCEPTED", "approved_by": "o", "approved_at": "d", "limitation": "out-of-contract input"}])
+    assert BP.findings(ws) == [] and "dispositioned by OD-T" in BP.dispositioned(ws)[0]   # ... until dispositioned
+    monkeypatch.setattr(analysis, "vendor_paths", lambda w: set())
+    assert call(analysis, "forge-analysis-mcp", "clang_analyze", {}, "swe3-inspector", "SWE.3")["status"] == "FAIL"

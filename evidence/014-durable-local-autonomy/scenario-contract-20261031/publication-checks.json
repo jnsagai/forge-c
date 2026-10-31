@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "scope": "PUBLICATION_HYGIENE_AND_RECEIPT_HASHES_NOT_RUNTIME",
+  "checks": {
+    "decompressed_failed_receipts_scanned": true,
+    "raw_failed_receipts_preserved": true,
+    "strict_before_after_graph_hashes_equal": true
+  }
+}

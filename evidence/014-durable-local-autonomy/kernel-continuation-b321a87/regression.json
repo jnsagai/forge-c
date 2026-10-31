@@ -1,0 +1,105 @@
+{
+  "schema": "forge-c/014-kernel-continuation-qualification/2",
+  "source_revision": "b321a8766947fa5f5174bbb4f61f5d05720b22d6",
+  "base_revision": "12759e8553dc20e417d1f00ab4e3b3d3da58908a",
+  "initial_source": "c4b601c12b4e9930ade6b08ae9b7ae6991a9e5d4",
+  "source_start_end": "CLEAN_DURING_EXACT_TESTS",
+  "lanes": {
+    "kernel-c4b601c-exact": {
+      "tests": 513,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 40.018,
+      "junit_sha256": "4645147fa138f23956a2b8bc9ddf86755a743e18ce89e5159febf30904369c48"
+    },
+    "kernel-c4b601c-release": {
+      "tests": 29,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 9.416,
+      "junit_sha256": "fc2223ae03a1720438ff29d5e0bf1b4c5ec9e9d96f6628c03930262377dff420"
+    },
+    "kernel-anonymous-wip": {
+      "tests": 74,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.367,
+      "junit_sha256": "34fd8d4297803d5b95d50778791944beb5b3a49b5011db60fa7b6d26686abd19"
+    },
+    "kernel-unlink-wip": {
+      "tests": 81,
+      "failures": 26,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.998,
+      "junit_sha256": "cf518a9cac17c34d25ddf44cffb3b362a050e1d2f6d047451373747207eed9a5"
+    },
+    "kernel-unlink-wip2": {
+      "tests": 81,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.841,
+      "junit_sha256": "65c95f972bf21ff57e7d4a3f4477f25b342b3abb2f63aaafcd3c2ce3374d079d"
+    },
+    "kernel-b321a87-exact": {
+      "tests": 521,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 39.908,
+      "junit_sha256": "898b824cc794e4572d3562082ebaad3ffe34ea65f7657cea239d47f13685ac16"
+    },
+    "kernel-b321a87-release": {
+      "tests": 29,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 10.15,
+      "junit_sha256": "4f59e77dc592031e849457a4816415df3aaca51694ed7d406d12a1c17e9ed638"
+    }
+  },
+  "wip_scope": "UNCOMMITTED_TDD_NOT_EXACT_SOURCE_QUALIFICATION; original failures/fixtures preserved",
+  "failed_prototype": "Descriptor URI made SQLite create a named alias; owned hard-kill test rejected it. Final implementation opens actual owned slot before unlink.",
+  "transitional_assertion_failures": "26 stale cleanup assertions expected no control files; final strict checks allow only two bounded control files, reject named aliases and verify two hard-kill phases.",
+  "local_long_source_assessments": [
+    {
+      "source_bytes": 134224064,
+      "segments": 17,
+      "uncaptured_final_source_bytes": 0,
+      "totals": {
+        "duplicate_records": 2095,
+        "events": 1,
+        "integrity_events": 0,
+        "orphan_compound_groups": 0,
+        "pending_events": 0,
+        "source_events": 2,
+        "source_records": 5
+      },
+      "input_sha256": "afb3ea981aaea3fb1b12a4d287b52ed295744450c19405f2406e4885c85d2505"
+    }
+  ],
+  "native_cases": 81,
+  "native_case_seconds": 28.073,
+  "native_junit_sha256": "e9d8668edc215c80717d0285c9366cb5e23c0754491591c21bcd097aa8c47ac7",
+  "source_bundle_sha256": "faf33262e67aa9202be797d97b8143cf8fc96c5422209eb8944f7092323f1fb3",
+  "scratch": "DISPOSABLE_SELECTED_FACT_SORT;UNLINKED_PROCESSING_FILE;LOCKED_OWNED_INIT_SLOT;NOT_MEMORY_AUTHORITY;FULL_RESTART_FROM_ORIGINALS",
+  "integrity_tags": "PROCESS_LOCAL_NOT_AUTHORIZATION_OR_DURABLE_CHECKPOINTS",
+  "native_preflight": "BLOCKED",
+  "unexpected_interventions": null,
+  "live_kernel_complete_records": "NOT_QUALIFIED",
+  "all_channel_verification": "INCOMPLETE",
+  "model_calls": 0,
+  "product_attempts": 0,
+  "qualified_lessons_added": 0,
+  "learning_benefit": "NOT_MEASURED",
+  "formal_task_count": "30/58_UNCHANGED",
+  "self_healing": "NOT_PROVEN",
+  "availability_campaigns": "NOT_RUN",
+  "deployment": "NOT_ACTIVATED",
+  "grant_changes": 0,
+  "budget_resets": 0
+}

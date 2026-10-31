@@ -1,0 +1,11 @@
+{
+  "expected_remote_package_sha256": "f953209eefcf3c06a88281c93f4771653f9e01715e66875c9f6a4213557c93dd",
+  "integrity": {
+    "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/full-pipeline-delivery-first/native-01M6788GYKREQSS1YTZHS9N3TV/forge-c-WO-F014-QWEN-CRC-IDR-DELIVERY-20261030-01-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "copied_at": "2026-10-30T21:46:18.773367+00:00",
+  "private_local_copy": true,
+  "model_requests": 0
+}

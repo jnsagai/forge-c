@@ -1,0 +1,71 @@
+F.F.                                                                     [100%]
+=================================== FAILURES ===================================
+__________________ test_at082_author_role_denied_and_audited ___________________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-broad-failures/test_at082_author_role_denied_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x777e2c1c1940>
+
+    def test_at082_author_role_denied_and_audited(tmp_path, monkeypatch):
+        monkeypatch.setattr(isolation, "available", lambda: False)
+        monkeypatch.setattr(oracle, "emit", lambda *a, **k: None)
+        s = AssuranceStore(tmp_path / "db.sqlite3")
+        v = oracle.HoldoutVault(tmp_path / "vault", store=s)
+        digests = v.deposit({"expected/SWR-013.json": b'{"status":"HAL_TIMEOUT"}'})
+        with pytest.raises(PermissionError):
+            v.read("swe4-author", "expected/SWR-013.json")
+>       assert v.read("easa-verifier", "expected/SWR-013.json") == b'{"status":"HAL_TIMEOUT"}'
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_easa_m2.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/assurance/oracle.py:110: in read
+    return (self.root / rel).read_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_abc.py:625: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-broad-failures/test_at082_author_role_denied_0/vault/expected/SWR-013.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       PermissionError: [Errno 13] Permission denied: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-broad-failures/test_at082_author_role_denied_0/vault/expected/SWR-013.json'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:537: PermissionError
+___________ test_kpi_t012_observer_mcp_read_only_and_least_privilege ___________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/pytest-broad-failures/test_kpi_t012_observer_mcp_rea0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x777e2b4f28d0>
+
+    def test_kpi_t012_observer_mcp_read_only_and_least_privilege(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "ev"))
+        monkeypatch.setenv("FORGE_MCP_TRUST", "env")
+        monkeypatch.setenv("FORGE_WORKSPACE", str(tmp_path))
+        S.compute_and_store(order("O1", "O1", "2026-10-14T00:30:00Z", ALL_PASS))
+        from forge_factory.mcp import sdk
+        from forge_factory.mcp.servers import observer
+        op = {o.name: o for o in observer.OPERATIONS}
+        monkeypatch.setenv("FORGE_ROLE", "release-manager")
+        ok = sdk.invoke("forge-observer-mcp", op["get_kpis"], {"kpi_id": "K02"})
+        assert ok["status"] == "PASS" and all(i.startswith("K02") for i in ok["issues"])
+        ev_ = sdk.invoke("forge-observer-mcp", op["get_kpi_evidence"], {"kpi_id": "K02"})
+>       assert ev_["status"] == "PASS" and ev_["metrics"]["event_refs"] >= 1
+E       AssertionError: assert ('PASS' == 'PASS'
+E         
+E           PASS and 0 >= 1)
+
+factory/python/tests/test_kpi_003.py:269: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_easa_m2.py::test_at082_author_role_denied_and_audited
+FAILED factory/python/tests/test_kpi_003.py::test_kpi_t012_observer_mcp_read_only_and_least_privilege

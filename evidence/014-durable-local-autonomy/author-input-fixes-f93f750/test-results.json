@@ -1,0 +1,19 @@
+{
+  "source_revision": "f93f750fe4065472deb76eadcacb1ae963a1464a",
+  "included_data_fix_revision": "f2d4dde9fa63dd1de35c4c825ffc3f6a38d295e0",
+  "tests": {
+    "tests": "45",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "5.014",
+    "timestamp": "2026-10-28T15:32:51.858889+00:00"
+  },
+  "deselected_cases": 1,
+  "deselected_scope": "ST delivery work-order fixture; native production intake was already checked on fcb15cb, not qualified for this prospective source",
+  "native_qualification": "NOT_RUN_REMOTE_DEDICATED_TO_LIVE_MISSION",
+  "actual_Qwen_candidate_calls": 0,
+  "deployed": false,
+  "actual_runtime": "fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61",
+  "source_changes_are_external_engineering_not_autonomous_product_repair": true
+}

@@ -1,0 +1,50 @@
+{
+  "runtime_source": "017e68da015390c60abb8ca46b7dfdd40a0afa79",
+  "deployed": false,
+  "local_model_calls": 0,
+  "native_model_evaluation": "NOT_RUN",
+  "native_cpu_qualification": "QUEUED_AFTER_FROZEN_MTP_SWEEP_ONLY",
+  "commands": [
+    {
+      "files": [
+        "test_da014_diagnosis_context_contract.py",
+        "test_da014_two_step.py",
+        "test_da014_qualification_reservations.py"
+      ],
+      "result": "36 PASS; no failures/errors/skips"
+    },
+    {
+      "files": [
+        "test_da014_proposal_diagnostics.py",
+        "test_da014_role_envelopes.py",
+        "test_da014_protocol_faults.py"
+      ],
+      "result": "64 PASS; no failures/errors/skips"
+    },
+    {
+      "files": [
+        "test_da014_diagnosis_context_contract.py",
+        "test_da014_two_step.py",
+        "test_da014_qualification_inputs.py",
+        "test_reasoning_comparison_preparation.py",
+        "test_mtp_comparison_preparation.py",
+        "test_da014_qualification_reservations.py",
+        "test_afo_local_autonomy.py"
+      ],
+      "result": "121 PASS +1 setup failure; failed case re-run PASS with installed Fabro path; groups overlap"
+    }
+  ],
+  "pytest_prefix": "FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 FORGE_FABRO_LIVE=0 PYTHONPATH=factory/python python -m pytest -q -p no:cacheprovider",
+  "data_and_tmp": "Local loop10, FORGE_DATA_ROOT=B TMPDIR=A3",
+  "meaningful_assertions": [
+    "Generic requirement IDs and incident units distinguished",
+    "All later questions retain global IDs/dependencies/known absences",
+    "Genuine absence accepted for ordinary and synthetic cases",
+    "Complete index does not invent source authority or force repair",
+    "Duplicate semantic items remain invalid",
+    "Expected-outcome/fault controls never enter provider context",
+    "Actual complete sanitized serialized request hash/bytes measured",
+    "Original sealed packet bytes unchanged",
+    "Actual installed Fabro graph validation, no inference"
+  ]
+}

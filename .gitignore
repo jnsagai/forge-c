@@ -20,3 +20,15 @@ secrets/
 # ST copyrighted inputs: keep local (hash manifest is tracked)
 examples/0002-arm_55_rcc_st/inputs/*.md
 examples/0002-arm_55_rcc_st/hal_driver_guideline.md
+examples/0010-gpio-st/inputs/*.md
+examples/0011-spi-st/inputs/*.md
+examples/0012-usart-st/inputs/*.md
+examples/0013-tim-st/inputs/*.md
+examples/0014-crc-st/inputs/*.md
+examples/0015-rm0486-conventions/inputs/*.md
+examples/0016-wwdg-st/inputs/*.md
+examples/0017-rng-st/inputs/*.md
+examples/0018-lptim-st/inputs/*.md
+
+# process-first lab (design rev 4 §1): generated lab work orders, launch manifests and handoff copies
+/process-lab/

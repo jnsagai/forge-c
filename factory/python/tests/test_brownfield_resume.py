@@ -26,7 +26,7 @@ def save(ws, man):
 
 
 @pytest.fixture()
-def pair(tmp_path, monkeypatch):
+def pair(tmp_path, monkeypatch, request):
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
     monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "state/events"))
     monkeypatch.setattr(WO, "factory_revision", lambda: {"commit": "1" * 40, "dirty": False})
@@ -34,10 +34,11 @@ def pair(tmp_path, monkeypatch):
     monkeypatch.setattr(R, "runtime_identity", lambda: {"factory_assets_sha256": "a" * 64, "tools": {"clang": "pinned"}})
     monkeypatch.setattr("forge_factory.fabro.client.client_for_workspace",
                         lambda *a, **kw: Mock(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}}))
-    ex = example_copy(tmp_path)
+    purpose = getattr(request, "param", "DEVELOPMENT")
+    ex = example_copy(tmp_path, name="0008a-rcc-ll-delivered" if purpose == "ASPICE_ONLY" else "ex")
 
     def prepare(wo):
-        ws, man = WO.prepare(ex, wo)
+        ws, man = WO.prepare(ex, wo, purpose=purpose)
         # A minimal native checklist fixture; no mocked gate/PASS predicate.
         man["trace_profile"] = None
         man["register_contract"] = None
@@ -77,6 +78,34 @@ def test_resume_reuses_passed_swe1_and_injects_own_delivery(pair):
     assert report["restart_phase"] == "SWE.2" and report["source_fabro_run_id"] == "test-run-id"
     assert report["lineage"]["attempt_seq"] == 2
     assert not (dst / ".forge-run/package.json").exists()
+
+
+@pytest.mark.parametrize("pair", ["ASPICE_ONLY"], indirect=True)
+def test_aspice_resume_preserves_evidence_and_historical_scope_across_attempt_ids(pair):
+    src, old, dst, new, _, _ = pair
+    original = R.files(src, ".")
+    assert old["historical_safety_scope"]["scope"]["work_order_id"] == "WO-SRC"
+    assert new["historical_safety_scope"]["scope"]["work_order_id"] == "WO-DST"
+    assert old["resume_identity"] == new["resume_identity"]
+    assert WO.resume_from(dst, new, "WO-SRC") == PHASES[1:]
+    assert Store(dst).gate("SWE.1")["decision"] == "PASS"
+    assert R.files(src, ".") == original
+    assert new["historical_safety_scope"]["scope"]["work_order_id"] == "WO-DST"
+    assert new["resume_lineage"]["attempt_seq"] == 2
+
+
+@pytest.mark.parametrize("pair", ["ASPICE_ONLY"], indirect=True)
+@pytest.mark.parametrize("change", ["allocation", "policy"])
+def test_aspice_resume_rechecks_destination_contract_before_copying(pair, change):
+    _, _, dst, new, _, _ = pair
+    if change == "allocation":
+        new["historical_safety_scope"]["scope"]["target_asil"] = "D"
+    else:
+        new["aspice_development"]["policy_ref"]["sha256"] = "0" * 64
+    before = R.files(dst, ".")
+    with pytest.raises(R.ResumeRefused, match="CONTRACT_OR_RUNTIME_CHANGED"):
+        WO.resume_from(dst, new, "WO-SRC")
+    assert R.files(dst, ".") == before
 
 
 def test_resume_carries_two_phases_and_earliest_invalid_wins(pair):

@@ -1,0 +1,18 @@
+{
+  "schema": "forge-c/review-disposition/1",
+  "disposition_id": "DSP-WO-0009B-x1-SWE1-02",
+  "export_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "run_key": "WO-0009B-X-0123456789ab",
+  "workorder": "WO-0009B-X",
+  "subject": {
+    "kind": "FINDING",
+    "phase": "SWE.1",
+    "ref": "SWE1-02"
+  },
+  "verdict": "APPROVED_FOR_RELEASE",
+  "rationale": "SWR-003 states the key write; the finding misread it.",
+  "approver": "Jefferson",
+  "decided_utc": "2026-10-26T12:00:00Z",
+  "use": "LEARNING_SET_ONLY",
+  "signature_ref": "DSP-WO-0009B-x1-SWE1-02.sig"
+}

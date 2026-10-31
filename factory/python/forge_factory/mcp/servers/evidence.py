@@ -9,7 +9,7 @@ from __future__ import annotations
 import csv
 import io
 import re
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -38,7 +38,10 @@ class InspectIn(ToolInput):
     phase: Phase
     baseline_id: str = Field(pattern=r"^BL-SWE\.[1-6]-\d{3}$")
     # Small models often send bare verdict strings; accepted and normalised (evidence = inspected baseline record).
-    verdicts: dict[str, ItemVerdict | Literal["PASS", "FAIL", "NOT_APPLICABLE"]] | str = Field(max_length=4000)
+    verdicts: (
+        Annotated[dict[str, ItemVerdict | Literal["PASS", "FAIL", "NOT_APPLICABLE"]], Field(max_length=4000)]
+        | Annotated[str, Field(max_length=65536)]
+    )
 
 
 # r56: DeepSeek wrote "SWE5-05=Rework finding: ..." - a failure in other words. Fail synonyms map to FAIL (the
@@ -58,7 +61,7 @@ def parse_verdict_string(text: str) -> dict[str, dict]:
         note = text[m.end():end].strip().lstrip(":").strip().rstrip(";.,").strip()
         word = m.group(2).upper()
         out[m.group(1).upper()] = {"verdict": word if word in ("PASS", "NOT_APPLICABLE") else "FAIL", "evidence_refs": [],
-                                   "findings": [note[:120]] if note else []}
+                                   "findings": [note] if note else []}
     return out
 
 
@@ -232,8 +235,24 @@ def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
 
 
 def build_package(ctx: ToolContext, a: PackageIn) -> dict:
+    from ...delivery_first import selected
     from ...release.finalize import finalize
 
+    cfg, _ = selected(ctx.workspace)
+    if cfg:
+        import json
+
+        final = ctx.workspace / ".forge-run/delivery-first/attempt-final/result.json"
+        try:
+            receipt = json.loads(final.read_text()) if not final.is_symlink() else {}
+        except (OSError, ValueError):
+            receipt = {}
+        if (not isinstance(receipt, dict) or receipt.get("attempt") != "final"
+                or receipt.get("verification_round") != "FINAL_RECHECK_NO_NEW_AUTHOR"
+                or receipt.get("status") not in ("PASS", "FAIL")):
+            return result(ctx, "BLOCKED", "Packaging deferred to the graph after final verification; no archive sealed",
+                          issues=["DELIVERY_FIRST_FINAL_VERIFICATION_PENDING"],
+                          metrics={"package_status": "NOT_BUILT"}, tool="forge-packager-v0.4")
     out = finalize(ctx.workspace, ctx.run_id)
     return result(ctx, "PASS" if out["package_status"] in ("READY_FOR_OFFLINE_REVIEW", "BLOCKED") else "FAIL",
                   f"package {out['package_status']} gaps={out['gap_count']}", [out["archive_ref"]],

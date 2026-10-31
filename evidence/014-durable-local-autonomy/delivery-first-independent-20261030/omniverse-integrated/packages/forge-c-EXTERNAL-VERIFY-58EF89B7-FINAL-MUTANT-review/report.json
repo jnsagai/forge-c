@@ -1,0 +1,1087 @@
+{
+  "artifact_delivery": "COMPLETE",
+  "artifact_delivery_scope": "DECLARED_CANDIDATE_FILES_ONLY; PHASE_BASELINES_REPORTED_SEPARATELY",
+  "attempts": [
+    {
+      "at": "2026-10-30T21:40:00.309747Z",
+      "attempt": 0,
+      "authorship": "NATIVE_WRITE_EVENTS_REQUIRED",
+      "calls": [
+        {
+          "argv": [
+            "clang",
+            "-std=c11",
+            "-O2",
+            "-g",
+            "-DFORGE_HOST_BUILD=1",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wconversion",
+            "-Wsign-conversion",
+            "-Wshadow",
+            "-Wcast-align",
+            "-Wstrict-prototypes",
+            "-Wmissing-prototypes",
+            "-Wundef",
+            "-pedantic",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/software/ll",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/inputs",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/inputs/idr_oracle.c",
+            "-o",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/.forge-run/delivery-first/attempt-0/oracle"
+          ],
+          "check": "host_compile",
+          "duration_ms": 37.2,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "arm-none-eabi-gcc",
+            "-std=c11",
+            "-mcpu=cortex-m55",
+            "-mthumb",
+            "-mfloat-abi=hard",
+            "-Os",
+            "-ffunction-sections",
+            "-fdata-sections",
+            "-ffreestanding",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wconversion",
+            "-Wsign-conversion",
+            "-Wshadow",
+            "-Wcast-align",
+            "-Wstrict-prototypes",
+            "-Wmissing-prototypes",
+            "-Wundef",
+            "-pedantic",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/software/ll",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/inputs",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/inputs/idr_target_probe.c",
+            "-c",
+            "-o",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/.forge-run/delivery-first/attempt-0/probe.o"
+          ],
+          "check": "target_compile",
+          "duration_ms": 23.3,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/.forge-run/delivery-first/attempt-0/oracle"
+          ],
+          "check": "independent_behavior",
+          "duration_ms": 2.0,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "88a4b58146e9dbf667d2dd92980ca3c610c73835057144efe812b3e2b1817477",
+          "timed_out": false
+        }
+      ],
+      "candidate_hashes": {
+        "software/ll/stm32n6xx_ll_crc.h": "511956a9345ca465b265a60214f16fb43c5d2395b18dfcf7fd4766a980cc29f5"
+      },
+      "candidate_unchanged_during_checks": true,
+      "correction_count": 0,
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "58ef89b7c798b7fdeb05aef08813f1b26a24a6a9",
+        "dirty": false
+      },
+      "independent_target": {
+        "independent_oracle_sha256": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+        "outputs": {
+          "compile": {
+            "artifact_refs": [
+              "artifact:sha256:da0e8291f97ad634490efd56a2ad5e918592a65416758a95281f6d9b122ddbb0"
+            ],
+            "issues": [],
+            "metrics": {
+              "failed_units": 0,
+              "relocatable_elf": true,
+              "units": 2
+            },
+            "provenance": {
+              "duration_ms": 33.6,
+              "exit_code": 0,
+              "input_sha256": "81b2fd8c0a276f979ce8d480cb7d2d13a065c9d8c56e429b4f9ba0489482cb0a",
+              "invocation_id": "inv-ef72f2b3c0e84b39",
+              "output_sha256": "da0e8291f97ad634490efd56a2ad5e918592a65416758a95281f6d9b122ddbb0",
+              "tool": "arm-none-eabi-gcc",
+              "version": "arm-none-eabi-gcc (15:10.3-2021.07-4) 10.3.1 20210621 (release)"
+            },
+            "status": "PASS",
+            "summary": "2/2 units compiled (target-cm55-gcc)"
+          },
+          "cost": {
+            "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+            "hardware_wcet": "NOT_MEASURED",
+            "issues": [],
+            "measurement_plan": {
+              "budget_sha256": "c8c3d7953d413ebcf78696c7d10aa964beeda5cad6fe1da3a19eba04b53b259a",
+              "disassembly_sha256": "604a41bfb40e90382e959d11dea6aaca02622caa12e3d9b9cb661733c1b6c8ea",
+              "elf_sha256": "3c57dcea6426bc11629e501aaf088522d1c130fefc622fb7f9e040a5c2f7f99c",
+              "hooks": [
+                [
+                  "forge_measure_LL_CRC_Write_IDR",
+                  "BEGIN",
+                  872415768
+                ],
+                [
+                  "forge_measure_LL_CRC_Read_IDR",
+                  "BEGIN",
+                  872415772
+                ],
+                [
+                  "forge_measure_LL_CRC_Write_IDR",
+                  "END",
+                  872415384
+                ],
+                [
+                  "forge_measure_LL_CRC_Read_IDR",
+                  "END",
+                  872415440
+                ]
+              ],
+              "model_sha256": "dc60996b97d2e17eb0b917e6cf59c2a090bf4de4c76f515bb9050297ac464ae2",
+              "observer_sha256": "3f8a843a8a73e778d780e387faa2e0a1833cf2d917916c3003c60f0abd39e216",
+              "platform_sha256": "ac82c12a0e25307c73fc669f9c844d6953459a9177c670a509feb2a8fbf914d3",
+              "source_files": {
+                "inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+                "inputs/IDR-CONTRACT.md": "6ad4a49d8f54c394b8fb4d87c10321a2ce4de19075f5e31cfe5c19a6c021b5e3",
+                "inputs/RM0486-rev4-ch26-crc.md": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+                "inputs/RM0486-rev4-memory-map-excerpt-crc.md": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac",
+                "inputs/RM0486-rev4-register-conventions-manifest.json": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506",
+                "inputs/RM0486-rev4-register-conventions.md": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4",
+                "inputs/forge_crc_device.h": "59ad4e687a1c25f15d2b9c6b2c65862a81fdd2c82127c18c0c89a9ab2eba4961",
+                "inputs/hal_driver_guideline.md": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909",
+                "inputs/idr_oracle.c": "b529eb4cb408e0c12472ef1e8f49f00d71f504ae9136376422fbfaa1c21a2e10",
+                "inputs/idr_target_oracle.c": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+                "inputs/idr_target_probe.c": "4aa5567216d172e627bdd0ef382c33fd7d914cfb8365643893762df70389e625",
+                "inputs/idr_unit_harness.c": "01077a1f987b3ad10bbf4cd37852d3f645a43061c8ee326aff88ba3057ebc0bb",
+                "inputs/inputs-manifest.json": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2",
+                "inputs/provided-requirements.json": "c65c2093156181d5ac1c3b021de3b9715a84fb55883864226791d62fe1088e14",
+                "software/ll/stm32n6xx_ll_crc.h": "511956a9345ca465b265a60214f16fb43c5d2395b18dfcf7fd4766a980cc29f5"
+              },
+              "symbols": [
+                "forge_measure_LL_CRC_Write_IDR",
+                "forge_measure_LL_CRC_Read_IDR"
+              ],
+              "test_source_sha256": "5b76ca8d7577cb3d187cdc4a2f271c5bdbdfd2d386a36420aad1f8ea7aac0cdd",
+              "wrapper_sha256": "6ac7a84b283ddb4bc7f30f35086e6d118ee00baaa136070290614ed8ff704f3c"
+            },
+            "performance_mips": 100,
+            "samples": {
+              "forge_measure_LL_CRC_Read_IDR": [
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                }
+              ],
+              "forge_measure_LL_CRC_Write_IDR": [
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                },
+                {
+                  "instructions": 2,
+                  "virtual_nanoseconds": 20
+                }
+              ]
+            },
+            "schema": "forge-c/simulation-call-performance/1",
+            "scope": "observed complete calls in the pinned Renode instruction/time model; not silicon timing",
+            "status": "PASS"
+          },
+          "simulation": {
+            "artifact_refs": [
+              "artifact:sha256:b6a0fab2f9c86da7918c481c9f563f33e3c5cf7dfef43d4b7bab2ebee9260d32",
+              "artifact:sha256:3a81948bd6a037bec1d77e04f7d603ab11eee5f7c55855a1bb3526d156821263",
+              "artifact:sha256:77c0ebabaef68c6f432843e14e8e4aab9e324badfc8b6e5e8f98e890ca52616f"
+            ],
+            "issues": [],
+            "metrics": {
+              "cpu": "cortex-m55",
+              "failed": 0,
+              "passed": 351,
+              "platform": "forge-stm32n6-crc-min (CPU+NVIC+AXISRAM+behavioural CRC)",
+              "silicon_verified": false,
+              "simulation_performance_report": "artifact:sha256:77c0ebabaef68c6f432843e14e8e4aab9e324badfc8b6e5e8f98e890ca52616f",
+              "target_evidence": "simulated"
+            },
+            "provenance": {
+              "exit_code": 0,
+              "input_sha256": "7c3d1082ca88270d5afe88f366a0cc054970519ad2b4998b6dc3a8d2cf8e95cf",
+              "invocation_id": "inv-a8615ccf9004474e",
+              "output_sha256": "b6a0fab2f9c86da7918c481c9f563f33e3c5cf7dfef43d4b7bab2ebee9260d32",
+              "tool": "renode",
+              "version": "Renode v1.17.0"
+            },
+            "status": "PASS",
+            "summary": "renode cortex-m55: 351 checks passed, 0 failed (1 images; behavioural CRC model)"
+          },
+          "size": {
+            "artifact_refs": [
+              "artifact:sha256:9279b6138f0243558b891a68046380e896f9f21cfad3619d98b535ae32000b0e"
+            ],
+            "issues": [],
+            "metrics": {
+              "bss": 0,
+              "data": 0,
+              "flash_bytes": 16,
+              "objects": 2,
+              "ram_bytes": 0,
+              "scope": "object-level, not linked image",
+              "text": 16
+            },
+            "provenance": {
+              "duration_ms": 1.5,
+              "exit_code": 0,
+              "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+              "invocation_id": "inv-ef72f2b3c0e84b39",
+              "output_sha256": "9279b6138f0243558b891a68046380e896f9f21cfad3619d98b535ae32000b0e",
+              "tool": "arm-none-eabi-size",
+              "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+            },
+            "status": "PASS",
+            "summary": "text=16 data=0 bss=0 (target-cm55-gcc)"
+          },
+          "stack": {
+            "artifact_refs": [
+              "artifact:sha256:2687216ad65004698b9a77e7b312e6aa0d112a5a97d26ac41c82aaf51cb56b85"
+            ],
+            "issues": [],
+            "metrics": {
+              "functions": 4,
+              "max_frame_bytes": 0,
+              "scope": "per-function frames; call-graph worst case not computed"
+            },
+            "provenance": {
+              "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+              "invocation_id": "inv-ef72f2b3c0e84b39",
+              "tool": "gcc/clang -fstack-usage",
+              "version": "profile:target-cm55-gcc"
+            },
+            "status": "PASS",
+            "summary": "max frame 0 B in forge_measure_LL_CRC_Write_IDR (target-cm55-gcc)"
+          }
+        },
+        "physical_hardware": "NOT_RUN",
+        "resource_scope": "OBJECT_LEVEL_AND_MAXIMUM_FRAME; NOT_LINKED_FIRMWARE_OR_CALL_GRAPH",
+        "resources_within_declared_limits": true,
+        "source_rewritten": false,
+        "status": "PASS",
+        "workspace": ".forge-run/delivery-first/attempt-0/independent-target/workspace"
+      },
+      "missing": [],
+      "mode": "QM_DELIVERY_FIRST_DEMO",
+      "physical_hardware": "NOT_RUN",
+      "release_eligibility": "BLOCKED",
+      "simulation": "PASS",
+      "status": "PASS",
+      "verification_round": "BOUNDED_AUTHOR_ATTEMPT",
+      "verification_scope": "DECLARED_HOST_TARGET_SIMULATION_COST_AND_OBJECT_FRAME_RESOURCES",
+      "work_order": "WO-DF-EXTERNAL-VERIFY-58EF89B7"
+    },
+    {
+      "at": "2026-10-30T21:40:08.610653Z",
+      "attempt": "final",
+      "authorship": "NATIVE_WRITE_EVENTS_REQUIRED",
+      "calls": [
+        {
+          "argv": [
+            "clang",
+            "-std=c11",
+            "-O2",
+            "-g",
+            "-DFORGE_HOST_BUILD=1",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wconversion",
+            "-Wsign-conversion",
+            "-Wshadow",
+            "-Wcast-align",
+            "-Wstrict-prototypes",
+            "-Wmissing-prototypes",
+            "-Wundef",
+            "-pedantic",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/software/ll",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/inputs",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/inputs/idr_oracle.c",
+            "-o",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/.forge-run/delivery-first/attempt-final/oracle"
+          ],
+          "check": "host_compile",
+          "duration_ms": 35.2,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "arm-none-eabi-gcc",
+            "-std=c11",
+            "-mcpu=cortex-m55",
+            "-mthumb",
+            "-mfloat-abi=hard",
+            "-Os",
+            "-ffunction-sections",
+            "-fdata-sections",
+            "-ffreestanding",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-Wconversion",
+            "-Wsign-conversion",
+            "-Wshadow",
+            "-Wcast-align",
+            "-Wstrict-prototypes",
+            "-Wmissing-prototypes",
+            "-Wundef",
+            "-pedantic",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/software/ll",
+            "-I",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/inputs",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/inputs/idr_target_probe.c",
+            "-c",
+            "-o",
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/.forge-run/delivery-first/attempt-final/probe.o"
+          ],
+          "check": "target_compile",
+          "duration_ms": 17.3,
+          "exit_code": 0,
+          "status": "PASS",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/mnt/data/forge-c/delivery-first-014-20261030-v1/independent-integrated-verification-58ef89b7/state/workorders/WO-DF-EXTERNAL-VERIFY-58EF89B7/workspace/.forge-run/delivery-first/attempt-final/oracle"
+          ],
+          "check": "independent_behavior",
+          "duration_ms": 2.8,
+          "exit_code": 1,
+          "status": "FAIL",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "b1837120ab91c800f15c2485599f00b575442bc8510a74c60941cabb2c025f22",
+          "timed_out": false
+        }
+      ],
+      "candidate_hashes": {
+        "software/ll/stm32n6xx_ll_crc.h": "9a18ede324444431de8cad5fb1e71e35ba6832398a522de6c5c931abf31b3108"
+      },
+      "candidate_unchanged_during_checks": true,
+      "correction_count": 0,
+      "factory_revision": {
+        "basis": "recorded_at_launch",
+        "branch": "HEAD",
+        "commit": "58ef89b7c798b7fdeb05aef08813f1b26a24a6a9",
+        "dirty": false
+      },
+      "independent_target": null,
+      "missing": [],
+      "mode": "QM_DELIVERY_FIRST_DEMO",
+      "physical_hardware": "NOT_RUN",
+      "release_eligibility": "BLOCKED",
+      "simulation": "NOT_RUN",
+      "status": "FAIL",
+      "verification_round": "FINAL_RECHECK_NO_NEW_AUTHOR",
+      "verification_scope": "DECLARED_HOST_BEHAVIOR_AND_TARGET_COMPILATION_ONLY",
+      "work_order": "WO-DF-EXTERNAL-VERIFY-58EF89B7"
+    }
+  ],
+  "authorship": "UNVERIFIED",
+  "candidate_hashes": {
+    "software/ll/stm32n6xx_ll_crc.h": "9a18ede324444431de8cad5fb1e71e35ba6832398a522de6c5c931abf31b3108"
+  },
+  "declared_scope": {
+    "dependencies": [
+      {
+        "description": "Valid accessible CRC_TypeDef instance; caller owns clock/power/security setup. No invented setup sequence.",
+        "kind": "caller_precondition"
+      },
+      {
+        "description": "Qwen-authored header, immutable source-backed CRC_TypeDef compile/host fixture; no ST driver implementation is imported.",
+        "kind": "build"
+      }
+    ],
+    "functions": [
+      "LL_CRC_Write_IDR",
+      "LL_CRC_Read_IDR"
+    ],
+    "primary_sections": [
+      "26.4.2"
+    ],
+    "prompt_overrides": {
+      "integration": "Write a 32-bit IDR value through LL_CRC_Write_IDR(CRC,value), then read through LL_CRC_Read_IDR(CRC), and check exact equality and untouched unrelated registers. Use boundary and alternating patterns.",
+      "ll_api": "Only void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData) and uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx); use the declared signatures. CRCx is a valid accessible instance. No implicit singleton or invented return status.",
+      "requirement_example": "When the caller requests an IDR write with a valid accessible CRC instance, the CRC LL driver shall write the supplied 32-bit value to CRC_IDR.IDR.",
+      "swe1_cover": "Cover only CRC_IDR.IDR write/read through the two declared functions, valid accessible-instance caller preconditions and no autonomous startup writes. No generic safe state or invented error-handling contract.",
+      "swe1_effect_example": "{\"case\":\"WRITE_IDR\",\"swr\":\"SWR-001\",\"register\":\"CRC_IDR\",\"field\":\"IDR\",\"op\":\"write\",\"value\":\"0x12345678\"}",
+      "swe1_effect_rule": "Write-IDR: op write to CRC_IDR.IDR with the supplied 32-bit value. Read-IDR: op no_write with CRC_IDR.IDR; read returns its current 32-bit value. No calculation/reversal requirements.",
+      "swe2_dynamic_view": "Caller passes CRCx and a 32-bit value to LL_CRC_Write_IDR, then passes CRCx to LL_CRC_Read_IDR and receives that stored value. No CRC calculations or configuration.",
+      "swe2_static_view": "Caller -> header-only stm32n6xx_ll_crc -> CRC_IDR; caller owns accessible-instance setup. Keep only the two declared IDR functions.",
+      "target_tests": "Execute IDR write/read round trips at zero, all ones and alternating 32-bit patterns through the two actual Qwen-authored functions; read test also presets IDR independently. Record Renode target-simulation fidelity and caller setup limitations, not physical board verification. The proposed simulation-only performance contract requires software/tests/target/test_performance.c to include forge_performance_calls.h and call forge_measure_LL_CRC_Write_IDR and forge_measure_LL_CRC_Read_IDR, so the simulator can observe actual entry and return PCs. The generated header exists in the simulator build directory; it declares typed wrappers for exactly the scoped functions. Each measured call must meet 64 executed instructions and 100 microseconds of virtual time at 100 MIPS, without injected interrupts or bus stalls. This is not a hardware timing claim. SWE.6 invokes Run Target Scenario on that target test and Simulation Performance Should Meet Budget.",
+      "ut_example": "static void ut_idr(void) { LL_CRC_Write_IDR(CRC, 0x12345678U); CHECK(\"UT-001\", CRC->IDR == 0x12345678U); CRC->IDR = 0x87654321U; CHECK(\"UT-002\", LL_CRC_Read_IDR(CRC) == 0x87654321U); }",
+      "ut_rule": "Test all 32 IDR bits with zero, all ones and alternating values; test read independently by presetting IDR. Snapshot other registers to verify the IDR calls do not change them. Use the Qwen-authored candidate and immutable device-layout fixture."
+    },
+    "register_fields": [
+      "CRC_IDR.IDR"
+    ],
+    "schema": "forge-c/operation-scope/1"
+  },
+  "execution": "FAILED",
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "58ef89b7c798b7fdeb05aef08813f1b26a24a6a9",
+    "dirty": false
+  },
+  "final_candidate_matches_last_verification": true,
+  "functional_scope": "HOST_BEHAVIOR_AND_TARGET_COMPILATION; SIMULATION_NOT_QUALIFIED",
+  "functional_verification": "FAIL",
+  "integrity_issues": [],
+  "local_profile": null,
+  "metrics": {
+    "attempted_products": 1,
+    "cohort_scope": "THIS_WORK_ORDER_ONLY_NOT_REPEATABILITY",
+    "compiler_failures": 0,
+    "compiler_passes": 4,
+    "corrections": 0,
+    "end_to_end_yield": "UNKNOWN",
+    "functionally_verified_candidates": 0,
+    "functionally_verified_products": "UNKNOWN_REQUIRES_REAL_MODEL_AND_TERMINAL_AUDIT",
+    "human_interventions": "UNKNOWN_REQUIRES_EXTERNAL_OBSERVER",
+    "model_requests": "UNKNOWN",
+    "reported_author_output_tokens": "UNKNOWN",
+    "reported_tokens": "UNKNOWN",
+    "required_functions": [
+      "LL_CRC_Write_IDR",
+      "LL_CRC_Read_IDR"
+    ],
+    "wall_clock_basis": "PREFLIGHT_TO_COMPLETE_INDEPENDENT_CHECKS",
+    "wall_clock_to_first_functional_result_s": 3.83
+  },
+  "milestone": "NOT_PROVEN",
+  "mode": "QM_DELIVERY_FIRST_DEMO",
+  "model_profile": "UNKNOWN",
+  "native_evidence": {
+    "authorship": "UNVERIFIED",
+    "model_requests": "UNKNOWN",
+    "status": "NOT_AVAILABLE"
+  },
+  "phases": {
+    "SWE.1": {
+      "baseline": false,
+      "files": {},
+      "gate": "REWORK"
+    },
+    "SWE.2": {
+      "baseline": false,
+      "files": {},
+      "gate": "REWORK"
+    },
+    "SWE.3": {
+      "baseline": false,
+      "files": {
+        "software/ll/stm32n6xx_ll_crc.h": "9a18ede324444431de8cad5fb1e71e35ba6832398a522de6c5c931abf31b3108"
+      },
+      "gate": "REWORK"
+    },
+    "SWE.4": {
+      "baseline": false,
+      "files": {},
+      "gate": "REWORK"
+    },
+    "SWE.5": {
+      "baseline": false,
+      "files": {},
+      "gate": "REWORK"
+    },
+    "SWE.6": {
+      "baseline": false,
+      "files": {},
+      "gate": "REWORK"
+    }
+  },
+  "process_qualification": "GAPS",
+  "release_eligibility": "BLOCKED",
+  "slice_behavior_and_compile": "FAIL",
+  "unrun": [
+    "physical_hardware",
+    "whole-program call-graph stack analysis",
+    "complete simulation/performance requirement qualification"
+  ],
+  "work_order": "WO-DF-EXTERNAL-VERIFY-58EF89B7"
+}

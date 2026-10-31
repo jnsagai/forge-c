@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-31T01:02:53.378759Z",
+  "check": {
+    "deadline_utc": "2026-10-31T07:57:59Z",
+    "expected_epoch": 6,
+    "model_requests": 0,
+    "status": "PREPARED_NOT_RUNNING"
+  },
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "identity": {
+    "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+    "netns": "net:[4026531840]",
+    "start_ticks": "316015721",
+    "uid": 1000
+  },
+  "implementation": "EXISTING_STOP_AND_RECONCILIATION_PRIMITIVES; NO_WORK_SCHEDULING",
+  "pid": 2564269,
+  "script_sha256": "9645d6a5ffcdde7001679b4b176c56b4a1b9ff3b57662bdf771bb86a1a946b4e"
+}

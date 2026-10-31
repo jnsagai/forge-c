@@ -67,6 +67,9 @@ def test_proxy_enforces_the_boundary(tmp_path, monkeypatch):
     codex_cfg = json.loads(env["CODEX_CONFIG"])
     assert codex_cfg["features"]["shell_tool"] is False and codex_cfg["features"]["unified_exec"] is False
     assert codex_cfg["model_verbosity"] == "low"
+    from forge_factory.acp import codex_home
+
+    assert codex_cfg["developer_instructions"] == codex_home.REPLY_INSTRUCTIONS
     cfg = codex_cfg["mcp_servers"]
     assert sorted(cfg) == ["forge_build_mcp", "forge_fs"]
     assert all(s["args"][:2] == ["-m", "forge_factory.acp.gate"] and s["default_tools_approval_mode"] == "approve"
@@ -84,6 +87,18 @@ def test_proxy_enforces_the_boundary(tmp_path, monkeypatch):
     log = [json.loads(x) for x in (ws / ".forge-run/acp/n1.proxy.jsonl").read_text().splitlines()]
     assert {x["event"] for x in log} >= {"session", "denied_permission", "denied_request"}
     assert next(x for x in log if x["event"] == "session")["client_mcp_servers_dropped"] == ["evil"]
+
+
+def test_factory_config_declares_the_same_reply_contract_without_enabling_other_tools():
+    import tomllib
+
+    from forge_factory.acp import codex_home
+
+    config = tomllib.loads(codex_home.config_text())
+    assert config["developer_instructions"] == codex_home.REPLY_INSTRUCTIONS
+    assert config["model"] == codex_home.MODEL and config["model_reasoning_effort"] == codex_home.EFFORT
+    assert config["sandbox_mode"] == "read-only" and config["web_search"] == "disabled"
+    assert not any(config["features"][feature] for feature in codex_home.DISABLED_FEATURES)
 
 
 def test_attach_converts_author_nodes_only_and_drops_api_only_attributes(tmp_path):
@@ -237,3 +252,21 @@ def test_cr_t027_usage_is_recorded_per_prompt_result_without_content(tmp_path, m
         ("claude-opus-5-5", 6, 434, 10368), ("claude-opus-5-5", 3, 5, 7)]
     assert "SECRET" not in log and all(set(r) <= {"ts", "event", "model", "input", "output", "cache_read", "cache_write"}
                                        for r in rows)
+
+
+def test_a_prompt_that_ends_in_an_error_is_logged_redacted(tmp_path, monkeypatch):
+    """F015 (2026-10-25 23:03): Codex refused every turn at sign-in ('ACP turn failed'); the workspace kept only
+    'session' lines, so AFO read the stopped phase as a product finding. The error is now logged, redacted."""
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    ws = tmp_path / "WO" / "workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    p = P.Proxy.__new__(P.Proxy)
+    p.ws, p.node, p.kind, p.prompts = ws, "swe1_author", "codex", set()
+    p.to_client = lambda m: None
+    p.from_client({"jsonrpc": "2.0", "id": 3, "method": "session/prompt", "params": {"sessionId": "S", "prompt": []}})
+    p.from_agent({"jsonrpc": "2.0", "id": 3, "error": {"code": -32000, "message": "Authentication required: "
+                                                       "token=abc.def " + "x" * 300}})
+    p.from_agent({"jsonrpc": "2.0", "id": 4, "error": {"code": -32601, "message": "not a prompt"}})
+    (r,) = [json.loads(x) for x in (ws / ".forge-run/acp/swe1_author.proxy.jsonl").read_text().splitlines()]
+    assert (r["event"], r["code"]) == ("prompt_error", -32000) and "abc" not in r["message"]
+    assert r["message"].startswith("Authentication required: [REDACTED]") and len(r["message"]) == 160

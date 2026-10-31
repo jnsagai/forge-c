@@ -6,8 +6,10 @@ Only endpoints observed on the installed server are used:
   GET /api/v1/runs/{id}/usage, POST /api/v1/runs/{id}/cancel.
 No undocumented DB access, no UI scraping.
 """
+
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from collections.abc import Iterator
@@ -40,13 +42,37 @@ def load_token(storage_dir: str | None = None) -> str | None:
 
 
 class FabroClient:
-    def __init__(self, base_url: str | None = None, token: str | None = None, timeout: float = 5.0,
-                 transport: httpx.BaseTransport | None = None):
+    def __init__(
+        self,
+        base_url: str | None = None,
+        token: str | None = None,
+        timeout: float = 5.0,
+        transport: httpx.BaseTransport | None = None,
+    ):
         url = (base_url or os.environ.get("FORGE_FABRO_URL") or DEFAULT_URL).rstrip("/")
         if url.endswith("/api/v1"):
             url = url[: -len("/api/v1")]
+        try:
+            namespace = os.readlink("/proc/self/ns/net")
+            boot = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
+        except OSError:
+            namespace, boot = "UNKNOWN", "UNKNOWN"
+        # A loopback port can name different servers in different namespaces.
+        # This is a probe-cache subject, never native termination evidence.
+        self.observation_identity = hashlib.sha256(json.dumps(
+            {"url": url, "netns": namespace, "boot": boot}, sort_keys=True,
+        ).encode()).hexdigest()
         headers = {"Authorization": f"Bearer {token}"} if token else {}
         self._http = httpx.Client(base_url=url, headers=headers, timeout=timeout, transport=transport)
+
+    def close(self):
+        self._http.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        self.close()
 
     def _get(self, path: str, **params: Any) -> Any:
         try:

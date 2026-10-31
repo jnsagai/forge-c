@@ -1,0 +1,69 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_structured_refusal_preserves_bounded_typed_reason_without_body_leak ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x79389fcc1480>
+
+    def test_structured_refusal_preserves_bounded_typed_reason_without_body_leak(monkeypatch):
+        packet = dict(model="fixture", _messages=[], output_reserve=20, output_schema={})
+        body = json.dumps({"error": {"type": "JOB_TOKEN_ENVELOPE_EXHAUSTED", "message": "PRIVATE_BODY"}}).encode()
+    
+        def denied(*a, **kw):
+            raise urllib.error.HTTPError("http://localhost", 429, "refused", {}, io.BytesIO(body))
+    
+        monkeypatch.setattr(structured.urllib.request, "urlopen", denied)
+>       result = structured.call(packet, url="http://localhost")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_settled_usage.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+p = {'_messages': [], 'model': 'fixture', 'output_reserve': 20, 'output_schema': {}}
+
+    def call(
+        p: dict, *, temperature: float | None = None, schema_mode: str = "json_schema", timeout: float = 3600, url: str | None = None
+    ) -> dict:
+        """One structured call. Returns {doc, errors, usage, wall_ms, raw_chars, format_note}; never raises on model
+        output problems (they are findings for the localized repair loop)."""
+        ws = RECOVERY_WORKSPACE.get()
+        if ws is not None:
+            from ..development_execution import reserve_call
+    
+            if not reserve_call(ws, p):
+                return {"doc": None, "errors": ["CALL_REFUSED:DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"], "usage": None,
+                        "wall_ms": 0, "finish_reason": None, "raw_chars": 0, "format_note": "phase allowance retained"}
+        body = {
+            "model": p["model"],
+            "messages": p["_messages"],
+            "stream": True,
+            "max_tokens": p["output_reserve"],
+            "stream_options": {"include_usage": True},
+        }
+        if schema_mode == "json_schema":
+            body["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {"name": "packet_output", "strict": True, "schema": p["output_schema"]},
+            }
+        elif schema_mode == "json_object":
+            body["response_format"] = {"type": "json_object"}
+        body.update(p.get("sampling") or {})  # F011-T048: the inspector's recorded sampling (temperature, top_p, seed)
+        if temperature is not None:
+            body["temperature"] = temperature
+        ws = RECOVERY_WORKSPACE.get()
+        if ws is not None and (ws / ".forge-run/durable-binding.json").is_file():
+            import uuid
+    
+            binding = json.loads((ws / ".forge-run/durable-binding.json").read_text())
+            body["forge_execution"] = {
+                "job_id": binding["job_id"],
+                "nonce": binding["nonce"],
+                "request_id": "structured-request-" + uuid.uuid4().hex,
+                "role": p["role"],
+            }
+>       t0 = time.monetic()
+             ^^^^^^^^^^^^
+E       AttributeError: module 'time' has no attribute 'monetic'. Did you mean: 'monotonic'?
+
+factory/python/forge_factory/lrtx/structured.py:404: AttributeError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_settled_usage.py::test_structured_refusal_preserves_bounded_typed_reason_without_body_leak

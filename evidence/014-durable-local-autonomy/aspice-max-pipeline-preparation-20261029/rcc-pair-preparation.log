@@ -1,0 +1,1 @@
+{"source_revision": "1237081af4336f479151d60083cd69d1f616bd39", "profile": "local-rtx-v2-omniverse2-q38-aspice-max-mtp", "routes_verified": ["LL", "HAL"], "model_requests": 0, "HAL": {"status": "WAITING_FOR_NEW_QWEN_LL_VERIFIED_OUTPUT", "guard": "HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>", "verified_source_substituted": false}}

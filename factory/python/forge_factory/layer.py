@@ -111,7 +111,7 @@ def components(layer: str, ws: Path | None = None) -> tuple[str, ...]:
 
 
 def ll_measure_unit(header_text: str, ws: Path | None = None) -> str | None:
-    """CAPA-013/016/018: a build-only C unit with one non-inline instance per LL static inline function, whatever its
+    """CAPA-013/016/018: a build-only C unit with one non-inline instance per LL static header function, whatever its
     parameter list (r84 used `(volatile uint32_t *rcc)`), so size and stack tools measure the header-only LL."""
     import re
 
@@ -121,7 +121,7 @@ def ll_measure_unit(header_text: str, ws: Path | None = None) -> str | None:
            f'#include "{prof["ll"]["header"]}"']
     n = 0
     fn = re.escape(prof["ll"]["function_prefix"])
-    for m in re.finditer(r"static\s+inline\s+([A-Za-z_][\w\s]*?[\w*])\s*\b(" + fn + r"\w+)\s*\(([^)]*)\)\s*\{", code):
+    for m in re.finditer(r"static\s+(?:inline\s+)?([A-Za-z_][\w\s]*?[\w*])\s*\b(" + fn + r"\w+)\s*\(([^)]*)\)\s*\{", code):
         ret, name, params = " ".join(m.group(1).split()), m.group(2), m.group(3).strip()
         args = [] if params in ("", "void") else [
             re.search(r"([A-Za-z_]\w*)\s*(?:\[[^\]]*\])?\s*$", p.strip()).group(1) for p in params.split(",")]

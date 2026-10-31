@@ -1,0 +1,32 @@
+{
+  "schema": "forge-c/native-qm-publication-checks/1",
+  "source_revision": "c221b65ebc011cbed488db83af3e2804790c1129",
+  "local_existing_boundary_tests": {
+    "passed": 2,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "model_calls": 0
+  },
+  "script_syntax": "PASS",
+  "pattern_privacy_scan": {
+    "files": 20,
+    "matches": 0,
+    "patterns": [
+      "private_key",
+      "github_credential",
+      "provider_credential",
+      "bearer",
+      "jwt"
+    ],
+    "limitation": "Pattern based, not an absolute privacy guarantee"
+  },
+  "remote_transfer_verified_members": 9,
+  "new_formal_task_ids": [],
+  "runtime_vs_product": "Native running; no complete LL/HAL proof",
+  "diff_check": {
+    "default": "One captured collector script retains an extra blank line at EOF; no runtime failure",
+    "ignore_blank_at_eof": "PASS: git -c core.whitespace=-blank-at-eof diff HEAD^ HEAD --check",
+    "captured_script_preserved": true
+  }
+}

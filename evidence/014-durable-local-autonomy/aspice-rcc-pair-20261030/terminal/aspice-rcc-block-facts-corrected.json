@@ -1,0 +1,141 @@
+{
+  "at": "2026-10-30T00:41:22.067552Z",
+  "jobs": [
+    {
+      "job_id": "afo-agent-2ae4c086f6e5cb032903e2a4",
+      "role": "afo-recovery-planner",
+      "state": "FAILED",
+      "error": "GATEWAY_HTTP_429:PRODUCT_ROLE_TRIAL_CONFIGURATION_UNDECLARED",
+      "attempt_id": "afo-83276a5a34a47931-a1",
+      "case": "/mnt/data/forge-c/production-local-014/state/afo/cases/afo-fb-e25d5b6ee0aeb5a405e0-da014/case.json",
+      "case_sha256": "ea52099eebed6f5ef206b58f60cf82f3c29392f1077a0a7aeeefd62417d1e479",
+      "run_id": "01M653ZHCNDAPXS8H39ZX93FZX",
+      "reported_tokens": 0,
+      "reserved_tokens": 131072,
+      "review_state": null,
+      "review_error": null,
+      "decision": null,
+      "output": null,
+      "packet": null
+    }
+  ],
+  "phase_files": [
+    ".forge-run/binding.json",
+    ".forge-run/owner_dispositions.json",
+    ".forge-run/fabro_run_id",
+    ".forge-run/workflow.fabro",
+    ".forge-run/package.json",
+    ".forge-run/durable-binding.json",
+    ".forge-run/model-profile.json",
+    ".forge-run/manifest.json",
+    ".forge-run/preflight.json",
+    ".forge-run/workflow.toml",
+    ".forge-run/fabro_server.json"
+  ],
+  "lrtx_visits": {
+    ".forge-run/lrtx/SWE.1/visits.jsonl": [
+      {
+        "at": "2026-10-30T00:39:32.617394Z",
+        "calls": 7,
+        "issues": [],
+        "max_calls": 35,
+        "prompt_tokens": [
+          [
+            3334,
+            4642
+          ],
+          [
+            3299,
+            4619
+          ],
+          [
+            3069,
+            4331
+          ],
+          [
+            3019,
+            4273
+          ],
+          [
+            2322,
+            3160
+          ],
+          [
+            2372,
+            3209
+          ],
+          [
+            2894,
+            3780
+          ]
+        ],
+        "status": "PASS"
+      }
+    ]
+  },
+  "package": {
+    "archive": "/mnt/data/forge-c/production-local-014/archives/WO-AFO-83276a5a34a47931-a1/forge-c-WO-AFO-83276a5a34a47931-a1-review.zip",
+    "archive_ref": "archive:sha256:4bbc50a5dee56d99ced976f18e5980f11017304e544a9de84312ec64d78f3ab9",
+    "archive_sha256": "4bbc50a5dee56d99ced976f18e5980f11017304e544a9de84312ec64d78f3ab9",
+    "finalized_at": "2026-10-30T00:39:42.241988Z",
+    "gap_count": 49,
+    "gaps": [
+      "failed_or_missing_quality_check:integration_verification",
+      "failed_or_missing_quality_check:misra_coverage_assessed",
+      "failed_or_missing_quality_check:resource_budgets",
+      "failed_or_missing_quality_check:software_verification",
+      "failed_or_missing_quality_check:static_analysis",
+      "failed_or_missing_quality_check:swe1_inspection",
+      "failed_or_missing_quality_check:swe2_inspection",
+      "failed_or_missing_quality_check:swe3_inspection",
+      "failed_or_missing_quality_check:swe4_inspection",
+      "failed_or_missing_quality_check:swe5_inspection",
+      "failed_or_missing_quality_check:swe6_inspection",
+      "failed_or_missing_quality_check:target_verification",
+      "failed_or_missing_quality_check:unit_verification",
+      "missing_or_empty_file:inspection/SWE.1/inspection_record.json",
+      "missing_or_empty_file:inspection/SWE.2/inspection_record.json",
+      "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+      "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+      "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+      "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+      "missing_or_empty_file:workproducts/SWE.2/software_architecture.md",
+      "missing_or_empty_file:workproducts/SWE.3/detailed_design.md",
+      "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+      "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+      "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+      "missing_or_empty_section:inspection/SWE.1",
+      "missing_or_empty_section:inspection/SWE.2",
+      "missing_or_empty_section:inspection/SWE.3",
+      "missing_or_empty_section:inspection/SWE.4",
+      "missing_or_empty_section:inspection/SWE.5",
+      "missing_or_empty_section:inspection/SWE.6",
+      "missing_or_empty_section:software/build",
+      "missing_or_empty_section:software/include",
+      "missing_or_empty_section:software/src",
+      "missing_or_empty_section:workproducts/SWE.2",
+      "missing_or_empty_section:workproducts/SWE.3",
+      "missing_or_empty_section:workproducts/SWE.4",
+      "missing_or_empty_section:workproducts/SWE.5",
+      "missing_or_empty_section:workproducts/SWE.6",
+      "missing_required_pattern:software/build/*.elf",
+      "missing_required_pattern:software/build/*.map",
+      "missing_required_pattern:software/include/*.h",
+      "missing_required_pattern:software/src/*.c",
+      "run_not_completed:INCOMPLETE",
+      "unresolved_finding:SWE.1:GATE_REINSPECT",
+      "unresolved_finding:SWE.2:GATE_REWORK",
+      "unresolved_finding:SWE.3:GATE_REWORK",
+      "unresolved_finding:SWE.4:GATE_REWORK",
+      "unresolved_finding:SWE.5:GATE_REWORK",
+      "unresolved_finding:SWE.6:GATE_REWORK"
+    ],
+    "package_status": "BLOCKED",
+    "policy": "archive:evidence/configuration/release-package-policy-v0.5-aspice-development.json",
+    "policy_sha256": "9d06f7e2ec1e35f76d40b5d6b083ee511d3a4f38a114127c84906c6bcb31908e",
+    "quality_run_status": "INCOMPLETE",
+    "run_id": "WO-AFO-83276a5a34a47931-a1",
+    "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED",
+    "work_order_purpose": "ASPICE_ONLY"
+  }
+}

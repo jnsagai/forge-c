@@ -420,7 +420,8 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         from ..afo import dashboard_api as F
         if action not in ("pause", "drain", "resume"):
             raise HTTPException(404, "unknown action")
-        if not F.operator_ok(authorization):
+        authentication = F.operator_authentication(authorization)
+        if authentication is None:
             who = "cookie-session" if request.cookies.get("forge_dashboard_session") else (
                 "bearer" if authorization else "anonymous")
             F.audit_denied(action, who, "no valid operator bearer token")
@@ -430,7 +431,8 @@ def create_app(store: EventStore | None = None, collect: bool = True, fabro_clie
         except ValueError:
             body = {}
         try:
-            return {"control": F.control(action, "dashboard-operator", str(body.get("reason", ""))[:300])}
+            return {"control": F.control(action, "dashboard-operator", str(body.get("reason", ""))[:300],
+                                         authentication=authentication)}
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from exc
 

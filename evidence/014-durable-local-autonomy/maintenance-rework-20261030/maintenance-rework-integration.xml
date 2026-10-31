@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="17" time="10.162" timestamp="2026-10-29T23:36:41.619489+00:00" hostname="master"><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_rejected_receipted_artifacts_and_independent_facts_survive_quarantine" time="1.347" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[disabled]" time="0.922" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[live_parent]" time="0.476" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[fence]" time="0.426" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[allowance]" time="0.459" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[authority]" time="0.442" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[deadline]" time="0.479" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_no_new_job_or_rework_when_fences_or_remaining_authority_fail[unsafe]" time="0.448" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_preparation_recovers_after_partial_seed_without_reverting_an_active_child" time="0.607" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_completed_worker_reference_is_required_before_conductor_can_admit" time="0.545" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_changed_feedback_is_never_adopted_after_partial_preparation" time="0.490" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_failure_to_prepare_child_does_not_replace_actual_independent_rejection" time="0.418" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_optional_policy_bound_is_validated_without_changing_existing_policy" time="0.009" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_actual_worker_seals_feedback_and_existing_conductor_admits_only_one_child" time="0.961"><failure message="AssertionError: assert 2 == 0&#10; +  where 2 = &lt;function main at 0x7c6537aadbc0&gt;(['review', '--job', 'afo-agent-b08dfe619ba1eb0af56e5232', '--epoch', '1'])&#10; +    where &lt;function main at 0x7c6537aadbc0&gt; = L.main">local = (&lt;forge_factory.afo.queue.Store object at 0x7c6536216c10&gt;, {'admitted_utc': '2026-10-29T23:36:49.035202Z', 'authorizat...1-followup-20261029/pytest-of-jefferson/pytest-76/test_actual_worker_seals_feedb0/state/afo/cases/afo-fb-1/case.json'))
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-76/test_actual_worker_seals_feedb0/factory-repo')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7c6536cf5a90&gt;
+
+    def test_actual_worker_seals_feedback_and_existing_conductor_admits_only_one_child(local, factory, monkeypatch):
+        from forge_factory.afo import queue as queue_module
+        from forge_factory.afo import runtime
+    
+        p = setup_parent(local, factory, monkeypatch, claim=False)
+        p.store.transition(p.order['order_id'], 'WAITING_EXTERNAL_CHANGE', 'synthetic factory defect fixture')
+        monkeypatch.setattr(queue_module, 'Store', lambda *a: p.store)
+        assert L.main(['review', '--job', p.job['job_id'], '--epoch', str(p.epoch)]) == 2
+        verification = p.queue.get(p.job['job_id'])
+        assert verification['state'] == 'COMPLETE'
+        assert verification['record']['result']['status'] == 'REJECTED'
+        assert verification['record']['result']['maintenance_rework']['state'] == 'READY'
+        monkeypatch.setattr(runtime, 'workspace_of', lambda *a: p.workspace)
+        original_prepare, original_poll = L.prepare, L.poll
+    
+        def admitted(*args, **kwargs):
+            with monkeypatch.context() as admission:
+                admission.setattr(isolation, 'available', lambda: True)
+                return original_prepare(*args, **kwargs)
+    
+        monkeypatch.setattr(L, 'prepare', admitted)
+        monkeypatch.setattr(L, 'poll', lambda store, order, job, eff: original_poll(
+            store, order, job, eff, client=p.native, launch_fn=lambda j: 'synthetic-' + j['job_id']))
+        first = L.sweep_maintenance(p.store, p.eff)
+        assert len(first) == 2 and first[-1]['state'] == 'RUNNING'
+        jobs = L.records(p.store, p.order['order_id'])
+        assert len(jobs) == 2 and jobs[0]['job_id'] != jobs[1]['job_id']
+        child = next(j for j in jobs if j['job_id'] != p.job['job_id'])
+        case = json.loads(Path(child['case']).read_text())
+        # A synthetic test author corrects the child; no Qwen capability is claimed by this fixture.
+        _good_candidate(case)
+        M.submit(case, 'repair the arithmetic with a causal reproducer', M.CANDIDATE_TESTS + 'rpr_calc.py', SIG)
+        spawned = []
+        monkeypatch.setattr(L.subprocess, 'Popen', lambda argv, **kw: spawned.append(argv))
+        second = L.sweep_maintenance(p.store, p.eff)
+        assert second[-1]['state'] == 'SUCCEEDED' and len(spawned) == 1
+        monkeypatch.setattr(M, 'evaluate', lambda *a, **k: {
+            'decision': 'ELIGIBLE_FOR_OFFLINE_REVIEW', 'decision_id': 'fixture-eligibility',
+            'allowed_auto_deployment': False})
+        row = p.queue.get(child['job_id'])
+&gt;       assert L.main(['review', '--job', child['job_id'], '--epoch', str(row['epoch'])]) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = &lt;function main at 0x7c6537aadbc0&gt;(['review', '--job', 'afo-agent-b08dfe619ba1eb0af56e5232', '--epoch', '1'])
+E        +    where &lt;function main at 0x7c6537aadbc0&gt; = L.main
+
+factory/python/tests/test_afo_maintenance_rework.py:250: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_rework_limit_ends_only_this_job_chain_without_refilling_its_allowance" time="0.853" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_complete_oversized_independent_feedback_blocks_without_silent_truncation" time="0.486" /><testcase classname="factory.python.tests.test_afo_maintenance_rework" name="test_newer_operator_pause_and_changed_receipt_prevent_retained_dispatch" time="0.420"><failure message="forge_factory.afo.durable.Refused: OPERATIONS_DIRECTORY_NOT_PRIVATE_OR_OWNED:">local = (&lt;forge_factory.afo.queue.Store object at 0x7c6536343f50&gt;, {'admitted_utc': '2026-10-29T23:36:51.348214Z', 'authorizat...1-followup-20261029/pytest-of-jefferson/pytest-76/test_newer_operator_pause_and_0/state/afo/cases/afo-fb-1/case.json'))
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-76/test_newer_operator_pause_and_0/factory-repo')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7c653623ec10&gt;
+
+    def test_newer_operator_pause_and_changed_receipt_prevent_retained_dispatch(local, factory, monkeypatch):
+        from forge_factory.afo.operations import Intent
+    
+        p = setup_parent(local, factory, monkeypatch)
+        reject(p)
+        intent_path = Path(p.job['case']).parent / 'synthetic-operator-intent.json'
+        monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(intent_path))
+&gt;       Intent().set('PAUSED', actor='test-owner', reason='newer operator intent', initialize=True)
+
+factory/python/tests/test_afo_maintenance_rework.py:297: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/operations.py:91: in set
+    with self.lock():
+         ^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;forge_factory.afo.operations.Intent object at 0x7c6536985e80&gt;
+
+    @contextmanager
+    def lock(self):
+        parent = self.path.parent
+        if not parent.is_dir() or parent.stat().st_uid != os.getuid() or parent.stat().st_mode &amp; 0o022:
+&gt;           raise Refused("OPERATIONS_DIRECTORY_NOT_PRIVATE_OR_OWNED")
+E           forge_factory.afo.durable.Refused: OPERATIONS_DIRECTORY_NOT_PRIVATE_OR_OWNED:
+
+factory/python/forge_factory/afo/operations.py:50: Refused</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,133 @@
+{
+  "acceptance": "DA-AT-055 expects complete registered runs with honest rates; it sets no rate threshold. The rates are reported, not passed: 2/2 clean held-out baselines falsely rejected (KI-014-003).",
+  "command": "python3 evidence/014-durable-local-autonomy/stepwise-inspector-20261026/verify_calibration.py (repository root, loop10); measurement: gpuq job 030-l123-cal-9300475.sh on Omniverse2 (q014-calibrate-t2.sh)",
+  "cwd": "repos/forge-c-014-implementation",
+  "duration_s": null,
+  "execution_host": "omniverse2 (measurement); loop10 (protocol verification)",
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "291a1ffa79129cef33fa9aeb5577c60ba15aa9c3",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "known_issues": [
+    "KI-014-003",
+    "KI-014-007"
+  ],
+  "log": "evidence/v0.4/runs/DA014-calibration-t2/20261027T052041.log",
+  "log_sha256": "f53fe1a06468e6eb2068fcf10c2db39e8b492c66560e577a8627d65c4fd00dcd",
+  "measured_revision": "9300475e7cec6d7ed751dd2bd6d1a84db4af45e0",
+  "records": {
+    "calibration-runs.json": {
+      "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-runs.json",
+      "sha256": "295d106760985b4c536f474d90086b345345784a2723d7b8504fea3be4cde6c2"
+    },
+    "calibration-t2-runs.json": {
+      "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-t2-runs.json",
+      "sha256": "d14f932d7382d3473a04fde7057b5e252b8f5bdc53e314d612e7a5d6059c4436"
+    },
+    "learning-round-9300475.json": {
+      "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/learning-round-9300475.json",
+      "sha256": "c61463d98306b71955e9765e51e1d31ab31e0f8c5da96a19e7227501fcae47a7"
+    },
+    "unit-local-9300475e7cec6d7ed751dd2bd6d1a84db4af45e0.txt": {
+      "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/unit-local-9300475e7cec6d7ed751dd2bd6d1a84db4af45e0.txt",
+      "sha256": "a82f925af64db7930f00eba59d4ebf76f7408ad83e3bd83ef8f655b00f6e4f37"
+    },
+    "verify_calibration.py": {
+      "path": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/verify_calibration.py",
+      "sha256": "9f391523d268bbad338f1d38490114008b3289ec3575be8c1643a981aea7e644"
+    }
+  },
+  "registration": {
+    "commit": "48207f1",
+    "seed": 20261026,
+    "split": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/f015-split.json",
+    "subset": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-subset.json",
+    "subset_commit": "1067d40"
+  },
+  "results": {
+    "seeded_adding_a_code_absent_from_their_clean_baseline": "10/12",
+    "subset_runs": [
+      {
+        "baselines": 9,
+        "deterministic_detection": 9,
+        "false_rejections": 5,
+        "inspection_fail_off_target": 4,
+        "missed": 1,
+        "no_inspection": 0,
+        "run": "calibration-s1",
+        "seeded": 54,
+        "semantic_detection_on_target": 40
+      },
+      {
+        "baselines": 9,
+        "deterministic_detection": 9,
+        "false_rejections": 5,
+        "inspection_fail_off_target": 4,
+        "missed": 1,
+        "no_inspection": 0,
+        "run": "calibration-s2",
+        "seeded": 54,
+        "semantic_detection_on_target": 40
+      },
+      {
+        "baselines": 9,
+        "deterministic_detection": 9,
+        "false_rejections": 5,
+        "inspection_fail_off_target": 4,
+        "missed": 1,
+        "no_inspection": 0,
+        "run": "calibration-s3",
+        "seeded": 54,
+        "semantic_detection_on_target": 40
+      }
+    ],
+    "test_set_2_runs": [
+      {
+        "baselines": 2,
+        "deterministic_detection": 0,
+        "false_rejections": 2,
+        "inspection_fail_off_target": 1,
+        "missed": 0,
+        "no_inspection": 0,
+        "preflight": "FAIL",
+        "run": "calibration-t2-1",
+        "seeded": 12,
+        "semantic_detection_on_target": 11
+      },
+      {
+        "baselines": 2,
+        "deterministic_detection": 0,
+        "false_rejections": 2,
+        "inspection_fail_off_target": 1,
+        "missed": 0,
+        "no_inspection": 0,
+        "preflight": "FAIL",
+        "run": "calibration-t2-2",
+        "seeded": 12,
+        "semantic_detection_on_target": 11
+      },
+      {
+        "baselines": 2,
+        "deterministic_detection": 0,
+        "false_rejections": 2,
+        "inspection_fail_off_target": 1,
+        "missed": 0,
+        "no_inspection": 0,
+        "preflight": "FAIL",
+        "run": "calibration-t2-3",
+        "seeded": 12,
+        "semantic_detection_on_target": 11
+      }
+    ],
+    "test_set_2_runs_identical": true
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "LIVE_CALIBRATION_PROTOCOL_HONEST_RATES_NOT_INSPECTOR_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-calibration-t2",
+  "ts_utc": "2026-10-27T05:20:41.148335+00:00"
+}

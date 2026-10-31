@@ -1,0 +1,63 @@
+{
+  "configs": {
+    "budget2048": {
+      "expected_trials": 9,
+      "independent_case_passes": 2,
+      "measured_trials": 9,
+      "median_decode_tokens_per_second": 153.88503633320164,
+      "median_request_seconds": 13.707750892266631,
+      "median_thinking_tokens_retokenized": 2047,
+      "thinking_budget_tokens": 2048,
+      "thinking_enabled": true,
+      "truncated": 0
+    },
+    "budget512": {
+      "expected_trials": 9,
+      "independent_case_passes": 0,
+      "measured_trials": 9,
+      "median_decode_tokens_per_second": 154.69296974086953,
+      "median_request_seconds": 3.6622228040359914,
+      "median_thinking_tokens_retokenized": 511,
+      "thinking_budget_tokens": 512,
+      "thinking_enabled": true,
+      "truncated": 0
+    },
+    "default_on": {
+      "expected_trials": 9,
+      "independent_case_passes": 4,
+      "measured_trials": 9,
+      "median_decode_tokens_per_second": 153.2985880412058,
+      "median_request_seconds": 21.248407604172826,
+      "median_thinking_tokens_retokenized": 2948,
+      "thinking_budget_tokens": -1,
+      "thinking_enabled": true,
+      "truncated": 1
+    },
+    "off": {
+      "expected_trials": 9,
+      "independent_case_passes": 1,
+      "measured_trials": 9,
+      "median_decode_tokens_per_second": 148.9243599637166,
+      "median_request_seconds": 0.45295357098802924,
+      "median_thinking_tokens_retokenized": 0,
+      "thinking_budget_tokens": 0,
+      "thinking_enabled": false,
+      "truncated": 0
+    }
+  },
+  "context_capacity": 262144,
+  "expected_trials": 36,
+  "factory_grants_renewed": false,
+  "factory_jobs_launched": false,
+  "kv_cache": "f16",
+  "model": "/mnt/data/forge-c/production-local-014/ollama-models/blobs/sha256-de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3",
+  "model_file_sha256": "de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3",
+  "mtp": "OFF_FOR_THIS_CONTROLLED_REASONING_COMPARISON",
+  "native_named_efforts": "NO_DISTINCT_TEMPLATE_CONTROL_OBSERVED",
+  "reasoning_content_collected": false,
+  "recorded_trials": 36,
+  "repetitions_per_case": 3,
+  "speed_not_factory_or_model_capability_qualification": true,
+  "status": "COMPLETED_DESCRIPTIVE_SPEED_STUDY",
+  "updated_utc": "2026-10-31T09:06:18.337255+00:00"
+}

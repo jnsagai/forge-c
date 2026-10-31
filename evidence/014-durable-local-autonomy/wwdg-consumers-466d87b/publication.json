@@ -1,0 +1,73 @@
+{
+  "scope": "SOURCE_CONSUMER_AND_MODEL_ASSESSMENT_METADATA_NOT_RUNTIME_AVAILABILITY",
+  "source_revision": "466d87bef4688af6209937433ef056baa4a5d51f",
+  "formal_tasks": "30/58_UNCHANGED",
+  "privacy_scan": "PASS_PATTERN_SCAN_NOT_EXHAUSTIVE_PROOF",
+  "tool_sha256": "ff68416dda948acac080352512f274ad3c384412bea392b94da60b38ab366b25",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 6463,
+      "sha256": "4b05b7488a4e9df0405d0f8e2a80be574d2fe38dc68c81d863200f4bc6c9a9f4"
+    },
+    {
+      "path": "initial-learning-capture.json",
+      "bytes": 336,
+      "sha256": "5d3aba7add9cd497baa13acab1e9ec2f4de35ac5494d8372cb733161cc5ee54e"
+    },
+    {
+      "path": "initial-summary.json",
+      "bytes": 13280,
+      "sha256": "caabc6ff01145507beebeaecbc6a077efc8a1d3ec10b8b6cf9d29ab6637a696c"
+    },
+    {
+      "path": "learning-capture.json",
+      "bytes": 336,
+      "sha256": "22082cfc66af576f40a774e0a53c2e4ea5aff397d678eaa8902dcfa8f121c2d3"
+    },
+    {
+      "path": "legacy-reader.json",
+      "bytes": 445,
+      "sha256": "75a2389bb153efb9e22f0f38a27e56881e361962daddd98ea42120cd48cce2ea"
+    },
+    {
+      "path": "regression.json",
+      "bytes": 2428,
+      "sha256": "f8904eb09bf640952b801e7c7a8d974b46f56eb37eee4d0945ffad48dddffe53"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 13576,
+      "sha256": "78db7829ba99f10c99c5716fa07eea450defcefd30b7f404869250bcc66f03c5"
+    }
+  ],
+  "static_checks": {
+    "consumer466-static-spec.log": {
+      "status": "PASS",
+      "sha256": "442b344881a58d48a5c862590b4f2cabd0ae02244a849ae7310c0188e153681b"
+    },
+    "consumer466-static-contracts.log": {
+      "status": "PASS",
+      "sha256": "6a44a7de8ed0f6a80069d8865c1317666d9f7fa6b39733979af864ac8ce77b94"
+    },
+    "consumer466-static-design.log": {
+      "status": "PASS",
+      "sha256": "c133d1470d3e79a746b2b7f36c9247481dff54e276316d5f0da3c5a66fd802fe"
+    },
+    "consumer466-static-handoff.log": {
+      "status": "PASS",
+      "sha256": "5cbf3321a8c9951f403f5e18123567253e7da69b4c02a684634c81d046f9392a"
+    },
+    "consumer466-static-ruff.log": {
+      "status": "PASS",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    }
+  },
+  "product_success": "NOT_PROVEN",
+  "learning_benefit": "NOT_MEASURED",
+  "self_healing": "NOT_PROVEN",
+  "operational_campaigns": "NOT_RUN",
+  "new_model_calls": 0,
+  "source_model_comparison": "40_MATCH_4_MISMATCH_OF_44",
+  "native_assessment_exit": 2
+}

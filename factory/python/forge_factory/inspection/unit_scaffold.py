@@ -199,7 +199,7 @@ def sync_trace(ws: Path) -> dict:
     fn_changes = []
     lines, cur = text.splitlines(keepends=True), None
     for i, line in enumerate(lines):
-        h = re.match(r"^##\s+(SWU-(?:LL|HAL)-\d{2})\b", line)
+        h = re.match(r"^##\s+(SWU-(?:LL|HAL)-\d{2,})\b", line)
         if h:
             cur = h.group(1)
             continue

@@ -8,14 +8,18 @@ clock); every other gap is an observation hole and is reported as unknown outage
 DEMONSTRATED requires covered hours >= target with every covered sample healthy; anything less is IN_PROGRESS or
 NOT_DEMONSTRATED. A soak never changes the AFO mode.
 """
+
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import re
+import stat
 import sys
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from ..common import state_dir, utc_now
@@ -30,11 +34,57 @@ def path(soak_id: str) -> Path:
     return state_dir() / "afo/soak" / f"{soak_id}.jsonl"
 
 
-def _append(p: Path, rec: dict) -> None:
+@contextmanager
+def locked(p: Path):
+    """Serialize writers/resume on the existing soak, without service authority."""
+    from .durable import Refused
+
     p.parent.mkdir(parents=True, exist_ok=True)
-    fd = os.open(p, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
-    with os.fdopen(fd, "a") as f:
-        f.write(json.dumps(rec, sort_keys=True) + "\n")
+    fd = os.open(p.with_suffix(".lock"), os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+    try:
+        s = os.fstat(fd)
+        if not stat.S_ISREG(s.st_mode) or s.st_uid != os.getuid() or s.st_mode & 0o022:
+            raise Refused("SOAK_LOCK_NOT_PROTECTED")
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise Refused("SOAK_WRITER_BUSY") from exc
+        yield
+    finally:
+        os.close(fd)
+
+
+def _append_locked(p: Path, rec: dict) -> None:
+    """Caller owns locked(p). Publish one bounded line and fsync before return."""
+    from .durable import Refused
+
+    raw = (json.dumps(rec, sort_keys=True, allow_nan=False) + "\n").encode()
+    if len(raw) > 65536:
+        raise Refused("SOAK_SAMPLE_BYTE_BOUND_EXCEEDED")
+    fd = os.open(p, os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+    try:
+        s = os.fstat(fd)
+        if not stat.S_ISREG(s.st_mode) or s.st_uid != os.getuid() or s.st_mode & 0o022:
+            raise Refused("SOAK_LOG_NOT_PROTECTED")
+        count = 0
+        while count < len(raw):
+            written = os.write(fd, raw[count:])
+            if written <= 0:
+                raise Refused("SOAK_APPEND_INCOMPLETE")
+            count += written
+        os.fsync(fd)
+        parent = os.open(p.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(parent)
+        finally:
+            os.close(parent)
+    finally:
+        os.close(fd)
+
+
+def _append(p: Path, rec: dict) -> None:
+    with locked(p):
+        _append_locked(p, rec)
 
 
 def live_probes() -> dict:
@@ -42,8 +92,14 @@ def live_probes() -> dict:
     from .scheduler import _healthy
 
     fabro = os.environ.get("FORGE_FABRO_URL", "http://127.0.0.1:32291/api/v1").rstrip("/").rsplit("/api", 1)[0]
-    return {"data_volume": lambda: host.preflight()["ok"], "conductor": lambda: watchdog.check(120)["ok"],
-            "fabro": lambda: _healthy(fabro + "/health"), "gateway": lambda: _healthy("http://127.0.0.1:11437/health")}
+    return {
+        "data_volume": lambda: host.preflight()["ok"],
+        "conductor": lambda: watchdog.check(120)["ok"],
+        "fabro": lambda: _healthy(fabro + "/health"),
+        "gateway": lambda: _healthy(
+            os.environ.get("FORGE_LRTX_GATEWAY_URL", "http://127.0.0.1:11437/v1").rstrip("/").removesuffix("/v1") + "/health"
+        ),
+    }
 
 
 def start(soak_id: str, target_h: int, interval_s: float, authorization_ref: str) -> dict:
@@ -52,10 +108,21 @@ def start(soak_id: str, target_h: int, interval_s: float, authorization_ref: str
     p = path(soak_id)
     if p.exists():
         raise ValueError("soak exists (append samples with `sample`, never restart a soak id)")
-    head = {"kind": "start", "soak_id": soak_id, "target_hours": target_h, "interval_s": interval_s,
-            "authorization_ref": authorization_ref, "utc": utc_now(), "wall": time.time(), "mono": time.monotonic(),
-            "boot_id": _boot_id()}
-    _append(p, head)
+    head = {
+        "kind": "start",
+        "soak_id": soak_id,
+        "target_hours": target_h,
+        "interval_s": interval_s,
+        "authorization_ref": authorization_ref,
+        "utc": utc_now(),
+        "wall": time.time(),
+        "mono": time.monotonic(),
+        "boot_id": _boot_id(),
+    }
+    with locked(p):
+        if p.exists():
+            raise ValueError("soak exists (append samples with `sample`, never restart a soak id)")
+        _append_locked(p, head)
     return head
 
 
@@ -74,21 +141,30 @@ def sample(soak_id: str, probes: dict | None = None) -> dict:
             res[k] = bool(f())
         except Exception:  # noqa: BLE001 - a probe error is an unhealthy sample, never a skipped one
             res[k] = False
-    rec = {"kind": "sample", "utc": utc_now(), "wall": time.time(), "mono": time.monotonic(), "boot_id": _boot_id(),
-           "healthy": all(res.values()), "probes": res}
+    rec = {
+        "kind": "sample",
+        "utc": utc_now(),
+        "wall": time.time(),
+        "mono": time.monotonic(),
+        "boot_id": _boot_id(),
+        "healthy": all(res.values()),
+        "probes": res,
+    }
     _append(path(soak_id), rec)
     return rec
 
 
-def run(soak_id: str, probes: dict | None = None, max_samples: int | None = None) -> int:
+def run(soak_id: str, probes: dict | None = None, max_samples: int | None = None, *, sampler=None,
+        stop_at_target=True) -> int:
     head = json.loads(path(soak_id).read_text().splitlines()[0])
     n = 0
     while max_samples is None or n < max_samples:
-        sample(soak_id, probes)
+        (sampler or sample)(soak_id, probes=probes)
         n += 1
-        if report(soak_id)["status"] == "DEMONSTRATED":
+        if stop_at_target and report(soak_id)["status"] == "DEMONSTRATED":
             break
-        time.sleep(head["interval_s"])
+        if max_samples is None or n < max_samples:
+            time.sleep(head["interval_s"])
     return n
 
 
@@ -101,8 +177,14 @@ def report(soak_id: str) -> dict:
     for a, b in zip(samples, samples[1:], strict=False):
         dw, dm = b["wall"] - a["wall"], b["mono"] - a["mono"]
         if a["boot_id"] != b["boot_id"] or dm < 0 or abs(dw - dm) > CLOCK_SKEW_S:
-            jumps.append({"from": a["utc"], "to": b["utc"], "wall_s": round(dw, 1),
-                          "mono_s": round(dm, 1) if a["boot_id"] == b["boot_id"] else None})
+            jumps.append(
+                {
+                    "from": a["utc"],
+                    "to": b["utc"],
+                    "wall_s": round(dw, 1),
+                    "mono_s": round(dm, 1) if a["boot_id"] == b["boot_id"] else None,
+                }
+            )
             continue
         if dw > 2 * iv:
             holes.append({"from": a["utc"], "to": b["utc"], "seconds": round(dw, 1)})
@@ -118,12 +200,20 @@ def report(soak_id: str) -> dict:
         status = "IN_PROGRESS"
     else:
         status = "NOT_DEMONSTRATED"
-    return {"soak_id": soak_id, "target_hours": head["target_hours"], "authorization_ref": head["authorization_ref"],
-            "samples": len(samples), "covered_hours": round(covered / 3600, 4),
-            "healthy_hours": round(healthy_s / 3600, 4), "unhealthy_samples": unhealthy,
-            "observation_holes": holes[:20], "clock_or_boot_jumps": jumps[:20],
-            "availability": round(healthy_s / covered, 6) if covered else None, "status": status,
-            "note": "real wall-clock samples only; holes and jumps are unknown exposure, never up time"}
+    return {
+        "soak_id": soak_id,
+        "target_hours": head["target_hours"],
+        "authorization_ref": head["authorization_ref"],
+        "samples": len(samples),
+        "covered_hours": round(covered / 3600, 4),
+        "healthy_hours": round(healthy_s / 3600, 4),
+        "unhealthy_samples": unhealthy,
+        "observation_holes": holes[:20],
+        "clock_or_boot_jumps": jumps[:20],
+        "availability": round(healthy_s / covered, 6) if covered else None,
+        "status": status,
+        "note": "real wall-clock samples only; holes and jumps are unknown exposure, never up time",
+    }
 
 
 def main(argv: list[str] | None = None) -> int:

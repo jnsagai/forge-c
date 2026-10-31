@@ -1,0 +1,9 @@
+{
+  "scope": "LEGACY_RECORDED_REAL_ENGINE_ARTIFACT_REPLAY_NO_SOLVER_OR_MODEL",
+  "source_revision": "466d87bef4688af6209937433ef056baa4a5d51f",
+  "status": "PASS",
+  "reader_checks": 2,
+  "new_engine_requests": 0,
+  "new_model_calls": 0,
+  "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/safec014-consumer-466d87b-exact/test_mask_as_value_is_repaired0/state/workorders/WO-T-V2-IWDG/workspace"
+}

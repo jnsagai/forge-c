@@ -1,0 +1,15 @@
+{
+  "status": "OLD_ORDERING_DEFECT_REPRODUCED",
+  "scope": "PINNED_OLD_SYNCHRONIZE_WITH_COMPATIBLE_CURRENT_INTENT_AND_STORE_NOT_A_FULL_HISTORICAL_FACTORY_RUN",
+  "old_revision": "7f77e38125300eb1eb2c67ce097964de456b0927",
+  "old_function_sha256": "e958414dbca2d175cb6d28da559448cfb60a5876f79aa96b5f1c2adaaaa37183",
+  "harness_revision": "7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1",
+  "older_resume_epoch": 2,
+  "newer_stop_epoch": 3,
+  "final_intent_mode": "STOPPED",
+  "incorrect_final_controls": {
+    "paused": "0",
+    "draining": "0"
+  },
+  "independent_fixed_case": "test_da014_control_context.py::test_newer_stop_cannot_be_overwritten_by_old_resume_database_effects"
+}

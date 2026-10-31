@@ -1,0 +1,43 @@
+{
+  "native_model_alias": "qwen3.8:27b-q8_0",
+  "template_sha256": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+  "template_bytes": 8952,
+  "rows": [
+    {
+      "effort": "xhigh",
+      "http_status": 200,
+      "rendered_prompt_sha256": "9a42e847b7f104c1d4579314d58b245a53993e445e16e3a64b55801952d5b28c",
+      "rendered_prompt_chars": 318,
+      "xhigh_instruction_present": true,
+      "low_instruction_present": false
+    },
+    {
+      "effort": "medium",
+      "http_status": 200,
+      "rendered_prompt_sha256": "3a3a73b51847b58dc7280547f82231d0c7a4db0b60c512e2ed1a53519df1b7da",
+      "rendered_prompt_chars": 81,
+      "xhigh_instruction_present": false,
+      "low_instruction_present": false
+    },
+    {
+      "effort": "high",
+      "http_status": 500,
+      "unsupported_effort_error": true,
+      "error_response_sha256": "8b32dab48e2dacaf46ba13ff7b7fc23bb109fd0e9f3292da6dcdf0c02c6ad8ec"
+    },
+    {
+      "effort": "low",
+      "http_status": 200,
+      "rendered_prompt_sha256": "56ffec958a254ce35ff63ded2cde9fab32ed95c9e92965a3582daf6bd244ad08",
+      "rendered_prompt_chars": 247,
+      "xhigh_instruction_present": false,
+      "low_instruction_present": true
+    }
+  ],
+  "model_requests": 0,
+  "test_kind": "NATIVE_TEMPLATE_RENDER_ONLY_NO_INFERENCE",
+  "raw_prompts_or_reasoning_saved": false,
+  "request_ledger_before": 650,
+  "request_ledger_after": 650,
+  "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039"
+}

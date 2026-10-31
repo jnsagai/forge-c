@@ -60,6 +60,9 @@ structured:               # SWE.1 register tasks are semantic (SafeC); every oth
     qwen3.6:35b-a3b: {temperature: 0.6, top_p: 0.95}   # thinking mode: vendor guidance, greedy can loop
   inspector_coverage: true   # F011-T049: decomposed coverage questions per work-order scope item
   inspector_entries: true    # F011-T054: per-entry effects and budget questions
+  inspector_stepwise: true   # F014 (owner 2026-10-26): one closed temperature-0 question per baseline fact
+  advisory_continue: true    # F014 (owner 2026-10-26 "Advisory + calibrate"): an exhausted ladder continues with
+                             # its gaps registered for the end-of-run human review (release rule unchanged)
   # F011-T036: a delivered-code (brownfield) work order keeps only these phases structured; the others run
   # as the existing agent nodes (the structured SWE.3-SWE.6 tasks need code tasks of a local code author)
   brownfield_structured_phases: [SWE.1, SWE.2]

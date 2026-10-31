@@ -1,0 +1,30 @@
+{
+ "schema_version": "1.0",
+ "authorization_id": "AUTH-AFO-PILOT-20261025",
+ "approver": "jnsagai",
+ "approval_evidence_ref": "owner 2026-10-25: \"AFO on main can't run this yet - solve it! I want it running with codex and claude as inpector, forget about deepseek now\"",
+ "issued_utc": "2026-10-25T10:30:00Z",
+ "expires_utc": "2026-11-24T00:00:00Z",
+ "policy_sha256": "0e3bd7f8571e8c8174a6e8b4490055f7cd48150fd29cbb26221f5ff039af668b",
+ "mode": "PILOT",
+ "allowed_actions": [
+  "submit_workorder",
+  "launch_workorder",
+  "recover_workorder"
+ ],
+ "scope": {
+  "driver_classes": [
+   "STM32N6_CRC_LL_ST",
+   "STM32N6_SPI_LL_ST",
+   "STM32N6_USART_LL_ST",
+   "STM32N6_GPIO_LL_ST",
+   "STM32N6_TIM_LL_ST"
+  ],
+  "models": [
+   "codex-claude"
+  ]
+ },
+ "signature_ref": "AUTH-AFO-PILOT-20261025.sig",
+ "revoked_utc": null,
+ "signed_runbook_ref": null
+}

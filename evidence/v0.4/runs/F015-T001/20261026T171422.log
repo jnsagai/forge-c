@@ -1,0 +1,17 @@
+crc: RM0486-rev4-ch26-crc.md OK
+crc: RM0486-rev4-memory-map-excerpt-crc.md OK
+crc: 5 registers parsed from RM0486-rev4-ch26-crc.md; in-scope missing: none
+spi: RM0486-rev4-ch67-spi.md OK
+spi: RM0486-rev4-memory-map-excerpt-spi.md OK
+spi: 14 registers parsed from RM0486-rev4-ch67-spi.md; in-scope missing: none
+usart: RM0486-rev4-ch65-usart.md OK
+usart: RM0486-rev4-memory-map-excerpt-usart.md OK
+usart: 12 registers parsed from RM0486-rev4-ch65-usart.md; in-scope missing: none
+gpio: RM0486-rev4-ch15-gpio.md OK
+gpio: RM0486-rev4-memory-map-excerpt-gpio.md OK
+gpio: 18 registers parsed from RM0486-rev4-ch15-gpio.md; in-scope missing: none
+tim: RM0486-rev4-ch54-tim2-5.md OK
+tim: RM0486-rev4-memory-map-excerpt-tim.md OK
+tim: 22 registers parsed from RM0486-rev4-ch54-tim2-5.md; in-scope missing: none
+
+--- stderr ---

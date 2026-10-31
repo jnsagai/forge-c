@@ -1,0 +1,151 @@
+{
+  "files": [
+    {
+      "path": "intent.json",
+      "sha256": "641643137712794eec2c1e4afb863b43370bbb4b925807f7d19a18f2a4633869",
+      "bytes": 510
+    },
+    {
+      "path": "native-first-candidate-target-oracle.c",
+      "sha256": "8fcab3697c49913121e150358aa76e3a0b5606048256b2b7a1db05a52ecb018d",
+      "bytes": 1338
+    },
+    {
+      "path": "one-instruction-budget/result.json",
+      "sha256": "0fc14722e13a3d1a220be1fef68f95cc0e20516b4837f03a8f9d416cac1b6a46",
+      "bytes": 13008
+    },
+    {
+      "path": "one-instruction-budget/workspace/.forge-run/manifest.json",
+      "sha256": "ca97d4e2e683cc4d1c36318e670562964d2d690ede5e64f78469e1c3fb61479d",
+      "bytes": 17694
+    },
+    {
+      "path": "one-instruction-budget/workspace/build/renode/test_performance.performance-inputs.json",
+      "sha256": "2007600f921727ba9449379134eb48a46c43a963aa99e8d23af8795f29227d26",
+      "bytes": 1783
+    },
+    {
+      "path": "one-instruction-budget/workspace/evidence/raw/16b59b09dee7835271fe602fc4d10c453099c969d5b50f4a29db16f9d620adc2.json",
+      "sha256": "16b59b09dee7835271fe602fc4d10c453099c969d5b50f4a29db16f9d620adc2",
+      "bytes": 9295
+    },
+    {
+      "path": "one-instruction-budget/workspace/evidence/raw/48a1dfb0855c36f45237b2a987d743430703792d2ec10c02b49dcafddd19ef7e.log",
+      "sha256": "48a1dfb0855c36f45237b2a987d743430703792d2ec10c02b49dcafddd19ef7e",
+      "bytes": 737
+    },
+    {
+      "path": "one-instruction-budget/workspace/evidence/raw/70783f1b449a7e77479302683bef314a18e1300ca07b6cc3610d615005c4bb29.log",
+      "sha256": "70783f1b449a7e77479302683bef314a18e1300ca07b6cc3610d615005c4bb29",
+      "bytes": 437
+    },
+    {
+      "path": "one-instruction-budget/workspace/evidence/raw/86a546c4c56595dffca187b5de4bc94c6bdbbbb277385e8bd8dab5556ca9bc1a.log",
+      "sha256": "86a546c4c56595dffca187b5de4bc94c6bdbbbb277385e8bd8dab5556ca9bc1a",
+      "bytes": 18157
+    },
+    {
+      "path": "one-instruction-budget/workspace/evidence/raw/d4bfa3f8693cb29dd476f92864885825d04cfbc0028a568a3435bbebfade83d6.log",
+      "sha256": "d4bfa3f8693cb29dd476f92864885825d04cfbc0028a568a3435bbebfade83d6",
+      "bytes": 2670
+    },
+    {
+      "path": "positive/result.json",
+      "sha256": "0c0365e1cc9c671036cb8538cf3cd5fab5aa38697a05c074c9e5be9402a5705b",
+      "bytes": 12730
+    },
+    {
+      "path": "positive/workspace/.forge-run/manifest.json",
+      "sha256": "fe92ac155d539a75855171aef4ece9e8707fa1bcea7e358cbc26821f5b0ca04c",
+      "bytes": 17681
+    },
+    {
+      "path": "positive/workspace/build/renode/test_performance.performance-inputs.json",
+      "sha256": "19c616cf505249efee3081910562b941924c7e65110e525db90819444f5bee24",
+      "bytes": 1783
+    },
+    {
+      "path": "positive/workspace/evidence/raw/19f8f5f8baf9f84b2dddbd8e02b3d9c50fdf8ce9d88e193b777eedf66c0e37e0.log",
+      "sha256": "19f8f5f8baf9f84b2dddbd8e02b3d9c50fdf8ce9d88e193b777eedf66c0e37e0",
+      "bytes": 681
+    },
+    {
+      "path": "positive/workspace/evidence/raw/6006f1094af823f731099043c79f4ac38966fa0edfab0dda586b9d07367168b9.json",
+      "sha256": "6006f1094af823f731099043c79f4ac38966fa0edfab0dda586b9d07367168b9",
+      "bytes": 9189
+    },
+    {
+      "path": "positive/workspace/evidence/raw/b8e93e80eee536caa4975a53ab451e1dd1186822531e6b162c1c6acc1ab69de5.log",
+      "sha256": "b8e93e80eee536caa4975a53ab451e1dd1186822531e6b162c1c6acc1ab69de5",
+      "bytes": 2474
+    },
+    {
+      "path": "positive/workspace/evidence/raw/ce037ce1028c858816135bc84232cbcb3ac64d4b8258a44fce2d6283db054991.log",
+      "sha256": "ce037ce1028c858816135bc84232cbcb3ac64d4b8258a44fce2d6283db054991",
+      "bytes": 409
+    },
+    {
+      "path": "positive/workspace/evidence/raw/d68059922a5e266430863c034d5195c7b34f11c6b253736159ef4e6c51fc0b15.log",
+      "sha256": "d68059922a5e266430863c034d5195c7b34f11c6b253736159ef4e6c51fc0b15",
+      "bytes": 18073
+    },
+    {
+      "path": "qualify-first-native-qwen-candidate-20261030-v1.py",
+      "sha256": "d8d539a0af4ef62fe5be449416eca96acf8afcb3e0e737bf7f71e8f36068eb08",
+      "bytes": 7314
+    },
+    {
+      "path": "read-mask-mutant/result.json",
+      "sha256": "57dcbdf537995b931dbeb6827c33eaafcb797c9cc1399997a443905ed868196f",
+      "bytes": 13067
+    },
+    {
+      "path": "read-mask-mutant/workspace/.forge-run/manifest.json",
+      "sha256": "abcd90f3f630c8057bceb1bf45758992ee84af3ef72b64e2424a082f164144fe",
+      "bytes": 17680
+    },
+    {
+      "path": "read-mask-mutant/workspace/build/renode/test_performance.performance-inputs.json",
+      "sha256": "60e84c5cf0cbcfa0154029957ed2b3dd46d02ba425e9a0b09f2505f309747552",
+      "bytes": 1783
+    },
+    {
+      "path": "read-mask-mutant/workspace/evidence/raw/15420544e0a755058c83a8cfdd297c7ab3b4bc5df0e8e89ecba764b454fd76f9.log",
+      "sha256": "15420544e0a755058c83a8cfdd297c7ab3b4bc5df0e8e89ecba764b454fd76f9",
+      "bytes": 713
+    },
+    {
+      "path": "read-mask-mutant/workspace/evidence/raw/209c82bca72b637afbd222df093f97c46eccf53330badb756fbd5d4daf68b5c9.json",
+      "sha256": "209c82bca72b637afbd222df093f97c46eccf53330badb756fbd5d4daf68b5c9",
+      "bytes": 9189
+    },
+    {
+      "path": "read-mask-mutant/workspace/evidence/raw/bf9c29c06857877776625e5d6fb2e5719ad9bbe835f9b8cb3286bf6a3d3d3a91.log",
+      "sha256": "bf9c29c06857877776625e5d6fb2e5719ad9bbe835f9b8cb3286bf6a3d3d3a91",
+      "bytes": 18129
+    },
+    {
+      "path": "read-mask-mutant/workspace/evidence/raw/c382199f96d4f345ca4230b47c1f09ae8dfc6a65e214414bf969505875898cbc.log",
+      "sha256": "c382199f96d4f345ca4230b47c1f09ae8dfc6a65e214414bf969505875898cbc",
+      "bytes": 425
+    },
+    {
+      "path": "read-mask-mutant/workspace/evidence/raw/d820f2254aca33f163f09781fdc15f979cc76ce1fd5523dea798c912d6ee4267.log",
+      "sha256": "d820f2254aca33f163f09781fdc15f979cc76ce1fd5523dea798c912d6ee4267",
+      "bytes": 2586
+    },
+    {
+      "path": "summary.json",
+      "sha256": "c185df281bb78f9cb0c1361e30307654578462b53231ff7d6a9d26bbccd8d574",
+      "bytes": 552
+    }
+  ],
+  "excluded": [
+    "authoritative input contents",
+    "ELF base64 blobs",
+    "credentials",
+    "model hidden reasoning"
+  ],
+  "active_workspace_modified": false
+}

@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "scope": "PUBLICATION_HYGIENE_NOT_RUNTIME",
+  "issues": [],
+  "checks": {
+    "all_publication_files_tracked_in_git": true,
+    "decompressed_raw_receipts_scanned": true,
+    "raw_and_view_representation_hashes_match": true
+  }
+}

@@ -144,6 +144,10 @@ def handshake(pin: EnginePin, workdir: Path, lim: Limits | None = None) -> tuple
         issues.append("ENGINE_SELF_DIGEST_MISMATCH")
     if pin.semantic_profile not in eng["semantic_profiles"]:
         issues.append(f"PROFILE_NOT_OFFERED:{pin.semantic_profile}")
+    declared_domain = ident["protocol"].get("domain")
+    if ((pin.semantic_profile == "register-io-0.2" or declared_domain is not None)
+            and declared_domain != C.domain_schema(pin.semantic_profile)):
+        issues.append("DOMAIN_PROFILE_MISMATCH")
     return ident, issues
 
 

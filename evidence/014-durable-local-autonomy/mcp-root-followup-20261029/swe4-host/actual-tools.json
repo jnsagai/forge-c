@@ -1,0 +1,192 @@
+{
+  "at": "2026-10-29T15:19:20.502688Z",
+  "phase": "SWE.4",
+  "baseline": null,
+  "current_baseline": false,
+  "gate": {
+    "phase": "SWE.4",
+    "decision": "REWORK",
+    "reason": "NO_BASELINE",
+    "failed_inspections": 0,
+    "max_rework_cycles": 3
+  },
+  "gates": [],
+  "tools": [
+    {
+      "at": "2026-10-29T15:12:16.154471Z",
+      "server": "forge-tests-mcp",
+      "op": "run_unit",
+      "role": "swe4-author",
+      "status": "FAIL",
+      "issues": [
+        "DUPLICATE_TEST_ID:UT-001:used by 4 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-002:used by 8 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-003:used by 4 checks - give each check its own id"
+      ],
+      "summary": "unit: 1 passed, 1 failed (HOST)",
+      "provenance": {
+        "duration_ms": 2.9,
+        "exit_code": 1,
+        "invocation_id": "inv-54b68a82fedf4b1a",
+        "output_sha256": "09aeae467de2269624b3fa8873257b7eebd38cda9ece4da543191dd10c876489",
+        "tool": "clang+self-checking tests",
+        "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029"
+      },
+      "artifact_refs": [
+        "artifact:sha256:09aeae467de2269624b3fa8873257b7eebd38cda9ece4da543191dd10c876489"
+      ],
+      "metric_fields": [
+        "environment",
+        "executables",
+        "failed",
+        "passed",
+        "target_evidence"
+      ],
+      "measured_dimensions": {
+        "executables": 1,
+        "failed": 1,
+        "passed": 1,
+        "target_evidence": false
+      }
+    },
+    {
+      "at": "2026-10-29T15:15:41.096081Z",
+      "server": "forge-tests-mcp",
+      "op": "run_unit",
+      "role": "swe4-author",
+      "status": "FAIL",
+      "issues": [
+        "DUPLICATE_TEST_ID:UT-001:used by 4 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-002:used by 8 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-003:used by 4 checks - give each check its own id"
+      ],
+      "summary": "unit: 1 passed, 1 failed (HOST)",
+      "provenance": {
+        "duration_ms": 3.1,
+        "exit_code": 1,
+        "invocation_id": "inv-237532cc8c544833",
+        "output_sha256": "09aeae467de2269624b3fa8873257b7eebd38cda9ece4da543191dd10c876489",
+        "tool": "clang+self-checking tests",
+        "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029"
+      },
+      "artifact_refs": [
+        "artifact:sha256:09aeae467de2269624b3fa8873257b7eebd38cda9ece4da543191dd10c876489"
+      ],
+      "metric_fields": [
+        "environment",
+        "executables",
+        "failed",
+        "passed",
+        "target_evidence"
+      ],
+      "measured_dimensions": {
+        "executables": 1,
+        "failed": 1,
+        "passed": 1,
+        "target_evidence": false
+      }
+    },
+    {
+      "at": "2026-10-29T15:18:27.129913Z",
+      "server": "forge-tests-mcp",
+      "op": "run_unit",
+      "role": "swe4-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "unit: 1 passed, 0 failed (HOST)",
+      "provenance": {
+        "duration_ms": 2.7,
+        "exit_code": 0,
+        "invocation_id": "inv-d995d4945f7e44d7",
+        "output_sha256": "81ed913464911558c98364f42dfeeda1989b32b45cd76a20d59106a7bc85e72e",
+        "tool": "clang+self-checking tests",
+        "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029"
+      },
+      "artifact_refs": [
+        "artifact:sha256:81ed913464911558c98364f42dfeeda1989b32b45cd76a20d59106a7bc85e72e"
+      ],
+      "metric_fields": [
+        "environment",
+        "executables",
+        "failed",
+        "passed",
+        "target_evidence"
+      ],
+      "measured_dimensions": {
+        "executables": 1,
+        "failed": 0,
+        "passed": 1,
+        "target_evidence": false
+      }
+    },
+    {
+      "at": "2026-10-29T15:18:31.675489Z",
+      "server": "forge-tests-mcp",
+      "op": "llvm_coverage",
+      "role": "swe4-author",
+      "status": "PASS",
+      "issues": [],
+      "summary": "scope (2 delivered functions): functions 100.0% regions 100.0% branches None% (host); whole delivered files line 6.76%",
+      "provenance": {
+        "duration_ms": 6.5,
+        "exit_code": 0,
+        "input_sha256": "1900c8b35970d67e11f2e442c743fb21c0938a5032d36e1581feea6576e803b7",
+        "invocation_id": "inv-27a466fee5dd4f12",
+        "output_sha256": "2279f8ed0f2ff5c5109f13e4b8ba3868c87bd74f76b08cf9661c35e4179aa66b",
+        "tool": "llvm-cov",
+        "version": "LLVM (http://llvm.org/):"
+      },
+      "artifact_refs": [
+        "artifact:sha256:2279f8ed0f2ff5c5109f13e4b8ba3868c87bd74f76b08cf9661c35e4179aa66b",
+        "artifact:sha256:d016bcc8058334a14c025f67f4c914ba44f869618b9035a806075040f40ace70",
+        "artifact:sha256:57ec5406c56ef5f4bc9141e8cabce2d97ad12d2e63c49a066dc08522565f1bdb"
+      ],
+      "metric_fields": [
+        "branch_pct",
+        "environment",
+        "function_pct",
+        "line_pct",
+        "mcdc_pct",
+        "region_pct",
+        "scope_branch_pct",
+        "scope_function_pct",
+        "scope_functions",
+        "scope_region_pct",
+        "target_evidence"
+      ],
+      "measured_dimensions": {
+        "function_pct": 8.33,
+        "line_pct": 6.76,
+        "region_pct": 12.0,
+        "scope_function_pct": 100.0,
+        "scope_functions": 2,
+        "scope_region_pct": 100.0,
+        "target_evidence": false
+      }
+    }
+  ],
+  "build_files": [
+    {
+      "path": "build/target-cm55-gcc/driver.elf",
+      "bytes": 1056,
+      "sha256": "730855b86d4618bf10103ef086b846b9298daa5f0ff829c7e3741a5eb9849b0d"
+    },
+    {
+      "path": "build/target-cm55-gcc/driver.map",
+      "bytes": 5371,
+      "sha256": "f3699d08e3e02c32823e8ff35099285256230f853f1b2ff88d492be85927bc43"
+    },
+    {
+      "path": "build/target-cm55-gcc/forge_delivered_unit.o",
+      "bytes": 1056,
+      "sha256": "8cadbc7a843f983be74e9e5d4f968870490be105952a9200f303c56e880d8ba3"
+    },
+    {
+      "path": "build/target-cm55-gcc/forge_delivered_unit.su",
+      "bytes": 352,
+      "sha256": "185f5f61c6ec0ed1a52ef26e7ca7f7b1b5d86e8682f39ae182d0753ab03f7747"
+    }
+  ],
+  "read_only": true,
+  "generation_requests": 0
+}

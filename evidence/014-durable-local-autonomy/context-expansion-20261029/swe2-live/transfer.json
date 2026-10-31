@@ -1,0 +1,17 @@
+{
+  "schema": "forge-c/live-phase-snapshot/1",
+  "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "order_id": "afo-774900b297bdde37",
+  "native_run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
+  "observed_utc": "2026-10-29T14:28:50.737107Z",
+  "artifact": {
+    "path": "workproducts/SWE.2/software_architecture.md",
+    "bytes": 8882,
+    "sha256": "5fafa6de489e36e1ef3ac94a8cfc85eba0eb4ffff34dd857fd1034bca72c0b3e"
+  },
+  "local_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen/live-phase-snapshots/afo-774900b297bdde37/20261029T142850Z/software_architecture.md",
+  "transfer": "SHA256_AND_SIZE_VERIFIED",
+  "status": "PROVISIONAL_AUTHOR_OUTPUT; INSPECTION_PENDING",
+  "hidden_reasoning_or_prompt_copied": false,
+  "complete_package": false
+}

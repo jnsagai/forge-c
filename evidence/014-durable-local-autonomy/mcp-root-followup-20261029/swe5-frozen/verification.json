@@ -1,0 +1,61 @@
+{
+  "schema": "forge-c/frozen-phase-snapshot/1",
+  "at": "2026-10-29T16:03:55.938658Z",
+  "order_id": "afo-774900b297bdde37",
+  "job_id": "afo-product-b715f920180f440b708e55a0",
+  "phase": "SWE.5",
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "dirty": false
+  },
+  "baseline": {
+    "author_role": "swe5-author",
+    "baseline_hash": "c6337b6f55cd41d22fdefc8f470a641ebead75aa4a8a79ef6c909e39e687cf80",
+    "baseline_id": "BL-SWE.5-001",
+    "files": {
+      "software/tests/integration/test_crc_integration.c": "38f1cbc71e9744602fa3a36b30de76723663b75556e3d45e4f2b6091685c3763",
+      "software/tests/target/test_crc.c": "bd0e2c63369f3bf4ef7e90813874c2fa783d06edb939712b0ee49c02bc7238c8",
+      "software/tests/target/test_performance.c": "12aa5a6a3a8ae56db1a8910cd19dd3a7cf8df5d468c51962deccc211a7cd48c2",
+      "workproducts/SWE.5/integration_verification_report.md": "629d47f72c80b73d01e751fec4eb6fec09a639bbd50000c40a0b7589d0c5a548",
+      "workproducts/SWE.5/traceability/matrix_5_integrationtest_to_architecture.csv": "2e56fbac6ace02b6d91f49a1d503ec2b7943d07a75c1fd584f76a5b0767fa1fb",
+      "workproducts/SWE.5/traceability/matrix_5_integrationtest_to_architecture.md": "dab68122c65aec3eeae6b6df5a094ac509a022816fb324419be582900bdfbb78"
+    },
+    "frozen_at": "2026-10-29T15:55:04.974020Z",
+    "phase": "SWE.5",
+    "schema": "forge-c/baseline/0.4",
+    "upstream": {
+      "SWE.2": "3308f08043518b4c0471061d7230b2afddd6ed283570869975e9d934c407ffb6",
+      "SWE.3": "97f4c1c95f841e179d72846ff63e49ac5d777761e8474a87a80403e14a1133f5",
+      "SWE.4": "92a66ef1e1ab535dd26d217b1611e4972a7f9c1fcfa2780a7b7231554c3a9fa0"
+    }
+  },
+  "actual_inspection": {
+    "inspection_id": "INS-SWE.5-001",
+    "recorded_at": "2026-10-29T15:59:17.742121Z",
+    "verdict": "PASS",
+    "baseline_hash": "c6337b6f55cd41d22fdefc8f470a641ebead75aa4a8a79ef6c909e39e687cf80"
+  },
+  "phase_completion": "RECORDED_PASS",
+  "current_baseline_verified": true,
+  "deterministic_gate": {
+    "phase": "SWE.5",
+    "decision": "PASS",
+    "reason": "INS-SWE.5-001",
+    "failed_inspections": 0,
+    "max_rework_cycles": 3
+  },
+  "additional_checks": {
+    "status": "NOT_RERUN_IN_READONLY_COLLECTION"
+  },
+  "generation_requests": 0,
+  "read_only": true,
+  "product_acceptance": "NOT_ESTABLISHED",
+  "local_transfer": {
+    "status": "ALL_MEMBER_HASHES_AND_SIZES_VERIFIED",
+    "files": 23,
+    "archive_sha256": "ab1619e576dc68ae52ed9048880acac41d83323c142f79067b8ddd040b79fcf8",
+    "directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen/frozen-phase-snapshots/afo-774900b297bdde37-SWE.5"
+  }
+}

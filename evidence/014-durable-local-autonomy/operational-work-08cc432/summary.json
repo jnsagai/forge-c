@@ -1,0 +1,66 @@
+{
+  "artifacts": {
+    "affected.log": "099d2e36e733390e649c546fb34c9c278dd6d7b16c0b3776cebf5e3d9053296f",
+    "affected.xml": "d3244018f20cc9240d5b2011705cb39546d0f460761ca734b021185188a93e3c",
+    "history.json": "d047512fd113879a28f17aba888861e7d82d3e479024c29a069f59ab957055cc",
+    "independent-cre.json": "e9640dbc1828e1a59e1ad3270987a174e9f98be893fe8471ec5fc00574f91e81",
+    "invocation.json": "de391a06b77ea9d8be1216475e66f2502ea8af8ce69741a593f3464a70a15883",
+    "private-input-hashes.json": "ed0bd488b6fc697c52b5d71b80d5153ca03531f5ae7202de67a10f231b3847b5",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "release.xml": "80ccd08b765356cb9f576267867da929de2bcdb27d9771962f677c5662226d69",
+    "systemd.json": "4934cf296888b155cbfb38216ea26dd526af26f07edea3c24a6796a3046535dc"
+  },
+  "formal_progress": "30/58; no new task checkbox",
+  "full_core_regression_on_this_revision": "NOT_RUN; prior exact c86d577: 712 PASS/11 SKIP",
+  "full_inherited_1840_test_suite_on_this_revision": "NOT_RUN; prior exact 20650af remains distinct",
+  "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE",
+  "learning_benefit": "NOT_RUN",
+  "local_systemd_cases": 7,
+  "native_model_capability": "PARTIAL (separate existing qualification)",
+  "new_qwen_requests": 0,
+  "operational_campaigns_24_72_168_hours": "NOT_RUN",
+  "product_success": "NOT_RUN",
+  "remaining": [
+    "Host intervention audit producer/integration remains incomplete",
+    "Actual independently produced product correctness oracle evidence is unavailable for this candidate",
+    "Authorized reboot/authoritative-mount-loss fixture window and actual live fault/work exposure remain unavailable",
+    "No actual 24/72/168-hour campaign or product/learning-benefit qualification run",
+    "Independent CRE protected-path veto is retained"
+  ],
+  "results": {
+    "affected": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 235,
+      "seconds": 26.223,
+      "skipped": 1,
+      "skips": [
+        {
+          "reason": "HAL r154 workspace not on this host",
+          "test": "factory.python.tests.test_afo_m3_reconcile::test_checkpoints_from_a_real_passing_workspace"
+        }
+      ],
+      "tests": 236
+    },
+    "release": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 13,
+      "seconds": 9.226,
+      "skipped": 0,
+      "skips": [],
+      "tests": 13
+    }
+  },
+  "rolling_30_day_slo": "NOT_DEMONSTRATED",
+  "runtime_deployment": "NOT_ACTIVATED",
+  "scope": "READ_ONLY_NATIVE_WORK_IN_WINDOW_AND_INDEPENDENT_AUDIT_INTEGRATION_NOT_LIVE_QUALIFICATION",
+  "static_checks": {
+    "contracts": "PASS 6 schemas/38 structural fixtures",
+    "design": "PASS 14 tests",
+    "handoff": "PASS documentation only 30/58",
+    "ruff": "PASS changed source/new tests",
+    "spec": "PASS 58 mappings"
+  },
+  "tested_revision": "08cc4326063074878b876c4aec36b9062fbde970"
+}

@@ -272,10 +272,17 @@ def loops_used(ws: Path) -> int:
     return len(p.read_text().splitlines()) if p.is_file() else 0
 
 
+def loop_budget(ws: Path) -> int:
+    from ..development_execution import selected
+
+    policy = selected(ws)
+    return policy.get("max_upstream_loops", UPSTREAM_LOOP_BUDGET) if policy else UPSTREAM_LOOP_BUDGET
+
+
 def take_upstream(ws: Path, target: str) -> list[dict]:
     """Chain node `upstream_<target>`: claim every OPEN defect owned by `target` if loop budget remains."""
     todo = [d for d in all_defects(ws) if d["status"] == "OPEN" and d["target_phase"] == target]
-    if not todo or loops_used(ws) >= UPSTREAM_LOOP_BUDGET:
+    if not todo or loops_used(ws) >= loop_budget(ws):
         return []
     for d in todo:
         _event(d, "IN_FIX", loop=loops_used(ws) + 1)

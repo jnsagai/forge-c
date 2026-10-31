@@ -1,0 +1,131 @@
+schema: forge-c/local-profile/1
+id: local-rtx-v2-omniverse2-q38-qm-native-artifacts
+version: 2
+work_order_purpose: QM
+status: DEVELOPMENT_ARTIFACT_TRIAL_NOT_QUALIFIED
+description: Owner-requested native MCP artifact trial. Same six-phase agent workflow,
+  no structured author or inspector substitution. Standalone trial omits AFO generation
+  admission and budget enforcement; quality findings remain visible and do not establish
+  production acceptance.
+host_reference:
+  gpu: RTX 6000 Ada 48 GB
+  cpu: Core Ultra 9 285K
+  ram_gb: 125
+local_only: true
+provider: ollama
+models:
+  default: qwen3.8:27b-q8_0
+  allowed:
+    qwen3.8:27b-q8_0:
+      digest: 8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039
+      quantization: Q8_0
+      license: Apache-2.0
+      role_qualification: NOT_QUALIFIED; author/inspector/diagnosis/maintenance qualify
+        separately
+      license_source: https://huggingface.co/Qwen/Qwen3.8-27B
+runtime:
+  context_limit_tokens: 262144
+  fabro_context_tokens: 262144
+  fabro_max_output_tokens: 16384
+  ollama:
+    OLLAMA_NUM_PARALLEL: '1'
+    OLLAMA_MAX_LOADED_MODELS: '1'
+    OLLAMA_FLASH_ATTENTION: '1'
+    OLLAMA_KV_CACHE_TYPE: f16
+    OLLAMA_CONTEXT_LENGTH: '262144'
+    OLLAMA_NOPRUNE: '1'
+  timeout_scale: 10
+  llama_server:
+    model: qwen3.8:27b-q8_0
+    slots: 1
+    mtp_draft: 3
+    reasoning: 'on'
+    reasoning_effort: medium
+    gpu_layers: all
+    batch_tokens: 1024
+    microbatch_tokens: 512
+structured:
+  phases_by_layer:
+    LL: []
+    HAL: []
+    LL+HAL: []
+  inspect_phases_by_layer:
+    LL: []
+    HAL: []
+    LL+HAL: []
+  semantic_phases: []
+  semantic_inspect_phases: []
+  advisory_continue: false
+  reinspect_direct: false
+  c_parameter_list_note: false
+  inspection_max_source_chars: 1048576
+gateway:
+  request_measurement:
+    qwen3.8:27b-q8_0: native_template_plus_serialized
+  drop_retries: 0
+  request_timeout_s: 21600
+  reasoning:
+    qwen3.8:27b-q8_0:
+      effort: medium
+      system_message_order: merge_first
+      extra_output_tokens: 32768
+      role_efforts:
+        swe1-inspector: xhigh
+        swe2-inspector: xhigh
+        swe3-inspector: xhigh
+        swe4-inspector: xhigh
+        swe5-inspector: xhigh
+        swe6-inspector: xhigh
+afo:
+  role_job_tokens:
+    afo-recovery-planner: 1048576
+    afo-factory-maintainer: 131072
+admission:
+  max_inflight: 1
+  max_queue: 8
+  max_wait_s: 21600
+measurement:
+  sample_s: 10
+deployment:
+  root_env: FORGE_LRTX_ROOT
+  default_root: /mnt/data/forge-c/native-artifacts-014-20261030-v1
+  ports:
+    ollama: 11455
+    gateway: 11458
+    fabro: 32401
+    llama: 11457
+  forbidden_ports:
+  - 8765
+  - 8787
+  - 11434
+  - 11435
+  - 11436
+  - 11437
+  - 11445
+  - 11446
+  - 32290
+  - 32291
+  - 32390
+  writable_env:
+  - FORGE_DATA_ROOT
+  - FORGE_STATE_DIR
+  - FORGE_ARCHIVE_DIR
+  - FORGE_FABRO_CONFIG
+  - FORGE_FABRO_STORAGE
+  - FORGE_FABRO_HOME
+  - FORGE_VENV
+  - UV_CACHE_DIR
+  - PIP_CACHE_DIR
+  shared_readonly:
+    toolchains: /mnt/data/forge-c/toolchains
+    standards: /mnt/data/forge-c/standards
+    inputs: /mnt/data/forge-c/inputs
+    ollama-0.34.0: /mnt/data/forge-c/ollama-0.34.0
+    ollama-models: /mnt/data/forge-c/ollama-models
+existing_deployment:
+  roots:
+  - /home/omniverse2/forge-c-remote/repos/forge-c
+  - /home/omniverse2/forge-c-remote/repos/safec
+network:
+  required: namespace_denied
+development_execution_policy: qm-pipeline-demonstration-repair-v2

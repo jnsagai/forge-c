@@ -1,0 +1,14 @@
+{
+  "status": "V1_EXTERNAL_ACTIVATION_FAILED_BEFORE_ANY_MISSION_JOB_OR_MODEL_REQUEST",
+  "exit_code": 1,
+  "scope_sha256": "ae16935fbde8ac0aa5887d556f1a1b530d02190916869024d5010b7bda1cc0d7",
+  "source_revision": "12e601e4f53ab71b6d184ae19379faa1dd8f6e97",
+  "failure": "SIGNED_RAW_YAML_HASH_INSTEAD_OF_CANONICAL_PARSED_POLICY",
+  "mode_after_failure": "PAUSED89_WITH_MODEL_FREE_SUPERVISION_RESTORED",
+  "created_missions": 0,
+  "created_jobs": 0,
+  "model_requests": 0,
+  "old_grants_and_failed_records_preserved": true,
+  "replacement_scope": "9064faecbc628312be11286a38f149f47afcacabd48b8cd67db2e1b56fe61043",
+  "deadline_renewed": false
+}

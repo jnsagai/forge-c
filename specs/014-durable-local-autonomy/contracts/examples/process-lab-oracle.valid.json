@@ -1,0 +1,27 @@
+{
+  "schema": "forge-c/swe1-oracle/1",
+  "driver": "crc-idr",
+  "source_hashes": [
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ],
+  "reviewer": "owner",
+  "review_utc": "2026-10-31T12:00:00Z",
+  "obligations": [
+    {
+      "id": "OBL-idr-write",
+      "critical": true,
+      "kind": "behaviour",
+      "accepted_source_refs": [
+        "RM0486 p.1172"
+      ],
+      "predicate": [
+        {
+          "register": "IDR",
+          "field": "IDR",
+          "op": "write"
+        }
+      ],
+      "note": "All 32 supplied bits are written to IDR."
+    }
+  ]
+}

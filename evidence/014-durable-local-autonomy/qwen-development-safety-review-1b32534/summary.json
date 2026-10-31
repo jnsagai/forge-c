@@ -1,0 +1,68 @@
+{
+  "source_revision": "1b32534eecfaa0481d4eb00ebf30fe478b42cb01",
+  "scope": "READ_ONLY_NEW_DEVELOPMENT_POLICY_REVIEW_NOT_REPAIR_OR_ROLE_QUALIFICATION",
+  "model": "qwen3.6:35b-a3b",
+  "gpu_job": "080-development-safety-review-1b32534.sh",
+  "max_client_calls": 1,
+  "client_calls_attempted": 1,
+  "upstream_attempts_observed": 1,
+  "input_tokens": 2574,
+  "output_tokens": 531,
+  "request_wall_ms": 7912.9,
+  "client_elapsed_seconds": 7.913,
+  "full_serialized_context_accounting": {
+    "serialized_chars": 10243,
+    "estimated_prompt_tokens": 3788,
+    "output_reserve": 1024,
+    "context_tokens": 24576,
+    "fits": true,
+    "complete_serialized_request": {
+      "sha256": "1e4e7c9d750f6b38136d8eb58a7f0e47217dc60277ac93bbdbbf156a8e05ff64",
+      "serialized_bytes": 11762,
+      "input_tokens": 11890,
+      "method": "utf8_byte_upper_bound",
+      "native_measured": false
+    }
+  },
+  "review_outcome": "INVALID_OR_BLOCKED_PROPOSAL",
+  "literal_reference_check": "FAIL",
+  "individual_literal_quotes": [
+    false,
+    true
+  ],
+  "supported_actionable_findings": 0,
+  "code_changes_from_model_review": 0,
+  "independent_result": "FIXED_BASELINES_MATCH_EXPECTED_BEHAVIOR; hypothetical protected baseline edits are outside the declared contract",
+  "experience_dispositions": [
+    "DEFERRED_BUDGET",
+    "NO_NEW_LESSON"
+  ],
+  "qualified_lessons_added": 0,
+  "learning_benefit": "NOT_MEASURED",
+  "learning_overhead": "independent capture_seconds recorded; no comparable cohort or benefit evaluation",
+  "new_model_requests_in_independent_check": 0,
+  "native_role_qualification": "NOT_CLAIMED",
+  "autonomous_self_healing": "NOT_PROVEN",
+  "runtime_deployment": "NOT_ACTIVATED",
+  "product_success": "NOT_RUN",
+  "operational_campaign": "NOT_RUN",
+  "budget_state": "SPENT_NO_REDISPATCH",
+  "previous_studies": "ST3 diagnosis and bus-query review remain exhausted; this is a distinct new-code review",
+  "private_input_refs": {
+    "packet.json": "c4db60999bfdd925185bf64a7651520f4f955168fd0347a84ccdc3ca45b9cc79",
+    "proposal.json": "879df14480ec36c900f54969eeac16ed540efba57a00c3e29d0006faeb84b40f",
+    "input-coverage.json": "ab70bc4aac735a6be85b3ec45d90691e51d87fac9eb7c27f8f1b71712452001d"
+  },
+  "artifacts": {
+    "080-development-safety-review-1b32534.sh.log": "e495eca8cfa57089819fd0aa6f57cfcd0772c8952ee3bdf118b9e44614a98af6",
+    "080-development-safety-review-1b32534.sh.status": "5c4b983a410bbbd7d82820958df10d19a0b40ad187ba31468f7780026c65f82a",
+    "accounting.json": "7fedb0bf5cd79491cd04d42d57089991fe8756d50a238fc83471650a787c5936",
+    "admission-after.json": "5d89cb98b2ff449363fc6616cd67f707493b19373b77b19e194811807b686a13",
+    "independent-check.json": "28afdffa9634e18a457761c384f65b4881fe9485f80df28ad43ef8b903953b54",
+    "independent-learning-capture.json": "45a9cdcdebab598832db409bf221833dba069c2a01e6655dfbe9043c23fb112d",
+    "learning-capture.json": "26a53ec2e8bb3f6b220ab3ea40db777216f4430cc6e6fbb41da8b99f2ec1361e",
+    "meter-observation.json": "7cf9e45cf404ff65d616ee3fbaedaa16a33d87e75808c39ea067635b010e7fc6",
+    "check-frozen-baselines.py": "9ab4ed144764ac32c96318d9bac3f51a2e6076aa65efc18d06191636280dde9a"
+  },
+  "independent_replay_command": "python evidence/014-durable-local-autonomy/qwen-development-safety-review-1b32534/check-frozen-baselines.py --work-dir <loop10-private-tmp>"
+}

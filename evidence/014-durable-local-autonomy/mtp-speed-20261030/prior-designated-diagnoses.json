@@ -1,0 +1,69 @@
+[
+  {
+    "effort": "xhigh",
+    "trial": "obligation-counterexample:0",
+    "decision": "NEEDS_EVIDENCE",
+    "missing_evidence": [
+      {
+        "evidence_kind": "AUTHORITATIVE_INPUT",
+        "obligation_ref": "USPEC-001",
+        "reason": "The authoritative requirement for USPEC-001 is not present in the supplied primary sources; A1 and A3 are identical seeded fixture text and A2 is only an architecture note, so the decisive requirement"
+      }
+    ],
+    "reason": null,
+    "diagnostic": null
+  },
+  {
+    "effort": "xhigh",
+    "trial": "upstream-owner:0",
+    "decision": "NEEDS_EVIDENCE",
+    "missing_evidence": [
+      {
+        "evidence_kind": "AUTHORITATIVE_INPUT",
+        "obligation_ref": "USPEC-001",
+        "reason": "The supplied artifacts conflict on the authoritative EN mask: A1 and A3 require UINT32_C(1), while A2 specifies UINT32_C(2). No supplied authoritative input resolves which mask is the governing design"
+      }
+    ],
+    "reason": null,
+    "diagnostic": null
+  },
+  {
+    "effort": "medium",
+    "trial": "obligation-counterexample:0",
+    "decision": "NEEDS_EVIDENCE",
+    "missing_evidence": [
+      {
+        "evidence_kind": "AUTHORITATIVE_INPUT",
+        "obligation_ref": "USPEC-001",
+        "reason": "The packet lists required_obligations as [\"SWR-001\", \"USPEC-001\"], but the obligations map contains only USPEC-001. No obligation entry, evidence_refs, or finding_refs exist for SWR-001 in this packet"
+      }
+    ],
+    "reason": null,
+    "diagnostic": null
+  },
+  {
+    "effort": "medium",
+    "trial": "upstream-owner:0",
+    "decision": null,
+    "missing_evidence": null,
+    "reason": "CONTRACT_INVALID",
+    "diagnostic": {
+      "bytes": 2630,
+      "decision": "NEEDS_EVIDENCE",
+      "issues": [
+        {
+          "path": "missing_evidence",
+          "validator": "uniqueItems"
+        }
+      ],
+      "keys": [
+        "decision",
+        "evidence_refs",
+        "missing_evidence"
+      ],
+      "parse": "OK",
+      "type": "dict",
+      "unknown_key_count": 0
+    }
+  }
+]

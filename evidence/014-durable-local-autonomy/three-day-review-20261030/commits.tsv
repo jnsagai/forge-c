@@ -1,0 +1,186 @@
+revision	author_time	subject
+c221b65ebc011cbed488db83af3e2804790c1129	2026-10-30T18:26:01+00:00	feat(qm): prepare native Qwen artifact workflow without structured substitutions
+1089742db8b9acb0f8b85b2a4b779bb9b7cd1839	2026-10-30T17:56:03+00:00	fix(contracts): clarify query evidence and honor the selected hardware manual
+f5e07c9e844b9ee09c391f50f74b2d30e4888246	2026-10-30T17:44:38+00:00	fix(codex): declare compact worker replies in developer instructions
+76d79b461690933ddf225b235ec945d68bcac267	2026-10-30T17:40:44+00:00	fix(acp): bind full-scope author capacity and start one budget per visit
+451038c4776db8e52c248148848d0f734af8b70b	2026-10-30T17:29:08+00:00	fix(preflight): share launch inventory and resolve default RCC scope
+c1244ecdcbc9ddc499b42d0bfe92b38b818a5630	2026-10-30T17:20:37+00:00	feat(rcc): bind owner-selected simulation performance targets for both model paths
+30ab4b0292175b58f4d0b82cc989d87d7bdacd21	2026-10-30T17:16:13+00:00	fix(workflow): preserve complete owner scope in native ASPICE prompts
+344b70513efc0c58b5458fcb488a46dab9e00eec	2026-10-30T16:50:11+00:00	fix(acp): retain pinned toolchain and data root through native gates
+e50f3d16b4feb77e5a462f46fe912b5b35d0bb26	2026-10-30T16:44:56+00:00	feat(aspice): support explicit native Codex and Claude comparison runs
+9029f93927c4ca0916c608a09dbac2d71efcd2f9	2026-10-30T16:27:21+00:00	fix(lrtx): revalidate assembled code and opt in to hash-bound fresh task reuse
+9769911c4630ed9fc059fb6aecc9be7dfb663337	2026-10-30T16:10:28+00:00	fix(lrtx): apply pinned author call capacity across all structured phases
+df8dc94261da6e718410a580af3f6846ff1fcadb	2026-10-30T16:06:04+00:00	docs(014): record live checkpoint continuation without budget reset
+dc78f6d6a22cdab46bb3066203187ebc6fed7910	2026-10-30T16:00:55+00:00	docs(014): preserve watchdog failure and qualified native-context continuation
+20dccfcbd9ecea639d1d0b0a80deb9a8d920af71	2026-10-30T15:45:01+00:00	fix(lrtx): revalidate and reuse matching author tasks across resumed attempts
+27f337e149373b0547b159fcdf880ae025fab920	2026-10-30T15:38:35+00:00	fix(lrtx): measure native request context and checkpoint before watchdog expiry
+7a730036745b4bcb427abe9f0e25211d0f1d6e98	2026-10-30T15:15:30+00:00	docs(014): record autonomous SWE2 repair and active mixed-role trial
+7fbefc40e0912e15aabeb70ca6b85932085b1b27	2026-10-30T14:32:45+00:00	fix(test): isolate continuity fixture and pin diagnosis transport role
+e4e93d96cd49f93cc943e436718d367ee53ad11e	2026-10-30T14:21:55+00:00	feat(lrtx): pin medium authors and xhigh inspectors per request
+090b5f0e7bdf8604045e20b5a142014312bd583c	2026-10-30T13:59:46+00:00	fix(lrtx): retain explicit owner section coverage in structured requirements
+9a827c407918bb52c4edcd0e78c9504227643435	2026-10-30T13:28:24+00:00	docs(014): normalize qualification window review copy
+44261c92f596c9d9ef57a943a75d0e60bdbf9a63	2026-10-30T13:27:55+00:00	docs(014): publish reasoning-off comparison and successful stepwise pilot
+a32d87a311cc4a46cd12b6f00d1aea8a210c305c	2026-10-30T13:21:03+00:00	fix(afo): bind signed stepwise product trials before admission sizing
+7d7ecc6e8598fb01ba95223987b2a42cc6bfd209	2026-10-30T12:48:13+00:00	evidence(014): record journal-cost diagnosis, WAL regressions and queued native checks
+a7804054744ce3d471d6e15c60a205610755503a	2026-10-30T12:23:08+00:00	perf(014): retain WAL connection for each bounded conductor cycle with FULL commits
+a6cbfc1b9e942d9613b1ff1ddae820c89028daac	2026-10-30T12:07:31+00:00	evidence(014): publish final MTP sweep, native279 checks and live non-thinking trial
+656f30c2f5e5ee6ed7c640e36e6f95892851cc8d	2026-10-30T11:45:43+00:00	evidence(014): publish non-thinking preparation and exact-source gated native runbooks
+12e601e4f53ab71b6d184ae19379faa1dd8f6e97	2026-10-30T11:39:31+00:00	fix(014): give new comparison campaigns distinct authorization references
+cc6dfba7800ab946a6bdb2a6b162b888ff174cbe	2026-10-30T11:36:04+00:00	feat(014): prepare explicit non-thinking Qwen comparison with equal output ceilings
+d01b65ee31f2f69df7da5dacd5b8efab1b299c67	2026-10-30T11:31:15+00:00	evidence(014): verify native Qwen non-thinking template without inference
+c292a7ad4310d1289a4a6e0702a400d007503638	2026-10-30T11:28:35+00:00	docs(014): round paired wall speedup consistently
+a8e1d048e5c52c5260795c43ec0e1cfc05436ab0	2026-10-30T11:28:14+00:00	evidence(014): distinguish paired gateway and complete trial speedups
+219d1d4609cd0395f3e9686185aff6e542204c56	2026-10-30T11:26:17+00:00	evidence(014): publish diagnosis context regressions and fenced native qualification
+017e68da015390c60abb8ca46b7dfdd40a0afa79	2026-10-30T11:00:32+00:00	fix(014): retain global diagnosis context through compact follow-up questions
+dd24a849cbee88e5c226ce53d08d9a5dfbbbed62	2026-10-30T10:52:15+00:00	fix(014): distinguish diagnosis incident units from global requirement coverage
+52e41582b57951ec65224ce709e63acb6648b1e0	2026-10-30T10:31:38+00:00	evidence(014): record native MTP qualification and durable signed speed sweep
+a9b2ddfccc326bdcf8287c95a4310c0408429ccb	2026-10-30T10:10:55+00:00	feat(014): prepare controlled Q8 xhigh MTP draft-speed cohorts
+a6d70a4208aa03f3d62b706eadabc684ee63f5e1	2026-10-30T10:03:03+00:00	evidence(014): publish completed native xhigh versus medium speed pilot
+8f9fde61d082b67a382f1a138c48c532dcc8f98d	2026-10-30T09:46:20+00:00	ops(014): persist serial reasoning pilot and verified local result collection
+87b7fcbd88b93637c3b384d3d57277a185f1ffc8	2026-10-30T09:31:37+00:00	evidence(014): preserve owner-aborted run and start native reasoning speed pilot
+c738c79095a021754e6bfd5e1774d4cf270d4476	2026-10-30T09:00:28+00:00	docs(014): preserve C-notation counterexample and combined native qualification handoff
+37c0c354629312a70eb6a199989477036bb674d9	2026-10-30T08:50:55+00:00	fix(context): distinguish void parameters from return types in opted-in local roles
+377c3875eb6d306df69914f3e6634cb1bfe9cca0	2026-10-30T08:31:58+00:00	docs(014): record native high rejection and qualified local reasoning-pilot preparation
+94b5a68d22e88c010a04ca5d4356422551790a52	2026-10-30T08:18:04+00:00	feat(014): prepare controlled medium reasoning pilot and reject unsupported high
+ac36e65aaee8195066abf119e400c4c1617219a8	2026-10-30T07:40:42+00:00	docs(014): preserve native repair qualification, launch failure and active Qwen continuation
+899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f	2026-10-30T07:08:22+00:00	fix(runtime): synchronize generated skill lock and expose installed simulation tools
+3bc1f10e41c24afb3db30f4b243e35df063cb721	2026-10-30T06:40:56+00:00	fix(requirements): recognize qualified reset events without rejecting valid Qwen startup invariants
+b1abd4b80de1bfbe783f313c8d032a1c60b62243	2026-10-30T06:27:15+00:00	feat(qm): bound author repair loops and retain provisional LL provenance for HAL demonstrations
+b9f4611066d51eae25a56729b2fecda71e7dd9f8	2026-10-30T06:03:17+00:00	Record explicit QM full-phase continuation, strict run outcome and qualification results
+078663bd0461e99ab680733ea8178bf8be04474a	2026-10-30T05:59:39+00:00	feat(sim): measure authored LL and HAL APIs through existing Renode verification
+beb524c7e736e84e6eb859dc219c483c3d67b31f	2026-10-30T05:33:08+00:00	Record live Qwen rework, scoped feedback regressions and pending native qualification
+f037a0cf1ccb8bdc035b0cc5348b3efe2b2aefc4	2026-10-30T05:20:37+00:00	fix(lrtx): preserve provided-input provenance without fabricated packet identity
+d60fe4fc5f87727b0eebf1a0685e67059a5597b5	2026-10-30T05:12:37+00:00	feat(lrtx): retain open point scope and route rework to note origins
+5c28f1ffffe3544491901612fa605f2bee725758	2026-10-30T05:07:06+00:00	fix(lrtx): deliver complete published findings to localized rework
+77503c9d5685e073e2ab4f486cb9f9f6aefd9226	2026-10-30T04:54:54+00:00	fix(lrtx): preserve register reset findings beside startup invariants
+cd1a988f2a4dacbbf540eb1aea9b166534939070	2026-10-30T04:35:26+00:00	Record real inspector admission beyond legacy context and first passing verdict
+1e22301ac2de21fd16ca07c2679cc3b797a4eec5	2026-10-30T04:21:29+00:00	Preserve live clean LL packet progress and bounded local outcome collection
+157e88cf2a75a23686eb25806aadc53fce8faf29	2026-10-30T04:14:14+00:00	Record qualified Qwen repair activation and same-mission full LL continuation
+e21aa74411d01458bab45fee8af6d59f710fad03	2026-10-30T03:13:02+00:00	AFO maintainer candidate mnt-7e653513a54375a5-a1-r2: Preserved profile-context repair and time.monotonic 429-refusal path in lrtx/structured.py; aligned sealed reproducer with contract: baseline exits 1 ending SYMPTOM_PRESENT:<suffix>, fixed exits 0 end
+db69cc0196284341a8043959b4de23a2131e83ef	2026-10-30T03:59:46+00:00	Record qualified signature binding and independently eligible Qwen context repair
+5a288206f8b64c2435375f0e4b943f295ea8e14d	2026-10-30T03:44:54+00:00	feat(afo): bind legacy signature encoding with one accounted protocol correction
+8d253ca542e0bc84bea3108b5cd4739afcb32a13	2026-10-30T03:12:33+00:00	Preserve live retained rework, qualified commit recovery and remaining protocol rejection
+a7d54325fe47a55c88084c1caed47ee72f7594bc	2026-10-30T03:09:43+00:00	fix(afo): expose exact reproducer I/O and reject prefixed native signatures
+53e1234709eeaea91aaf681d1d5068659c85762a	2026-10-30T02:54:10+00:00	fix(afo): reconcile Git-cleaned commit messages without repeating submission
+cc352668559980565431b1e2650010755d5e4e8e	2026-10-30T02:45:02+00:00	Clarify newest rework findings and exact reproducer marker contract
+58d926f0208e51b9084222146f7dd35935fe16ab	2026-10-30T02:33:49+00:00	fix(afo): deliver hash-verified retained feedback through maintainer MCP
+4920009e27236e31427739fb9d79710399886cc2	2026-10-30T02:24:01+00:00	Record discovery overhead and qualify bounded source inventory locally
+09704db8fec44c21a292e8b952f35ae445b945dd	2026-10-30T02:20:50+00:00	feat(afo): expose bounded source inventory and controller-bound profile metadata
+e7457d24d8e9c138efba03875ef299cef1f58258	2026-10-30T02:04:39+00:00	Record bounded edit qualification and retain failed Qwen repair for scoped completion
+ab46545c1cfb7ffd90fb09715b6715b7d21ad242	2026-10-30T01:55:02+00:00	feat(afo): add bounded hash-bound maintenance source edits
+c15e2a13adcf154c34c4cd3d987bb77718f1f772	2026-10-30T01:22:08+00:00	Preserve full LL context failure and start Qwen repair against frozen original evidence
+085794d0e7926fd655e852c006b118f4aa33b4f1	2026-10-30T00:29:18+00:00	Record native capacity qualification and live same-mission Qwen ASPICE RCC execution
+b713e354b5c50744c549b1a9cada491c3ca017bd	2026-10-30T00:07:30+00:00	Add explicit signed capacity amendments without resetting mission expenditure
+8a56c9738bbef1aa3918ea27b65cbbc596b9a9ea	2026-10-30T00:03:09+00:00	Record Qwen scoped causal acceptance and qualified bounded maintenance rework
+8f215118168515db97346b49dcb8d648ca80625a	2026-10-29T23:51:30+00:00	Publish retained maintenance cases atomically
+e528734d61cdcf4adc2448f1d1f4d795c0ec6fba	2026-10-29T23:49:45+00:00	Add bounded same-order maintenance rework from independent feedback
+d6c1fad5d7bc197e7a787462dc97e12e8ddda934	2026-10-29T23:22:06+00:00	Preserve Qwen causal recovery evidence and start receipt-bound remaining rework
+f9e7f54b1838be2560d00117c1725f8d1d74d4c8	2026-10-29T23:08:38+00:00	Project durable maintainer disposition into independent review results
+9093a216b5ef9b9872154a163d935033fb1ea251	2026-10-29T23:00:21+00:00	Record live focused Qwen repair and prepare complete ASPICE pipeline qualification
+1237081af4336f479151d60083cd69d1f616bd39	2026-10-29T22:44:58+00:00	Prepare strict ASPICE Qwen MTP profile at native context maximum
+95d63b889d1fad59cdd9988f85ed7f73c4e93a77	2026-10-29T22:38:36+00:00	Record failed Qwen rework and native bootstrap qualification
+c1f1378733af388b50ba1d6e5de37c16f3c0a9ee	2026-10-29T22:36:40+00:00	Use canonical local-agent identity in retained-work launch test
+0da4616a4084b98899af63b6e494b0b2343bedc1	2026-10-29T22:31:43+00:00	Bind retained maintenance rework to verified Git artifacts
+bf5f83900c32ccd9ff6224a8f3bc7553c00702d3	2026-10-29T22:12:47+00:00	Record independent rejection and provenance-bound Qwen artifact continuation
+6cd238088b84ec67df3b59e88a22b6576e0d9412	2026-10-29T22:07:52+00:00	Preserve field constraints in the actual MCP tool schema
+9b0cd57cb138741191884d5528fe6f02927a5e76	2026-10-29T21:21:58+00:00	Record maximum-context activation and live Qwen AFO repair continuation
+92c49a6adde181737af19bb32a5efbd2130e9cd4	2026-10-29T21:13:10+00:00	Add native maximum context profile for Qwen AFO maintenance
+abff9194326162fca5f3056f57d99d22a31c55ac	2026-10-29T20:47:55+00:00	Publish Codex driver size census and qualified AFO limit activation
+979dcb406353b5c779cd7b61964e3e5f39add454	2026-10-29T20:26:28+00:00	Raise AFO paging and tool allowances using measured Codex driver sizes
+8c645f227805b900c1d04e0198b02ddbe05723fd	2026-10-29T18:55:11+00:00	Record real AFO maintenance limits, qualified budget fix and terminal outcomes
+3f1ef1b734f72e868a75488d980a2b4ac7c63998	2026-10-29T18:37:28+00:00	Separate cumulative maintenance job allowance from per-request context
+fb5a27b5ed7b9a90d006557d46d254463b990d77	2026-10-29T18:07:17+00:00	Prepare bounded AFO maintenance replay with native independent controls
+7c93372a27c68a3c62d7373bd9e3d9673da65aa6	2026-10-29T17:26:26+00:00	Qualify combined fixes natively with Qwen stopped and preserve failed setup evidence
+5c2e41ac3ae434c1f3472faa53a0c3650c632f6f	2026-10-29T16:53:29+00:00	Publish structured measurement regression and guarded native qualification preparation
+3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6	2026-10-29T16:43:31+00:00	Route bound simulation budgets through deterministic SWE6 measurement
+91ce79069b04f8ddd808bf1591cce3366191955f	2026-10-29T16:39:49+00:00	Publish exact local performance-contract qualification and interrupted outcome copy
+b1536d78bbfa23677c562a2e2e82aef4d27f423a	2026-10-29T16:34:49+00:00	Expose instrumented performance-test contract and actionable Robot failures
+9a00280be5ed7f1d50048aed8c450aa4b0f4de4a	2026-10-29T16:28:53+00:00	Record authenticated owner stop and confirmed provider quiescence
+7383dc1a35e12342e9b90ddc7a646044958001e9	2026-10-29T16:11:58+00:00	Record frozen SWE5 pass and measured simulation call performance
+bf9697d9160560ff8881cb5fe84c1f5cddfc21fb	2026-10-29T15:59:11+00:00	Record frozen SWE4 pass and stage guarded native root-fix qualification
+3e926e3edc8e022252951fa0f5b5ec75b407d720	2026-10-29T15:22:14+00:00	Record actual Qwen host-unit feedback, pass and scoped coverage
+1e77e97393fb15f62c9b64c3691fbabc48b1a7da	2026-10-29T15:13:56+00:00	Publish MCP root failure diagnosis, source qualification and actual SWE3 evidence
+9f9a93f174f46aa0add59c16a423be7d56988614	2026-10-29T15:04:32+00:00	Propagate the tool data root to isolated Fabro MCP servers and hooks
+49add27d1288c21aa8b0caa0b6ac8dcbb6a7132e	2026-10-29T14:42:10+00:00	Verify frozen Qwen SWE2 phase and scoped primary-reference offset
+0cb7530495d9de73af612a10f21743bbaeb051c3	2026-10-29T14:31:41+00:00	Record substantive Qwen SWE2 output and verified local snapshot
+a5b708a986f99bfbe347a99bd86d8abb6a0466ff	2026-10-29T14:27:22+00:00	Publish refusal-diagnostics counterexamples and exact local qualification
+a1c6ae5049bf2477fd5198dcbdbdbc80596b4bb0	2026-10-29T14:21:38+00:00	Retain hash-bound context diagnostics for rejected native requests
+453dde2d75f03058ae03bb68355a9b8e6a39045d	2026-10-29T14:13:06+00:00	Record larger-context qualification, activation and prior incomplete Qwen outcome
+9b4c390e1605d11c4865bdeea382df74a0078692	2026-10-29T13:47:34+00:00	fix(014): enlarge demo context to native trained window with bounded GPU batches
+143c3fe96a25143112e67175e707586eff87f7ab	2026-10-29T13:00:55+00:00	test(014): publish signed live QM demonstration and local outcome collection
+15b0fa59a5eb71dc7b921e8dcf67352520dd8de4	2026-10-29T12:28:38+00:00	feat(014): run owner-selected QM demonstrations through all six phases
+77fd55ebbb3b4ad749e7d25c2dde68ef7b3713d4	2026-10-29T12:15:09+00:00	test(014): publish complete archive audit qualification and truthful runtime status
+319e215417b8f7e0d329fb3ce71b595f0367f8ef	2026-10-29T12:01:20+00:00	fix(014): verify complete unambiguous package checksum inventories
+25a93b694134cd10cdbf7ca7dca72618b236bf15	2026-10-29T11:51:56+00:00	test(014): publish exact QM local and Omniverse qualification
+4ccffa2fab7cca4569d43381fcb42be356967c30	2026-10-29T11:42:41+00:00	docs(014): publish terminal Qwen outcome and prospective QM boundary
+5b398d27f2ee60d3c059dc115dd612f0ff105199	2026-10-29T11:29:58+00:00	fix(014): bind native and structured model instructions to resolved QM scope
+7f359550626582c24a53dd2a21aa8503056258a2	2026-10-29T10:57:51+00:00	fix(014): preserve legacy example applicability alongside QM naming scope
+89f535b71cc0f670ff2bdfafac0133c8e2f7417d	2026-10-29T10:51:57+00:00	feat(014): implement owner-selected QM inspection and release for any driver
+9dd013918fd86e7611d92b6a194b69d101d3ccb3	2026-10-29T10:51:57+00:00	fix(014): admit current-policy continuations without rebinding mission allowances
+dd7ee7fd2d2d0342f12147e2a5118712d92f8308	2026-10-29T10:18:54+00:00	docs(014): retain exact signed continuation bindings for offline verification
+680f78fd392ca0c97cde2fe1143837154cbdcb53	2026-10-29T10:18:25+00:00	docs(014): qualify independent recheck and record approved live Qwen continuation
+f206e3aa26837f892c2267ec67c46dcc61844c60	2026-10-29T09:03:48+00:00	feat(014): run one independent unit recheck from unchanged accepted inputs
+ed411b9a0d53b610cc3e8b91e120df69f6fd6688	2026-10-29T09:03:47+00:00	fix(014): preserve reviewed simulation input applicability and valid anchor replies
+6278ac59540c62710314f33177c5ac2e14c5d2a4	2026-10-29T08:24:37+00:00	docs(014): publish shared tool-cap regression and historical accounting uncertainty
+c8daeb18d3b6afba51219d23562448ef17a56855	2026-10-29T08:19:31+00:00	fix(014): account standard and semantic inspection receipts through shared tool dispatch
+c817ae96f027fbfd97ee4ed45d314fe490a3736e	2026-10-29T08:15:02+00:00	fix(014): retain verification limits and journal structured admission refusals
+bee02a7bf6ade5db7640098cc440bb83a63f06ed	2026-10-29T08:11:21+00:00	fix(014): debit structured tool handlers from the shared mission allowance
+77861cf0252aff08e679b30895e879d32e00ed69	2026-10-29T07:56:15+00:00	docs(014): publish final 178-pass clean-revision evidence and resume boundary
+aac50fcb3b415e7ac35fa6525f885d986ab4ca71	2026-10-29T07:49:53+00:00	docs(014): publish approved import and exact local recovery evidence
+e09b227aaf0ef2e5a7e21c99f2649651f986ce37	2026-10-29T07:49:21+00:00	fix(014): refuse missing or malformed deadline authority without mutation
+87287baa366e3e4fae2493e7df443996e2084e26	2026-10-29T07:42:11+00:00	feat(014): bind owner-approved simulation requirements and offline preparation
+d34e4ea063f5ebb8817b646138ab01255ce7a624	2026-10-29T07:42:11+00:00	feat(014): authorize audited time-only mission continuation without budget reset
+7f150986d1d7eeaa7827ae11d046f6275abeb02d	2026-10-29T07:12:07+00:00	feat(014): verify simulation-only call budgets through Renode, Robot and release
+92a4d6ecc820a3abbde247ac84ba2ee7e8fb519f	2026-10-29T06:18:01+00:00	fix(014): bind owner assessment scope into both inspector input paths
+c6ba2dcab639c5330be72bd9565d47bdb1eacfc7	2026-10-28T22:06:20+00:00	docs(014): record successful host-side Git progress publication
+9fa095f306595ae045f316cf62ff92fe90a806f0	2026-10-28T22:04:14+00:00	docs(014): publish high-quota deployment, real Qwen verdicts and stalled-order containment
+1dd54a0ea7887221910e1857a1b11f5dc5b28645	2026-10-28T22:01:25+00:00	fix(014): stop repeated failed inspections of an unchanged baseline
+e098b515a421900131b05a6763029d20b3a8b09d	2026-10-28T21:40:02+00:00	Add owner-selected high finite development allowances and measured 128k MTP context
+a9d0ddb1688bda8aa3212d4f47eee7fecd2fce02	2026-10-28T20:54:41+00:00	docs(014): record owner approval of the exact M1 requirements
+fbb63911781696b97a478130ad629a758a572c44	2026-10-28T19:58:17+00:00	docs(014): publish incremental qualification and scoped completion evidence
+41a6c2832b14332125b7c37ce798a8117b6a4a78	2026-10-28T19:49:49+00:00	feat(014): preflight complete product role requests without generation
+545e1024f396a039d3107279fd040eac83a1e51c	2026-10-28T19:41:06+00:00	fix(014): distinguish development reservations from executed inference
+308cba8502d0bb41f9c1e40e22de2b7269867965	2026-10-28T19:38:05+00:00	test(014): preserve failed SWE1 history and spend across advisory resume
+7a4bc51abb200b074e2a2e3ecf962298901c0808	2026-10-28T19:32:56+00:00	feat(014): prepare verified phase references through the existing lesson lane
+4e9904cd949ed4c3f98e130460e43d271c162bf3	2026-10-28T19:32:17+00:00	test(014): exercise six-phase IDR delivery with real verification and release
+d3f0b28a12ce789658ddccaa714d3b785fa42f87	2026-10-28T18:55:11+00:00	fix(014): expose empty-reply retries in the bounded MTP profile
+7ddd20ac598c1d063075f1de4f6998a223050a54	2026-10-28T18:49:37+00:00	feat(014): select single-slot Q8 MTP backend with xhigh reasoning
+610556a0761bc3120e536cee03ae6daa2e065789	2026-10-28T18:31:18+00:00	feat(014): add scoped assisted CRC delivery and bounded development execution
+2df1faa0efc4c8ed4466cbbbc1694ced05d2469a	2026-10-28T18:20:16+00:00	docs(014): define incremental IDR delivery milestones and acceptance
+5e89a2b9a427c0c0e39670869fa7bbae5845a7e0	2026-10-28T18:05:04+00:00	docs(014): add incremental local end-to-end implementation handoff
+9d3cbd64374f66766cb22f6f921402d1fa762911	2026-10-28T16:37:56+00:00	docs(014): measure real diagnosis admission failure and pin continuation readiness
+d0a25f33c8e65ff48a1d9cdd459d0a02a733a009	2026-10-28T16:30:36+00:00	docs(014): record qualified resume fix and unmet five-hour deadline
+98d066dfe519c5ea2b23cec7d8f9681aff1f71d0	2026-10-28T16:25:59+00:00	fix(014): preserve ASPICE resume compatibility across attempt identities
+81a2c26329fa392658cd4289665a264ca8e5d576	2026-10-28T16:21:43+00:00	docs(014): publish native Q8 MTP measurements and terminal recovery failure
+54707a6aeddd4fdfa345a01361e7f335c76d9648	2026-10-28T15:45:15+00:00	fix(evidence): audit inspection packets with the pinned runtime source
+3cbc15aafb0bd766ea4b6611989ee7558dffedec	2026-10-28T15:37:06+00:00	docs(014): record actual SWE1 baseline, author repairs and prospective input corrections
+f93f750fe4065472deb76eadcacb1ae963a1464a	2026-10-28T15:28:45+00:00	fix(lrtx): make cross-cutting requirement instructions self-contained
+f2d4dde9fa63dd1de35c4c825ffc3f6a38d295e0	2026-10-28T15:24:48+00:00	fix(profile): use primary RM field name for CRC initial value
+3ce4776d11b0f10cbebeee3c460fa0d1508291e6	2026-10-28T15:12:32+00:00	docs(014): record coherent-obligation reproducer and native qualification boundary
+2c2971a7e3d04bf892180c3b6bef1c96dfd2b52b	2026-10-28T15:10:31+00:00	fix(lrtx): keep explicit joint field obligations in bounded packets
+114d70fce8ec7e6958043650f0c94ea048c5743a	2026-10-28T14:49:52+00:00	docs(014): retain partial ASPICE author checks without inferring phase success
+98de0f73d2c876a830179ed8eaf8900533250e0d	2026-10-28T14:42:28+00:00	docs(014): record native ASPICE lane qualification and bounded live continuation
+fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61	2026-10-28T14:25:36+00:00	feat: add owner-bound ASPICE-only local development lane
+0ee3640b28817e8ff9ec1e7c0e32c242f9a8e59a	2026-10-28T13:57:58+00:00	docs(014): preserve live scope-gap evidence and tested author guard
+dd870e1fe826fbf90a9ecd514a06ee693389a127	2026-10-28T13:48:27+00:00	fix(014): preserve explicitly required fields in author task coverage
+7908a11f251e8374eb3e2a39841e37eb3df8fd7a	2026-10-28T13:26:32+00:00	docs(014): correct dashboard timeout and preserve live CRC continuation evidence
+7cd7ea99b7a905adc7626a2419c147cfe15ff7db	2026-10-28T13:06:38+00:00	docs(014): connect live Omniverse production runs to owner dashboard
+809372f3a6d7eeadf6220c2d95facd1a67bc4303	2026-10-28T12:52:51+00:00	docs(014): record live Q38 end-to-end window and standing authorization basis
+d7fa97e41f6e265e55737478379052db8d6bd859	2026-10-28T12:34:41+00:00	fix(014): cover final inventory role in signed product experiments
+a74c3a6a09d3c9b4dc76c9877d2e3da0648a336e	2026-10-28T12:29:26+00:00	docs(014): audit Q38 failure and checkpoint deployed full-workflow runtime
+fa901289fffbb3424b6cde5b38628760670e153d	2026-10-28T12:17:22+00:00	fix(lrtx): expose isolated staged target toolchains to native jobs
+d36feb7f6694143866601f6b4e29dac04f81124f	2026-10-28T12:12:57+00:00	fix(014): retain evaluation holdout through runtime and resume
+19acb5bf7ca81ba3c9e92373e7093b7026790cf7	2026-10-28T11:55:08+00:00	feat(014): bound full-workflow capacity and slow local requests explicitly
+1cfea7ad69b43ffecf0aaf40a243d05078584d05	2026-10-28T11:17:50+00:00	fix(014): reconcile native jobs through their verified runtime route
+f5103bb996ebca903cd687968b85348b760fd957	2026-10-28T10:52:10+00:00	docs(014): record finite role admission and first Q38 protocol request
+2c774b440db65f47f5b78a4702ad974254fa6a96	2026-10-28T10:27:47+00:00	fix(014): bind prospective role capacity to complete Qwen requests
+91011bfdc2751b205f32e0262ef878a27e7d090b	2026-10-28T10:19:26+00:00	docs(014): preserve recovery outcomes and official Q38 xhigh activation
+a7490b45e25a399c87e274f60c3f2fcaba1080c2	2026-10-28T09:49:25+00:00	feat(014): enable explicit bounded xhigh reasoning for Qwen3.8
+1252589107ccc10809f9834e589bd8bc0a70fbf6	2026-10-28T09:38:03+00:00	feat(014): select Qwen3.8 Q8 for all Omniverse model roles
+24f5d004b158e68cbafe84cf11f1d432b54a0e5f	2026-10-28T09:25:18+00:00	fix(014): capture blocked phase experience without an inspector record
+ddd6b4dc08d8674402eb30d70720562de1ca20b7	2026-10-28T09:14:31+00:00	fix(014): retain failed product outcomes after native capacity settles
+9663fa56528275ba85052cbe554a2c365a6b016a	2026-10-28T09:07:29+00:00	fix(014): diagnose missing inspections and stop repairing admission refusals
+97936d7deab55795248539b6f0577460fba75902	2026-10-28T08:51:22+00:00	fix(014): fence delayed maintenance controls against newer operator intent
+4fc584b0f0c3aa40991ae1908303bceb4f33e5e1	2026-10-28T08:46:41+00:00	fix(014): preserve API relay ownership during stack recovery
+2fbb33eda764a21d949c5ad487823dd7b295eef0	2026-10-28T08:37:51+00:00	fix(014): reconcile unspent request reservations inside fixed job budgets
+af509b43dec408c94fdc2d401fddc02d16345a03	2026-10-28T08:15:11+00:00	fix(014): settle pre-dispatch failures and bound recovery waits

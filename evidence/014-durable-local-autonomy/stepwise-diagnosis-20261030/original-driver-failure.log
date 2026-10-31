@@ -1,0 +1,18 @@
+{"variant": "medium", "reasoning": "medium", "mtp_draft": 3, "trial": "late-finding:0", "backend_decode_tokens_per_second": 68.89256347656459, "gateway_total_seconds": 75.09689999999999, "output_tokens": 4820, "observed": "PROPOSE_REPAIR"}
+{"variant": "medium", "reasoning": "medium", "mtp_draft": 3, "trial": "late-finding:1", "backend_decode_tokens_per_second": 70.59893958167682, "gateway_total_seconds": 78.582, "output_tokens": 5267, "observed": "PROPOSE_REPAIR"}
+{"variant": "medium", "reasoning": "medium", "mtp_draft": 3, "trial": "obligation-counterexample:0", "backend_decode_tokens_per_second": 70.2123249133821, "gateway_total_seconds": 71.734, "output_tokens": 4742, "observed": "PROPOSE_REPAIR"}
+{"variant": "medium", "reasoning": "medium", "mtp_draft": 3, "trial": "obligation-counterexample:1", "backend_decode_tokens_per_second": 70.6709385111611, "gateway_total_seconds": 58.42, "output_tokens": 3863, "observed": "PROPOSE_REPAIR"}
+{"variant": "medium", "reasoning": "medium", "mtp_draft": 3, "trial": "upstream-owner:0", "backend_decode_tokens_per_second": 71.38032516403499, "gateway_total_seconds": 80.8337, "output_tokens": 5490, "observed": "PROPOSE_REPAIR"}
+{"variant": "medium", "reasoning": "medium", "mtp_draft": 3, "trial": "upstream-owner:1", "backend_decode_tokens_per_second": 71.3303218096643, "gateway_total_seconds": 70.105, "output_tokens": 4731, "observed": "PROPOSE_REPAIR"}
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/run-stepwise-diagnosis.py", line 83, in <module>
+    provision=Q.provision(manifest,aid,store=S,trial_ids=[trial])
+  File "/mnt/data/forge-c/production-local-014/repo/factory/python/forge_factory/afo/qualification.py", line 483, in provision
+    with store.tx() as c:
+         ~~~~~~~~^^
+  File "/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/mnt/data/forge-c/production-local-014/repo/factory/python/forge_factory/afo/queue.py", line 185, in tx
+    c.execute("BEGIN IMMEDIATE")
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: database is locked

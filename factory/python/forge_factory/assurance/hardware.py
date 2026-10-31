@@ -26,17 +26,42 @@ def _bit_columns(line: str) -> dict[int, int] | None:
     return {int(m.group(0)): (m.start() + m.end()) // 2 for m in toks}
 
 
-def parse_section(text: str, prefix: str = "RCC") -> dict | None:
+def _register_name(text: str, prefix: str) -> str | None:
     name = re.search(rf"^#+ .*\(({prefix}_[A-Z0-9_]+)\)\s*$", text, re.M)
+    if name or prefix == "RCC":  # RCC: the exact heading rule only (results unchanged)
+        return name.group(1) if name else None
+    # feature 015: multi-instance registers named by the RM placeholder (GPIOx_MODER, TIMx_CR1), optionally with the
+    # instances "(x = ...)", maybe wrapped onto the first lines after the heading -> CMSIS form (GPIO_MODER, TIM_CR1).
+    # Written here separately from inspection.regmap on purpose (independent parser, finding F-02).
+    head = "\n".join(text.splitlines()[:6])
+    m = re.search(rf"^(?:#+ .*|[ \t]*)\(({prefix})x?(_[A-Z0-9_]+)\)\s*(?:\(\s*x\s*=[^)]*\)\s*)?$", head, re.M)
+    return m.group(1) + m.group(2) if m else None
+
+
+def parse_section(text: str, prefix: str = "RCC") -> dict | None:
+    name = _register_name(text, prefix)
     off = re.search(r"Address offset:\s*(0x[0-9a-fA-F]+)", text)
     if not (name and off):
         return None
     reset = re.search(r"Reset value:\s*(0x[0-9a-fA-F]{4}\s?[0-9a-fA-F]{4})", text)
+    if prefix != "RCC":  # feature 015: per-port values (the first, port A) and 16-bit registers ('0x0000')
+        reset = re.search(r"Reset value:\s*Port [A-Z]:\s*(0x[0-9a-fA-F]{4}\s?[0-9a-fA-F]{4})", text) or reset or \
+            re.search(r"Reset value:\s*(0x[0-9a-fA-F]{4})\s*$", text, re.M)
     fields: dict[str, dict] = {}
     for m in re.finditer(r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)(?:\[\d+(?::\d+)?\])?\s*:", text, re.M):
         msb, lsb = int(m.group(1)), int(m.group(2) or m.group(1))
         if lsb <= msb <= 31:
             fields.setdefault(m.group(3), {"msb": msb, "lsb": lsb, "access": set()})
+    # feature 015: one line for every pin of a port ('Bits 31:0 MODEy[1:0]: ... pin y (y = 15 to 0)') -> MODE0..MODE15
+    for m in re.finditer(r"^\s*Bits?\s+(\d+):(\d+)\s+([A-Z][A-Z0-9_]*?)y(?:\[\d+(?::\d+)?\])?\s*:.*?"
+                         r"\(y\s*=\s*(\d+)\s+to\s+(\d+)\)", text, re.M):
+        msb, lsb, n = int(m.group(1)), int(m.group(2)), abs(int(m.group(4)) - int(m.group(5))) + 1
+        y0 = min(int(m.group(4)), int(m.group(5)))  # GPIOx_AFRH: AFSELy (y = 15 to 8) starts at pin 8
+        width = (msb - lsb + 1) // n if msb >= lsb else 0
+        if width and width * n == msb - lsb + 1:
+            for y in range(n):
+                fields.setdefault(f"{m.group(3)}{y0 + y}", {"msb": lsb + (y + 1) * width - 1, "lsb": lsb + y * width,
+                                                            "access": set()})
     access_by_bit: dict[int, str] = {}
     lines = text.splitlines()
     cols = None
@@ -56,7 +81,7 @@ def parse_section(text: str, prefix: str = "RCC") -> dict | None:
     used = 0
     for f in fields.values():
         used |= ((1 << (f["msb"] - f["lsb"] + 1)) - 1) << f["lsb"]
-    return {"name": name.group(1), "offset": int(off.group(1), 16),
+    return {"name": name, "offset": int(off.group(1), 16),
             "reset": int(reset.group(1).replace(" ", ""), 16) if reset else None, "fields": fields,
             "reserved_mask": (~used) & 0xFFFFFFFF, "access_by_bit": access_by_bit,
             "read_only": bool(access_by_bit) and all(a == "r" for a in access_by_bit.values())}
@@ -77,6 +102,14 @@ def index(sections_dir: Path, prefix: str | None = None) -> dict[str, dict]:
         r = parse_section(p.read_text(errors="replace"), prefix)
         if r and r["name"] not in out:
             out[r["name"]] = r
+        elif r and prefix != "RCC":  # feature 015: an "[alternate]" description of the same register (USART_ISR with
+            o = out[r["name"]]       # FIFO disabled: TXE/RXNE for TXFNF/RXFNE) adds its field names for the same bits
+            for k, v in r["fields"].items():
+                o["fields"].setdefault(k, v)
+            used = 0
+            for f in o["fields"].values():
+                used |= ((1 << (f["msb"] - f["lsb"] + 1)) - 1) << f["lsb"]
+            o["reserved_mask"] = (~used) & 0xFFFFFFFF
     return out
 
 

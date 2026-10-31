@@ -17,10 +17,12 @@ CAPA-052 (h001, OD-2026-10-20-03): while the owner suspends the upstream's provi
 every request is refused here and never reaches the provider - Fabro's server-side run-title generation called the
 suspended DeepSeek through this gateway once per run, outside the workflow graph that CAPA-051 guards.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import time
 from pathlib import Path
@@ -49,8 +51,10 @@ def role_tools() -> dict[str, set[str]]:
         from .registry.agents import load_agents
         from .registry.mcp_registry import fabro_tool_name
 
-        _ROLE_TOOLS = {a.id: {fabro_tool_name(t) for t in a.allowed_tools} | _NATIVE_READ
-                       | (set() if a.readonly else _NATIVE_WRITE) for a in load_agents()[0]}
+        _ROLE_TOOLS = {
+            a.id: {fabro_tool_name(t) for t in a.allowed_tools} | _NATIVE_READ | (set() if a.readonly else _NATIVE_WRITE)
+            for a in load_agents(include_afo=True)[0]
+        }
     return _ROLE_TOOLS
 
 
@@ -73,7 +77,7 @@ def scope_tools(body: dict) -> dict:
     return {**body, "tools": kept}
 
 
-EFFORTS = ("low", "medium", "high")
+EFFORTS = ("none", "low", "medium", "high", "xhigh")
 
 
 def reasoning_policy() -> dict[str, dict]:
@@ -83,18 +87,68 @@ def reasoning_policy() -> dict[str, dict]:
         pol = json.loads(os.environ.get("FORGE_GATEWAY_REASONING") or "{}")
     except ValueError:
         return {}
-    return {m: v for m, v in pol.items() if isinstance(v, dict) and v.get("effort") in EFFORTS} \
-        if isinstance(pol, dict) else {}
+    return {m: v for m, v in pol.items() if isinstance(v, dict) and v.get("effort") in EFFORTS} if isinstance(pol, dict) else {}
 
 
-def sanitize_request(body: dict) -> dict:
+def system_messages_first(messages: list) -> list:
+    """Adapt compaction's late system notes to templates that accept one initial system message.
+
+    Only existing system messages move. User/assistant/tool messages keep their
+    order and contents, including tool-call IDs. No evidence text is truncated.
+    Metadata is retained as explicitly labelled JSON rather than silently lost.
+    """
+    systems = [(i, m) for i, m in enumerate(messages) if isinstance(m, dict) and m.get("role") == "system"]
+    if not systems or len(systems) == 1 and systems[0][0] == 0:
+        return messages
+
+    def text_of(message):
+        content = message.get("content")
+        if isinstance(content, str):
+            text = content
+        elif isinstance(content, list) and all(
+            isinstance(p, dict) and p.get("type") in ("text", "input_text") and isinstance(p.get("text"), str)
+            for p in content
+        ):
+            parts = []
+            for part in content:
+                metadata = {k: v for k, v in part.items() if k not in ("type", "text")}
+                prefix = "[System text metadata: " + json.dumps(metadata, ensure_ascii=False, sort_keys=True) + "]\n" \
+                    if metadata else ""
+                parts.append(prefix + part["text"])
+            text = "\n".join(parts)
+        else:
+            raise ValueError("SYSTEM_MESSAGE_CONTENT_UNSUPPORTED")
+        metadata = {k: v for k, v in message.items() if k not in ("role", "content")}
+        return ("[System message metadata: " + json.dumps(metadata, ensure_ascii=False, sort_keys=True) + "]\n"
+                if metadata else "") + text
+
+    merged = {"role": "system", "content": "\n\n".join(text_of(m) for _, m in systems)}
+    return [merged, *[m for m in messages if not isinstance(m, dict) or m.get("role") != "system"]]
+
+
+def sanitize_request(body: dict, *, policy=None, role: str | None = None) -> dict:
     body = scope_tools(body)
     out = {k: v for k, v in body.items() if k not in ("reasoning", "think", "thinking")}
-    pol = reasoning_policy().get(out.get("model"))
-    out["reasoning_effort"] = pol["effort"] if pol else "none"
+    pol = (reasoning_policy() if policy is None else policy).get(out.get("model"))
+    effort = pol["effort"] if pol else "none"
+    overrides = pol.get("role_efforts") if pol else None
+    if overrides is not None:
+        if (not isinstance(overrides, dict) or any(r not in role_tools() or e not in EFFORTS
+                                                   for r, e in overrides.items())):
+            raise ValueError("INVALID_ROLE_REASONING_POLICY")
+        selected = role if role is not None else detect_role(out.get("messages") or [])
+        effort = overrides.get(selected, effort)
+    out["reasoning_effort"] = effort
+    if pol and (effort == "none" or overrides is not None):
+        # Explicit profile opt-in: close Qwen's thinking block, not merely hide
+        # reasoning text. Preserve the legacy wire shape for models without it.
+        kwargs = out.get("chat_template_kwargs")
+        out["chat_template_kwargs"] = {
+            **(kwargs if isinstance(kwargs, dict) else {}), "enable_thinking": effort != "none",
+        }
     if pol and pol.get("extra_output_tokens"):  # the reasoning would otherwise use up the answer's reserve
         for key in ("max_tokens", "max_completion_tokens"):
-            if isinstance(out.get(key), int):
+            if type(out.get(key)) is int and out[key] > 0:
                 out[key] += int(pol["extra_output_tokens"])
     msgs = []
     for m in out.get("messages") or []:
@@ -102,7 +156,10 @@ def sanitize_request(body: dict) -> dict:
             m = {k: v for k, v in m.items() if k not in REASONING_KEYS}
         msgs.append(m)
     if "messages" in out:
-        out["messages"] = msgs
+        order = pol.get("system_message_order") if pol else None
+        if order not in (None, "merge_first"):
+            raise ValueError("SYSTEM_MESSAGE_ORDER_POLICY_INVALID")
+        out["messages"] = system_messages_first(msgs) if order == "merge_first" else msgs
     return out
 
 
@@ -162,32 +219,62 @@ class Meter:
     def refusal(self, model: str | None, reason: str) -> None:
         """CAPA-052: a request refused before any upstream call (no tokens, no cost)."""
         with self.path.open("a") as f:
-            f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "refused": reason,
-                                "upstream_called": False}, sort_keys=True) + "\n")
+            f.write(
+                json.dumps(
+                    {"ts_utc": utc_now(), "model": model or "unknown", "refused": reason, "upstream_called": False},
+                    sort_keys=True,
+                )
+                + "\n"
+            )
 
     def record_resources(self, model: str | None, resources: dict) -> None:
         """Feature 010 admission gateway: resource observation after a request (no tokens, no content)."""
         with self.path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "resources_after": resources},
-                               sort_keys=True) + "\n")
+            f.write(
+                json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "resources_after": resources}, sort_keys=True)
+                + "\n"
+            )
+
+    def outcome_unknown(self, model: str | None, code: str) -> None:
+        """A transport failure after dispatch is not a zero-cost admission refusal."""
+        with self.path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"ts_utc": utc_now(), "model": model or "unknown", "error": code,
+                                "basis": "unknown", "upstream_called": None, "completed": False}) + "\n")
 
     def record_sample(self, resources: dict) -> None:
         """Feature 010 admission gateway: periodic resource sample (no request, no content)."""
         with self.path.open("a", encoding="utf-8") as f:
             f.write(json.dumps({"ts_utc": utc_now(), "sample": resources}, sort_keys=True) + "\n")
 
-    def record(self, model: str | None, usage: dict | None, stripped: bool, latency_ms: float,
-               shape: dict | None = None, local: dict | None = None) -> None:
-        rec = {"ts_utc": utc_now(), "model": model or "unknown",
-               "tokens_input": (usage or {}).get("prompt_tokens"),
-               "tokens_output": (usage or {}).get("completion_tokens"),
-               "tokens_cache_hit": (usage or {}).get("prompt_cache_hit_tokens"),
-               "basis": "reported" if usage else "unknown",
-               "reasoning_stripped": stripped, "latency_ms": round(latency_ms, 1)}
+    def record(
+        self,
+        model: str | None,
+        usage: dict | None,
+        stripped: bool,
+        latency_ms: float,
+        shape: dict | None = None,
+        local: dict | None = None,
+    ) -> None:
+        rec = {
+            "ts_utc": utc_now(),
+            "model": model or "unknown",
+            "tokens_input": (usage or {}).get("prompt_tokens"),
+            "tokens_output": (usage or {}).get("completion_tokens"),
+            "tokens_cache_hit": (usage or {}).get("prompt_cache_hit_tokens"),
+            "basis": "reported" if usage else "unknown",
+            "reasoning_stripped": stripped,
+            "latency_ms": round(latency_ms, 1),
+        }
         if shape is not None:  # response shape only (never content): exposes upstream-dropped tool calls (ADR-0005)
-            rec.update({"content_chars": shape["content_chars"], "tool_calls": shape["tool_calls"],
-                        "finish_reason": shape.get("finish_reason"), "attempt": shape.get("attempt", 0),
-                        "dropped_output": dropped(usage, shape)})
+            rec.update(
+                {
+                    "content_chars": shape["content_chars"],
+                    "tool_calls": shape["tool_calls"],
+                    "finish_reason": shape.get("finish_reason"),
+                    "attempt": shape.get("attempt", 0),
+                    "dropped_output": dropped(usage, shape),
+                }
+            )
         if local is not None:  # feature 010 admission gateway only: queue/load/prefill/decode timing, resources
             rec["local"] = local
         with self.path.open("a", encoding="utf-8") as f:
@@ -207,10 +294,20 @@ def suspended(upstream: str, path: Path | None = None) -> dict | None:
     return suspension(provider, path) if provider else None
 
 
-def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
-               transport: httpx.AsyncBaseTransport | None = None, admission: Any = None) -> FastAPI:
+def create_app(
+    upstream: str = UPSTREAM,
+    meter_path: Path | None = None,
+    transport: httpx.AsyncBaseTransport | None = None,
+    admission: Any = None,
+    request_timeout_s: float | None = None,
+) -> FastAPI:
     """`admission` (feature 010, lrtx.admission.Admission; from FORGE_GATEWAY_MAX_INFLIGHT when not given) turns on the
     single-request queue, cancellation and timing; without it the gateway behaves as before."""
+    if request_timeout_s is None:
+        request_timeout_s = float(os.environ.get("FORGE_GATEWAY_REQUEST_TIMEOUT_S", "600"))
+    if (type(request_timeout_s) not in (int, float) or not math.isfinite(request_timeout_s)
+            or not 1 <= request_timeout_s <= 86400):
+        raise ValueError("GATEWAY_REQUEST_TIMEOUT_INVALID")
     if admission is None and os.environ.get("FORGE_GATEWAY_MAX_INFLIGHT"):
         from .lrtx import admission as lrtx_admission
 
@@ -230,13 +327,29 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                 while True:
                     meter.record_sample(await asyncio.to_thread(la.resources, upstream.removesuffix("/v1")))
                     await asyncio.sleep(sample_s)
+
             task = asyncio.get_running_loop().create_task(loop())
             yield
             task.cancel()
+
     app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     meter = Meter(meter_path or state_dir() / "llm-gateway" / "usage.jsonl")
-    client = httpx.AsyncClient(base_url=upstream, timeout=httpx.Timeout(600.0, connect=10.0),
-                               transport=transport)
+    timeout = httpx.Timeout(float(request_timeout_s), connect=min(10.0, request_timeout_s))
+    client = httpx.AsyncClient(base_url=upstream, timeout=timeout, transport=transport)
+    # F014 (owner 2026-10-26: a runtime that serves parallel requests): a local profile may serve a model from its own
+    # llama.cpp server with several request slots; that model's chat requests go there, every other model to Ollama
+    routes = json.loads(os.environ.get("FORGE_GATEWAY_ROUTES") or "{}")
+    routed = {m: httpx.AsyncClient(base_url=u.rstrip("/"), timeout=timeout, transport=transport)
+              for m, u in routes.items()}
+    from .lrtx.request_measurement import METHOD as native_measurement_method
+
+    measurement_policy = json.loads(os.environ.get("FORGE_GATEWAY_REQUEST_MEASUREMENT") or "{}")
+    if (not isinstance(measurement_policy, dict)
+            or any(m not in routed or method != native_measurement_method for m, method in measurement_policy.items())):
+        raise ValueError("GATEWAY_REQUEST_MEASUREMENT_INVALID")
+
+    def cl(body: dict | None) -> httpx.AsyncClient:
+        return routed.get((body or {}).get("model"), client)
 
     @app.get("/health")
     async def health() -> dict:
@@ -249,9 +362,16 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         if not s:
             return None
         meter.refusal(model, f"MODEL_SUSPENDED:{s['provider']}:{s['decision']}")
-        return JSONResponse({"error": {"message": f"MODEL_SUSPENDED: {s['provider']} is suspended by the owner "
-                                       f"({s['decision']}); the forge gateway did not call the provider",
-                                       "type": "model_suspended"}}, status_code=503)
+        return JSONResponse(
+            {
+                "error": {
+                    "message": f"MODEL_SUSPENDED: {s['provider']} is suspended by the owner "
+                    f"({s['decision']}); the forge gateway did not call the provider",
+                    "type": "model_suspended",
+                }
+            },
+            status_code=503,
+        )
 
     @app.get("/v1/models")
     async def models() -> Response:
@@ -266,8 +386,9 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         if (r := refused(None)) is not None:  # CAPA-052: before reading the body, before any upstream call
             return r
         if COST_CAP_USD > 0 and spent_usd(meter.path) >= COST_CAP_USD:  # paid upstream: hard spend cap
-            return JSONResponse({"error": {"message": f"forge gateway cost cap {COST_CAP_USD} USD reached",
-                                           "type": "cost_cap"}}, status_code=429)
+            return JSONResponse(
+                {"error": {"message": f"forge gateway cost cap {COST_CAP_USD} USD reached", "type": "cost_cap"}}, status_code=429
+            )
         auth = request.headers.get("authorization")  # the caller's credential is forwarded, never stored
         headers = {"Authorization": auth} if auth else None
         try:
@@ -276,16 +397,79 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                 raise ValueError
         except ValueError:
             return JSONResponse({"error": {"message": "invalid JSON body"}}, status_code=400)
-        body = sanitize_request(body)
+        binding = body.pop("forge_execution", None)
+        native_id = request.headers.get("x-session-id")
+        if binding is None and native_id and os.environ.get("FORGE_DURABLE_NATIVE_HEADER") == "1":
+            # Enable only after pinned Fabro header propagation is measured on the actual local profile.
+            import uuid
+
+            from .afo.durable import Refused
+            from .afo.product_job import from_native
+            from .afo.queue import Store
+
+            try:
+                binding = {**from_native(Store(), native_id), "request_id": "native-request-" + uuid.uuid4().hex}
+            except Refused as exc:
+                return JSONResponse({"error": {"type": exc.code}}, status_code=429)
+        try:
+            body = sanitize_request(body, role=binding.get("role") if isinstance(binding, dict) else None)
+        except ValueError:
+            return JSONResponse({"error": {"type": "invalid_role_reasoning_policy"}}, status_code=400)
+        if binding is not None:
+            return await durable_request(request, binding, body, headers)
+        # Legacy calls retain their existing behavior, but cannot bypass a held durable native execution.
+        from .afo.queue import Store, default_path
+
+        if default_path().exists() or os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
+            from .afo.request_admission import unbound_allowed
+
+            if not unbound_allowed(Store()):
+                return JSONResponse({"error": {"type": "durable_execution_busy_or_unbound"}}, status_code=429)
+        if os.environ.get("FORGE_GATEWAY_MEASURE_UNBOUND") == "1" and body.get("model") in measurement_policy:
+            # Standalone native development still measures its entire effective
+            # request. This is metadata, not a durable mission reservation or
+            # evidence of generation. Non-opted-in legacy routes are unchanged.
+            from .afo.durable import Refused
+            from .lrtx.request_measurement import measure
+
+            if body.get("stream"):
+                body.setdefault("stream_options", {"include_usage": True})
+            try:
+                measured = await measure(cl(body), body)
+                reserve = body.get("max_completion_tokens", body.get("max_tokens", 0))
+                ceiling = int(os.environ.get("FORGE_GATEWAY_NATIVE_CONTEXT_LIMIT", "0"))
+                if type(reserve) is not int or reserve <= 0 or ceiling <= 0:
+                    raise Refused("NATIVE_CONTEXT_CONFIGURATION_INVALID")
+                fits = measured["input_tokens"] + reserve <= ceiling
+                metadata = {"ts_utc": utc_now(), "model": body["model"], "kind": "REQUEST_MEASUREMENT",
+                            "measurement": measured, "output_reserve_tokens": reserve,
+                            "context_limit_tokens": ceiling, "fits": fits, "generation_dispatched": False,
+                            "scope": "STANDALONE_NO_DURABLE_ACCOUNTING"}
+                # Separate from provider-usage rows so counts cannot imply a
+                # model response or fabricate zero-token success from metadata.
+                with meter.path.with_name("request-measurements.jsonl").open("a", encoding="utf-8") as f:
+                    f.write(json.dumps(metadata, sort_keys=True) + "\n")
+                if not fits:
+                    raise Refused("NATIVE_CONTEXT_DOES_NOT_FIT")
+            except (Refused, ValueError, OSError) as exc:
+                code = exc.code if isinstance(exc, Refused) else "NATIVE_MEASUREMENT_UNAVAILABLE"
+                meter.refusal(body.get("model"), code)
+                permanent = code in {"NATIVE_CONTEXT_DOES_NOT_FIT", "NATIVE_CONTEXT_CONFIGURATION_INVALID",
+                                     "NATIVE_MEASUREMENT_TEMPLATE_INVALID", "NATIVE_MEASUREMENT_TOKENS_INVALID",
+                                     "NATIVE_MEASUREMENT_REQUEST_TOO_LARGE"}
+                # A permanent context/configuration defect is not a rate limit.
+                # Preserve the actionable cause and avoid native transient retries.
+                return JSONResponse({"error": {"type": code, "message": code}},
+                                    status_code=400 if permanent else 503)
         if adm is not None:
             return await admitted(request, body, headers)
         if body.get("stream"):
             body.setdefault("stream_options", {"include_usage": True})
 
             async def attempt() -> tuple[int, list[str], dict | None, bool, dict]:
-                upstream_resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body,
-                                                                       headers=headers),
-                                                  stream=True)
+                upstream_resp = await cl(body).send(
+                    cl(body).build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True
+                )
                 lines: list[str] = []
                 usage, stripped = None, False
                 shape: dict[str, Any] = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
@@ -326,7 +510,7 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             return StreamingResponse(gen(), status_code=status, media_type="text/event-stream")
         for n in range(DROP_RETRIES + 1):
             t0 = time.monotonic()
-            r = await client.post("/v1/chat/completions", json=body, headers=headers)
+            r = await cl(body).post("/v1/chat/completions", json=body, headers=headers)
             try:
                 data = r.json()
             except ValueError:
@@ -336,13 +520,102 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             if isinstance(data, dict) and data.get("choices"):
                 ch = data["choices"][0]
                 msg = ch.get("message") or {}
-                nshape = {"content_chars": len(msg.get("content") or ""), "tool_calls": len(msg.get("tool_calls") or []),
-                         "finish_reason": ch.get("finish_reason"), "attempt": n}
+                nshape = {
+                    "content_chars": len(msg.get("content") or ""),
+                    "tool_calls": len(msg.get("tool_calls") or []),
+                    "finish_reason": ch.get("finish_reason"),
+                    "attempt": n,
+                }
             usage = data.get("usage") if isinstance(data, dict) else None
             meter.record(body.get("model"), usage, stripped, (time.monotonic() - t0) * 1000, nshape)
             if r.status_code != 200 or nshape is None or not dropped(usage, nshape):
                 break
         return JSONResponse(data, status_code=r.status_code)
+
+    async def durable_request(request, binding, body, headers):
+        # A timed-out native stage can leave its provider request draining.
+        # Serialize through the existing bounded queue before trying to reserve
+        # the next request; otherwise the authoritative busy ledger makes its
+        # rapid provider retries fail before this queue is ever reached.
+        ticket = None
+        try:
+            if adm is not None:
+                ticket = await adm.enter(request.is_disconnected)
+                if ticket.refused:
+                    code = "admission_" + ticket.refused
+                    meter.refusal(body.get("model"), code)
+                    return JSONResponse({"error": {"type": code}}, status_code=429)
+            return await durable_admitted(request, binding, body, headers)
+        finally:
+            if ticket is not None and not ticket.refused:
+                adm.leave(ticket)
+
+    async def durable_admitted(request, binding, body, headers):
+        from .afo import request_admission as durable
+        from .afo.durable import Refused
+        from .afo.queue import Store
+
+        store = Store()
+        try:
+            if body.get("model") in measurement_policy:
+                from .afo.durable import digest
+                from .afo.provider_recovery import current_instance
+                from .lrtx.request_measurement import measure
+
+                provider = digest(current_instance())
+                measured = await measure(cl(body), body)
+                if digest(current_instance()) != provider:
+                    raise Refused("NATIVE_MEASUREMENT_PROVIDER_CHANGED")
+                measured["provider_instance_sha256"] = provider
+                rec = durable.reserve(store, binding, body, measurement=measured)
+            else:
+                rec = durable.reserve(store, binding, body)
+        except (Refused, KeyError, ValueError) as exc:
+            code = exc.code if isinstance(exc, Refused) else "INVALID_DURABLE_BINDING"
+            meter.refusal(body.get("model"), code)
+            return JSONResponse({"error": {"type": code}}, status_code=429)
+        # No transparent retry: each new generation needs its own durable reservation.
+        usage, completed, started = None, False, False
+        try:
+            durable.start(store, rec, body)
+            started = True
+            status, payload, usage, stripped, shape, timing = await _timed(body, headers, bool(body.get("stream")))
+            # A complete provider response with a finish reason is generation quiescence; transport close is not.
+            completed = status == 200 and shape.get("finish_reason") is not None
+            meter.record(
+                body.get("model"),
+                usage,
+                stripped,
+                timing.get("total_ms", 0),
+                shape,
+                {"request_id": rec["request_id"], "mission_id": rec["mission_id"]},
+            )
+            if body.get("stream"):
+
+                async def chunks():
+                    for line in payload:
+                        yield line
+
+                return StreamingResponse(chunks(), status_code=status, media_type="text/event-stream")
+            return (
+                JSONResponse(payload, status_code=status)
+                if isinstance(payload, (dict, list))
+                else Response(payload, status_code=status)
+            )
+        except Refused as exc:
+            meter.refusal(body.get("model"), exc.code)
+            return JSONResponse({"error": {"type": exc.code}}, status_code=429)
+        except httpx.HTTPError as exc:
+            code = "PROVIDER_REQUEST_OUTCOME_UNKNOWN"
+            for cls, kind in ((httpx.ReadTimeout, "READ"), (httpx.ConnectTimeout, "CONNECT"),
+                              (httpx.WriteTimeout, "WRITE"), (httpx.PoolTimeout, "POOL")):
+                if isinstance(exc, cls):
+                    code = f"PROVIDER_{kind}_TIMEOUT_OUTCOME_UNKNOWN"
+                    break
+            meter.outcome_unknown(body.get("model"), code)
+            return JSONResponse({"error": {"type": code}}, status_code=502)
+        finally:
+            durable.reconcile(store, rec["request_id"], usage, completed=completed or not started)
 
     async def admitted(request: Request, body: dict, headers: dict | None):
         """Feature 010 (LRTX-FR-006/FR-007): one request at a time, bounded waiting, cancellation, separate timings.
@@ -356,13 +629,17 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         ticket = await adm.enter(request.is_disconnected)
         if ticket.refused:
             meter.refusal(model, f"ADMISSION_{ticket.refused.upper()}")
-            return JSONResponse({"error": {"message": f"forge gateway admission: {ticket.refused}",
-                                           "type": "admission_" + ticket.refused}},
-                                status_code=429 if ticket.refused == "queue_full" else 503)
+            return JSONResponse(
+                {"error": {"message": f"forge gateway admission: {ticket.refused}", "type": "admission_" + ticket.refused}},
+                status_code=429 if ticket.refused == "queue_full" else 503,
+            )
         try:
             ollama = upstream.removesuffix("/v1")
-            was_loaded = await asyncio.to_thread(la.loaded, ollama, model) if model else None
-            load = await asyncio.to_thread(la.preload, ollama, model) if was_loaded is False else None
+            if model in routed:  # a resident llama.cpp server: no Ollama load state, nothing to preload
+                was_loaded, load = True, None
+            else:
+                was_loaded = await asyncio.to_thread(la.loaded, ollama, model) if model else None
+                load = await asyncio.to_thread(la.preload, ollama, model) if was_loaded is False else None
             before = await asyncio.to_thread(la.resources, ollama)
             stream = bool(body.get("stream"))
             if stream:
@@ -376,9 +653,15 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
                     meter.refusal(model, "ADMISSION_CANCELLED_RUNNING")
                     return Response(status_code=499)
                 status, payload, usage, stripped, shape, timing = res
-                local = {"queue_wait_ms": ticket.wait_ms, "queue_depth_at_arrival": ticket.depth_at_arrival,
-                         "model_loaded_before": was_loaded, "load": load if n == 0 else None, **timing,
-                         "resources_before": before if n == 0 else None}
+                local = {
+                    "queue_wait_ms": ticket.wait_ms,
+                    "queue_depth_at_arrival": ticket.depth_at_arrival,
+                    "model_loaded_before": was_loaded,
+                    "load": load if n == 0 else None,
+                    **timing,
+                    "resources_before": before if n == 0 else None,
+                    **({"served_by": "llama-server"} if model in routed else {}),
+                }
                 meter.record(model, usage, stripped, (time.monotonic() - t0) * 1000, {**shape, "attempt": n}, local)
                 if status != 200 or not dropped(usage, shape):
                     break
@@ -387,12 +670,17 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         finally:
             adm.leave(ticket)
         if stream:
+
             async def gen():
                 for line in payload:
                     yield line
+
             return StreamingResponse(gen(), status_code=status, media_type="text/event-stream")
-        return JSONResponse(payload, status_code=status) if isinstance(payload, dict | list) else \
-            Response(payload, status_code=status)
+        return (
+            JSONResponse(payload, status_code=status)
+            if isinstance(payload, dict | list)
+            else Response(payload, status_code=status)
+        )
 
     async def _timed(body: dict, headers: dict | None, stream: bool):
         """One upstream attempt with wall-clock phases: time to first generated delta (prompt processing; the model is
@@ -401,7 +689,7 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
         t0 = time.monotonic()
         shape: dict[str, Any] = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
         if not stream:
-            r = await client.post("/v1/chat/completions", json=body, headers=headers)
+            r = await cl(body).post("/v1/chat/completions", json=body, headers=headers)
             total = (time.monotonic() - t0) * 1000
             try:
                 data = r.json()
@@ -411,13 +699,22 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             if isinstance(data, dict) and data.get("choices"):
                 ch = data["choices"][0]
                 msg = ch.get("message") or {}
-                shape = {"content_chars": len(msg.get("content") or ""), "tool_calls": len(msg.get("tool_calls") or []),
-                         "finish_reason": ch.get("finish_reason")}
+                shape = {
+                    "content_chars": len(msg.get("content") or ""),
+                    "tool_calls": len(msg.get("tool_calls") or []),
+                    "finish_reason": ch.get("finish_reason"),
+                }
             usage = data.get("usage") if isinstance(data, dict) else None
-            return r.status_code, data, usage, stripped, shape, {
-                "total_ms": round(total, 1), "prefill_ms": "UNKNOWN (non-streaming)", "decode_ms": "UNKNOWN (non-streaming)"}
-        resp = await client.send(client.build_request("POST", "/v1/chat/completions", json=body, headers=headers),
-                                 stream=True)
+            return (
+                r.status_code,
+                data,
+                usage,
+                stripped,
+                shape,
+                {"total_ms": round(total, 1), "prefill_ms": "UNKNOWN (non-streaming)", "decode_ms": "UNKNOWN (non-streaming)"},
+            )
+        up = cl(body)
+        resp = await up.send(up.build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True)
         lines: list[str] = []
         usage, stripped, first, last, deltas = None, False, None, None, 0
         try:
@@ -448,11 +745,16 @@ def create_app(upstream: str = UPSTREAM, meter_path: Path | None = None,
             await resp.aclose()
         end = time.monotonic()
         ms = lambda a, b: round((b - a) * 1000, 1)  # noqa: E731
-        timing = {"total_ms": ms(t0, end), "first_delta_ms": ms(t0, first) if first else None, "delta_chunks": deltas,
-                  "prefill_ms": ms(t0, first) if first and deltas > 1 else
-                  "UNKNOWN (answer arrived in one chunk: the first-delta time includes generation)",
-                  "decode_ms": ms(first, last) if first and deltas > 1 else "UNKNOWN (single final chunk)",
-                  "basis": "gateway wall clock around the upstream stream; model preloaded separately"}
+        timing = {
+            "total_ms": ms(t0, end),
+            "first_delta_ms": ms(t0, first) if first else None,
+            "delta_chunks": deltas,
+            "prefill_ms": ms(t0, first)
+            if first and deltas > 1
+            else "UNKNOWN (answer arrived in one chunk: the first-delta time includes generation)",
+            "decode_ms": ms(first, last) if first and deltas > 1 else "UNKNOWN (single final chunk)",
+            "basis": "gateway wall clock around the upstream stream; model preloaded separately",
+        }
         out = int((usage or {}).get("completion_tokens") or 0)
         if first and deltas > 1 and last > first:
             timing["decode_tokens_per_s"] = round(out / (last - first), 2)

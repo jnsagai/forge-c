@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/qualification-afo-paging-979dcb4-v1/bootstrap.py", line 39, in <module>
+    assert hashlib.sha256((N/'source.bundle').read_bytes()).hexdigest()=='113ebca350d328309b2b035ff1b3dbee39996c11655690e55a672cf2c66df9bd'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

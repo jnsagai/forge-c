@@ -1,0 +1,12 @@
+Failed to connect to bus: $DBUS_SESSION_BUS_ADDRESS and $XDG_RUNTIME_DIR not defined (consider using --machine=<user>@.host --user to connect to bus of other user)
+Failed to connect to bus: $DBUS_SESSION_BUS_ADDRESS and $XDG_RUNTIME_DIR not defined (consider using --machine=<user>@.host --user to connect to bus of other user)
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/afo-repair-live-20261029-v1/enrol-afo-repair-v2.py", line 110, in <module>
+    subprocess.run(['systemctl','--user','--no-block','start','forge-conductor-local-omniverse2.service',
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'forge-afo-watchdog-014-omniverse2.timer'],check=True,timeout=20)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['systemctl', '--user', '--no-block', 'start', 'forge-conductor-local-omniverse2.service', 'forge-afo-watchdog-014-omniverse2.timer']' returned non-zero exit status 1.

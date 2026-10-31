@@ -1,0 +1,2742 @@
+{
+  "scope": "INHERITED_DETERMINISTIC_COMPATIBILITY_NO_LIVE_QWEN",
+  "source_revision": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03",
+  "started_utc": "2026-10-25T11:18:05.844889+00:00",
+  "per_file_timeout_seconds": 900,
+  "targets": [
+    "factory/python/tests/test_001_backlog_evidence.py",
+    "factory/python/tests/test_001_t015_optimization.py",
+    "factory/python/tests/test_capa038_ll_fake.py",
+    "factory/python/tests/test_capa044_safety_scope_text.py",
+    "factory/python/tests/test_controlroom_alerts.py",
+    "factory/python/tests/test_controlroom_api.py",
+    "factory/python/tests/test_controlroom_floor.py",
+    "factory/python/tests/test_controlroom_scorecard.py",
+    "factory/python/tests/test_controlroom_spc_pareto.py",
+    "factory/python/tests/test_controlroom_usage.py",
+    "factory/python/tests/test_controlroom_windows.py",
+    "factory/python/tests/test_cpu_verification_parallel.py",
+    "factory/python/tests/test_cre_capa_013_015.py",
+    "factory/python/tests/test_cre_capa_046.py",
+    "factory/python/tests/test_cre_capa_050.py",
+    "factory/python/tests/test_cre_capa_051.py",
+    "factory/python/tests/test_cre_capa_052.py",
+    "factory/python/tests/test_cre_capa_053.py",
+    "factory/python/tests/test_cre_capa_054.py",
+    "factory/python/tests/test_cre_capa_055.py",
+    "factory/python/tests/test_cre_capa_056.py",
+    "factory/python/tests/test_cre_capa_057.py",
+    "factory/python/tests/test_cre_capa_058.py",
+    "factory/python/tests/test_cre_capa_059.py",
+    "factory/python/tests/test_cre_capa_060.py",
+    "factory/python/tests/test_cre_capa_061.py",
+    "factory/python/tests/test_cre_capa_062.py",
+    "factory/python/tests/test_cre_capa_063.py",
+    "factory/python/tests/test_cre_capa_064.py",
+    "factory/python/tests/test_cre_capa_065.py",
+    "factory/python/tests/test_cre_capa_066.py",
+    "factory/python/tests/test_cre_capa_067.py",
+    "factory/python/tests/test_cre_d0_adrs.py",
+    "factory/python/tests/test_cre_d0_audit.py",
+    "factory/python/tests/test_cre_d0_baseline.py",
+    "factory/python/tests/test_cre_d0_policy.py",
+    "factory/python/tests/test_cre_d1_observe.py",
+    "factory/python/tests/test_cre_d2_recovery.py",
+    "factory/python/tests/test_cre_d3_capa.py",
+    "factory/python/tests/test_cre_d5_metrics.py",
+    "factory/python/tests/test_cre_d6_views.py",
+    "factory/python/tests/test_cre_d7_dispatch_admission.py",
+    "factory/python/tests/test_cre_d7_drill.py",
+    "factory/python/tests/test_cre_d7_faults.py",
+    "factory/python/tests/test_cre_d7_final.py",
+    "factory/python/tests/test_cre_d7_production_journal.py",
+    "factory/python/tests/test_cre_d7_trace_runbook.py",
+    "factory/python/tests/test_cre_slo_evidence.py",
+    "factory/python/tests/test_cre_t046_benchmark.py",
+    "factory/python/tests/test_cre_t053_growth_fit.py",
+    "factory/python/tests/test_dashboard_access.py",
+    "factory/python/tests/test_ears.py",
+    "factory/python/tests/test_easa_case.py",
+    "factory/python/tests/test_easa_corpus.py",
+    "factory/python/tests/test_easa_formal.py",
+    "factory/python/tests/test_easa_m0.py",
+    "factory/python/tests/test_easa_m1.py",
+    "factory/python/tests/test_easa_m3_m4.py",
+    "factory/python/tests/test_easa_m4_swe3.py",
+    "factory/python/tests/test_easa_m5.py",
+    "factory/python/tests/test_easa_m6.py",
+    "factory/python/tests/test_easa_m7.py",
+    "factory/python/tests/test_easa_m7b.py",
+    "factory/python/tests/test_easa_m8.py",
+    "factory/python/tests/test_easa_matrix.py",
+    "factory/python/tests/test_easa_norm_worksheet.py",
+    "factory/python/tests/test_easa_pilot_check.py",
+    "factory/python/tests/test_easa_pilot_validation.py",
+    "factory/python/tests/test_easa_pilot_wiring.py",
+    "factory/python/tests/test_easa_policy_active.py",
+    "factory/python/tests/test_easa_pr_body.py",
+    "factory/python/tests/test_easa_readiness.py",
+    "factory/python/tests/test_easa_register_contract.py",
+    "factory/python/tests/test_easa_scope_decision.py",
+    "factory/python/tests/test_easa_swtrace.py",
+    "factory/python/tests/test_guideline_check.py",
+    "factory/python/tests/test_layer_split.py",
+    "factory/python/tests/test_owner_disposition.py",
+    "factory/python/tests/test_owner_safety_documents.py",
+    "factory/python/tests/test_peripheral_assurance.py",
+    "factory/python/tests/test_peripheral_contract.py",
+    "factory/python/tests/test_peripheral_fields.py",
+    "factory/python/tests/test_peripheral_hal.py",
+    "factory/python/tests/test_peripheral_iwdg.py",
+    "factory/python/tests/test_peripheral_prompts.py",
+    "factory/python/tests/test_peripheral_rcc_equivalence.py",
+    "factory/python/tests/test_peripheral_sim.py",
+    "factory/python/tests/test_reqif_plantuml.py",
+    "factory/python/tests/test_robot_swe6.py",
+    "factory/python/tests/test_safec_bridge.py",
+    "factory/python/tests/test_safec_bridge_engine_corpus.py",
+    "factory/python/tests/test_safec_bridge_m0.py",
+    "factory/python/tests/test_safec_bridge_m2.py",
+    "factory/python/tests/test_safec_bridge_obligations.py",
+    "factory/python/tests/test_safec_bridge_oracle.py",
+    "factory/python/tests/test_safec_bridge_reset_seal.py",
+    "factory/python/tests/test_sim_renode.py",
+    "factory/python/tests/test_swe2_architecture.py",
+    "factory/python/tests/test_swe3_implementation.py",
+    "factory/python/tests/test_swe3_regmap.py",
+    "factory/python/tests/test_t024_systemd.py",
+    "factory/python/tests/test_t050_t051_docs_status.py",
+    "factory/python/tests/test_target_oracle.py"
+  ],
+  "rows": [
+    {
+      "target": "factory/python/tests/test_001_backlog_evidence.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_001_backlog_evidence.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_001_backlog_evidence/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_001_backlog_evidence/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.516,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "197c6639f5da16d8f434cb6c49d795914d3a9cad1cd126ad3dfab75e5ca18acc",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_001_t015_optimization.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_001_t015_optimization.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_001_t015_optimization/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_001_t015_optimization/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 105.716,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "0544c9d75c371f37ecd430794007839f2fbda6acd494c14b2010ae0a456d92c0",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_capa038_ll_fake.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_capa038_ll_fake.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_capa038_ll_fake/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_capa038_ll_fake/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 7.384,
+      "log_sha256": "700bc0322b00f8e8db3ce495047983b54ab27ab59ed1fedac05f3aeba47dae24",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "2ef0c0f806c9f65ab3ac3edc53e5d73e4957359ba4d78bf64f0417f1ed21e11d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_capa044_safety_scope_text.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_capa044_safety_scope_text.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_capa044_safety_scope_text/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_capa044_safety_scope_text/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.366,
+      "log_sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "41e9a272666545b9ccb4073c80ac09bfb074da8c5224ab46c485c03ccac2fda5",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_controlroom_alerts.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_controlroom_alerts.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_alerts/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_alerts/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.966,
+      "log_sha256": "700bc0322b00f8e8db3ce495047983b54ab27ab59ed1fedac05f3aeba47dae24",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "152362749df18322f9b1cb634f4594ea2ab28669b0c48816e4bf1350c4390d19",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_controlroom_api.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_controlroom_api.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_api/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_api/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 23.268,
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "bc78698f073bddd59e01cce3a12035e7f3376218d82aa66a9c0a05786b61660d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_controlroom_floor.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_controlroom_floor.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_floor/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_floor/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.567,
+      "log_sha256": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+      "counts": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "53fa72ff37e0dfd7d532cae1d8e888fa84448f00c265e567edd4acaeb143177f",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_controlroom_scorecard.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_controlroom_scorecard.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_scorecard/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_scorecard/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.517,
+      "log_sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "486a226ba19002c9c95f5cd975b44f86dd392a4263b3915c931e815d75df386d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_controlroom_spc_pareto.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_controlroom_spc_pareto.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_spc_pareto/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_spc_pareto/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.315,
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "968ce52801e0a134c820399f9571080e75a83eee1d1613f9622cd66a08e938fd",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_controlroom_usage.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_controlroom_usage.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_usage/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_usage/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.365,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "68545236dcdaab77a7b357d3f383b78097fdddd9d59f2a8c71ff29882e8eeb0d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_controlroom_windows.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_controlroom_windows.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_windows/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_controlroom_windows/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.315,
+      "log_sha256": "700bc0322b00f8e8db3ce495047983b54ab27ab59ed1fedac05f3aeba47dae24",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "0ab1752525f29308163a5bb0c78303ec6d894a8f5407ad60984e43584eea4b41",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cpu_verification_parallel.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cpu_verification_parallel.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cpu_verification_parallel/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cpu_verification_parallel/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.466,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "e8df0124002c439df4030960f65a27187eb38143b927ee4add557d67105308c2",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_013_015.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_013_015.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_013_015/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_013_015/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 2.77,
+      "log_sha256": "fe9dca0451129aaabdd76ea13e310b61a52091a146a1f9fe5b72b851eb33547f",
+      "counts": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "a8166c561ae9408e35395e413aa493fb1eab5acd3d18f47c0dc886db0aa4dd5a",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_046.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_046.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_046/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_046/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.318,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "471d9ad104c17c54f771b6ea4bdfb59c018e592a128ee8c60e17c7ec4edb3884",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_050.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_050.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_050/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_050/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.466,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "80943a8f9744bf05ce2c6dae5358181adda272450d8484a3d039f7b7644ffd7b",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_051.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_051.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_051/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_051/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.017,
+      "log_sha256": "585ba42829657b9e2d56f8614be6c3365a8405474eed008559511ab50f2ffcfb",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "b8445c89272fc4e39cb334888dd6d2f6f629757ab3037420a66741f40277bc04",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_052.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_052.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_052/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_052/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.917,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "a1053af752efb8f736486dcf2241c3abe0d59d5e5fb430e8b0efce57b860c14d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_053.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_053.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_053/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_053/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.767,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "1678284b294d051644e7627f74ecb40696e1cfb912447338292cf2299441126d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_054.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_054.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_054/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_054/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.667,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "82a66c138416ec1a53326fb3d8256a809219d4442a5f158856990fa67257e5e6",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_055.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_055.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_055/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_055/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.516,
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "dac32a9549195e365a6c985ce50e2bf07399b031f624bec8195e5a72c5f88adb",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_056.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_056.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_056/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_056/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.716,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "2d9ef937cf45b13cc7b3f3db37c0a934f8fae8c917fd12e5e78702ee79e2825b",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_057.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_057.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_057/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_057/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 8.383,
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "222f4af836e90088610dd2001cc953d1be5a1aa54871c1c2561526d2a8f5ca16",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_058.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_058.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_058/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_058/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.466,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "9d12e037a7baabd2e4c27880d7ebda63df60cfd3ccf47f20b443aae33520ba75",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_059.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_059.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_059/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_059/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.466,
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "1ee8a079ed222c9b677d4511e7654c301bdbb2ad72361ef45aee9485dcfbd525",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_060.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_060.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_060/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_060/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.817,
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "1a57a1b7ba5c06edd3e868823a5cf87034b7d57b7679058bbed62b91b72896d0",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_061.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_061.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_061/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_061/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.917,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "4f9dd05f50c7bac65a4006041deed1f08e349ff00777553e2bd53daf46b30f3a",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_062.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_062.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_062/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_062/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.466,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "d172524c155999f677a4abb31f39c4ed15d4a4f12dd195b714209a7de40ce80b",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_063.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_063.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_063/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_063/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.819,
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "2a7faf276418327ba9b4ebf343ca9e0e486125a43226f0823858f80ace84f0f9",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_064.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_064.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_064/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_064/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.517,
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "de33e3c09b044d3f4067180cc373e2b36a5900013a482fd84cd8644e93ac4a3c",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_065.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_065.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_065/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_065/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.466,
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "0b373e0ff5540aab83a6b33db4d6a19711eb3e8f5826543a7ba8b64e331f8e23",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_066.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_066.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_066/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_066/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.466,
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "f2584fe3ccca3cf6f7260756a4cd7a6a06be470bb6feb0e842a673fc98e2173d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_capa_067.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_capa_067.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_067/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_capa_067/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.566,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "e4fe1014503a8a4c6ddc29fc7d43c4d1c28679fa857b6c2d08aa415cb701ac3a",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d0_adrs.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d0_adrs.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d0_adrs/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d0_adrs/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.417,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "7ed5d738c774ede3f6c0f7a6fd9e15332e2cf65a30c19dc878145c124a995696",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d0_audit.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d0_audit.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d0_audit/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d0_audit/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.517,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "bc0a96eee0ac828dd3519765240288103cff1f255cd907564fce3ec8b27bd738",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d0_baseline.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d0_baseline.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d0_baseline/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d0_baseline/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.717,
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "6a64cc2f840b73ab9d3c54faf8f05dedc66e6deb8b876f49cec6812888f7bea2",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d0_policy.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d0_policy.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d0_policy/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d0_policy/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.666,
+      "log_sha256": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+      "counts": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "c2c00737a56d6b41beafd5e1076bb9bc0f3193c1500fe56b0f4baa8394bfcf0d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d1_observe.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d1_observe.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d1_observe/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d1_observe/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 2.269,
+      "log_sha256": "32faef56d0289369b1ac111e68ee0bb7b2ed1bcf92d3f33b75313bd0556c3e6f",
+      "counts": {
+        "tests": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "f076363c0255519342543dbeeb78a215f44d341ff29c0185b434e2bff32e85b6",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d2_recovery.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d2_recovery.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d2_recovery/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d2_recovery/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 28.623,
+      "log_sha256": "fe9dca0451129aaabdd76ea13e310b61a52091a146a1f9fe5b72b851eb33547f",
+      "counts": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "7a45d70b3ecc7f53d04cdf71c1d4d6d40038779d05ad4db9dd2ad16a46045e8e",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d3_capa.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d3_capa.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d3_capa/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d3_capa/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 7.932,
+      "log_sha256": "7040371af15613c02e821ec0eecc1d1330f691ace4cef93a41bfa358822c4103",
+      "counts": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "218ee49023dcaa037ae62c70a91be3b98031bde6d2881fa2e4b4e5af649aaa05",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d5_metrics.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d5_metrics.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d5_metrics/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d5_metrics/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.867,
+      "log_sha256": "700bc0322b00f8e8db3ce495047983b54ab27ab59ed1fedac05f3aeba47dae24",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "e8159af52b01b9eb57e04862377c15adf757c6033d58be33f36e47dfb79634e6",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d6_views.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d6_views.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d6_views/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d6_views/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 5.326,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "9ec7ccbc79484fcca81f8aad27972627954ca6f92ae92a6e389e56e65173dba7",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d7_dispatch_admission.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d7_dispatch_admission.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_dispatch_admission/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_dispatch_admission/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.518,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "144d582bce8af54283d61b57b5470f132780e80a247f137b8faf4ca3938060ef",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d7_drill.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d7_drill.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_drill/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_drill/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.316,
+      "log_sha256": "6cdb88bc5aa15feac5bc9b0e9d17b17569628226602de34dc45f55c973ef1562",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "junit_sha256": "dde2cbba63f08ddbfb9621cb172d7d1a1e6a00c407fccfe00745ef063d115621",
+      "nonpass_cases": [
+        {
+          "name": "test_record_matches_the_durable_incident_and_audit_stores",
+          "kind": "skipped",
+          "reason": "live state not present"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_cre_d7_faults.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d7_faults.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_faults/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_faults/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 96.272,
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "23040594d8070912abaa9c039f953cef128a3bd1cc3606ccc03f27cb45600a71",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d7_final.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d7_final.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_final/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_final/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 1,
+      "seconds": 0.515,
+      "log_sha256": "43a3d925c6f615ab4018873be17feafaae29a7656c9b8da592f9ae800faaac9e",
+      "counts": {
+        "tests": 3,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "7993c9ee1d2b0f48fa8efe8461dbe1975d762521c2aeb84b270e99fc1041b24d",
+      "nonpass_cases": [
+        {
+          "name": "test_readiness_is_recomputable_evidence_based_and_never_a_safety_claim",
+          "kind": "failure",
+          "reason": "AssertionError: assert 'OBSERVE_ONLY' == 'NOT_DEMONSTRATED'\n  \n  - NOT_DEMONSTRATED\n  + OBSERVE_ONLY"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_cre_d7_production_journal.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d7_production_journal.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_production_journal/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_production_journal/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.768,
+      "log_sha256": "585ba42829657b9e2d56f8614be6c3365a8405474eed008559511ab50f2ffcfb",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "f0c76851c4711eed761dea62a42be6b0b129ee6d65caaa0f28483c20c8903028",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_d7_trace_runbook.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_d7_trace_runbook.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_trace_runbook/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_d7_trace_runbook/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.615,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "3f29cfe60099b1b19c0b3e4e10245c7b56787adde41108db7e7caa7056378fdf",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_slo_evidence.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_slo_evidence.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_slo_evidence/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_slo_evidence/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.265,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "1b0133484d30f53d087ce345fda66be841e659793197e9d3e8fe683abc46b890",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_t046_benchmark.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_t046_benchmark.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_t046_benchmark/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_t046_benchmark/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 9.836,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "b6bb12dd700c30ddd0fb5267e68c707049c7a6375b3abe4d28548e9782eeef29",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_cre_t053_growth_fit.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_cre_t053_growth_fit.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_t053_growth_fit/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_cre_t053_growth_fit/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.616,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "815568f0aa1bf13fc2fca12c754707c1c8f7859d0f0ae06292812f4443ac93f2",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_dashboard_access.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_dashboard_access.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_dashboard_access/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_dashboard_access/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.467,
+      "log_sha256": "fe9dca0451129aaabdd76ea13e310b61a52091a146a1f9fe5b72b851eb33547f",
+      "counts": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "99126a17ed6167be2f3a9b8c9b1295d905396a54cbc1f64a891f52e315f0a615",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_ears.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_ears.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_ears/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_ears/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.265,
+      "log_sha256": "fe9dca0451129aaabdd76ea13e310b61a52091a146a1f9fe5b72b851eb33547f",
+      "counts": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "8671461f0da8c9b3a9ff6afa5b0c96cfcd212cac6d1f7c0938998c7c0e0197db",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_case.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_case.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_case/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_case/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.566,
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "116f17272ba9f83a7b8e7e5ea3fab93c57d610b2ff77d9a5aeca94ec5a7a0733",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_corpus.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_corpus.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_corpus/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_corpus/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.315,
+      "log_sha256": "d8c65b4bb0248e499beaaa7c0a8eb03c6fa01d3b5556d9d410750791699e5314",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "junit_sha256": "942eda577cf2175d55b559d609d4e8244152e910097e14bbd41cbc148c266b15",
+      "nonpass_cases": [
+        {
+          "name": "test_t066_corpus_detection_and_no_false_positives",
+          "kind": "skipped",
+          "reason": "sealed archive/RM inputs absent"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_easa_formal.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_formal.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_formal/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_formal/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 10.741,
+      "log_sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "2ddf7b9e9c1a125c6879ff812501f1a828a9c844ef914cd3674a166ebac89845",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_m0.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_m0.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m0/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m0/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.971,
+      "log_sha256": "fe9dca0451129aaabdd76ea13e310b61a52091a146a1f9fe5b72b851eb33547f",
+      "counts": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "8b2af01481092715ed57ec747576fee2459939892c910b099c1fca3e4c6eb865",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_m1.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_m1.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m1/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m1/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.169,
+      "log_sha256": "0caf379acbcb845c31b98bf4efeffb865a66d527d27d5bb4f34018bea0099078",
+      "counts": {
+        "tests": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "d421e7b58bd2b33455b9d2559e46f59f3686674e6d1d749c45bf99d7140fa9f8",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_m3_m4.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_m3_m4.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m3_m4/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m3_m4/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.467,
+      "log_sha256": "37087ee317cae233230cdaf739fdc72499ba2ded8055f0aa3da1eddd0bcee130",
+      "counts": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "junit_sha256": "7d0d8b976c16b75efa1c4ed570c60908f17ade6cc40afbcd80f7a1cd67cfb89b",
+      "nonpass_cases": [
+        {
+          "name": "test_real_rm_index_matches_independent_audit",
+          "kind": "skipped",
+          "reason": "baselined RM sections not on this host"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_easa_m4_swe3.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_m4_swe3.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m4_swe3/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m4_swe3/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.268,
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "07e6cadf96cba0a8ef87b961d6bdefb5beccfbc71fe08fb9041eb1ea866e49c6",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_m5.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_m5.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m5/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m5/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.418,
+      "log_sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "ee335d294c9c3786ba51fa01050b78b18ef0deed07f3ec608c63b066330cfef7",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_m6.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_m6.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m6/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m6/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.415,
+      "log_sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "b9e78d2f09e5cfb1b80c767c13cebd729aeadb7a7b2e0e8378dfab0efdebc9dc",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_m7.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_m7.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m7/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m7/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 2.27,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "8474424ebef3abfef4d4a688c2bc6d54f36dff6a914c2e8b85df046f2baf4593",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_m7b.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_m7b.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m7b/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m7b/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 2.07,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "ad6517138aab754b698b4b4e72ba31de9e2e71ff76e6dedf6a8e2a8cdbc8219a",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_m8.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_m8.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m8/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_m8/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.517,
+      "log_sha256": "6eabd3f5a58421765e5a41fd1d1b857d7d6d4622c9c3578192795dabf447acdb",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "junit_sha256": "b7607c67cbf65d4483c3093ffe591ffb0a39860d7485baa43536f4b49c5da437",
+      "nonpass_cases": [
+        {
+          "name": "test_t064_shadow_audit_is_read_only_and_reproduces_the_manual_findings",
+          "kind": "skipped",
+          "reason": "sealed archive/RM inputs absent"
+        },
+        {
+          "name": "test_at065_tampered_copy_gives_diff_linked_audit_original_untouched",
+          "kind": "skipped",
+          "reason": "sealed archive/RM inputs absent"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_easa_matrix.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_matrix.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_matrix/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_matrix/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.018,
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "f7602f4f6065d26b8b47e5e94a477583df86264542ab97217ca87c9711e135db",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_norm_worksheet.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_norm_worksheet.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_norm_worksheet/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_norm_worksheet/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.767,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "033fd7a6e33773c46b531c2327fc55dc18c5855aa4fa150c88e41e3630a8bce2",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_pilot_check.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_pilot_check.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_pilot_check/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_pilot_check/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.265,
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "c41dc380fe7a64280fc10025bec75051c2238efefd204a6da5e74b5a4f19069d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_pilot_validation.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_pilot_validation.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_pilot_validation/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_pilot_validation/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.366,
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "d3331cbef73574f2a3d89f6549db43d4599e799420ca698a0cfce877df10ca60",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_pilot_wiring.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_pilot_wiring.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_pilot_wiring/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_pilot_wiring/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.365,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "e0c48085fcb5614844ae48fb723f04c2fabfa00b8a99c239a7e7fbb868edaba2",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_policy_active.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_policy_active.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_policy_active/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_policy_active/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.366,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "455f2e0684a99f62ba31d50a95da15609624186cf0641363e711073b77e392eb",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_pr_body.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_pr_body.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_pr_body/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_pr_body/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.265,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "de6ef15b9fc04d09922f9f3fce19a5a88e22a397076275974572324e7f9204c8",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_readiness.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_readiness.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_readiness/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_readiness/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.918,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "4e5f48f517a42dff2498e289917f4804e3cfc76f4f93add579a60abdda77c157",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_register_contract.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_register_contract.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_register_contract/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_register_contract/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.867,
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "53098ca41c04812ff08476636df2e72e7ad1ca59515d41deba9ca0247099d381",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_scope_decision.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_scope_decision.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_scope_decision/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_scope_decision/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.366,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "c9a77ea1762997c3aceeb18c955c52fa1a82997d5cf44f96f9a839947c7e2d4b",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_easa_swtrace.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_easa_swtrace.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_swtrace/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_easa_swtrace/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 24.423,
+      "log_sha256": "12a9a4a8915fb8d2bb5b4227220247cde267c1a0620203589fe47280d5be4a7f",
+      "counts": {
+        "tests": 36,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "c823dfebd8adb420d01c4d5fedcb353403e66a43fc99858afb6dc6cd0b6f34ae",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_guideline_check.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_guideline_check.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_guideline_check/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_guideline_check/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.567,
+      "log_sha256": "f44919a3367dc52929a8af8f8919d5f9536d2eb90b5c6c6d38b1e58904be21bc",
+      "counts": {
+        "tests": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "c7639da7796ee400f07480cb3e132456450369964d353189bfabe84ed6109dc1",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_layer_split.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_layer_split.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_layer_split/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_layer_split/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 10.639,
+      "log_sha256": "475bcfb56b286d857c4310602373e306e2cb722ad6df6053d0e1aff939c18220",
+      "counts": {
+        "tests": 23,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "edd7e28be480483ac5414a065e9f6871f3d62cd89d87b3d63b65fd31725a202c",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_owner_disposition.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_owner_disposition.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_owner_disposition/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_owner_disposition/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.318,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "b0ef8b2195805fc607f1a726fd3d29e108327696bfd4a93c0b658a8eacc61ee2",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_owner_safety_documents.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_owner_safety_documents.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_owner_safety_documents/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_owner_safety_documents/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.618,
+      "log_sha256": "511fb971caf59261241ec2a3919d9d10c7dcb9ec044ee07d50b2db465184f057",
+      "counts": {
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "caf2da58de0112a663cf8137fcb8d04966b5fa83d32ec68b5734cc0726d40df6",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_peripheral_assurance.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_peripheral_assurance.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_assurance/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_assurance/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 3.622,
+      "log_sha256": "fe9dca0451129aaabdd76ea13e310b61a52091a146a1f9fe5b72b851eb33547f",
+      "counts": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "46e11573ff49dfe0c33165df463135439c0630751001273c8df3d9b9b61b1cf1",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_peripheral_contract.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_peripheral_contract.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_contract/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_contract/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.268,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "848dfd3e29b2533518b9bb58f9e3f607a541e6ffccd1c2924f744793302c1f70",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_peripheral_fields.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_peripheral_fields.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_fields/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_fields/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.366,
+      "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "c8bab4ad319c520ed6fe936bf56ea9f0e8adb8e659305d97c096eafbfcc05302",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_peripheral_hal.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_peripheral_hal.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_hal/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_hal/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.819,
+      "log_sha256": "c4b808d34f4db00b333696dec1f3a43a2887d8bfe0cb7af07a3cb98ff43a7830",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "9c8bb2b457a83032ee98cfaa21c27478ff7704a69ef6f0e494e5afae8a8d5d4f",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_peripheral_iwdg.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_peripheral_iwdg.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_iwdg/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_iwdg/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 1.268,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "885834258436f99c54b07436948b0bd01b7ae6329f7c5bd3a505f3401fe42a8f",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_peripheral_prompts.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_peripheral_prompts.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_prompts/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_prompts/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.667,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "5067b5b80cb109cef5bb49a3580a12d46a370c5c14f3b3987de2a8321384e458",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_peripheral_rcc_equivalence.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_peripheral_rcc_equivalence.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_rcc_equivalence/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_rcc_equivalence/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.866,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "84a167db645ae44bd8de845537ac310e4a087bbfeb799a7e6d9c55cb081e613e",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_peripheral_sim.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_peripheral_sim.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_sim/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_peripheral_sim/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 8.035,
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "414a5ae207d68fa9acebf50642a9b16f2901b0409926b01aae07d3834283af3e",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_reqif_plantuml.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_reqif_plantuml.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_reqif_plantuml/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_reqif_plantuml/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 4.024,
+      "log_sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "50a19ab5d66bddb8585cb685ba575c56adbc3ea01c9a4259679eda2b821c1a1a",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_robot_swe6.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_robot_swe6.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_robot_swe6/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_robot_swe6/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 31.989,
+      "log_sha256": "585ba42829657b9e2d56f8614be6c3365a8405474eed008559511ab50f2ffcfb",
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "371f6d2026881e29f7d23f5a9f16ef2ef652c70801f78e104fb214908f0998f6",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_safec_bridge.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_safec_bridge.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 5.227,
+      "log_sha256": "6161eda9aded8f41de7d9be326fa6cc8005cf0ccc546c8dce0a333f9bc15f540",
+      "counts": {
+        "tests": 43,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "junit_sha256": "5304fd82e3b0add696427b4541cbf45cf1b1b025a540c662a27b61005640b39d",
+      "nonpass_cases": [
+        {
+          "name": "test_real_engine_handshake_and_unsupported_round_trip",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine on this host"
+        },
+        {
+          "name": "test_real_engine_is_refused_under_a_wrong_pin_and_answers_identically_twice",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine on this host"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_safec_bridge_engine_corpus.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_safec_bridge_engine_corpus.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_engine_corpus/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_engine_corpus/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.316,
+      "log_sha256": "f794d38f55f2afcd3142c64a95601adc8f44264671a63fedd10648f2bee31e88",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "junit_sha256": "8365e758ee5405132131cb99f29de9494f81ece92150160539ffc264c8e3888b",
+      "nonpass_cases": [
+        {
+          "name": "test_the_real_engine_never_passes_never_panics_on_hostile_payloads",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_control_characters_in_the_request_id_are_schema_valid_and_echoed_unchanged",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_safec_bridge_m0.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_safec_bridge_m0.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_m0/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_m0/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.917,
+      "log_sha256": "511fb971caf59261241ec2a3919d9d10c7dcb9ec044ee07d50b2db465184f057",
+      "counts": {
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "17e45b948fe6dc7032f07041426fe59f9e684aa8d5d6ef5dbf537547282a65bc",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_safec_bridge_m2.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_safec_bridge_m2.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_m2/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_m2/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.567,
+      "log_sha256": "52647d16c8451072665bc2af023fed3f7edbfb949a995a7ed4063a83ee43e38d",
+      "counts": {
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 9
+      },
+      "junit_sha256": "7973714c160ece14da5246b7254244ab718605dc00930b1287a96e8226fa33ec",
+      "nonpass_cases": [
+        {
+          "name": "test_real_engine_validates_synthetic_intents_and_both_engines_agree",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_real_engine_statuses_and_checks[pass]",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_real_engine_statuses_and_checks[mask-as-value]",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_real_engine_statuses_and_checks[overflow]",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_real_engine_statuses_and_checks[inverted-key]",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_real_engine_statuses_and_checks[ro-write]",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_real_engine_statuses_and_checks[w1c-unsupported]",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_real_engine_statuses_and_checks[unknown-field]",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_real_engine_on_real_rm_facts",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_safec_bridge_obligations.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_safec_bridge_obligations.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_obligations/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_obligations/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.466,
+      "log_sha256": "6cdb88bc5aa15feac5bc9b0e9d17b17569628226602de34dc45f55c973ef1562",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "junit_sha256": "0043ddc297074d38b3ad3dd2e4c3419e3a39ab10668d397cc99d83cc89396aa6",
+      "nonpass_cases": [
+        {
+          "name": "test_real_engine_obligations_are_bound_and_agree_with_forge_c",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_safec_bridge_oracle.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_safec_bridge_oracle.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_oracle/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_oracle/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.316,
+      "log_sha256": "d8394224141a6765aaa0d3db5e35a92a838f618b716822af6ef620a487298516",
+      "counts": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "junit_sha256": "d21937cde6b6a1b4ae24fdbca65ebe772865a685b46ea10b0fcc73347260ce50",
+      "nonpass_cases": [
+        {
+          "name": "test_real_engine_oracle_is_bound_and_agrees_with_forge_c",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_real_engine_oracle_on_real_rm_facts",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_safec_bridge_reset_seal.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_safec_bridge_reset_seal.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_reset_seal/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_safec_bridge_reset_seal/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.265,
+      "log_sha256": "f794d38f55f2afcd3142c64a95601adc8f44264671a63fedd10648f2bee31e88",
+      "counts": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "junit_sha256": "6a5b25c113068d2411719de9e86ef0c879ea68382a5b3e00fbc877b7f62442f7",
+      "nonpass_cases": [
+        {
+          "name": "test_reset_claims_on_real_rm_facts",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        },
+        {
+          "name": "test_every_result_is_sealed_and_a_broken_seal_is_refused",
+          "kind": "skipped",
+          "reason": "FORGE_SAFEC_ENGINE_PIN not set: no pinned private SafeC engine"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_sim_renode.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_sim_renode.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_sim_renode/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_sim_renode/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 1,
+      "seconds": 9.936,
+      "log_sha256": "2eeed5ef2917e5e3f802d24e5e0824bd13c06f94e6c77d8c2c0bf7f091c074f8",
+      "counts": {
+        "tests": 3,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "df9f05c2a2c024827a5f195a63f1e22eb49380e4035c22b71179c8a545555d9c",
+      "nonpass_cases": [
+        {
+          "name": "test_renode_found_from_mcp_server_environment",
+          "kind": "failure",
+          "reason": "AssertionError: assert None == '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/renode/renode_1.17.0-portable/renode'\n +  where None = <function renode_bin at 0x7d4e0b3cfce0>()\n +    where <function renode_bin at 0x7d4e0b3cfc"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_swe2_architecture.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_swe2_architecture.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_swe2_architecture/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_swe2_architecture/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.517,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "09a3f83e6cf56d8a7fa7598825786ce167d2482e52fe891311ace3728385b01d",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_swe3_implementation.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_swe3_implementation.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_swe3_implementation/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_swe3_implementation/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.617,
+      "log_sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "counts": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "da49268e63dcdbc5af20e6bd4ab08e411518696bcd29a995be4d58fb49c49829",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_swe3_regmap.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_swe3_regmap.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_swe3_regmap/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_swe3_regmap/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.768,
+      "log_sha256": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "fe99ee6ac4d912222bd4b8e0b43c6e64aa9911afbc269a6b61d05b26676ec380",
+      "nonpass_cases": []
+    },
+    {
+      "target": "factory/python/tests/test_t024_systemd.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_t024_systemd.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_t024_systemd/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_t024_systemd/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.266,
+      "log_sha256": "4a629b3d0ebea074d791abd083c526492ffbae0f37403a1cf2b3015f948edb28",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "junit_sha256": "2499aa1d152902e7886083f94b102996df74cdaf984a7af1ec7ab4e5ea521555",
+      "nonpass_cases": [
+        {
+          "name": "test_sigkill_restarts_and_db_integrity",
+          "kind": "skipped",
+          "reason": "live systemd test disabled"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_t050_t051_docs_status.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_t050_t051_docs_status.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_t050_t051_docs_status/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_t050_t051_docs_status/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 0.818,
+      "log_sha256": "ce13a191b998dfedb76b6f118d1d432fc07a64ce0f322e633a19ff0d12f99742",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "junit_sha256": "1ed10ec5ce2e27f39b22a6713eb91ff9f0db52128c82eb35a8a2b770b92c7315",
+      "nonpass_cases": [
+        {
+          "name": "test_t050_clean_bootstrap_reproduces_demo_and_fault_injections",
+          "kind": "skipped",
+          "reason": "clean reproduction is slow; opt-in"
+        }
+      ]
+    },
+    {
+      "target": "factory/python/tests/test_target_oracle.py",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_target_oracle.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_target_oracle/tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/remaining-754e93c/test_target_oracle/result.xml"
+      ],
+      "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/compatibility-fixtures-followup",
+      "exit_code": 0,
+      "seconds": 74.139,
+      "log_sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "junit_sha256": "56c712777745d59fe932473e432c4ab2de95a3eaa80b26f4000563c218f57fad",
+      "nonpass_cases": []
+    }
+  ],
+  "status": "PARTIAL_FAILURES_OR_TIMEOUTS",
+  "excluded_native_files": [
+    "test_cre_d7_e2e.py",
+    "test_t048_e2e.py"
+  ],
+  "native_exclusion_reason": "Qwen installation tests must execute on Omniverse; no current campaign grant",
+  "finished_utc": "2026-10-25T11:27:08.432378+00:00",
+  "clean_revision_at_end": false
+}

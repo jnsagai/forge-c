@@ -1,0 +1,58 @@
+{
+  "schema": "forge-c/frozen-phase-snapshot/1",
+  "at": "2026-10-29T15:38:36.269367Z",
+  "order_id": "afo-774900b297bdde37",
+  "job_id": "afo-product-b715f920180f440b708e55a0",
+  "phase": "SWE.4",
+  "factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "HEAD",
+    "commit": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "dirty": false
+  },
+  "baseline": {
+    "author_role": "swe4-author",
+    "baseline_hash": "92a66ef1e1ab535dd26d217b1611e4972a7f9c1fcfa2780a7b7231554c3a9fa0",
+    "baseline_id": "BL-SWE.4-001",
+    "files": {
+      "software/tests/unit/test_crc.c": "e78d028dd2b537f6f945811572f3bb3220f24be52b681f6a6969f2f4026de2b9",
+      "workproducts/SWE.4/traceability/matrix_4_unittest_to_unitspec.csv": "bdee5f7003c9d2e5dcc5f292cd85c58d55dd4085bdde81a78d8145fd8bda2e0a",
+      "workproducts/SWE.4/traceability/matrix_4_unittest_to_unitspec.md": "d3332df6e748960689e04a47b0595fba58908d82faee4ed6fa94a11f60576dd3",
+      "workproducts/SWE.4/unit_verification_report.md": "f2d6c77c5430757942ded7720967da9cf3689cc35c95df47a048cc6cb9fe2476"
+    },
+    "frozen_at": "2026-10-29T15:23:43.363210Z",
+    "phase": "SWE.4",
+    "schema": "forge-c/baseline/0.4",
+    "upstream": {
+      "SWE.1": "6d78bb02cd4dea064fe1e72f17c9e410a0a12b62bc9140bd8a38f06e603239cd",
+      "SWE.3": "97f4c1c95f841e179d72846ff63e49ac5d777761e8474a87a80403e14a1133f5"
+    }
+  },
+  "actual_inspection": {
+    "inspection_id": "INS-SWE.4-001",
+    "recorded_at": "2026-10-29T15:33:48.120608Z",
+    "verdict": "PASS",
+    "baseline_hash": "92a66ef1e1ab535dd26d217b1611e4972a7f9c1fcfa2780a7b7231554c3a9fa0"
+  },
+  "phase_completion": "RECORDED_PASS",
+  "current_baseline_verified": true,
+  "deterministic_gate": {
+    "phase": "SWE.4",
+    "decision": "PASS",
+    "reason": "INS-SWE.4-001",
+    "failed_inspections": 0,
+    "max_rework_cycles": 3
+  },
+  "additional_checks": {
+    "status": "NOT_RERUN_IN_READONLY_COLLECTION"
+  },
+  "generation_requests": 0,
+  "read_only": true,
+  "product_acceptance": "NOT_ESTABLISHED",
+  "local_transfer": {
+    "status": "ALL_MEMBER_HASHES_AND_SIZES_VERIFIED",
+    "files": 17,
+    "archive_sha256": "dfdde2f2334a0d031ff85c7f11729ed4c69fa9bc52cda948b698cdd52d2f1292",
+    "directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen/frozen-phase-snapshots/afo-774900b297bdde37-SWE.4"
+  }
+}

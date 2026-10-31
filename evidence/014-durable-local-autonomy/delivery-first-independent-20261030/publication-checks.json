@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "scope": "PUBLICATION_HYGIENE_AND_TRANSFER_HASHES_NOT_RUNTIME_QUALIFICATION",
+  "checks": {
+    "private_key_or_provider_token_patterns_absent": true,
+    "raw_hidden_reasoning_absent": true,
+    "frozen_input_contents_excluded": true,
+    "transfer_hashes_match": true,
+    "native_terminal_archive_copied_and_sha256_verified": true,
+    "all_publication_files_tracked_in_git": true
+  },
+  "issues": []
+}

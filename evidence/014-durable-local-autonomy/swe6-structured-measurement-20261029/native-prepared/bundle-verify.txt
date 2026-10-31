@@ -1,0 +1,5 @@
+The bundle contains this ref:
+3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6 refs/qualification/014-swe6-route-3015e47
+The bundle requires this ref:
+9b4c390e1605d11c4865bdeea382df74a0078692 
+/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/swe6-route-3015e47.bundle is okay

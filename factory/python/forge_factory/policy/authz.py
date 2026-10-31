@@ -99,8 +99,9 @@ class Authorizer:
     def __init__(self, binding: Binding, agents: list[AgentDefinition] | None = None):
         self.binding = binding
         self.workspace = Path(os.path.realpath(binding.workspace))
-        afo = any(n.get("role") in ("afo-recovery-planner", "afo-factory-maintainer")
-                  for n in binding.nodes.values())
+        # Feature 005 overlay roles (afo-*) and their MCP servers exist only for a binding that binds one of them
+        # (the afo-recovery-planner's single-node run); SWE work-order bindings see the base registry, unchanged
+        afo = any(str(n.get("role", "")).startswith("afo-") for n in binding.nodes.values())
         self.agents = {a.id: a for a in (agents or load_agents(include_afo=afo)[0])}
         self.registry = load_registry(include_afo=afo)
         self.protected = list(ALWAYS_PROTECTED)
@@ -167,6 +168,29 @@ class Authorizer:
             return "DELIVERED_CODE_NO_DEFECT"
         return None
 
+    def _delivery_first_write(self, node_id: str, rel: str) -> str | None:
+        """Only the three existing graph visits can mutate a delivery-first candidate."""
+        cfg = self._manifest().get("delivery_first")
+        if not cfg:
+            return None
+        code = rel.startswith(("software/ll/", "software/hal/", "software/src/", "software/include/"))
+        if not code:
+            return "DELIVERY_FIRST_AUTHOR_SCOPE" if node_id.startswith("df_author_") else None
+        if rel not in cfg.get("candidate_files", []):
+            return "DELIVERY_FIRST_UNDECLARED_CODE"
+        match = re.fullmatch(r"df_author_([0-2])", node_id)
+        root = self.workspace / ".forge-run/delivery-first"
+        if not match or not (root / "initial.json").is_file():
+            return "DELIVERY_FIRST_CANDIDATE_FROZEN"
+        attempt = int(match[1])
+        if (root / f"attempt-{attempt}/intent.json").exists():
+            return "DELIVERY_FIRST_AUTHOR_VISIT_COMPLETED"
+        if attempt:
+            previous = root / f"attempt-{attempt - 1}/result.json"
+            if not previous.is_file() or json.loads(previous.read_text()).get("status") != "FAIL":
+                return "DELIVERY_FIRST_CORRECTION_NOT_ELIGIBLE"
+        return None
+
     # -- decision -----------------------------------------------------------------------
     def decide(self, node_id: str | None, tool: str, tool_input: dict | None) -> Decision:
         tin = tool_input if isinstance(tool_input, dict) else {}
@@ -228,10 +252,17 @@ class Authorizer:
                     else self.protected
                 if _match(rel, protected):
                     return Decision(False, "PROTECTED_PATH_DENIED", rel, role_id)
+                denied = self._delivery_first_write(node_id or "", rel)
+                if denied:
+                    return Decision(False, denied, rel, role_id)
                 denied = self._delivered_write(role_id, rel)
                 if denied:  # feature 008 (FR-013/FR-014): delivered code is frozen or changes only for a CODE defect
                     return Decision(False, denied, rel, role_id)
                 if not any(rel == p.rstrip("/") or rel.startswith(p) for p in prefixes):
                     return Decision(False, "WRITE_SCOPE_DENIED", rel, role_id)
+                from ..development_execution import mutation_allowed
+
+                if not mutation_allowed(self.workspace, phase, role_id, rel):
+                    return Decision(False, "DEVELOPMENT_PHASE_REPAIR_EXHAUSTED", rel, role_id)
             return Decision(True, "ALLOW_WRITE", tool, role_id)
         return Decision(False, "UNKNOWN_TOOL_DENIED", tool, role_id)

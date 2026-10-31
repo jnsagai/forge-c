@@ -1,0 +1,89 @@
+{
+  "git_head": "fbd8bc89967b68ed4e99e4c63fe12784f135e62f",
+  "start_head": "fbd8bc89967b68ed4e99e4c63fe12784f135e62f",
+  "start_dirty": "",
+  "started_at": 1793102142.0187638,
+  "results": [
+    {
+      "label": "kernel",
+      "command": [
+        "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+        "-m",
+        "forge_factory.afo.host_audit",
+        "preflight",
+        "--out",
+        "/mnt/data/forge-c/inspector-014-b309039/host-bus-fbd8bc8/kernel.json"
+      ],
+      "started_at": 1793102142.0187924,
+      "ended_at": 1793102142.2346542,
+      "exit_code": 2,
+      "artifacts": {
+        "kernel.json": "8f3a0a2237454452a6ca948748d826330eead4b75f1a200812df0cc52481aff4",
+        "kernel.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6"
+      },
+      "status": "BLOCKED",
+      "blockers": [
+        "KERNEL_AUDIT_STATUS_UNAVAILABLE",
+        "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED",
+        "AUTHENTICATED_CONTROL_CORRELATION_REQUIRED"
+      ]
+    },
+    {
+      "label": "user-bus",
+      "command": [
+        "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+        "-m",
+        "forge_factory.afo.host_audit",
+        "bus-preflight",
+        "--bus",
+        "user",
+        "--seconds",
+        "1",
+        "--out",
+        "/mnt/data/forge-c/inspector-014-b309039/host-bus-fbd8bc8/user-bus.json"
+      ],
+      "started_at": 1793102142.2348416,
+      "ended_at": 1793102143.5034459,
+      "exit_code": 0,
+      "artifacts": {
+        "user-bus.json": "cdda3ca3ee1964e1f72248f4be18008abc41de51e2bb3013b8629d72fb33bef0",
+        "user-bus.log": "320dd845de3db04562638457ee1a3c82d533da31bdf35185dd7c424da3b81e78"
+      },
+      "status": "BUS_VISIBILITY_AND_HEADERS_CAPTURED",
+      "blockers": []
+    },
+    {
+      "label": "system-bus",
+      "command": [
+        "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+        "-m",
+        "forge_factory.afo.host_audit",
+        "bus-preflight",
+        "--bus",
+        "system",
+        "--seconds",
+        "1",
+        "--out",
+        "/mnt/data/forge-c/inspector-014-b309039/host-bus-fbd8bc8/system-bus.json"
+      ],
+      "started_at": 1793102143.503671,
+      "ended_at": 1793102146.9293892,
+      "exit_code": 2,
+      "artifacts": {
+        "system-bus.json": "b11f37edb2bea409140100294dfdfff1f4f0705969ab1baec4a81cdf424d7d98",
+        "system-bus.log": "0fb4154f0c2cb3a3e5ebd05e2d235e95fae2cc5ba9efc81da970a2986f0d3b1b"
+      },
+      "status": "BLOCKED",
+      "blockers": [
+        "BUS_AUDIT_BECOME_MONITOR_NOT_PROVEN",
+        "BUS_AUDIT_BOUNDARY_VISIBILITY_NOT_PROVEN",
+        "BUS_AUDIT_MONITOR_DIAGNOSTIC_OR_FALLBACK"
+      ]
+    }
+  ],
+  "new_model_requests": 0,
+  "factory_deployment": "NOT_ACTIVATED",
+  "end_head": "fbd8bc89967b68ed4e99e4c63fe12784f135e62f",
+  "end_dirty": "",
+  "ended_at": 1793102146.9408996
+}

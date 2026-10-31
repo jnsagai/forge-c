@@ -1,0 +1,198 @@
+# Peripheral profile (feature 015, owner 2026-10-25 benchmark set): CRC calculation unit, RM0486 Rev 4 chapter 26
+# (pp. 1169-1175); secure base 0x56024C00, 1 KB (RM0486 p.176, Table 3).
+schema: forge-c/peripheral-profile/0.1
+id: crc
+name: CRC calculation unit (CRC)
+register_prefix: CRC
+base_address: "0x56024C00"
+mm_page: 176
+window_bytes: 1024
+system_name: CRC LL driver
+rm:
+  doc: RM0486
+  chapter: 26
+  key_sections: ["26.4.1", "26.4.2", "26.4.3", "26.4.4", "26.4.5"]
+ll:
+  header: stm32n6xx_ll_crc.h
+  compile_unit: stm32n6xx_ll_crc.c
+  function_prefix: LL_CRC_
+  register_block: ll_crc_regs
+  register_count: 256
+  void_signatures: false   # LL_CRC_SetPolynomialSize(uint32_t), LL_CRC_FeedData32(uint32_t), ...
+hal:
+  header: stm32n6xx_hal_crc.h
+  source: stm32n6xx_hal_crc.c
+  function_prefix: HAL_CRC_
+sim:
+  model: crc_model.py
+  platform: stm32n6_crc.repl
+# Prompt texts that replace the RCC domain content of the generic LL/HAL prompts (feature 009 mechanism). They describe
+# the CRC work-order scope; hardware facts stay in the RM0486 chapter 26 inputs (cite RM0486 p.N).
+prompt:
+  swe1_cover: >-
+    Cover (only what the CRC scope names): resetting the calculation unit (set CRC_CR.RESET), setting the polynomial
+    size (write the requested value to CRC_CR.POLYSIZE, within its 2-bit range), the input reversal mode (write the
+    requested reversal to CRC_CR.REV_IN and its reversal type to CRC_CR.RTYPE_IN: one mode value sets both, RM0486
+    26.4.3) and the output reversal mode (CRC_CR.REV_OUT with its type CRC_CR.RTYPE_OUT, likewise), each preserving the
+    other CRC_CR fields, writing the initial value (write the requested
+    value to CRC_INIT.CRC_INIT) and the polynomial coefficients (write the requested value to CRC_POL.POL), feeding a 32-bit
+    data word (write the word to CRC_DR.DR), reading the current CRC (return CRC_DR.DR), and writing and reading the
+    independent data register (CRC_IDR.IDR); one requirement per function and value, naming the register field (e.g.
+    CRC_CR.POLYSIZE); then a reset/startup requirement (e.g. '- **SWR-0nn** While no LL function has been called after
+    reset, the CRC LL driver shall not write any CRC register.'). 8-bit and 16-bit data register accesses and DMA are out
+    of scope.
+  swe1_effect_example: '{"case":"SET_POLYSIZE","swr":"SWR-002","register":"CRC_CR","field":"POLYSIZE","op":"write","value":1}'
+  swe1_effect_rule: >-
+    Use op "write" with "value" (an integer or "0x..." string) for a field the requirement writes a value to (polynomial
+    size, reversal modes, initial value, polynomial, data word, independent data); a function that writes a
+    caller-supplied value gets one entry with a representative value and the api_calls args pass that value; the reset
+    function gets op "set" on CRC_CR.RESET. Read functions (CRC_DR, CRC_IDR) get op no_write with register/field.
+  ll_api: >-
+    static inline functions named exactly LL_CRC_ResetCRCCalculationUnit (set CRC_CR.RESET),
+    LL_CRC_SetPolynomialSize(uint32_t PolySize), LL_CRC_SetInputDataReverseMode(uint32_t ReverseMode) and
+    LL_CRC_SetOutputDataReverseMode(uint32_t ReverseMode) (read-modify-write of CRC_CR: the polynomial size field, or
+    the reversal field together with its reversal type bit - REV_IN with RTYPE_IN, REV_OUT with RTYPE_OUT - masked, the
+    other CRC_CR fields preserved), LL_CRC_SetInitialData(uint32_t InitCrc) and
+    LL_CRC_SetPolynomialCoef(uint32_t PolynomCoef) (whole-register writes of CRC_INIT and CRC_POL),
+    LL_CRC_FeedData32(uint32_t InData) (a 32-bit write of CRC_DR), uint32_t LL_CRC_ReadData32(void) (returns CRC_DR),
+    LL_CRC_Write_IDR(uint32_t InData) and uint32_t LL_CRC_Read_IDR(void); list in Interfaces exactly the functions of
+    the allocation table
+  swe2_static_view: >-
+    a Caller, the component stm32n6xx_ll_crc (LL, header-only) and the CRC register block (0x56024C00, RM0486 p.176) and
+    their dependencies (Caller -> LL -> registers)
+  swe2_dynamic_view: >-
+    participants Caller, stm32n6xx_ll_crc, CRC, showing a configuration (polynomial, polynomial size, initial value,
+    reversal modes), a reset of the calculation unit, two data words fed and the CRC read back, using the allocated
+    LL_CRC_ function names
+  ut_example: |-
+    static void ut_crc_config(void)
+    {
+        ut_reset_regs();
+        ll_crc_regs[LL_CRC_CR_OFFSET / 4U] = LL_CRC_CR_REV_IN_MSK;
+        LL_CRC_SetPolynomialSize(1U);
+        CHECK("UT-001", ((ll_crc_regs[LL_CRC_CR_OFFSET / 4U] & LL_CRC_CR_POLYSIZE_MSK) >> LL_CRC_CR_POLYSIZE_POS) == 1U);
+        CHECK("UT-002", (ll_crc_regs[LL_CRC_CR_OFFSET / 4U] & LL_CRC_CR_REV_IN_MSK) == LL_CRC_CR_REV_IN_MSK);
+        LL_CRC_FeedData32(0x12345678U);
+        CHECK("UT-003", ll_crc_regs[LL_CRC_DR_OFFSET / 4U] == 0x12345678U);
+        ll_crc_regs[LL_CRC_DR_OFFSET / 4U] = 0xDF8A8A2BU;
+        CHECK("UT-004", LL_CRC_ReadData32() == 0xDF8A8A2BU);
+    }
+  ut_rule: >-
+    Value functions check the written field value (a reversal mode: the reversal field and its reversal type bit) and
+    that a preset unrelated field of the same register is preserved (CRC_CR); write functions of whole registers check the register value; read functions return a preset register
+    value; the reset function checks CRC_CR.RESET.
+  target_model: >-
+    The simulated CRC (factory/sim/stm32n6/crc_model.py) is behavioural: CRC_DR and CRC_INIT reset to 0xFFFFFFFF,
+    CRC_POL to 0x04C11DB7 and the others to 0; a 32-bit write to CRC_DR combines the word with the current CRC
+    (polynomial CRC_POL of size CRC_CR.POLYSIZE, input reversal CRC_CR.REV_IN of type CRC_CR.RTYPE_IN) and a read of
+    CRC_DR returns the CRC after the output reversal CRC_CR.REV_OUT of type CRC_CR.RTYPE_OUT (RM0486 26.3.3 examples); setting CRC_CR.RESET or writing CRC_INIT loads CRC_INIT into the CRC and
+    CRC_CR.RESET reads 0; CRC_IDR is storage. With the reset configuration the CRC of the single word 0x12345678 reads
+    0xDF8A8A2B. Expected values in target checks follow this model.
+  target_tests: >-
+    write software/tests/target/test_crc_target.c (with the reset configuration, a reset of the calculation unit then
+    the word 0x12345678 fed gives 0xDF8A8A2B in CRC_DR; a second reset brings CRC_DR back to the initial value; the
+    independent data register keeps a written value across a reset) and software/tests/target/test_crc_target_config.c
+    (the polynomial size, polynomial, initial value and reversal settings reach CRC_CR, CRC_POL and CRC_INIT)
+  field_mask_example: LL_CRC_CR_POLYSIZE_MSK
+  query_example: LL_CRC_ReadData32()
+  integration: >-
+    a configuration of the polynomial, polynomial size, initial value and reversal modes followed by a reset of the
+    calculation unit, data words fed and the CRC read back (on the host the data register keeps the last written word),
+    and the independent data register written and read back
+  requirement_example: When the CRC polynomial size function is called with a size value, the CRC LL driver shall write the size value to CRC_CR.POLYSIZE.
+  # ---- HAL layer: configuration, buffer calculation and accumulation; the CRC needs no wait (RM0486 26.3.3: at most 4
+  # AHB clock cycles per word, with an input buffer), so the HAL has no timeout --------------------------------------
+  hal_requirement_example: When the CRC initialisation is requested with a valid configuration, the CRC driver shall write the configured polynomial to CRC_POL.POL.
+  hal_reset_example: >-
+    (e.g. '- **SWR-0nn** While no CRC initialisation has been requested after reset, the CRC driver shall not write any
+    CRC register.')
+  hal_failure_responses: >-
+    one requirement per failure response (invalid parameter -> HAL_ERROR without register writes, naming the invalid
+    values: a NULL configuration, buffer or result pointer, a word count of 0, a polynomial size, input reversal or output
+    reversal value outside its field and reversal type, and an even polynomial, which RM0486 26.3.3 does not support), and one timing requirement:
+    every HAL_CRC_ function returns without waiting on a CRC flag (the computation of a fed word completes within 4 AHB
+    clock cycles, RM0486 26.3.3)
+  hal_api: >-
+    Interfaces (each HAL_CRC_ API with hal_status_t: HAL_CRC_Init(const hal_crc_config_t *p_config) with typedef struct
+    {uint32_t polynomial; uint32_t polynomial_size; uint32_t init_value; uint32_t input_reverse; uint32_t
+    output_reverse;} hal_crc_config_t - writes the polynomial, the polynomial size, the initial value and the reversal
+    modes, then resets the calculation unit; HAL_CRC_Calculate(const uint32_t *p_data, uint32_t count, uint32_t
+    *p_crc) - resets the calculation unit, feeds the count words and writes the CRC to *p_crc; HAL_CRC_Accumulate(const
+    uint32_t *p_data, uint32_t count, uint32_t *p_crc) - feeds the count words onto the current CRC, without a reset,
+    and writes the CRC to *p_crc)
+  hal_dynamic_view: >-
+    showing HAL_CRC_Init (configuration written, then the reset of the calculation unit), HAL_CRC_Calculate (reset,
+    words fed, CRC read) and HAL_CRC_Accumulate (words fed, CRC read) using the allocated HAL_CRC_ function names, plus
+    an invalid parameter returning HAL_ERROR without register access
+  hal_wait_rule: >-
+    No HAL_CRC_ function waits (RM0486 26.3.3: a fed word is computed within 4 AHB clock cycles and an input buffer
+    takes the next word); each function checks its parameters first (NULL pointers, a count of 0, a polynomial size or a
+    reversal value above 3, an even polynomial), returning HAL_ERROR before any register write, then calls the LL
+    functions like this example (adapt names):
+  hal_example: |-
+    hal_status_t HAL_CRC_Calculate(const uint32_t *p_data, uint32_t count, uint32_t *p_crc)
+    {
+        hal_status_t status = HAL_ERROR;
+        uint32_t i;
+        if ((p_data != NULL) && (p_crc != NULL) && (count != 0U))
+        {
+            LL_CRC_ResetCRCCalculationUnit();
+            for (i = 0U; i < count; i++)
+            {
+                LL_CRC_FeedData32(p_data[i]);
+            }
+            *p_crc = LL_CRC_ReadData32();
+            status = HAL_OK;
+        }
+        return status;
+    }
+  hal_wait_rest: >-
+    (the parameter checks come first). HAL_CRC_Init writes the polynomial, the polynomial size, the initial value and
+    both reversal modes through the LL, then resets the calculation unit, and returns HAL_OK; HAL_CRC_Accumulate is
+    HAL_CRC_Calculate without the reset.
+  hal_contract_rule: >-
+    The oracle sees only the register values after the call: HAL_CRC_Init with a valid configuration gets op write
+    entries for CRC_POL.POL, CRC_INIT.CRC_INIT, CRC_CR.POLYSIZE, CRC_CR.REV_IN and CRC_CR.REV_OUT (the configured values),
+    status HAL_OK; HAL_CRC_Calculate and HAL_CRC_Accumulate with valid arguments get op write CRC_DR.DR with the last
+    word of the buffer (on the host the data register keeps the last written word), status HAL_OK; invalid parameter:
+    one entry per invalid value (NULL configuration, buffer or result pointer, count 0, a polynomial size of 4, an input
+    or output reversal of 4, an even polynomial) with op no_write and status HAL_ERROR (no register/field). The call
+    order (reset before the words) is verified by the unit tests, not by the contract.
+  hal_ut_example: |-
+    static void ut_crc_calculate(void)
+    {
+        hal_status_t st;
+        const uint32_t words[2] = {0x12345678U, 0x9ABCDEF0U};
+        uint32_t crc = 0U;
+        ut_reset();
+        ll_fake_return_from(LL_FAKE_LL_CRC_ReadData32, 1U, 0x0BADC0DEU);
+        st = HAL_CRC_Calculate(words, 2U, &crc);
+        CHECK("UT-001", st == HAL_OK);
+        CHECK("UT-001-RESULT", crc == 0x0BADC0DEU);
+        CHECK("UT-001-WORDS", ll_fake_calls(LL_FAKE_LL_CRC_FeedData32) == 2U);
+        CHECK("UT-001-ORDER", ll_fake_index_of(LL_FAKE_LL_CRC_ResetCRCCalculationUnit, 1U) < ll_fake_index_of(LL_FAKE_LL_CRC_FeedData32, 1U));
+        ut_reset();
+        st = HAL_CRC_Calculate(words, 0U, &crc);
+        CHECK("UT-002", st == HAL_ERROR);
+        CHECK("UT-002-NO-LL", ll_fake_calls(LL_FAKE_LL_CRC_FeedData32) == 0U);
+    }
+  hal_ut_rule: >-
+    HAL_CRC_Init gets a valid case (each configured value passed to its LL function, the reset after the configuration)
+    and one HAL_ERROR case per invalid value with no LL call; HAL_CRC_Calculate gets a valid case (the reset before the
+    words, every word fed in order, the LL result written to *p_crc) and one HAL_ERROR case per invalid argument;
+    HAL_CRC_Accumulate gets a valid case with no reset call.
+  hal_integration: >-
+    (HAL_CRC_Init with a valid configuration on the real LL, then HAL_CRC_Calculate over a two-word buffer and
+    HAL_CRC_Accumulate over one more word - on the host the data register keeps the last written word -, and an invalid
+    configuration returning HAL_ERROR with CRC_POL and CRC_CR unchanged)
+  hal_effect_example: '{"case":"INIT_POLYNOMIAL","swr":"SWR-002","register":"CRC_POL","field":"POL","op":"write","value":"0x04C11DB7","status":"HAL_OK"}'
+  hal_args_example: >-
+    , e.g. "&(const hal_crc_config_t){ .polynomial = 0x04C11DB7U, .polynomial_size = 0U, .init_value = 0xFFFFFFFFU,
+    .input_reverse = 0U, .output_reverse = 0U }" and for a buffer "(const uint32_t[]){0x12345678U}", "1U", "&crc";
+    invalid cases pass the invalid value (NULL, 0U, a polynomial_size of 4U, an input_reverse of 4U, a polynomial of
+    0x04C11DB6U)
+  hal_target_tests: >-
+    write software/tests/target/test_crc_target.c (HAL_CRC_Init with the reset configuration - polynomial 0x04C11DB7,
+    32-bit size, initial value 0xFFFFFFFF, no reversal - then HAL_CRC_Calculate over the single word 0x12345678 gives
+    0xDF8A8A2B, and HAL_CRC_Accumulate continues from that CRC) and software/tests/target/test_crc_target_errors.c (each
+    invalid parameter returns HAL_ERROR and leaves CRC_POL, CRC_INIT and CRC_CR unchanged)

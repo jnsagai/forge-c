@@ -1,0 +1,20 @@
+[
+  {
+    "authorization_id": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V3",
+    "record_sha256": "5530fbee43a63e8d18e6bbae42bb41615fcb6059fa6a871a057c6b1f96357bd8",
+    "signature_valid": true,
+    "expires_utc": "2026-10-31T07:57:59Z",
+    "policy_sha256": "c7868cf14f2242d6aab209062a38056403cd15ee47fb3f413f68181372453fb1",
+    "signed_runbook_ref": "qualification-delivery-first-014:0fe46b9d80ac8fe680b2de88304a4621fdcdb3b3beeff5dbe37a50de98a1f3b2",
+    "private_key_access": false
+  },
+  {
+    "authorization_id": "AUTH-014-DF-AFO-ROLES-20261030-V3",
+    "record_sha256": "3453fb0d993088a2f4b79676294eeb64246055566e605056cf98ae640a7ded4d",
+    "signature_valid": true,
+    "expires_utc": "2026-10-31T07:57:59Z",
+    "policy_sha256": "c7868cf14f2242d6aab209062a38056403cd15ee47fb3f413f68181372453fb1",
+    "signed_runbook_ref": "qualification-product-014:852b655778a7db4d96de78b066fd9e753dd2a7aa89a9121cb4acdc50cb90db5c",
+    "private_key_access": false
+  }
+]

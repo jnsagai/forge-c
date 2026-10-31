@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "upstream": "http://127.0.0.1:11455",
+  "admission": {
+    "max_inflight": 1,
+    "max_queue": 8,
+    "max_wait_s": 1800.0,
+    "waiting": 0,
+    "inflight": 0,
+    "admitted": 34558,
+    "queue_full": 0,
+    "wait_timeout": 0,
+    "cancelled_waiting": 0,
+    "cancelled_running": 0
+  }
+}

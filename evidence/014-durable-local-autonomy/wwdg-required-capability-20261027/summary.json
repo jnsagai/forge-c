@@ -1,0 +1,156 @@
+{
+  "schema": "forge-c/014-required-driver-capability/1",
+  "sdk_revision": "75d4bdc19dc95f1fdc469326adb3dd2c1c0e5632",
+  "host": "omniverse2",
+  "scope": "EXTERNAL_DETERMINISTIC_REQUIRED_INTENTS_NOT_NEW_PRODUCT_ATTEMPT",
+  "historical_workorder": "WWDG-LL-st301",
+  "recorded_request_ref": {
+    "path": "lrtx/state/workorders/WWDG-LL-st301/workspace/.forge-run/safec/2026-10-27T081327.907442Z-0001-requirements_WWDG_CR/request.json",
+    "sha256": "26537bd9568c89996b6f11d2f5c463f0d12e0d0ed732d0353fa1fdb7d53d70ac"
+  },
+  "domain_sha256": "c16d033114a973f1030d2d999e182089ef7960753b36bfb820628447e2d00088",
+  "engine": {
+    "source_commit_sha": "cf3b01baa66ceec9ef6f9db95fc97a4c98807ce2",
+    "binary_sha256": "5a3b4cda16cd101b1f2126f73269a3a52abab80a37dc2484ac8b2d7d1396d36f",
+    "semantic_profile": "register-io-0.1"
+  },
+  "checks": [
+    {
+      "case": "required-activation",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-ACCESS-UNSUPPORTED"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "ace23f40957b647d6500b8379ea7c9caa0e926ee8c56b21017f47ac4b0cbf3da"
+    },
+    {
+      "case": "required-activation-query",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-ACCESS-UNSUPPORTED"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "357ed8d6ccfb05df8a080b8b4bcb00fbd82c5d2794fd9e9a7f1d06d9068f6c70"
+    },
+    {
+      "case": "required-counter-update",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-RMW-SIDE-EFFECT"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "4a7f3ff3267ab2cf46901d8ea3a67f6277daf49d7e3aebd5840196c965945603"
+    },
+    {
+      "case": "required-counter-query",
+      "status": "PASS",
+      "admissible": true,
+      "issues": [],
+      "check_ids": [],
+      "independent_contract_check": "PASS_ENGINE_AND_INDEPENDENT_PYTHON_CONTRACT",
+      "request_sha256": "8e4f59aafdeb30e870cf9095e0517f17b140e37447a2b63ef6dffd7a42337b2e"
+    },
+    {
+      "case": "required-prescaler-update",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-RMW-SIDE-EFFECT"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "a8fb45959eb6cfd53a91dfc4f0397222a1231d781d0158ac732456d369cad25b"
+    },
+    {
+      "case": "required-prescaler-query",
+      "status": "PASS",
+      "admissible": true,
+      "issues": [],
+      "check_ids": [],
+      "independent_contract_check": "PASS_ENGINE_AND_INDEPENDENT_PYTHON_CONTRACT",
+      "request_sha256": "d8b182db2f8aaf065afb1b31dbd9083f4c652f045c61fbfdaa1dbbc67a54cb10"
+    },
+    {
+      "case": "required-window-update",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-RMW-SIDE-EFFECT"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "341918838a80b4a1db4977107eff5293c77db57c363fffae8794206587de41d3"
+    },
+    {
+      "case": "required-window-query",
+      "status": "PASS",
+      "admissible": true,
+      "issues": [],
+      "check_ids": [],
+      "independent_contract_check": "PASS_ENGINE_AND_INDEPENDENT_PYTHON_CONTRACT",
+      "request_sha256": "ba7b9b18e0d480822b36b86a98832856b90b737d5b3f57c8775ff5d391f0fa20"
+    },
+    {
+      "case": "required-interrupt-enable",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-ACCESS-UNSUPPORTED"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "d99c04769198c79592cda4cc3c34ad034212a1bede2ff2ebb3d70f31db183650"
+    },
+    {
+      "case": "required-interrupt-query",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-ACCESS-UNSUPPORTED"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "3af14e9cfc5f9c9d6cc116a143cfc395ef4623f784d79651cf8130fe9c94ba10"
+    },
+    {
+      "case": "required-flag-clear",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-ACCESS-UNSUPPORTED"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "b0781aef499e573064a566271c3d8db96e9f95b3479b1bf39f3a39fc6eea4fa2"
+    },
+    {
+      "case": "required-flag-query",
+      "status": "UNSUPPORTED",
+      "admissible": false,
+      "issues": [],
+      "check_ids": [
+        "RIO-ACCESS-UNSUPPORTED"
+      ],
+      "independent_contract_check": null,
+      "request_sha256": "19e2ea420e5271f2299e42660b0147fc89a8ec7d01fc787a5f3d486e77252b8e"
+    }
+  ],
+  "status": "CAPABILITY_LIMIT_REPRODUCED",
+  "conclusion": "Nine of twelve required WWDG operation forms are UNSUPPORTED in register-io-0.1 for the frozen source facts. Three ordinary reads pass both the engine and independent contract derivation. RS and RC_W0 access plus RMW sibling semantics need a qualified extension; additional Qwen proposals cannot supply missing engine semantics.",
+  "original_scope_success": "NOT_POSSIBLE_WITH_THIS_ENGINE_DOMAIN",
+  "proposed_next_action": "QUALIFIED_RS_RC_W0_AND_RMW_ENGINE_EXTENSION_OR_EXPLICITLY_CHANGED_PRODUCT_SCOPE",
+  "native_model_requests": 0,
+  "new_product_attempts": 0,
+  "runtime_deployment": "NOT_ACTIVATED",
+  "safety_gates": "UNCHANGED",
+  "historical_expenditure": "UNCHANGED",
+  "qualified_lessons_added": 0,
+  "wall_seconds": 14.05595
+}

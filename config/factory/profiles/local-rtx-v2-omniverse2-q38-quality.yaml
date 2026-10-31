@@ -1,0 +1,147 @@
+# Owner-selected dedicated Omniverse2 model profile, 2026-10-28.
+# Shared profile mechanism; one resident model, one admitted request.
+# Reasoning is metered and stripped before persistence by the existing gateway.
+# Historical profiles and their frozen inspector configuration remain unchanged.
+schema: forge-c/local-profile/1
+id: local-rtx-v2-omniverse2-q38-quality
+version: 3
+status: OWNER_SELECTED_FOR_OMNIVERSE2; ROLE_QUALIFICATION_PENDING
+description: 'Owner2026-10-28: officially use Qwen3.8-27B Q8 for authoring, inspection, diagnosis and maintenance;
+  prioritize quality and reliability. Explicit dedicated-host selection; no qualification receipt or gate change.'
+host_reference:
+  gpu: RTX 6000 Ada 48 GB
+  cpu: Core Ultra 9 285K
+  ram_gb: 125
+local_only: true
+provider: ollama
+models:
+  default: qwen3.8:27b-q8_0
+  allowed:
+    qwen3.8:27b-q8_0:
+      digest: 8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039
+      quantization: Q8_0
+      license: Apache-2.0
+      role_qualification: NOT_QUALIFIED; author/inspector/diagnosis/maintenance qualify separately
+      license_source: https://huggingface.co/Qwen/Qwen3.8-27B
+runtime:
+  fabro_context_tokens: 65536
+  fabro_max_output_tokens: 49152
+  ollama:
+    OLLAMA_NUM_PARALLEL: '1'
+    OLLAMA_MAX_LOADED_MODELS: '1'
+    OLLAMA_FLASH_ATTENTION: '1'
+    OLLAMA_KV_CACHE_TYPE: f16
+    OLLAMA_CONTEXT_LENGTH: '65536'
+    OLLAMA_NOPRUNE: '1'
+  timeout_scale: 4
+structured:
+  phases_by_layer:
+    LL:
+    - SWE.1
+    - SWE.2
+    - SWE.3
+    - SWE.4
+    - SWE.5
+    - SWE.6
+    HAL: []
+    LL+HAL: []
+  inspect_phases_by_layer:
+    LL:
+    - SWE.1
+    - SWE.2
+    - SWE.3
+    - SWE.4
+    - SWE.5
+    - SWE.6
+    HAL: []
+    LL+HAL: []
+  semantic_phases:
+  - SWE.1
+  semantic_inspect_phases:
+  - SWE.1
+  swe2_named_functions: true
+  swe2_constrained_design: true
+  inspector_sampling:
+    default:
+      temperature: 0.2
+      seed: 1
+    qwen3.6:35b-a3b:
+      temperature: 0.6
+      top_p: 0.95
+  inspector_coverage: true
+  inspector_entries: true
+  inspector_stepwise: true
+  advisory_continue: true
+  brownfield_structured_phases:
+  - SWE.1
+  - SWE.2
+  reinspect_direct: true
+  timeout_s: 3600
+  visit_time_s: 1200
+safec:
+  engine:
+    binary: /mnt/data/forge-c/safec/engines/cf3b01baa66ceec9ef6f9db95fc97a4c98807ce2-xhost/safec-bridge
+    binary_sha256: 5a3b4cda16cd101b1f2126f73269a3a52abab80a37dc2484ac8b2d7d1396d36f
+    source_commit_sha: cf3b01baa66ceec9ef6f9db95fc97a4c98807ce2
+    semantic_profile: register-io-0.1
+  timeout_s: 60
+gateway:
+  request_timeout_s: 3600
+  reasoning:
+    qwen3.8:27b-q8_0:
+      effort: xhigh
+      extra_output_tokens: 32768
+afo:
+  # Prospective jobs only; these are NOT mission grants or capability receipts.
+  # Legacy16k/24k jobs cannot fit32k reasoning plus complete input and answer.
+  # Every call still passes actual serialized-context and cumulative admission.
+  role_job_tokens:
+    afo-recovery-planner: 65536
+    afo-factory-maintainer: 65536
+admission:
+  max_inflight: 1
+  max_queue: 8
+  max_wait_s: 1800
+measurement:
+  sample_s: 10
+deployment:
+  root_env: FORGE_LRTX_ROOT
+  default_root: /mnt/data/forge-c/lrtx-v2-q38-quality
+  ports:
+    ollama: 11455
+    gateway: 11456
+    fabro: 32391
+  forbidden_ports:
+  - 8765
+  - 8787
+  - 11434
+  - 11435
+  - 11436
+  - 11437
+  - 11445
+  - 11446
+  - 32290
+  - 32291
+  - 32390
+  writable_env:
+  - FORGE_DATA_ROOT
+  - FORGE_STATE_DIR
+  - FORGE_ARCHIVE_DIR
+  - FORGE_FABRO_CONFIG
+  - FORGE_FABRO_STORAGE
+  - FORGE_FABRO_HOME
+  - FORGE_VENV
+  - UV_CACHE_DIR
+  - PIP_CACHE_DIR
+  shared_readonly:
+    toolchains: /mnt/data/forge-c/toolchains
+    standards: /mnt/data/forge-c/standards
+    inputs: /mnt/data/forge-c/inputs
+    ollama-0.34.0: /mnt/data/forge-c/ollama-0.34.0
+    ollama-models: /mnt/data/forge-c/ollama-models
+existing_deployment:
+  roots:
+  - /home/omniverse2/forge-c-remote/repos/forge-c
+  - /home/omniverse2/forge-c-remote/repos/safec
+network:
+  required: namespace_denied

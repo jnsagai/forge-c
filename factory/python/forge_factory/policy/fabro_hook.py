@@ -4,6 +4,7 @@ Fabro pipes the hook context JSON on stdin (ADR-0002). Exit 0 + {"decision":"pro
 exit 2 + {"decision":"block"} denies. ANY error -> block (command hooks fail closed in Fabro).
 Usage in run config:  script = "<venv>/bin/python -m forge_factory.policy.fabro_hook --binding <file>"
 """
+
 from __future__ import annotations
 
 import argparse
@@ -31,12 +32,33 @@ def handle(ctx: dict, binding: Binding) -> Decision:
         return Decision(True, "NOT_A_TOOL_EVENT", str(ctx.get("event")))
     d = Authorizer(binding).decide(ctx.get("node_id"), str(ctx.get("tool_name", "")), ctx.get("tool_input"))
     if d.allow and d.role:
-        ok, n, limit, reserved = count_tool_call(binding.binding_id, str(ctx.get("run_id")), str(ctx.get("node_id")),
-                                                 d.role, str(ctx.get("tool_name", "")), binding.workspace)
+        import uuid
+
+        from ..afo.durable import Refused
+        from ..afo.tool_accounting import charge
+
+        try:
+            charge(Path(binding.workspace), str(ctx.get("tool_call_id") or "hook-" + uuid.uuid4().hex))
+        except Refused as exc:
+            return Decision(False, exc.code, "shared mission tool allowance refused", d.role, d.op)
+        ok, n, limit, reserved = count_tool_call(
+            binding.binding_id,
+            str(ctx.get("run_id")),
+            str(ctx.get("node_id")),
+            d.role,
+            str(ctx.get("tool_name", "")),
+            binding.workspace,
+        )
         if reserved:
-            return Decision(False, "INSPECTION_CALLS_RESERVED", f"{n}/{limit} tool calls used: the remaining calls are "
-                            "reserved - call check_inspection now with a verdict for EVERY item (and report_defect for "
-                            "upstream findings)", d.role, d.op)
+            return Decision(
+                False,
+                "INSPECTION_CALLS_RESERVED",
+                f"{n}/{limit} tool calls used: the remaining calls are "
+                "reserved - call check_inspection now with a verdict for EVERY item (and report_defect for "
+                "upstream findings)",
+                d.role,
+                d.op,
+            )
         if not ok:
             return Decision(False, "TURN_BUDGET_EXHAUSTED", f"{n}>{limit} tool calls; reply BLOCKED now", d.role, d.op)
     return d
@@ -45,8 +67,13 @@ def handle(ctx: dict, binding: Binding) -> Decision:
 def audit(ctx: dict, d: Decision, binding_id: str) -> None:
     if d.code == "STAGE_START_RESET":
         return
-    common = {"run_id": ctx.get("run_id"), "phase": None, "agent_id": d.role, "tool_id": d.op or ctx.get("tool_name"),
-              "workflow_id": ctx.get("workflow_name")}
+    common = {
+        "run_id": ctx.get("run_id"),
+        "phase": None,
+        "agent_id": d.role,
+        "tool_id": d.op or ctx.get("tool_name"),
+        "workflow_id": ctx.get("workflow_name"),
+    }
     msg = f"{'ALLOW' if d.allow else 'DENY'} {ctx.get('tool_name')} role={d.role} {d.code}"
     if d.allow:
         emit("audit", "INFO", msg, correlation_id=ctx.get("run_id") or binding_id, **common)
@@ -70,8 +97,15 @@ def main(argv: list[str] | None = None) -> int:
             from ..mcp.sdk import issue_ticket
 
             node = binding.nodes.get(ctx.get("node_id") or "", {})
-            issue_ticket(binding.binding_id, ctx["tool_name"], ctx.get("tool_input") or {}, d.role or "",
-                         ctx.get("node_id") or "", node.get("phase"), binding.workspace)
+            issue_ticket(
+                binding.binding_id,
+                ctx["tool_name"],
+                ctx.get("tool_input") or {},
+                d.role or "",
+                ctx.get("node_id") or "",
+                node.get("phase"),
+                binding.workspace,
+            )
         try:
             audit(ctx, d, binding.binding_id)
         except Exception:  # noqa: BLE001 - audit failure must not open the gate

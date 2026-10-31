@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-29T17:33:04.491675Z",
+  "mode": "PILOT",
+  "policy_sha256": "8b4628f9204c9fc2b9581a552d66371c4eecd7061b6fe649102ea5237922ed55",
+  "planner_enabled": true,
+  "maintainer_enabled": true,
+  "allowed_models": [
+    "qwen3.8:27b-q8_0"
+  ],
+  "no_auto_source_deploy": true,
+  "isolation_backend": "bubblewrap",
+  "isolation_level": "bubblewrap-userns-scoped-mounts",
+  "tools": {
+    "bwrap": "/usr/bin/bwrap",
+    "podman": null,
+    "git": "/usr/bin/git",
+    "java": "/usr/bin/java",
+    "clang": "/usr/bin/clang",
+    "unshare": "/usr/bin/unshare"
+  },
+  "profile": {
+    "id": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
+    "version": 4,
+    "sha256": "a709dac1cd3fff08803847ccc8e461f67e2223470af607bfd026d70729d50aac",
+    "afo": {
+      "role_job_tokens": {
+        "afo-recovery-planner": 131072,
+        "afo-factory-maintainer": 131072
+      }
+    },
+    "models": {
+      "default": "qwen3.8:27b-q8_0",
+      "allowed": {
+        "qwen3.8:27b-q8_0": {
+          "digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+          "quantization": "Q8_0",
+          "license": "Apache-2.0",
+          "role_qualification": "NOT_QUALIFIED; author/inspector/diagnosis/maintenance qualify separately",
+          "license_source": "https://huggingface.co/Qwen/Qwen3.8-27B"
+        }
+      }
+    }
+  },
+  "gpu": "NVIDIA RTX 6000 Ada Generation, 49140, 26982, 21519",
+  "gpu_query_exit": 0,
+  "model_requests": 0,
+  "read_only": true
+}

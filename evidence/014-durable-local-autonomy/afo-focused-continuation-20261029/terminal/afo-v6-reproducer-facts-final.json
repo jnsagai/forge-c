@@ -1,0 +1,32 @@
+{
+  "registered_manifest": {
+    "reproducers": [
+      {
+        "baseline_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+        "fix_revision": "2ae98542928369aca3cfb8cc05cb5374fc3ce6bf",
+        "id": "AFO-mnt-48c5fa011f42b339-a1",
+        "observed_in": "afo-48c5fa011f42b339",
+        "script": "reproducer.py",
+        "sha256": "a3cbf86b947c2d403fbe311be6a8ac3867ac6bcc2d82e12ade56a4192aeac18c",
+        "source_path": "factory/python/tests/afo_candidate/test_swe3_10_data_root.py",
+        "symptom_signature": "SYMPTOM_PRESENT:SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED"
+      }
+    ]
+  },
+  "reproducer_runs": [
+    {
+      "run_id": "rr-2696adf1ca536aac9335",
+      "reproducer_id": "AFO-mnt-48c5fa011f42b339-a1",
+      "revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+      "role": "BASELINE",
+      "exit_code": 1,
+      "verdict": "ERROR",
+      "signature": "SYMPTOM_PRESENT:SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED",
+      "log_sha256": "fd7ef72796fbd9fa5432beabba57be3cbff71a47be6dd2a234f3b8f909363b5e",
+      "at": "2026-10-29T23:02:55.856998Z",
+      "log": "SYMPTOM_PRESENT:SWE3-10-PLANTUML_NOT_AVAILABLE-DATA-ROOT-NOT-PROPAGATED\n\n--- stderr ---\n  - generated MCP env block does not pin the host FORGE_DATA_ROOT\n  - generated policy hook does not pin the host FORGE_DATA_ROOT\n  - isolated MCP child resolves a different data root (/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c)\n  - plantuml jar invisible to the child -> PLANTUML_NOT_AVAILABLE\n"
+    }
+  ],
+  "read_only": true,
+  "model_requests": 0
+}

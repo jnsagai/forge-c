@@ -1,0 +1,32 @@
+{
+  "command": "env -u FORGE_FABRO_TOKEN PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q factory/python/tests/test_cre_d4_promotion.py --basetemp=<loop10>/tmp/cre-d4-e973286 --junitxml=<loop10>/cre-d4-e973286.xml",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/isolation-followup",
+  "duration_s": 658.109,
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "e9732866604a1d1b33246c06405496e4d118cac3",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "junit": {
+    "path": "evidence/v0.4/runs/DA014-CRE-regression/20261025T112325.xml",
+    "sha256": "676f234246e4dd176b09b94db3ef5956338f275ac9be60c8ef4ce04352b19333"
+  },
+  "log": "evidence/v0.4/runs/DA014-CRE-regression/20261025T112325.log",
+  "log_sha256": "eb27a136c18598aedc0e4f11e6893b614a04335a9faf3ec03433325d777e2663",
+  "results": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 658.109,
+    "skipped": 0,
+    "tests": 12,
+    "timestamp": "2026-10-25T11:04:21.321511+00:00"
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_LIVE_QWEN_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-CRE-regression",
+  "ts_utc": "2026-10-25T11:23:25.594349+00:00"
+}

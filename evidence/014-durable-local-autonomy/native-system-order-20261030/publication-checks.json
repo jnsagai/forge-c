@@ -1,0 +1,11 @@
+{
+  "syntax_json_xml": "PASS",
+  "credential_pattern_scan": "PASS",
+  "transfer_files_verified": "original manifests retained",
+  "files_checked": 40,
+  "vendor_primary_content_included": false,
+  "hidden_reasoning_included": false,
+  "source_test_revision": "per-cohort exact revision in README",
+  "raw_failed_logs_preserved": true,
+  "evidence_whitespace_check": "allow captured blank-at-eol/blank-at-eof; source changes checked separately"
+}

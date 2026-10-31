@@ -1,0 +1,44 @@
+{
+  "command": "q014-inspector-run.sh learning-15 (unit tests, truthful preflight, seeded --stepwise on --seed 1, 7 learning holdouts x 7 cases)",
+  "cwd": "/mnt/data/forge-c/inspector-014-b309039/repo-b309039",
+  "duration_s": null,
+  "execution_host": "omniverse2",
+  "exit_code": 0,
+  "git_dirty": false,
+  "git_head": "9f001edb200ee19f48b8c0b9f3032fa943ba8a8c",
+  "held_out_calibration": "evidence/014-durable-local-autonomy/stepwise-inspector-20261026/calibration-runs.json (subset, 3 runs)",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "inspector_options": {
+    "coverage": true,
+    "entries": false,
+    "profile": "local-rtx-v2-omniverse2-q36-noreason",
+    "sampling": {
+      "seed": 1,
+      "temperature": 0
+    },
+    "stepwise": true
+  },
+  "log": "evidence/v0.4/runs/DA014-stepwise-learning/20261026T171814.log",
+  "log_sha256": "e161b2daa6ee8951019a4dfdb58a74978d326d385fd48005cb074fd6b2a3dfa2",
+  "model": "qwen3.6:35b-a3b",
+  "result_sha256": "dda670a7e510531976fbf92bb4c6f8858c04e2e6d309438f56fc7a6670c86780",
+  "results": {
+    "baselines": 7,
+    "deterministic_detection": 8,
+    "false_rejections": 0,
+    "inspection_fail_off_target": 0,
+    "missed": 0,
+    "no_inspection": 0,
+    "seeded": 42,
+    "semantic_detection_on_target": 34
+  },
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "LIVE_QWEN_LEARNING_SET_PRELIMINARY_NOT_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-stepwise-learning",
+  "ts_utc": "2026-10-26T17:18:14.736509+00:00"
+}

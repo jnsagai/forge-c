@@ -1,0 +1,58 @@
+{
+  "schema": "forge-c/review-publication-checks/1",
+  "source_revision": "c221b65ebc011cbed488db83af3e2804790c1129",
+  "review_report_sha256": "c9665e1dd70677a2188ea7dd7a8670b38ee6cfe03881fe3d43906055536fdd95",
+  "link_check": {
+    "result": "PASS",
+    "missing_links": [],
+    "scope": "new review, generic boundary and evidence README files"
+  },
+  "syntax": {
+    "json_files": 61,
+    "xml_files": 16,
+    "result": "PASS"
+  },
+  "simulation_import": {
+    "verified_members": 29,
+    "checks": [
+      "SHA256",
+      "byte length"
+    ],
+    "result": "PASS"
+  },
+  "credential_pattern_scan": {
+    "result": "PASS_NO_MATCHES",
+    "patterns": [
+      "private_key",
+      "github_credential",
+      "provider_credential",
+      "bearer",
+      "jwt"
+    ],
+    "scanned_files": 91,
+    "limitations": "Pattern-based only; not an absolute privacy guarantee. Sensitive-named JSON fields were examined; observed nonempty values are authorization references/IDs, not bearer credentials."
+  },
+  "static_checks": [
+    {
+      "command": "python specs/014-durable-local-autonomy/validate_spec.py",
+      "exit_code": 0,
+      "result": "58 requirements/tasks/acceptance cases; 6 schemas/38 fixtures PASS; static only"
+    },
+    {
+      "command": "python tests/spec/validate_design.py",
+      "exit_code": 0,
+      "result": "14 PASS; static only"
+    }
+  ],
+  "python_environment": "Existing loop10 venv, absolute source PYTHONPATH and pinned installed tools; local offline checks",
+  "runtime_tests_rerun_for_report": false,
+  "new_live_model_calls": 0,
+  "deployment_changed": false,
+  "new_tasks_closed": [],
+  "diff_check": {
+    "documentation": "PASS, git diff --cached --check -- specs/014-durable-local-autonomy",
+    "all_staged_default": "EXIT_2: captured original failure XML/logs contain trailing spaces; retained byte-for-byte for provenance",
+    "all_staged_ignoring_end_of_line_spaces": "PASS, git -c core.whitespace=-blank-at-eol diff --cached --check",
+    "runtime_failure": false
+  }
+}

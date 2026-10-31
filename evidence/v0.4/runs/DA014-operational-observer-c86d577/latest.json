@@ -1,0 +1,161 @@
+{
+  "command": {
+    "auxiliary": "python operations/feature014/run_auxiliary_current.py",
+    "core_release": [
+      [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_advisory.py",
+        "factory/python/tests/test_da014_advisory_recovery.py",
+        "factory/python/tests/test_da014_dispatch_faults.py",
+        "factory/python/tests/test_da014_fault_observer.py",
+        "factory/python/tests/test_da014_integration.py",
+        "factory/python/tests/test_da014_isolation.py",
+        "factory/python/tests/test_da014_launch_boundary.py",
+        "factory/python/tests/test_da014_learning.py",
+        "factory/python/tests/test_da014_lesson_delivery.py",
+        "factory/python/tests/test_da014_llama_server.py",
+        "factory/python/tests/test_da014_maintenance.py",
+        "factory/python/tests/test_da014_offline_disposition.py",
+        "factory/python/tests/test_da014_offline_export.py",
+        "factory/python/tests/test_da014_offline_patch.py",
+        "factory/python/tests/test_da014_operational_facts.py",
+        "factory/python/tests/test_da014_proposal_diagnostics.py",
+        "factory/python/tests/test_da014_protocol.py",
+        "factory/python/tests/test_da014_protocol_faults.py",
+        "factory/python/tests/test_da014_provider_process.py",
+        "factory/python/tests/test_da014_provider_recovery.py",
+        "factory/python/tests/test_da014_qualification.py",
+        "factory/python/tests/test_da014_qualification_audit.py",
+        "factory/python/tests/test_da014_qualification_inputs.py",
+        "factory/python/tests/test_da014_qualification_intake.py",
+        "factory/python/tests/test_da014_qualification_reservations.py",
+        "factory/python/tests/test_da014_qualification_scope.py",
+        "factory/python/tests/test_da014_qualification_state.py",
+        "factory/python/tests/test_da014_two_step.py",
+        "factory/python/tests/test_afo_codex_claude.py",
+        "factory/python/tests/test_afo_local_autonomy.py",
+        "factory/python/tests/test_afo_m0_audit.py",
+        "factory/python/tests/test_afo_m0_contracts_status.py",
+        "factory/python/tests/test_afo_m0_policy_authz.py",
+        "factory/python/tests/test_afo_m1_services.py",
+        "factory/python/tests/test_afo_m2_queue.py",
+        "factory/python/tests/test_afo_m3_reconcile.py",
+        "factory/python/tests/test_afo_m4_recovery.py",
+        "factory/python/tests/test_afo_m5_maintainer.py",
+        "factory/python/tests/test_afo_m6_operations.py",
+        "factory/python/tests/test_afo_m7_readiness.py",
+        "factory/python/tests/test_afo_m8_acceptance.py",
+        "factory/python/tests/test_afo_planner_run.py",
+        "factory/python/tests/test_m5_lessons.py",
+        "factory/python/tests/test_inspection_lessons.py",
+        "factory/python/tests/test_lrtx_profile.py",
+        "factory/python/tests/test_lrtx_v2_profile.py",
+        "factory/python/tests/test_llm_gateway.py",
+        "factory/python/tests/test_acp_gate.py",
+        "factory/python/tests/test_acp_proxy.py",
+        "factory/python/tests/test_t009_inspection.py",
+        "factory/python/tests/test_t009_workflow_gates.py",
+        "factory/python/tests/test_t005_t006_agents_skills.py",
+        "factory/python/tests/test_brownfield_resume.py",
+        "factory/python/tests/test_bubblewrap_confinement.py",
+        "factory/python/tests/test_cre_d7_isolation.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-c86d577-core",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-c86d577-core.xml"
+      ],
+      [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_m7_governance_release.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/provider-c86d577-release",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/provider-c86d577-release.xml"
+      ]
+    ],
+    "kernel_fixture": "python -m pytest -q factory/python/tests/test_cre_d7_isolation.py -k role_runs_as (private nonsecret 0600 fixture)"
+  },
+  "evidence": "evidence/014-durable-local-autonomy/operational-observer-c86d577/summary.json",
+  "evidence_sha256": "bf6ad0e1dc877b66f00c5fa192d728dd2eedec2ddfb777cdffdbab8623235fec",
+  "exit_code": 0,
+  "git_head": "c86d5773ff7238cb2195a2f1ec0484dbdfa24ec3",
+  "new_task_checkboxes": [],
+  "results": {
+    "core": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 712,
+      "seconds": 673.428,
+      "skipped": 11,
+      "skips": [
+        {
+          "reason": "HAL r154 workspace not on this host",
+          "test": "factory.python.tests.test_afo_m3_reconcile::test_checkpoints_from_a_real_passing_workspace"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_bundles_from_real_failed_runs_and_none_for_a_passing_one"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_conductor_recovery_path_end_to_end_with_a_real_failed_workspace"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r153 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r153-SWE.1]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r142 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r142-SWE.2]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r148-SWE.3]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r146 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r146-SWE.4]"
+        },
+        {
+          "reason": "WO-0002A-STM32N6-RCC-LL-r153 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002A-STM32N6-RCC-LL-r153-SWE.3]"
+        },
+        {
+          "reason": "live Fabro disabled",
+          "test": "factory.python.tests.test_t009_workflow_gates::test_installed_fabro_validates_generated_workflow"
+        },
+        {
+          "reason": "no 0600 owner file to probe",
+          "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[verifier-2001]"
+        },
+        {
+          "reason": "no 0600 owner file to probe",
+          "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[repair-2002]"
+        }
+      ],
+      "tests": 723
+    },
+    "kernel_fixture": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 2,
+      "seconds": 1.31,
+      "skipped": 0,
+      "skips": [],
+      "tests": 2
+    },
+    "release": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 13,
+      "seconds": 11.194,
+      "skipped": 0,
+      "skips": [],
+      "tests": 13
+    }
+  },
+  "scope": "Deterministic/integration/tooling only; not operational qualification or CRE approval",
+  "status": "PASS_DETERMINISTIC"
+}

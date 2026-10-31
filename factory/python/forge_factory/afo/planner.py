@@ -7,6 +7,7 @@ malformed JSON, a plan for another case, a schema violation - yields None (no pl
 still only PROPOSED: recovery.validate decides. `make(invoke)` adapts a planner runner (a Fabro single-node run of the
 role, enabled by policy engineering.enable_recovery_planner) to recovery.decide.
 """
+
 from __future__ import annotations
 
 import json
@@ -16,8 +17,13 @@ from pathlib import Path
 from ..common import sha256_file, state_dir
 from . import contracts
 
-ALLOWED = ["REWORK_LOCAL", "RESTART_FROM_LAST_VALID_CHECKPOINT", "RETURN_TO_OWNING_UPSTREAM_PHASE",
-           "SWITCH_PREAPPROVED_MODEL_PROFILE", "CLOSE_BLOCKED"]
+ALLOWED = [
+    "REWORK_LOCAL",
+    "RESTART_FROM_LAST_VALID_CHECKPOINT",
+    "RETURN_TO_OWNING_UPSTREAM_PHASE",
+    "SWITCH_PREAPPROVED_MODEL_PROFILE",
+    "CLOSE_BLOCKED",
+]
 MAX_REPLY = 2000
 
 
@@ -29,14 +35,32 @@ class Failed(Exception):
     """Diagnosis itself failed; preserve its reason instead of claiming no different strategy exists."""
 
 
-def case(bundle: dict, workspace: Path, budget: dict) -> Path:
-    d = state_dir() / "afo/cases" / bundle["bundle_id"]
+def case(bundle: dict, workspace: Path, budget: dict, *, mission_id: str | None = None, prior_strategies=()) -> Path:
+    d = state_dir() / "afo/cases" / (bundle["bundle_id"] + ("-da014" if mission_id else ""))
     d.mkdir(parents=True, exist_ok=True)
     req = Path(workspace) / "workproducts/SWE.1/software_requirements.md"
     p = d / "case.json"
-    doc = {"bundle": bundle, "workspace": str(workspace),
-                             "requirements_sha256": sha256_file(req) if req.is_file() else None,
-                             "budget": budget, "allowed_strategies": ALLOWED}
+    doc = {
+        "bundle": bundle,
+        "workspace": str(workspace),
+        "requirements_sha256": sha256_file(req) if req.is_file() else None,
+        "budget": budget,
+        "allowed_strategies": ALLOWED,
+    }
+    if mission_id:
+        from .diagnosis_packet import build
+        from .durable import immutable_json
+
+        doc.update(mission_id=mission_id, packet_ref=build(workspace, bundle, prior_strategies=prior_strategies))
+        if p.is_file():
+            # Polls observe a changing remaining budget; they must adopt the
+            # original case allowance, never rewrite or replenish it.
+            old = json.loads(p.read_text())
+            if {k: v for k, v in old.items() if k != "budget"} != {k: v for k, v in doc.items() if k != "budget"}:
+                raise ValueError("FROZEN_RECOVERY_CASE_CHANGED")
+            return p
+        immutable_json(p, doc)
+        return p
     if not p.exists():
         with p.open("x") as f:
             f.write(json.dumps(doc, sort_keys=True))
@@ -76,15 +100,33 @@ def parse(reply: str, case_dir: Path) -> dict | None:
     return plan
 
 
-def make(invoke):
-    """recovery.decide planner hook: freeze the case, run the planner (`invoke(case_path) -> reply text`), parse."""
-    def planner(bundle: dict, budget: dict, workspace: Path | None = None) -> dict | None:
+PENDING = "PENDING"
+
+
+def make(invoke, *, freeze=None):
+    """recovery.decide planner hook: freeze the case, run the planner (`invoke(case_path)` -> reply text, None, or
+    PENDING while an asynchronous Fabro run is still going - planner_run), parse.
+
+    Pending and Failed are explicit outcomes and always propagate (Feature 014 local agent). Without `freeze` the case
+    is frozen once and later conductor cycles poll the same case (Feature 015 planner_run), and a failed run proposes
+    nothing; with the local agent's `freeze`, any other error is an explicit failed diagnosis, never a fabricated plan."""
+
+    def planner(bundle: dict, budget: dict, workspace: Path | None = None) -> dict | str | None:
         try:
-            p = case(bundle, workspace or Path("."), budget)
+            if freeze is not None:
+                p = freeze(bundle, workspace or Path("."), budget)
+            else:
+                p = state_dir() / "afo/cases" / bundle["bundle_id"] / "case.json"
+                if not p.is_file():  # frozen once (read-only)
+                    p = case(bundle, workspace or Path("."), budget)
             reply = invoke(p)
         except (Pending, Failed):
             raise
-        except Exception as exc:  # noqa: BLE001 - an explicit failed diagnosis, never a fabricated plan
-            raise Failed(type(exc).__name__) from exc
-        return parse(reply, p.parent)
+        except Exception as exc:  # noqa: BLE001
+            if freeze is not None:
+                raise Failed(str(getattr(exc, "code", type(exc).__name__))) from exc
+            return None
+        if reply == PENDING:
+            return PENDING
+        return parse(reply, p.parent) if reply is not None else None
     return planner

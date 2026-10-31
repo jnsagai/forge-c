@@ -256,6 +256,8 @@ def test_safe_proposal_reaches_offline_review_only_and_broker_makes_a_branch(fac
         calls.append(argv)
         if argv[:2] == ["git", "branch"]:                                            # local: real
             return subprocess.run(argv, cwd=factory, capture_output=True, text=True)
+        if argv[:3] == ['gh', 'pr', 'list']:
+            return subprocess.CompletedProcess(argv, 0, '[]', '')
         return subprocess.CompletedProcess(argv, 0, "https://example.invalid/pr/7\n", "")  # remote: recorded only
 
     out = M.publish(store, case["proposal_id"], Eff({"maintenance.enable_factory_maintainer": True}), runner=runner)
@@ -265,8 +267,8 @@ def test_safe_proposal_reaches_offline_review_only_and_broker_makes_a_branch(fac
     calls.clear()
     out = M.publish(store, case["proposal_id"], Eff({"maintenance.enable_factory_maintainer": True,
                                                      "maintenance.allow_proposal_pr": True}), runner=runner)
-    assert [c[:3] for c in calls] == [["git", "push", "origin"], ["gh", "pr", "create"]]
-    assert "--draft" in calls[1] and out["pr_url"] == "https://example.invalid/pr/7"
+    assert [c[:3] for c in calls] == [["git", "push", "origin"], ["gh", "pr", "list"], ["gh", "pr", "create"]]
+    assert "--draft" in calls[2] and out["pr_url"] == "https://example.invalid/pr/7"
     assert _head(factory, "main") == main                                            # nothing merged or deployed
     assert [h["status"] for h in store.proposal_history(case["proposal_id"])] == [
         "ELIGIBLE_FOR_OFFLINE_REVIEW", "PUBLISHED", "PUBLISHED"]

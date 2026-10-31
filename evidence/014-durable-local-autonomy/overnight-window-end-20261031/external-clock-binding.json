@@ -1,0 +1,13 @@
+{
+  "owner_window_start_utc": "2026-10-30T21:57:59Z",
+  "owner_window_deadline_utc": "2026-10-31T07:57:59Z",
+  "stop_requested_tool_clock": {
+    "current_time": "2026-10-31 07:56:35 UTC"
+  },
+  "first_provider_kernel_quiet_observed_tool_utc": "2026-10-31T07:56:58Z",
+  "all_six_settlement_conditions_observed_tool_utc": "2026-10-31T07:57:19Z",
+  "settlement_receipt_sha256": "4b755921a7245b58fc460644fe228188e7c3c23731789ae96f14c181bf16af88",
+  "guard_final_sha256": "df91e2fccbf4f56e0733a52dc1822ff5e6a0240b12730426af48f684e162298e",
+  "post_deadline_actions": "Read-only capture/hash/copy and model-free terminal queue projection, documentation/publication only; no new inference, verification C execution, deployment, signature or grant renewal",
+  "remote_clock_note": "Service UTC trails external clock approximately57seconds; external clock bounds stop before deadline"
+}

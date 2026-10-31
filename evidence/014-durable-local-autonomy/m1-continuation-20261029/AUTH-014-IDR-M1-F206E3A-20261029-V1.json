@@ -1,0 +1,42 @@
+{
+  "allowed_actions": [
+    "submit_workorder",
+    "launch_workorder",
+    "reconcile_run",
+    "recover_workorder",
+    "finalize_blocked",
+    "dead_letter",
+    "notify",
+    "read_status",
+    "health_poll",
+    "record_telemetry",
+    "operate_service"
+  ],
+  "approval_evidence_ref": "owner-qwen-resume-20261029:61749a3c90d281f7f8bd7535d38e88c5e89cd0eb847fcadf7442cc8591d9d59b",
+  "approver": "jefferson",
+  "authorization_id": "AUTH-014-IDR-M1-F206E3A-20261029-V1",
+  "expires_utc": "2026-10-29T18:05:39Z",
+  "issued_utc": "2026-10-29T10:05:39Z",
+  "mode": "PILOT",
+  "policy_sha256": "686f370bf511c3bdb0bcb87f8b5680658d40342c54278c322a9d51f39c881cbe",
+  "schema_version": "1.0",
+  "scope": {
+    "driver_classes": [
+      "LL"
+    ],
+    "models": [
+      "qwen3.8:27b-q8_0"
+    ],
+    "order_ids": [
+      "f014-idr-m1-f206e3a-20261029"
+    ],
+    "service_actions": [
+      "pause",
+      "drain",
+      "resume",
+      "shutdown"
+    ]
+  },
+  "signature_ref": "AUTH-014-IDR-M1-F206E3A-20261029-V1.sig",
+  "signed_runbook_ref": "factory-revision:f206e3aa26837f892c2267ec67c46dcc61844c60"
+}

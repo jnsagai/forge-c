@@ -3,6 +3,7 @@ AFO classes and routes, deterministic rules before any model, the plan validator
 weakening wording, pre-approved models, budgets, anti-loop), execution as a new attempt, the planner's typed parser
 and the forge-afo-mcp case scope."""
 import json
+import time
 
 import pytest
 from forge_factory.afo import bundle, planner, policy, recovery
@@ -57,7 +58,9 @@ def order(tmp_path, monkeypatch):
     s.attempt_transition(aid, "DISPATCH_PENDING", workspace_ref="workorder:WO-AFO-x-a1")
     s.attempt_transition(aid, "RUNNING", fabro_run_id="RUN1")
     s.transition(oid, "RUNNING", "launched")
-    eff = policy.load()
+    from test_afo_m2_queue import logic_policy
+
+    eff = policy.load(logic_policy(tmp_path))
     return s, s.order(oid), {**B, "order_id": oid, "attempt_id": aid}, epoch, eff
 
 
@@ -94,6 +97,7 @@ def test_rules_upstream_defect_then_untried_model_then_nothing(order, tmp_path):
     ({"notes": "relax the coverage threshold"}, "PLAN_WEAKENS_A_GATE_OR_POLICY"),
     ({"model_profile": "qwen3:8b"}, "MODEL_NOT_PREAPPROVED"),
     ({"strategy": "DEFER_TRANSIENT_DEPENDENCY"}, "STRATEGY_NOT_LEGAL_FOR_CLASS"),
+    ({"strategy": "SWITCH_PREAPPROVED_MODEL_PROFILE"}, "MODEL_PROFILE_REQUIRED"),   # F015 planner trial 2
 ])
 def test_validator_refuses_unsafe_or_illegal_plans(order, change, code):
     s, o, b, _, eff = order
@@ -220,6 +224,95 @@ def test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked(w
     b = bundle.build(_real(wo), "afo-x", "afo-x-a1", open_capa=set())
     assert b["phase"] == phase and b["failure_class"] == "PRODUCT_QUALITY" and b["gate_result"] == "BLOCKED"
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
-    p = recovery.rule_plan(b, ws=_real(wo), order_env={}, tried_models={"deepseek-flash"}, eff=policy.load(),
-                           attempt_started_utc="", allowed_models=["deepseek-flash", "codex-gpt-6.1-sol"])
+    from test_afo_m2_queue import logic_policy
+
+    p = recovery.rule_plan(b, ws=_real(wo), order_env={}, tried_models={"deepseek-flash"},
+                           eff=policy.load(logic_policy(tmp_path)), attempt_started_utc="",
+                           allowed_models=["deepseek-flash", "codex-gpt-6.1-sol"])
     assert p is not None and p["strategy"] in ("RETURN_TO_OWNING_UPSTREAM_PHASE", "SWITCH_PREAPPROVED_MODEL_PROFILE")
+
+
+def _turns(ws, node, *events, start=10):
+    (ws / ".forge-run/acp").mkdir(parents=True, exist_ok=True)
+    with (ws / ".forge-run/acp" / f"{node}.proxy.jsonl").open("a") as f:
+        for i, ev in enumerate(events):
+            f.write(json.dumps({"ts": f"2026-10-25T23:04:{start + i:02d}Z", **ev}) + "\n")
+
+
+ERR = {"event": "prompt_error", "code": -32000, "message": "ACP turn failed"}
+OK = {"event": "usage", "model": "gpt-6.1-sol", "input": 1, "output": 1}
+
+
+def test_a_failed_run_gets_a_bundle_and_an_unavailable_agent_is_transient(tmp_path):
+    """F015: BENCH-GPIO-ST-R2 (WO-AFO-889090e22f5adc87-a1) failed in 20 s with Codex refusing every SWE.1 turn; no
+    phase BLOCKED, so no bundle was built and the order waited 6 h in VALIDATING for a package that could not come."""
+    ws = tmp_path / "ws"
+    (ws / ".forge-run/gates").mkdir(parents=True)
+    (ws / ".forge-run/gates/gate-log.jsonl").write_text(json.dumps(
+        {"phase": "SWE.1", "step": "route", "gate": {"decision": "REWORK", "reason": "NO_BASELINE"}}) + "\n")
+    _turns(ws, "swe1_author", {"event": "session"}, ERR, {"event": "session"}, ERR)
+    assert bundle.build(ws, "afo-o", "afo-o-a1", open_capa=set()) is None         # run not failed: validation decides
+    b = bundle.build(ws, "afo-o", "afo-o-a1", open_capa=set(), run_failed=True)
+    assert (b["phase"], b["failure_class"], b["error_code"]) == ("SWE.1", "TRANSIENT_DEPENDENCY",
+                                                                  "AGENT_BACKEND_UNAVAILABLE")
+    (ws / ".forge-run/acp/swe1_author.proxy.jsonl").unlink()
+    b = bundle.build(ws, "afo-o", "afo-o-a1", open_capa=set(), run_failed=True)
+    assert (b["failure_class"], b["error_code"]) == ("INFRASTRUCTURE", "RUN_NOT_COMPLETED")
+
+
+def test_a_stuck_phase_whose_last_agent_turn_errored_is_transient(tmp_path):
+    """F015: BENCH-USART-ST-R2 SWE.3 'STUCK: identical deterministic rejection twice' - the rework turn never ran
+    (Codex refused it), so the files were unchanged. A later completed turn makes it an ordinary product finding."""
+    ws = tmp_path / "ws"
+    (ws / ".forge-run/gates").mkdir(parents=True)
+    (ws / ".forge-run/gates/gate-log.jsonl").write_text(json.dumps(
+        {"phase": "SWE.3", "step": "route", "gate": {"decision": "BLOCKED", "reason": "STUCK: identical"}}) + "\n")
+    _turns(ws, "swe3_author", OK, ERR)
+    _turns(ws, "swe1_author", OK)
+    b = bundle.build(ws, "afo-o", "afo-o-a1", open_capa=set())
+    assert (b["phase"], b["failure_class"], b["gate_result"]) == ("SWE.3", "TRANSIENT_DEPENDENCY", "BLOCKED")
+    assert "STUCK" in b["redacted_summary"]
+    _turns(ws, "swe3_fix_author", OK, start=30)
+    assert bundle.agent_unavailable(ws, "SWE.3") is None
+
+
+def test_transient_retries_are_numbered_backed_off_and_bounded(order, tmp_path):
+    from forge_factory.afo import dispatch
+
+    s, o, b, epoch, eff = order
+    b = {**b, "failure_class": "TRANSIENT_DEPENDENCY", "phase": "SWE.1"}
+    oid, prev = o["order_id"], "WO-AFO-x-a1"
+    for c in s.commands("PENDING"):  # the fixture's first launch already happened
+        s.mark_command(c["command_id"], "DONE")
+    for n in (1, 2):
+        d = recovery.decide(s, s.order(oid), b, ws=None, eff=eff, auth_models=None)
+        assert (d["status"], d["plan"]["strategy"], d["plan"]["material_difference_ref"]) == (
+            "VALIDATED", "DEFER_TRANSIENT_DEPENDENCY", f"transient_retry:{n}")
+        r = recovery.execute(s, s.order(oid), d, epoch=epoch, eff=eff, previous_wo=prev)
+        assert r["action"] == "new_attempt"
+        cmd = [c for c in s.commands("PENDING") if c["attempt_id"] == r["attempt_id"]][0]
+        assert cmd["retry_not_before_epoch"] >= time.time() + recovery.TRANSIENT_BACKOFF_SECONDS * n - 5
+        out = dispatch.dispatch_pending(s, lambda *a: pytest.fail("launched during backoff"),
+                                        decide=lambda req: type("D", (), {"allow": True})())
+        assert {"command_id": cmd["command_id"], "action": "backoff"} in out
+        s.mark_command(cmd["command_id"], "DONE")
+        s.attempt_transition(r["attempt_id"], "DISPATCH_PENDING")
+        s.attempt_transition(r["attempt_id"], "RUNNING", fabro_run_id=f"RUN{n + 1}")
+        s.transition(oid, "RUNNING", "relaunched")
+        b, prev = {**b, "attempt_id": r["attempt_id"]}, f"WO-AFO-x-a{n + 1}"
+    d = recovery.decide(s, s.order(oid), b, ws=None, eff=eff, auth_models=None)  # policy: 2 transient retries
+    assert d["plan"]["strategy"] == "CLOSE_BLOCKED" and d["plan"]["rationale_code"].startswith("PLAN_REJECTED:BUDGET_")
+    (rej,) = [p for p in recovery.plans(s, oid) if p["status"] == "REJECTED"]
+    assert "BUDGET_TRANSIENT_RETRIES_EXHAUSTED" in json.loads(rej["reasons"])
+    assert recovery.budget_snapshot(s, s.order(oid), eff)["variants_by_phase"]["SWE.1"] == 1  # only the CLOSE plan
+
+
+def test_a_model_switch_to_the_orders_own_profile_is_refused(order):
+    """F015 BENCH-USART-ST-R4: the planner proposed SWITCH_PREAPPROVED_MODEL_PROFILE to codex-claude, the order's own
+    profile ("untried" in its own words); the validator accepted it and the retry ran on the same model."""
+    s, o, b, _, eff = order
+    own = json.loads(o["envelope"])["model_profile"]
+    p = recovery._base(b, "SWITCH_PREAPPROVED_MODEL_PROFILE", "SWE.3", "TEST", artifact_scope=["software/hal"],
+                       model_profile=own)
+    assert f"MODEL_ALREADY_TRIED:{own}" in recovery.validate(p, b, store=s, order=o, eff=eff, auth_models=None)
+    assert recovery.budget_snapshot(s, o, eff)["tried_models"] == [own]

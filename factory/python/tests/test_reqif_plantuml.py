@@ -1,7 +1,7 @@
 """ReqIF export (SWE1-08) and PlantUML architecture views (SWE2-08): valid outputs pass, broken ones fail."""
 import pytest
 from forge_factory.inspection.reqif_export import OUT, export, validate
-from forge_factory.inspection.views import check_views, plantuml_jar
+from forge_factory.inspection.views import DYNAMIC, check_views, plantuml_jar
 from test_swe2_architecture import ARCH_MIN, DYNAMIC_PUML, STATIC_PUML
 
 REQS = ("# Software requirements\n- **SWR-001** When the HSI enable is requested, the RCC driver shall set RCC_CR.HSION.\n"
@@ -37,5 +37,6 @@ def test_plantuml_views_valid_render_and_broken_views_fail(tmp_path):
         DYNAMIC_PUML.replace("HAL_TIMEOUT", "HAL_ERROR").replace("->", "-> ->"))
     bad = check_views(tmp_path)["major_findings"]
     assert "VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH" in bad and any(f.startswith("VIEWS:SYNTAX:") for f in bad)
+    assert any(f.startswith("VIEWS:SYNTAX:" + DYNAMIC + ":line ") for f in bad)
     (tmp_path / "workproducts/SWE.2/architecture_static.puml").unlink()
     assert check_views(tmp_path)["major_findings"][0].startswith("VIEWS:MISSING:static")

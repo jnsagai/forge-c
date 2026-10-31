@@ -1,0 +1,1 @@
+{"status": "INVALID_OR_BLOCKED_PROPOSAL", "calls_attempted": 1, "reference_check": "FAIL", "usage": {"prompt_tokens": 2574, "prompt_tokens_details": {"cached_tokens": 0}, "completion_tokens": 531, "total_tokens": 3105}, "wall_ms": 7912.9}

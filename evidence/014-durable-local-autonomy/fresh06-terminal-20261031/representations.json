@@ -1,0 +1,44 @@
+{
+  "external-fresh-trial-audit": {
+    "original_sha256": "3e73552ff2e454a847ebe0a1f2778f023f31ccfd5b287ea908650e53d81b871d",
+    "view_sha256": "7337051a28b847c6a97e1b0dcbe5ef4745257e37a7ef3b8fa5d6be7017a05e6c",
+    "source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/cohort-audits/native06-3e73552ff2e454a847ebe0a1f2778f023f31ccfd5b287ea908650e53d81b871d.json",
+    "raw_encoding": "deterministic gzip, mtime0; decompress to original hashed bytes"
+  },
+  "terminal-observation": {
+    "original_sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd",
+    "view_sha256": "32e0393709e1e825a960eedd2b2643ba9b7a903c23f69b55127a257e88bdeb28",
+    "source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+    "raw_encoding": "deterministic gzip, mtime0; decompress to original hashed bytes"
+  },
+  "terminal-source-audit": {
+    "original_sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1",
+    "view_sha256": "8d084eb945784155a22269d5b8140cedcfbf8c52e19f271f904973b62171aeff",
+    "source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+    "raw_encoding": "deterministic gzip, mtime0; decompress to original hashed bytes"
+  },
+  "administrative-reprobe07": {
+    "original_sha256": "50fa7f3e8109646b5f97a2e8f747866c8ffc44b2f236ebdf2e655f5a13fb1763",
+    "view_sha256": "04e7bcfafb8f844d0c3a850a8c7edc74b2a23beda7595495fbadb17703e8aa46",
+    "source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/capacity-reprobe07-result.json",
+    "raw_encoding": "deterministic gzip, mtime0; decompress to original hashed bytes"
+  },
+  "capacity-backoff-diagnosis": {
+    "original_sha256": "7b0d231f0ad8082c4d2e7c5f12c5c34b48be3890d6666fdfd5cbc61a72b45148",
+    "view_sha256": "8a7b0183f44c96fd27fd73aac4a68078c9112e8cfe53270c1df89d63bc135989",
+    "source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/capacity-backoff-diagnosis.json",
+    "raw_encoding": "deterministic gzip, mtime0; decompress to original hashed bytes"
+  },
+  "capacity-released-diagnosis": {
+    "original_sha256": "4ccb0d696255b000fb6ea3eabaa39e24bf8f35f3db04440a717f7bef03b70df4",
+    "view_sha256": "f954c6c2c64df2ea5629348452294e23b14d19545fd3ab4965f1ab8a5c510588",
+    "source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/capacity-released-diagnosis.json",
+    "raw_encoding": "deterministic gzip, mtime0; decompress to original hashed bytes"
+  },
+  "transfer-verification": {
+    "original_sha256": "ab640c508756d9ca704f7a9c7f5620344ebadf3c170765d298c5eef01efdd5ec",
+    "view_sha256": "3fd504e3361d925d06e2efbf52d4faa047804956cc5936f7e905dd8a8ed0e084",
+    "source_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-30-qwen/overnight-afo-delivery/native-01M67ZJWDYS7H33828MPTK6E6D/transfer-verification.json",
+    "raw_encoding": "deterministic gzip, mtime0; decompress to original hashed bytes"
+  }
+}

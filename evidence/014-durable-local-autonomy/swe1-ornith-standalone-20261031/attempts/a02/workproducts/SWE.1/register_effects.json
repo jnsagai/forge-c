@@ -1,0 +1,20 @@
+{
+  "schema": "forge-c/register-effects/1",
+  "effects": [
+    {
+      "case": "WRITE_IDR_STORES",
+      "swr": "SWR-001",
+      "register": "CRC_IDR",
+      "field": "IDR",
+      "op": "write",
+      "value": "0x00000000"
+    },
+    {
+      "case": "READ_IDR_RETURNS",
+      "swr": "SWR-002",
+      "register": "CRC_IDR",
+      "field": "IDR",
+      "op": "no_write"
+    }
+  ]
+}

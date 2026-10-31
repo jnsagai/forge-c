@@ -1,0 +1,393 @@
+{
+  "schema": "forge-c/incremental-delivery-status/1",
+  "handoff_revision": "5e89a2b",
+  "milestones": {
+    "M1": "QM_DEMONSTRATION_INTERRUPTED_BY_OWNER; STRICT_M1_UNACCEPTED",
+    "M2": "NOT_RUN",
+    "M3": "NOT_RUN",
+    "M4": "NOT_RUN",
+    "M5": "NOT_RUN"
+  },
+  "completed_incremental_tasks": [
+    "IE-T001",
+    "IE-T002",
+    "IE-T003",
+    "IE-T004",
+    "IE-T005",
+    "IE-T006",
+    "IE-T007"
+  ],
+  "formal_da_completed_tasks": 30,
+  "formal_da_total_tasks": 58,
+  "live_authority": "OPERATOR_STOPPED_EPOCH33; EXISTING_GRANT_EXPIRES_2026-10-29T18:05:39Z",
+  "requirements_review": "ORIGINAL_7_AND_SIMULATION_9_REQUIREMENT_PAYLOADS_REVIEWED",
+  "product_acceptance": "BLOCKED",
+  "selected_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
+  "backend_owner_decision": "2026-10-28: no, go with MTP",
+  "backend_qualification": "PASS_BACKEND_MCP_SMOKE_ONLY_d3f0b28; FULL_ROLES_NOT_QUALIFIED",
+  "latest_source_revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+  "production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+  "deterministic_fixture": "PASS_REAL_TOOLS_AND_GATES_WITH_EXPLICIT_PROVIDER_FIXTURES",
+  "native_fixture": {
+    "revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
+    "passed": 16,
+    "skipped": 0,
+    "model_requests": 0,
+    "scope": "three-module demonstration/QM/high-allowance cohort; local and isolated native; explicit semantic fixtures"
+  },
+  "reference_candidate": {
+    "source": "WO-AFO-c2fd276494a54e7f-a1",
+    "status": "PENDING_INDEPENDENT_QUALIFICATION",
+    "exposed": false,
+    "benefit": "UNKNOWN"
+  },
+  "partial_tasks": {},
+  "evidence": "evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md",
+  "active_order_id": "afo-774900b297bdde37",
+  "active_native_run_id": "01M63ZTJ5QM1R96484Y2KN97H6",
+  "allowance_evidence": "evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
+  "live_order_state": "RUNNING_PARENT_ORCHESTRATION_UNSETTLED; NATIVE_FAILED",
+  "later_phases": "SWE6_INTERRUPTED_BY_OWNER; LAST_ROBOT_7_OF_9; NO_INSPECTION",
+  "reported_output_tokens_completed_requests": null,
+  "host_availability": "REACHABLE_2026-10-29; SAME_BOOT_SINCE_2026-09-24; OVERNIGHT_CONNECTIVITY_LOSS",
+  "operational_availability": "NOT_QUALIFIED",
+  "learning_benefit": "NOT_MEASURED",
+  "local_followup_evidence": "evidence/014-durable-local-autonomy/m1-local-followup-20261029/README.md",
+  "simulation_requirements": {
+    "payload_sha256": "af48340bdc64510347f2aa236114b601f86ad24a0fbd062e82f07e4eed770463",
+    "review": "APPROVED_OWNER_20261029",
+    "local_import": "PASS; FROZEN; INSPECTION_REINSPECT; DELIVERY_REFUSED",
+    "instructions_per_call": 64,
+    "microseconds_per_call": 100,
+    "performance_mips": 100,
+    "hardware_wcet": "NOT_MEASURED",
+    "example": "examples/0014e-st-cube-crc-idr-simulation"
+  },
+  "tool_accounting_evidence": "evidence/014-durable-local-autonomy/m1-shared-tool-accounting-20261029/README.md",
+  "historical_tool_accounting": "66_IDENTIFIED_INSPECTION_OPERATIONS_RECONCILED; OTHER_HISTORY_NOT_INFERRED_COMPLETE",
+  "historical_m1_snapshot": {
+    "attempts": 1,
+    "requests": 6,
+    "tools": 66,
+    "charged_tokens": 100000000,
+    "usage_unknown": true,
+    "original_deadline_epoch": 1793250000.0
+  },
+  "independent_continuation_evidence": "evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md",
+  "service_snapshot": {
+    "conductor": "ACTIVE",
+    "watchdog_timer": "ACTIVE",
+    "finite_recorder": "ACTIVE",
+    "operator_mode": "STOPPED",
+    "operator_epoch": 33,
+    "effective_stop": true,
+    "captured_utc": "2026-10-29T16:27:48.498573Z"
+  },
+  "deployed_candidate": {
+    "revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "qualification": "28_PASS_PER_HOST; ALLOCATION_PASS; STATIC_ADMISSION_PASS; REAL_RUN_LIVE",
+    "qualification_model_requests": 0,
+    "purpose": "QM full-pipeline demonstration, context262144, quality outcomes observational, product unaccepted",
+    "local_tests": {
+      "passed": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 4.303,
+      "deselected": 1,
+      "deselected_scope": "existing full_six_phase fixture, already qualified on unchanged pipeline source15b0fa5"
+    },
+    "native_tests": {
+      "passed": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 13.057,
+      "deselected": 1,
+      "deselected_scope": "existing full_six_phase fixture, already qualified on unchanged pipeline source15b0fa5"
+    }
+  },
+  "historical_order_id": "afo-cf20126621ac2673",
+  "historical_run_outcome": "BLOCKED_SWE1; FAILED_NATIVE; QUIESCENT; LEASE_RELEASED",
+  "current_mission_snapshot": {
+    "attempts": 4,
+    "requests": 345,
+    "tools": 596,
+    "charged_tokens": 400000000,
+    "usage_unknown": true,
+    "captured_utc": "2026-10-29T16:27:48.498573Z"
+  },
+  "live_continuation_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md",
+  "prospective_purpose": "QM",
+  "prospective_qm_live_execution": "STOPPED_BY_OWNER; NO_AUTO_RESUME",
+  "current_runtime_purpose": "QM; PIPELINE_DEMONSTRATION_ONLY",
+  "qualification_evidence": "evidence/014-durable-local-autonomy/qm-development-20261029/README.md",
+  "current_production_profile": "local-rtx-v2-omniverse2-q38-qm-demo-mtp",
+  "qm_activation": {
+    "status": "SUPERSEDED_UNSIGNED_NEVER_ACTIVATED",
+    "source_revision": "5b398d27f2ee60d3c059dc115dd612f0ff105199",
+    "scope_sha256": "f068de413c5f7ca786722dece26f9dc9cda3afdd4a87892e521ceedbac1b642d",
+    "remote_packet": "/mnt/data/forge-c/production-local-014/deployment/idr-m1-qm-5b398d2-20261029",
+    "signatures_created": 0,
+    "deadline_utc": "2026-10-29T18:05:39Z",
+    "deadline_changed": false,
+    "same_mission": true,
+    "pending_prerequisite": "NONE; SUPERSEDED HISTORICAL UNSIGNED PACKET, DO NOT ACTIVATE"
+  },
+  "historical_reported_output_tokens_completed_requests": 17340,
+  "active_inference_run": null,
+  "last_execution_liveness": "QUIESCENT",
+  "last_inference_lease": "RELEASED",
+  "terminal_evidence": "evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md",
+  "source_status_captured_utc": "2026-10-29T17:24:31.282871Z",
+  "independent_archive_auditor": {
+    "revision": "319e215417b8f7e0d329fb3ce71b595f0367f8ef",
+    "local_passed": 24,
+    "native_passed": 24,
+    "model_requests": 0,
+    "deployed": true,
+    "historical_archive_integrity": "PASS",
+    "historical_product_acceptance": "BLOCKED_UNCHANGED",
+    "evidence": "evidence/014-durable-local-autonomy/archive-inventory-20261029/README.md"
+  },
+  "demonstration_evidence": "evidence/014-durable-local-autonomy/qm-pipeline-demonstration-20261029/README.md",
+  "demonstration_activation": {
+    "source_revision": "15b0fa59a5eb71dc7b921e8dcf67352520dd8de4",
+    "scope_sha256": "252141d8903a944b7473b1734ae028d1db2d3dd55fd2847aad76c91c7fdff7d0",
+    "state": "HISTORICAL_TERMINAL_BLOCKED",
+    "signatures_created": 2,
+    "deadline_utc": "2026-10-29T18:05:39Z",
+    "history_reset": false
+  },
+  "owner_execution_signing_delegation": "STANDING_OWNER_APPROVAL_20261029_FOR_THIS_DEVELOPMENT_MISSION; NO_REPEAT_CONFIRMATION_FOR_SAME_AUTHORIZED_ACTION_CLASS",
+  "local_outcome_collection": {
+    "directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen",
+    "status": "ACTIVE_MODEL_FREE_60_SECOND_POLL",
+    "ends_utc": "2026-10-29T18:35:39Z",
+    "historical_f206_archive": "COPIED_SHA_VERIFIED_86_FILES_EXTRACTED",
+    "current_demo_archive": "COPIED_SHA_AND_FULL_INVENTORY_VERIFIED; 46_GAPS; INCOMPLETE_PRODUCT",
+    "current_context262_archive": "NOT_YET_FINALIZED",
+    "current_context262_live_swe2_snapshot": "COPIED_8882_BYTES_SHA256_VERIFIED; INSPECTION_PENDING",
+    "current_context262_frozen_swe2": "COPIED_13_FILES; ALL_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; PRODUCT_STILL_UNACCEPTED",
+    "current_context262_frozen_swe3": "COPIED_36_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; REAL_FAIL_PRESERVED",
+    "current_context262_frozen_swe4": "COPIED_17_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; UPSTREAM_SWE3_FAIL_REMAINS",
+    "current_context262_frozen_swe5": "COPIED_23_FILES; ALL_MEMBER_HASHES_AND_SIZES_VERIFIED; PHASE_GATE_PASS; UPSTREAM_SWE3_FAIL_REMAINS",
+    "current_context262_interrupted_engineering": "COPIED_101_FILES_4482319_BYTES; ALL_HASHES_AND_SIZES_VERIFIED; NOT_A_COMPLETED_RELEASE_PACKAGE"
+  },
+  "historical_f206_reported_usage": {
+    "prompt_tokens": 31688,
+    "completion_tokens": 31353,
+    "total_tokens": 63041,
+    "model_calls": 6,
+    "scope": "Six f206 continuation provider reports; completion may include reasoning; aggregate historical usage remains UNKNOWN"
+  },
+  "reported_usage_scope": "CURRENT262_RUN_FIRST_REQUEST_PENDING; HISTORICAL_USAGE_RETAINED; AGGREGATE_UNKNOWN",
+  "historical_deployed_candidate": {
+    "revision": "f206e3aa26837f892c2267ec67c46dcc61844c60",
+    "purpose": "Reviewed simulation input; scoped independent unit recheck; shared accounting; explicit time-only continuation",
+    "qualification": "DEPLOYED_AFTER_LOCAL_AND_NATIVE_FIXTURE_QUALIFICATION; REAL_M1_TERMINAL_BLOCKED_SWE1",
+    "local_tests": {
+      "passed": 84,
+      "skipped": 0,
+      "model_requests": 0,
+      "scope": "same_84_check_local_and_native_cohort"
+    },
+    "qualification_model_requests": 0,
+    "live_model_requests": 6
+  },
+  "demonstration_phase_progress": {
+    "SWE.1": "REAL_INSPECTION_PASS_2026-10-29T14:17:44Z",
+    "SWE.2": "REAL_INSPECTION_PASS_2026-10-29T14:32:20Z; CURRENT_BASELINE_AND_DETERMINISTIC_GATE_PASS",
+    "SWE.3": "FROZEN_DESIGN_AND_TARGET_BUILD_PRESENT; TWO_INSPECTIONS_FAIL_PLANTUML_NOT_AVAILABLE; MCP_DATA_ROOT_MISSING_CONFIRMED",
+    "SWE.4": "REAL_INSPECTION_PASS_2026-10-29T15:33:48Z; CURRENT_BASELINE_GATE_PASS; 17_LOCAL_FILES_VERIFIED",
+    "SWE.5": "REAL_INSPECTION_PASS_2026-10-29T15:59:17Z; CURRENT_GATE_PASS; 23_LOCAL_FILES_VERIFIED",
+    "SWE.6": "AUTHOR_INTERRUPTED_BY_OWNER; LAST_ROBOT_7_OF_9; NO_INSPECTION"
+  },
+  "historical_demonstration_phase_progress": {
+    "SWE.1": "REAL_INSPECTION_PASS",
+    "SWE.2_THROUGH_6": "NATIVE_AGENT_ERRORS_CAPABILITY_LIMIT; NO_SUBSTANTIVE_COMPLETION"
+  },
+  "historical_demo_terminal": {
+    "order_id": "afo-d9ddb6d7a1c4e025",
+    "native_run_id": "01M63V3YA87ENXA7052M8HS62X",
+    "native_status": "SUCCEEDED",
+    "product_status": "BLOCKED",
+    "gaps": 46,
+    "failed_native_roles": 14,
+    "archive_sha256": "5eb4c3c7912fe9d30e40117e38de4312b618080818d8b92abe4bda9e66960196",
+    "full_pipeline_productive_completion": false
+  },
+  "historical_demo_reported_usage_partial": {
+    "completed_requests": 6,
+    "pending_requests": 1,
+    "reported_total_tokens": 63513,
+    "prompt_completion_split": "Not exported by this observation",
+    "aggregate_historical_usage": "UNKNOWN",
+    "scope": "Historical12:55 checkpoint, not terminal total"
+  },
+  "context262_activation": {
+    "source_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "operator_epoch": 32,
+    "context_tokens": 262144,
+    "profile_version": 4,
+    "scope_sha256": "71b48d33283655a68d9fc33dd65b750a6e1be1aa9bd81188a232d3e1a6ac5759",
+    "evidence": "evidence/014-durable-local-autonomy/context-expansion-20261029/README.md",
+    "signatures_created": 2,
+    "deadline_utc": "2026-10-29T18:05:39Z",
+    "history_reset": false
+  },
+  "pending_diagnostics_candidate": {
+    "source_revision": "a1c6ae5049bf2477fd5198dcbdbdbc80596b4bb0",
+    "local_tests_passed": 89,
+    "native_tests": "NOT_RUN",
+    "deployed": false,
+    "evidence": "evidence/014-durable-local-autonomy/request-context-diagnostics-20261029/README.md"
+  },
+  "current_trial_reported_usage_partial": {
+    "completed_requests": 213,
+    "pending_requests": 1,
+    "reported_total_tokens": 8284314,
+    "scope": "Current262k provider reports at16:01UTC; pending and historical aggregate remain UNKNOWN"
+  },
+  "swe2_independent_verification": {
+    "structure": "PASS_9_OF_9_REQUIREMENTS_ALLOCATED",
+    "generic_rm_offset_coverage": 0,
+    "external_scoped_idr_offset": "PASS_0x04_MATCH_PINNED_RM0486_26.4.2",
+    "qualified_product": "NOT_ESTABLISHED"
+  },
+  "pending_mcp_environment_candidate": {
+    "source_revision": "9f9a93f174f46aa0add59c16a423be7d56988614",
+    "baseline_revision": "49add27",
+    "local": {
+      "passed": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 9.959,
+      "scope": "isolated MCP/hook root/quoting/override subprocesses, inherited native context, actual MCP protocol handshakes"
+    },
+    "baseline_counterexample": {
+      "tests": 2,
+      "failed": 2,
+      "scope": "new focused tests on unchanged old runconfig"
+    },
+    "native_qualification": "NOT_RUN_WHILE_REMOTE_QWEN_MISSION_ACTIVE",
+    "deployed": false,
+    "current_production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "generation_requests": 0,
+    "services_or_authority_changed": false,
+    "evidence": "evidence/014-durable-local-autonomy/mcp-root-followup-20261029/README.md",
+    "native_tooling": "STAGED_VERSION2_NOT_EXECUTED; OPERATOR32_AND_QUIESCENCE_REQUIRED",
+    "native_entrypoint": "/mnt/data/forge-c/production-local-014/deployment/qualification-mcp-root-9f9a93f/bootstrap-v2.py"
+  },
+  "swe3_static_binary_evidence": {
+    "target_relocatable_elf": "PASS",
+    "flash_text_bytes": 8,
+    "static_ram_bytes": 0,
+    "maximum_per_function_frame_bytes": 0,
+    "instructions_per_measurement_wrapper": 2,
+    "virtual_runtime_timing": "NOT_RUN_BY_THIS_AUDIT",
+    "physical_wcet": "NOT_MEASURED"
+  },
+  "swe4_host_feedback": {
+    "failed_attempts": 2,
+    "pass_utc": "2026-10-29T15:18:27Z",
+    "tool_exit_code": 0,
+    "scope_functions": 2,
+    "scope_function_pct": 100.0,
+    "scope_region_pct": 100.0,
+    "whole_file_line_pct": 6.76,
+    "target_evidence": false,
+    "formal_M3_repair": "NOT_RUN",
+    "learning_benefit": "NOT_MEASURED"
+  },
+  "swe5_simulation_progress": {
+    "actual_tool": "Renode v1.17.0",
+    "cpu": "cortex-m55",
+    "failed_attempts_observed": 1,
+    "pass_utc": "2026-10-29T15:46:25Z",
+    "checks_passed": 27,
+    "checks_failed": 0,
+    "images": 2,
+    "model": "behavioural CRC",
+    "silicon_verified": false,
+    "phase_inspection": "PENDING",
+    "formal_M3": "NOT_RUN",
+    "learning_benefit": "NOT_MEASURED"
+  },
+  "simulation_performance_observed": {
+    "status": "PASS",
+    "performance_mips": 100,
+    "samples_per_function": 2,
+    "instructions_per_call": 2,
+    "virtual_nanoseconds_per_call": 20,
+    "hardware_wcet": "NOT_MEASURED",
+    "artifact_sha256": "9d513acaf78a37a2d039c599e239b48755cb0e8b8a3d3bb06ae9e2a181036e1f",
+    "scope": "Complete observed calls in pinned Renode instruction/time model; no silicon claim"
+  },
+  "owner_stop_evidence": "evidence/014-durable-local-autonomy/owner-stop-20261029/README.md",
+  "swe6_contract_followup": {
+    "revision": "b1536d78bbfa23677c562a2e2e82aef4d27f423a",
+    "local_tests": {
+      "passed": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 112.827
+    },
+    "scope": "Full scoped scripted-artifact anchor; actual Robot/compiler/Renode source-binding controls; inherited Robot and MCP environment regressions",
+    "model_requests": 0,
+    "native_qualification": "NOT_RUN; OWNER_STOPPED_EPOCH33",
+    "deployed": false,
+    "evidence": "evidence/014-durable-local-autonomy/swe6-performance-contract-20261029/README.md"
+  },
+  "structured_swe6_measurement_followup": {
+    "revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+    "local_tests": {
+      "passed": 41,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "duration_seconds": 197.299
+    },
+    "baseline_counterexamples": {
+      "tests": 3,
+      "failed": 3,
+      "runtime_revision": "91ce79069b04f8ddd808bf1591cce3366191955f",
+      "new_test_cases": true
+    },
+    "model_requests": 0,
+    "native_qualification": "PASS_EXACT_3015E47; 41_PLUS_89_DISTINCT_CPU_TESTS_AND_TWO_REAL_DIAGRAM_CASES",
+    "native_preparation": "V4_AND_V6_EXECUTED_UNDER_STOPPED_33; EARLIER_V3_UNRUN",
+    "deployed": false,
+    "evidence": "evidence/014-durable-local-autonomy/swe6-structured-measurement-20261029/README.md",
+    "native_evidence": "evidence/014-durable-local-autonomy/native-cpu-3015e47-20261029/README.md"
+  },
+  "native_cpu_qualification": {
+    "revision": "3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6",
+    "local_distinct_passes": 130,
+    "native_distinct_passes": 130,
+    "cohorts": [
+      41,
+      89
+    ],
+    "final_failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "initial_native_core": {
+      "passed": 88,
+      "failed": 1,
+      "cause": "Isolated verification data root lacked volume sentinel; real Conductor refused correctly",
+      "corrected": "Existing host.init validates actual mounted volume UUID/root/fsync; production sentinel unchanged"
+    },
+    "actual_frozen_diagram_cases_passed": 2,
+    "model_requests": 0,
+    "operator_mode": "STOPPED",
+    "operator_epoch": 33,
+    "source_deployed": false,
+    "active_production_revision": "9b4c390e1605d11c4865bdeea382df74a0078692",
+    "mission_unchanged": true,
+    "evidence": "evidence/014-durable-local-autonomy/native-cpu-3015e47-20261029/README.md"
+  },
+  "remaining_live_blocker": "EXPLICIT_OWNER_STOP_QWEN_EPOCH33; NO_AUTOMATIC_1800_RESUME; IE_T008_REQUIRES_REAL_MODEL_DELIVERY"
+}

@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-30T21:43:31.260047Z",
+  "native_id": "01M6788GYKREQSS1YTZHS9N3TV",
+  "native_status": "SUCCEEDED",
+  "physical_slots": [
+    {
+      "id": 0,
+      "is_processing": false,
+      "n_ctx": 262144
+    }
+  ],
+  "model_signalled": false,
+  "source": "ACTUAL_LLAMA_SLOTS_API_OBSERVATION",
+  "production_operations": "PAUSED111"
+}

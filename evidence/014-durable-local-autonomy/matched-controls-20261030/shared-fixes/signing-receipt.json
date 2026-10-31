@@ -1,0 +1,7 @@
+{
+  "status": "TWO_EXACT_RECORDS_SIGNED_VERIFIED",
+  "scope_sha256": "4edfe623950ef3dbdd86e00e7f4d7bf2099221550d36104ec9b2b0f5868be3fa",
+  "expires_utc": "2026-10-30T19:40:00Z",
+  "old_grants_renewed": false,
+  "activation": false
+}

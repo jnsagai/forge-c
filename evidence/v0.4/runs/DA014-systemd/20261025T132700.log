@@ -1,0 +1,503 @@
+{
+  "scope": "ISOLATED_SYSTEMD_SEMANTICS_NO_MODEL_NO_DEPLOYMENT",
+  "host": "master",
+  "at": "2026-10-25T13:19:50.779711Z",
+  "version": "systemd 249 (249.11-0ubuntu3.23)",
+  "status": "PASS",
+  "rows": [
+    {
+      "case": "unexpected-clean-exit-restarts-then-rate-limits",
+      "pass": true,
+      "observations": [
+        {
+          "mono": 1518626.546276375,
+          "state": {
+            "MainPID": "0",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518626.65174429,
+          "state": {
+            "MainPID": "0",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518626.756958668,
+          "state": {
+            "MainPID": "0",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518626.861963282,
+          "state": {
+            "MainPID": "0",
+            "Result": "start-limit-hit",
+            "NRestarts": "2",
+            "ActiveState": "failed",
+            "SubState": "failed"
+          }
+        }
+      ]
+    },
+    {
+      "case": "slow-start-after-burst-exhaustion",
+      "pass": true,
+      "before": {
+        "MainPID": "0",
+        "Result": "start-limit-hit",
+        "NRestarts": "2",
+        "ActiveState": "failed",
+        "SubState": "failed"
+      },
+      "start_returncode": 0,
+      "observations": [
+        {
+          "mono": 1518628.984810013,
+          "state": {
+            "MainPID": "0",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518629.08909267,
+          "state": {
+            "MainPID": "0",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518629.193700471,
+          "state": {
+            "MainPID": "0",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518629.298218651,
+          "state": {
+            "MainPID": "0",
+            "Result": "start-limit-hit",
+            "NRestarts": "2",
+            "ActiveState": "failed",
+            "SubState": "failed"
+          }
+        }
+      ]
+    },
+    {
+      "case": "unexpected-process-kill",
+      "pass": true,
+      "observations": [
+        {
+          "mono": 1518629.326274877,
+          "state": {
+            "MainPID": "0",
+            "Result": "signal",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518629.430541706,
+          "state": {
+            "MainPID": "0",
+            "Result": "signal",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518629.534622719,
+          "state": {
+            "MainPID": "2820964",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        }
+      ]
+    },
+    {
+      "case": "hung-notify-worker-watchdog",
+      "pass": true,
+      "observations": [
+        {
+          "mono": 1518629.572498893,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518629.677353732,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518629.782357251,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518629.88644448,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518629.991295772,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518630.095647173,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518630.200090132,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518630.304876388,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518630.409780499,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518630.514912675,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518630.619877827,
+          "state": {
+            "MainPID": "2820967",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518630.724989701,
+          "state": {
+            "MainPID": "0",
+            "Result": "watchdog",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518630.830495834,
+          "state": {
+            "MainPID": "0",
+            "Result": "watchdog",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518630.935526949,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518631.040764357,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518631.146084442,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518631.252109935,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518631.357844992,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518631.462521801,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518631.569051175,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518631.675222984,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518631.781323513,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "success",
+            "NRestarts": "1",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518631.886662736,
+          "state": {
+            "MainPID": "2821028",
+            "Result": "watchdog",
+            "NRestarts": "1",
+            "ActiveState": "deactivating",
+            "SubState": "stop-watchdog"
+          }
+        },
+        {
+          "mono": 1518631.992695951,
+          "state": {
+            "MainPID": "0",
+            "Result": "watchdog",
+            "NRestarts": "1",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518632.098176493,
+          "state": {
+            "MainPID": "0",
+            "Result": "watchdog",
+            "NRestarts": "2",
+            "ActiveState": "failed",
+            "SubState": "failed"
+          }
+        }
+      ]
+    },
+    {
+      "case": "operator-exit-77-prevents-restart-always",
+      "pass": true,
+      "observations": [
+        {
+          "mono": 1518632.132223348,
+          "state": {
+            "MainPID": "2821373",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        {
+          "mono": 1518632.237427656,
+          "state": {
+            "MainPID": "0",
+            "Result": "exit-code",
+            "NRestarts": "0",
+            "ActiveState": "failed",
+            "SubState": "failed"
+          }
+        }
+      ],
+      "state": {
+        "MainPID": "0",
+        "Result": "exit-code",
+        "NRestarts": "0",
+        "ActiveState": "failed",
+        "SubState": "failed"
+      }
+    },
+    {
+      "case": "stopped-boot-condition-does-not-enter-restart-loop",
+      "pass": true,
+      "observations": [
+        {
+          "mono": 1518632.577048951,
+          "state": {
+            "MainPID": "0",
+            "Result": "exec-condition",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518632.682147569,
+          "state": {
+            "MainPID": "0",
+            "Result": "exec-condition",
+            "NRestarts": "0",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518632.786755948,
+          "state": {
+            "MainPID": "0",
+            "Result": "exec-condition",
+            "NRestarts": "1",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518632.891769364,
+          "state": {
+            "MainPID": "0",
+            "Result": "exec-condition",
+            "NRestarts": "1",
+            "ActiveState": "activating",
+            "SubState": "auto-restart"
+          }
+        },
+        {
+          "mono": 1518632.996013388,
+          "state": {
+            "MainPID": "0",
+            "Result": "success",
+            "NRestarts": "0",
+            "ActiveState": "inactive",
+            "SubState": "dead"
+          }
+        }
+      ]
+    },
+    {
+      "case": "explicit-service-stop-is-not-restarted",
+      "pass": true,
+      "state": {
+        "MainPID": "0",
+        "Result": "success",
+        "NRestarts": "0",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      }
+    }
+  ],
+  "remote_profile_reboot_mount_campaign": "NOT_RUN",
+  "24_72_168_hour_availability": "NOT_RUN"
+}

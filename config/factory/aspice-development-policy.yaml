@@ -1,0 +1,10 @@
+schema: forge-c/aspice-development-policy/1
+enabled: true
+purpose: ASPICE_ONLY
+approved_by: Jefferson
+approved_at: '2026-10-28'
+decision: OWNER-20261028-ASPICE-ONLY
+request: 'let focus to be only ASPICE complaint by now, not safety'
+scope: Prospective ASPICE engineering development; safety assurance and SafeC excluded.
+safety_approval: null
+assessed_aspice_compliance: null

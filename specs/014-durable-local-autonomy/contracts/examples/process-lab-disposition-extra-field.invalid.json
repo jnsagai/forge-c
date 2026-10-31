@@ -1,0 +1,20 @@
+{
+  "schema": "forge-c/process-lab-disposition/1",
+  "disposition_id": "PLD-crc-idr-a1-0001",
+  "experiment_id": "crc-idr-a1",
+  "driver": "crc-idr",
+  "obligation_id": "OBL-idr-write",
+  "oracle_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "verdict": "COVERED",
+  "covering": [
+    {
+      "id": "SWR-001",
+      "statement_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "rationale": "SWR-001 states the full 32-bit IDR write.",
+  "approver": "owner",
+  "decided_utc": "2026-10-31T12:00:00Z",
+  "signature_ref": "PLD-crc-idr-a1-0001.sig",
+  "use": "LEARNING_SET_ONLY"
+}

@@ -2,9 +2,10 @@
 
 Independent of the Conductor process: reads the heartbeat file and, when it is missing, older than --max-age or
 reports a failed cycle, appends ONE alert per dedup window to <state>/afo/alerts.jsonl (always-available local
-channel; external channels come with M6) and exits 1 so the timer unit shows the failure. It never restarts
-anything: restarts are systemd's (Restart=, WatchdogSec=) and bounded by StartLimitBurst.
+channel; external channels come with M6) and exits 1 so the timer unit shows the failure. Continuous profiles
+also use the existing pre-authorized recovery recipe, durable cooldown and authenticated intent fence.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -55,7 +56,30 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     r = check(a.max_age)
     if not r["ok"]:
+        from .operations import configured
+        from .host import preflight
+
+        if configured() and not preflight()["ok"]:
+            # Surviving independent layer reports via journal/stdout, without data-root fallback writes.
+            print(json.dumps({**r, "recovery": "WAITING_FOR_AUTHORITATIVE_VOLUME"}))
+            return 1
         r["alerted"] = alert(r, a.dedup)
+        from .operations import recover
+
+        r["recovery"] = recover()
+    from .operations import configured, recover_profile, Intent, recover
+    from .host import preflight
+
+    if configured() and preflight()["ok"]:
+        from .queue import Store
+
+        try:
+            intent = Intent().read()
+            if r["ok"] and intent["mode"] == "STOPPED" and not intent.get("effective_stop"):
+                r["recovery"] = recover()
+            r["profile_recovery"] = recover_profile(Store(), external=True)
+        except (OSError, ValueError, TimeoutError) as exc:
+            r["profile_recovery"] = {"action": "WAITING", "code": getattr(exc, "code", type(exc).__name__)}
     print(json.dumps(r))
     return 0 if r["ok"] else 1
 

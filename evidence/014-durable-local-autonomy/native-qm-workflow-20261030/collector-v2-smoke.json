@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-30T19:01:30.889003+00:00",
+  "result": "PASS",
+  "copies": [],
+  "LL_native_status": "RUNNING",
+  "HAL_launch_record": "ABSENT",
+  "runtime_model_calls": 0,
+  "observation_end_unix": 1793414784.449241,
+  "previous_observer_local_PID": 758031,
+  "remote_or_model_processes_signalled": 0
+}

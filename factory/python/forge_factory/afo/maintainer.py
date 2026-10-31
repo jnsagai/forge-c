@@ -24,12 +24,15 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 
 from ..common import REPO_ROOT, sha256_bytes, sha256_file, state_dir, utc_now
 from ..reliability import isolation
 from ..reliability.protect import _match
 
+MAX_SOURCE_READ_BYTES = 4 * 1024 * 1024
 CANDIDATE_TESTS = "factory/python/tests/afo_candidate/"
 ALLOW = ["factory/python/forge_factory/**", CANDIDATE_TESTS + "**"]
 DENY = [  # inside ALLOW, still never the maintainer's: the deciders, the grants and the other repair identities
@@ -133,7 +136,7 @@ def case_dir(pid: str) -> Path:
     return state_dir() / "afo/maintainer" / pid
 
 
-def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT) -> dict:
+def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, retained_rework: dict | None = None) -> dict:
     """Detached worktree of `base`; everything the maintainer may not change is read-only (OS); one frozen case."""
     d = case_dir(pid)
     if (d / "case.json").exists():
@@ -155,8 +158,19 @@ def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT) -> dict
     case = {"proposal_id": pid, "base": base_rev, "src": str(src), "root": str(root), "repo": str(repo),
             "incident": {k: str(v)[:400] for k, v in incident.items()}, "allow": ALLOW, "deny": DENY,
             "hardened_files": hardened, "isolation": isolation.level(), "created_utc": utc_now()}
-    (d / "case.json").write_text(json.dumps(case, indent=2, sort_keys=True))
-    (d / "case.json").chmod(0o400)
+    if retained_rework is not None:
+        case["retained_rework"] = retained_rework
+        if len(json.dumps(case).encode()) > 65536:
+            subprocess.run(["git", "worktree", "remove", "--force", str(src)], cwd=repo, capture_output=True)
+            isolation.discard(root)
+            raise MaintainerDenied("REWORK_CASE_TOO_LARGE")
+    if retained_rework is not None:
+        from .durable import immutable_json
+
+        immutable_json(d / "case.json", case)
+    else:
+        (d / "case.json").write_text(json.dumps(case, indent=2, sort_keys=True))
+        (d / "case.json").chmod(0o400)
     return case
 
 
@@ -179,22 +193,150 @@ def safe_path(src: Path, rel: str, globs: list[str], *, write: bool) -> Path:
     return p
 
 
+
+def work_unit(case: dict) -> dict:
+    """Trusted task metadata from Git facts; incident/source prose never becomes an instruction."""
+    src = Path(case["src"])
+    names = _git("diff", "--name-only", "-z", case["base"], cwd=src).split("\0")
+    names += _git("ls-files", "--others", "--exclude-standard", "-z", cwd=src).split("\0")
+    paths = sorted({p for p in names if p})
+    if len(paths) > MAX_PATHS:
+        raise MaintainerDenied("REWORK_SCOPE_TOO_LARGE")
+    files = []
+    globs = protected_globs()
+    for rel in paths:
+        if not re.fullmatch(r"[A-Za-z0-9_./-]{1,200}", rel) or path_issue(rel, globs):
+            raise MaintainerDenied("REWORK_SCOPE_PATH_INVALID", rel)
+        p = safe_path(src, rel, globs, write=False)
+        if not p.is_file() or p.stat().st_size > MAX_SOURCE_READ_BYTES:
+            raise MaintainerDenied("REWORK_SCOPE_SOURCE_INVALID", rel)
+        files.append({"path": rel, "sha256": sha256_file(p), "bytes": p.stat().st_size})
+    return {"schema": "forge-c/maintenance-work-unit/1", "base": case["base"],
+            "proposal_id": case["proposal_id"],
+            "kind": "REWORK_RETAINED_CANDIDATE" if files else "REPAIR_BASELINE", "files": files}
+
+
+SOURCE_ROOTS = ("factory/python/forge_factory", "factory/python/tests", "config/factory/profiles")
+
+
+def source_inventory(case: dict, prefix: str = "factory/python/forge_factory") -> dict:
+    """Names/hashes of existing readable Git/candidate files; no shell/glob permissions."""
+    if (prefix != "." and (not re.fullmatch(r"[A-Za-z0-9_./-]{1,200}", prefix)
+                           or ".." in Path(prefix).parts or prefix.startswith("/"))):
+        raise MaintainerDenied("SOURCE_INVENTORY_PREFIX_INVALID")
+    prefix = "" if prefix == "." else prefix.rstrip("/")
+    if prefix and not any(prefix == root or prefix.startswith(root + "/") for root in SOURCE_ROOTS):
+        raise MaintainerDenied("SOURCE_INVENTORY_OUT_OF_SCOPE", prefix)
+    src = Path(case["src"])
+    globs = protected_globs()
+    with _case_lock(case):
+        names = _git("ls-files", "-z", "--cached", "--others", "--exclude-standard", cwd=src).split("\0")
+        if len(names) > 20000:
+            raise MaintainerDenied("SOURCE_INVENTORY_TOO_LARGE")
+        entries = []
+        for rel in sorted(set(names)):
+            if not any(rel.startswith(root + "/") for root in SOURCE_ROOTS):
+                continue
+            if prefix and rel != prefix and not rel.startswith(prefix + "/"):
+                continue
+            if (not re.fullmatch(r"[A-Za-z0-9_./-]{1,200}", rel)
+                    or path_issue(rel, globs) in ("PATH_TRAVERSAL", "PROTECTED_PATH")):
+                continue
+            try:
+                p = safe_path(src, rel, globs, write=False)
+            except MaintainerDenied:
+                continue  # a symlink never becomes a discoverable source
+            if p.is_file():
+                entries.append({"path": rel, "bytes": p.stat().st_size, "sha256": sha256_file(p)})
+    return {"schema": "forge-c/maintenance-source-inventory/1", "base": case["base"],
+            "roots": list(SOURCE_ROOTS), "prefix": prefix or ".", "entries": entries,
+            "count": len(entries), "write_authority": "UNCHANGED"}
+
+
 def read_source(case: dict, rel: str, max_bytes: int = MAX_EXCERPT * 2) -> str:
     p = safe_path(Path(case["src"]), rel, protected_globs(), write=False)
     if not p.is_file():
         raise MaintainerDenied("NOT_FOUND", rel)
-    return p.read_text(errors="replace")[:max_bytes]
+    with p.open("rb") as stream:
+        return stream.read(max_bytes).decode("utf-8", errors="replace")
 
 
-def write_source(case: dict, rel: str, text: str) -> str:
+@contextmanager
+def _case_lock(case: dict, *, wait: bool = False):
+    import fcntl
+
+    path = case_dir(case["proposal_id"]) / ".submission.lock"
+    fd = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "a") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | (0 if wait else fcntl.LOCK_NB))
+        except BlockingIOError as exc:
+            raise MaintainerDenied("SOURCE_EDIT_BUSY") from exc
+        yield
+
+
+def _unsealed(case: dict) -> None:
+    directory = case_dir(case["proposal_id"])
+    if (directory / "submission-intent.json").exists() or (directory / "submission.json").exists():
+        raise MaintainerDenied("CASE_ALREADY_SUBMITTED", case["proposal_id"])
+
+
+def _write_source(case: dict, rel: str, text: str) -> str:
     if len(text.encode()) > MAX_FILE_BYTES:
         raise MaintainerDenied("FILE_TOO_LARGE", rel)
     p = safe_path(Path(case["src"]), rel, protected_globs(), write=True)
     if p.exists() and not os.access(p, os.W_OK):
         raise MaintainerDenied("OS_READ_ONLY", rel)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(text)
+    raw = text.encode("utf-8")
+    mode = p.stat().st_mode & 0o777 if p.exists() else 0o644
+    fd, temporary = tempfile.mkstemp(prefix=".afo-source-", dir=p.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temporary, mode)
+        os.replace(temporary, p)
+        parent = os.open(p.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(parent)
+        finally:
+            os.close(parent)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
     return sha256_file(p)
+
+
+def write_source(case: dict, rel: str, text: str) -> str:
+    with _case_lock(case):
+        _unsealed(case)
+        return _write_source(case, rel, text)
+
+
+def edit_source(case: dict, rel: str, expected_sha256: str, old_text: str, new_text: str) -> str:
+    """One exact bounded replacement; stale/ambiguous requests never mutate source."""
+    if (not re.fullmatch(r"[0-9a-f]{64}", expected_sha256) or not old_text or old_text == new_text
+            or max(len(old_text.encode()), len(new_text.encode())) > 8192):
+        raise MaintainerDenied("SOURCE_EDIT_INVALID")
+    with _case_lock(case):
+        _unsealed(case)
+        p = safe_path(Path(case["src"]), rel, protected_globs(), write=True)
+        if not p.is_file() or p.stat().st_size > MAX_FILE_BYTES:
+            raise MaintainerDenied("SOURCE_EDIT_FILE_INVALID", rel)
+        raw = p.read_bytes()
+        if sha256_bytes(raw) != expected_sha256:
+            raise MaintainerDenied("SOURCE_EDIT_STALE", rel)
+        before = old_text.encode("utf-8")
+        if raw.count(before) != 1:
+            raise MaintainerDenied("SOURCE_EDIT_ANCHOR_NOT_UNIQUE", rel)
+        replacement = raw.replace(before, new_text.encode("utf-8"), 1)
+        try:
+            text = replacement.decode("utf-8")
+        except UnicodeError as exc:
+            raise MaintainerDenied("SOURCE_EDIT_NOT_UTF8", rel) from exc
+        return _write_source(case, rel, text)
 
 
 def clean_env(src: Path, scratch: Path) -> dict:
@@ -231,43 +373,106 @@ def run_tests(case: dict, tests: list[str], timeout: int = 540) -> dict:
 
 # -- submit: broker commit + veto + sealed reproducer (T047) ------------------------------------------------------
 def submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
+    """Serialize one submission; recover a lost commit acknowledgement from its frozen tree/parent."""
+    with _case_lock(case, wait=True):
+        return _submit(case, summary, reproducer, signature)
+
+
+def _submit(case: dict, summary: str, reproducer: str, signature: str) -> dict:
+    from .durable import digest, immutable_bytes, immutable_json, strict_json
+
     src, pid = Path(case["src"]), case["proposal_id"]
     if not (reproducer.startswith(CANDIDATE_TESTS) and reproducer.endswith(".py")):
         raise MaintainerDenied("REPRODUCER_NOT_CANDIDATE_OWNED", reproducer)
     if not re.fullmatch(r"[\w .:,/()'-]{8,160}", signature):
         raise MaintainerDenied("BAD_SYMPTOM_SIGNATURE", signature[:60])
-    _git("add", "-A", cwd=src)
-    if not _git("status", "--porcelain", cwd=src).strip():
-        raise MaintainerDenied("EMPTY_CANDIDATE")
-    _git(*IDENTITY, "commit", "-q", "--no-verify", "-m",
-         f"AFO maintainer candidate {pid}: {' '.join(summary.split())[:200]}", cwd=src)
-    cand = _git("rev-parse", "HEAD", cwd=src).strip()
+    d = case_dir(pid)
+    frozen = d / "case.json"
+    if digest(strict_json(frozen.read_bytes(), 65536)) != digest(case):
+        raise MaintainerDenied("FROZEN_CASE_CHANGED")
+    request = digest({"case_sha256": sha256_file(frozen), "summary": summary,
+                      "reproducer": reproducer, "signature": signature})
+    intent_path = d / "submission-intent.json"
+    if intent_path.exists():
+        intent = strict_json(intent_path.read_bytes(), 65536)
+        if intent["request_sha256"] != request:
+            raise MaintainerDenied("SUBMISSION_REPLAY_CHANGED")
+    else:
+        _git("add", "-A", cwd=src)
+        if not _git("status", "--porcelain", cwd=src).strip():
+            raise MaintainerDenied("EMPTY_CANDIDATE")
+        intent = {"request_sha256": request, "case_sha256": sha256_file(frozen),
+                  "parent": _git("rev-parse", "HEAD", cwd=src).strip(),
+                  "tree": _git("write-tree", cwd=src).strip(), "submitted_utc": utc_now(),
+                  "message": f"AFO maintainer candidate {pid}: {' '.join(summary.split())[:200]}".rstrip(" ")}
+        immutable_json(intent_path, intent)
+    if (d / "submission-receipt.json").exists():
+        return submission(case, require_receipt=True)[0]
+    head = _git("rev-parse", "HEAD", cwd=src).strip()
+    if head == intent["parent"]:
+        if _git("write-tree", cwd=src).strip() != intent["tree"]:
+            raise MaintainerDenied("SUBMISSION_TREE_CHANGED")
+        _git(*IDENTITY, "commit", "-q", "--no-verify", "-m", intent["message"], cwd=src)
+        head = _git("rev-parse", "HEAD", cwd=src).strip()
+    # A crash after commit but before receipt must adopt precisely that effect, never commit again.
+    actual = _git("show", "-s", "--format=%P%n%T%n%B", head, cwd=src).strip().split("\n", 2)
+    # Git strips trailing ASCII spaces from a commit message. Adopt legacy effects
+    # only under that exact normalization; parent, tree and all other message bytes stay bound.
+    if actual != [intent["parent"], intent["tree"], intent["message"].rstrip(" ")]:
+        raise MaintainerDenied("SUBMISSION_COMMIT_MISMATCH")
+    cand = head
     issues = veto(case["base"], cand, Path(case["repo"]))
     staged = None
     if not issues:
         text = _git("show", f"{cand}:{reproducer}", cwd=src)  # the committed content, not the live file
-        d = case_dir(pid) / "reproducer"
-        d.mkdir(parents=True, exist_ok=True)
-        script = d / "reproducer.py"
-        if script.exists():
-            script.chmod(0o600)
-        script.write_text(text)
+        repro_dir = case_dir(pid) / "reproducer"
+        repro_dir.mkdir(parents=True, exist_ok=True)
+        script = repro_dir / "reproducer.py"
         # read-only for everyone: the CRE verifier runs it as its sandbox UID (r: 0o400 was "Permission denied" in
         # the M5 drill); integrity is the sha256 in the sealed manifest, and no sandbox UID can write here
-        script.chmod(0o444)
+        immutable_bytes(script, text.encode(), 0o444)
         rid = "AFO-" + pid
         man = {"reproducers": [{"id": rid, "script": script.name, "sha256": sha256_file(script),
                                 "symptom_signature": signature, "observed_in": case["incident"].get("order_id", ""),
                                 "baseline_revision": case["base"], "fix_revision": cand,
                                 "source_path": reproducer}]}
-        import yaml
-
-        (d / "manifest.yaml").write_text(yaml.safe_dump(man, sort_keys=False))
-        staged = {"id": rid, "manifest": str(d / "manifest.yaml"), "sha256": man["reproducers"][0]["sha256"]}
+        # JSON is valid YAML; use immutable publication for the existing CRE manifest reader.
+        immutable_json(repro_dir / "manifest.yaml", man)
+        staged = {"id": rid, "manifest": str(repro_dir / "manifest.yaml"), "sha256": man["reproducers"][0]["sha256"]}
     sub = {"proposal_id": pid, "candidate": cand, "veto": issues, "staged": staged, "summary": summary[:300],
-           "submitted_utc": utc_now()}
-    (case_dir(pid) / "submission.json").write_text(json.dumps(sub, indent=2, sort_keys=True))
+           "submitted_utc": intent["submitted_utc"]}
+    sub_hash = immutable_json(d / "submission.json", sub)
+    receipt = {"schema_version": "1.0", "case_sha256": intent["case_sha256"],
+               "request_sha256": request, "submission_sha256": sub_hash, "candidate": cand,
+               "manifest_sha256": sha256_file(Path(staged["manifest"])) if staged else None,
+               "reproducer_sha256": staged["sha256"] if staged else None}
+    immutable_json(d / "submission-receipt.json", receipt)
     return sub
+
+
+def submission(case: dict, *, require_receipt: bool = False) -> tuple[dict, dict | None]:
+    """Read durable candidate evidence; a receipt proves submission, never product correctness."""
+    from .durable import digest, strict_json
+
+    d = case_dir(case["proposal_id"])
+    sub = strict_json((d / "submission.json").read_bytes(), 65536)
+    path = d / "submission-receipt.json"
+    if not path.exists() and not require_receipt and not (d / "submission-intent.json").exists():
+        return sub, None  # legacy M5 submissions retain their independent validation path
+    receipt = strict_json(path.read_bytes(), 65536)
+    if (receipt["case_sha256"] != sha256_file(d / "case.json")
+            or digest(strict_json((d / "case.json").read_bytes(), 65536)) != digest(case)
+            or receipt["submission_sha256"] != sha256_file(d / "submission.json")
+            or receipt["candidate"] != sub["candidate"] or sub["proposal_id"] != case["proposal_id"]):
+        raise MaintainerDenied("SUBMISSION_RECEIPT_MISMATCH")
+    if sub["staged"]:
+        manifest = Path(sub["staged"]["manifest"])
+        if (manifest != d / "reproducer/manifest.yaml" or manifest.is_symlink()
+                or receipt["manifest_sha256"] != sha256_file(manifest)
+                or (manifest.parent / "reproducer.py").is_symlink()
+                or receipt["reproducer_sha256"] != sha256_file(manifest.parent / "reproducer.py")):
+            raise MaintainerDenied("SUBMISSION_REPRODUCER_CHANGED")
+    return sub, receipt
 
 
 def changed_paths(base: str, cand: str, repo: Path) -> list[str]:
@@ -321,11 +526,18 @@ def triage(case: dict, sub: dict, cre_store, policy, *, capa_id: str | None = No
     if b["verdict"] != "SYMPTOM_PRESENT":
         return {"ok": False, "reason": f"REPRODUCER_DOES_NOT_FAIL_ON_BASELINE:{b['verdict']}", "baseline_run": b}
     reg = CapaRegistry(cre_store, policy)
+    linked_cases = [c['capa_id'] for c in reg.all() if case['proposal_id'] in reg.links(c['capa_id'], 'AFO_PROPOSAL')]
+    if len(linked_cases) > 1:
+        raise MaintainerDenied("AMBIGUOUS_CAPA_LINK")
     if capa_id and reg.get(capa_id):
         linked = capa_id
+    elif linked_cases:
+        linked = linked_cases[0]  # recover independent verification without a duplicate CAPA
     else:
         linked = _next_capa(reg)
-        reg.open(linked, [case["incident"].get("incident_id") or linked], list(fingerprints),
+        observed = (case["incident"].get("incident_id") or case["incident"].get("source_order_id")
+                    or case["incident"].get("order_id") or "afo-proposal:" + case['proposal_id'])
+        reg.open(linked, [observed], list(fingerprints),
                  f"AFO maintainer {case['proposal_id']}: {sub['summary']}"[:1000])
         reg.triage(linked, f"maintainer hypothesis (unverified): {sub['summary']}"[:1500], None,
                    "AGENT (afo-factory-maintainer)")
@@ -343,10 +555,19 @@ def evaluate(case: dict, sub: dict, cre_store, policy, evaluator=None) -> dict:
 
 
 def process(store, pid: str, cre_store, policy, *, capa_id: str | None = None, fingerprints=(),
-            tests_ref: str = "NOT_RUN", evaluator=None) -> dict:
+            tests_ref: str = "NOT_RUN", evaluator=None, binding_ref: dict | None = None) -> dict:
     """Submission -> veto -> triage -> CRE evaluation -> append-only record. Never publishes or deploys."""
     case = load_case(pid)
-    sub = json.loads((case_dir(pid) / "submission.json").read_text())
+    sub, _ = submission(case)
+    binding_evidence = []
+    if binding_ref is not None:
+        from .maintenance_binding import bound_submission
+
+        sub = bound_submission(store, case, sub, binding_ref)
+        binding_evidence = ["administrative-binding:" + binding_ref["binding_id"]]
+        previous = store.proposal(pid)
+        if previous and binding_evidence[0] in previous['record']['evidence_refs']:
+            return previous['record']  # historical independently evaluated binding, no repeat effect
     if sub["veto"]:
         rec = record(store, case, sub, "QUARANTINED", "QUARANTINED", tests_ref=tests_ref)
         quarantine(case)
@@ -354,7 +575,7 @@ def process(store, pid: str, cre_store, policy, *, capa_id: str | None = None, f
     t = triage(case, sub, cre_store, policy, capa_id=capa_id, fingerprints=fingerprints)
     if not t["ok"]:
         rec = record(store, case, sub, "REJECTED", "REJECTED", promotion_id="NOT_EVALUATED:" + t["reason"][:80],
-                     tests_ref=tests_ref, evidence=[f"triage:{t['reason']}"[:200]])
+                     tests_ref=tests_ref, evidence=[*binding_evidence, f"triage:{t['reason']}"[:200]])
         quarantine(case)
         return rec
     d = evaluate(case, sub, cre_store, policy, evaluator)
@@ -363,7 +584,7 @@ def process(store, pid: str, cre_store, policy, *, capa_id: str | None = None, f
     if d.get("allowed_auto_deployment") is not False:
         outcome = "QUARANTINED"  # an evaluator claiming deployment rights is itself a fault
     rec = record(store, case, sub, outcome, outcome, capa_id=t["capa_id"], promotion_id=d["decision_id"],
-                 tests_ref=tests_ref, evidence=[f"promotion-decision:{d['decision_id']}",
+                 tests_ref=tests_ref, evidence=[*binding_evidence, f"promotion-decision:{d['decision_id']}",
                                                 f"reproducer-run:{t['baseline_run']['run_id']}"])
     if outcome != "ELIGIBLE_FOR_OFFLINE_REVIEW":
         quarantine(case)
@@ -395,6 +616,9 @@ def publish(store, pid: str, eff, *, runner=None, remote: str = "origin", base_b
     if not eff.get("maintenance.enable_factory_maintainer"):
         raise MaintainerDenied("MAINTAINER_DISABLED_BY_POLICY")
     case = load_case(pid)
+    sub, _ = submission(case)
+    if sub["candidate"] != cur["record"]["candidate_commit"]:
+        raise MaintainerDenied("PUBLICATION_SUBMISSION_MISMATCH")
     rec, repo = cur["record"], Path(case["repo"])
     again = veto(rec["baseline_commit"], rec["candidate_commit"], repo)
     if again:
@@ -419,12 +643,27 @@ def publish(store, pid: str, eff, *, runner=None, remote: str = "origin", base_b
         body = (f"AFO Factory Maintainer proposal {pid} (candidate {rec['candidate_commit'][:12]}).\n\n"
                 f"CAPA: {rec['capa_id']}; reproducer: {rec['reproducer_id']}; CRE decision: {rec['cre_promotion_id']} "
                 "(ELIGIBLE_FOR_OFFLINE_REVIEW).\nOffline human review only: no automatic merge or deployment.")
-        p = call(["gh", "pr", "create", "--draft", "--base", base_branch, "--head", branch,
+        existing = call(['gh', 'pr', 'list', '--head', branch, '--base', base_branch,
+                         '--state', 'all', '--json', 'url,isDraft,headRefOid'])
+        try:
+            matches = json.loads(existing.stdout) if existing.returncode == 0 else None
+        except (ValueError, AttributeError):
+            matches = None
+        if matches is None:
+            raise MaintainerDenied('PR_RECONCILIATION_UNKNOWN', branch)
+        if matches:
+            if (len(matches) != 1 or matches[0].get('isDraft') is not True
+                    or matches[0].get('headRefOid') != rec['candidate_commit']):
+                raise MaintainerDenied('PR_RECONCILIATION_CONFLICT', branch)
+            pr_url = matches[0]['url']
+        else:
+            pr_url = None
+        p = None if pr_url else call(["gh", "pr", "create", "--draft", "--base", base_branch, "--head", branch,
                   "--title", f"AFO proposal {pid}: {rec['capa_id']}", "--body", body])
-        if getattr(p, "returncode", 1):
+        if p is not None and getattr(p, "returncode", 1):
             raise MaintainerDenied("PR_FAILED", str(getattr(p, "stderr", ""))[-120:])
-        pr_url = str(p.stdout).strip().splitlines()[-1]
-    sub = json.loads((case_dir(pid) / "submission.json").read_text())
+        if p is not None:
+            pr_url = str(p.stdout).strip().splitlines()[-1]
     return record(store, case, sub, "ELIGIBLE_FOR_OFFLINE_REVIEW", "PUBLISHED", capa_id=rec["capa_id"],
                   promotion_id=rec["cre_promotion_id"], tests_ref=rec["tests_ref"], branch=branch, pr_url=pr_url,
                   evidence=[x for x in rec["evidence_refs"] if x != "none"])

@@ -155,7 +155,10 @@ def preflight(roles_required: list[str] | None = None, agents_path: Path | None 
             issues.append(Issue("AGENT_OUTPUT_CONTRACT_MISSING", r.id, r.output_contract))
         if r.model_provider not in LOCAL_PROVIDERS:
             issues.append(Issue("AGENT_MODEL_NOT_LOCAL", r.id, r.model_provider))
-        if r.max_mcp_output_bytes > tok["max_tool_result_bytes"]:
+        output_limit = (tok.get("afo_max_tool_result_bytes", tok["max_tool_result_bytes"])
+                        if r.id.startswith("afo-") else tok["max_tool_result_bytes"])
+        if (type(output_limit) is not int or not 0 < output_limit <= 65_536
+                or r.max_mcp_output_bytes > output_limit):
             issues.append(Issue("AGENT_BUDGET_INVALID", r.id, "max_mcp_output_bytes"))
         for t in r.allowed_tools:
             if t not in ops:

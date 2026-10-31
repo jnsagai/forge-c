@@ -1,0 +1,64 @@
+# Continuous operation — 24 hours a day, every day
+
+**Status:** REQUIRED DESIGN / NOT_IMPLEMENTED / NOT_QUALIFIED. Applies to DA-FR-045–052, together with existing recovery, accounting and learning requirements. This extends Feature 005; it does not introduce another factory scheduler.
+
+## Owner intent and service contract
+
+Once externally enabled for continuous operation, Forge-C has no autonomous end-of-service condition. The last job finishing, a failed driver, a Qwen capability limit, an empty backlog, a completed benchmark or an exhausted campaign MUST NOT cause the factory to exit, disable its services or abandon supervision. The deployed production service has no finite `--max-cycles`/`--max-polls` limit and no nightly expiry. Finite test harnesses remain available outside the continuous service profile.
+
+Persist service intent separately from job outcomes and inference authority. `RUNNING` service intent means keep deterministic supervision, supported reconciliation, intake/status and eligible scheduling available. It does not turn AFO `DISABLED`/`OBSERVE_ONLY` into `ACTIVE`, extend a grant, renew a mission or make unknown execution quiescent. A job can terminate BLOCKED while the factory continues to manage other work. Candidate search still stops on exhaustion; the factory does not.
+
+The factory executes eligible approved work continuously, recovers eligible operational failures, and consolidates experience within admitted allocations. When nothing can legally or technically run, it remains in a visible waiting state, with a bounded model-free probe/reconciliation schedule and explicit resumption conditions. It never invents work or spends inference solely to appear busy. An authenticated operator can still pause, drain, revoke or shut down the installation; every automatic restart path must respect that intent.
+
+## Reuse and observed gaps
+
+Source audit: repository commit `511861f50e0032a62113c2750f55f707432f4c8b`. Repository templates are evidence of code, not proof of the units installed on Omniverse2. Codex must inventory the actual local-profile units and installed systemd version before qualification.
+
+| Existing capability | Integration work |
+|---|---|
+| Feature 005 AFO-FR-009–015: headless services, independent watchdog, readiness and bounded restarts | Extend the existing service renderer and templates; qualify boot, crash, hang, unexpected clean exit and restart-limit exhaustion. |
+| `afo/conductor.py`: indefinite loop, completed-cycle heartbeat, finite test option | Preserve the indefinite production mode, bound each stage, isolate per-item errors, expose recovery progress; do not send healthy heartbeats from a stalled loop. |
+| `deploy/systemd/afo/forge-conductor.service.in`: `Type=notify`, `WatchdogSec=120`, `Restart=on-failure`, five starts per 600 seconds | Cover unexpected exit code 0 as well as failure; retain bounded restart bursts and implement a separately supervised slow recovery path after the burst is exhausted. |
+| `afo/watchdog.py` and its service/timer: independent alerts only | Existing code explicitly never restarts services. Add a narrowly scoped, policy-controlled recovery action through existing operations ownership, with persistent cooldown and operator-intent checks; do not claim the present timer already restores a start-limited unit. |
+| `deploy/systemd/forge-supervisor.service.in`: independent notify/watchdog service with `Restart=always` | Preserve independence from Fabro/Qwen and qualify its own rate-limit and boot recovery. Avoid mutually recursive restart loops. |
+| `afo/scheduler.py`, queue, leases and outbox: one candidate per cycle, authority checks, backoff, aging | Test an authority-refused or poison candidate at the head of the queue. Persist item-specific deferral/quarantine so independent eligible work progresses without reordering true dependencies or bypassing shared leases. |
+| AFO-FR-024–026, 030, 044–046, 056–058: continuous queue, operator controls, bounded attempts and dead letters | Keep these contracts; strengthen job isolation and distinguish waiting for prerequisites from globally stopping the factory. |
+| Existing governor, CRE breakers, local-profile preflight, events, dashboard and scorecard | Add service intent, outage/wait intervals, next-probe deadlines, recovery status and scope-aware availability; retain original expenditure and product-quality metrics. |
+
+The Conductor template currently references a cloud-named Fabro unit in ordering. This is an integration audit target, not permission to start a cloud profile. Render and test the actual Omniverse2 local service graph, mounts and gateway/model identities. Preserve default/provider compatibility and local-only routing.
+
+## Recovery ownership and scheduling
+
+Use three existing layers: systemd manages processes; the independent supervisor/watchdog observes and performs approved operational recipes; the Conductor reconciles durable jobs and schedules eligible work. Qwen is a replaceable worker dependency and has no responsibility for keeping the control plane alive.
+
+Systemd restart policies must cover unexpected successful exits where appropriate, while an explicit service-manager stop remains respected. Start-rate limiting can leave a failed unit without another automatic attempt; merely waiting for its interval to pass is insufficient. A separately scheduled, model-free recovery check must observe that state and, after persistent cooldown plus prerequisite and operator-intent checks, request an approved start. Do not disable rate limits, repeatedly reset failed counters, or create an unbounded rapid restart loop. These semantics are documented by [systemd.service](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html) and [systemd.unit](https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html); use only directives supported by the installed version.
+
+Each dependency has a typed condition, last probe, consecutive failures, policy-bounded backoff, next probe, approved recipe identity, attempt history and material resumption predicate. Persist cooldown across controller restarts. Rate limits are scoped to a recovery recipe/dependency, not a lifetime deadline for the factory. After exhausting a recipe burst, continue cheap probes; permit another bounded burst only under the pre-established cooldown/recovery policy, never by resetting a product mission. Permanent corruption, invalid configuration or missing authority remain quarantined until independently resolved. The factory remains degraded and observable through the surviving layer.
+
+Set all probe, loop-stage, startup, watchdog, cancellation, backoff, maximum probe-gap and starvation bounds in a versioned policy and freeze them before a campaign. No unlimited waits in a control-loop subprocess or network call. Test successful scheduled probes across long outages as well as deadline violations. Restore an eligible waiting job automatically after its prerequisite is verified and authority remains valid; reconcile native executions and leases before admitting another inference. A terminal exhausted job is not silently reopened.
+
+## Containment and long-running resource management
+
+Contain an item-local parse error, inspector failure, invalid proposal or learning-candidate failure to that item's existing quarantine/dead-letter path. Continue bounded processing of unrelated items. A storage transaction failure or other shared integrity fault closes affected admission globally; it must not be disguised as a harmless item error. Keep supported supervision alive, publish degradation through independent service-manager status, and never create a new empty queue on another disk.
+
+Reserve sufficient CPU/RAM/IO for deterministic control and cancellation independently of the model worker. Preserve one admitted inference, uncertain-execution leases, verification limits and backpressure. Optional learning cannot starve cancellation, reconciliation or eligible product work. Persist fair scheduling state and cap per-cycle batch size.
+
+Implement policy-bounded log rotation, temporary-workspace cleanup, retention, WAL/checkpoint/backup maintenance and resource trend checks through existing components. Delete only explicitly disposable data after reference/pin checks; preserve sealed evidence, active workspaces, receipts, current recovery state and required learning history. Cleanup is not a license to erase failed evidence. Do not reset/wipe the database to recover availability. If the mandatory mount is absent, read-only or full, refuse affected mutations, keep the independent observer running where possible, and use existing bounded OS logging without falling back to another application data root. Restoration requires mount identity and integrity verification.
+
+## Operator control and outage truth
+
+Maintain an authenticated, durable operations intent and epoch for running, paused, draining or stopped operation, mapped onto existing controls. All restart layers consult it before starting a component. Explicit shutdown never gets reversed to improve an availability metric; no operator stop/disable/mask is auto-undone. If intent cannot be verified, do not infer permission to restart or admit work. The operations design must account for boot and loss of the application mount, including where the minimal intent is durably readable; no credentials or policy widening are implied.
+
+Fence every queued start/restart effect with its operations epoch and serialize it with operator controls. A prior RUNNING read is insufficient if STOPPED is committed before dispatch: reject stale effects and reconcile any already in-flight service-manager request against the newer intent. Workers also recheck current authority before doing work. Distinguish requested shutdown from effective shutdown; issue the effective-stop receipt only when pending contrary start effects and native workers have settled under the declared policy. If cancellation is unresolved, report that explicitly. Test a pause between intent read and start, a concurrent stop, and stale outbox replay after restart; no obsolete command may resurrect the factory after confirmed shutdown.
+
+Separate four dimensions: desired service mode, observed control-plane availability, worker/dependency readiness, and engineering progress/quality. A healthy waiting controller with Qwen down is not an available inference worker or a successful product run. Missing telemetry is UNKNOWN and counted as unavailable in availability calculations. Operator maintenance, host power loss, disk faults, forced reboot and recovery time remain in the gross 24/7 service-window report, with causes; any scoped availability measure is separately labeled and cannot erase gross outages.
+
+Retain the existing rolling-30-day 99% availability and p95 transient restoration of at most 10 minutes as objectives until measured. Record detection time, restoration time, blocked duration, queue age, overdue probes, intervention count, restart count and useful completed work separately. Fault exposure, sample count, censored/unrecovered faults and denominator rules must be visible. Never infer product progress from uptime or number of restarts.
+
+One Omniverse2 cannot compute while it has no power or functioning hardware. Require unattended startup after power/OS/storage prerequisites return and test persistent-state reconciliation. Hardware replacement, UPS sizing, redundant hosts and host-level reboot permission are outside this amendment; list uncovered failure classes honestly rather than claiming zero physical downtime. No purchase, deployment or host reboot is authorized by this specification.
+
+## Qualification and delivery
+
+DA-AT-045–052 cover indefinite service intent, empty/blocked queues, clean/crash/hung exits, restart-limit exhaustion, prerequisite restoration, unfair/poison queue items, long-running resource pressure, intentional shutdown and truthful availability. The 24h smoke, 72h pilot and 168h unattended campaigns include real admitted work and frozen fault exposure. Each campaign must continue observing control-plane cycles beyond the end of its engineering grant, then verify that a later eligible authorized submission is admitted without manually relaunching the factory. No inference occurs between grants unless separately admitted.
+
+Keep deterministic fixtures, real systemd integration, native local-model campaigns and the 30-day observation window separate. A 168-hour campaign establishes evidence for that envelope, not a 100% uptime guarantee. The service remains active after a measurement window ends unless the operator explicitly requests shutdown. All runtime and live campaign results remain NOT_RUN until recorded on the exact candidate revision.

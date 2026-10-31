@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="24" time="5.145" timestamp="2026-10-25T10:46:25.023077+00:00" hostname="master"><testcase classname="factory.python.tests.test_da014_maintenance" name="test_submission_replays_without_another_commit_and_rejects_changed_request" time="0.217"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_submission_replays_withou0/state/afo/maintainer/mnt-abcd-a1/submission.json'">factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_submission_replays_withou0/factory-repo')
+
+    def test_submission_replays_without_another_commit_and_rejects_changed_request(factory):
+        case = _case(factory)
+        _good_candidate(case)
+        sub = M.submit(case, "fix addition", M.CANDIDATE_TESTS + "rpr_calc.py", SIG)
+        assert M.submit(case, "fix addition", M.CANDIDATE_TESTS + "rpr_calc.py", SIG) == sub
+        assert _head(Path(case["src"])) == sub["candidate"]
+        with pytest.raises(M.MaintainerDenied, match="SUBMISSION_REPLAY_CHANGED"):
+            M.submit(case, "different request", M.CANDIDATE_TESTS + "rpr_calc.py", SIG)
+&gt;       receipt = M.submission(case, require_receipt=True)[1]
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_maintenance.py:29: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/maintainer.py:318: in submission
+    sub = strict_json((d / "submission.json").read_bytes(), 65536)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_abc.py:625: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_submission_replays_withou0/state/afo/maintainer/mnt-abcd-a1/submission.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_submission_replays_withou0/state/afo/maintainer/mnt-abcd-a1/submission.json'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:537: FileNotFoundError</failure></testcase><testcase classname="factory.python.tests.test_da014_maintenance" name="test_crash_after_commit_is_adopted_before_resealing" time="0.134" /><testcase classname="factory.python.tests.test_da014_maintenance" name="test_submission_tampering_is_rejected_before_review" time="0.132"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_submission_tampering_is_r0/state/afo/maintainer/mnt-abcd-a1/submission.json'">factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_submission_tampering_is_r0/factory-repo')
+
+    def test_submission_tampering_is_rejected_before_review(factory):
+        case = _case(factory)
+        _good_candidate(case)
+        M.submit(case, "fix addition", M.CANDIDATE_TESTS + "rpr_calc.py", SIG)
+        path = M.case_dir(case["proposal_id"]) / "submission.json"
+&gt;       path.chmod(0o600)
+
+factory/python/tests/test_da014_maintenance.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_submission_tampering_is_r0/state/afo/maintainer/mnt-abcd-a1/submission.json')
+mode = 384
+
+    def chmod(self, mode, *, follow_symlinks=True):
+        """
+        Change the permissions of the path, like os.chmod().
+        """
+&gt;       os.chmod(self, mode, follow_symlinks=follow_symlinks)
+E       FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_submission_tampering_is_r0/state/afo/maintainer/mnt-abcd-a1/submission.json'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:738: FileNotFoundError</failure></testcase><testcase classname="factory.python.tests.test_da014_maintenance" name="test_durable_maintenance_prepares_without_a_semantic_packet" time="0.176" /><testcase classname="factory.python.tests.test_da014_maintenance" name="test_candidate_receipt_survives_missing_final_but_waits_for_provider_quiescence" time="0.414"><failure message="AssertionError: assert ('FAILED' == 'SUCCEEDED'&#10;  &#10;  - SUCCEEDED&#10;  + FAILED)">protocol = namespace(store=&lt;forge_factory.afo.queue.Store object at 0x76cad7683890&gt;, order={'order_id': 'afo-8d8ec7d9d84edf67', '...didate_receipt_survive0/case.json', 'case_sha256': 'dac1926d827f045e0bc842a92d494dfeee8bc484903eb71de487736f83b4ae37'})
+factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_candidate_receipt_survive0/factory-repo')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x76cad83c3680&gt;
+
+    def test_candidate_receipt_survives_missing_final_but_waits_for_provider_quiescence(protocol, factory, monkeypatch):
+        p = protocol
+        case = M.prepare("mnt-durable-a1", "HEAD", {"order_id": p.order["order_id"]}, factory)
+        _good_candidate(case)
+        M.submit(case, "fix addition", M.CANDIDATE_TESTS + "rpr_calc.py", SIG)
+        job = ready(p, monkeypatch)
+        job.pop("durable_protocol")
+        job.update(durable_native="maintenance-1", role="afo-factory-maintainer",
+                   case=str(M.case_dir(case["proposal_id"]) / "case.json"))
+        job["case_sha256"] = sha256_file(Path(job["case"]))
+        L.save(p.store, job)
+        client = SimpleNamespace(get_run=lambda _: {"lifecycle": {"status": {"kind": "SUCCEEDED"}}}, usage=lambda _: {})
+        job = L.poll(p.store, p.order, job, p.eff, client=client, launch_fn=lambda _: "native-maintainer")
+        p.ledger.reserve_request("mission-test", job["job_id"], "req-maint", body_sha256="a" * 64,
+                                 input_tokens=10, output_cap=20, authorize=lambda: True)
+        p.ledger.start_request("req-maint", authorize=lambda: True)
+        job = L.poll(p.store, p.order, job, p.eff, client=client)
+        assert job["state"] == "RUNNING" and Executions(p.store).get(job["job_id"])["resource_lease"] == "HELD"
+        p.ledger.reconcile_request("req-maint", input_tokens=10, output_tokens=3, quiescent=True, evidence_ref="provider-finished")
+        job = L.poll(p.store, p.order, job, p.eff, client=client)
+&gt;       assert job["state"] == "SUCCEEDED" and job["completion"]["status"] == "PASS"
+E       AssertionError: assert ('FAILED' == 'SUCCEEDED'
+E         
+E         - SUCCEEDED
+E         + FAILED)
+
+factory/python/tests/test_da014_maintenance.py:94: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_maintenance" name="test_native_success_without_submission_is_not_a_maintenance_receipt" time="0.223" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_path_policy_separates_maintainer_from_protected_and_decider_paths" time="0.010" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_isolated_worktree_os_hardening_and_canonical_writes" time="0.145" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_veto_judges_the_git_diff_not_the_agent" time="0.130" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_maintainer_mcp_is_the_only_surface_and_is_role_scoped" time="0.379" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_maintainer_role_grants_are_distinct_from_fabric_repair" time="0.152" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_candidate_tests_run_as_sandbox_uid_without_credentials_or_network" time="1.115" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_triage_rejects_an_unsupported_claim_and_quarantines" time="0.294"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_triage_rejects_an_unsuppo0/state/afo/maintainer/mnt-claim-a1/submission.json'">factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_triage_rejects_an_unsuppo0/factory-repo')
+
+    def test_triage_rejects_an_unsupported_claim_and_quarantines(factory):
+        store = Store()
+        case = _case(factory, "mnt-claim-a1")
+        M.write_source(case, "factory/python/forge_factory/calc.py", "def add(a, b):\n    return a + b\n")
+        M.write_source(case, M.CANDIDATE_TESTS + "rpr_calc.py", 'print("SYMPTOM_ABSENT")\n')  # "fixed" without proof
+        sub = M.submit(case, "fix calc.add sign error", M.CANDIDATE_TESTS + "rpr_calc.py", SIG)
+        assert sub["veto"] == [] and Path(sub["staged"]["manifest"]).is_file()
+        sealed = Path(sub["staged"]["manifest"]).parent / "reproducer.py"
+        assert sealed.stat().st_mode &amp; 0o777 == 0o444          # readable by the CRE verifier sandbox UID, writable by none
+&gt;       rec = M.process(store, case["proposal_id"], CREStore(), cre_policy(),
+                        evaluator=lambda *a, **k: pytest.fail("must not be evaluated"))
+
+factory/python/tests/test_afo_m5_maintainer.py:219: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/maintainer.py:414: in process
+    sub, _ = submission(case)
+             ^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/maintainer.py:318: in submission
+    sub = strict_json((d / "submission.json").read_bytes(), 65536)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_abc.py:625: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_triage_rejects_an_unsuppo0/state/afo/maintainer/mnt-claim-a1/submission.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_triage_rejects_an_unsuppo0/state/afo/maintainer/mnt-claim-a1/submission.json'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:537: FileNotFoundError</failure></testcase><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_safe_proposal_reaches_offline_review_only_and_broker_makes_a_branch" time="0.227"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_safe_proposal_reaches_off0/state/afo/maintainer/mnt-safe-a1/submission.json'">factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_safe_proposal_reaches_off0/factory-repo')
+
+    def test_safe_proposal_reaches_offline_review_only_and_broker_makes_a_branch(factory):
+        store = Store()
+        main = _head(factory, "main")
+        case = _case(factory, "mnt-safe-a1")
+        _good_candidate(case)
+        sub = M.submit(case, "fix calc.add sign error", M.CANDIDATE_TESTS + "rpr_calc.py", SIG)
+        seen = {}
+    
+        def evaluator(cand, base, cstore, pol, **kw):
+            seen.update(kw, cand=cand, base=base)
+            return {"decision": "ELIGIBLE_FOR_OFFLINE_REVIEW", "decision_id": "pd-test", "allowed_auto_deployment": False}
+    
+&gt;       rec = M.process(store, case["proposal_id"], CREStore(), cre_policy(), evaluator=evaluator)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_afo_m5_maintainer.py:239: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/maintainer.py:414: in process
+    sub, _ = submission(case)
+             ^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/maintainer.py:318: in submission
+    sub = strict_json((d / "submission.json").read_bytes(), 65536)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_abc.py:625: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_safe_proposal_reaches_off0/state/afo/maintainer/mnt-safe-a1/submission.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_safe_proposal_reaches_off0/state/afo/maintainer/mnt-safe-a1/submission.json'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:537: FileNotFoundError</failure></testcase><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_broker_guard_refuses_merge_force_main_and_non_draft[argv0]" time="0.001" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_broker_guard_refuses_merge_force_main_and_non_draft[argv1]" time="0.001" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_broker_guard_refuses_merge_force_main_and_non_draft[argv2]" time="0.001" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_broker_guard_refuses_merge_force_main_and_non_draft[argv3]" time="0.001" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_broker_guard_refuses_merge_force_main_and_non_draft[argv4]" time="0.001" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_broker_guard_refuses_merge_force_main_and_non_draft[argv5]" time="0.001" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_broker_guard_refuses_merge_force_main_and_non_draft[argv6]" time="0.001" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_broker_guard_refuses_merge_force_main_and_non_draft[argv7]" time="0.001" /><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_malicious_and_regressing_candidates_are_quarantined_append_only" time="0.330"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_malicious_and_regressing_0/state/afo/maintainer/mnt-regress-a1/submission.json'">factory = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_malicious_and_regressing_0/factory-repo')
+
+    def test_malicious_and_regressing_candidates_are_quarantined_append_only(factory):
+        """T052: protected-path patch (vetoed before any evaluation) and a candidate the CRE gate rejects (holdout /
+        prevention regression) are both quarantined; records cannot be changed; no lesson is created from them."""
+        store = Store()
+        case = _case(factory, "mnt-evil-a1")
+        _good_candidate(case)
+        f = Path(case["src"]) / "tests/reliability/reproducers/manifest.yaml"
+        f.chmod(0o644)
+        f.write_text("reproducers: []  # oracle edited\n")
+        sub = M.submit(case, "fix calc and quietly edit the oracle", M.CANDIDATE_TESTS + "rpr_calc.py", SIG)
+        assert sub["staged"] is None and any(v.startswith("PROTECTED_PATH") for v in sub["veto"])
+        rec = M.process(store, case["proposal_id"], CREStore(), cre_policy(),
+                        evaluator=lambda *a, **k: pytest.fail("a vetoed candidate is never evaluated"))
+        assert rec["outcome"] == "QUARANTINED" and "protected_changes_count" not in rec
+        case2 = _case(factory, "mnt-regress-a1")
+        _good_candidate(case2)
+        M.submit(case2, "fix calc.add sign error", M.CANDIDATE_TESTS + "rpr_calc.py", SIG)
+&gt;       rec2 = M.process(store, case2["proposal_id"], CREStore(), cre_policy(), evaluator=lambda *a, **k: {
+            "decision": "REJECTED", "decision_id": "pd-holdout-fail", "allowed_auto_deployment": False})
+
+factory/python/tests/test_afo_m5_maintainer.py:304: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/maintainer.py:414: in process
+    sub, _ = submission(case)
+             ^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/maintainer.py:318: in submission
+    sub = strict_json((d / "submission.json").read_bytes(), 65536)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_abc.py:625: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_malicious_and_regressing_0/state/afo/maintainer/mnt-regress-a1/submission.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/maintenance-first/test_malicious_and_regressing_0/state/afo/maintainer/mnt-regress-a1/submission.json'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:537: FileNotFoundError</failure></testcase><testcase classname="factory.python.tests.test_afo_m5_maintainer" name="test_waiting_external_change_is_bounded_and_unrelated_orders_continue" time="0.233" /></testsuite></testsuites>

@@ -153,7 +153,7 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
     if f"@test {c['ut']}" not in tags:
         out.append(f"the block above the test needs '@test {c['ut']}'")
     specs = {s["id"] for s in _unit_specs(ws, c["unit"])}
-    ver = re.findall(r"\bUSPEC-[A-Z]+-\d{2}-\d{2}\b", " ".join(re.findall(r"@verifies([^@*]*)", tags)))
+    ver = re.findall(r"\bUSPEC-[A-Z]+-\d{2,}-\d{2,}\b", " ".join(re.findall(r"@verifies([^@*]*)", tags)))
     if not ver:
         out.append("'@verifies' must list the USPEC ids this test verifies")
     out += [f"@verifies {v} is not a specification item of {c['unit']['id']}" for v in ver if v not in specs]
@@ -229,7 +229,7 @@ def visit_tests(ws: Path, model: str, max_calls: int | None = None, resume: bool
     role = {a.id: a for a in load_agents()[0]}["swe4-author"]
     since = V.last_finished(ws, PHASE)
     budget, findings = V.open_visit(ws, PHASE, resume, lambda: V.rework_findings(ws, PHASE, since) if since else [],
-                                    max_calls or role.max_turns, time_budget_s)
+                                    V.author_call_limit(ws, PHASE, role.max_turns, max_calls), time_budget_s)
     try:
         return _visit_tests(ws, model, budget, findings)
     except V.Continue as c:

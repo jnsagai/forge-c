@@ -148,6 +148,12 @@ class Store:
         with open(self.base / phase / f"{rec['baseline_id']}.json", "x", encoding="utf-8") as f:
             f.write(pretty_json(rec))
         emit("workflow", "INFO", f"{phase} baseline {rec['baseline_id']} frozen", phase=phase, agent_id=author_role)
+        try:  # DA-FR-040: declared lesson use becomes APPLICATION only now, with this baseline as evidence
+            from ..knowledge.application import verify_on_freeze
+
+            verify_on_freeze(self.workspace, phase, rec)
+        except Exception as exc:  # noqa: BLE001 - learning records never decide or break a freeze
+            emit("workflow", "WARN", f"{phase} lesson application not recorded: {type(exc).__name__}", phase=phase)
         return rec
 
     def missing_outputs(self, phase: str) -> list[str]:
@@ -331,8 +337,10 @@ class Store:
     def checklist(self, phase: str) -> dict:
         """The checklist of this work order: v0.4-brownfield for a delivery (OD-2026-10-20-02), else v0.4."""
         from ..brownfield import is_brownfield, manifest_of
+        from .assessment_context import checklist
 
-        return load_checklist(phase, brownfield=is_brownfield(manifest_of(self.workspace)))
+        manifest = manifest_of(self.workspace)
+        return checklist(manifest, load_checklist(phase, brownfield=is_brownfield(manifest)))
 
     def applicable(self, checklist: dict) -> dict:
         """Owner addendum checks (`applies_when: owner_trace_profile`) apply only to work orders that opted in."""
@@ -360,10 +368,17 @@ class Store:
                 decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), stale
             elif last is None or last["baseline_hash"] != bl["baseline_hash"]:
                 decision, reason = "REINSPECT", "NO_INSPECTION_FOR_CURRENT_BASELINE"
+            elif "assessment_context" in checklist and last.get("checklist_sha256") != checklist["sha256"]:
+                decision, reason = "REINSPECT", "INSPECTION_ASSESSMENT_CONTEXT_CHANGED"
             elif last["verdict"] == "PASS":
                 decision, reason = "PASS", last["inspection_id"]
             else:
                 decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), last["inspection_id"]
+        from ..provided_requirements import findings as assisted_findings
+
+        assisted = assisted_findings(self.workspace)
+        if assisted:
+            decision, reason = "BLOCKED", ";".join(assisted)
         return {"phase": phase, "decision": decision, "reason": reason, "failed_inspections": failed,
                 "max_rework_cycles": max_cycles}
 

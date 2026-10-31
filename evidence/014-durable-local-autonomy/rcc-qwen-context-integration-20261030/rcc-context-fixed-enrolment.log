@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/aspice-rcc-context-fixed-20261030-v1/enrol.py", line 53, in <module>
+    provision_order(S,entry,eff,s['deadline_epoch']);assert L.for_order(entry['order_id'])==s['mission_id'] and L.snapshot(s['mission_id'])==before
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/forge-c/production-local-014/repo/factory/python/forge_factory/afo/overnight.py", line 41, in provision_order
+    register(store, {**mission, "orders": []}, eff)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/data/forge-c/production-local-014/repo/factory/python/forge_factory/afo/mission_admin.py", line 32, in register
+    raise Refused(grant.code)
+forge_factory.afo.durable.Refused: AUTH_POLICY_MISMATCH:

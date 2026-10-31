@@ -1,0 +1,46 @@
+{
+  "schema": "forge-c/014-st3-author-diagnostics/1",
+  "source_revision": "9a88fbc5b28864e45917cdc77f7e6ab9c9f59825",
+  "scope": "REPLAY_OF_RECORDED_DIAGNOSTIC_CODES_NO_NEW_MODEL_REQUESTS",
+  "rows": [
+    {
+      "work_order": "WWDG-LL-st301",
+      "author_status": "FAILED",
+      "diagnostic_codes": {
+        "RIO-ACCESS-UNSUPPORTED": 4,
+        "RIO-RMW-SIDE-EFFECT": 3,
+        "STUCK": 1
+      },
+      "other_validation_findings": 0,
+      "reply_sha256": "e17552b40b5858cea36cdea11e6e932aa67cda8409024aafd7ca1c0146c0d1e7",
+      "first_blocking_phase": "SWE.1",
+      "partial_workproducts_assembled": false
+    },
+    {
+      "work_order": "RNG-LL-st301",
+      "author_status": "FAILED",
+      "diagnostic_codes": {
+        "RIO-RMW-SIDE-EFFECT": 5
+      },
+      "other_validation_findings": 5,
+      "reply_sha256": "300c0a64a04be1fa98820416307e45506e166708c5cd86947734b0f488a5e79f",
+      "first_blocking_phase": "SWE.1",
+      "partial_workproducts_assembled": false
+    },
+    {
+      "work_order": "LPTIM-LL-st301",
+      "author_status": "FAILED",
+      "diagnostic_codes": {
+        "RIO-RMW-SIDE-EFFECT": 4,
+        "RIO-SEQUENCE-NOT-KEY-FIELD": 1,
+        "RIO-VALUE-REQUIRED": 1,
+        "RIO-WO-PARTIAL-WRITE": 1,
+        "STUCK": 1
+      },
+      "other_validation_findings": 0,
+      "reply_sha256": "5e8febddd0083f55fc7ced921942f08f4cb83797ab25c78f4c85cc324b4c8739",
+      "first_blocking_phase": "SWE.1",
+      "partial_workproducts_assembled": false
+    }
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "scope": "SERIAL_NATIVE_LOG_NUMERIC_CORRELATION_NOT_CAPABILITY_QUALIFICATION",
+  "native_generations": 37,
+  "warmup_generations_excluded": 1,
+  "timed_trials": 36,
+  "all_api_native_timings_match": true,
+  "rows": [
+    {
+      "trial": "numeric-r1-off",
+      "native_task_id": 52,
+      "native_decode_tokens": 34,
+      "native_decode_ms": 221.59,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r1-budget512",
+      "native_task_id": 89,
+      "native_decode_tokens": 549,
+      "native_decode_ms": 3533.45,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r1-budget2048",
+      "native_task_id": 641,
+      "native_decode_tokens": 2092,
+      "native_decode_ms": 13592.84,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r1-default_on",
+      "native_task_id": 2736,
+      "native_decode_tokens": 3358,
+      "native_decode_ms": 21647.87,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r1-off",
+      "native_task_id": 6097,
+      "native_decode_tokens": 287,
+      "native_decode_ms": 1901.11,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r1-budget512",
+      "native_task_id": 6387,
+      "native_decode_tokens": 844,
+      "native_decode_ms": 5502.5,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r1-budget2048",
+      "native_task_id": 7234,
+      "native_decode_tokens": 2396,
+      "native_decode_ms": 15716.6,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r1-default_on",
+      "native_task_id": 9633,
+      "native_decode_tokens": 4563,
+      "native_decode_ms": 29939.75,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r1-off",
+      "native_task_id": 14199,
+      "native_decode_tokens": 16,
+      "native_decode_ms": 103.51,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r1-budget512",
+      "native_task_id": 14218,
+      "native_decode_tokens": 524,
+      "native_decode_ms": 3373.43,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r1-budget2048",
+      "native_task_id": 14745,
+      "native_decode_tokens": 1713,
+      "native_decode_ms": 11210.88,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r1-default_on",
+      "native_task_id": 16461,
+      "native_decode_tokens": 1713,
+      "native_decode_ms": 11167.75,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r2-budget512",
+      "native_task_id": 18177,
+      "native_decode_tokens": 556,
+      "native_decode_ms": 3620.77,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r2-budget2048",
+      "native_task_id": 18736,
+      "native_decode_tokens": 2084,
+      "native_decode_ms": 13504.16,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r2-default_on",
+      "native_task_id": 20823,
+      "native_decode_tokens": 2700,
+      "native_decode_ms": 17662.36,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r2-off",
+      "native_task_id": 23526,
+      "native_decode_tokens": 35,
+      "native_decode_ms": 232.16,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r2-budget512",
+      "native_task_id": 23564,
+      "native_decode_tokens": 857,
+      "native_decode_ms": 5519.56,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r2-budget2048",
+      "native_task_id": 24424,
+      "native_decode_tokens": 2347,
+      "native_decode_ms": 15245.15,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r2-default_on",
+      "native_task_id": 26774,
+      "native_decode_tokens": 3244,
+      "native_decode_ms": 21010.97,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r2-off",
+      "native_task_id": 30021,
+      "native_decode_tokens": 277,
+      "native_decode_ms": 1816.68,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r2-budget512",
+      "native_task_id": 30301,
+      "native_decode_tokens": 524,
+      "native_decode_ms": 3381.97,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r2-budget2048",
+      "native_task_id": 30828,
+      "native_decode_tokens": 2068,
+      "native_decode_ms": 13389.45,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r2-default_on",
+      "native_task_id": 32899,
+      "native_decode_tokens": 3475,
+      "native_decode_ms": 22752.86,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r2-off",
+      "native_task_id": 36377,
+      "native_decode_tokens": 16,
+      "native_decode_ms": 115.27,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r3-budget2048",
+      "native_task_id": 36396,
+      "native_decode_tokens": 2080,
+      "native_decode_ms": 13486.69,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r3-default_on",
+      "native_task_id": 38479,
+      "native_decode_tokens": 8192,
+      "native_decode_ms": 53808.71,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r3-off",
+      "native_task_id": 46674,
+      "native_decode_tokens": 34,
+      "native_decode_ms": 219.62,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "numeric-r3-budget512",
+      "native_task_id": 46711,
+      "native_decode_tokens": 549,
+      "native_decode_ms": 3542.5,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r3-budget2048",
+      "native_task_id": 47263,
+      "native_decode_tokens": 1857,
+      "native_decode_ms": 12023.45,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r3-default_on",
+      "native_task_id": 49123,
+      "native_decode_tokens": 1857,
+      "native_decode_ms": 12037.5,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r3-off",
+      "native_task_id": 50983,
+      "native_decode_tokens": 302,
+      "native_decode_ms": 1949.55,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "author_c-r3-budget512",
+      "native_task_id": 51288,
+      "native_decode_tokens": 797,
+      "native_decode_ms": 5137.75,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r3-budget2048",
+      "native_task_id": 52088,
+      "native_decode_tokens": 1406,
+      "native_decode_ms": 9177.21,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r3-default_on",
+      "native_task_id": 53497,
+      "native_decode_tokens": 1406,
+      "native_decode_ms": 9149.54,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r3-off",
+      "native_task_id": 54906,
+      "native_decode_tokens": 16,
+      "native_decode_ms": 104.58,
+      "api_native_timing_match": true
+    },
+    {
+      "trial": "review_c-r3-budget512",
+      "native_task_id": 54925,
+      "native_decode_tokens": 529,
+      "native_decode_ms": 3453.62,
+      "api_native_timing_match": true
+    }
+  ]
+}

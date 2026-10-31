@@ -1,0 +1,10 @@
+{"lrtx_progress": "inspect:b6af5383c8720b97:SWE1-01", "attempt": 0, "errors": 1, "wall_ms": 23384.0}
+{"lrtx_progress": "inspect:b6af5383c8720b97:SWE1-01", "attempt": 1, "errors": 0, "wall_ms": 4555.3}
+{"lrtx_progress": "inspect:b6af5383c8720b97:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 54742.6}
+{"lrtx_progress": "inspect:b6af5383c8720b97:SWE1-03", "attempt": 0, "errors": 1, "wall_ms": 28210.6}
+{"lrtx_progress": "inspect:b6af5383c8720b97:SWE1-03", "attempt": 1, "errors": 0, "wall_ms": 8433.5}
+{"lrtx_progress": "inspect:b6af5383c8720b97:SWE1-04", "attempt": 0, "errors": 2, "wall_ms": 29017.4}
+{"lrtx_progress": "inspect:b6af5383c8720b97:SWE1-04", "attempt": 1, "errors": 0, "wall_ms": 15266.9}
+{"lrtx_progress": "inspect:b6af5383c8720b97:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 19415.3}
+{"lrtx_progress": "inspect:b6af5383c8720b97:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 22301.8}
+{"status": "PASS", "artifacts": ["inspection/SWE.1/INS-SWE.1-001.json"], "issues": [], "next_action": "next"}

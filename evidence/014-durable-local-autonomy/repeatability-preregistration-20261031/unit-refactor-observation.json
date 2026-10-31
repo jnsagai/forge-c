@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-31T02:27:07.871733Z",
+  "native_id": "01M67R1HNE9TKPWCYJ2SVKEPJS",
+  "scope": "ACTUAL_PROTECTED_TEST_HISTORY; NO_C_EXECUTION_BY_OBSERVER",
+  "failed": {
+    "assert_failed": [],
+    "code_sha": "6e31f80721b8bf16434a26cc907682b0a26e4c934ead81f96d3c6c0741096020",
+    "files": {
+      "software/tests/unit/test_crc.c": "e8ef088bc0d9abae2feb93a5f49e3d4647985c60d345b39fa0106406c4ecc4ed"
+    },
+    "op": "run_unit",
+    "phase": "SWE.4",
+    "status": "FAIL",
+    "ts_utc": "2026-10-31T02:19:34.741394Z"
+  },
+  "passed": {
+    "assert_failed": [],
+    "code_sha": "6e31f80721b8bf16434a26cc907682b0a26e4c934ead81f96d3c6c0741096020",
+    "files": {
+      "software/tests/unit/test_crc.c": "4cab116e0c0c8bdb402a1abbc3d623fd05901055fe01be5f032e4e8a21c495d0"
+    },
+    "op": "run_unit",
+    "phase": "SWE.4",
+    "status": "PASS",
+    "ts_utc": "2026-10-31T02:23:59.120456Z"
+  },
+  "files": [
+    {
+      "path": "software/tests/unit/test_crc.c",
+      "failed_sha256": "e8ef088bc0d9abae2feb93a5f49e3d4647985c60d345b39fa0106406c4ecc4ed",
+      "passed_sha256": "4cab116e0c0c8bdb402a1abbc3d623fd05901055fe01be5f032e4e8a21c495d0",
+      "failed_counts": {
+        "check_calls": 45,
+        "distinct_ids": 6
+      },
+      "passed_counts": {
+        "check_calls": 7,
+        "distinct_ids": 7
+      },
+      "same_code_except_comments_whitespace_and_ut_ids": false
+    }
+  ],
+  "product_code_hash_unchanged": true,
+  "candidate_sha256": "9aa11db10b4547cc4f440f91e3d4e513f006906b83a1c1a77e26fbf9ebedf76e",
+  "classification": "AUTONOMOUS_TEST_RESTRUCTURE_WITH_MIXED_COVERAGE; NOT_ASSERTION_PRESERVING_ID_RENAME",
+  "observed_additions": [
+    "Write/read walking-one and walking-zero pattern loops",
+    "Explicit no-self-setup case",
+    "Startup check precedes explicit fixture reset"
+  ],
+  "observed_removals": [
+    "Separate reset-to-zero read followed by checking all unrelated registers remain zero",
+    "Primary CRC instance remains unchanged when writing a different instance"
+  ],
+  "limits": [
+    "Static CHECK counts differ from dynamic predicate counts",
+    "No quantitative adequacy or learning-benefit claim",
+    "Independent preregistered driver tests remain separate",
+    "No post-launch human test or candidate fixes"
+  ]
+}

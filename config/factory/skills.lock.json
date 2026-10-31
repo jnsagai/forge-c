@@ -16,7 +16,7 @@
     },
     "lessons-curator": {
       "path": ".fabro/skills/lessons-curator/SKILL.md",
-      "sha256": "eeb74bfe44a7ebda0aff7094158a7530f2e8bdf6845b4a09f0109e35dcfa023d"
+      "sha256": "39506ee646475c6347b0b55afd3520d31509d284605640ea04e1bde4825ef267"
     },
     "mcp-integrator": {
       "path": ".fabro/skills/mcp-integrator/SKILL.md",
@@ -68,7 +68,7 @@
     },
     "swe5-author": {
       "path": ".fabro/skills/swe5-author/SKILL.md",
-      "sha256": "ef8744a82287aa34c6c6bbddab2d470119c9a302de5105ec55920f8eb8ab500e"
+      "sha256": "d9683d26d142cb1b5a8b93dece27437088e322137fb598ee20dc657b8b4915b2"
     },
     "swe5-inspector": {
       "path": ".fabro/skills/swe5-inspector/SKILL.md",

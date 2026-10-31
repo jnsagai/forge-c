@@ -100,6 +100,27 @@ class ForgeTarget:
             raise AssertionError(f"{self.last_name}: {r['passed']} passed, {r['failed']} failed "
                                  f"(failed ids {r['failed_ids']})")
 
+    @keyword("Simulation Performance Should Meet Budget")
+    def simulation_performance_should_meet_budget(self) -> None:
+        from forge_factory.afo.durable import digest
+        from forge_factory.simulation_performance import selected
+
+        budget = selected(self.ws)
+        measurement = self._need().get("performance") or {}
+        if not budget:
+            raise AssertionError("SIM_PERF_NO_DECLARED_BUDGET")
+        if self.last_src != self.ws / budget["test_source"]:
+            raise AssertionError(f"SIM_PERF_WRONG_SCENARIO: Run Target Scenario    {budget['test_source']}; "
+                                 "only the declared test receives entry/return instrumentation")
+        if not measurement:
+            raise AssertionError("SIM_PERF_MEASUREMENT_MISSING: rerun the declared instrumented target test")
+        if measurement.get("budget_sha256") != digest(budget):
+            raise AssertionError("SIM_PERF_BUDGET_CHANGED: rerun the declared test with the current budget")
+        if measurement.get("status") != "PASS":
+            raise AssertionError("SIM_PERF_MEASUREMENT_FAILED: no complete passing measurement; "
+                                 "inspect the independent entry/return measurement issues")
+        self.all_target_checks_should_pass()
+
     def _objects(self, extra: list[str] | None = None, sub: str = "size") -> list[str]:
         cc = shutil.which("arm-none-eabi-gcc")
         if not cc:
@@ -108,6 +129,7 @@ class ForgeTarget:
         out.mkdir(parents=True, exist_ok=True)
         objs = []
         from forge_factory.brownfield.cmsis import delivered_unit, target_flags
+        from forge_factory.delivery_first import include_flags
 
         units = [*sorted((self.ws / "software/hal").glob("*.c")), *self._ll_units(out)]
         if not units:  # CAPA-061 (b007): a header-only delivery (ST LL) is measured through its scope wrappers
@@ -121,7 +143,8 @@ class ForgeTarget:
             o = out / (c.stem + ".o")
             r = subprocess.run([cc, "-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os",
                                 "-ffunction-sections", "-fdata-sections", f"-I{self.ws / 'software/hal'}",
-                                f"-I{self.ws / 'software/ll'}", *target_flags(self.ws), *(extra or []), "-c", str(c),
+                                f"-I{self.ws / 'software/ll'}", *target_flags(self.ws), *include_flags(self.ws),
+                                *(extra or []), "-c", str(c),
                                 "-o", str(o)],
                                capture_output=True, text=True, timeout=120, cwd=out)
             if r.returncode != 0:

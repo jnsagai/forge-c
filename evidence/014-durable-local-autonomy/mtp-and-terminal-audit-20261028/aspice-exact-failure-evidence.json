@@ -1,0 +1,249 @@
+{
+  "inspection": [
+    {
+      "author_role": "swe1-author",
+      "baseline_hash": "d96f4b3e0dd53f00865bb077818cea23b2f833ad50244109631799294375da33",
+      "baseline_id": "BL-SWE.1-001",
+      "checklist_sha256": "76f3eae9283c01d01a2fb6b20e3d268cf6371ec31686057f5b3978a810caabd6",
+      "checklist_version": "0.4",
+      "findings": [
+        {
+          "detail": "SWR-013 in workproducts/SWE.1/software_requirements.md requires a 'safe state', but safety/software_safety_requirements.md states safety assurance is not assessed and .forge-run/manifest.json#scope-ta",
+          "id": "SWE1-02",
+          "severity": "major"
+        },
+        {
+          "detail": "workproducts/SWE.1/software_requirements.md SWR-013 requires the CRC LL driver to remain in a safe state after reset, but the supplied baseline does not specify what that safe state is; traceability/u",
+          "id": "SWE1-03",
+          "severity": "major"
+        }
+      ],
+      "inspection_id": "INS-SWE.1-001",
+      "inspector_role": "swe1-inspector",
+      "items": {
+        "SWE1-01": {
+          "evidence_refs": [
+            "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+            ".forge-run/manifest.json#scope-target-budgets",
+            "safety/software_safety_requirements.md",
+            "traceability/upstream_gaps.md",
+            "workproducts/SWE.1/software_requirements.md"
+          ],
+          "findings": [],
+          "verdict": "PASS"
+        },
+        "SWE1-02": {
+          "evidence_refs": [
+            "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+            "workproducts/SWE.1/software_requirements.md",
+            "safety/software_safety_requirements.md",
+            ".forge-run/manifest.json#scope-target-budgets",
+            "traceability/upstream_gaps.md",
+            "workproducts/SWE.1/register_effects.json",
+            "traceability/requirements_to_tests.csv"
+          ],
+          "findings": [
+            "SWR-013 in workproducts/SWE.1/software_requirements.md requires a 'safe state', but safety/software_safety_requirements.md states safety assurance is not assessed and .forge-run/manifest.json#scope-ta",
+            "SWR-005 in workproducts/SWE.1/software_requirements.md is not atomic because one requirement combines writing CRC_CR.REV_OUT, writing CRC_CR.RTYPE_OUT, and preserving all other CRC_CR bits.",
+            "workproducts/SWE.1/software_requirements.md Open points contradict the requirement set for input reversal: one bullet says the task specifies only CRC_CR.RTYPE_IN, another says the task is restricted ",
+            "SWR-006 in workproducts/SWE.1/software_requirements.md is inconsistent with the stated scope because its trigger is 'When the LL function sets the input reversal mode' although it obliges only CRC_CR."
+          ],
+          "verdict": "FAIL"
+        },
+        "SWE1-03": {
+          "evidence_refs": [
+            "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+            "workproducts/SWE.1/software_requirements.md",
+            "workproducts/SWE.1/register_effects.json",
+            "traceability/upstream_gaps.md",
+            "traceability/requirements_to_tests.csv",
+            "safety/software_safety_requirements.md",
+            ".forge-run/manifest.json#scope-target-budgets"
+          ],
+          "findings": [
+            "workproducts/SWE.1/software_requirements.md SWR-013 requires the CRC LL driver to remain in a safe state after reset, but the supplied baseline does not specify what that safe state is; traceability/u",
+            "workproducts/SWE.1/software_requirements.md does not specify failure handling for the CRC LL driver beyond SWR-014, which only requires the driver not to wait on CRC status flags; no requirement in wo"
+          ],
+          "verdict": "FAIL"
+        },
+        "SWE1-04": {
+          "evidence_refs": [
+            "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+            "workproducts/SWE.1/software_requirements.md",
+            ".forge-run/manifest.json#scope-target-budgets",
+            "traceability/upstream_gaps.md"
+          ],
+          "findings": [],
+          "verdict": "PASS"
+        },
+        "SWE1-05": {
+          "evidence_refs": [
+            "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+            "traceability/upstream_gaps.md",
+            "workproducts/SWE.1/software_requirements.md",
+            ".forge-run/manifest.json#scope-target-budgets",
+            "safety/software_safety_requirements.md"
+          ],
+          "findings": [],
+          "verdict": "PASS"
+        },
+        "SWE1-06": {
+          "evidence_refs": [
+            "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+            "safety/software_safety_requirements.md",
+            "traceability/requirements_to_tests.csv",
+            "traceability/upstream_gaps.md",
+            "workproducts/SWE.1/register_effects.json",
+            "workproducts/SWE.1/software_requirements.md",
+            ".forge-run/manifest.json#scope-target-budgets"
+          ],
+          "findings": [],
+          "verdict": "PASS"
+        },
+        "SWE1-07": {
+          "evidence_refs": [
+            "inspection/SWE.1/deterministic/SWE1-07-2026-10-28T154855.838703Z.json"
+          ],
+          "findings": [],
+          "source": "deterministic",
+          "verdict": "PASS"
+        },
+        "SWE1-08": {
+          "evidence_refs": [
+            "inspection/SWE.1/deterministic/SWE1-08-2026-10-28T154856.017090Z.json"
+          ],
+          "findings": [],
+          "source": "deterministic",
+          "verdict": "PASS"
+        }
+      },
+      "phase": "SWE.1",
+      "recorded_at": "2026-10-28T15:48:56.017333Z",
+      "schema": "forge-c/inspection/0.4",
+      "stale_reason": null,
+      "verdict": "FAIL"
+    }
+  ],
+  "workspace_failures": {
+    "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-533cd9ba25e792a5-a1/workspace/.forge-run/package.json": {
+      "archive": "/mnt/data/forge-c/production-local-014/archives/WO-AFO-533cd9ba25e792a5-a1/forge-c-WO-AFO-533cd9ba25e792a5-a1-review.zip",
+      "archive_ref": "archive:sha256:a4a71493af1df5399af3a0eba3a1e1f7a5cec5827a2fcc8e3cfa481e64fc9e4d",
+      "archive_sha256": "a4a71493af1df5399af3a0eba3a1e1f7a5cec5827a2fcc8e3cfa481e64fc9e4d",
+      "finalized_at": "2026-10-28T15:48:58.059763Z",
+      "gap_count": 50,
+      "gaps": [
+        "failed_or_missing_quality_check:integration_verification",
+        "failed_or_missing_quality_check:misra_coverage_assessed",
+        "failed_or_missing_quality_check:resource_budgets",
+        "failed_or_missing_quality_check:software_verification",
+        "failed_or_missing_quality_check:static_analysis",
+        "failed_or_missing_quality_check:swe1_inspection",
+        "failed_or_missing_quality_check:swe2_inspection",
+        "failed_or_missing_quality_check:swe3_inspection",
+        "failed_or_missing_quality_check:swe4_inspection",
+        "failed_or_missing_quality_check:swe5_inspection",
+        "failed_or_missing_quality_check:swe6_inspection",
+        "failed_or_missing_quality_check:target_verification",
+        "failed_or_missing_quality_check:unit_verification",
+        "missing_or_empty_file:inspection/SWE.2/inspection_record.json",
+        "missing_or_empty_file:inspection/SWE.3/inspection_record.json",
+        "missing_or_empty_file:inspection/SWE.4/inspection_record.json",
+        "missing_or_empty_file:inspection/SWE.5/inspection_record.json",
+        "missing_or_empty_file:inspection/SWE.6/inspection_record.json",
+        "missing_or_empty_file:workproducts/SWE.2/software_architecture.md",
+        "missing_or_empty_file:workproducts/SWE.3/detailed_design.md",
+        "missing_or_empty_file:workproducts/SWE.4/unit_verification_report.md",
+        "missing_or_empty_file:workproducts/SWE.5/integration_verification_report.md",
+        "missing_or_empty_file:workproducts/SWE.6/software_verification_report.md",
+        "missing_or_empty_section:inspection/SWE.2",
+        "missing_or_empty_section:inspection/SWE.3",
+        "missing_or_empty_section:inspection/SWE.4",
+        "missing_or_empty_section:inspection/SWE.5",
+        "missing_or_empty_section:inspection/SWE.6",
+        "missing_or_empty_section:software/build",
+        "missing_or_empty_section:software/include",
+        "missing_or_empty_section:software/src",
+        "missing_or_empty_section:workproducts/SWE.2",
+        "missing_or_empty_section:workproducts/SWE.3",
+        "missing_or_empty_section:workproducts/SWE.4",
+        "missing_or_empty_section:workproducts/SWE.5",
+        "missing_or_empty_section:workproducts/SWE.6",
+        "missing_required_pattern:software/build/*.elf",
+        "missing_required_pattern:software/build/*.map",
+        "missing_required_pattern:software/include/*.h",
+        "missing_required_pattern:software/src/*.c",
+        "run_not_completed:INCOMPLETE",
+        "unresolved_finding:DELIVERY:NOT_INJECTED",
+        "unresolved_finding:SWE.1:GATE_REWORK",
+        "unresolved_finding:SWE.1:SWE1-02",
+        "unresolved_finding:SWE.1:SWE1-03",
+        "unresolved_finding:SWE.2:GATE_REWORK",
+        "unresolved_finding:SWE.3:GATE_REWORK",
+        "unresolved_finding:SWE.4:GATE_REWORK",
+        "unresolved_finding:SWE.5:GATE_REWORK",
+        "unresolved_finding:SWE.6:GATE_REWORK"
+      ],
+      "package_status": "BLOCKED",
+      "policy": "archive:evidence/configuration/release-package-policy-v0.5-aspice-development.json",
+      "policy_sha256": "9d06f7e2ec1e35f76d40b5d6b083ee511d3a4f38a114127c84906c6bcb31908e",
+      "quality_run_status": "INCOMPLETE",
+      "run_id": "WO-AFO-533cd9ba25e792a5-a1",
+      "scope": "OFFLINE_REVIEW_ONLY_NOT_SAFETY_APPROVED",
+      "work_order_purpose": "ASPICE_ONLY"
+    }
+  },
+  "launch_failure_evidence": [
+    {
+      "kind": "LAUNCH_NOT_STARTED",
+      "record": {
+        "evidence_ref": "local-launch-not-started:9503b99679e4f60a345072c78dd70204c7358f2b189122e9a0279d3fd5c37d99",
+        "failure_type": "ResumeRefused",
+        "job_id": "afo-product-d2fab982c59bd2b4ab8e282c",
+        "kind": "LOCAL_LAUNCH_NOT_STARTED",
+        "launch_nonce": "<redacted-dispatch-nonce>",
+        "lease_epoch": 19
+      }
+    },
+    {
+      "kind": "NATIVE_TERMINAL",
+      "record": {
+        "evidence_ref": "local-launch-not-started:9503b99679e4f60a345072c78dd70204c7358f2b189122e9a0279d3fd5c37d99",
+        "failure_type": "ResumeRefused",
+        "job_id": "afo-product-d2fab982c59bd2b4ab8e282c",
+        "kind": "LOCAL_LAUNCH_NOT_STARTED",
+        "launch_nonce": "<redacted-dispatch-nonce>",
+        "lease_epoch": 19
+      }
+    },
+    {
+      "kind": "QUIESCENCE",
+      "record": {
+        "evidence_ref": "local-launch-not-started:9503b99679e4f60a345072c78dd70204c7358f2b189122e9a0279d3fd5c37d99",
+        "failure_type": "ResumeRefused",
+        "job_id": "afo-product-d2fab982c59bd2b4ab8e282c",
+        "kind": "LOCAL_LAUNCH_NOT_STARTED",
+        "launch_nonce": "<redacted-dispatch-nonce>",
+        "lease_epoch": 19
+      }
+    }
+  ],
+  "recovery_plans": [
+    {
+      "plan_id": "afo-plan-4c3be0966a6c2bd3",
+      "order_id": "afo-533cd9ba25e792a5",
+      "attempt_id": "afo-533cd9ba25e792a5-a1",
+      "failure_fingerprint": "cfp1-0f3f9b0d76092572298515c62be08f50d5598c57",
+      "strategy": "CLOSE_BLOCKED",
+      "plan_fingerprint": "ca8662d61d1b88f30cd168e1276ad6ce26681f6ede85a46c49bbc5757aef7c75",
+      "source": "RULE",
+      "status": "EXECUTED",
+      "reasons": "[]",
+      "record": "{\"schema_version\": \"1.0\", \"order_id\": \"afo-533cd9ba25e792a5\", \"attempt_id\": \"afo-533cd9ba25e792a5-a1\", \"failure_fingerprint\": \"cfp1-0f3f9b0d76092572298515c62be08f50d5598c57\", \"strategy\": \"CLOSE_BLOCKED\", \"affected_phase\": \"SWE.1\", \"material_difference_ref\": \"strategy:CLOSE_BLOCKED\", \"artifact_scope\": [], \"validation_tests\": [\"gate:SWE.1:route=PASS\"], \"budget_estimate\": {\"tokens_max\": 120000, \"wall_seconds_max\": 21600, \"turns_max\": 35}, \"rationale_code\": \"LOCAL_DIAGNOSIS_FAILED:CAPABILITY_LIMIT\", \"plan_id\": \"afo-plan-4c3be0966a6c2bd3\"}",
+      "budget_snapshot": "{\"attempts\": 1, \"max_attempts\": 3, \"variants_by_phase\": {\"SWE.1\": 0, \"SWE.2\": 0, \"SWE.3\": 0, \"SWE.4\": 0, \"SWE.5\": 0, \"SWE.6\": 0}, \"transient_retries\": 0, \"max_transient_retries\": 2, \"max_variants_per_phase\": 2, \"planner_calls\": 0, \"max_planner_calls\": 4, \"wall_seconds\": 4513.4, \"max_wall_seconds\": 21600, \"local_agent_reserved_tokens\": 0, \"tokens\": \"UNKNOWN (unreported usage is never read as zero; local diagnosis capacity is reserved)\", \"tried_models\": [\"qwen3.8:27b-q8_0\"]}",
+      "decided_utc": "2026-10-28T15:49:03.863110Z"
+    }
+  ],
+  "plan_tables": [
+    "afo_recovery_plans"
+  ]
+}

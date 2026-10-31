@@ -1,0 +1,88 @@
+{
+  "runtime_revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+  "runs": [
+    {
+      "name": "role-envelopes-baseline",
+      "revision": "91011bfdc2751b205f32e0262ef878a27e7d090b",
+      "scope": "BASELINE_COUNTEREXAMPLE_NEW_TESTS",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "14",
+        "skipped": "0",
+        "tests": "14",
+        "time": "2.069",
+        "timestamp": "2026-10-28T10:23:20.101704+00:00",
+        "hostname": "master"
+      },
+      "xml_sha256": "45a57fad8c4966c57219bbed230c52ac2eaf9b9887d93807a40e6b78499b334c"
+    },
+    {
+      "name": "role-envelopes-first",
+      "revision": null,
+      "scope": "INITIAL_IMPORT_ERROR_RETAINED",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "3",
+        "skipped": "0",
+        "tests": "54",
+        "time": "59.972",
+        "timestamp": "2026-10-28T10:24:07.518691+00:00",
+        "hostname": "master"
+      },
+      "xml_sha256": "e782d983d831d4dbd201187763df55cc7a38c54dbe94cb25a1ec532fe7da00c7"
+    },
+    {
+      "name": "role-envelopes-regression",
+      "revision": null,
+      "scope": "INITIAL_MISSING_FABRO_ENVIRONMENT_RETAINED",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "139",
+        "time": "26.154",
+        "timestamp": "2026-10-28T10:26:55.307964+00:00",
+        "hostname": "master"
+      },
+      "xml_sha256": "894e7ec53ab0fd1b713e4a9a3ac480799c57ef4e0c12cc80894727c4f9b65fac"
+    },
+    {
+      "name": "role-envelopes-exact-2c774b4",
+      "revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+      "scope": "LOCAL_REGRESSION",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "139",
+        "time": "30.694",
+        "timestamp": "2026-10-28T10:27:57.191128+00:00",
+        "hostname": "master"
+      },
+      "xml_sha256": "e2e7ef931cc9a5bd43ad6d9cea978b104f2b0fa833500dfdb9bd19870c795b76"
+    },
+    {
+      "name": "native-2c774b4",
+      "revision": "2c774b440db65f47f5b78a4702ad974254fa6a96",
+      "scope": "OMNIVERSE2_NATIVE_FIXTURES_ZERO_INFERENCE",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "75",
+        "time": "265.659",
+        "timestamp": "2026-10-28T10:29:41.207246+00:00",
+        "hostname": "omniverse2"
+      },
+      "xml_sha256": "1bf03ee84ffd6e80fb9e21ea5c4a765a26f95a05244724a10dbbf928eb572cef"
+    }
+  ],
+  "new_completed_task_ids": [],
+  "full_suite_claim": false,
+  "role_qualification_claim": false
+}

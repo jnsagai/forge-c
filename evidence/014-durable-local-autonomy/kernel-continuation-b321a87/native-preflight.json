@@ -1,0 +1,11 @@
+{
+  "schema": "forge-c/host-audit-preflight/1",
+  "status": "BLOCKED",
+  "blockers": [
+    "KERNEL_AUDIT_STATUS_UNAVAILABLE",
+    "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED",
+    "AUTHENTICATED_CONTROL_CORRELATION_REQUIRED"
+  ],
+  "host": "omniverse2",
+  "source_sha256": "3ead1b2b2ac9e3fa4bd2547be8f2203aebb7b594e108d8146a666be6c967c594"
+}

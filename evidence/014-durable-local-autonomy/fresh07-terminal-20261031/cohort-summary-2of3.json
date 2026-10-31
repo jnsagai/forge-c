@@ -1,0 +1,135 @@
+{
+  "all_frozen_trials_qualified": false,
+  "auditor_revision": "30371da548bad2790a9f3c21dafc8964047ce06d",
+  "basis": "HASH_PINNED_EXTERNAL_AUDIT_ASSERTIONS; NOT_REEXECUTION_OR_NEW_QUALIFICATION",
+  "candidate_execution": false,
+  "cohort_sha256": "a14bfe74a0365a47360a630e09cdaec0338b10385ecb8be7a1b4d3389d18e759",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "denominator": 3,
+  "limits": [
+    "Does not independently reproduce external audits or measure missing interventions",
+    "Missing/failed/cancelled/unfinished trials remain in denominator",
+    "Functional yield does not grant release, LL/HAL, autonomy or learning benefit",
+    "No causal speed inference from stochastic/shared-resource trials"
+  ],
+  "model_calls": 0,
+  "qualified": 2,
+  "runtime_effects": false,
+  "schema": "forge-c/delivery-first-cohort-summary/1",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "trials": [
+    {
+      "archive": {
+        "remote_path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/archives/WO-AFO-7f71565db57f0a76-a1/forge-c-WO-AFO-7f71565db57f0a76-a1-review.zip",
+        "sha256": "3aced187a1d34d938f08e85d1b40160b0afe4f4c07b3adece51d4808f45174ef"
+      },
+      "audit": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/cohort-audits/native06-3e73552ff2e454a847ebe0a1f2778f023f31ccfd5b287ea908650e53d81b871d.json",
+        "sha256": "3e73552ff2e454a847ebe0a1f2778f023f31ccfd5b287ea908650e53d81b871d"
+      },
+      "audit_status": "FUNCTIONAL_MILESTONE_PASS",
+      "automatic_factory_handoff": "NOT_QUALIFIED; inherited capacity backoff required external administrative retry before07",
+      "candidate_hashes": {
+        "software/ll/stm32n6xx_ll_crc.h": "e52e3763dd46d25d8732613c953293dbacce6de907cfb1f808b7b0c3157d89f2"
+      },
+      "functional_status": "QUALIFIED_BY_PINNED_EXTERNAL_AUDIT",
+      "gap_count": 16,
+      "gates": {
+        "SWE.1": "PASS",
+        "SWE.2": "PASS",
+        "SWE.3": "REWORK",
+        "SWE.4": "PASS",
+        "SWE.5": "PASS",
+        "SWE.6": "PASS"
+      },
+      "metrics": {
+        "author_role_output_tokens": 156531,
+        "corrections": 0,
+        "native_usage": {
+          "timing": {
+            "active_time_ms": 5444838,
+            "inference_time_ms": 5204710,
+            "tool_time_ms": 240128,
+            "wall_time_ms": 5509388
+          },
+          "usage": {
+            "tokens": {
+              "cache_read": 8245199,
+              "cache_write": 0,
+              "input": 846767,
+              "output": 239538,
+              "reasoning": 0
+            }
+          }
+        },
+        "post_launch_job_interventions": 0,
+        "reasoning_breakdown": "UNKNOWN; provider0 is not a measurement of hidden reasoning",
+        "request_ledger_entries": 239
+      },
+      "native_id": "01M67ZJWDYS7H33828MPTK6E6D",
+      "order_id": "afo-7f71565db57f0a76",
+      "release_eligibility": "BLOCKED",
+      "request_id": "DF-AFO-CRC-IDR-20261030-06"
+    },
+    {
+      "archive": {
+        "remote_path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/archives/WO-AFO-f83452175591716f-a1/forge-c-WO-AFO-f83452175591716f-a1-review.zip",
+        "sha256": "8a02a83573cf5d47c8c6078af9e2322c3d5dbd7a5483345d389f162b3280e103"
+      },
+      "audit": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/cohort-audits/native07-bf2dc88af050973621c5f5b602b486797fe1df8397e8e7814db9b97ae84275d3.json",
+        "sha256": "bf2dc88af050973621c5f5b602b486797fe1df8397e8e7814db9b97ae84275d3"
+      },
+      "audit_status": "FUNCTIONAL_MILESTONE_PASS",
+      "automatic_factory_handoff": "NOT_QUALIFIED; inherited capacity backoff required external administrative retries before07 and08",
+      "candidate_hashes": {
+        "software/ll/stm32n6xx_ll_crc.h": "70d5558762d299a8ce664dc0aa589b42c77425e969ec365e5430badbbaced689"
+      },
+      "functional_status": "QUALIFIED_BY_PINNED_EXTERNAL_AUDIT",
+      "gap_count": 35,
+      "gates": {
+        "SWE.1": "PASS",
+        "SWE.2": "PASS",
+        "SWE.3": "REWORK",
+        "SWE.4": "REWORK",
+        "SWE.5": "REINSPECT",
+        "SWE.6": "REWORK"
+      },
+      "metrics": {
+        "author_role_output_tokens": 194067,
+        "corrections": 0,
+        "native_usage": {
+          "timing": {
+            "active_time_ms": 6559004,
+            "inference_time_ms": 6333039,
+            "tool_time_ms": 225965,
+            "wall_time_ms": 7532944
+          },
+          "usage": {
+            "tokens": {
+              "cache_read": 11835530,
+              "cache_write": 0,
+              "input": 906238,
+              "output": 321796,
+              "reasoning": 0
+            }
+          }
+        },
+        "post_launch_job_interventions": 0,
+        "reasoning_breakdown": "UNKNOWN; provider0 is not a measurement of hidden reasoning",
+        "request_ledger_entries": 264
+      },
+      "native_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+      "order_id": "afo-f83452175591716f",
+      "release_eligibility": "BLOCKED",
+      "request_id": "DF-AFO-CRC-IDR-20261030-07"
+    },
+    {
+      "audit_status": "MISSING",
+      "functional_status": "NOT_QUALIFIED",
+      "order_id": "afo-48b5f7eb60495e69",
+      "release_eligibility": "UNKNOWN",
+      "request_id": "DF-AFO-CRC-IDR-20261030-08"
+    }
+  ]
+}

@@ -16,6 +16,7 @@ runner is resumable: completed cases are not run again. The summary reports READ
 and time/tokens/energy per accepted work order including the failed attempts. It is a pilot operational measurement,
 not a reliability proof or a safety qualification.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -70,8 +71,11 @@ def classify(ws: Path) -> dict:
             rows = [json.loads(x) for x in (log.read_text().splitlines() if log.is_file() else [])]
             last = next((r for r in reversed(rows) if r.get("phase") == ph and r.get("step") == "route"), {})
             reason = (last.get("gate") or {}).get("reason") or g.get("reason")
-            kind = "INFRASTRUCTURE" if any(x in str(reason) for x in ("timeout", "stall", "UNREACHABLE", "OOM")) \
+            kind = (
+                "INFRASTRUCTURE"
+                if any(x in str(reason) for x in ("timeout", "stall", "UNREACHABLE", "OOM"))
                 else "QUALITY_OR_FACTORY (triage per case)"
+            )
             return {"blocked_phase": ph, "reason": str(reason)[:300], "kind": kind}
     return {"blocked_phase": None, "reason": "all phases passed", "kind": "NONE"}
 
@@ -102,19 +106,41 @@ def run_case(case: dict, model: str, env: dict) -> dict:
 
     state = Path(env["FORGE_STATE_DIR"])
     ws = state / "workorders" / case["run"] / "workspace"
-    argv = ["python", "-m", "forge_factory.workorder", "--example", str(REPO_ROOT / case["example"]), "--wo",
-            case["run"], "--profile", case.get("profile", "local-rtx-v1"), "--model", model]
+    argv = [
+        "python",
+        "-m",
+        "forge_factory.workorder",
+        "--example",
+        str(REPO_ROOT / case["example"]),
+        "--wo",
+        case["run"],
+        "--profile",
+        case.get("profile", "local-rtx-v1"),
+        "--model",
+        model,
+    ]
     provided = None
     if case.get("provided_from"):
         argv += ["--provided-from", case["provided_from"]]
         if case.get("import_from_deployment"):
-            provided = import_provided(case["provided_from"], env, Path(env.get(
-                "FORGE_LRTX_DEPLOYMENT_STATE", "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state")))
+            provided = import_provided(
+                case["provided_from"],
+                env,
+                Path(
+                    env.get("FORGE_LRTX_DEPLOYMENT_STATE", "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state")
+                ),
+            )
     t0 = time.monotonic()
     p = subprocess.run(argv, cwd=REPO_ROOT, env=env, capture_output=True, text=True, timeout=24 * 3600)
-    rec = {"case": case["id"], "run": case["run"], "started_exit": p.returncode, "wall_s": round(time.monotonic() - t0, 1),
-           "stdout_tail": p.stdout[-400:], "stderr_tail": p.stderr[-600:] if p.returncode else "",
-           "provided": provided}
+    rec = {
+        "case": case["id"],
+        "run": case["run"],
+        "started_exit": p.returncode,
+        "wall_s": round(time.monotonic() - t0, 1),
+        "stdout_tail": p.stdout[-400:],
+        "stderr_tail": p.stderr[-600:] if p.returncode else "",
+        "provided": provided,
+    }
     pkg = ws / ".forge-run/package.json"
     rec["package_status"] = json.loads(pkg.read_text()).get("package_status") if pkg.is_file() else "NO_PACKAGE"
     rec["gap_count"] = json.loads(pkg.read_text()).get("gap_count") if pkg.is_file() else None
@@ -139,17 +165,28 @@ def summary(c: dict, rows: list[dict], digest: str) -> dict:
     for r in rows:
         ph = (r.get("classification") or {}).get("blocked_phase") or "none"
         by_phase[ph] = by_phase.get(ph, 0) + 1
-    return {"schema": "forge-c/lrtx-campaign-summary/1", "campaign": c["tag"], "campaign_sha256": digest,
-            "generated_at": utc_now(), "cases_planned": len(expand(c)), "cases_run": n,
-            "ready": len(ready), "ready_wilson_95": wilson(len(ready), n),
-            "target": c.get("target", "27/30 READY_FOR_OFFLINE_REVIEW (spec acceptance 5, proposed)"),
-            "blocked_or_failed_by_phase": by_phase,
-            "per_accepted_work_order": {"wall_s": round(wall / len(ready), 1) if ready else "NO_ACCEPTED_WORK_ORDER",
-                                        "prompt_tokens": round(tok / len(ready)) if ready else "NO_ACCEPTED_WORK_ORDER",
-                                        "gpu_wh": round(sum(e_known) / len(ready), 3) if ready and len(e_known) == n
-                                        else "UNKNOWN (energy not measured for every attempt)",
-                                        "basis": "all attempts, including failed ones, divided by accepted packages"},
-            "rows": rows, "note": "Pilot operational criterion, not a reliability proof or safety qualification."}
+    return {
+        "schema": "forge-c/lrtx-campaign-summary/1",
+        "campaign": c["tag"],
+        "campaign_sha256": digest,
+        "generated_at": utc_now(),
+        "cases_planned": len(expand(c)),
+        "cases_run": n,
+        "ready": len(ready),
+        "ready_wilson_95": wilson(len(ready), n),
+        "target": c.get("target", "27/30 READY_FOR_OFFLINE_REVIEW (spec acceptance 5, proposed)"),
+        "blocked_or_failed_by_phase": by_phase,
+        "per_accepted_work_order": {
+            "wall_s": round(wall / len(ready), 1) if ready else "NO_ACCEPTED_WORK_ORDER",
+            "prompt_tokens": round(tok / len(ready)) if ready else "NO_ACCEPTED_WORK_ORDER",
+            "gpu_wh": round(sum(e_known) / len(ready), 3)
+            if ready and len(e_known) == n
+            else "UNKNOWN (energy not measured for every attempt)",
+            "basis": "all attempts, including failed ones, divided by accepted packages",
+        },
+        "rows": rows,
+        "note": "Pilot operational criterion, not a reliability proof or safety qualification.",
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -157,7 +194,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--campaign", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--max-cases", type=int, default=0, help="stop after this many new cases (0 = all)")
+    ap.add_argument("--durable-manifest", type=Path, help="Feature 014 frozen campaign; uses existing AFO job dispatch")
+    ap.add_argument("--authorization-ref")
     a = ap.parse_args(argv)
+    if a.durable_manifest:
+        from ..afo.qualification import step
+
+        result = step(json.loads(a.durable_manifest.read_text()), a.authorization_ref, a.out)
+        print(json.dumps(result, indent=2))
+        return 2 if result.get("status") == "BLOCKED" else 0
     c = load(a.campaign)
     digest = sha256_file(a.campaign)
     a.out.mkdir(parents=True, exist_ok=True)

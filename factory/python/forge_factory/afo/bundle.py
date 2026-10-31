@@ -9,6 +9,10 @@ fingerprint). An agent's own "PASS" text is never a verdict. The AFO class adds 
     FACTORY_CODE_DEFECT - rework would only meet the same defect.
 Agent-written text (inspector findings, author replies) enters only as a bounded, secret-redacted excerpt tagged
 untrusted (`untrusted_source_refs`): it is data for the planner, never instructions.
+F015 (2026-10-25/26): an agent backend that refuses its turns (ACP `prompt_error`, e.g. Codex unavailable at sign-in)
+is a TRANSIENT_DEPENDENCY, not product quality: the phase whose latest agent turn errored stopped on unchanged files
+(a STUCK route), and a run that failed before any phase BLOCKED gets a bundle at once instead of waiting out the
+package deadline (6 h of a one-order queue on 2026-10-25).
 """
 from __future__ import annotations
 
@@ -46,6 +50,50 @@ def blocked_phase(ws: Path) -> tuple[str | None, str]:
     return (last["phase"], str(last["gate"].get("reason", ""))) if last else (None, "")
 
 
+def _node_phase(node: str) -> str | None:
+    m = re.match(r"swe(\d)_", node)
+    return f"SWE.{m.group(1)}" if m else None
+
+
+def agent_turns(ws: Path, phase: str | None = None) -> list[dict]:
+    """The ACP proxy's turn records (session start, usage, prompt_error) of one phase's agent nodes, oldest first."""
+    out = []
+    for f in sorted((ws / ".forge-run/acp").glob("*.proxy.jsonl")):
+        node = f.name.removesuffix(".proxy.jsonl")
+        if phase is not None and _node_phase(node) != phase:
+            continue
+        for line in f.read_text().splitlines():
+            try:
+                r = json.loads(line)
+            except ValueError:
+                continue
+            if r.get("event") in ("session", "usage", "prompt_error"):
+                out.append({**r, "node": node})
+    return sorted(out, key=lambda r: str(r.get("ts", "")))
+
+
+def agent_unavailable(ws: Path, phase: str) -> dict | None:
+    """The latest prompt_error of `phase` when no agent turn of that phase completed after it."""
+    last = None
+    for r in agent_turns(ws, phase):
+        if r["event"] == "prompt_error":
+            last = r
+        elif r["event"] == "usage":
+            last = None
+    return last
+
+
+def last_phase(ws: Path) -> str:
+    log = ws / ".forge-run/gates/gate-log.jsonl"
+    ph = "SWE.1"
+    for line in log.read_text().splitlines() if log.is_file() else []:
+        try:
+            ph = json.loads(line).get("phase") or ph
+        except ValueError:
+            continue
+    return ph if ph in PHASES else "UNKNOWN"
+
+
 def _capa_fingerprints() -> set[str]:
     from ..reliability.capa import CapaRegistry
     from ..reliability.policy import load
@@ -69,14 +117,40 @@ def afo_class(obs: dict, open_capa: set[str]) -> str:
         else "UNKNOWN"
 
 
-def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | None = None) -> dict | None:
-    """None when no phase BLOCKED (the run reached its package; validation, not recovery, decides)."""
+def _unavailable_bundle(ws: Path, order_id: str, attempt_id: str, phase: str, err: dict | None, reason: str) -> dict:
+    from ..reliability.taxonomy import fingerprint
+
+    cls, code = ("TRANSIENT_DEPENDENCY", "AGENT_BACKEND_UNAVAILABLE") if err else ("INFRASTRUCTURE", "RUN_NOT_COMPLETED")
+    node = (err or {}).get("node", "")
+    summary = redact(f"route: {reason}; " + (f"{node} prompt_error {err.get('code')}: {err.get('message', '')}"
+                                             if err else "Fabro run failed before any phase gate BLOCKED"))
+    rec = {"schema_version": "1.0", "order_id": order_id, "attempt_id": attempt_id, "phase": phase,
+           "failure_class": cls, "fingerprint": fingerprint(cls, node or "fabro-run", code, f"{phase}/agent_turn"),
+           "gate_result": "BLOCKED" if reason else "UNKNOWN", "error_code": code, "artifact_refs": [],
+           "evidence_refs": [f"workspace:.forge-run/acp/{node}.proxy.jsonl"] if err else
+           ["workspace:.forge-run/gates/gate-log.jsonl"], "input_digests": {}, "requirements_refs": [],
+           "redacted_summary": summary[:MAX_SUMMARY], "context_truncated": len(summary) > MAX_SUMMARY,
+           "untrusted_source_refs": []}
+    rec["bundle_id"] = "afo-fb-" + hashlib.sha256(json.dumps(rec, sort_keys=True).encode()).hexdigest()[:20]
+    contracts.require("failure-bundle", rec)
+    return rec
+
+
+def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | None = None,
+          run_failed: bool = False) -> dict | None:
+    """None when no phase BLOCKED and the run did not fail (it reached its package; validation decides)."""
     from ..reliability.observe import from_workspace
 
     ws = Path(ws)
     phase, reason = blocked_phase(ws)
     if phase is None:
-        return None
+        if not run_failed:
+            return None
+        ph = last_phase(ws)
+        return _unavailable_bundle(ws, order_id, attempt_id, ph, agent_unavailable(ws, ph), "")
+    err = agent_unavailable(ws, phase)
+    if err:  # the phase stopped on files its errored agent turn never changed: not a product finding
+        return _unavailable_bundle(ws, order_id, attempt_id, phase, err, reason)
     obs = sorted((o for o in from_workspace(ws) if o.get("phase") == phase and o.get("disposition") == "ACTIVE"),
                  key=lambda o: (o.get("ts_utc", ""), o["obs_id"]))  # the latest failure dominates
     route = [o for o in obs if o["operation"].endswith("/route")]

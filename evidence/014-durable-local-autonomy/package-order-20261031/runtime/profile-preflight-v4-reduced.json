@@ -1,0 +1,38 @@
+{
+  "id": "local-rtx-v2-omniverse2-q38-delivery-first",
+  "version": 3,
+  "config": "config/factory/profiles/local-rtx-v2-omniverse2-q38-delivery-first.yaml",
+  "config_sha256": "823942772335b7ef500f9f11926732405ac12dbff0dcc7f0ab39e345db3358e7",
+  "models": [
+    {
+      "digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+      "expected_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+      "model": "qwen3.8:27b-q8_0",
+      "quantization": "Q8_0",
+      "role_qualification": "NOT_QUALIFIED; author/inspector/diagnosis/maintenance qualify separately",
+      "size": 29978242050,
+      "status": "MATCH"
+    }
+  ],
+  "enforcement": {
+    "acp": "REJECTED_BEFORE_LAUNCH",
+    "basis": "checked by forge_factory.lrtx.profile.select at launch; a declared provider name alone is not enforcement",
+    "endpoints": "LOOPBACK_VERIFIED",
+    "fabro_providers": [
+      "ollama"
+    ],
+    "isolation": "VERIFIED",
+    "network": {
+      "detail": "OSError: [Errno 101] Network is unreachable",
+      "interfaces": [
+        "lo"
+      ],
+      "netns": "net:[4026533325]",
+      "probe": "1.1.1.1:443",
+      "status": "DENIED_VERIFIED"
+    }
+  },
+  "local_only": true,
+  "provider": "ollama",
+  "status": "DEVELOPMENT_ARTIFACT_TRIAL_NOT_QUALIFIED"
+}

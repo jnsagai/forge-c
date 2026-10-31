@@ -1,0 +1,15 @@
+{
+  "goal": "Make factory runnable with a passing end-to-end driver workflow within original five-hour window",
+  "cutoff": "2026-10-28T16:29:12Z",
+  "status": "NOT_ACHIEVED",
+  "observed_at": "2026-10-28T16:29:48.170072Z",
+  "product": "BLOCKED",
+  "candidate_runtime_fix": "98d066dfe519c5ea2b23cec7d8f9681aff1f71d0 NOT_DEPLOYED",
+  "supervision": "RUNNING epoch18; Conductor/watchdog active",
+  "finite_recorder": "INACTIVE_AT_CAMPAIGN_END",
+  "production_policy": "Original signed policy restored, PILOT, no issues",
+  "expiry_cleanup": "FENCED_BY_NEWER_OPERATOR_INTENT; no stale epoch16 overwrite",
+  "mission": "3/3 attempts;1.9m conservative charged;UNKNOWN actual usage;deadline/allowances unchanged",
+  "qualified_source_status": "124 native fixtures PASS;71 local exact PASS;not live model recovery",
+  "next_live_prerequisite": "Exact prospective candidate source/profile scope under valid authority and explicit cumulative mission allowance; do not silently renew expired engineering scope or reset original mission"
+}

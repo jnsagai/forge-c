@@ -1,0 +1,341 @@
+{
+  "scope": "SPEC_CONTRACTS_ONLY_NOT_RUNTIME",
+  "fixtures": [
+    {
+      "file": "proposal-repair.valid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": true,
+      "purpose": "Well-formed semantic repair; evidence membership and usefulness are not established by schema."
+    },
+    {
+      "file": "proposal-needs-evidence.valid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": true,
+      "purpose": "Evidence request; never binds a recovery plan or dispatches implementation."
+    },
+    {
+      "file": "proposal-close-blocked.valid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": true,
+      "purpose": "Candidate blocked decision; independent admissibility still required."
+    },
+    {
+      "file": "proposal-host-field.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Reject model-owned administrative fields."
+    },
+    {
+      "file": "proposal-wrong-type.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Reject semantic type errors; never coerce a string into an array."
+    },
+    {
+      "file": "proposal-mixed-decision.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Evidence request cannot smuggle repair/dispatch fields."
+    },
+    {
+      "file": "proposal-switch-without-profile.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Model-switch proposal must name its semantic choice."
+    },
+    {
+      "file": "proposal-empty-hypothesis.invalid.json",
+      "schema": "semantic-proposal.schema.json",
+      "expected_valid": false,
+      "purpose": "Host must not fabricate an absent hypothesis."
+    },
+    {
+      "file": "receipt-stored-pending.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Storage is neither acceptance nor permission to execute."
+    },
+    {
+      "file": "receipt-accepted-not-dispatched.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Admissible repair has not yet executed."
+    },
+    {
+      "file": "receipt-scoped-verification.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Scoped independent repair verification; does not assert a READY package or deployment."
+    },
+    {
+      "file": "receipt-accepted-close.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Accepted CLOSE_BLOCKED is not a recovered product."
+    },
+    {
+      "file": "receipt-accepted-evidence-request.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Admissible evidence request permits only separately bounded retrieval."
+    },
+    {
+      "file": "receipt-submission-rejected.valid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": true,
+      "purpose": "Malformed submission can have an audit receipt without any accepted proposal."
+    },
+    {
+      "file": "receipt-dispatch-before-acceptance.invalid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": false,
+      "purpose": "Stored proposal cannot authorize implementation."
+    },
+    {
+      "file": "receipt-false-verification.invalid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": false,
+      "purpose": "Verified state requires a verifier receipt reference; authenticity remains a semantic check."
+    },
+    {
+      "file": "receipt-close-dispatch.invalid.json",
+      "schema": "completion-receipt.schema.json",
+      "expected_valid": false,
+      "purpose": "Accepted blocked decision cannot dispatch implementation."
+    },
+    {
+      "file": "lifecycle-reserved.valid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": true,
+      "purpose": "Reservation precedes durable dispatch intent."
+    },
+    {
+      "file": "lifecycle-revoked-before-adoption.valid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": true,
+      "purpose": "Terminal task with unresolved native execution retains lease and nonce reconciliation."
+    },
+    {
+      "file": "lifecycle-cancel-ack-still-running.valid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": true,
+      "purpose": "Cancel acknowledgement is not process termination."
+    },
+    {
+      "file": "lifecycle-quiescent.valid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": true,
+      "purpose": "Authoritative quiescence permits release while task remains blocked."
+    },
+    {
+      "file": "lifecycle-unknown-lease-release.invalid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": false,
+      "purpose": "Uncertain execution retains exclusive resources."
+    },
+    {
+      "file": "lifecycle-cancel-ack-as-terminal.invalid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": false,
+      "purpose": "Cannot label a live native run cancellation-confirmed."
+    },
+    {
+      "file": "lifecycle-unproven-quiescence.invalid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": false,
+      "purpose": "Quiescence requires evidence; a timeout or 404 alone is insufficient."
+    },
+    {
+      "file": "lifecycle-model-claim-recovered.invalid.json",
+      "schema": "execution-lifecycle.schema.json",
+      "expected_valid": false,
+      "purpose": "No recovered outcome before native quiescence and independent semantic validation."
+    },
+    {
+      "file": "export-manifest.valid.json",
+      "schema": "offline-export-manifest.schema.json",
+      "expected_valid": true,
+      "purpose": "Records exported in full, a vendor input listed by hash only."
+    },
+    {
+      "file": "export-vendor-content.invalid.json",
+      "schema": "offline-export-manifest.schema.json",
+      "expected_valid": false,
+      "purpose": "A NEVER_CONTENT vendor file cannot carry exported content."
+    },
+    {
+      "file": "export-path-escape.invalid.json",
+      "schema": "offline-export-manifest.schema.json",
+      "expected_valid": false,
+      "purpose": "A path escaping the workspace is refused."
+    },
+    {
+      "file": "export-raw-prompt.invalid.json",
+      "schema": "offline-export-manifest.schema.json",
+      "expected_valid": false,
+      "purpose": "A raw prompt field has no place in the manifest."
+    },
+    {
+      "file": "disposition.valid.json",
+      "schema": "review-disposition.schema.json",
+      "expected_valid": true,
+      "purpose": "An owner disposition of one finding, routed to the learning set."
+    },
+    {
+      "file": "disposition-test-set-use.invalid.json",
+      "schema": "review-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "A disposition never feeds a held-out test set."
+    },
+    {
+      "file": "disposition-release-verdict.invalid.json",
+      "schema": "review-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "A disposition is not a release approval."
+    },
+    {
+      "file": "disposition-unsigned.invalid.json",
+      "schema": "review-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "A disposition without a signature reference is refused."
+    },
+    {
+      "file": "patch.valid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": true,
+      "purpose": "A write with its base hash and a delete of a known file, with declared regression and CRE decision."
+    },
+    {
+      "file": "patch-path-escape.invalid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": false,
+      "purpose": "A path escaping the release tree is refused."
+    },
+    {
+      "file": "patch-blind-delete.invalid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": false,
+      "purpose": "A delete must name the exact base content it removes."
+    },
+    {
+      "file": "patch-no-regression.invalid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": false,
+      "purpose": "A patch without a declared regression is refused."
+    },
+    {
+      "file": "patch-git-dir.invalid.json",
+      "schema": "patch-bundle.schema.json",
+      "expected_valid": false,
+      "purpose": "A patch cannot write into .git."
+    },
+    {
+      "file": "process-lab-block-inspect.valid.json",
+      "schema": "runtime/process-lab.schema.json",
+      "expected_valid": true,
+      "purpose": "INSPECT order (seq 2) bound to a sealed AUTHOR handoff by sha256."
+    },
+    {
+      "file": "process-lab-block-oracle-field.invalid.json",
+      "schema": "runtime/process-lab.schema.json",
+      "expected_valid": false,
+      "purpose": "An oracle reference in a lab block is refused (never exposed to an order)."
+    },
+    {
+      "file": "process-lab-block-seq2-no-handoff.invalid.json",
+      "schema": "runtime/process-lab.schema.json",
+      "expected_valid": false,
+      "purpose": "seq >= 2 without an input handoff is refused."
+    },
+    {
+      "file": "process-lab-handoff-author.valid.json",
+      "schema": "runtime/process-handoff.schema.json",
+      "expected_valid": true,
+      "purpose": "Sealed AUTHOR handoff with one RM-sourced requirement and group/scope files."
+    },
+    {
+      "file": "process-lab-handoff-release-claim.invalid.json",
+      "schema": "runtime/process-handoff.schema.json",
+      "expected_valid": false,
+      "purpose": "A lab handoff can never claim a release status."
+    },
+    {
+      "file": "process-lab-handoff-bad-id.invalid.json",
+      "schema": "runtime/process-handoff.schema.json",
+      "expected_valid": false,
+      "purpose": "Requirement IDs must match SWR-nnn."
+    },
+    {
+      "file": "process-lab-oracle.valid.json",
+      "schema": "runtime/swe1-oracle.schema.json",
+      "expected_valid": true,
+      "purpose": "Per-driver oracle with one critical behaviour obligation and a register predicate."
+    },
+    {
+      "file": "process-lab-oracle-empty.invalid.json",
+      "schema": "runtime/swe1-oracle.schema.json",
+      "expected_valid": false,
+      "purpose": "An oracle without obligations is refused."
+    },
+    {
+      "file": "process-lab-oracle-bad-kind.invalid.json",
+      "schema": "runtime/swe1-oracle.schema.json",
+      "expected_valid": false,
+      "purpose": "Obligation kinds are a closed set."
+    },
+    {
+      "file": "process-lab-experiment.valid.json",
+      "schema": "runtime/process-lab-experiment.schema.json",
+      "expected_valid": true,
+      "purpose": "Frozen experiment record binding the oracle hash before the first order."
+    },
+    {
+      "file": "process-lab-experiment-no-oracle.invalid.json",
+      "schema": "runtime/process-lab-experiment.schema.json",
+      "expected_valid": false,
+      "purpose": "An experiment must bind at least one oracle hash."
+    },
+    {
+      "file": "process-lab-experiment-bad-threshold.invalid.json",
+      "schema": "runtime/process-lab-experiment.schema.json",
+      "expected_valid": false,
+      "purpose": "Thresholds are fractions in [0, 1]."
+    },
+    {
+      "file": "process-lab-swap.valid.json",
+      "schema": "runtime/model-swap.schema.json",
+      "expected_valid": true,
+      "purpose": "Completed activation record."
+    },
+    {
+      "file": "process-lab-swap-inference.invalid.json",
+      "schema": "runtime/model-swap.schema.json",
+      "expected_valid": false,
+      "purpose": "Activation never sends a model request."
+    },
+    {
+      "file": "process-lab-swap-bad-outcome.invalid.json",
+      "schema": "runtime/model-swap.schema.json",
+      "expected_valid": false,
+      "purpose": "Outcomes are a closed set; there is no forced outcome."
+    },
+    {
+      "file": "process-lab-disposition.valid.json",
+      "schema": "runtime/process-lab-disposition.schema.json",
+      "expected_valid": true,
+      "purpose": "Owner disposition bound to the covering requirement statements."
+    },
+    {
+      "file": "process-lab-disposition-covered-empty.invalid.json",
+      "schema": "runtime/process-lab-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "COVERED needs at least one covering statement."
+    },
+    {
+      "file": "process-lab-disposition-extra-field.invalid.json",
+      "schema": "runtime/process-lab-disposition.schema.json",
+      "expected_valid": false,
+      "purpose": "No fields beyond the contract (not the learning-only review-disposition)."
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "forge-c/external-engineering-authorization-basis/1",
+  "kind": "EXISTING_EXPLICIT_OWNER_QUALIFICATION_AND_SSH_AGENT_AUTHORIZATION",
+  "new_approval_reply_received": false,
+  "new_capacity_question_answer_received": false,
+  "owner_requests": [
+    {
+      "quote": "I do, I approve all",
+      "scope": "Feature014 bounded live qualification, as recorded in HANDOVER-CODEX.md owner decisions."
+    },
+    {
+      "quote": "make the factory runnable in omniverse machine, trying to run end to end workflows until 5h from now",
+      "scope": "Active owner goal:11:29:12\u201316:29:12Z,28October2026."
+    },
+    {
+      "quote": "switch officially to Qwen3.8-27B Q8 then",
+      "scope": "Official model switch; xhigh subsequently requested."
+    }
+  ],
+  "agent_signing_basis": "HANDOVER-CODEX.md standing rule explicitly permits signing AFO qualification grants using ssh-keygen -Y sign -U and qualification-owner/owner.pub; no safety/review/patch signature authority.",
+  "engineering_interpretation": "A second approval was requested unnecessarily. Existing bounded Feature014 qualification approval covers these prospective finite experimental orders. This record discloses reliance on prior approval; it is not a new owner reply or an independent qualification result.",
+  "scope_sha256": "570a031c15ff4bc668cfa58ab9d3602ac70e1f7e935352b57398b6641258d35d",
+  "source_revision": "d7fa97e41f6e265e55737478379052db8d6bd859",
+  "experimental_only": true,
+  "ordinary_production_grant_renewed": false,
+  "old_missions_reset": false,
+  "deadline_utc": "2026-10-28T16:29:12Z",
+  "per_order_tokens": 2000000,
+  "per_order_requests": 512,
+  "aggregate_tokens": 4000000,
+  "inference_concurrency": 1,
+  "source_promotion_or_safety_approval": false
+}

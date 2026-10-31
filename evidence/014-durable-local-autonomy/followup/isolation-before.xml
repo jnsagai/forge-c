@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="2.402" timestamp="2026-10-25T11:03:01.174516+00:00" hostname="master"><testcase classname="test_isolation_before" name="test_inherited_read_only_tmpdir_cannot_break_independent_compilation[verifier]" time="0.735"><failure message="AssertionError: clang: error: unable to make temporary file: Permission denied&#10;  &#10;assert 1 == None">role = 'verifier'
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/isolation-before/test_inherited_read_only_tmpdi0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7ac8a041df30&gt;
+
+    @pytest.mark.parametrize("role", ["verifier", "repair", "maintainer"])
+    def test_inherited_read_only_tmpdir_cannot_break_independent_compilation(role, tmp_path, monkeypatch):
+        if not shutil.which("podman") or not shutil.which("clang"):
+            pytest.skip("actual rootless Podman/compiler prerequisite unavailable")
+        monkeypatch.setenv(I.MODE_ENV, "podman")
+        scratch = I.new_dir("014-compiler-scratch")
+        inherited = tmp_path / "owner-temp"
+        inherited.mkdir()
+        env = {"PATH": os.environ["PATH"], "FORGE_REPO_ROOT": str(REPO_ROOT), "TMPDIR": str(inherited)}
+        code = '''import json,os,pathlib,subprocess,tempfile
+    root=pathlib.Path.cwd()
+    with tempfile.NamedTemporaryFile() as f: temporary=f.name
+    (root/'probe.c').write_text('int main(void) { return 0; }\\n')
+    compile=subprocess.run(['clang',str(root/'probe.c'),'-o',str(root/'probe')],capture_output=True,text=True)
+    run=subprocess.run([str(root/'probe')],capture_output=True) if compile.returncode==0 else None
+    print(json.dumps({'uid':os.getuid(),'tmpdir':os.environ['TMPDIR'],'temporary':temporary,
+                     'compile':compile.returncode,'run':run.returncode if run else None,'stderr':compile.stderr}))
+    '''
+        try:
+            I.hand_over(role, scratch)
+            p = I.execute(role, [sys.executable, "-c", code], cwd=scratch, env=env, writable=[scratch], timeout=60)
+            assert p.returncode == 0, p.stderr.decode(errors="replace")
+            result = json.loads(p.stdout)
+            assert result["uid"] == I.ROLES[role]
+&gt;           assert result["compile"] == result["run"] == 0, result["stderr"]
+E           AssertionError: clang: error: unable to make temporary file: Permission denied
+E             
+E           assert 1 == None
+
+../test_isolation_before.py:36: AssertionError</failure></testcase><testcase classname="test_isolation_before" name="test_inherited_read_only_tmpdir_cannot_break_independent_compilation[repair]" time="0.732"><failure message="AssertionError: clang: error: unable to make temporary file: Permission denied&#10;  &#10;assert 1 == None">role = 'repair'
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/isolation-before/test_inherited_read_only_tmpdi1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7ac8a041da70&gt;
+
+    @pytest.mark.parametrize("role", ["verifier", "repair", "maintainer"])
+    def test_inherited_read_only_tmpdir_cannot_break_independent_compilation(role, tmp_path, monkeypatch):
+        if not shutil.which("podman") or not shutil.which("clang"):
+            pytest.skip("actual rootless Podman/compiler prerequisite unavailable")
+        monkeypatch.setenv(I.MODE_ENV, "podman")
+        scratch = I.new_dir("014-compiler-scratch")
+        inherited = tmp_path / "owner-temp"
+        inherited.mkdir()
+        env = {"PATH": os.environ["PATH"], "FORGE_REPO_ROOT": str(REPO_ROOT), "TMPDIR": str(inherited)}
+        code = '''import json,os,pathlib,subprocess,tempfile
+    root=pathlib.Path.cwd()
+    with tempfile.NamedTemporaryFile() as f: temporary=f.name
+    (root/'probe.c').write_text('int main(void) { return 0; }\\n')
+    compile=subprocess.run(['clang',str(root/'probe.c'),'-o',str(root/'probe')],capture_output=True,text=True)
+    run=subprocess.run([str(root/'probe')],capture_output=True) if compile.returncode==0 else None
+    print(json.dumps({'uid':os.getuid(),'tmpdir':os.environ['TMPDIR'],'temporary':temporary,
+                     'compile':compile.returncode,'run':run.returncode if run else None,'stderr':compile.stderr}))
+    '''
+        try:
+            I.hand_over(role, scratch)
+            p = I.execute(role, [sys.executable, "-c", code], cwd=scratch, env=env, writable=[scratch], timeout=60)
+            assert p.returncode == 0, p.stderr.decode(errors="replace")
+            result = json.loads(p.stdout)
+            assert result["uid"] == I.ROLES[role]
+&gt;           assert result["compile"] == result["run"] == 0, result["stderr"]
+E           AssertionError: clang: error: unable to make temporary file: Permission denied
+E             
+E           assert 1 == None
+
+../test_isolation_before.py:36: AssertionError</failure></testcase><testcase classname="test_isolation_before" name="test_inherited_read_only_tmpdir_cannot_break_independent_compilation[maintainer]" time="0.617"><failure message="AssertionError: clang: error: unable to make temporary file: Permission denied&#10;  &#10;assert 1 == None">role = 'maintainer'
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/isolation-before/test_inherited_read_only_tmpdi2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7ac8a01f3ad0&gt;
+
+    @pytest.mark.parametrize("role", ["verifier", "repair", "maintainer"])
+    def test_inherited_read_only_tmpdir_cannot_break_independent_compilation(role, tmp_path, monkeypatch):
+        if not shutil.which("podman") or not shutil.which("clang"):
+            pytest.skip("actual rootless Podman/compiler prerequisite unavailable")
+        monkeypatch.setenv(I.MODE_ENV, "podman")
+        scratch = I.new_dir("014-compiler-scratch")
+        inherited = tmp_path / "owner-temp"
+        inherited.mkdir()
+        env = {"PATH": os.environ["PATH"], "FORGE_REPO_ROOT": str(REPO_ROOT), "TMPDIR": str(inherited)}
+        code = '''import json,os,pathlib,subprocess,tempfile
+    root=pathlib.Path.cwd()
+    with tempfile.NamedTemporaryFile() as f: temporary=f.name
+    (root/'probe.c').write_text('int main(void) { return 0; }\\n')
+    compile=subprocess.run(['clang',str(root/'probe.c'),'-o',str(root/'probe')],capture_output=True,text=True)
+    run=subprocess.run([str(root/'probe')],capture_output=True) if compile.returncode==0 else None
+    print(json.dumps({'uid':os.getuid(),'tmpdir':os.environ['TMPDIR'],'temporary':temporary,
+                     'compile':compile.returncode,'run':run.returncode if run else None,'stderr':compile.stderr}))
+    '''
+        try:
+            I.hand_over(role, scratch)
+            p = I.execute(role, [sys.executable, "-c", code], cwd=scratch, env=env, writable=[scratch], timeout=60)
+            assert p.returncode == 0, p.stderr.decode(errors="replace")
+            result = json.loads(p.stdout)
+            assert result["uid"] == I.ROLES[role]
+&gt;           assert result["compile"] == result["run"] == 0, result["stderr"]
+E           AssertionError: clang: error: unable to make temporary file: Permission denied
+E             
+E           assert 1 == None
+
+../test_isolation_before.py:36: AssertionError</failure></testcase></testsuite></testsuites>

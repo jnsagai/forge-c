@@ -1,0 +1,71 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+___ test_open_point_finding_routes_to_note_owner_and_referenced_requirement ____
+
+    def test_open_point_finding_routes_to_note_owner_and_referenced_requirement():
+        finding = 'Open points says the TEST_ENR input does not define TEST_RSTR, but SWR-006 specifies reset assertion.'
+        routed = visit.route_findings([finding], _map(), 'requirements:crosscutting')
+>       assert set(routed) == {'requirements:TEST_ENR', 'requirements:TEST_RSTR'}
+E       AssertionError: assert {'requirements:TEST_RSTR'} == {'requirement...ts:TEST_RSTR'}
+E         
+E         Extra items in the right set:
+E         'requirements:TEST_ENR'
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_open_point_provenance.py:20: AssertionError
+___________ test_explicit_open_point_id_reaches_original_obligation ____________
+
+    def test_explicit_open_point_id_reaches_original_obligation():
+        routed = visit.route_findings(['OP-0123456789abcdef is inconsistent with SWR-006.'],
+                                      _map(), 'requirements:crosscutting')
+>       assert set(routed) == {'requirements:TEST_ENR', 'requirements:TEST_RSTR'}
+E       AssertionError: assert {'requirements:TEST_RSTR'} == {'requirement...ts:TEST_RSTR'}
+E         
+E         Extra items in the right set:
+E         'requirements:TEST_ENR'
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_open_point_provenance.py:26: AssertionError
+_ test_unscoped_open_point_finding_covers_known_note_origins_and_legacy_maps_still_work _
+
+    def test_unscoped_open_point_finding_covers_known_note_origins_and_legacy_maps_still_work():
+        finding = 'The Open points section contradicts the declared scope.'
+>       assert set(visit.route_findings([finding], _map(), 'requirements:crosscutting')) == {'requirements:TEST_ENR'}
+E       AssertionError: assert {'requirements:crosscutting'} == {'requirements:TEST_ENR'}
+E         
+E         Extra items in the left set:
+E         'requirements:crosscutting'
+E         Extra items in the right set:
+E         'requirements:TEST_ENR'
+E         Use -v to get more diff
+
+factory/python/tests/test_lrtx_open_point_provenance.py:31: AssertionError
+__ test_assembly_keeps_note_text_with_stable_source_scope_and_packet_identity __
+
+ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-111/test_assembly_keeps_note_text_0/state/workorders/WO-T-IWDG-LL/workspace')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x733bb7a2c160>
+
+    def test_assembly_keeps_note_text_with_stable_source_scope_and_packet_identity(ws, monkeypatch):  # noqa: F811
+        note = 'This prescaler input section does not define reload register fields.'
+        answers = copy.deepcopy(ANSWERS)
+        answers['requirements:IWDG_PR']['open_points'] = [note]
+        monkeypatch.setattr(S, 'call', _scripted(answers, []))
+        assert swe1.visit(ws, 'synthetic')['status'] == 'PASS'
+        amap = json.loads((ws / '.forge-run/lrtx/SWE.1/assembly.json').read_text())
+>       entries = [(key, value) for key, value in amap['open_points'].items() if value['text'] == note]
+                                                  ^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'open_points'
+
+factory/python/tests/test_lrtx_open_point_provenance.py:43: KeyError
+----------------------------- Captured stdout call -----------------------------
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_lrtx_open_point_provenance.py::test_open_point_finding_routes_to_note_owner_and_referenced_requirement
+FAILED factory/python/tests/test_lrtx_open_point_provenance.py::test_explicit_open_point_id_reaches_original_obligation
+FAILED factory/python/tests/test_lrtx_open_point_provenance.py::test_unscoped_open_point_finding_covers_known_note_origins_and_legacy_maps_still_work
+FAILED factory/python/tests/test_lrtx_open_point_provenance.py::test_assembly_keeps_note_text_with_stable_source_scope_and_packet_identity

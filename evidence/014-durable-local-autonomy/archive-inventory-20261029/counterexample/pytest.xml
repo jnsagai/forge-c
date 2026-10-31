@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.096" timestamp="2026-10-29T11:58:37.448205+00:00" hostname="master"><testcase classname="factory.python.tests.test_archive_inventory" name="test_incomplete_ambiguous_or_malformed_inventory_is_rejected[missing-member]" time="0.008"><failure message="AssertionError: {'archive': '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-32/test_incomplete_ambiguous_or_m0/review.zip', 'integrity': 'PASS', 'issues': []}&#10;assert 'PASS' == 'FAIL'&#10;  &#10;  - FAIL&#10;  + PASS">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-32/test_incomplete_ambiguous_or_m0')
+fault = 'missing-member'
+
+    @pytest.mark.parametrize("fault", ["missing-member", "unlisted-member", "duplicate-member", "duplicate-checksum",
+                                      "malformed-checksum", "invalid-encoding", "empty-index"])
+    def test_incomplete_ambiguous_or_malformed_inventory_is_rejected(tmp_path, fault):
+        result = verify_archive(archive(tmp_path, fault))
+&gt;       assert result["integrity"] == "FAIL", result
+E       AssertionError: {'archive': '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-32/test_incomplete_ambiguous_or_m0/review.zip', 'integrity': 'PASS', 'issues': []}
+E       assert 'PASS' == 'FAIL'
+E         
+E         - FAIL
+E         + PASS
+
+factory/python/tests/test_archive_inventory.py:49: AssertionError</failure></testcase></testsuite></testsuites>

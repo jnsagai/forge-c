@@ -1,0 +1,114 @@
+{
+  "schema": "forge-c/delivery-first-overnight-scope/1",
+  "root": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "profile": "local-rtx-v2-omniverse2-q38-delivery-first",
+  "profile_sha256": "823942772335b7ef500f9f11926732405ac12dbff0dcc7f0ab39e345db3358e7",
+  "model": "qwen3.8:27b-q8_0",
+  "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+  "precision": "Q8_0",
+  "provider_context_tokens": 262144,
+  "reasoning": "medium",
+  "mtp_draft": 3,
+  "slots": 1,
+  "purpose": "QM_DEVELOPMENT_QUALIFICATION_NOT_PRODUCTION",
+  "example": "examples/0014g-st-crc-idr-qwen-delivery",
+  "request_id": "DF-AFO-CRC-IDR-20261030-05",
+  "order_id": "afo-ee4282b25001a15d",
+  "tenant_scope": "feature014-delivery-first-20261030",
+  "mission_id": "mission-feature014-delivery-first-20261030",
+  "policy_sha256": "36d4b97e3a0d66360a94224a9f717e3f8ecfdc34aa292fe54ac039b45aa33caf",
+  "primary_authorization": "AUTH-014-DF-AFO-OVERNIGHT-20261031-V4",
+  "role_authorization": "AUTH-014-DF-AFO-ROLES-20261031-V4B",
+  "issued_utc": "2026-10-31T01:01:03.913727Z",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "deadline_epoch": 1793433479.0,
+  "mission_limits": {
+    "max_attempts": 10,
+    "max_jobs": 1,
+    "max_requests": 8000,
+    "max_tokens": 1073741824,
+    "max_tools": 100000,
+    "max_corrections": 20,
+    "deadline": 1793433479.0
+  },
+  "current_job_token_reservation": 67108864,
+  "historical_native_id": "01M6788GYKREQSS1YTZHS9N3TV",
+  "historical_request_reservation": 246,
+  "historical_token_reservation": 64487424,
+  "historical_token_basis": "CONSERVATIVE_GATEWAY_REQUEST_COUNT_TIMES_PHYSICAL_CONTEXT_BOUND; ACTUAL_GENERATION_COUNT_UNKNOWN",
+  "historical_counts": {
+    "requests": 246,
+    "tools": 439,
+    "corrections": 0
+  },
+  "historical_reported_tokens": {
+    "input": 610015,
+    "output": 209145,
+    "cache_read": 4545363,
+    "reasoning": "UNKNOWN"
+  },
+  "standing_signing_delegation": "always approve it for now on automatically",
+  "owner_window": "2026-10-30T21:57:59Z plus ten hours",
+  "authorization_basis": [
+    "owner requested implement DELIVERY-FIRST-E2E.md",
+    "owner delegated qualification signing",
+    "owner: continue the goal in overnight during 10 hours"
+  ],
+  "production_operations_must_remain": "PAUSED111",
+  "no_safety_or_review_signing": true,
+  "no_automatic_grant_renewal": true,
+  "release_policy": "UNCHANGED_STRICT",
+  "progression": "Retry DF-M1 with unused order04. No fresh repeatability cohort until independent terminal package audit PASS. All orders retain one cumulative mission.",
+  "supersedes_prelaunch_scope_sha256": "a9aa5d63086f6fdf41762304a881457efadb99979cc9d92514ed5ebce4c6c967",
+  "prelaunch_correction": "Defer model package sealing until final graph verification; declared Robot API/include fixes and retained test history",
+  "mission_registration_authorization": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+  "mission_before_sha256": "65469ddbb3bb2e4b82973c49cdefc59b28ed389dfd3dd2459cfcbd58374635aa",
+  "mission_allowances_changed": false,
+  "prior_new_product_attempts": 2,
+  "deadline_extended": false,
+  "predeclared_orders": [
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-05",
+      "order_id": "afo-ee4282b25001a15d"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-06",
+      "order_id": "afo-7f71565db57f0a76"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-07",
+      "order_id": "afo-f83452175591716f"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-08",
+      "order_id": "afo-48b5f7eb60495e69"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-09",
+      "order_id": "afo-de6809c9be417bd6"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-10",
+      "order_id": "afo-2786814af730ce77"
+    }
+  ],
+  "prior_failure_sha256": "d708ee7568b87e223b9e9846e2a9f49ddebf0a5873b8a44649d5806deb3bc84a",
+  "candidate_reuse": false,
+  "supersedes_scope_sha256": "0fe46b9d80ac8fe680b2de88304a4621fdcdb3b3beeff5dbe37a50de98a1f3b2",
+  "prior_terminal_audit_sha256": "8c2f41f1b0cef3ef7cbe7094d61f9ad1c4b4323281a9f9499ab448af98e5398c",
+  "prior_terminal_archive_sha256": "2cbfa28aa6925a5d1c206e0c887004e4fa543f096bfbda78195b2f001632ed58",
+  "prior_terminal_native": "01M67ETTPXS1Q73QPMQ98DNJX0",
+  "qualification_implementation_tests": {
+    "revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+    "tests": 68,
+    "passed": 68,
+    "errors": 0,
+    "skips": 0,
+    "scope": "FRAMEWORK_NOT_MODEL_QUALIFICATION"
+  },
+  "known_inherited_failure": "Feature009 historical RCC graph golden; identical strict hashes before/after prior increment; not waived for release",
+  "primary_scope_sha256": "83c919dcc947cf003db192a2936dd093c19021ce0fa80c3702f8cfe68a2f1a34",
+  "signed_role_addendum_sha256": "e43742bd265c74fbfdb2560e627400c08e81cbe78e03a64d4ac826a9d3166185",
+  "scope_declaration": "EFFECTIVE_SUBSET_OF_SIGNED_PRIMARY_SCOPE_WITH_SIGNED_ROLE_ADDENDUM"
+}

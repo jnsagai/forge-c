@@ -1,0 +1,611 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:forge-c:014:execution-lifecycle:1.0",
+  "title": "Execution liveness separate from mission outcome; NOT IMPLEMENTED",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mission_id",
+    "job_id",
+    "execution_id",
+    "revision",
+    "lease_epoch",
+    "launch_nonce",
+    "authorization_state",
+    "admission_state",
+    "identity_state",
+    "native_run_ids",
+    "execution_liveness",
+    "cancellation_state",
+    "cancel_attempts",
+    "last_cancel_error",
+    "resource_lease",
+    "task_outcome",
+    "terminal_reason",
+    "quiescence_evidence_ref",
+    "outcome_evidence_ref",
+    "last_reconciled_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "mission_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "execution_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "lease_epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "launch_nonce": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "authorization_state": {
+      "enum": [
+        "VALID",
+        "REVOKED",
+        "EXPIRED"
+      ]
+    },
+    "admission_state": {
+      "enum": [
+        "RESERVED",
+        "DISPATCH_INTENT_RECORDED",
+        "NATIVE_ACCEPTED"
+      ]
+    },
+    "identity_state": {
+      "enum": [
+        "NONE",
+        "UNCONFIRMED",
+        "CONFIRMED",
+        "AMBIGUOUS"
+      ]
+    },
+    "native_run_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}$"
+      },
+      "minItems": 0,
+      "maxItems": 256,
+      "uniqueItems": true
+    },
+    "execution_liveness": {
+      "enum": [
+        "NOT_STARTED",
+        "POSSIBLY_LIVE",
+        "LIVE",
+        "QUIESCENT",
+        "UNKNOWN"
+      ]
+    },
+    "cancellation_state": {
+      "enum": [
+        "NOT_REQUESTED",
+        "REQUESTED",
+        "ACKNOWLEDGED",
+        "QUIESCENCE_CONFIRMED"
+      ]
+    },
+    "cancel_attempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "last_cancel_error": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resource_lease": {
+      "enum": [
+        "HELD",
+        "RELEASED"
+      ]
+    },
+    "task_outcome": {
+      "enum": [
+        "ACTIVE",
+        "RECOVERED",
+        "BLOCKED",
+        "EXHAUSTED",
+        "FAILED_PROTOCOL",
+        "ROLLED_BACK"
+      ]
+    },
+    "terminal_reason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "quiescence_evidence_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 256
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outcome_evidence_ref": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 256
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "last_reconciled_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "admission_state": {
+            "const": "RESERVED"
+          }
+        },
+        "required": [
+          "admission_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "identity_state": {
+            "const": "NONE"
+          },
+          "execution_liveness": {
+            "const": "NOT_STARTED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "identity_state": {
+            "const": "NONE"
+          }
+        },
+        "required": [
+          "identity_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "native_run_ids": {
+            "maxItems": 0
+          },
+          "execution_liveness": {
+            "const": "NOT_STARTED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "identity_state": {
+            "const": "UNCONFIRMED"
+          }
+        },
+        "required": [
+          "identity_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "native_run_ids": {
+            "maxItems": 0
+          },
+          "execution_liveness": {
+            "enum": [
+              "POSSIBLY_LIVE",
+              "UNKNOWN",
+              "QUIESCENT"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "identity_state": {
+            "const": "CONFIRMED"
+          }
+        },
+        "required": [
+          "identity_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "native_run_ids": {
+            "minItems": 1,
+            "maxItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "identity_state": {
+            "const": "AMBIGUOUS"
+          }
+        },
+        "required": [
+          "identity_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "native_run_ids": {
+            "minItems": 2
+          },
+          "execution_liveness": {
+            "enum": [
+              "UNKNOWN",
+              "QUIESCENT"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "admission_state": {
+            "const": "NATIVE_ACCEPTED"
+          }
+        },
+        "required": [
+          "admission_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "identity_state": {
+            "enum": [
+              "CONFIRMED",
+              "AMBIGUOUS"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution_liveness": {
+            "const": "LIVE"
+          }
+        },
+        "required": [
+          "execution_liveness"
+        ]
+      },
+      "then": {
+        "properties": {
+          "identity_state": {
+            "const": "CONFIRMED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution_liveness": {
+            "enum": [
+              "POSSIBLY_LIVE",
+              "LIVE",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "required": [
+          "execution_liveness"
+        ]
+      },
+      "then": {
+        "properties": {
+          "resource_lease": {
+            "const": "HELD"
+          },
+          "quiescence_evidence_ref": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution_liveness": {
+            "const": "QUIESCENT"
+          }
+        },
+        "required": [
+          "execution_liveness"
+        ]
+      },
+      "then": {
+        "properties": {
+          "quiescence_evidence_ref": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 256
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution_liveness": {
+            "const": "NOT_STARTED"
+          }
+        },
+        "required": [
+          "execution_liveness"
+        ]
+      },
+      "then": {
+        "properties": {
+          "quiescence_evidence_ref": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "resource_lease": {
+            "const": "RELEASED"
+          }
+        },
+        "required": [
+          "resource_lease"
+        ]
+      },
+      "then": {
+        "properties": {
+          "execution_liveness": {
+            "enum": [
+              "NOT_STARTED",
+              "QUIESCENT"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cancellation_state": {
+            "const": "QUIESCENCE_CONFIRMED"
+          }
+        },
+        "required": [
+          "cancellation_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "execution_liveness": {
+            "enum": [
+              "NOT_STARTED",
+              "QUIESCENT"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cancellation_state": {
+            "const": "ACKNOWLEDGED"
+          }
+        },
+        "required": [
+          "cancellation_state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cancel_attempts": {
+            "minimum": 1
+          },
+          "native_run_ids": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task_outcome": {
+            "const": "ACTIVE"
+          }
+        },
+        "required": [
+          "task_outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "terminal_reason": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task_outcome": {
+            "not": {
+              "const": "ACTIVE"
+            }
+          }
+        },
+        "required": [
+          "task_outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "terminal_reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "outcome_evidence_ref": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 256
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task_outcome": {
+            "enum": [
+              "RECOVERED",
+              "ROLLED_BACK"
+            ]
+          }
+        },
+        "required": [
+          "task_outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "execution_liveness": {
+            "const": "QUIESCENT"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "task_outcome": {
+            "not": {
+              "const": "ACTIVE"
+            }
+          },
+          "execution_liveness": {
+            "enum": [
+              "POSSIBLY_LIVE",
+              "LIVE",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "required": [
+          "task_outcome",
+          "execution_liveness"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cancellation_state": {
+            "enum": [
+              "REQUESTED",
+              "ACKNOWLEDGED"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authorization_state": {
+            "enum": [
+              "REVOKED",
+              "EXPIRED"
+            ]
+          },
+          "execution_liveness": {
+            "enum": [
+              "POSSIBLY_LIVE",
+              "LIVE",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "required": [
+          "authorization_state",
+          "execution_liveness"
+        ]
+      },
+      "then": {
+        "properties": {
+          "cancellation_state": {
+            "enum": [
+              "REQUESTED",
+              "ACKNOWLEDGED"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

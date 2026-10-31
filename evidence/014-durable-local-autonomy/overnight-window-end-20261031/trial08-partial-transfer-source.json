@@ -1,0 +1,21 @@
+{
+  "archive": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/qualification-observations/partial-artifacts/afo-48b5f7eb60495e69-vt91cv5c/PARTIAL-artifacts.zip",
+  "archive_sha256": "c2037d61215b9040c14c3a2b148068a2cd1cec1cb8a20c8f53088fd92d280e63",
+  "attempt_id": "afo-48b5f7eb60495e69-a1",
+  "candidate_execution": false,
+  "captured_end": "2026-10-31T07:59:32.186135+00:00",
+  "captured_start": "2026-10-31T07:59:32.167441+00:00",
+  "file_count": 87,
+  "limits": "Captured byte hashes only; active writes can race. No finality, consistency, authorship, release or missing checks inferred.",
+  "model_calls": 0,
+  "native_id": "01M68CMQAZNN7QGRZSX5DGRMYY",
+  "order_at_start": {
+    "order_id": "afo-48b5f7eb60495e69",
+    "state": "BLOCKED",
+    "terminal_reason": "OPERATOR_SHUTDOWN"
+  },
+  "schema": "forge-c/private-partial-artifact-copy/1",
+  "source_workspace_written": false,
+  "status": "PARTIAL_UNATOMIC_ARTIFACT_COPY_NOT_RELEASE_OR_QUALIFICATION",
+  "unstable_during_read": []
+}

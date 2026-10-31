@@ -1,0 +1,207 @@
+{
+  "at": "2026-10-30T23:12:17.322889Z",
+  "native_id": "01M67ETTPXS1Q73QPMQ98DNJX0",
+  "source_revision": "a34fdd859af47d1ca6cba2633b3ccb672c7cb690",
+  "scope": "READ_ONLY_NATIVE_TOOL_FEEDBACK_OBSERVATION_NOT_NEW_VERIFICATION",
+  "model_calls": 0,
+  "rows": [
+    {
+      "at": "2026-10-30T23:02:13.044459889Z",
+      "tool_call_id": "Hrze7chfwIwmsvFUFCLJhBmJnfCMVNE9",
+      "node": "swe2_author",
+      "requested_path": "workproducts/SWE.2/architecture_static.puml",
+      "status": "FAIL",
+      "summary": "PlantUML views: 1 findings",
+      "issues": [
+        "VIEWS:SYNTAX:Some diagram description contains errors"
+      ],
+      "metrics": {
+        "syntax": "FAIL",
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      },
+      "provenance": {
+        "tool": "plantuml",
+        "version": "0.4.0",
+        "invocation_id": "inv-cb466cb4a3cf4456",
+        "input_sha256": "9ffdda1f5d560ace6e4fa6652fcc6b8b603f0e6e2bd6a178775cf5a2e3adb255"
+      }
+    },
+    {
+      "at": "2026-10-30T23:02:13.644806321Z",
+      "tool_call_id": "LpKdx4P6Vf91D6wKhfoxPudaNB2xQ0aU",
+      "node": "swe2_author",
+      "requested_path": "workproducts/SWE.2/architecture_dynamic.puml",
+      "status": "FAIL",
+      "summary": "PlantUML views: 1 findings",
+      "issues": [
+        "VIEWS:SYNTAX:Some diagram description contains errors"
+      ],
+      "metrics": {
+        "syntax": "FAIL",
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      },
+      "provenance": {
+        "tool": "plantuml",
+        "version": "0.4.0",
+        "invocation_id": "inv-5f35c3dfbe0b48c7",
+        "input_sha256": "f3bc63825a29dda6448f0ca15035a0b2cdf8855846b3c967bcd46641e28c0763"
+      }
+    },
+    {
+      "at": "2026-10-30T23:03:25.261781433Z",
+      "tool_call_id": "1eCNpChH32hXXVKejHqnozuO4yh8O4dD",
+      "node": "swe2_author",
+      "requested_path": "workproducts/SWE.2/architecture_dynamic.puml",
+      "status": "FAIL",
+      "summary": "PlantUML views: 1 findings",
+      "issues": [
+        "VIEWS:SYNTAX:Some diagram description contains errors"
+      ],
+      "metrics": {
+        "syntax": "FAIL",
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      },
+      "provenance": {
+        "tool": "plantuml",
+        "version": "0.4.0",
+        "invocation_id": "inv-03d3111d5c5f4543",
+        "input_sha256": "f3bc63825a29dda6448f0ca15035a0b2cdf8855846b3c967bcd46641e28c0763"
+      }
+    },
+    {
+      "at": "2026-10-30T23:03:25.853374533Z",
+      "tool_call_id": "vZEOLDrxLbVDgnVloWh7VrlO9L4WTHGw",
+      "node": "swe2_author",
+      "requested_path": "workproducts/SWE.2/architecture_static.puml",
+      "status": "FAIL",
+      "summary": "PlantUML views: 1 findings",
+      "issues": [
+        "VIEWS:SYNTAX:Some diagram description contains errors"
+      ],
+      "metrics": {
+        "syntax": "FAIL",
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      },
+      "provenance": {
+        "tool": "plantuml",
+        "version": "0.4.0",
+        "invocation_id": "inv-17e300cda0484b51",
+        "input_sha256": "9ffdda1f5d560ace6e4fa6652fcc6b8b603f0e6e2bd6a178775cf5a2e3adb255"
+      }
+    },
+    {
+      "at": "2026-10-30T23:03:42.587991689Z",
+      "tool_call_id": "EKtdQpvWVGRtwKioFbfrUC3WBgwvufC4",
+      "node": "swe2_author",
+      "requested_path": "workproducts/SWE.2/_debug.puml",
+      "status": "FAIL",
+      "summary": "PlantUML views: 1 findings",
+      "issues": [
+        "VIEWS:SYNTAX:Some diagram description contains errors"
+      ],
+      "metrics": {
+        "syntax": "FAIL",
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      },
+      "provenance": {
+        "tool": "plantuml",
+        "version": "0.4.0",
+        "invocation_id": "inv-7fc7d4185b3c4b3a",
+        "input_sha256": "c93406920eab4ffcec0c98fd4255ca0f8c22daa04a78b1a7fdac73f5083a98f4"
+      }
+    },
+    {
+      "at": "2026-10-30T23:03:54.232327188Z",
+      "tool_call_id": "T9nWdnoIElBxgTWWkpUpmT7eO49gFpYe",
+      "node": "swe2_author",
+      "requested_path": "workproducts/SWE.2/_debug.puml",
+      "status": "FAIL",
+      "summary": "PlantUML views: 1 findings",
+      "issues": [
+        "VIEWS:SYNTAX:Some diagram description contains errors"
+      ],
+      "metrics": {
+        "syntax": "FAIL",
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      },
+      "provenance": {
+        "tool": "plantuml",
+        "version": "0.4.0",
+        "invocation_id": "inv-5fa73a899e234d61",
+        "input_sha256": "c93406920eab4ffcec0c98fd4255ca0f8c22daa04a78b1a7fdac73f5083a98f4"
+      }
+    },
+    {
+      "at": "2026-10-30T23:06:30.058358492Z",
+      "tool_call_id": "8jM496JBLbWToYkgOPDq5W5ZDmT3MhF1",
+      "node": "swe2_author",
+      "requested_path": "workproducts/SWE.2/_debug2.puml",
+      "status": "FAIL",
+      "summary": "PlantUML views: 1 findings",
+      "issues": [
+        "VIEWS:SYNTAX:Some diagram description contains errors"
+      ],
+      "metrics": {
+        "syntax": "FAIL",
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      },
+      "provenance": {
+        "tool": "plantuml",
+        "version": "0.4.0",
+        "invocation_id": "inv-ef8ddd076e134f6c",
+        "input_sha256": "26730e0f976756e03afe3f910532ac0a51910528dca2c05917d68b9d3c919498"
+      }
+    },
+    {
+      "at": "2026-10-30T23:06:30.199818643Z",
+      "tool_call_id": "E0sW2xGGYQX6SheI0mpVXAmKcLfKYslV",
+      "node": "swe2_author",
+      "requested_path": "workproducts/SWE.2/_debug.puml",
+      "status": "FAIL",
+      "summary": "PlantUML views: 1 findings",
+      "issues": [
+        "VIEWS:SYNTAX:Some diagram description contains errors"
+      ],
+      "metrics": {
+        "syntax": "FAIL",
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      },
+      "provenance": {
+        "tool": "plantuml",
+        "version": "0.4.0",
+        "invocation_id": "inv-f23b1b9eaca44b5d",
+        "input_sha256": "c93406920eab4ffcec0c98fd4255ca0f8c22daa04a78b1a7fdac73f5083a98f4"
+      }
+    },
+    {
+      "at": "2026-10-30T23:08:11.091976444Z",
+      "tool_call_id": "0drKhSvxM5a0diNSfxB96AjK56uf78nA",
+      "node": "swe2_author",
+      "requested_path": "workproducts/SWE.2/architecture_static.puml",
+      "status": "FAIL",
+      "summary": "PlantUML views: 1 findings",
+      "issues": [
+        "VIEWS:SYNTAX:Some diagram description contains errors"
+      ],
+      "metrics": {
+        "syntax": "FAIL",
+        "allocated_apis": 2,
+        "apis_in_dynamic_view": 2
+      },
+      "provenance": {
+        "tool": "plantuml",
+        "version": "0.4.0",
+        "invocation_id": "inv-6a60012ac6fc4506",
+        "input_sha256": "9ffdda1f5d560ace6e4fa6652fcc6b8b603f0e6e2bd6a178775cf5a2e3adb255"
+      }
+    }
+  ]
+}

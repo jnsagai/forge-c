@@ -1,0 +1,16 @@
+// Forge-C minimal STM32N6 (Cortex-M55) platform for RNG driver target tests. NOT a full SoC model:
+// CPU + NVIC + AXISRAM (code/data/mailbox) + a behavioural RNG model (rng_model.py) at RM0486 base 0x54020000 (secure, p.177).
+cpu: CPU.CortexM @ sysbus
+    cpuType: "cortex-m55"
+    nvic: nvic
+
+nvic: IRQControllers.NVIC @ sysbus 0xE000E000
+    -> cpu@0
+
+axisram: Memory.MappedMemory @ sysbus 0x34000000
+    size: 0x200000
+
+rng: Python.PythonPeripheral @ sysbus 0x54020000
+    size: 0x400
+    initable: true
+    filename: "RNG_MODEL_PATH"

@@ -1,0 +1,2005 @@
+{
+ "schema": "forge-c/feature014-inherited-whole-suite/1",
+ "scope": "INHERITED_DETERMINISTIC_WHOLE_SUITE_NO_LIVE_QWEN",
+ "source_revision": "74ba5462d4ff63dff6cbb2d7df34e5dd6dc7e16a",
+ "base_revision": "f6ff873d5b4f3e9e46956ef26766181aaec2289d",
+ "started_utc": "2026-10-26T02:33:34.745330+00:00",
+ "ended_utc": "2026-10-26T03:10:23.509695+00:00",
+ "per_file_timeout_seconds": 900,
+ "excluded_native_files": [
+  "test_cre_d7_e2e.py",
+  "test_t048_e2e.py"
+ ],
+ "totals": {
+  "files": 197,
+  "tests": 1648,
+  "failures_and_errors": 3,
+  "skipped": 44
+ },
+ "non_passing": {
+  "factory/python/tests/test_cre_d7_final.py": "INHERITED: fails identically on base f6ff873; readiness recomputed from an empty private CRE state (no observations imported) differs from the recorded OBSERVE_ONLY assessment",
+  "factory/python/tests/test_lrtx_drill.py": "INHERITED: fails identically on base f6ff873 (namespace holder not found in this environment)",
+  "factory/python/tests/test_sim_renode.py": "INHERITED: fails identically on base f6ff873 (Renode not resolved from the MCP server environment)",
+  "factory/python/tests/test_da014_integration.py": "FEATURE 014 DEFECT, FIXED in de324a3: an in-process verification claim by a group/session leader was marked killable and lease expiry SIGKILLed the test runner; after the fix the file passes in its own session (32 passed)"
+ },
+ "worktree_side_effect": "test_t050_t051_docs_status regenerates docs/IMPLEMENTATION-STATUS-v0.4.md and evidence/v0.4/implementation-status.json (timestamp/commit only); inherited behaviour, end_dirty recorded",
+ "end_dirty": " M docs/IMPLEMENTATION-STATUS-v0.4.md\n M evidence/v0.4/implementation-status.json\n",
+ "rows": [
+  {
+   "target": "factory/python/tests/test_001_backlog_evidence.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_001_build_pins.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 1.3
+  },
+  {
+   "target": "factory/python/tests/test_001_t015_optimization.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 71.3
+  },
+  {
+   "target": "factory/python/tests/test_acp_gate.py",
+   "exit_code": 0,
+   "tests": 6,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.9
+  },
+  {
+   "target": "factory/python/tests/test_acp_proxy.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.9
+  },
+  {
+   "target": "factory/python/tests/test_afo_local_autonomy.py",
+   "exit_code": 0,
+   "tests": 43,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 6.1
+  },
+  {
+   "target": "factory/python/tests/test_afo_m0_audit.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_afo_m0_contracts_status.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_afo_m0_policy_authz.py",
+   "exit_code": 0,
+   "tests": 11,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_afo_m1_services.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.9
+  },
+  {
+   "target": "factory/python/tests/test_afo_m2_queue.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.5
+  },
+  {
+   "target": "factory/python/tests/test_afo_m3_reconcile.py",
+   "exit_code": 0,
+   "tests": 12,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 1.3
+  },
+  {
+   "target": "factory/python/tests/test_afo_m4_recovery.py",
+   "exit_code": 0,
+   "tests": 21,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 7,
+   "failed_cases": [],
+   "seconds": 1.6
+  },
+  {
+   "target": "factory/python/tests/test_afo_m5_maintainer.py",
+   "exit_code": 0,
+   "tests": 18,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.4
+  },
+  {
+   "target": "factory/python/tests/test_afo_m6_operations.py",
+   "exit_code": 0,
+   "tests": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 4.5
+  },
+  {
+   "target": "factory/python/tests/test_afo_m7_readiness.py",
+   "exit_code": 0,
+   "tests": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.7
+  },
+  {
+   "target": "factory/python/tests/test_afo_m8_acceptance.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_checklist.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 19.3
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_conformance.py",
+   "exit_code": 0,
+   "tests": 11,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 9.9
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_dispositions.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_fix.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 7.6
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_frozen.py",
+   "exit_code": 0,
+   "tests": 11,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 8.4
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_hal.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_intake.py",
+   "exit_code": 0,
+   "tests": 13,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 4.6
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_pilot.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 8.9
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_resume.py",
+   "exit_code": 0,
+   "tests": 45,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 74.5
+  },
+  {
+   "target": "factory/python/tests/test_brownfield_st_host.py",
+   "exit_code": 0,
+   "tests": 6,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 7.6
+  },
+  {
+   "target": "factory/python/tests/test_bubblewrap_confinement.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_capa038_ll_fake.py",
+   "exit_code": 0,
+   "tests": 6,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 6.7
+  },
+  {
+   "target": "factory/python/tests/test_capa044_safety_scope_text.py",
+   "exit_code": 0,
+   "tests": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_controlroom_alerts.py",
+   "exit_code": 0,
+   "tests": 6,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_controlroom_api.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 22.9
+  },
+  {
+   "target": "factory/python/tests/test_controlroom_floor.py",
+   "exit_code": 0,
+   "tests": 13,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_controlroom_scorecard.py",
+   "exit_code": 0,
+   "tests": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.0
+  },
+  {
+   "target": "factory/python/tests/test_controlroom_spc_pareto.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_controlroom_usage.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_controlroom_windows.py",
+   "exit_code": 0,
+   "tests": 6,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cpu_verification_parallel.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_013_015.py",
+   "exit_code": 0,
+   "tests": 14,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.0
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_046.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.8
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_050.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_051.py",
+   "exit_code": 0,
+   "tests": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_052.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.6
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_053.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_054.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_055.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_056.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_057.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 6.0
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_058.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_059.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_060.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.6
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_061.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.6
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_062.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_063.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.5
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_064.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_065.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_066.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_capa_067.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_d0_adrs.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_d0_audit.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_d0_baseline.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.5
+  },
+  {
+   "target": "factory/python/tests/test_cre_d0_policy.py",
+   "exit_code": 0,
+   "tests": 13,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.6
+  },
+  {
+   "target": "factory/python/tests/test_cre_d1_observe.py",
+   "exit_code": 0,
+   "tests": 21,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.1
+  },
+  {
+   "target": "factory/python/tests/test_cre_d2_recovery.py",
+   "exit_code": 0,
+   "tests": 14,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 28.8
+  },
+  {
+   "target": "factory/python/tests/test_cre_d3_capa.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 8.1
+  },
+  {
+   "target": "factory/python/tests/test_cre_d4_promotion.py",
+   "exit_code": 0,
+   "tests": 12,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 605.0
+  },
+  {
+   "target": "factory/python/tests/test_cre_d5_metrics.py",
+   "exit_code": 0,
+   "tests": 6,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_cre_d6_views.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 4.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_d7_dispatch_admission.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.2
+  },
+  {
+   "target": "factory/python/tests/test_cre_d7_drill.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_d7_faults.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 90.1
+  },
+  {
+   "target": "factory/python/tests/test_cre_d7_final.py",
+   "exit_code": 1,
+   "tests": 3,
+   "failures": 1,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [
+    "factory.python.tests.test_cre_d7_final::test_readiness_is_recomputable_evidence_based_and_never_a_safety_claim"
+   ],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_cre_d7_isolation.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 2,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_cre_d7_production_journal.py",
+   "exit_code": 0,
+   "tests": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.9
+  },
+  {
+   "target": "factory/python/tests/test_cre_d7_trace_runbook.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.5
+  },
+  {
+   "target": "factory/python/tests/test_cre_slo_evidence.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_cre_t046_benchmark.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 9.7
+  },
+  {
+   "target": "factory/python/tests/test_cre_t053_growth_fit.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.5
+  },
+  {
+   "target": "factory/python/tests/test_da014_dispatch_faults.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.7
+  },
+  {
+   "target": "factory/python/tests/test_da014_integration.py",
+   "exit_code": -9,
+   "tests": null,
+   "failures": null,
+   "errors": null,
+   "skipped": null,
+   "failed_cases": null,
+   "seconds": 2.0
+  },
+  {
+   "target": "factory/python/tests/test_da014_isolation.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.0
+  },
+  {
+   "target": "factory/python/tests/test_da014_launch_boundary.py",
+   "exit_code": 0,
+   "tests": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.7
+  },
+  {
+   "target": "factory/python/tests/test_da014_learning.py",
+   "exit_code": 0,
+   "tests": 12,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.1
+  },
+  {
+   "target": "factory/python/tests/test_da014_maintenance.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.8
+  },
+  {
+   "target": "factory/python/tests/test_da014_proposal_diagnostics.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.7
+  },
+  {
+   "target": "factory/python/tests/test_da014_protocol.py",
+   "exit_code": 0,
+   "tests": 25,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.5
+  },
+  {
+   "target": "factory/python/tests/test_da014_protocol_faults.py",
+   "exit_code": 0,
+   "tests": 31,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 8.5
+  },
+  {
+   "target": "factory/python/tests/test_da014_provider_process.py",
+   "exit_code": 0,
+   "tests": 21,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.8
+  },
+  {
+   "target": "factory/python/tests/test_da014_provider_recovery.py",
+   "exit_code": 0,
+   "tests": 19,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.8
+  },
+  {
+   "target": "factory/python/tests/test_da014_qualification.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_da014_qualification_audit.py",
+   "exit_code": 0,
+   "tests": 6,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.2
+  },
+  {
+   "target": "factory/python/tests/test_da014_qualification_inputs.py",
+   "exit_code": 0,
+   "tests": 18,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 56.9
+  },
+  {
+   "target": "factory/python/tests/test_da014_qualification_intake.py",
+   "exit_code": 0,
+   "tests": 21,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 160.9
+  },
+  {
+   "target": "factory/python/tests/test_da014_qualification_reservations.py",
+   "exit_code": 0,
+   "tests": 14,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.3
+  },
+  {
+   "target": "factory/python/tests/test_da014_qualification_scope.py",
+   "exit_code": 0,
+   "tests": 15,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 93.2
+  },
+  {
+   "target": "factory/python/tests/test_da014_qualification_state.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.7
+  },
+  {
+   "target": "factory/python/tests/test_da014_two_step.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.4
+  },
+  {
+   "target": "factory/python/tests/test_dashboard_access.py",
+   "exit_code": 0,
+   "tests": 14,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.4
+  },
+  {
+   "target": "factory/python/tests/test_ears.py",
+   "exit_code": 0,
+   "tests": 14,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_easa_case.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.5
+  },
+  {
+   "target": "factory/python/tests/test_easa_corpus.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_easa_formal.py",
+   "exit_code": 0,
+   "tests": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 8.8
+  },
+  {
+   "target": "factory/python/tests/test_easa_m0.py",
+   "exit_code": 0,
+   "tests": 14,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.1
+  },
+  {
+   "target": "factory/python/tests/test_easa_m1.py",
+   "exit_code": 0,
+   "tests": 19,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.3
+  },
+  {
+   "target": "factory/python/tests/test_easa_m2.py",
+   "exit_code": 0,
+   "tests": 15,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.6
+  },
+  {
+   "target": "factory/python/tests/test_easa_m3_m4.py",
+   "exit_code": 0,
+   "tests": 13,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 0.5
+  },
+  {
+   "target": "factory/python/tests/test_easa_m4_swe3.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.0
+  },
+  {
+   "target": "factory/python/tests/test_easa_m5.py",
+   "exit_code": 0,
+   "tests": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.7
+  },
+  {
+   "target": "factory/python/tests/test_easa_m6.py",
+   "exit_code": 0,
+   "tests": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_easa_m7.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.0
+  },
+  {
+   "target": "factory/python/tests/test_easa_m7b.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.2
+  },
+  {
+   "target": "factory/python/tests/test_easa_m8.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 2,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_easa_matrix.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.0
+  },
+  {
+   "target": "factory/python/tests/test_easa_norm_worksheet.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.6
+  },
+  {
+   "target": "factory/python/tests/test_easa_pilot_check.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_easa_pilot_validation.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_easa_pilot_wiring.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_easa_policy_active.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_easa_pr_body.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_easa_readiness.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.1
+  },
+  {
+   "target": "factory/python/tests/test_easa_register_contract.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.0
+  },
+  {
+   "target": "factory/python/tests/test_easa_scope_decision.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_easa_swtrace.py",
+   "exit_code": 0,
+   "tests": 36,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 17.4
+  },
+  {
+   "target": "factory/python/tests/test_fabro_monitor_export.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_guideline_check.py",
+   "exit_code": 0,
+   "tests": 17,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_inspection_lessons.py",
+   "exit_code": 0,
+   "tests": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_kpi_003.py",
+   "exit_code": 0,
+   "tests": 23,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 3.9
+  },
+  {
+   "target": "factory/python/tests/test_layer_split.py",
+   "exit_code": 0,
+   "tests": 23,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 8.1
+  },
+  {
+   "target": "factory/python/tests/test_llm_gateway.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_loopbacks.py",
+   "exit_code": 0,
+   "tests": 32,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.2
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_admission.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.4
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_campaign.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_capabilities.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_compat.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 4.7
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_drill.py",
+   "exit_code": 1,
+   "tests": 8,
+   "failures": 1,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [
+    "factory.python.tests.test_lrtx_drill::test_stop_waits_for_the_namespace_holder_and_forgets_it"
+   ],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_hostcheck.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_modelcmp.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.2
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_p3.py",
+   "exit_code": 0,
+   "tests": 27,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 16.3
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_profile.py",
+   "exit_code": 0,
+   "tests": 11,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_review_bundle.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.5
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_rework_unchanged.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.6
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_runmetrics.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_seeded.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 36.6
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_swe1.py",
+   "exit_code": 0,
+   "tests": 21,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 4.6
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_swe2.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 4.5
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_swe3.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 14.0
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_swe4.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 21.8
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_swe5.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 30.5
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_swe6.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 82.0
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_v2_profile.py",
+   "exit_code": 0,
+   "tests": 16,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_v2_review.py",
+   "exit_code": 0,
+   "tests": 16,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 23.7
+  },
+  {
+   "target": "factory/python/tests/test_lrtx_v2_swe1.py",
+   "exit_code": 0,
+   "tests": 18,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 314.0
+  },
+  {
+   "target": "factory/python/tests/test_m2_mcp.py",
+   "exit_code": 0,
+   "tests": 18,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 12.8
+  },
+  {
+   "target": "factory/python/tests/test_m3_supervisor.py",
+   "exit_code": 0,
+   "tests": 12,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 5.1
+  },
+  {
+   "target": "factory/python/tests/test_m4_repair.py",
+   "exit_code": 0,
+   "tests": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.3
+  },
+  {
+   "target": "factory/python/tests/test_m5_lessons.py",
+   "exit_code": 0,
+   "tests": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.6
+  },
+  {
+   "target": "factory/python/tests/test_m6_observability.py",
+   "exit_code": 0,
+   "tests": 12,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 4.6
+  },
+  {
+   "target": "factory/python/tests/test_m7_governance_release.py",
+   "exit_code": 0,
+   "tests": 13,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 11.4
+  },
+  {
+   "target": "factory/python/tests/test_owner_disposition.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.5
+  },
+  {
+   "target": "factory/python/tests/test_owner_safety_documents.py",
+   "exit_code": 0,
+   "tests": 15,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.2
+  },
+  {
+   "target": "factory/python/tests/test_peripheral_assurance.py",
+   "exit_code": 0,
+   "tests": 14,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 3.0
+  },
+  {
+   "target": "factory/python/tests/test_peripheral_contract.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.0
+  },
+  {
+   "target": "factory/python/tests/test_peripheral_fields.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_peripheral_hal.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.6
+  },
+  {
+   "target": "factory/python/tests/test_peripheral_iwdg.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.0
+  },
+  {
+   "target": "factory/python/tests/test_peripheral_prompts.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.6
+  },
+  {
+   "target": "factory/python/tests/test_peripheral_rcc_equivalence.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_peripheral_sim.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 5.2
+  },
+  {
+   "target": "factory/python/tests/test_reqif_plantuml.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.6
+  },
+  {
+   "target": "factory/python/tests/test_resume_from.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 1.9
+  },
+  {
+   "target": "factory/python/tests/test_rework_progress_extension.py",
+   "exit_code": 0,
+   "tests": 7,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_robot_swe6.py",
+   "exit_code": 0,
+   "tests": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 25.2
+  },
+  {
+   "target": "factory/python/tests/test_safec_bridge.py",
+   "exit_code": 0,
+   "tests": 43,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 2,
+   "failed_cases": [],
+   "seconds": 5.0
+  },
+  {
+   "target": "factory/python/tests/test_safec_bridge_engine_corpus.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 2,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_safec_bridge_m0.py",
+   "exit_code": 0,
+   "tests": 15,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.8
+  },
+  {
+   "target": "factory/python/tests/test_safec_bridge_m2.py",
+   "exit_code": 0,
+   "tests": 15,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 9,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_safec_bridge_obligations.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_safec_bridge_oracle.py",
+   "exit_code": 0,
+   "tests": 6,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 2,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_safec_bridge_reset_seal.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 2,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_sim_renode.py",
+   "exit_code": 1,
+   "tests": 3,
+   "failures": 1,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [
+    "factory.python.tests.test_sim_renode::test_renode_found_from_mcp_server_environment"
+   ],
+   "seconds": 7.7
+  },
+  {
+   "target": "factory/python/tests/test_swe2_architecture.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_swe3_implementation.py",
+   "exit_code": 0,
+   "tests": 8,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_swe3_regmap.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.6
+  },
+  {
+   "target": "factory/python/tests/test_t001_inventory.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 2.4
+  },
+  {
+   "target": "factory/python/tests/test_t004_fabro_capabilities.py",
+   "exit_code": 0,
+   "tests": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_t005_t006_agents_skills.py",
+   "exit_code": 0,
+   "tests": 10,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.9
+  },
+  {
+   "target": "factory/python/tests/test_t007_policy.py",
+   "exit_code": 0,
+   "tests": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 1.3
+  },
+  {
+   "target": "factory/python/tests/test_t008_agent_output.py",
+   "exit_code": 0,
+   "tests": 5,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_t009_inspection.py",
+   "exit_code": 0,
+   "tests": 9,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 4.5
+  },
+  {
+   "target": "factory/python/tests/test_t009_workflow_gates.py",
+   "exit_code": 0,
+   "tests": 19,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 10.2
+  },
+  {
+   "target": "factory/python/tests/test_t024_systemd.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "factory/python/tests/test_t050_t051_docs_status.py",
+   "exit_code": 0,
+   "tests": 4,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 1,
+   "failed_cases": [],
+   "seconds": 0.7
+  },
+  {
+   "target": "factory/python/tests/test_target_oracle.py",
+   "exit_code": 0,
+   "tests": 1,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 56.6
+  },
+  {
+   "target": "factory/python/tests/test_timeout_scale.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.4
+  },
+  {
+   "target": "factory/python/tests/test_upstream_inputs.py",
+   "exit_code": 0,
+   "tests": 3,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "tests/test_gates.py",
+   "exit_code": 0,
+   "tests": 14,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.3
+  },
+  {
+   "target": "tests/test_oss_pipeline.py",
+   "exit_code": 0,
+   "tests": 2,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "failed_cases": [],
+   "seconds": 0.2
+  }
+ ]
+}

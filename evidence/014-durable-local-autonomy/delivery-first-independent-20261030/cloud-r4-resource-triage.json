@@ -1,0 +1,266 @@
+{
+  "order": "WO-F014-CC-20261030-LL-r4",
+  "native_id": "01M66YMZK9JTMZCF2PNV4JRGCY",
+  "kind": "RETAINED_FACTUAL_TOOL_METADATA_NOT_NEW_INFERENCE",
+  "budgets": {
+    "flash_bytes": 4096,
+    "stack_bytes": 128,
+    "static_ram_bytes": 64,
+    "status": "development targets set by the work-order owner (2026-10-15)"
+  },
+  "tool_results": [
+    {
+      "op": "measure_elf",
+      "phase": "SWE.3",
+      "result": {
+        "artifact_refs": [
+          "artifact:sha256:baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a"
+        ],
+        "issues": [],
+        "metrics": {
+          "bss": 0,
+          "data": 0,
+          "flash_bytes": 11216,
+          "objects": 2,
+          "ram_bytes": 0,
+          "scope": "object-level, not linked image",
+          "text": 11216
+        },
+        "provenance": {
+          "duration_ms": 3.7,
+          "exit_code": 0,
+          "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+          "invocation_id": "inv-5326b15f60eb4e33",
+          "output_sha256": "baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a",
+          "tool": "arm-none-eabi-size",
+          "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+        },
+        "status": "PASS",
+        "summary": "text=11216 data=0 bss=0 (target-cm55-gcc)"
+      },
+      "role": "swe3-author",
+      "run_id": "WO-F014-CC-20261030-LL-r4",
+      "server": "forge-build-mcp",
+      "ts_utc": "2026-10-30T17:59:14.656502Z"
+    },
+    {
+      "op": "stack_usage",
+      "phase": "SWE.3",
+      "result": {
+        "artifact_refs": [
+          "artifact:sha256:a682c5198bcf27730c0494ed7a8364324bee7ef04d5d983215696b4f6c24c686"
+        ],
+        "issues": [],
+        "metrics": {
+          "functions": 586,
+          "max_frame_bytes": 0,
+          "scope": "per-function frames; call-graph worst case not computed"
+        },
+        "provenance": {
+          "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+          "invocation_id": "inv-deaa35028acb4d40",
+          "tool": "gcc/clang -fstack-usage",
+          "version": "profile:target-cm55-gcc"
+        },
+        "status": "PASS",
+        "summary": "max frame 0 B in forge_measure_LL_RCC_HSI_Enable (target-cm55-gcc)"
+      },
+      "role": "swe3-author",
+      "run_id": "WO-F014-CC-20261030-LL-r4",
+      "server": "forge-build-mcp",
+      "ts_utc": "2026-10-30T17:59:14.777807Z"
+    },
+    {
+      "op": "measure_elf",
+      "phase": "SWE.3",
+      "result": {
+        "artifact_refs": [
+          "artifact:sha256:baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a"
+        ],
+        "issues": [],
+        "metrics": {
+          "bss": 0,
+          "data": 0,
+          "flash_bytes": 11216,
+          "objects": 2,
+          "ram_bytes": 0,
+          "scope": "object-level, not linked image",
+          "text": 11216
+        },
+        "provenance": {
+          "duration_ms": 3.4,
+          "exit_code": 0,
+          "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+          "invocation_id": "inv-5e9b202f14a44132",
+          "output_sha256": "baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a",
+          "tool": "arm-none-eabi-size",
+          "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+        },
+        "status": "PASS",
+        "summary": "text=11216 data=0 bss=0 (target-cm55-gcc)"
+      },
+      "role": "swe3-author",
+      "run_id": "WO-F014-CC-20261030-LL-r4",
+      "server": "forge-build-mcp",
+      "ts_utc": "2026-10-30T18:06:59.076974Z"
+    },
+    {
+      "op": "measure_elf",
+      "phase": "SWE.3",
+      "result": {
+        "artifact_refs": [
+          "artifact:sha256:baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a"
+        ],
+        "issues": [],
+        "metrics": {
+          "bss": 0,
+          "data": 0,
+          "flash_bytes": 11216,
+          "objects": 2,
+          "ram_bytes": 0,
+          "scope": "object-level, not linked image",
+          "text": 11216
+        },
+        "provenance": {
+          "duration_ms": 3.0,
+          "exit_code": 0,
+          "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+          "invocation_id": "inv-8991a50b5f5e487b",
+          "output_sha256": "baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a",
+          "tool": "arm-none-eabi-size",
+          "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+        },
+        "status": "PASS",
+        "summary": "text=11216 data=0 bss=0 (target-cm55-gcc)"
+      },
+      "role": "swe3-author",
+      "run_id": "WO-F014-CC-20261030-LL-r4",
+      "server": "forge-build-mcp",
+      "ts_utc": "2026-10-30T18:08:02.434574Z"
+    },
+    {
+      "op": "stack_usage",
+      "phase": "SWE.3",
+      "result": {
+        "artifact_refs": [
+          "artifact:sha256:a682c5198bcf27730c0494ed7a8364324bee7ef04d5d983215696b4f6c24c686"
+        ],
+        "issues": [],
+        "metrics": {
+          "functions": 586,
+          "max_frame_bytes": 0,
+          "scope": "per-function frames; call-graph worst case not computed"
+        },
+        "provenance": {
+          "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+          "invocation_id": "inv-b5d532185abb4693",
+          "tool": "gcc/clang -fstack-usage",
+          "version": "profile:target-cm55-gcc"
+        },
+        "status": "PASS",
+        "summary": "max frame 0 B in forge_measure_LL_RCC_HSI_Enable (target-cm55-gcc)"
+      },
+      "role": "swe3-author",
+      "run_id": "WO-F014-CC-20261030-LL-r4",
+      "server": "forge-build-mcp",
+      "ts_utc": "2026-10-30T18:08:02.555632Z"
+    },
+    {
+      "op": "measure_elf",
+      "phase": "SWE.3",
+      "result": {
+        "artifact_refs": [
+          "artifact:sha256:baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a"
+        ],
+        "issues": [],
+        "metrics": {
+          "bss": 0,
+          "data": 0,
+          "flash_bytes": 11216,
+          "objects": 2,
+          "ram_bytes": 0,
+          "scope": "object-level, not linked image",
+          "text": 11216
+        },
+        "provenance": {
+          "duration_ms": 3.8,
+          "exit_code": 0,
+          "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+          "invocation_id": "inv-146c8a3a232e47d7",
+          "output_sha256": "baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a",
+          "tool": "arm-none-eabi-size",
+          "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+        },
+        "status": "PASS",
+        "summary": "text=11216 data=0 bss=0 (target-cm55-gcc)"
+      },
+      "role": "swe3-author",
+      "run_id": "WO-F014-CC-20261030-LL-r4",
+      "server": "forge-build-mcp",
+      "ts_utc": "2026-10-30T18:11:55.287702Z"
+    },
+    {
+      "op": "measure_elf",
+      "phase": "SWE.3",
+      "result": {
+        "artifact_refs": [
+          "artifact:sha256:baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a"
+        ],
+        "issues": [],
+        "metrics": {
+          "bss": 0,
+          "data": 0,
+          "flash_bytes": 11216,
+          "objects": 2,
+          "ram_bytes": 0,
+          "scope": "object-level, not linked image",
+          "text": 11216
+        },
+        "provenance": {
+          "duration_ms": 2.7,
+          "exit_code": 0,
+          "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+          "invocation_id": "inv-db8873d2c02b40fc",
+          "output_sha256": "baad9bef1e17db6f8f6d298337b220d02eb39cb43a0d6773ae1e4d8148f30e1a",
+          "tool": "arm-none-eabi-size",
+          "version": "GNU size (2.38-3ubuntu1+15build1) 2.38"
+        },
+        "status": "PASS",
+        "summary": "text=11216 data=0 bss=0 (target-cm55-gcc)"
+      },
+      "role": "swe3-author",
+      "run_id": "WO-F014-CC-20261030-LL-r4",
+      "server": "forge-build-mcp",
+      "ts_utc": "2026-10-30T18:13:13.383522Z"
+    },
+    {
+      "op": "stack_usage",
+      "phase": "SWE.3",
+      "result": {
+        "artifact_refs": [
+          "artifact:sha256:a682c5198bcf27730c0494ed7a8364324bee7ef04d5d983215696b4f6c24c686"
+        ],
+        "issues": [],
+        "metrics": {
+          "functions": 586,
+          "max_frame_bytes": 0,
+          "scope": "per-function frames; call-graph worst case not computed"
+        },
+        "provenance": {
+          "input_sha256": "1da2cc438a2565557ac75d236ee9db4e6357b3a8650796962a3ce03d68a10887",
+          "invocation_id": "inv-59ca4f8ad69b44da",
+          "tool": "gcc/clang -fstack-usage",
+          "version": "profile:target-cm55-gcc"
+        },
+        "status": "PASS",
+        "summary": "max frame 0 B in forge_measure_LL_RCC_HSI_Enable (target-cm55-gcc)"
+      },
+      "role": "swe3-author",
+      "run_id": "WO-F014-CC-20261030-LL-r4",
+      "server": "forge-build-mcp",
+      "ts_utc": "2026-10-30T18:13:17.832304Z"
+    }
+  ],
+  "scope": "OBJECT_LEVEL_NOT_LINKED_FIRMWARE",
+  "unchanged_budget": true
+}

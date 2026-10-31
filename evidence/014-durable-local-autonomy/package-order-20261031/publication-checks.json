@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "scope": "PUBLICATION_HYGIENE_AND_TRANSFER_NOT_RUNTIME",
+  "checks": {
+    "decompressed_failed_receipt_scanned": true,
+    "original_archive_preserved": true,
+    "private_terminal_transfer_integrity": "PASS",
+    "no_manual_changes_to_live_job": true
+  },
+  "limits": "Does not qualify authorship edit chains, DF-M1, release or availability"
+}

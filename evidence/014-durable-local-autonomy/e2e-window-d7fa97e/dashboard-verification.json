@@ -1,0 +1,38 @@
+{
+  "status": "PASS_LIVE_DASHBOARD_CONNECTION",
+  "url": "http://127.0.0.1:8787",
+  "source": {
+    "id": "forge-c-omniverse2-production",
+    "name": "Forge-C \u00b7 Omniverse production \u00b7 Qwen3.8 Q8 xhigh",
+    "connected": true,
+    "error": null,
+    "last_success_at": "2026-10-28T13:05:21.498081+00:00",
+    "runs": 7
+  },
+  "native_run_id": "01M618R74R8KQFQR9AJ4VQXZ5Q",
+  "listed_run_status": "running",
+  "production_runs_listed": 7,
+  "detail_keys": [
+    "run",
+    "stages",
+    "last_event_at",
+    "conclusion"
+  ],
+  "stage_observations": [
+    {
+      "id": "start@1",
+      "node_id": "start",
+      "status": "succeeded"
+    },
+    {
+      "id": "swe1_author@1",
+      "node_id": "swe1_author",
+      "status": "running"
+    }
+  ],
+  "graph_svg_chars": 68343,
+  "graph_error": null,
+  "remote_workers_restarted": 0,
+  "model_requests_created": 0,
+  "browser_visual_inspection": "NOT_RUN; browser tooling unavailable"
+}

@@ -1,0 +1,23 @@
+{
+  "source_revision": "92c49a6adde181737af19bb32a5efbd2130e9cd4",
+  "source_clean_before": true,
+  "source_clean_after": true,
+  "pytest_exit_code": 1,
+  "command": [
+    "/mnt/data/forge-c/production-local-014/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_da014_llama_server.py",
+    "factory/python/tests/test_da014_product_role_trial.py",
+    "factory/python/tests/test_da014_q38_quality_profile.py",
+    "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-afo-max-context-92c49a6-v1/pytest.xml"
+  ],
+  "started": 1793308424.1653655,
+  "finished": 1793308428.8389192,
+  "model_requests": 0,
+  "gpu_tests": false,
+  "bundle_sha256": "842e2a7360a8bff283c3f62ee34ce76b64c7d471eb235733d8cd07ec571b1b45"
+}

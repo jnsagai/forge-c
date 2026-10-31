@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-31T01:06:15.911562Z",
+  "order_id": "afo-002d8ed0e31b5cc1",
+  "state": "BLOCKED",
+  "native_attempts": 0,
+  "new_model_requests": 0,
+  "root_cause": "Role identities retained adapter_revision a34 while trial/source were updated to 0e342eef",
+  "scope": "EXTERNAL_PRELAUNCH_BINDING_HELPER; NOT_QWEN_OR_RUNTIME_SELF_HEALING",
+  "old_trial_sha256": "65604fcbec48ad0f4107573e142274b24046375c3c2bc6df77be51567a5ed7e2",
+  "mission_unchanged": true,
+  "deadline_utc": "2026-10-31T07:57:59Z"
+}

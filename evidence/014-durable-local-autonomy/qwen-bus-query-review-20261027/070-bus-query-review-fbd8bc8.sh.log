@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/inspector-014-b309039/runs/qwen-bus-query-review-20261027.py", line 63, in <module>
+    assert process_identity(gateway['pid']) == gateway['identity']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

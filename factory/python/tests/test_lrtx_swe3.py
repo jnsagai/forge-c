@@ -93,6 +93,31 @@ def test_code_validation_catches_casts_wrong_signature_unknown_defines_and_trace
         assert frag in found, (frag, found)
 
 
+def test_revalidation_after_assembly_compiles_changed_candidate_against_current_defines(ws2):
+    """A cached VALID record still needs current validation; neither duplicates nor a stale pristine header suffice."""
+    import copy
+
+    us = swe3.units(ws2)
+    swe3.assemble_code(ws2, [(u, {"doc": CODE["code:" + u["id"]]}) for u in us])
+    path = swe3._header(ws2)
+    original = path.read_bytes()
+    good = copy.deepcopy(CODE["code:SWU-LL-01"])
+    assert swe3.validate_code(ws2, good, us[0]) == []
+    assert path.read_bytes() == original
+    broken = copy.deepcopy(good)
+    broken["code"] = broken["code"].replace("= 0x0000CCCCU;", "= ;")
+    assert any("compile:" in e for e in swe3.validate_code(ws2, broken, us[0]))
+    assert path.read_bytes() == original
+    # A changed current define must not be hidden by the pristine pre-assembly snapshot.
+    text = path.read_text()
+    import re
+
+    changed, count = re.subn(r"(#define LL_IWDG_KR_OFFSET\s+)[^\n]+", r"\g<1>UNKNOWN_CURRENT_OFFSET", text)
+    assert count == 1
+    path.write_text(changed)
+    assert any("compile:" in e for e in swe3.validate_code(ws2, good, us[0]))
+
+
 @pytest.mark.skipif(not TOOLS, reason="gcc/arm-none-eabi-gcc/clang/cppcheck not installed")
 def test_structured_code_and_design_pass_the_unchanged_swe3_gate(ws2, monkeypatch):
     from forge_factory.inspection import unit_scaffold

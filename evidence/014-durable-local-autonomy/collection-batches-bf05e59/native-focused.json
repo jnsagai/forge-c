@@ -1,0 +1,45 @@
+{
+  "schema": "forge-c/014-collection-batch-native/1",
+  "source_revision": "bf05e59b968f01abc6bc8ba60f8d369237e1c804",
+  "host": "omniverse2",
+  "command": [
+    "/mnt/data/forge-c/inspector-014-b309039/lrtx/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_da014_collection_continuation.py",
+    "--basetemp=/mnt/data/forge-c/inspector-014-b309039/collection-bf05e59/focused/pytest-tmp",
+    "--junitxml=/mnt/data/forge-c/inspector-014-b309039/collection-bf05e59/focused/native-tests.xml"
+  ],
+  "exit_code": 0,
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "18",
+    "time": "40.713",
+    "timestamp": "2026-10-27T20:01:03.364724+00:00",
+    "hostname": "omniverse2"
+  },
+  "junit_sha256": "98aa1cebfec5b13d9bb983fda18537434356b133d7d447005f597728eacef8d7",
+  "source_start_end": "CLEAN",
+  "fixture_source_accounting": [
+    {
+      "fixture": "test_real_sources_exceed_128_m0",
+      "source_files": 24,
+      "source_bytes": 134233135
+    }
+  ],
+  "limits": {
+    "wall_s": 180,
+    "cpu_s": 120,
+    "address_space_bytes": 3221225472
+  },
+  "elapsed_seconds": 40.93629551306367,
+  "model_calls": 0,
+  "product_attempts": 0,
+  "scope": "SYNTHETIC_DETERMINISTIC_QUALIFICATION_NOT_LIVE_CAMPAIGN",
+  "unexpected_interventions": null,
+  "availability_campaigns": "NOT_RUN"
+}

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="17" time="1.094" timestamp="2026-10-31T01:28:02.686853+00:00" hostname="master"><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[none]" time="0.007"><failure message="AssertionError: {'authorship': 'UNVERIFIED_EDIT_CHAIN', 'edit_chain_evidence': [], 'write_evidence': []}&#10;assert 'UNVERIFIED_EDIT_CHAIN' == 'CONFIRMED_NA...TE_EDIT_CHAIN'&#10;  &#10;  - CONFIRMED_NATIVE_WRITE_EDIT_CHAIN&#10;  + UNVERIFIED_EDIT_CHAIN">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-279/test_replay_requires_successfu0')
+fault = 'none'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+        result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+        status = ("CONFIRMED_NATIVE_WRITE_EDIT_CHAIN" if fault in ("none", "json_args") else
+                  "CONFIRMED_NATIVE_WRITE_FILE" if fault == "failed_edit" else "UNVERIFIED_EDIT_CHAIN")
+&gt;       assert result["authorship"] == status, result
+E       AssertionError: {'authorship': 'UNVERIFIED_EDIT_CHAIN', 'edit_chain_evidence': [], 'write_evidence': []}
+E       assert 'UNVERIFIED_EDIT_CHAIN' == 'CONFIRMED_NA...TE_EDIT_CHAIN'
+E
+E         - CONFIRMED_NATIVE_WRITE_EDIT_CHAIN
+E         + UNVERIFIED_EDIT_CHAIN
+
+factory/python/tests/test_delivery_first_edit_provenance.py:51: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[json_args]" time="0.001"><failure message="AssertionError: {'authorship': 'UNVERIFIED_EDIT_CHAIN', 'edit_chain_evidence': [], 'write_evidence': []}&#10;assert 'UNVERIFIED_EDIT_CHAIN' == 'CONFIRMED_NA...TE_EDIT_CHAIN'&#10;  &#10;  - CONFIRMED_NATIVE_WRITE_EDIT_CHAIN&#10;  + UNVERIFIED_EDIT_CHAIN">tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-279/test_replay_requires_successfu1')
+fault = 'json_args'
+
+    @pytest.mark.parametrize("fault", ["none", "json_args", "failed_edit", "pending", "wrong_role", "wrong_target",
+                                      "ambiguous", "tampered_final", "malformed_args", "opaque_patch", "wrong_completion"])
+    def test_replay_requires_successful_bound_unambiguous_edits(tmp_path, fault):
+        initial = BEFORE + BEFORE if fault == "ambiguous" else BEFORE
+        events = call("write", "write_file", {"file_path": REL, "content": initial})
+        args = {"file_path": REL, "old_string": "return 1U;", "new_string": "return 2U;"}
+        expected = AFTER
+        if fault == "failed_edit":
+            expected = BEFORE
+        if fault == "wrong_target":
+            args["file_path"] = "workproducts/other.md"
+        if fault == "json_args":
+            args = json.dumps(args)
+        elif fault == "malformed_args":
+            args = "not json"
+        edits = call("edit", "apply_patch" if fault == "opaque_patch" else "edit_file", args,
+                     node="inspector" if fault == "wrong_role" else "author", error=fault == "failed_edit",
+                     complete=fault != "pending")
+        if fault == "wrong_completion":
+            edits[-1]["node_id"] = "inspector"
+        if fault == "tampered_final":
+            expected = AFTER + "/* unrecorded change */\n"
+        if fault == "ambiguous":
+            expected = AFTER + BEFORE
+        events += [{"event": "agent.message", "properties": {"event": "not a tool event"}}, *edits]
+        result = D.native_source_provenance(events, ROLES, tmp_path, {REL: sha256_bytes(expected.encode())})
+        status = ("CONFIRMED_NATIVE_WRITE_EDIT_CHAIN" if fault in ("none", "json_args") else
+                  "CONFIRMED_NATIVE_WRITE_FILE" if fault == "failed_edit" else "UNVERIFIED_EDIT_CHAIN")
+&gt;       assert result["authorship"] == status, result
+E       AssertionError: {'authorship': 'UNVERIFIED_EDIT_CHAIN', 'edit_chain_evidence': [], 'write_evidence': []}
+E       assert 'UNVERIFIED_EDIT_CHAIN' == 'CONFIRMED_NA...TE_EDIT_CHAIN'
+E
+E         - CONFIRMED_NATIVE_WRITE_EDIT_CHAIN
+E         + UNVERIFIED_EDIT_CHAIN
+
+factory/python/tests/test_delivery_first_edit_provenance.py:51: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[failed_edit]" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[pending]" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[wrong_role]" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[wrong_target]" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[ambiguous]" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[tampered_final]" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[malformed_args]" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[opaque_patch]" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_replay_requires_successful_bound_unambiguous_edits[wrong_completion]" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_partial_edit_without_a_whole_source_anchor_does_not_prove_authorship" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first_edit_provenance" name="test_later_successful_whole_write_anchors_the_actual_final_bytes" time="0.001" /><testcase classname="factory.python.tests.test_delivery_first" name="test_native_authorship_requires_success_role_and_exact_content[False-df_author_0-False-CONFIRMED_NATIVE_WRITE_FILE]" time="0.248" /><testcase classname="factory.python.tests.test_delivery_first" name="test_native_authorship_requires_success_role_and_exact_content[True-df_author_0-False-UNVERIFIED_EDIT_CHAIN]" time="0.180" /><testcase classname="factory.python.tests.test_delivery_first" name="test_native_authorship_requires_success_role_and_exact_content[False-swe3_inspector-False-UNVERIFIED_EDIT_CHAIN]" time="0.189" /><testcase classname="factory.python.tests.test_delivery_first" name="test_native_authorship_requires_success_role_and_exact_content[False-df_author_0-True-UNVERIFIED_EDIT_CHAIN]" time="0.180" /></testsuite></testsuites>

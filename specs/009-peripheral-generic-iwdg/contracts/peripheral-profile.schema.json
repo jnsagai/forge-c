@@ -158,6 +158,43 @@
     "mm_page": {
       "type": "integer",
       "description": "RM page of the memory-map line for the base address"
+    },
+    "semantic_required_operations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "register",
+          "field",
+          "action"
+        ],
+        "properties": {
+          "register": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{0,127}$"
+          },
+          "field": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{0,127}$"
+          },
+          "action": {
+            "enum": [
+              "read_field",
+              "set_field",
+              "clear_field",
+              "write_field"
+            ]
+          },
+          "logical_value": {
+            "type": "string",
+            "maxLength": 32,
+            "pattern": "^(0x[0-9a-fA-F]+|[0-9]+)$"
+          }
+        }
+      }
     }
   }
 }

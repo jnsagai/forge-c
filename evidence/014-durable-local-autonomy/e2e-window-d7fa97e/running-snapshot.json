@@ -1,0 +1,125 @@
+{
+  "at": "2026-10-28T12:48:38.514333Z",
+  "intent": {
+    "mode": "RUNNING",
+    "epoch": 13
+  },
+  "deadline_epoch": 1793204952.0,
+  "units": {
+    "forge-conductor-local-omniverse2.service": "active",
+    "forge-afo-watchdog-014-omniverse2.timer": "active",
+    "forge-qwen-golive-20261028.service": "active",
+    "forge-e2e-expiry-20261028.timer": "active"
+  },
+  "resources": "32733 MiB, 99 %",
+  "orders": [
+    {
+      "order": {
+        "order_id": "afo-99cc4f39103951e7",
+        "state": "RUNNING",
+        "terminal_reason": null,
+        "created_epoch": 1793191565.8946147
+      },
+      "mission": {
+        "authorization_ref": "AUTH-014-Q38-E2E-WINDOW-20261028-V3",
+        "created_at": "2026-10-28T12:46:05.636011Z",
+        "limits": {
+          "deadline": 1793204952.0,
+          "max_attempts": 3,
+          "max_corrections": 1,
+          "max_jobs": 4,
+          "max_requests": 512,
+          "max_tokens": 2000000,
+          "max_tools": 1024
+        },
+        "lineage": "F014-OWNER-E2E-ACCEPTANCE-20261028-CRC",
+        "mission_id": "F014-E2E5H-20261028-CRC",
+        "attempts": 1,
+        "jobs": 0,
+        "requests": 2,
+        "tools": 0,
+        "corrections": 0,
+        "charged_tokens": 1400000,
+        "usage_unknown": true,
+        "unique_executions": 1,
+        "unbounded_historical_usage": false
+      },
+      "attempts": [
+        {
+          "attempt_id": "afo-99cc4f39103951e7-a1",
+          "seq": 1,
+          "state": "RUNNING"
+        }
+      ],
+      "native_handles": [
+        {
+          "native_id": "01M618R74R8KQFQR9AJ4VQXZ5Q",
+          "status": "RUNNING"
+        }
+      ],
+      "requests": [
+        {
+          "request_id": "structured-request-c8687e4162494bcbbf6f5a0990726089",
+          "state": "QUIESCENT",
+          "reported_input_tokens": null,
+          "reported_output_tokens": null,
+          "charge": 4544,
+          "reserved_tokens": 46122,
+          "created_at": "2026-10-28T12:46:24.661662Z",
+          "updated_at": null
+        },
+        {
+          "request_id": "structured-request-14f59c50dcb949108eba120771753a95",
+          "state": "SENT",
+          "reported_input_tokens": null,
+          "reported_output_tokens": null,
+          "charge": 46314,
+          "reserved_tokens": 46314,
+          "created_at": "2026-10-28T12:48:00.279114Z",
+          "updated_at": null
+        }
+      ],
+      "execution_liveness": [
+        {
+          "admission_state": "NATIVE_ACCEPTED",
+          "authorization_state": "VALID",
+          "cancel_attempts": 0,
+          "cancellation_state": "NOT_REQUESTED",
+          "execution_id": "execution-5cf59cbd7f1f512c269f2892",
+          "execution_liveness": "LIVE",
+          "identity_state": "CONFIRMED",
+          "job_id": "afo-product-b8ba83de00a6225bee89f8e4",
+          "last_cancel_error": null,
+          "last_reconciled_at": "2026-10-28T12:48:35.435587Z",
+          "launch_nonce": "e78f1ca27436b68ce246b87ee73e1be8",
+          "lease_epoch": 15,
+          "mission_id": "F014-E2E5H-20261028-CRC",
+          "native_run_ids": [
+            "01M618R74R8KQFQR9AJ4VQXZ5Q"
+          ],
+          "outcome_evidence_ref": null,
+          "quiescence_evidence_ref": null,
+          "resource_lease": "HELD",
+          "revision": 11,
+          "schema_version": "1.0",
+          "task_outcome": "ACTIVE",
+          "terminal_reason": null
+        }
+      ]
+    },
+    {
+      "order": {
+        "order_id": "afo-8298dbdf8767eb9c",
+        "state": "NOT_SUBMITTED"
+      },
+      "mission": {
+        "not_registered": "Refused"
+      },
+      "attempts": [],
+      "native_handles": [],
+      "requests": [],
+      "execution_liveness": []
+    }
+  ],
+  "claim": "LIVE_EXPERIMENT_NOT_PRODUCT_OR_ROLE_QUALIFICATION"
+}

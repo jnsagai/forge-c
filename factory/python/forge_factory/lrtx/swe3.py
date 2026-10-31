@@ -41,7 +41,7 @@ CODE_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["co
                               "spec_items": {"type": "array", "minItems": 1, "items": {
                                   "type": "object", "additionalProperties": False,
                                   "required": ["id", "behaviour", "traces"],
-                                  "properties": {"id": {"type": "string", "pattern": "^USPEC-LL-[0-9]{2}-[0-9]{2}$"},
+                                  "properties": {"id": {"type": "string", "pattern": "^USPEC-LL-[0-9]{2,}-[0-9]{2,}$"},
                                                  "behaviour": {"type": "string", "minLength": 20},
                                                  "traces": {"type": "array", "minItems": 1, "items": {
                                                      "type": "string", "pattern": "^SWR-[0-9]{3}$"}}}}}}}
@@ -128,17 +128,40 @@ def code_packet(ws: Path, u: dict, model: str, findings=None, previous=None) -> 
                     output_schema=CODE_SCHEMA, model=model, findings=findings, previous=previous)
 
 
-def _compile_alone(ws: Path, code: str) -> list[str]:
-    """The function compiles in the generated header (host gcc, strict warnings as errors)."""
+def _compile_alone(ws: Path, code: str, function: str) -> list[str]:
+    """Compile the candidate in a temporary CURRENT header, replacing its old definition.
+
+    Revalidation after assembly must not insert a duplicate. The pristine assembly
+    snapshot can have stale defines after an upstream repair, so use today's
+    header and preserve every unrelated declaration. Comments/literals are masked
+    before balancing braces; no change is made to the actual workproduct.
+    """
     hdr = _header(ws).read_text()
+    from ..inspection.guideline import strip_c
     from ..inspection.regmap import functions_marker
 
     marker = functions_marker(ws)
     if marker not in hdr:
         return ["the generated header has no functions marker (regenerate the register map)"]
+    masked = strip_c(hdr)
+    definitions = list(re.finditer(r"^[ \t]*static\s+inline\s+(?:void|uint32_t)\s+" + re.escape(function)
+                                  + r"\s*\([^;{}]*\)\s*\{", masked, re.M))
+    if len(definitions) > 1:
+        return [f"compile: current header has multiple definitions of {function}"]
+    if definitions:
+        definition = definitions[0]
+        depth, end = 1, definition.end()
+        while end < len(masked) and depth:
+            depth += (masked[end] == "{") - (masked[end] == "}")
+            end += 1
+        if depth:
+            return [f"compile: current header has an unbalanced definition of {function}"]
+        candidate = hdr[:definition.start()] + code + hdr[end:]
+    else:
+        candidate = hdr.replace(marker, code + "\n" + marker, 1)
     with tempfile.TemporaryDirectory() as td:
         h = Path(td) / "unit.h"
-        h.write_text(hdr.replace(marker, code + "\n" + marker))
+        h.write_text(candidate)
         c = Path(td) / "unit.c"
         c.write_text('#include "unit.h"\nvolatile uint32_t ' + _ident(ws)["block"] + "[LL_" + _ident(ws)["pfx"]
                      + "_REG_COUNT];\n")
@@ -179,7 +202,7 @@ def validate_code(ws: Path, doc: dict, u: dict) -> list[str]:
     out += [f"spec traces {t}, which is not allocated to {f['name']}" for t in sorted(traced - set(u["swrs"]))]
     out += [f"{t} (allocated to {f['name']}) is traced by no spec item" for t in u["swrs"] if t not in traced]
     if not out:
-        out += _compile_alone(ws, code)
+        out += _compile_alone(ws, code, f["name"])
     return out
 
 
@@ -243,7 +266,7 @@ def visit_code(ws: Path, model: str, max_calls: int | None = None, resume: bool 
     role = {a.id: a for a in load_agents()[0]}["swe3-author"]
     since = V.last_finished(ws, PHASE)
     budget, findings = V.open_visit(ws, PHASE, resume, lambda: V.rework_findings(ws, PHASE, since) if since else [],
-                                    max_calls or role.max_turns, time_budget_s)
+                                    V.author_call_limit(ws, PHASE, role.max_turns, max_calls), time_budget_s)
     try:
         return _visit_code(ws, model, budget, findings)
     except V.Continue as c:

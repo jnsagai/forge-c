@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Process lab profile activation record (design rev 4 \u00a74 step 12)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "swap_id",
+    "experiment_id",
+    "from",
+    "to",
+    "epochs",
+    "transitions",
+    "provider_instance",
+    "model_requests",
+    "outcome",
+    "operator",
+    "reason"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/model-swap/1"
+    },
+    "swap_id": {
+      "type": "string",
+      "pattern": "^activation-[0-9]{1,4}$"
+    },
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,31}$"
+    },
+    "from": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_sha256",
+        "model_digest"
+      ],
+      "properties": {
+        "profile_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "model_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "to": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_sha256",
+        "model_digest"
+      ],
+      "properties": {
+        "profile_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "model_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "epochs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "E0"
+      ],
+      "properties": {
+        "E0": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "E1": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "E2": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "E3": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step",
+          "utc"
+        ],
+        "properties": {
+          "step": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "utc": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "load_and_control_start_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "provider_instance": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "model_requests": {
+      "const": 0
+    },
+    "outcome": {
+      "enum": [
+        "RUNNING",
+        "ACTIVATE_NOT_QUIESCENT",
+        "ACTIVATE_EPOCH_CHANGED",
+        "STOPPED_BY_OPERATOR",
+        "GRANT_EXPIRED",
+        "STOPPED_VRAM_UNAVAILABLE",
+        "STOPPED_FAILED_LOAD",
+        "STOPPED_SETTLEMENT_PENDING"
+      ]
+    },
+    "operator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "reason": {
+      "const": "PROCESS_LAB_ROLE_BATCH"
+    }
+  }
+}

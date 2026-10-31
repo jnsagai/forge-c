@@ -1,0 +1,89 @@
+{
+  "tested_revision": "6b4166832ace78e791a5cb14c0a2ec8fc675648d",
+  "scope": "BOUNDED_SELECTED_EVENT_REPLAY_NOT_COMPLETE_NATIVE_AUDIT_OR_INTERVENTION_VERDICT",
+  "results": {
+    "affected": {
+      "tests": 466,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 1,
+      "passed": 465,
+      "seconds": 38.57
+    },
+    "release": {
+      "tests": 13,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 13,
+      "seconds": 9.086
+    },
+    "omniverse2": {
+      "tests": 183,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "passed": 183,
+      "seconds": 59.782
+    }
+  },
+  "native_prerequisite_probe": {
+    "status": "BLOCKED",
+    "exit_code": 2,
+    "blockers": [
+      "KERNEL_AUDIT_STATUS_UNAVAILABLE",
+      "SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED",
+      "AUTHENTICATED_CONTROL_CORRELATION_REQUIRED"
+    ]
+  },
+  "implemented": [
+    "one bounded parser implementation for legacy buffers and incremental selected-event replay",
+    "interleaved node/time/serial groups across verified chunks and retained rotation",
+    "UTF-8/partial-line handling and explicit pending/orphan compound facts",
+    "native enrichment separator regression fix with complete input and record hashes",
+    "single-pass source feed; cumulative byte/group/record/line and serialized output bounds",
+    "blocked event facts on malformed input or unbound/changed boot, separate from byte proof"
+  ],
+  "limitations": [
+    "ownership and root daemon UID are explicitly synthetic in fixtures; actual child/file IO is tested",
+    "PROCTITLE/EOE and PATH item coverage are selected-record boundary checks, not complete validation of all native payloads",
+    "no inferred timeout, forced EOF completion, independently authenticated clock/boot or global intervention count",
+    "finite prefix replay has no qualified batched continuous continuation; full native window and all-channel correlation remain unfinished"
+  ],
+  "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE",
+  "formal_progress": "30/58; no new checkbox",
+  "host_intervention_count": null,
+  "new_model_requests": 0,
+  "deployment": "NOT_ACTIVATED",
+  "product_success": "NOT_RUN",
+  "learning_benefit": "NOT_RUN",
+  "operational_campaigns_24_72_168_hours": "NOT_RUN",
+  "rolling_30_day_slo": "NOT_DEMONSTRATED",
+  "remaining_software": [
+    "qualified batched continuous chain/event verification",
+    "native full-record/loss/time-window qualification",
+    "native actor/control/write/service correlation",
+    "full all-channel source-derived intervention verification",
+    "genuine product oracle production"
+  ],
+  "broader_checks": "899-case reconciled cohort (890 PASS/9 SKIP), seven systemd/history cases last 7e1abb2; full inherited 1840-test cohort last 20650af, not repeated for this observer-only change",
+  "source_module_sha256": {
+    "host_audit.py": "7d74a6f7e177f2509c2669b64ffc1346fb5d2351d3f32ef6015e0a6a5be88f74",
+    "audit_segments.py": "146e2c4a36d6382626ce8491bf9e3848845810af7a129784f225ce4929c72c0c"
+  },
+  "artifacts": {
+    "affected.log": "254d61decd5f62d13090820bf346ae8155329301d5faa4615c1e519e200d7aae",
+    "affected.xml": "c3616d830081651461fae60ee62779368d4c8505f98809c1779e79d209363a31",
+    "host-preflight.json": "c03625db9bbb0ada20005d9b35539b1f8429cb6d2a50e6a35f365287f2c4cf2c",
+    "host-preflight.log": "2e8a90237d3f099ae6b31eb96ddc036a1909b840b3d85654c376a945d9aa92e6",
+    "independent-cre.json": "d0aee7a60b5967a538a5555a1274d059b26bcfcd5c478579a70323319a6a9571",
+    "invocation.json": "ac3e886aab0c4c9172068ead66a280d618511b50b4955157a2dabee73372fd60",
+    "native-invocation.json": "72bf409a450a98d4c47f44a1eb87b3d66323d1584394e1da564ecccbbfaa8586",
+    "native-tests.log": "82482b52e11ca0f3e28ee92e286a78b081f628422f0026ab2cef161ff7303b54",
+    "native-tests.xml": "bf6b8dad0103a735b907987203a7045ad3878aabb0b70314feba38df31eb52fd",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "release.xml": "c055795bf798217e9842aa89d2968854229bedaff26a742af6f930788381a2a0",
+    "static-checks.json": "eb99c59ad75aa019d9b1818d8a294dfe24f89ab4610997e7af7926176750f055",
+    "static-checks.log": "c8609fb72ef6eb5223c2eb8babc893d381a39569ec6f60617ae4d2860f2c0678"
+  }
+}

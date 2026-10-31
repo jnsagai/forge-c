@@ -1,0 +1,16 @@
+{
+  "status": "PASS_ALLOCATION_ONLY",
+  "network": {
+    "status": "DENIED_VERIFIED",
+    "probe": "1.1.1.1:443",
+    "detail": "OSError: [Errno 101] Network is unreachable",
+    "interfaces": [
+      "lo"
+    ],
+    "netns": "net:[4026533325]"
+  },
+  "profile_sha256": "823942772335b7ef500f9f11926732405ac12dbff0dcc7f0ab39e345db3358e7",
+  "allocation_sha256": "b4f40b1a3f3d9e66efb5ca522baca0d306fc8f8d27e356aba0cacfb981112675",
+  "provider_context_tokens": 262144,
+  "model_requests": 0
+}

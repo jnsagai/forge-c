@@ -48,10 +48,11 @@ def _load(ws: Path, rel: str) -> tuple[dict | None, list[str]]:
 
 
 def _rm_index(ws: Path) -> dict:
+    from ..layer import profile, register_prefix
     from .hardware import index
 
-    d = Path(ws) / "inputs/sections/RM0486"
-    return index(d) if d.is_dir() else {}
+    d = Path(ws) / "inputs/sections" / profile(ws)["rm"]["doc"]
+    return index(d, register_prefix(ws)) if d.is_dir() else {}
 
 
 def _field_rx(ws: Path) -> re.Pattern:
@@ -125,7 +126,7 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
     from ..layer import register_prefix
 
     pfx = register_prefix(ws)
-    out += [f"CONTRACT_SWR_NOT_COVERED:{s} (it sets or clears a register bit: add its effects)"
+    out += [f"CONTRACT_SWR_NOT_COVERED:{s} (declare its register-effect case; use no_write for a read/query)"
             for s, t in sorted(reqs.items()) if _needs_contract(t, pfx) and s not in covered]
     return out[:15]
 

@@ -1,0 +1,20 @@
+{
+  "git_head": "754e93c4ffbf445f1f5548cd924f50c4bef9ee03",
+  "command": [
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_safec_bridge.py",
+    "factory/python/tests/test_safec_bridge_engine_corpus.py",
+    "factory/python/tests/test_safec_bridge_m2.py",
+    "factory/python/tests/test_safec_bridge_obligations.py",
+    "factory/python/tests/test_safec_bridge_oracle.py",
+    "factory/python/tests/test_safec_bridge_reset_seal.py",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/tmp/safec-pin-754e93c",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/safec-pin-754e93c.xml"
+  ],
+  "pin": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/safec/engines/cf3b01baa66ceec9ef6f9db95fc97a4c98807ce2-xhost/pin.json",
+  "pin_sha256": "e17dc2697702152d1c524ca829c9548c2d326601097f3b81f02ce520fdb5512c",
+  "scope": "PINNED_NATIVE_SAFEC_ENGINE_NOT_QWEN"
+}

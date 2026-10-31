@@ -1,0 +1,10 @@
+Runtime and deterministic tested source: f206e3aa26837f892c2267ec67c46dcc61844c60
+
+Before approval: isolated source qualification (84PASS each host), real model-free native role capture.
+After exact owner approval: ssh-keygen -Y sign -U -f <existing-public-agent-identity> -n forge-afo-authorization <exact-authorization-message>
+
+Remote execution, sequential:
+/mnt/data/forge-c/production-local-014/venv/bin/python -u - < activation-stage1.py
+/mnt/data/forge-c/production-local-014/venv/bin/python -u - < activation-stage2.py
+
+These are historical exact-scope scripts, not reusable grants or permission to replay deployment. Preconditions include pinned source, current time, exact signatures, operator epoch, snapshot, liveness and all gates. Private backups/env files remain on Omniverse2. Scripts executed via authenticated SSH from loop10.

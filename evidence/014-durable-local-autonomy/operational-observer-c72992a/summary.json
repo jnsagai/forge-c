@@ -1,0 +1,99 @@
+{
+  "artifacts": {
+    "core.log": "441d7a98649e37e24e438413b892ed985dad946e844fee340b8356e7f69ce10f",
+    "core.xml": "5200badbdf7911ee78a21f365d30644da3c555267003c42598bf5c5df4d7e94e",
+    "history.json": "c69fe021432ff2367a853e8531db65a96c2c43ebf9a0f0ff97ffe0d1bcd44bc6",
+    "independent-cre.json": "70162f0c1ee3121d8549a59acca3e5d4820d5ff8933ebb7134385f41287480a5",
+    "invocation.json": "0451be78f3da73a756cac46f5454411ee1d91c0853ed617380159abdae29ec5e",
+    "kernel_fixture.log": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+    "kernel_fixture.xml": "651c987441ea180d269c5d228a8ca25fa708fbf000d41981c404f9ac49ea7dc1",
+    "private-input-hashes.json": "0c3ce09c7db154100f963557bebe34fff9931e3b9b04ab493c50cfa9c7805af4",
+    "release.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "release.xml": "91d44709a18bce6fa860d8affbae7e8b0d8f87e4f1c6d4d85bbffdae7a0a4284",
+    "systemd.json": "d7aff61a18c68902c0d4077ce9626e09aa997b0771f0bee6d4ba5609e98851d6"
+  },
+  "campaigns_24_72_168_hours": "NOT_RUN",
+  "fault_observer": "PARTIAL: three signal fault receipts plus independent capture; host intervention audit, remaining exposures and independent READY oracle pending",
+  "full_1840_test_inherited_suite_on_this_revision": "NOT_RUN (previous exact suite remains 20650af)",
+  "independent_cre": "REJECTED/PROTECTED_PATH_CHANGE",
+  "local_systemd_cases": 7,
+  "new_tasks_checked": [],
+  "remote_new_model_requests": 0,
+  "results": {
+    "core": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "5200badbdf7911ee78a21f365d30644da3c555267003c42598bf5c5df4d7e94e",
+      "seconds": 504.886,
+      "skipped": 11,
+      "skips": [
+        {
+          "reason": "HAL r154 workspace not on this host",
+          "test": "factory.python.tests.test_afo_m3_reconcile::test_checkpoints_from_a_real_passing_workspace"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_bundles_from_real_failed_runs_and_none_for_a_passing_one"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_conductor_recovery_path_end_to_end_with_a_real_failed_workspace"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r153 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r153-SWE.1]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r142 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r142-SWE.2]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r148 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r148-SWE.3]"
+        },
+        {
+          "reason": "WO-0002B-STM32N6-RCC-HAL-r146 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002B-STM32N6-RCC-HAL-r146-SWE.4]"
+        },
+        {
+          "reason": "WO-0002A-STM32N6-RCC-LL-r153 not on this host",
+          "test": "factory.python.tests.test_afo_m4_recovery::test_real_failed_gates_by_phase_are_product_quality_with_a_rule_or_blocked[WO-0002A-STM32N6-RCC-LL-r153-SWE.3]"
+        },
+        {
+          "reason": "live Fabro disabled",
+          "test": "factory.python.tests.test_t009_workflow_gates::test_installed_fabro_validates_generated_workflow"
+        },
+        {
+          "reason": "no 0600 owner file to probe",
+          "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[verifier-2001]"
+        },
+        {
+          "reason": "no 0600 owner file to probe",
+          "test": "factory.python.tests.test_cre_d7_isolation::test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[repair-2002]"
+        }
+      ],
+      "tests": 673
+    },
+    "kernel_fixture": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "651c987441ea180d269c5d228a8ca25fa708fbf000d41981c404f9ac49ea7dc1",
+      "seconds": 1.795,
+      "skipped": 0,
+      "skips": [],
+      "tests": 2
+    },
+    "release": {
+      "errors": 0,
+      "failures": 0,
+      "junit_sha256": "91d44709a18bce6fa860d8affbae7e8b0d8f87e4f1c6d4d85bbffdae7a0a4284",
+      "seconds": 8.98,
+      "skipped": 0,
+      "skips": [],
+      "tests": 13
+    }
+  },
+  "runtime_deployment": "NOT_ACTIVATED",
+  "scope": "DETERMINISTIC_IMPLEMENTATION_NOT_OPERATIONAL_OR_MODEL_QUALIFICATION",
+  "source_revision": "c72992ad1fe7a16fdbaa4850af5f6ccc66653994"
+}

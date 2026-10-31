@@ -83,3 +83,64 @@ def test_the_paired_swe1_mutations_seed_one_named_defect_each(tmp_path):
     (ws / "workproducts/SWE.1/software_requirements.md").write_text("# Software requirements\n")
     with pytest.raises(ValueError, match="NO_MUTATION_SITE:omit_startup"):
         SD.omit_startup(ws)
+
+
+def test_preflight_passes_clean_baselines_with_truthful_answers_and_no_model_call(tmp_path, monkeypatch):
+    """F014 (owner 2026-10-26): before any inference the run script inspects every clean baseline with scripted
+    truthful answers; every question's schema must accept its true answer and the adjudication must pass."""
+    from forge_factory.lrtx import review_semantic as RS
+
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", True)
+    monkeypatch.setattr(S, "call", lambda *a, **k: pytest.fail("the preflight made a model call"))
+    pf = seeded.preflight([HOLDOUT], "qwen3.6:35b-a3b", tmp_path, "semantic")
+    assert pf["status"] == "PASS" and pf["model_calls"] == 0, pf
+    assert S.call is not seeded._truthful_call  # the real client is restored
+
+
+def test_preflight_fails_on_a_harness_defect_and_the_run_stops_at_the_no_inspection_limit(tmp_path, monkeypatch):
+    from forge_factory.lrtx import review_semantic as RS
+
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", True)
+    real = RS.step_questions
+    # a defect a scripted answer exposes: a question whose closed answers exclude the true one
+    monkeypatch.setattr(RS, "step_questions", lambda ws, f: [{**q, "answers": ["NONE"]} if q["id"] == "startup" else q
+                                                             for q in real(ws, f)])
+    pf = seeded.preflight([HOLDOUT], "qwen3.6:35b-a3b", tmp_path / "pf", "semantic")
+    assert pf["status"] == "FAIL" and pf["rows"][0]["detected_by"] != "none", pf
+    monkeypatch.setattr(RS, "step_questions", real)
+    monkeypatch.setattr(S, "call", lambda p, **_k: {"doc": None, "errors": ["NOT_JSON"], "usage": None, "wall_ms": 1.0,
+                                                     "finish_reason": "stop"})
+    s = seeded.run([HOLDOUT], "m", tmp_path / "report.json", cases=["S3-INVERT", "S4-VACUOUS"], inspector="semantic",
+                   max_no_inspection=1)
+    assert s["aborted"].startswith("NO_INSPECTION_LIMIT") and len(s["rows"]) == 2
+
+
+def test_on_target_counts_a_detection_listed_only_under_its_item(tmp_path, monkeypatch):
+    """Run 2 (2026-10-26): S1-EFFECT raised the standing SWR-001 claim, but the record's capped top-level findings showed
+    only another SWE1-02 claim and the case was scored off target."""
+    from forge_factory.lrtx import review_semantic as RS
+
+    monkeypatch.setitem(RS.INSPECTOR, "stepwise", True)
+    # long enough to fill the item's 200-character top-level entry on its own (engine.record_inspection)
+    other = {"assertion": "other", "target_id": "document", "related_ids": [], "detail": "an unrelated judgement " * 12,
+             "remediation": "fix it"}
+
+    def call(p, **k):
+        item = p["task"].split(":")[-1]
+        if item == "step-effect-e01":  # the requirement's own value, against the seeded (flipped) entry
+            doc = {"quote": "write 0x0000CCCC", "answer": "write", "value": "0x0000CCCC"}
+            return {"doc": doc, "errors": [], "usage": None, "wall_ms": 1.0, "finish_reason": "stop"}
+        if item == "SWE1-02":
+            doc = {"verdict": "FAIL", "claims": [other],
+                   "evidence_checked": p["output_schema"]["properties"]["evidence_checked"]["items"]["enum"][:1]}
+            return {"doc": doc, "errors": [], "usage": None, "wall_ms": 1.0, "finish_reason": "stop"}
+        return seeded._truthful_call(p, **k)
+
+    monkeypatch.setattr(S, "call", call)
+    case = next(c for c in seeded.CATALOGUE if c["id"] == "S1-EFFECT")
+    seeded.PREFLIGHT["ws"] = tmp_path / "h" / "S1-EFFECT" / "workspace"
+    try:
+        r = seeded.evaluate(HOLDOUT, case, "qwen3.6:35b-a3b", tmp_path / "h", "semantic")
+    finally:
+        seeded.PREFLIGHT["ws"] = None
+    assert r["target"] == "SWR-001" and r["detected_by"] == "inspection (on target)", r["inspection"]

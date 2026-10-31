@@ -1,0 +1,111 @@
+"""Prepared fenced QM larger-context source 9b4c390 promotion; requires exact owner approval and signatures before use."""
+from pathlib import Path
+import json,os,signal,subprocess,sys,time,tempfile,xml.etree.ElementTree as ET
+P=Path('/mnt/data/forge-c/production-local-014');R=P/'repo';D=P/'deployment'
+N=D/'qualification-qm-demo-ctx262-9b4c390';O=D/'idr-m1-qm-demo-ctx262-9b4c390-20261029'
+for line in (P/'state/afo/conductor.env').read_text().splitlines():
+ if line and not line.startswith('#') and '=' in line:
+  k,v=line.split('=',1);os.environ[k]=v
+os.environ['TMPDIR']=str(N/'tmp');sys.path.insert(0,str(R/'factory/python'))
+from forge_factory.afo import authz,operations
+from forge_factory.afo.queue import Store
+from forge_factory.afo.mission_ledger import MissionLedger
+from forge_factory.afo.execution_lifecycle import Executions
+from forge_factory.afo.durable import digest,immutable_json
+from forge_factory.common import utc_now
+from forge_factory.lrtx import stack,provider_process,pidfd
+scope=json.loads((O/'scope.json').read_text());approval=json.loads((O/'owner-approval.json').read_text())
+assert digest(scope)==approval['scope_sha256']=='71b48d33283655a68d9fc33dd65b750a6e1be1aa9bd81188a232d3e1a6ac5759'
+assert approval['owner_answer']=='Standing approval: enlarged-context demonstration'
+assert time.time()<scope['limits_after']['deadline']
+def git(root,*args):return subprocess.check_output(['git','-C',str(root),*args],text=True).strip()
+assert git(R,'rev-parse','HEAD')==scope['previous_production_revision'] and not git(R,'status','--porcelain')
+assert git(N/'repo','rev-parse','HEAD')==scope['source_revision'] and not git(N/'repo','status','--porcelain')
+suite=ET.parse(N/'pytest.xml').getroot().find('testsuite')
+assert suite.get('tests')=='28' and all(suite.get(k)=='0' for k in ('failures','errors'))
+skipped=[c.attrib['name'] for c in suite.iter('testcase') if c.find('skipped') is not None]
+assert skipped==[]
+provenance=json.loads((N/'provenance.json').read_text())
+assert provenance['exit_code']==0 and provenance['source_revision']==scope['source_revision'] and provenance['source_clean_before'] and provenance['source_clean_after']
+capture=json.loads((N/'role-context-preflight-high-v1/result.json').read_text())
+assert capture['source_revision']==scope['source_revision'] and capture['native_nodes']==14 and not capture['halt'] and capture['model_generation_requests']==0 and capture['complete_native_workflow_validation']=='PASS'
+for label in ('primary','roles'):
+ grant=json.loads((O/(label+'-authorization.json')).read_text())
+ assert authz.signature_valid(grant,O/(label+'-authorization-message.bin.sig'),authz.ALLOWED_SIGNERS)
+ assert grant['policy_sha256']==scope['policy_sha256'] and grant['expires_utc']==scope['deadline_utc']
+S=Store();I=operations.Intent();L=MissionLedger(S)
+def history():
+ with S.tx() as c: mids=[r[0] for r in c.execute('SELECT mission_id FROM afo_missions')]
+ return {mid:L.snapshot(mid) for mid in mids}
+def quiet():
+ assert not Executions(S).pending()
+ with S.tx() as c:
+  assert not c.execute('SELECT holder FROM afo_resource_ownership WHERE holder IS NOT NULL').fetchone()
+  assert not c.execute("SELECT request_id FROM afo_request_ledger WHERE state!='QUIESCENT'").fetchone()
+  assert not c.execute("SELECT job_id FROM afo_verification_jobs WHERE state IN ('READY','DISPATCHING','RUNNING','CANCELLING')").fetchone()
+assert digest(L.snapshot(scope['mission_id']))==scope['mission_snapshot_sha256']
+assert I.read()['mode']=='RUNNING' and I.read()['epoch']==30
+quiet();immutable_json(O/'history-before.json',history())
+services=json.loads((P/'run/services.json').read_text());immutable_json(O/'services-before.json',services)
+provider=stack.serving_instance(stack.settings(scope['previous_profile']))
+paused=operations.synchronize(S,'pause',str(os.getuid()),'Owner approved exact QM larger-context source 9b4c390 same-M1 Qwen continuation',expected_epoch=30,
+ authentication={'method':'OS_STATE_DIRECTORY_OWNER','uid':os.getuid()})
+assert paused['epoch']==31
+def fenced(effect):
+ with I.lock():
+  state=I.read();assert state['mode']=='PAUSED' and state['epoch']==31
+  quiet();return effect()
+for unit in ('forge-afo-watchdog-014-omniverse2.timer','forge-afo-watchdog-014-omniverse2.service',
+ 'forge-conductor-local-omniverse2.service','forge-idr-m1-20261028.service'):
+ fenced(lambda unit=unit:subprocess.run(['systemctl','--user','stop',unit],check=True,timeout=45))
+fenced(lambda:immutable_json(O/'database-backup.json',S.backup(O/'conductor-before.sqlite3')))
+proof=provider_process.stop(provider,fenced_effect=fenced);assert proof
+immutable_json(O/'previous-provider-quiescence.json',proof)
+pr=services['processes']['fabro'];pid=pr['pid'];expected=pr['identity']
+def terminate():
+ actual=stack.process_identity(pid)
+ if actual is None:return
+ assert actual==expected
+ fd=pidfd.open_pid(pid)
+ try:
+  assert stack.process_identity(pid)==expected;pidfd.send_signal(fd,signal.SIGTERM)
+ finally:os.close(fd)
+fenced(terminate)
+for _ in range(100):
+ actual=stack.process_identity(pid)
+ if actual is None or actual.get('start_ticks')!=expected['start_ticks']:break
+ time.sleep(.05)
+else:raise RuntimeError('PREVIOUS_FABRO_NOT_QUIESCENT')
+def promote():
+ assert provider_process.quiet(provider) and history()==json.loads((O/'history-before.json').read_text())
+ subprocess.run(['git','-C',str(R),'fetch',str(N/'repo'),'HEAD'],check=True,capture_output=True)
+ subprocess.run(['git','-C',str(R),'merge','--ff-only',scope['source_revision']],check=True,capture_output=True)
+ assert not git(R,'status','--porcelain')
+ current=json.loads((P/'run/services.json').read_text());assert current['serving_instance']==provider
+ for key in ('serving_instance','serving_holder'):current.pop(key,None)
+ current['processes']={k:v for k,v in current['processes'].items() if k not in ('ollama','gateway','llama_server','fabro')}
+ stack._save_services(P,current)
+
+ def atomic(path,raw):
+  fd,name=tempfile.mkstemp(prefix='.qm-next-',dir=path.parent)
+  with os.fdopen(fd,'wb') as stream:stream.write(raw);stream.flush();os.fsync(stream.fileno())
+  os.chmod(name,0o600);os.replace(name,path)
+  parent=os.open(path.parent,os.O_RDONLY|os.O_DIRECTORY)
+  try:os.fsync(parent)
+  finally:os.close(parent)
+ env=P/'state/afo/conductor.env'
+ before_env=env.read_bytes()
+ (O/'conductor.env.before').write_bytes(before_env);os.chmod(O/'conductor.env.before',0o600)
+ assert scope['previous_profile'] in before_env.decode()
+ atomic(env,before_env.decode().replace(scope['previous_profile'],scope['profile']).encode())
+ for name in ('forge-conductor-local-omniverse2.service','forge-afo-watchdog-014-omniverse2.service'):
+  unit=Path.home()/'.config/systemd/user'/name
+  raw=unit.read_text()
+  (O/(name+'.before')).write_text(raw)
+  assert scope['previous_profile'] in raw
+  atomic(unit,raw.replace(scope['previous_profile'],scope['profile']).encode())
+ subprocess.run(['systemctl','--user','daemon-reload'],check=True,timeout=20)
+fenced(promote)
+record={'status':'SOURCE_PROMOTED_ADMISSION_PAUSED','source_revision':scope['source_revision'],'operator_epoch':31,
+ 'history_unchanged':True,'generation_requests':0,'at':utc_now()}
+immutable_json(O/'stage1.json',record);print(json.dumps(record),flush=True)

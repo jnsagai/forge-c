@@ -1,0 +1,233 @@
+{
+  "scope": "DETERMINISTIC_AND_NATIVE_RUNTIME_FIXTURES_NOT_MODEL_OR_OPERATIONAL_QUALIFICATION",
+  "cohorts": [
+    {
+      "host": "local-loop10",
+      "revision": "24f5d004b158e68cbafe84cf11f1d432b54a0e5f",
+      "file": "24f5d00-qualified.xml",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "241",
+        "time": "110.203",
+        "timestamp": "2026-10-28T09:27:53.028604+00:00",
+        "hostname": "master"
+      },
+      "xml_sha256": "ad7bbf89d258c17b811eb379d135fe2fe52939eebd124d6f4e990ff50696e9ce",
+      "command": [
+        "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_phase_gate_experience.py",
+        "factory/python/tests/test_da014_learning.py",
+        "factory/python/tests/test_da014_maintenance.py",
+        "factory/python/tests/test_m5_lessons.py",
+        "factory/python/tests/test_inspection_lessons.py",
+        "factory/python/tests/test_da014_product_outcomes.py",
+        "factory/python/tests/test_da014_gate_incidents.py",
+        "factory/python/tests/test_da014_settled_usage.py",
+        "factory/python/tests/test_da014_protocol.py",
+        "factory/python/tests/test_da014_qualification_state.py",
+        "factory/python/tests/test_da014_integration.py",
+        "factory/python/tests/test_da014_provider_recovery.py",
+        "factory/python/tests/test_da014_overnight_stall.py",
+        "factory/python/tests/test_da014_launch_boundary.py",
+        "factory/python/tests/test_da014_control_context.py",
+        "factory/python/tests/test_da014_bridge_lifecycle.py",
+        "factory/python/tests/test_lrtx_stack_cli.py",
+        "factory/python/tests/test_resume_from.py",
+        "factory/python/tests/test_brownfield_resume.py",
+        "factory/python/tests/test_afo_codex_claude.py",
+        "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/overnight-audit-20261028/24f5d00-qualified-tmp",
+        "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/overnight-audit-20261028/24f5d00-qualified.xml"
+      ],
+      "environment": {
+        "PYTHONPATH": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/recovery-after-overnight-20261028/factory/python",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "TMPDIR": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/overnight-audit-20261028",
+        "FORGE_STATE_DIR": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/overnight-audit-20261028/97936d7-exact-state",
+        "FORGE_EVENTS_DIR": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/overnight-audit-20261028/97936d7-exact-events",
+        "FORGE_DATA_ROOT": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c",
+        "FORGE_VENV": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv"
+      },
+      "source_clean_start_end": true
+    },
+    {
+      "host": "local-loop10",
+      "revision": "a7490b45e25a399c87e274f60c3f2fcaba1080c2",
+      "file": "release-qualified.xml",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "13",
+        "time": "9.658",
+        "timestamp": "2026-10-28T10:04:45.630309+00:00",
+        "hostname": "master"
+      },
+      "xml_sha256": "955d71258df8028e44e20018e4569f7cefe17b4fd401bae36ea5657cf4962a35"
+    },
+    {
+      "host": "Omniverse2",
+      "revision": "9663fa56528275ba85052cbe554a2c365a6b016a",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "43",
+        "time": "104.122",
+        "timestamp": "2026-10-28T09:09:02.649935+00:00",
+        "hostname": "omniverse2"
+      },
+      "xml_sha256": "e87e0951cc24def7862f445ce5f5828806e9fd427f4c8cbe26d0d3616825d7f7",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_gate_incidents.py",
+        "factory/python/tests/test_da014_overnight_stall.py",
+        "factory/python/tests/test_da014_protocol.py",
+        "--basetemp=/mnt/data/forge-c/production-local-014/deployment/qualification-9663fa5/tmp",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-9663fa5/tests.xml"
+      ],
+      "xml_path": "/mnt/data/forge-c/production-local-014/deployment/qualification-9663fa5/tests.xml"
+    },
+    {
+      "host": "Omniverse2",
+      "revision": "ddd6b4dc08d8674402eb30d70720562de1ca20b7",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "49",
+        "time": "112.870",
+        "timestamp": "2026-10-28T09:19:14.059395+00:00",
+        "hostname": "omniverse2"
+      },
+      "xml_sha256": "2f6da76c4fa91d184fa15ae543cb037e8f72c548a6749a28cd18fa906c9d049a",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_product_outcomes.py",
+        "factory/python/tests/test_da014_gate_incidents.py",
+        "factory/python/tests/test_da014_overnight_stall.py",
+        "factory/python/tests/test_da014_protocol.py",
+        "--basetemp=/mnt/data/forge-c/production-local-014/deployment/qualification-ddd6b4d/tmp-qualified",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-ddd6b4d/tests-qualified.xml"
+      ],
+      "xml_path": "/mnt/data/forge-c/production-local-014/deployment/qualification-ddd6b4d/tests-qualified.xml"
+    },
+    {
+      "host": "Omniverse2",
+      "revision": "24f5d004b158e68cbafe84cf11f1d432b54a0e5f",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "52",
+        "time": "122.768",
+        "timestamp": "2026-10-28T09:27:48.693906+00:00",
+        "hostname": "omniverse2"
+      },
+      "xml_sha256": "e4ec6a7d462e388cc36a6f2c99c213cef3a200aaff598bf4762296373b714479",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_phase_gate_experience.py",
+        "factory/python/tests/test_da014_product_outcomes.py",
+        "factory/python/tests/test_da014_gate_incidents.py",
+        "factory/python/tests/test_da014_overnight_stall.py",
+        "factory/python/tests/test_da014_protocol.py",
+        "--basetemp=/mnt/data/forge-c/production-local-014/deployment/qualification-24f5d00/tmp",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-24f5d00/tests.xml"
+      ],
+      "xml_path": "/mnt/data/forge-c/production-local-014/deployment/qualification-24f5d00/tests.xml"
+    },
+    {
+      "host": "Omniverse2",
+      "revision": "1252589107ccc10809f9834e589bd8bc0a70fbf6",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "25",
+        "time": "32.845",
+        "timestamp": "2026-10-28T09:40:42.202422+00:00",
+        "hostname": "omniverse2"
+      },
+      "xml_sha256": "3566042b1adf09aeb926a3ae6109e5d751ef548427de3deca258e3133f56841d",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_q38_quality_profile.py",
+        "factory/python/tests/test_da014_phase_gate_experience.py",
+        "factory/python/tests/test_da014_product_outcomes.py",
+        "factory/python/tests/test_da014_gate_incidents.py",
+        "--basetemp=/mnt/data/forge-c/production-local-014/deployment/qualification-1252589/tmp",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-1252589/tests.xml"
+      ],
+      "xml_path": "/mnt/data/forge-c/production-local-014/deployment/qualification-1252589/tests.xml"
+    },
+    {
+      "host": "Omniverse2",
+      "revision": "a7490b45e25a399c87e274f60c3f2fcaba1080c2",
+      "summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "32",
+        "time": "25.297",
+        "timestamp": "2026-10-28T09:49:51.517876+00:00",
+        "hostname": "omniverse2"
+      },
+      "xml_sha256": "88188913a072a39e022422082c6fc3502679d32744cf055ee358521f225fd9c5",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_q38_quality_profile.py",
+        "factory/python/tests/test_llm_gateway.py",
+        "factory/python/tests/test_da014_product_outcomes.py",
+        "factory/python/tests/test_da014_gate_incidents.py",
+        "--basetemp=/mnt/data/forge-c/production-local-014/deployment/qualification-a7490b4/tmp",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-a7490b4/tests.xml"
+      ],
+      "xml_path": "/mnt/data/forge-c/production-local-014/deployment/qualification-a7490b4/tests.xml"
+    }
+  ],
+  "latest_runtime_revision": "a7490b45e25a399c87e274f60c3f2fcaba1080c2",
+  "retained_nonpassing_evidence": [
+    "Initial old-source counterexample:9FAIL/1PASS at dbf6cb6.",
+    "Second pinned counterexample:6FAIL/2PASS at97936d7.",
+    "Initial199-predecessor185-test lane:182PASS/3FAIL; actual PlantUML path was missing; corrected241-test final predecessor lane passes.",
+    "Initial product-outcome lane:62PASS/1FAIL; child PYTHONPATH missing; corrected63PASS.",
+    "Initial native ddd6b4d49-case lane ended at120s without final report; retained incomplete. Same source49PASS under240s.",
+    "Initial release lane:12PASS/1FAIL; Fabro CLI missing from command environment; explicit actual binary lane13PASS.",
+    "Initial recorder unit lacked PYTHONPATH; journal failures retained; corrected unit published and submitted once.",
+    "One metadata observation timed out; source-bound activation/render receipts and current service/heartbeat were re-read; no inference process restarted from observation timeout."
+  ],
+  "not_claimed": [
+    "A single aggregate green full-suite invocation",
+    "Qwen3.8 role qualification",
+    "Successful self-healing or READY product",
+    "Learning benefit",
+    "24/72/168-hour operation"
+  ]
+}

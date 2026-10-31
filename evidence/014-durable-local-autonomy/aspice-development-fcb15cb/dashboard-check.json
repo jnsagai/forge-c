@@ -1,0 +1,31 @@
+[
+  {
+    "path": "/api/snapshot",
+    "http_status": 200,
+    "seconds": 0.019,
+    "top_keys": [
+      "runs",
+      "queues",
+      "direct_work",
+      "projects",
+      "sources",
+      "warnings",
+      "updated_at",
+      "refresh_seconds",
+      "network_addresses"
+    ],
+    "new_native_present": true
+  },
+  {
+    "path": "/api/runs/forge-c-omniverse2-production/01M61F40BHTFTDTXW16WGVRN9Q",
+    "http_status": 200,
+    "seconds": 8.283,
+    "top_keys": [
+      "run",
+      "stages",
+      "last_event_at",
+      "conclusion"
+    ],
+    "new_native_present": true
+  }
+]

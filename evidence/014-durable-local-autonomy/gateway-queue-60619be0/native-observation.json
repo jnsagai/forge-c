@@ -1,0 +1,121 @@
+{
+  "at": "2026-10-31T07:14:10.308429Z",
+  "candidate_execution_by_observer": false,
+  "completed_request_ledger": [
+    {
+      "charge": 78963,
+      "job_id": "afo-product-f10b3072a163ab219641cbd8",
+      "mission_id": "mission-feature014-delivery-first-20261030",
+      "reported_tokens": 78963,
+      "request_id": "native-request-e38b52638563499c848e28cb59be4cee",
+      "state": "QUIESCENT"
+    }
+  ],
+  "gateway_rows": [
+    {
+      "model": "qwen3.8:27b-q8_0",
+      "refused": "INFERENCE_REQUEST_BUSY",
+      "ts_utc": "2026-10-31T06:48:41.715231Z",
+      "upstream_called": false
+    },
+    {
+      "model": "qwen3.8:27b-q8_0",
+      "refused": "INFERENCE_REQUEST_BUSY",
+      "ts_utc": "2026-10-31T06:48:42.347386Z",
+      "upstream_called": false
+    },
+    {
+      "model": "qwen3.8:27b-q8_0",
+      "refused": "INFERENCE_REQUEST_BUSY",
+      "ts_utc": "2026-10-31T06:48:43.223514Z",
+      "upstream_called": false
+    },
+    {
+      "model": "qwen3.8:27b-q8_0",
+      "refused": "INFERENCE_REQUEST_BUSY",
+      "ts_utc": "2026-10-31T06:48:46.927327Z",
+      "upstream_called": false
+    },
+    {
+      "model": "qwen3.8:27b-q8_0",
+      "refused": "INFERENCE_REQUEST_BUSY",
+      "ts_utc": "2026-10-31T06:48:47.560448Z",
+      "upstream_called": false
+    },
+    {
+      "model": "qwen3.8:27b-q8_0",
+      "refused": "INFERENCE_REQUEST_BUSY",
+      "ts_utc": "2026-10-31T06:48:48.667789Z",
+      "upstream_called": false
+    },
+    {
+      "finish_reason": "tool_calls",
+      "latency_ms": 226526.8,
+      "local": {
+        "mission_id": "mission-feature014-delivery-first-20261030",
+        "request_id": "native-request-e38b52638563499c848e28cb59be4cee"
+      },
+      "model": "qwen3.8:27b-q8_0",
+      "tokens_input": 67394,
+      "tokens_output": 11569,
+      "tool_calls": 175,
+      "ts_utc": "2026-10-31T06:48:48.707165Z"
+    }
+  ],
+  "limits": "Captured timeline and durable request identity, not new model execution or measured benefit of inactive fix",
+  "model_calls_by_observer": 0,
+  "native_id": "01M6855WHNYHGCV6PFB5HPHAVH",
+  "schema": "forge-c/native-timeout-drain-observation/1",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "stage_failures": [
+    {
+      "at": "2026-10-31T06:48:29.810817041Z",
+      "event_sha256": "96778f323c5c36debf705bc159e8917acb0d449f9347144b058d4fc8453a8024",
+      "failure": {
+        "category": "transient_infra",
+        "message": "handler timed out after 900000ms",
+        "system_actor": "timeout"
+      },
+      "node": "swe5_inspector",
+      "timing": {
+        "active_time_ms": 0,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "wall_time_ms": 900074
+      }
+    },
+    {
+      "at": "2026-10-31T06:48:43.771789792Z",
+      "event_sha256": "858676b0fb160d2b9032ddcebefcae8bcd304c48b7baef0a60f662ac919938fc",
+      "failure": {
+        "category": "transient_infra",
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "node": "swe6_test_author",
+      "timing": {
+        "active_time_ms": 0,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "wall_time_ms": 13428
+      }
+    },
+    {
+      "at": "2026-10-31T06:48:49.156686948Z",
+      "event_sha256": "39a341f5ae17b98e371b5b725d5c8114cbdba2db28e33c22cad7f06622d905d0",
+      "failure": {
+        "category": "transient_infra",
+        "message": "LLM error: provider ollama returned HTTP status 429",
+        "signature": "api_transient|ollama|rate_limit"
+      },
+      "node": "swe6_author",
+      "timing": {
+        "active_time_ms": 0,
+        "inference_time_ms": 0,
+        "tool_time_ms": 0,
+        "wall_time_ms": 5376
+      }
+    }
+  ],
+  "workspace_written_by_observer": false
+}

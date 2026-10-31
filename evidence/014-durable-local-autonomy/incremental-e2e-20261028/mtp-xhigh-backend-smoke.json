@@ -1,0 +1,99 @@
+{
+  "conservative_total": 73949,
+  "context_tokens": 65536,
+  "finished_at": "2026-10-28T19:05:37.713088Z",
+  "halt_reason": [],
+  "independent_result_check": "PASS",
+  "limitations": [
+    "Backend/MCP smoke only; not full Fabro role competence, M1 acceptance or semantic proof of effort degree.",
+    "No production backend/source promotion; hidden reasoning excluded."
+  ],
+  "model": "qwen3.8:27b-q8_0",
+  "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+  "mtp_draft": 3,
+  "normal_mcp_ticket_consumed": true,
+  "old_mission_or_policy_modified": false,
+  "pause_epoch": 21,
+  "precision": "Q8_0",
+  "production_deployed": false,
+  "profile_sha256": "65ef1b9b008fb3ef0b53c623f1e4827b13db8010ddbd260974c8ea188c4dd88f",
+  "reasoning": "on",
+  "reasoning_effort": "xhigh",
+  "requests": [
+    {
+      "conservative_reservation": 36677,
+      "effective_output_cap": 34816,
+      "measurement": {
+        "input_tokens": 1861,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 1733,
+        "sha256": "239d623aa4bd3a8a5aedf31b853d25dd9937fc4d4936067fee628e44fc420584"
+      },
+      "reasoning_effort": "xhigh",
+      "reported_usage": {
+        "completion_tokens": 96,
+        "prompt_tokens": 589,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 685
+      },
+      "request_sha256": "f786e3c7e73921ee71ed7211a0201015892558cb80a06f7374093cdb05959a82",
+      "state": "QUIESCENT",
+      "wall_seconds": 1.979682171717286
+    },
+    {
+      "conservative_reservation": 37272,
+      "effective_output_cap": 34816,
+      "measurement": {
+        "input_tokens": 2456,
+        "method": "utf8_byte_upper_bound",
+        "native_measured": false,
+        "serialized_bytes": 2328,
+        "sha256": "668726c091394e8c93b946f1d9322a852f5f9762a4a3df18d46fa11b0382b436"
+      },
+      "reasoning_effort": "xhigh",
+      "reported_usage": {
+        "completion_tokens": 99,
+        "prompt_tokens": 511,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 610
+      },
+      "request_sha256": "627d5d410511a57b81a5ef5f8a7f7232519251ed49d5eb936a6257612b1bc590",
+      "state": "QUIESCENT",
+      "wall_seconds": 2.2392867719754577
+    }
+  ],
+  "resume_epoch": 22,
+  "schema": "forge-c/backend-smoke/1",
+  "scope_sha256": "664ed28e390e11cc942ffe56d1ef883cc909b3f51a0455e3c8de084c3de86541",
+  "slots": 1,
+  "source_revision": "d3f0b28a12ce789658ddccaa714d3b785fa42f87",
+  "started_at": "2026-10-28T19:05:27.845511Z",
+  "status": "PASS_BACKEND_PROTOCOL_SMOKE",
+  "tool_result": {
+    "artifact_refs": [],
+    "issues": [],
+    "metrics": {
+      "include_dirs": 0,
+      "sources": 1
+    },
+    "provenance": {
+      "input_sha256": "484d25d35b1121075a951b73a2e4753c65a49f7b78da0bca0d38bf734e66b466",
+      "invocation_id": "inv-d9d8f79cabdf49aa",
+      "tool": "clang",
+      "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029"
+    },
+    "status": "PASS",
+    "summary": "profile host-clang: 1 sources"
+  },
+  "tool_schema_sha256": "e17abf0e51958a083c8e3463d47c6bc3e7ed6e1447992d3cd5789e2233c3b694",
+  "visible_final": {
+    "observed_sources": 1,
+    "status": "PASS"
+  },
+  "visible_final_sha256": "aaa4e678cc2fb51415bd0beb4c7ca71592691708df3a2b4c9b38ef98af4e6974"
+}

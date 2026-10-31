@@ -80,6 +80,18 @@ def test_turn_budget_scales_with_the_allocated_work(tmp_path):
     assert GV.turn_limit("swe3-author", str(small)) == base  # at or below the reference size: authored budget
 
 
+def test_the_brownfield_swe3_author_gets_one_turn_per_allocated_function(tmp_path, monkeypatch):
+    """F015: USART1 (21 functions, 47 calls) and TIM2 (22, 48) exhausted every SWE.3 author turn of a delivered-code
+    work order; it recovers a design and unit specification per delivered unit. Other roles keep CAPA-015."""
+    ws = _ws(tmp_path, arch=ALLOC)
+    base, base4 = GV.turn_limit("swe3-author"), GV.turn_limit("swe4-author")
+    monkeypatch.setattr(GV, "_delivered_code", lambda w: True)
+    assert GV.turn_limit("swe3-author", str(ws)) == base + 25                       # 30 functions, capped at +25
+    assert GV.turn_limit("swe4-author", str(ws)) == base4 + (30 - 12) // 2          # unchanged
+    small = _ws(tmp_path / "s", arch=ALLOC.split("| SWR-013")[0])
+    assert GV.turn_limit("swe3-author", str(small)) > base                          # no reference-size floor
+
+
 @pytest.mark.skipif(not shutil.which("arm-none-eabi-gcc"), reason="GNU Arm not installed")
 def test_robot_driver_keywords_measure_a_header_only_ll(tmp_path):
     """CAPA-016 (r83 DEF-003): 'Driver Stack Should Be At Most' failed with 'no call graph produced' on an LL."""

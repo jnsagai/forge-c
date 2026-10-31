@@ -1,0 +1,4 @@
+....s...
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KeyboardInterrupt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/selectors.py:398: KeyboardInterrupt
+(to show a full traceback on KeyboardInterrupt use --full-trace)

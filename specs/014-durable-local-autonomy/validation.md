@@ -1,0 +1,1938 @@
+# WAL candidate and next bounded diagnosis mode — 30October2026,12:46UTC
+
+Prospective sourcea7804054744ce3d471d6e15c60a205610755503a NOT_DEPLOYED: bounded
+idle WAL session per Conductor cycle, independent FULL commits/no held transaction,
+legacy/device/rollback/intent paths preserved. Local27PASS; broader195PASS/1 child
+namespace import setup failure, corrected exact-case rerunPASS. Actual native I/O
+observation and isolated local1.80x/6x-write reduction are not native speed proof.
+Native source checks queued after all fixed12e601e4 comparison cohorts, PAUSED95
+only after quiescence/unchangedRUNNING94; resume only own pause96, no deployment.
+Current none/medium cohorts complete2/8 decisions each, xhighstill live. Source
+12e601e4 stays frozen. Next existing-four-question medium pilot is preparation-only,
+no signature/job/model/mission/source effect, separately scoped32requests/eight jobs.
+Spec/contracts/14static design PASS, formal30/58 unchanged/no new task closed.
+[Precise tests, preserved setup failure and native tooling](../../evidence/014-durable-local-autonomy/wal-cycle-20261030/README.md).
+Historical checkpoints below remain preserved.
+
+# Active explicit non-thinking trial — 30 October2026,12:04UTC
+
+Exact runtime/test source12e601e4f53ab71b6d184ae19379faa1dd8f6e97, native279PASS
+(no error/failure/skip), local73PASS overlapping. Explicit wire enable_thinking=false,
+native reasoning off/Q8/f16/MTP3/context262144/one slot/output ceiling34816 verified.
+Signed finite V2 scope9064faecbc628312be11286a38f149f47afcacabd48b8cd67db2e1b56fe61043,
+none→medium→xhigh/eight each, source fixed. First two none requests134 tokens,
+gateway4.04/3.70seconds, both wrong NEEDS_EVIDENCE decisions. No quality qualification.
+V1 external signer raw-YAML-versus-canonical hash failure retained, zero missions/
+jobs/model requests before failure; new V2 IDs and actual authenticated policy.load
+checks corrected the runbook without changing tested runtime or renewing expiry.
+ControllerRUNNING90/one serial comparison; no LL/HAL retry. Final MTP all32generated,
+medians63.44/56.94/65.91/64.70 for3/2/4/6; allFAIL/2of8 decisions. Formal30/58 unchanged.
+[Exact native/tests, signatures, failures and numeric evidence](../../evidence/014-durable-local-autonomy/non-thinking-speed-20261030/README.md).
+Historical checkpoints below remain preserved.
+
+# Non-thinking comparison preparation — 30 October2026,11:45UTC
+
+Prospective runtime12e601e4f53ab71b6d184ae19379faa1dd8f6e97, NOT_DEPLOYED.
+Owner-requested enable_thinking=false is profile-enforced, server reasoning off;
+Q8/f16/MTP3/context262144/one inference/output ceiling34816 remain fixed.
+Exact-source73PASS, no failure/error/skip, clean CLI24 frozen reference-backed inputs,
+zero model/grant/job/mission/service effects. Native CPU checks queued after MTP,
+then native preparation; no native model/quality/product/learning benefit claimed.
+Old017/cc6 waiters were superseded before native testing, not passed. All history
+and expiry13:52:52UTC preserved. Formal30/58 unchanged, no new task complete.
+[Exact evidence and tooling](../../evidence/014-durable-local-autonomy/non-thinking-speed-20261030/README.md).
+Historical checkpoints below remain preserved.
+
+# Prospective diagnosis context correction — 30 October 2026, 11:15 UTC
+
+Source017e68da015390c60abb8ca46b7dfdd40a0afa79 is NOT_DEPLOYED. Global requirement/
+incident namespaces clarified; global dependencies/known absences preserved through
+all four questions. Gates, source facts, packet bytes, schemas and authority remain.
+Final affected36PASS/transport64PASS; earlier121PASS+1setup failure, failed case
+corrected and independently rerunPASS with real Fabro parse. Clean-source CLI32inputs,
+zero model/grant/job/mission/service changes. Native model benefit NOT_RUN.
+Native CPU qualification queued only after all frozen MTP measurements/quiescence;
+actual check-only refused busy RUNNING82. Newer intent preserved, no source promotion.
+Current remote remainsa9b2ddf; draft3median63.44/draft2median56.94, draft4 live,
+draft6 not started. No product restart, no task checkbox change; formal30/58.
+[Exact evidence and executable tooling](../../evidence/014-durable-local-autonomy/diagnosis-context-20261030/README.md).
+Historical checkpoints below remain preserved.
+
+# MTP experiment checkpoint — 30 October 2026, 10:28 UTC
+
+Exact sourcea9b2ddfccc326bdcf8287c95a4310c0408429ccb: local60PASS/30PASS (overlap),
+clean preparation CLI/no model/grant/job/mission; isolated native126PASS, no failure/
+error/skip,24.20s. Deployed only for finite signed MTP3/2/4/6 speed cohorts,
+Q8/f16/xhigh/262144 fixed, eight diagnosis cases each, one inference. Current RUNNING80,
+baseline underway, candidate measurements still NOT_RUN. Tool hashes bound by
+signed manifests; historical missions unchanged, expiry13:52:52UTC unchanged.
+No product retry, no new task completed; formal30/58. Input-presentation ambiguity
+is recorded from actual designated responses; previous catalogue failure is not a
+pure competence estimate. Fresh qualification is required after any context fix.
+[Exact source/commands/JUnit, scopes and limits](../../evidence/014-durable-local-autonomy/mtp-speed-20261030/README.md).
+Historical results below remain preserved and are superseded only where stated.
+
+# Final speed-pilot checkpoint — 30 October 2026, 10:00 UTC
+
+Exact native runtime/test source37c0c354629312a70eb6a199989477036bb674d9.
+Isolated native cohorts96PASS/92PASS, no failures/errors/skips, overlapping tests.
+Xhigh8 frozen trials (6 generations/2 setup failures): median62.49tok/s, protocolFAIL.
+Medium8 generations: median71.01tok/s, protocolFAIL. Both2/8 expected decisions;
+medium also two CONTRACT_INVALID duplicate missing_evidence errors. Six matched
+model-request timings:948.58→118.21seconds (8.024×); not pipeline/role qualification.
+High unsupported; MTP draft3 fixed, factor sweep NOT_RUN.263 final transferred files
+hash-verified on loop10. Original product remains owner-aborted/BLOCKED and saved.
+Controller RUNNING78/active after campaign completion, zero pending requests/leases,
+historical mission snapshots unchanged. Formal30/58/no newly completed tasks.
+[Full evidence and exact source/commands](../../evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/README.md).
+Historical checkpoints below are retained and superseded by this result.
+
+# Latest operational checkpoint: owner abort and speed pilot, 30 October 2026
+
+Owner-aborted LL is saved as a sealed BLOCKED package plus complete private local
+engineering/accounting snapshot (835 verified members). Native code37c0c35 passed
+96 reasoning/gateway and 92 context/workflow checks on Omniverse2; overlapping
+cohorts, no model calls, no failure/error/skip. Benchmark-only xhigh/medium missions
+are separately signed and finite; first two xhigh trials had pre-inference host
+isolation refusals, preserved. Corrected driver delegates all dispatch/poll to the
+existing isolated Conductor. Actual xhigh native generation is running; medium,
+MTP-factor comparison and a speed winner remain NOT_RUN at this checkpoint.
+[Commands, JUnit, receipts, private copy paths and limits](../../evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/README.md).
+No task newly complete; formal30/58 unchanged. Product/learning/availability remain
+unproven. The historical record below is retained and superseded by this checkpoint.
+
+# Implementation and qualification status
+## Latest prospective C-notation correction — 2026-10-30 08:57UTC
+
+Candidate **37c0c354629312a70eb6a199989477036bb674d9**, NOT_DEPLOYED: an explicit profile flag
+supplies the same generic parameter-list clarification to native/structured SWE.1 authors and inspectors.
+Real C compiler positive/negative cases distinguish (void) parameters from an actual void return type.
+No gate, criterion, permission or verdict filtering changes. Inherited five RCC graph hashes remain unchanged.
+Local19PASS initial and92PASS full affected cohort, zero skips/errors/failures, four actual Fabro parsers.
+Clean exact37c0 reasoning-comparison preparation CLI PASS/no inference/queue/job/mission.
+Native top-level-only effort rendering confirms medium supported/high unsupported, without model generation.
+Combined native96(reasoning)/92(context) cohorts prepared/uploaded; check-only correctly refuses LIVE/RUNNING.
+Native candidate test qualification and speed comparison remain NOT_RUN; static spec validation is separate.
+
+Runtime899865d/RUNNING72 unchanged. Current LL native01M65TR9K7DRDTM8AX8ZTP445G remains LIVE/HELD:
+second author correction completed and baselinead64dceaa4f94435 is being reviewed at08:57UTC.
+The first re-review still had4model criteriaPASS/2FAIL. Full clean product remains unproven.
+Owner still requires current run finish before reasoning/MTP benchmark and dependent HAL.
+Same RCC mission/history/counters/uncertainty and13:52:52UTC deadline; no new grants or resets.
+Formal30/58 unchanged, no newly completed task IDs.
+[Exact source, original findings, tests and executable native tooling](../../evidence/014-durable-local-autonomy/c-parameter-context-20261030/README.md).
+
+## Latest reasoning comparison preparation — 2026-10-30 08:23UTC
+
+Runtime899865d/RUNNING72 continues LL01M65TR9K7DRDTM8AX8ZTP445G; first review4PASS/2FAIL,
+automatic author return and seven complete feedback strings observed. Source candidate94b5a68 is
+NOT_DEPLOYED: medium pilot tooling/profile and honest completion-versus-decode reporting.
+Native zero-inference template preflight proves **high unsupported**, medium/xhigh accepted, ledger650→650.
+Local96PASS regression +31 final affected checksPASS, exact clean94b5 preparation CLI PASS.
+Five real local verifier-child cancellation testsPASS. Native candidate CPU qualification and model
+comparison NOT_RUN; check-only correctly refuses while LL live. No source hot-change or new grants.
+The initial pilot measures diagnosis only; author/inspector competence and full mixed pipeline remain pending.
+Same RCC mission/history/counters/uncertainty and existing13:52:52UTC deadline remain.
+Formal30/58 unchanged, no newly completed tasks; clean full LL/HAL/learning benefit/operational soaks unproven.
+[Exact evidence and prepared executable native paths](../../evidence/014-durable-local-autonomy/reasoning-speed-20261030/README.md).
+
+## Latest actual execution — 2026-10-30 07:38UTC
+
+Deployed **899865d5f256e3c2fbdd836ba8696ef9cdb6fa8f**, RUNNING epoch72,
+QM/SafeC disabled/Qwen Q8_0/f16/MTP3/xhigh/262144/one inference.
+LL afo-f3ad027406784ef7, native01M65TR9K7DRDTM8AX8ZTP445G RUNNING/LIVE/HELD:
+five initial author packets VALID, sixth SENT,76163 completed reported tokens.
+Two durable phase corrections then advisory advance is active. HAL NOT_SUBMITTED;
+its read-only prerequisite check correctly waits for LL completion. No product acceptance.
+
+Qualified native base3bc1f10 language46/product92/measurement85 PASS, zero skips/errors/failures.
+Exact899 launch delta17 PASS and real launch preflight PASS/zero model calls.
+Base tests were not all rerun at899; precise tested revisions/commands are in the linked manifest.
+The failed3bc admission (skill-lock mismatch before any native launch) and prior single-pass
+six-phase but incomplete product remain retained and copied locally. Skills generator/lock
+and installed tool PATH are corrected with integrity checks enabled.
+
+Same mission/history/counters/uncertainty and existing explicit13:52:52UTC deadline unchanged.
+Formal30/58, no newly completed task IDs. Broad role qualification, clean full LL/HAL,
+independent learning benefit and24/72/168h operational proof remain UNPROVEN/NOT_RUN.
+[Evidence and exact commands](../../evidence/014-durable-local-autonomy/qm-all-phases-20261030/README.md).
+Historical checkpoints below retain their original timestamps.
+
+## Current correction — 2026-10-30 01:14UTC
+
+Full RCC LL is BLOCKED after7first-attempt VALID requirements packets/88317reported
+tokens; inspector not generated/context24576default, diagnosis not generated/
+undeclared0/None sampling. Subsequent phases unrun; actual incomplete package copied
+locally. Qwen maintenance01M655FBXJ3WW9R29ZT9YK9SKA now RUNNING atb713e35,
+epoch52, same08:11:56UTC/RCCmission/caps. Frozen original oraclev2 baseline2FAIL/
+legacy1PASS before candidate; candidate evaluation NOT_RUN. No operator repair code.
+[Exact current evidence](../../evidence/014-durable-local-autonomy/rcc-inspector-context-repair-20261030/README.md).
+Historical RUNNING checkpoints below retain their original timestamps, not current
+acceptance. Formal30/58 unchanged; complete pipeline and broad autonomy unproven.
+
+
+## Current native source and actual ASPICE experiment — 2026-10-30
+
+Runtime **b713e354b5c50744c549b1a9cada491c3ca017bd**, RUNNING epoch50:
+199local/51native PASS for current capacity/accounting changes. Native sandbox
+fixture failure48PASS/3FAIL is retained, corrected with synthetic passwd/group;
+no production signature/ownership checks removed. Inherited retained maintenance
+rework at8f21511:151local/34native PASS, opt-in now max2, live loop unproven.
+
+Full RCC LL **01M652TG29PWJYG7QSCQHZXVKC** actually RUNNING on local
+Qwen Q8_0/f16/MTP3/xhigh/262144, one inference, strict ASPICE_ONLY gates.
+Same RCC lineage/history with separately signed prospective capacity/time
+amendments through **30Oct08:11:56UTC**; no historical counter/grant reset.
+At00:25:18UTC two requests complete/21474reported tokens, third live; two packet
+outcomes VALID, no independent phase acceptance yet. HAL NOT_SUBMITTED and requires
+new verified LL. Outputs copied/hash-checked on loop10; Git recorder publishing.
+
+[Exact actual scope/evidence](../../evidence/014-durable-local-autonomy/aspice-rcc-pair-20261030/README.md),
+[capacity qualification](../../evidence/014-durable-local-autonomy/mission-capacity-20261030/README.md).
+Static validation is separate from runtime/model/product/availability results.
+Formal30/58 unchanged; no new task IDs completed. Historical checkpoints below
+retain their original operator epochs and restrictions; current epoch50/scope
+supersedes old temporary stops without erasing their evidence.
+
+
+## Exact candidate native CPU qualification — 2026-10-29 17:19UTC
+
+**3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6** now has **130distinct checks
+PASS on each host**, zero failures/errors/skips in the final41+89cohorts; matching
+case IDs verified. Local41=197.299s/89=19.191s; Omniverse41=208.095s/89=276.914s.
+Both actual frozen Qwen unit diagrams also pass the real PlantUML SVG invocation
+through candidate-generated MCP context/JAR. This does not rewrite old inspections.
+
+The first native core cohort was88PASS/1FAIL: its real Conductor correctly refused
+an uninitialized qualification-only data root. V6 uses existing host.init on the
+actual mounted volume and verifies UUID/root/fsync preflight before execution.
+Storage guards were never disabled and the original failure is preserved.
+
+These are independent **CPU-only, zero-Qwen** checks in private PID/network
+namespaces,8CPU affinity/nice10, finite bounds. Stable **STOPPED epoch33** and
+provider quiescence are required/monitored. RUNNING intent was unnecessarily
+restrictive for independent CPU verification; no resume was needed or performed.
+V4/V6 are actual executed tooling; earlier V3 remains historical unrun preparation.
+Active production remains clean9b4c390, provider quiet, no outstanding requests,
+original execution QUIESCENT/lease RELEASED. Mission unchanged4attempts/345requests/
+596tools/400m conservative charge/UNKNOWN usage; existing18:05:39UTC expiry unchanged.
+
+**Do not restart Qwen automatically at18:00.** New explicit owner resume is needed
+before model/resource preflight, exact-source role/scope admission and a same-mission
+continuation. Preserve failed records/costs and validate any brownfield reuse.
+The current demo has no SWE.6 report/inspection or completed release package;
+strict M1/IE-T008 remains unaccepted. Formal30/58, IE-T001–007 unchanged, M2–M5unrun.
+[Exact commands/XML/provenance, preserved failure, guard code and source note](../../evidence/014-durable-local-autonomy/native-cpu-3015e47-20261029/README.md).
+
+## Structured SWE.6 measurement routing; local41PASS — 2026-10-29 16:48UTC
+
+Exact candidate **3015e47f93de7bfd1e81c8dd7bf4426d8c13ddc6**, undeployed,
+fixes a separate structured-path crash: SWE.1 emits task=budgets for CPU/time,
+but SWE.6 assumed every non-byte-budget task contained a colon. Three old-runtime
+counterexamples reproduce IndexError. The planner now routes only exact generated,
+owner-bound simulation allocations through the existing instrumented test/keyword.
+Changed or unbound timing statements retain all normal engineering obligations;
+no requirement disappears because of a key name or timing phrase.
+
+Exact local **41PASS,0failures/errors/skips,197.299s** includes real Robot/compiler/
+Renode, complete IDR scripted-artifact fixture, full inherited IWDG structured
+verification/unchanged gate, source-binding negatives and MCP root regressions.
+This is not a new Qwen run or M1 acceptance; the earlier native run failed on a
+different contract-visibility problem addressed byb1536d7.
+
+A combined exact-source bundle and bounded bootstrap-v3 are prepared **locally
+only, NOT_UPLOADED/NOT_RUN**. It requires explicitly supplied RUNNING epoch and
+quiescent resources, continuously fences changes, and runs zero-model tests and
+the two actual failed diagram cases in private PID namespaces. Namespace support
+and real execution are native prerequisites, not proven by local CLI/AST checks.
+**STOPPED epoch33 remains authoritative; no automatic18:00 resume or activation.**
+[Commands, XML, counterexamples and executable native preparation](../../evidence/014-durable-local-autonomy/swe6-structured-measurement-20261029/README.md).
+
+## SWE.6 performance contract fix; local37PASS — 2026-10-29 16:37UTC
+
+Candidate **b1536d78bbfa23677c562a2e2e82aef4d27f423a**, **not deployed**,
+retains the measurement gate and makes its declared test path explicit in the
+opt-in scaffold and compact MCP result. Wrong scenario, missing/failed measurement
+and changed budget now have distinct actionable failures within the issue bound.
+The actual interrupted suite used scn_performance.c for both performance cases;
+only software/tests/target/test_performance.c receives declared instrumentation.
+This is corrected contract visibility, not evidence the previous gate was wrong.
+
+Exact local **37PASS,0failures/errors/skips,112.827s**: actual Robot/compiler/
+Renode positive and copied-scenario negative cases, measurement-binding controls,
+full six-phase scripted-artifact fixture and inherited Robot/MCP root regressions.
+The first uncommitted iteration lost nested contract metadata at the scalar-only
+MCP envelope; both new cases failed. Compact JSON-string serialization fixes that;
+the complete exact-source cohort then passes. No Qwen calls or acceptance claims.
+
+The stopped run's **101engineering files/4482319bytes** are copied privately to
+loop10; every hash and size verified, archiveSHA12dbfd978a1530bc66e419b4091226de86bd276e46bb99811032d443ba822682.
+It is an interrupted engineering snapshot, not a finalized release package. SWE.6
+has test sources/results but no completed report. Open local inspection entry point
+inspection/feature014/2026-10-29-qwen/interrupted-engineering/afo-774900b297bdde37/START-HERE.md.
+
+**Remote remains STOPPED epoch33; no automatic18:00 resume.** Native qualification
+of the combined candidate remains NOT_RUN. Prepared9f9a93f epoch32 tooling is for
+that older exact candidate and must refuse the current stop. Do not promote from
+local results or silently renew the existing18:05:39UTC window. No task is ticked.
+[Exact commands/results, failure controls and transfer inventory](../../evidence/014-durable-local-autonomy/swe6-performance-contract-20261029/README.md).
+
+## Owner stopped Qwen — 2026-10-29 16:27UTC
+
+Owner explicitly requested immediate stop. Durable intent is **STOPPED, epoch33,
+effective_stop=true**. Actual provider private PID namespace ended; `nvidia-smi`
+reports no compute processes. Native01M63ZTJ5QM1R96484Y2KN97H6 is FAILED after
+cancellation, sandbox stop completed; execution QUIESCENT and lease RELEASED.
+Task outcome BLOCKED/OPERATOR_SHUTDOWN. The parent order still reads RUNNING in
+SQLite at16:27:48UTC; that is unsettled orchestration state, not live inference.
+
+**Do not automatically resume at18:00.** The newer stop supersedes the earlier
+request to wait until18:00 for another run. Prepared qualification requires old
+epoch32 and must refuse epoch33; it remains NOT_RUN. Local fixes may continue.
+Existing18:05:39UTC expiry and all cumulative costs remain unchanged. Current
+mission4attempts/345requests/596tools/400m conservative charge, aggregate usage
+UNKNOWN. Strict M1 remains unaccepted; SWE.6 last Robot result7/9, no inspection.
+[Stop proof and limitations](../../evidence/014-durable-local-autonomy/owner-stop-20261029/README.md).
+
+## Actual SWE.5 PASS; SWE.6 running — 2026-10-29 16:01UTC
+
+Production remains9b4c390. **INS-SWE.5-001 PASS at15:59:17UTC**, no findings;
+current frozen baseline/deterministic gate rechecked PASS. All23phase/report/test/
+tool/inspection files copied privately to loop10 and all hashes/sizes verified.
+
+The rehashed simulation-performance artifact records two complete-call samples per
+function, each **2instructions/20ns virtual time at100MIPS**. It binds budget, ELF,
+disassembly, source/test/wrapper/model/platform/observer/hooks by hash. Explicit
+hardware_wcet=NOT_MEASURED; no silicon or physical timing claim. The approved64-
+instruction/100microsecond simulation-only requirement is unchanged.
+[Actual phase/transfer/performance evidence](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe5-frozen/README.md).
+
+At16:01:52UTC current native01M63ZTJ5QM1R96484Y2KN97H6 is RUNNING in **SWE.6
+test authoring**,214requests. Full product/strict M1 remains unaccepted; the actual
+SWE.3 failures remain. Source9f9a93f qualification is staged **NOT_RUN**, v2 entrypoint
+only, after current execution/resources release and unchanged operator intent.
+
+## Actual SWE.4 PASS; Renode checks pass — 2026-10-29 15:47UTC
+
+Production remains9b4c390. **INS-SWE.4-001 PASS at15:33:48UTC**, no findings;
+current frozen baseline/deterministic gate PASS. All17phase/report/test/coverage/
+inspection/tool-log files copied privately to loop10 with hashes/sizes verified.
+Upstream actual SWE.3 diagram-tool failures are unchanged.
+
+Renode v1.17.0 first recorded a performance-test compile failure, then **27checks
+PASS/0FAIL across two images at15:46:25UTC**, Cortex-M55 behavioural CRC model;
+silicon_verified=false. This is simulation/ordinary authoring feedback, not
+physical WCET, formal M3 repair or measured learning. At15:47:32UTC actual native
+01M63ZTJ5QM1R96484Y2KN97H6 is RUNNING in **SWE.5 author**,170requests in this run.
+[Actual phase/target/transfer evidence](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe4-frozen/README.md).
+
+Candidate9f9a93f native qualification is **staged, NOT_RUN**. Exact source bundle,
+bounded guard and actual frozen failed diagram cases are on Omniverse; current
+entrypoint bootstrap-v2.py refuses unless production quiescent and RUNNING epoch32.
+No source/service/grant/order changed. Initial staging rejected obsolete draft
+hashes; v2 binds the frozen failed baseline and preserves the first refusal.
+[Exact qualification tooling, hashes and next command](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/native-prepared/README.md).
+Current Qwen mission remains exclusive. Full product/strict M1 remains unaccepted.
+
+## Actual host-unit feedback and pass — 2026-10-29 15:19UTC
+
+The current Qwen run remains on source9b4c390. Its SWE.4 host-unit tool records two
+actual FAIL results for duplicate UT-001/002/003 IDs, followed by **PASS at15:18:27UTC**,
+exit0. LLVM coverage then reports100%functions/regions for the declared two-function
+scope; whole delivered-file coverage remains6.76%lines/8.33%functions. Target evidence
+is explicitly false. This is ordinary authoring feedback, not a seeded M3 repair,
+measured learning benefit or factory self-healing proof. No failing test result was
+overwritten. At15:19:19UTC SWE.4 test author is still active,104requests in this run;
+phase inspection/full product remain pending.
+[Actual tool/ledger evidence](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe4-host/actual-tools.json).
+The13-test local environment fix is still undeployed/nativeNOT_RUN.
+
+## Actual SWE.3 FAIL; context fix prepared — 2026-10-29 15:07UTC
+
+Production stays **9b4c390**, current Qwen run uninterrupted. SWE.3 produced detailed
+design/unit contracts/diagrams/trace and a target driver ELF. Both actual inspections
+**FAIL** with SWE3-10/PLANTUML_NOT_AVAILABLE. A read-only audit confirms all9MCP
+children lack FORGE_DATA_ROOT despite Java/JAR being installed. SWE.2 has a fallback,
+SWE.3 does not. The failed records and all36phase/build/inspection/tool-log files
+are copied/verified privately on loop10; no failure is changed to PASS.
+
+Candidate **9f9a93f174f46aa0add59c16a423be7d56988614**, **not deployed**, fixes
+explicit MCP/hook root propagation, path quoting and duplicate-key-safe overrides.
+Exact local13PASS,0failures/errors/skips,9.959s; two old-source counterexamples fail.
+Native qualification NOT_RUN while the active mission has priority. It includes
+the earliera1c6ae5 diagnostics. Qualify the combined source natively before later
+signed/fenced continuation; preserve current18:05:39UTC expiry/history/operator intent.
+[Actual failures, source fix, exact qualification and binary/transfer evidence](../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/README.md).
+
+Actual target compile/static tools/measurements report PASS after two preliminary
+measurement blocks. Relocatable driver text8bytes, static RAM0, max function frame0;
+independent disassembly shows two instructions per IDR measurement wrapper. These
+are static/driver-level facts, not runtime timing, full-image resources or WCET.
+Zero conformance findings, three delivered guideline findings retained.
+At15:07UTC the demonstration continues at **SWE.4 test author**,84requests.
+Strict M1 remains unaccepted; this externally implemented fix is not local-Qwen
+self-healing evidence. Older entries below retain their historical timestamps.
+
+## Actual SWE.2 PASS; SWE.3 running — 2026-10-29 14:37UTC
+
+Runtime remains **9b4c390**, current native **01M63ZTJ5QM1R96484Y2KN97H6**.
+Actual **INS-SWE.2-001 PASS at14:32:20UTC**, no findings; current frozen baseline
+and deterministic gate independently rechecked PASS at14:34:40UTC. Architecture,
+rendered static/dynamic diagrams, API calls and trace tables are present; all13
+downloaded phase/baseline/inspection files match remote hashes and sizes.
+The model-free structure check allocates9/9requirements but checked zero offsets.
+A separate actual pinned-primary-reference audit confirms CRC_IDR offset0x04 only;
+other hardware semantics are not thereby qualified. The inherited generic offset
+coverage gap remains open for later quality work.
+[Actual phase evidence, limits and verified local transfer](../../evidence/014-durable-local-autonomy/context-expansion-20261029/swe2-frozen/README.md).
+
+At14:37:29UTC **SWE.3 author active**,50provider requests in this run; only its
+deterministic code facts/seed are present so far, substantive detailed design and
+SWE.4–6 pending. Full product/strict M1 still unaccepted. Local loop10 frozen phase:
+inspection/feature014/2026-10-29-qwen/frozen-phase-snapshots/afo-774900b297bdde37-SWE.2.
+Candidatea1c6ae5 remains undeployed; native qualification NOT_RUN during this run.
+
+## Actual SWE.2 artifact and inspection — 2026-10-29 14:29UTC
+
+On deployed **9b4c390**, Qwen wrote **workproducts/SWE.2/software_architecture.md**
+(8882bytes, SHA5fafa6de489e36e1ef3ac94a8cfc85eba0eb4ffff34dd857fd1034bca72c0b3e).
+A private copy on local loop10 matches the independently observed remote hash/size.
+It contains components, interfaces, timing/error handling, memory, concurrency,
+requirement allocation and register tables. This is substantive author output,
+**not an accepted phase**. At14:29:39UTC actual native
+**01M63ZTJ5QM1R96484Y2KN97H6 RUNNING** had reached **swe2_inspector**,31provider
+requests, leaseHELD. SWE.1 passed at14:17:44UTC; SWE.2 inspection remains pending.
+The262k run admitted a187774 byte-bound reservation (above the former131072 limit);
+no new CAPABILITY_LIMIT refusal was recorded in the14:25audit.
+[Live artifact/transfer metadata](../../evidence/014-durable-local-autonomy/context-expansion-20261029/swe2-live/transfer.json).
+The complete final archive is still pending; current outputs are provisional.
+Sourcea1c6ae5 diagnostics remains undeployed/native qualification NOT_RUN.
+
+## Context refusal diagnostics candidate — 2026-10-29
+
+Exact **a1c6ae5049bf2477fd5198dcbdbdbc80596b4bb0**, **not deployed**:
+the existing execution evidence now preserves complete serialized bounds/resolved
+role and bounded cause for rejected capability requests, with body-hash keys and
+no raw prompt/result/hidden reasoning. Accepted requests also record the detected
+native role. Rejections still spend/reserve no inference and call no provider.
+Three old-source counterexamples fail; exact candidate local89PASS,0failures/
+errors/skips,30.989s, zero Qwen calls. Native qualification NOT_RUN to give the
+active remote mission priority. Do not restart current production for telemetry.
+[Commands, counterexamples, exact XML/logs and scope](../../evidence/014-durable-local-autonomy/request-context-diagnostics-20261029/README.md).
+
+Current production remains **9b4c390**,262144context/MTP3/xhigh. Actual new run
+**01M63ZTJ5QM1R96484Y2KN97H6** passed SWE.1 at14:17:44UTC and is executing
+SWE.2 author tools. Later substantive completion remains unproven; previous failed
+packages remain BLOCKED. Full mission/quality/availability acceptance is unchanged.
+
+## Larger-context Qwen continuation — 2026-10-29 14:08UTC
+
+Current deployed/tested source **9b4c390e1605d11c4865bdeea382df74a0078692**,
+profile local-rtx-v2-omniverse2-q38-qm-demo-mtp v4: **262144context**, GPU batch1024/
+microbatch512, same Q8/f16KV/MTP3/xhigh and one inference. Allocation on Omniverse
+PASS with1966MiB GPU free and zero generation; exact local/native cohort28PASS
+each,0failures/errors/skips, one pre-existing six-phase fixture deselected. Full
+native workflow validation and63role admission rows PASS, maximum byte-bound77488.
+See [qualification, prior failure, signatures and actual activation](../../evidence/014-durable-local-autonomy/context-expansion-20261029/README.md).
+
+The earlier15b0fa5 demonstration **finished BLOCKED,46gaps**. Native SUCCEEDED
+meant42-node traversal: all14later native roles errored HTTP429/CAPABILITY_LIMIT,
+so later substantive artifacts were not completed. SWE.1 passed; SWE.3 files were
+deterministic facts/seed only. Complete failed package is copied/verified locally.
+Largest accepted byte reservation130842/131072 strongly indicates context pressure;
+the exact refused body bounds were not retained. Do not label this model quality
+failure or a complete productive pipeline.
+
+Standing owner signing/activation delegation remains valid for this mission.
+Exact scope71b48d33 signed twice; fenced31/32 activation preserved all prior history
+and the existing18:05:39UTC deadline. New order **afo-774900b297bdde37 RUNNING**,
+native **01M63ZTJ5QM1R96484Y2KN97H6 RUNNING**, launch identityCONFIRMED,
+executionLIVE/leaseHELD. At14:08:44UTC first structured request SENT; cumulative
+4attempts/70requests/193tools/400m conservative charges and UNKNOWN aggregate usage.
+Actual graph contains all six phase authors/inspectors/checks. Product success
+remains unproven and demonstration outputs remain explicitly unaccepted.
+
+Recorder branch e2e/2026-10-29-idr-m1-qm-demo-ctx262. The existing model-free local
+collector will fetch the new outcome after finalization; prior demo already copied.
+Formal30/58, IE-T001–007 complete; IE-T008 unaccepted, IE-T009/M2–M5 unrun.
+Entries below are historical snapshots, including earlier RUNNING/pending states.
+
+## Live full-pipeline QM demonstration — 2026-10-29 12:50UTC
+
+Owner explicitly relaxed quality stopping criteria and approved exact15b0fa5 signing/
+activation, then delegated: “always approve it for now on automatically”. Proceed
+without repeated signing/activation confirmation for this development mission; keep
+current finite scope/window/cumulative costs and authenticated newer operator intent.
+There is no safety or product-quality acceptance implied by this delegation.
+
+**Production15b0fa59a5eb71dc7b921e8dcf67352520dd8de4**, profile
+local-rtx-v2-omniverse2-q38-qm-demo-mtp, Qwen3.8 Q8 MTP3/xhigh, one inference.
+Opt-in qm-pipeline-demonstration-v1 follows all six phases once with actual gates as
+observations; available snapshots/delivery are provisional and final product explicitly
+unaccepted. Strict M1 and other profiles retain their acceptance requirements.
+The old5b398d2 unsigned strict-QM packet is superseded and must not be activated.
+
+ScopeSHA252141d8903a944b7473b1734ae028d1db2d3dd55fd2847aad76c91c7fdff7d0;
+two exact SSH-agent signatures verified, all63role preflight rowsPASS. Fenced27/28
+activation preserved history; server/gateway/Fabro healthy. Current actual native
+**01M63V3YA87ENXA7052M8HS62X**, order **afo-d9ddb6d7a1c4e025 RUNNING**;
+actual launch source clean15b0fa5 and job/nonce identityCONFIRMED. Its42-node graph
+contains every phase author/inspector/check with unconditional control edges.
+At12:49:58UTC first requestQUIESCENT, secondSENT, executionLIVE/leaseHELD;
+cumulative3attempts,14requests,68tools,300m conservative tokens/UNKNOWN aggregate usage.
+No full-run completion or M1 acceptance yet. Same deadline18:05:39UTC remains.
+At12:55:24UTC actual SWE.1 inspectionPASS with no findings, six real requests
+completed; the next native author request is in flight and SWE.2 has started.
+Provider-reported total63513tokens for the six completed requests; no output-token
+split or aggregate usage is invented. Actual origin progress branch confirmed.
+
+Exact local/native16PASS each,0failures/errors/skips/model calls in qualification;
+real all-six-phase tool fixture retains failed SWE.1 and BLOCKED release. Native
+context capture14nodes/56bodies, bound77481/131072. See
+[qualification, actual signatures, preflight, runtime path and live evidence](../../evidence/014-durable-local-autonomy/qm-pipeline-demonstration-20261029/README.md).
+Git progress branch e2e/2026-10-29-idr-m1-qm-demo has active recorder commits.
+
+User requested local inspection copies. Complete previous f206 archive transferred,
+SHA and full inventoryPASS,86files extracted; it has SWE.1 only because later phases
+never ran. A live model-free collector fetches completed quiescent same-mission
+archives every60seconds until18:35:39UTC, verifies and extracts separate private
+job folders on loop10. Local index:
+/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inspection/feature014/2026-10-29-qwen/START-HERE.md.
+Current demo archive is not finalized. Do not replace missing outcomes with fixtures.
+Formal30/58, IE-T001–007 complete, IE-T008 unaccepted, IE-T009/M2–M5 unrun.
+Older entries below are historical checkpoints, including earlier pending delegations.
+
+## Independent archive verification follow-up — 2026-10-29
+
+Exact auditor source **319e215417b8f7e0d329fb3ce71b595f0367f8ef** fixes a reproduced
+false-positive integrity result: an indexed member removed from a ZIP could escape
+verification. The existing checker now verifies the complete, unambiguous inventory
+and streams hashes. Same24-check archive/inherited-release cohort passes locally
+and in isolated Omniverse2,0failures/errors/skips/model calls. Setup failures and
+the pre-fix counterexample are retained. Stronger audit of the actual private f206
+archive PASS; its product is still BLOCKED. No task or milestone acceptance changes.
+See [auditor evidence and commands](../../evidence/014-durable-local-autonomy/archive-inventory-20261029/README.md).
+
+This independent auditor is **not deployed**. Keep the pending, separately qualified
+QM runtime/signing scope pinned to **5b398d2**; do not substitute a newer branch head.
+Its17-file unsigned packet and fenced stage1.py/stage2.py are staged on Omniverse2:
+/mnt/data/forge-c/production-local-014/deployment/idr-m1-qm-5b398d2-20261029.
+ScopeSHA256f068de413c5f7ca786722dece26f9dc9cda3afdd4a87892e521ceedbac1b642d.
+Updated exact execution signing/activation approval remains pending; QM classification
+itself is already authorized and requires no safety sign-off. Signature count0.
+At11:55UTC productionf206 clean, operatorRUNNING26, requestsQUIESCENT; at12:06UTC
+Conductor/watchdog timer/finite recorder all active. Cumulative2attempts/12requests/
+68tools/200m conservative tokens and UNKNOWN historical usage remain. Current window
+ends18:05:39UTC; no renewal/refill or inference occurred in this follow-up.
+
+## Current QM implementation and actual prior outcome — 2026-10-29
+
+The owner explicitly selected **QM**: “Forget about safety now!!! implement as QM”.
+Prospective source **5b398d27f2ee60d3c059dc115dd612f0ff105199** implements the generic
+QM purpose/profile and hash-bound checklist/release tailoring for any declared driver.
+Safety-specific allocation/assurance clauses are outside this lane; functional
+startup/error/caller contracts, resources, traceability, independent inspection,
+real tests and package gates remain. Historical ASIL allocations and failures remain.
+Both native and structured prompts resolve the actual frozen QM criteria.
+Exact-source local and isolated Omniverse2 qualification:137PASS/1expectedSKIP
+per host,0failures/errors/model generation. Complete QM native graph validation
+PASS;18native prompt nodes/72captured initial/SKILL bodies, maximum conservative
+reservation77030/131072. Later tool histories remain live-admitted.
+See [QM source qualification and prepared unsigned scope](../../evidence/014-durable-local-autonomy/qm-development-20261029/README.md).
+The earlier 7f35955 activation draft is superseded and must not be signed/activated.
+
+The prior deployed f206e3a real Qwen run **finished BLOCKED at SWE.1**:
+SWE1-01/02/04/05/06 PASS, SWE1-03 FAIL (allocated safe state and disputed supported-domain
+error behavior). Six model calls, 63041 provider-reported total tokens; later phases
+NOT_RUN. Native transport SUCCEEDED, task BLOCKED, execution QUIESCENT, lease RELEASED.
+Private archive integrity PASS independently; product BLOCKED/INCOMPLETE with49gaps.
+See [terminal evidence](../../evidence/014-durable-local-autonomy/m1-continuation-20261029/terminal/README.md).
+
+Same-M1 cumulative snapshot:2attempts,12requests,68tools,200million conservative
+tokens; aggregate actual usage UNKNOWN. Original full-CRC mission remains exhausted3/3.
+Current f206 execution authority ends18:05:39UTC today; QM needs exact updated source/
+role signatures before activation. No deadline extension or allowance reset is prepared.
+Source qualification, Qwen capability, product acceptance, learning benefit and
+operational availability are separate. Formal progress30/58 is unchanged;
+IE-T001–007 complete, IE-T008 unaccepted, IE-T009 unrun. Older checkpoints below
+are historical, including the 10:13UTC RUNNING snapshot.
+
+## Historical launch snapshot — 2026-10-29 10:13UTC
+
+The owner approved the exact prepared scope, three new SSH-agent signatures and
+activation. Production is now **f206e3aa26837f892c2267ec67c46dcc61844c60**.
+Finite authority expires **18:05:39UTC** today; no further renewal is implied.
+Same mission F014-IDR-M1-HIGH-20261028, continuation_of afo-cf20126621ac2673.
+
+New order **afo-5ab4a2eb3e9de743**, native **01M63JC0YCPJFPSGHW04NG2W32**:
+RUNNING, first structured SWE.1 request SENT, execution LIVE/CONFIRMED, leaseHELD.
+At10:13:33UTC cumulative2attempts,7requests,66tools,200m conservative charge,
+UNKNOWN actual usage. Original mission row/non-timecaps and full-CRC3/3 remain.
+The accepted time-only extension is append-only. Operator RUNNING26;
+Conductor/watchdog/finite recorder active. All75role preflight rows pass;
+initial/SKILL contexts are measured, later histories remain live-admitted.
+
+Progress branch **e2e/2026-10-29-idr-m1-f206e3a**. Exact source qualification is
+84PASS per host,0model calls; live launch is a separate evidence item.
+No M1 acceptance, learning benefit or operational qualification is claimed.
+See [live scope/signatures/receipts/observation](../../evidence/014-durable-local-autonomy/m1-continuation-20261029/README.md).
+Older undeployed/expired/offline checkpoints below are historical.
+
+Historical pre-activation checkpoint: Updated2026-10-29. Latest tested candidate **f206e3aa26837f892c2267ec67c46dcc61844c60**
+passed84 checks locally and84 on Omniverse2 in the same deterministic/tool
+integration cohort,0failures/errors/skips and0model requests. Production remains
+e098b51 and the candidate is undeployed. Host is reachable; Conductor/watchdog
+active, finite recorder inactive. Actual M1 root is QUIESCENT/lease RELEASED.
+The identified66 historical inspection tool operations were reconciled with
+verified original hashes and no allowance reset. Grants expired05:00UTC.
+IE-T004 is now complete for the declared positive independent-input recheck;
+IE-T001–007 complete, IE-T008 unaccepted, IE-T009 unrun. Formal30/58 unchanged.
+[Exact qualification and limits](../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md).
+
+Earlier dated checkpoints below remain historical; documentation commits do not
+qualify a different runtime. Learning benefit and operational availability are
+unproven; no fixture result establishes real Qwen M1 acceptance.
+
+Historical Oct26 checkpoint: Updated 2026-10-26 (Claude continuation). Exact runtime source candidate: `de324a3c8686f06be566d479ea1a2d9dac48c61a` (`5dc2df3`, `dddf00e` before it; see [2026-10-25 continuation](#2026-10-25-continuation-intake-fault-controls-and-preliminary-omniverse2-trials)); the `9891b59` evidence below is retained history. Later evidence/documentation commits do not qualify a different running deployment. Feature 014 remains stacked on PR #41; neither PR was merged or activated by this work.
+
+The original authored specification and its three Feature 014 contracts are retained. `traceability.csv` is the immutable design-time NOT_IMPLEMENTED inventory used by the original specification checker. The dated [implementation matrix](implementation-status.csv) and [machine-readable evidence ledger](../../evidence/014-durable-local-autonomy/implementation-status.json) record all 52 implementation/acceptance dispositions. Checked tasks have passing evidence for their required deterministic scope. Native/live-containing tasks remain unchecked, even where their implementation and fixtures passed.
+
+## Five-hour deadline — NOT ACHIEVED, 2026-10-28
+
+No passing end-to-end driver workflow by16:29:12Z. At16:29:48Z factory stillRUNNING18,
+Conductor/watchdog active, finite recorder correctly inactive. Original signed production
+PILOT policy83e78088… active/no issues, expiry29Oct05:00Z unchanged. Stale epoch16
+expiry cleanup executed16:29:15Z and fenced against newer operator intent18.
+CRC remainsBLOCKED,3/3attempts,38requests,1.9m conservative charge/UNKNOWNusage.
+Candidate98d066d native124PASS/local71PASS, **NOT DEPLOYED**; deployedfcb retainsbug.
+No new Qwen work, budget reset or deadline extension. End-to-end/self-healing/product
+success still unproven. See aspice-resume-98d066d/deadline-outcome.json below.
+
+## Prospective ASPICE resume fix98d066d — NOT DEPLOYED
+
+The introduced historical work-order-ID bug is corrected in candidate
+**98d066dfe519c5ea2b23cec7d8f9681aff1f71d0**, with explicit prospective contractv2.
+Only its own administrative ID is excluded after identity validation; complete
+historical scope and policy/allocation/input binding retained. Legacy hashes unchanged.
+Both source/destination contracts now recomputed before copying.
+Baseline faulty-function counterexample1FAIL; exact local71PASS/102.543s;
+exact isolated Omniverse2124PASS/116.556s,0skips/0Qwen calls.
+Three real prepared-work-order integration cases cover valid inherited evidence and
+changed destination allocation/policy refusal. Native transport is a fixture.
+Candidate includes prior coherent-obligation/CRC-guidance/crosscutting input fixes;
+their combined native fixtures now pass. No candidate Qwen benefit measured.
+Production remainsfcb15cb, where the defect remains. No exhausted mission retry,
+allowance reset, promotion or task tick. Original engineering cutoff16:29:12Z unchanged.
+[Exact regression/native evidence and executable tooling](../../evidence/014-durable-local-autonomy/aspice-resume-98d066d/README.md).
+
+## 2026-10-28 terminal result and bounded MTP experiment
+
+Authoritative CRC order is BLOCKED/PRODUCT_LAUNCH_NOT_STARTED. Original native
+transport SUCCEEDED at15:49Z, SWE1-02/03FAIL, downstream phases NOT_RUN. Advisory
+continuation made no model call: the introduced ASPICE resume contract hashes
+historical scope.work_order_id, so changing attempt IDs refuses an otherwise
+identical continuation. Read-only exact reproduction confirms the sole contract
+difference; the bug remains UNFIXED. Mission3/3 attempts,38requests,1.9m conservative
+charge/UNKNOWN usage and original deadline preserved. No new task completion.
+
+Owner-requested native Q8 MTP microbenchmark: baseline28.61→MTP83.00tok/s,
+2.90× decoding; four short no-thinking requests per mode. Eight generated C outputs
+compiled and passed independent bounded functional checks. Only2/4 paired outputs
+byte-identical (CRC braces differ). This does not qualify xhigh role protocol,
+long-context accuracy, arbitrary drivers, product success or operational availability.
+Source/backend remainfcb15cb/original Ollama. Authenticated pause17 followed by
+original signed production-policy restoration and RUNNING18; no grant renewal or
+mission allowance edits. Epoch16 expiry cleanup now fences itself; original policy
+already restored. Controller/watchdog/recorder active at16:17:44Z.
+[Exact results and executable tooling](../../evidence/014-durable-local-autonomy/mtp-and-terminal-audit-20261028/README.md).
+
+The following scope activation is a historical snapshot superseded above.
+
+## 2026-10-28 owner ASPICE-only scope — deployed fcb15cb
+
+The owner's latest instruction supersedes the active Safety/SafeC trial scope:
+focus ASPICE-only development, without safety assurance. Exact deployed/tested
+**fcb15cba0bbc1b5e6e7c91c86aba08db244b5c61**, RUNNING epoch16. New purpose
+ASPICE_ONLY binds a separate owner policy; old formal/development allocations,
+signatures and frozen inspector source remain unchanged. Functional verification,
+traceability, reviews, finite budgets and offline review remain. No safety or
+formally assessed ASPICE compliance claim.
+
+100 native Omniverse2 fixturePASS(109.615s),16 exact localPASS(11.926s),
+114 inherited localPASS(95.776s), zero skips. Overlapping fixture cohorts, zero
+regression Qwen calls; role/product/learning/availability qualification separate.
+[Evidence, exact commands and executable tooling](../../evidence/014-durable-local-autonomy/aspice-development-fcb15cb/README.md).
+
+Current actual Qwen native **01M61F40BHTFTDTXW16WGVRN9Q**, order
+afo-533cd9ba25e792a5, continues the original CRC mission; 1.4m prior conservative
+charge retained, 400k new reservation,2/3 total product attempts, original2m
+cap/16:29:12Z deadline unchanged. At14:37:58Z first new requestSENT, nativeLIVE,
+leaseHELD, no phase/productPASS. Historical SafeC run preserved, cancelled and
+QUIESCENT/RELEASED before deployment. This owner scope change is not self-healing.
+Old planned SafeC RNG was not submitted; do not automatically restart it.
+
+Progress branch e2e/2026-10-28-q38-aspice-development updates every5minutes.
+Existing production dashboard source shows the new run (actual HTTP200).
+New expiry cleanup16:29:15Z is epoch16/current-policy fenced, restores original
+production policy only; timer execution unproven until receipt. Original grant
+expiry29Oct05:00Z unchanged. Keep runtime pinned while active. Feature stays30/58;
+no task tick or benchmark/24/7 proof.
+
+## Independent status axes
+
+| Axis | Result |
+|---|---|
+| Runtime implementation | Verified core increments; native qualification tooling remains partial. Exact-revision core/release evidence is below. Wider inherited coverage uses separately recorded revisions; combined-ordering and optional/native limits remain explicit. |
+| Actual Qwen/Fabro/gateway interoperability | PRELIMINARY live trial subsets on Omniverse2 (one isolated runtime per revision, 836ae49..dddf00e): intake, admission, native Fabro runs, gateway metering, typed incidents, wrapper closure and the four dispatch/liveness fault controls exercised; seven runtime defects found and fixed. Grammar-friendly wire schema raised schema-valid answers from 0/6 to 23/24. Not a completed campaign. |
+| Diagnosis, author, inspector, maintenance capability | Diagnosis: PRELIMINARY FAIL for `qwen3.6:35b-a3b` (reasoning high, single constrained response): NEEDS_EVIDENCE chosen for evident conformance repairs across 5 positive cases × 4 prompt/interface variants; the NEEDS_EVIDENCE case correct. Owner-chosen reasoning-off variant (3de1a44): same decisions at ~1/3 of the tokens. `qwen3.8:27b-q8_0` (bcb8cae, reasoning none): same pattern, 6/6 NEEDS_EVIDENCE. Stepwise diagnosis (owner-requested split; three small grammar-constrained questions, deterministic assembly, unchanged broker; qwen3.6 reasoning off, a206c54): 93/95 trials of the frozen matrix observed == expected with all fault exposures matched (24 accepted repair plans); independent REFERENCE_HARNESS audit (dbcec39): 0 false successes, 0 duplicate effects, 0 authority escapes over 95 rows; official protocol report 93/100 correct, FAIL (2 misses, 5 trials blocked by the measured-alternative prerequisite). Fixes b7ce315/5dc2df3 (obligation enum, separate strategy question, cited-findings context within the frozen job envelope): fourth matrix 95/95 eligible correct, audit 0/0/0, official report no failures, INCOMPLETE 95/100 (5 trials blocked only by the measured-alternative prerequisite). Inspector (owner 2026-10-26 "Stepwise inspector in 014"): stepwise local SWE.1 inspector on Feature 011's learning set (7 holdouts x 7 cases): learning-14 (`285d21e`) 49/49 correct: 42/42 seeded defects caught, 7/7 clean baselines passed, 0 empty inspections ([evidence](../../evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md)); PRELIMINARY; frozen test-set calibration (F011-T046, 3 runs) in progress. Advisory continuation (`ad5447a`, owner decision) lets an exhausted ladder continue with its gaps registered for the end-of-run human review; the release rule is unchanged. Author, maintenance: NOT_RUN. No model family or nominal context setting implies role competence. |
+| RCC recovery / sealed READY / GPIO follow-on | NOT_RUN. Historical RCC failures remain failures; GPIO requires all five explicit prerequisites. |
+| Cross-job learning benefit | NOT_RUN. Capture, qualified retrieval and comparison fixtures do not establish measured benefit. |
+| Continuous operation | Model-free controller and isolated systemd checks passed. Remote reboot/mount/load faults and 24/72/168-hour campaigns NOT_RUN. |
+| Rolling 30-day SLO | NOT_DEMONSTRATED. |
+| Source promotion / deployment | Not activated. Independent CRE vetoes protected-path changes; external engineering review is required. No automatic promotion switch was added. |
+
+## Source changes
+
+The existing Conductor, queue/outbox, supervisor/watchdog, native Fabro adapter, knowledge store, curator/MCP, CAPA/CRE and KPI paths own the implementation. No second scheduler, memory database or source authority was introduced.
+
+Complete finding/primary-evidence indexes are hash-bound and phase/role/path scoped. The semantic adapter serializes the locked role instruction, full selected evidence, schema and output reserve before admission. Its current fallback is an explicitly labeled conservative UTF-8 byte bound, not a qualified native tokenizer measurement. Coherent obligations preserve global requirement/dependency inventories; a task outside the measured/available envelope blocks rather than dropping evidence. This implementation does not claim that the historical RCC case fits or that decomposition improves Qwen without the native comparison.
+
+Strict semantic proposals exclude administrative identity and budget fields. Deterministic binding retains the authoritative recovery-plan validator. Append-only receipts, stable effect/nonces, request reservations and verifier epochs survive interruption. A task outcome and native/provider liveness are separate: a failed/blocked/succeeded job, timeout, cancel acknowledgement, listing gap or idle GPU never proves quiescence. Unknown provider requests retain inference ownership.
+
+Managed local profiles now bind each request to immutable gateway/model PID-namespace lifetime evidence. The external watchdog fences subsequent generation before retiring the exact namespace init through a pidfd. Kernel termination proof settles provider requests without resetting usage, receipts or task outcomes; authoritative native reconciliation still owns inference-lease release. Fabro alone may be restored while that lease is held. Healthy active generation is preserved. Shutdown effects and resume share the operator-intent lock; pending stop settlement is checked even with a healthy Conductor heartbeat. Different boot/start identities permit forgetting stale PID projections without signaling their replacements. These paths have real-kernel and durable-ledger fixtures, not deployed native-topology qualification.
+
+Mission identity and expenditure survive continuation and duplicate adoption. Known old expenditure remains charged; unbounded old usage refuses new admission. The fresh-database migration includes the previously lazy local-agent table so disabled/empty continuous supervision can capture learning before any model job exists.
+
+Every unique ordinary job/phase outcome can produce factual experience and a durable learning disposition. NO_NEW_LESSON and DEFERRED_BUDGET are valid outcomes. Ordinary/negative source qualification, exact applicability, independent applicable/adverse receipts, content/version identity, holdout isolation and atomic delivery/retraction fences extend the existing lesson store. Legacy PROMOTED-repair validation and separate inspector IL governance remain in force. Exposure, application and independently measured benefit are distinct; comparison costs include retrieval, curation and validation.
+
+Continuous mode rejects production finite-cycle limits. Failed/capability-limited jobs, exhausted engineering allowances, empty queues and campaign completion do not terminate supervision. Operator intent uses an OS-owned private file, durable epochs and serialized bounded start effects. Pending outbox commands cannot rebind to a newer resume epoch. STOPPED remains unresolved until contrary service-manager effects and native work settle. Explicit operator exit 77 prevents `Restart=always` restart; a false boot condition remains inactive.
+
+The Maintainer retains its existing restricted native/MCP candidate workflow under the shared mission ledger and per-role capability gate. Frozen submission intents reconcile a crash after commit without another commit; immutable case/submission/reproducer receipts drive completion even without final model text. A candidate receipt remains BLOCKED for independent review, and native terminal status never releases a still-live provider request. Legacy submissions retain independent validation; new submissions cannot downgrade after losing their receipt.
+
+AFO capture now preserves held-out workspace/qualification scope across jobs and phases. Late append-only classification excludes older facts of the same execution from lesson qualification and improvement routing. Previously validated ordinary lessons are retracted on retrieval; the transactional delivery fence also blocks a classification arriving between selection and exposure. Facts and dispositions remain durable. The three old-source counterexamples fail with explicitly pinned imports; the corrected 30-case learning/legacy/inspector run passes. See [held-out controls](../../evidence/014-durable-local-autonomy/followup/heldout-capture-provenance.json).
+
+## Concrete protocol preparation and remaining implementation
+
+Source increments `d629127`, `2de7ced` and `9891b59` add actual source-case preparation, effective gateway-envelope accounting, signed initial qualification reservations, four declared response interventions and typed empty-content refusal. Their separately recorded, overlapping regressions are retained in [increment evidence](../../evidence/014-durable-local-autonomy/followup/native-qualification-increments.json); they are not summed into independent native cohorts. The formal completed task count remains **22/52**. No native-containing task was checked from fixture results.
+
+The old adapter measured before the profile added high reasoning and 16,384 output tokens. The [old-source control](../../evidence/014-durable-local-autonomy/followup/reasoning-envelope-before.json) shows the raw request passing its local 16,000-token fit check while the transformed provider request would be refused by gateway admission. This was an early accounting/preflight error, not evidence of overspending or the historical V4 cause. The new adapter measures the transformed copy and sends the original once. It also refuses boolean, zero, negative and otherwise invalid output caps rather than turning them positive through an extension.
+
+On Omniverse2, clean `9891b59` generated all 20 cases x 5 repeats using the pinned Clang 19 binary and private state/events. A real compiled checker evaluates 260 inputs plus idempotence: seeded REG32 fails 194 checks; its independent reference fails zero. These are explicitly seeded virtual qualification fixtures, not manufactured historical product incidents or STM32 acceptance. Complete conservative admission totals (UTF-8 input byte upper bound plus effective output cap) range from **27,647 to 32,330** under the unchanged high-reasoning profile. The prospective 32,768-token envelopes fit these inputs; no grant, mission, order, runtime job or inference request was created. Configured context 65,536 remains distinct from a qualified role envelope.
+
+The frozen manifest hash is `50dd22b89a1cde0a118c67eea17291bf774513fd221632fa7536ee3ab6348ae7`. It declares 20 response-fault trials (four recipe types x five repeats). Administrative forgery, dropped content, truncated JSON and an unqualified model switch require the exact owner-signed trial mapping, seeded case, current order/model scope, policy/deadline and held native execution. The ledger retains only original/injected visible-content hashes and bounded metadata. Changed replay is refused; missing exposure evidence cannot satisfy the report. Injected outcomes do not establish unmodified model competence. Unmodified empty/invalidly typed output creates a protocol incident and no semantic receipt.
+
+The full native gate is **BLOCKED**, with exact preparation blockers `NATIVE_PROTOCOL_FAULT_EXECUTOR_NOT_PROVISIONED` and `INDEPENDENTLY_MEASURED_AUTHORIZED_LOCAL_ALTERNATIVE`. Source/symlink/cross-case intervention, strategy replay, revocation/expiry, lost launch acknowledgement and cancel-with-live-request executors remain to be implemented and qualified. The alternative must be genuinely measured and authorized. Frozen job IDs are prospective; existing AFO intake, mission registration and lazy admission must be completed without pretending that a product run exists or admitting 100 concurrent orders. See [executable input instructions](../../factory/qualification/014/README.md).
+
+Next execution is to finish those exact native boundary controls and eligible per-case provisioning, then use the already approved signing path for a distinct bounded qualification mission. Preserve the 100-case denominator, independent audits, all failed attempts, one inference lease and existing historical expenditure. No new signature was made yet, and no persistent source deployment was activated. Product/role/learning/operational campaigns remain separate and NOT_RUN.
+
+## Executed evidence
+
+See the exact commands, timestamps, exit codes, hashes and JUnit reports in:
+
+- [Core deterministic implementation](../../evidence/v0.4/runs/DA014-core/latest.json).
+- [Independent release regression process](../../evidence/v0.4/runs/DA014-release/latest.json).
+- [Restored fixture/ref/tool prerequisites](../../evidence/v0.4/runs/DA014-restored-prerequisites/latest.json).
+- [Historical offline migration and accounting](../../evidence/v0.4/runs/DA014-history/latest.json).
+- [Isolated systemd semantics](../../evidence/v0.4/runs/DA014-systemd/latest.json).
+- [Independent CRE evaluation](../../evidence/014-durable-local-autonomy/cre/independent-evaluation.json).
+
+Exact source `9891b59`: core **479 passed, 1 skipped**, no failures/errors (234.822 seconds); separate release regression **13/13 passed** (11.364 seconds). The core command includes all eleven Feature 014 test modules, inherited AFO, lessons, profiles/gateway/ACP, inspection/workflow/skill, brownfield and kernel confinement regressions. The source checkout was clean at start and end. Commands source `scripts/forge-env.sh`, then explicitly set `PYTHONPATH` to that checkout’s `factory/python`; `TMPDIR` and all test outputs are on loop10. Vendor fixtures are hash-verified private inputs; their provenance is published without their contents. The release file runs in a separate process with the generic Fabro token override unset. The recorded normal umask preserves inherited cross-UID fixture behavior; raw logs remain mode 0600. No live inference was performed.
+
+The [supplemental regression index](../../evidence/014-durable-local-autonomy/followup/supplemental-regression-index.json) retains separate source revisions, commands, denominators and follow-ups. The first 44-file group recorded 316 passes, seven skips and one timeout; the timed-out unchanged LRTX suite subsequently passed all 18 cases with its declared longer bound. The 103-file group recorded 644 passes, 25 skips and two missing-prerequisite failures; both unchanged assertions passed after restoring a private read-only CRE snapshot and the Renode discovery root. Further runs passed 71 pinned SafeC cases, 20 historical-corpus cases and the opt-in clean-environment reproduction. These overlapping groups are not summed into a fabricated independent cohort or relabeled as current-revision native qualification.
+
+The real isolated Conductor test runs the actual process with a missing/invalid engineering policy, an already exhausted zero-allowance mission and no model service. It observes several healthy cycles, verifies unchanged mission accounting and zero model requests, then records an explicit stop and exit 77. This is short deterministic runtime evidence, not an availability campaign.
+
+Seven actual local systemd tests cover unexpected clean exit, bounded immediate restart exhaustion, later slow start, process kill, notify watchdog hang, intentional stop, operator-exit prevention and boot-condition behavior (the report groups related observations into seven cases). They use only uniquely named transient `forge-c-014-qual-*` units and clean up those units. They do not deploy or qualify the remote production unit graph.
+
+Read-only reconstruction exported the Omniverse2 unit/native event inventory without prompts, private inputs or hidden reasoning. An immutable private SQLite dump was replayed into a new loop10 database. The final history tool reads the Conductor's authoritative migration table (an earlier development report incorrectly read SQLite's unrelated `user_version=0`; that report is retained). Schema 4 -> 9 preserves all 246 historical rows in 13 legacy tables. Duplicate imports retain five unique product executions from 20 adoption rows and four diagnoses. Reported diagnosis tokens remain 54,704; conservative diagnosis charge remains 64,856. Unknown product usage stays unknown and prevents fresh capacity. V4's native stopping cause remains UNKNOWN. No original remote database was modified.
+
+## Retained failures and limits
+
+The broad `e0b340b` run reached 832 passes, seven failures and 17 skips before the declared 900-second limit and forced cleanup (exit 137). It did not complete all 1,445 collected tests. The later `d2e71bf` remainder recorded 383 passes, 12 failures, 133 skips and 15 setup errors. These runs and later contrasts are retained in [development attempts](../../evidence/014-durable-local-autonomy/development-attempts/); retries do not erase them.
+
+- The earlier CRE symptoms for RPR-041, RPR-044 and RPR-047 were reproduced as a compiler environment failure: inherited `TMPDIR` pointed outside writable sandbox scratch. Runtime `e973286` binds compiler temporary files to scratch. Before/after controls, nine kernel compilation cases and all 12 unchanged CRE promotion regressions passed afterward; frozen oracles were retained. This does not establish the historical Qwen V4 stopping cause.
+- The inherited live-local-Qwen evidence check cannot find an eligible package in the isolated test state. It is not new Qwen execution or candidate product qualification. Qwen tests must run on Omniverse2.
+- Holdout-permission and KPI event-reference failures reproduced on unchanged `918c6a4`. Test-only `754e93c` selects the actual intended no-sandbox holdout backend and pins the evaluation window for frozen October 14 events. Their original assertions pass (37 passes, one optional native-state skip). Earlier broad-suite traceability failures remain retained alongside isolated passing checks.
+- The external-finalizer credential assertion fails in the same combined ordering on the unchanged baseline and candidate; its isolated test and full isolated release file pass. The original failed output is private; published copies redact credentials.
+- Missing private inputs, absent local historical branch refs and a tool-discovery environment assumption caused remainder failures. Available inputs/refs/tool settings were restored without changing oracles; all 45 targeted prerequisite regressions and 50 peripheral/traceability regressions then passed.
+- One explicitly disabled live-Fabro check remains skipped in the core command. Relevant native acceptance cases remain NOT_RUN.
+
+The first Maintainer receipt development run exposed an artifact-directory bug; it is retained, the path was corrected, and the final run includes the new receipt tests and all inherited Maintainer regressions.
+
+The [provider development record](../../evidence/014-durable-local-autonomy/followup/provider-development-attempts.json) retains the generic-Conductor shutdown regression and its production fix, plus a failed broad invocation that omitted the pinned environment/private fixtures and used an incompatible cross-UID fixture mask. The corrected exact-revision run above passes; earlier failures are not discarded.
+
+The exact-`9891b59` independent evaluator is `cre-promotion-runner@918c6a4`; it returns REJECTED / PROTECTED_PATH_CHANGE and does not run later promotion gates. Feature 014 deliberately changes protected recovery/lesson authority surfaces under this externally requested engineering PR. This result is retained, not converted to eligibility or bypassed. Candidate source is never promoted automatically.
+
+A standalone delivery fixture probe emitted two diagnostic knowledge audit events into the shared local JSONL stream because it omitted the private event-path override. Benchmark jobs, services and outcome records were unchanged. Their exact event IDs are retained in [fixture event provenance](../../evidence/014-durable-local-autonomy/followup/fixture-event-provenance.json) for exclusion from operational/learning metrics. Append-only history was preserved; subsequent standalone probes require private state and event paths.
+
+## 2026-10-25 continuation: intake, fault controls and preliminary Omniverse2 trials
+
+Source commits on `feat/014-durable-local-autonomy` after the handover (`72edbec`): `d446ef6` signed qualification intake
+(enrollment through existing AFO authorities, mission linked before QUEUED, frozen-root launch resolution, protocol-only
+mission limits, wrapper start); `836ae49` the four remaining fault controls (revoked-before-dispatch, expired-mission,
+lost-launch-ack, cancel-ack-still-live; all twelve declared interventions now have executors); then fixes found by the
+live runs: `cc2b39c` packet import at intake, item-local wrapper refusal, `expose-api --host-port`; `20f6b02` typed
+incident codes and required operations intent; `8e1aee5` /proc race in provider identity; `2dfd32f` value-free
+rejection diagnostics; `c6850ac` pidfd syscall fallback; `e35ed0a` closed-branch wire schema; `7f197d2` bridge
+identities for managed stop; `677d45a`, `b759094`, `dddf00e` single-response contract, evidence aliases and decision rule.
+
+Exact `dddf00e` (clean dedicated worktree, private state/event roots): core **559 passed, 11 skipped**, 0 failures
+(500.1 s); release **13/13** (9.0 s); history replay and transient-systemd semantics PASS; independent CRE
+`cre-promotion-runner@918c6a4` **REJECTED / PROTECTED_PATH_CHANGE** (retained, later gates NOT_RUN). The 11 skips (the
+`9891b59` run had 1) are 8 real-workspace history cases absent from the private state root, 2 cross-UID probes without a
+0600 owner file and the disabled live-Fabro check; earlier `4f954e2`, `836ae49`, `8e1aee5`, `677d45a` clean runs also
+passed with 0 failures.
+
+Stepwise diagnosis commits `bdba4c1`..`5dc2df3` (signed task class `two-step-diagnosis`; four grammar-constrained
+questions, deterministic assembly, unchanged broker), independent auditor `afo/qualification_audit.py` (`dbcec39`).
+Exact `5dc2df3` (clean dedicated worktree, private state/event roots): core **576 passed, 11 skipped**, 0 failures
+(499.0 s); release **13/13** (9.2 s); history replay and transient-systemd semantics PASS; six prepared manifests BLOCKED
+as before; independent CRE `cre-promotion-runner@918c6a4` **REJECTED / PROTECTED_PATH_CHANGE** (retained, not waived).
+Clean `a206c54` (570 passed) and `dbcec39` (575 passed) runs also had 0 failures.
+
+Exact `de324a3` (after `455e1dd` measured objective/work class and capability report, `74ba546` preregistered
+comparison factors, `c8af6fe` intake-manifest holdout scope, `de324a3` killable-group fix): core **579 passed, 11
+skipped**, 0 failures (506.9 s); release **13/13**; history replay and transient-systemd semantics PASS; independent CRE
+**REJECTED / PROTECTED_PATH_CHANGE** (retained).
+
+Whole inherited suite on `74ba546` (197 files, one process each with private state, two native e2e files
+excluded; [summary](../../evidence/014-durable-local-autonomy/inherited-whole-suite-74ba546.json)): 1,648 tests,
+44 skipped, 3 failures in 3 files plus one killed file. `test_cre_d7_final`, `test_lrtx_drill` and `test_sim_renode`
+fail identically on the base `f6ff873` in this environment (inherited, not waived). `test_da014_integration` was a
+Feature 014 defect: an in-process verification claim by a group/session leader was marked killable and lease
+expiry SIGKILLed the runner; fixed in `de324a3` (file passes in its own session). The run's worktree was left
+modified by the inherited `test_t050_t051_docs_status` status regeneration (timestamp/commit only). DA-T029 stays
+partial: three inherited failures and the retained CRE rejection.
+
+Retained: the `fc7e6d7` full run that exceeded 900 s was re-run: 507 passed/11 skipped in 1,007 s; one test took 328 s
+(normally ~2 s) during host memory pressure (systemd-oomd kill at 16:45:54) before a clean host shutdown at 16:50; the
+runner's final JSON lacks the release entry although its log/JUnit show 13 passed. A `cc2b39c` regression is invalid
+evidence: source files in its worktree were edited while it ran (its two failures exposed the real /proc race fixed in
+`8e1aee5`). One driver attempt started 33 s before its grant's issue time and was refused `AUTH_NOT_CURRENT` (no effect).
+Stuck wrappers from the 836ae49 attempt and stacks that the older code could not stop managed were closed/stopped
+through existing FSM edges or the unmanaged stack path after setting that runtime's intent to STOPPED with the reason.
+
+Preliminary live results, findings table and exposure facts:
+[omniverse2-preliminary-20261025](../../evidence/014-durable-local-autonomy/omniverse2-preliminary-20261025/README.md)
+(`summary.json` rows are sanitized; no reasoning, raw prompts or vendor content). They are trial subsets of separate
+per-revision campaigns; no report reduces the 100-trial denominator and no task is ticked from them.
+
+## Executable qualification handoff
+
+Six [stage skeleton manifests and dry-run reports](../../evidence/014-durable-local-autonomy/qualification/prepared/) freeze the 20x5 protocol denominator, RCC stage, 30-product cohort and 24/72/168-hour operation stages. They remain explicitly BLOCKED with their missing input/job bindings. The separate [concrete Omniverse2 protocol preparation](../../evidence/014-durable-local-autonomy/qualification/concrete-9891b59/concrete-input-preparation-9891b59.json) now freezes all 100 source cases and prospective job bindings, actual model/configuration identity, compiler oracle and a full manifest. No runtime job was admitted. A dry-run or specification validator is never runtime qualification.
+
+The historical `AUTH-OMNI-Q36-LOCAL-SELFHEAL-V4-20261024` expired at 2026-10-25 09:00 UTC and its four diagnoses were exhausted. It was not renewed, reused or signed by this implementation. The owner explicitly approved Feature 014 qualification in this conversation on October 25 ("I do, I approve all"). That approval permits preparing the new bounded campaign through the existing signing process; it does not change historical expenditure. The concrete 100-case bindings and requested finite 32,768-token initial job envelopes are frozen; they are not authorized ledger reservations. A new signature over `qualification-014:<frozen-manifest-sha256>`, exact private qualification policy/namespace and registered bounded mission/intake remain to be provisioned after the remaining case prerequisites. The conversation approval already exists; this is implementation/signing work, not a new permission question. Role qualification also pins actual model digest/precision/reasoning/schema/sampling/context/task and adapter revision.
+
+The owner is concurrently using another Claude terminal for Codex/Claude ST-driver benchmarks. Read-only process/service metadata and the Feature 015 specification locate its Conductor on local loop10 with the cloud Fabro configuration/storage, separate from the older Omniverse2 local-Qwen stack at `/mnt/data/forge-c/lrtx-v2`. Those services, source worktrees and benchmark data were preserved. Qualification must use a separate candidate checkout/data root and the existing owner principal; its allowed public-key fingerprint matches an available SSH-agent key. No private key was read, no new grant was signed yet, and no remote service or model request was changed. The hash-verified clean current checkout is staged at `/mnt/data/forge-c/qualification-014-17e6cbd/repo-9891b59`; [current source staging evidence](../../evidence/014-durable-local-autonomy/qualification/concrete-9891b59/source-9891b59-staging.json) records zero service starts and zero inference requests. The prior `repo-794e8d0` checkout is retained. All new writes are inside the separate qualification directory; the old runtime remains untouched.
+
+On the Omniverse2 host only, with the pinned clean runtime checkout, approved profile namespace, registered bounded mission/order lineage and independently frozen cases:
+
+```bash
+python -m forge_factory.afo.qualification dry-run --manifest <frozen-manifest.json>
+python -m forge_factory.afo.qualification provision --manifest <protocol-manifest.json> --authorization-ref <current-signed-id>
+python -m forge_factory.afo.qualification step --manifest <protocol-manifest.json> --authorization-ref <current-signed-id> --results <results-directory>
+python -m forge_factory.afo.qualification report --manifest <protocol-manifest.json> --results <results-directory>
+```
+
+Provisioning binds predeclared jobs after signing without changing case hashes or creating a grant, mission or model request. When the manifest explicitly freezes initial per-job envelopes, their exact owner signature, source/case/mission/model, per-order cap and declared context are checked before the first ledger charge. Existing job reservations cannot be rebound and production calls retain the registry allowance. Each call is bounded. Repeated `step` calls use existing AFO/native reconciliation and the same jobs; no campaign scheduler or blind relaunch is added. Independent audit files live outside product workspaces under `state/lrtx/qualification-audits/<manifest-sha>/<trial>.json`; their source revision, observation hash, independent producer and oracle hashes must match. Missing audits cannot become zero authority escapes, false successes or duplicate effects.
+
+For RCC/benchmark, existing Conductor intake owns execution; qualification `step` observes bound product jobs and sealed archives, independent gates and request metadata. For operation stages use `python -m forge_factory.afo.operational_campaign start|sample|fault|report`, or the existing `afo.soak` entry point. Only the fixed authorized service signal recipes are executable faults; reboot, storage/resource faults and other exposures require separately authorized host fixtures. Sampling/reconciliation continues without renewing engineering authority. Required fault/work/post-campaign/later-intake coverage and the complete wall-clock denominator cannot be dropped. Campaign completion never stops the factory.
+
+Before live execution: qualify the actual installed constrained-output/MCP/native header path, per-role semantic envelopes, cancellation/late-usage behavior, namespace dependencies and approved operational recipes. Then execute the 100 protocol trials, genuine RCC recovery and all six gates, gated GPIO intake, the representative 30-product benchmark, chronological learning comparisons, and staged 24/72/168-hour campaigns. All remain NOT_RUN here.
+
+## 2026-10-26: US11 (stepwise inspector, advisory continuation, offline improvement) and regression
+
+The owner decisions of 2026-10-26 are recorded as US11 (DA-FR/T/AT-053–058, commit `7726942`). None is ticked; 22/58 tasks have their full evidence.
+
+- DA-T053: the stepwise inspector passed the learning set (learning-14 at `285d21e`: 49/49). Rows and changes: [stepwise-inspector-20261026](../../evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md).
+- DA-T054: advisory continuation after the existing bounded ladder (`ad5447a`; v1 records kept byte-identical in `674bc07`). Lesson/CAPA and diagnosis-repair rungs are not integrated.
+- DA-T055: calibration runs on the 9-baseline subset pre-registered in `1067d40`. Two gate defects of the first full-set run are recorded in the evidence README.
+- DA-T056–058: `forge_factory.offline.{export,disposition,patch}` with contracts `offline-export-manifest`, `review-disposition` and `patch-bundle` (`dc000e8`, `53a853e`, `763f356`, `a23a611`). Deterministic tests only; no live offline round trip yet. Signing a disposition or a patch is an owner act in namespaces `forge-review-disposition` and `forge-patch-bundle`.
+
+Regression on loop10 (no live Qwen; private owner inputs copied with their recorded hashes; operations directory `operations/feature014/`):
+
+| Source | Core (`run_provider_regression.py`) | Release | Whole inherited suite (`run_full_inherited.py`) |
+|---|---|---|---|
+| `b180c97` | 594 passed, 1 skipped, 0 failed | 13/13 | 198 files, 1,713 tests, 4 failed |
+| `674bc07` | 610 passed, 1 skipped, 0 failed | 13/13 | 201 files, 1,729 tests, 2 failed |
+
+On `b180c97`, two of the four failures came from `ad5447a`: `test_lrtx_compat` (the v1 structured record gained `"advisory": false`) and `test_da014_advisory` (a substring check matched a state path). Both are fixed in `674bc07`. The two remaining failures, `test_cre_d7_final` and `test_sim_renode`, fail identically on base `f6ff873`. The end-of-run dirty `docs/IMPLEMENTATION-STATUS-v0.4.md` and `evidence/v0.4/implementation-status.json` come from the inherited `test_t050_t051_docs_status` side effect.
+
+## 2026-10-26: owner accepts 95/100; known issues reported for humans
+
+Owner decision: "95/100 is good enough!!! Lets not forget to have a factory that is not perfect, but can evolve over time and report the known issues to be solved by a Human." The native protocol gate passes at 95/100 (campaign `5dc2df3`: 95 correct, 0 failures; the 5 qualified-local-alternative trials not run), and [DA-AT-024](acceptance-tests.md) records the amendment. Everything the factory cannot yet do, or does imperfectly, is listed with evidence and the human action it needs in the [known-issues register](../../evidence/014-durable-local-autonomy/known-issues.md) (11 entries).
+
+Evidence records and ticks (27/58 tasks; `scripts/mark_task.py`, each record PASS with exit code 0):
+
+| Task | Evidence | Revision | Scope |
+|---|---|---|---|
+| DA-T024 | `DA014-protocol-95` | `5dc2df3` | live native protocol, 95/100 owner-accepted |
+| DA-T053 | `DA014-stepwise-learning`, `DA014-US11` | `9f001ed`, `e8e7fb6` | live learning set 49/49 (preliminary), 91 deterministic tests |
+| DA-T056, DA-T057, DA-T058 | `DA014-US11` | `e8e7fb6` | deterministic (live round trip: KI-014-009) |
+
+Core regression at `e8e7fb6`: 627 passed, 1 skipped, 0 failed; release 13/13 (records `DA014-core`, `DA014-release`). The implementation-status ledger is re-baselined to 58 rows at `e8e7fb6`; `verify_handoff.py` accepts only PASS_DETERMINISTIC or the two recorded live statuses for ticked tasks, requires model capability to stay PARTIAL and product success, learning benefit and availability to stay NOT_RUN.
+
+## 2026-10-27: inspector learning sets 1-3 perfect; refreshed held-out set calibrated (DA-T055)
+
+Revision `9300475` (learning-set-3 rules: safety-scope fact question, one-bit 'write 1/0', configuration writes, field named after 'shall', waits as reads, fixed-state assumptions) was tested on loop10 first: review and seeded tests 61 passed and 0 skipped; lrtx and DA014 suites 538 passed and 2 skipped (no pinned SafeC engine, no frozen SWE.2 baseline). The truthful preflight passed on all 18 learning baselines, and a replay of the recorded answers of learning-16, learning2-2 and learning3-1 left every baseline with 0 standing claims. The racy namespace-holder drill test (`setsid` fork, orphan sleeps) was fixed in the same commit.
+
+GPU job 030 on Omniverse2 ran learning-19 (49/49), learning2-5 (63/63) and learning3-2 (14/14). Its learning gate passed, so the job started the 3 registered runs on test set 2 (GPIOA and CRC, split `48207f1`). The runs were identical: 12/12 seeded defects flagged (11 on target, 1 off target, 0 missed), 2/2 clean baselines falsely rejected, 0 empty inspections, truthful preflight FAIL on CRC. Details and the causes are in the [stepwise-inspector README](../../evidence/014-durable-local-autonomy/stepwise-inspector-20261026/README.md). [KI-014-003](../../evidence/014-durable-local-autonomy/known-issues.md) stays OPEN, and test set 2 is now spent.
+
+DA-AT-055 expects complete registered runs with honest rates and sets no rate threshold. `verify_calibration.py` checks that protocol for both calibrations from the published records (47 checks PASS at `291a1ff`; a tampered copy fails). DA-T055 is ticked with record `DA014-calibration-t2` (29/58). `verify_handoff.py` now also accepts `PASS_LIVE_PROTOCOL`.
+
+## 2026-10-27: main merged into feat/014; DA-T029 at the merged candidate
+
+`247562c` merges main `38e2740` (Feature 015 ST driver benchmark, 54 commits) into the feature branch. The 16 conflict hunks in 10 AFO and policy files were resolved so both features keep their behaviour; the merge commit lists each one, and one behaviour change is for the owner's review: AFO recovery of delivered code now resumes its validated phases (Feature 012), where main started a fresh work order. The two inherited failures (KI-014-005) failed only under `run_full_inherited.py`'s private empty state and were fixed test-only in `1e2fd46`. The auxiliary run then found a raw crash when freezing the uncatalogued `targeted` stage, so `20650af` makes it refuse with a reason.
+
+Exact `20650af`, clean dedicated worktree: whole inherited suite **215 files, 1,840 tests, 0 failures, 0 errors**, 49 skipped with their reasons (the runner reports PARTIAL only because `test_t050_t051_docs_status` rewrites a generated timestamp); core **645 passed**, 1 skipped; release **13/13**; history replay and transient-systemd semantics PASS; every stage dry-run blocked as designed; independent CRE **REJECTED / PROTECTED_PATH_CHANGE** (retained, KI-014-010). DA-T029 is ticked with record `DA014-regression` (30/58); KI-014-005 is RESOLVED.
+
+## 2026-10-27: learning set 4, new ST LL drivers, handover to Codex
+
+GPU job 040 on `e0c020d`: learning sets 1–3 49/49, 63/63, 14/14; learning set 4 (the spent held-out pair) 13/14 with
+both clean baselines accepted (learning data; KI-014-003 stays OPEN). The owner froze inspector development. WWDG,
+RNG and LPTIM1 ST LL drivers were onboarded (`74c3aa4`, `60fccfd`, `4b71e6f`; Renode models smoke-tested in real
+Renode), the owner set ASIL B (OD-2026-10-27-01, `de54734`), and unsigned SSA-STC-001/TAA-STC-001 v0.1 drafts were
+committed (`9a88fbc`). GPU job 050 started the frozen st3 driver runs on Omniverse2 at 08:13 UTC (inputs verified,
+peripheral tests 12 passed); its results are collected by the next engineer (`HANDOVER-CODEX.md`).
+
+## Static checks
+
+`python specs/014-durable-local-autonomy/validate_spec.py`, `python specs/014-durable-local-autonomy/contracts/validate_contracts.py` and `python tests/spec/validate_design.py` validate documentation/contracts and registry/design consistency only. The 58 requirements/tasks/acceptance mappings, six Feature 014 schemas and 38 structural fixtures retain their design validation. These checks cannot satisfy native capability, product or availability acceptance.
+
+## 2026-10-27: Codex resumes; job 050 collected
+
+The completed remote job 050 (08:13:13–08:19:24 UTC) ran all three frozen ST LL
+cases at clean `9a88fbc5b28864e45917cdc77f7e6ab9c9f59825`: **0/3 READY, 3/3 BLOCKED
+at SWE.1**, 59 gaps each. Repeated deterministic output rejection is recorded as
+KI-014-029. Local-provider/digest/isolation/package-sealing verification passed;
+that does not imply product acceptance. [Sanitized results](../../evidence/014-durable-local-autonomy/st3-driver-runs/summary.json)
+retain native IDs, case denominator, request/token/energy measurements and package
+hashes. Collection is read-only, no new inference or retry. No task was ticked.
+Inspector development stays frozen; safety drafts remain unsigned/unregistered.
+
+## 2026-10-27: initial independent operational observer
+
+Source **`c72992ad1fe7a16fdbaa4850af5f6ccc66653994`**, clean dedicated worktree:
+core **662 passed, 11 skipped, 0 failures/errors** (504.886 s); release **13/13**
+(8.980 s). The 11 skip reasons are retained: eight missing historical workspaces,
+one disabled live-Fabro test and two absent owner-only permission fixtures. The
+last two were then exercised with a private nonsecret 0600 sentinel: **2/2 PASS**.
+This is supplemental coverage, not a second independent whole-suite cohort.
+
+The new read-only observer binds its source, isolated endpoints, mount, input plan
+and artifacts to the campaign; collects bounded SQLite/unit/health/intent facts
+outside the controller; recomputes signal-fault restoration and accounting checks;
+and refuses handwritten recovery verdicts. HTTP redirects/proxies, out-of-root
+artifacts, corrupted/truncated state, clock gaps and verdict tampering are covered.
+It is **partial tooling**, not full DA-T052: host intervention auditing, other
+fault-class exposure fixtures and an independent oracle for READY remain required.
+Missing facts stay UNKNOWN; no operational campaign can pass from those omissions.
+
+`run_auxiliary_current.py` on that exact candidate: offline history replay and
+seven isolated local systemd cases PASS; stage preparation remains blocked on its
+real prerequisites; independent CRE **REJECTED / PROTECTED_PATH_CHANGE**, retained.
+The full inherited 1,840-test suite was not repeated on this narrow increment;
+its previous clean `20650af` evidence remains distinct. Static spec/contracts,
+14 design checks and handoff reconciliation pass separately (documentation only).
+
+[Exact commands, JUnit, skipped reasons and hashes](../../evidence/014-durable-local-autonomy/operational-observer-c72992a/summary.json)
+and task-style record `evidence/v0.4/runs/DA014-operational-observer/latest.json`.
+No task checkbox changed (30/58); no source deployment, new Qwen request, pilot
+retry, owner signature or inspector development was performed. The three recorded
+pilot author diagnostics identify unsupported register-I/O effects and invalid
+proposals; no correctness gate was relaxed to emit partial artifacts as accepted.
+
+## 2026-10-27: bounded remote engineering diagnosis while local regression runs
+
+At the owner's request, Omniverse2's existing serial GPU queue ran a separate
+read-only ST3 engineering study on the clean remote source `9a88fbc`. It made
+**3 requests**, 15,803 prompt and 3,498 output tokens. A complete-context preflight
+refused the second packet before inference; coherent register-group repartition
+resumed the same study with prior expenditure and the three-call limit retained.
+The initial failed queue invocation remains evidence. Total elapsed wall was
+144.122 seconds; actual request wall was 24.004 seconds.
+
+Two proposals had valid references. LPTIM's invented diagnostic ID failed the
+reference check. Pinned SafeC checks independently rejected three selected
+WWDG/RNG suggestions as UNSUPPORTED; an isolated LPTIM read passed without
+establishing the original clearing requirement or a complete driver. Existing
+LessonStore APIs durably captured eight real phase outcomes and dispositions
+(seven DEFERRED_BUDGET, one NO_NEW_LESSON); no lessons were qualified/promoted,
+no repair incident invented and no benefit measured. [Sanitized study evidence](../../evidence/014-durable-local-autonomy/st3-diagnosis-study/summary.json)
+retains source/packet/proposal hashes, complete-context accounting and engine
+verdicts. Raw model prose and vendor data remain private. This study is not native
+AFO recovery qualification, a driver retry, a new held-out cohort or inspector
+calibration. Inspector development and all original failed pilot evidence remain
+unchanged. No task was ticked.
+
+
+## 2026-10-27: complete fault-catalogue observer predicates and bounded capture
+
+Exact source **`c86d5773ff7238cb2195a2f1ec0484dbdfa24ec3`**, clean start/end:
+**712 core PASS, 11 SKIP, zero failures/errors** (673.428 s), release **13/13 PASS**
+(11.194 s). The two missing 0600 permission fixtures were separately exercised
+with a private nonsecret sentinel: **2/2 PASS**. Other skips: eight unavailable
+historical workspaces and one disabled optional live-Fabro test. [Exact commands,
+JUnit and hashes](../../evidence/014-durable-local-autonomy/operational-observer-c86d577/summary.json).
+
+The observer now derives exposure/restoration for thirteen external fixture
+classes alongside the three existing signal recipes, covering the full sixteen
+case catalogue. Predicates require actual queue/order/attempt, boot, unit, intent,
+dependency and heartbeat transitions. Later terminal status cannot replace native
+liveness; shutdown settles before effective stop, then rejects new identities.
+The manifest must contain the complete fault catalogue and finite declared
+resource/timing bounds. Single-read hash/parse binding, cumulative read-only SQLite
+byte bounds, typed accounting and trace limits preserve UNKNOWN on incomplete
+facts. Tests include positive/negative fault timelines, real private SQLite/HTTP
+fixtures, stale/contradictory facts and reduced-manifest refusals.
+
+Exact-source history replay and seven isolated local systemd checks PASS.
+Independent CRE **REJECTED/PROTECTED_PATH_CHANGE**, preserved without waiver.
+Static validation passes separately: 58 requirement/task/acceptance mappings,
+six schemas/38 fixtures, 14 design tests, handoff 30/58, and selected changed-module
+Ruff checks. These are not native or elapsed-time qualification. Full inherited
+1,840-test regression was not repeated here; its prior `20650af` record remains.
+
+DA-T026/046/049/050/052 remain unchecked. Host intervention audit is still not
+implemented/integrated; an independent READY package oracle is not integrated.
+Omniverse2 also lacks the approved host-admin reboot/authoritative-mount-loss
+fixture window; actual work/fault campaigns and their 24/72/168 hours were not run.
+The current observer deliberately returns UNKNOWN for missing audit/oracle facts,
+so it cannot silently pass a campaign. No deployment or automatic merge occurred.
+
+## 2026-10-27: independent native work/READY audit binding and continuity
+
+Exact tested source **`08cc4326063074878b876c4aec36b9062fbde970`**: clean start/end,
+**235 affected checks PASS, one historical HAL-r154 workspace SKIP, zero failures**
+(26.223 s); release **13/13 PASS** (9.226 s). [Exact commands, JUnit, skip and hashes](../../evidence/014-durable-local-autonomy/operational-work-08cc432/summary.json).
+The previous `ccd10f0` observation-consumption record is retained separately,
+including its subsequently corrected historical-work-count limitation.
+
+The new `afo/operational_work.py` reuses `qualification_capture`'s existing
+independent audit, binds its exact native observation to the campaign and captured
+order/latest-attempt/mission/nonce/native/request identities, and requires actual
+captured quiescence/released capacity. READY requires all six native SWE gates and
+the sealed package result plus the independent correctness audit. A BLOCKED job
+can be independently verified as an outcome without becoming product success.
+Missing or edited audits, same-model producer labels, changed oracle bytes and
+missing/extra gate sets cannot turn into accepted evidence. Request identities
+are explicit; a genuine zero-request native outcome differs from missing telemetry.
+
+The existing Store now provides `ReadSnapshot`: one bounded read-only SQLite
+transaction, no migrations or database creation, SQL mutation refusal, and row,
+byte and deadline bounds. Tests use actual SQLite writer/read concurrency and
+verify the database remains unchanged. The observer's executable `product` and
+`work` commands bound workspace/archive reads and refuse FIFOs, symlinks, live or
+held executions, out-of-root paths and late publication. They execute no model,
+compiler, job dispatch or service change. Source hashes are frozen in the plan.
+
+Campaign reporting recomputes work and fault evidence. Legacy success/continuity
+booleans alone no longer count. It binds the actual stage/window/manifest,
+keeps missing or contradictory clocks/probes UNKNOWN and unavailable in the gross
+denominator, and derives later job processing/post-campaign continuity from source
+records. Work exposure requires an attempt created during the window or native
+activity observed there under fresh reconciliation. Re-reading historical terminal
+work cannot inflate the real-work counter; historical outcome proofs remain usable
+for READY auditing. Unknown timing stays unknown.
+
+Exact-source history replay and seven isolated local systemd cases PASS.
+Independent CRE remains **REJECTED / PROTECTED_PATH_CHANGE**, without waiver.
+Spec/contracts (58 mappings, six schemas, 38 structural fixtures), 14 static design
+checks, handoff reconciliation and changed-module/new-test Ruff checks PASS
+separately. The full 712-pass core run remains at `c86d577`; the full inherited
+1,840-test record remains at `20650af`. Neither cohort is claimed on this revision.
+
+This advances DA-T026/052 tooling; no formal task was ticked (30/58). The independent
+product audit consumer is implemented, but genuine product-correctness oracle
+production/evidence for this candidate is still unavailable. Host intervention
+audit production/integration is still incomplete. The actual authorized host
+reboot/mount-loss fixtures, native workload/fault exposure and 24/72/168-hour
+campaigns have not run. Current UNKNOWN host-audit facts still prevent campaign
+PASS. No additional Qwen request, deployment, inspector tuning or merge occurred.
+
+## 2026-10-27: bounded kernel-audit source capture and actual host prerequisites
+
+Exact clean source **`2928a9377c3ef96aab7cef7cf94355b96bdaa381`**:
+**273 affected PASS, one historical HAL-r154 workspace SKIP, zero failures/errors**
+(27.347 s); release **13/13 PASS** (10.301 s). [Exact commands, JUnit and hashes](../../evidence/014-durable-local-autonomy/host-audit-2928a93/summary.json).
+The new leaf adapter/parser has 38 tests including real subprocess resource/output
+limits. The earlier seven local systemd/history checks remain at `08cc432`; they
+were not repeated for this unused-by-runtime leaf. Current independent CRE again
+**REJECTED / PROTECTED_PATH_CHANGE**, retained without waiver. Static spec/contracts,
+handoff and new-source/test Ruff checks pass separately.
+
+`afo/host_audit.py` exports bounded read-only native kernel status/rule/log facts,
+not a complete host intervention verdict. Source capture binds a protected,
+root-owned regular source prefix; compound identities, duplicate/truncated records,
+path-item consistency, privacy exclusions, missing counters, historical losses,
+counter resets, daemon/policy/boot/clock changes and input bounds are tested.
+The implementation executes no audit configuration, package installation, counter
+reset, service mutation or model call. Global intervention count remains UNKNOWN.
+
+On Omniverse2, a clean isolated qualification checkout at this exact source ran
+`host_audit preflight`: **BLOCKED / exit 2**, with durable invocation/exit record.
+Auditctl/ausearch are unavailable, auditd is inactive, and noninteractive sudo
+listing returned 1. This is native prerequisite evidence, not runtime qualification.
+The existing `repo-b309039`, services, GPU queue and model setup were preserved;
+no shared-factory source deployment, grant renewal or inference occurred.
+
+Source work remains for continuous/rotation-safe segments, systemd-bus capture,
+authenticated-control/actor correlation and complete intervention-source replay.
+The current kernel counter comparison is not a complete coverage verifier and
+must not be used to set the campaign's unplanned-intervention count to zero.
+The actual host setup/privileged fault window, independent product oracle evidence
+and full native campaigns remain unavailable/unrun. No task was ticked (30/58);
+product success, learning benefit, availability and self-healing remain separate
+unproven qualifications.
+
+
+## 2026-10-27: native bus visibility source and measured permission boundaries
+
+Exact clean source **`fbd8bc89967b68ed4e99e4c63fe12784f135e62f`**:
+**318 affected PASS / one historical HAL-r154 workspace SKIP / zero failures or
+errors** (31.083 s); release **13 PASS** (8.794 s). [Commands, JUnit, source
+profiles and native receipts](../../evidence/014-durable-local-autonomy/host-bus-fbd8bc8/summary.json).
+The 83 host/bus tests include isolated native D-Bus Manager and Unit calls, unknown
+actor preservation, exact third-party call/reply visibility, malformed/truncated
+headers, monitor clean exit/fallback, child cleanup, bytes/messages/duration
+bounds, source freezing and response-body injection/privacy. No shared service
+was exercised by those isolated tests. Spec/contracts (58 mappings, six schemas,
+38 structural fixtures), 14 design checks, handoff 30/58 and selected Ruff pass
+separately. Current independent CRE remains **REJECTED/PROTECTED_PATH_CHANGE**.
+Earlier full-core/inherited/systemd cohorts retain their original revisions.
+
+`bus_audit` collects the native header-only profile and exact stream hash, not
+classic unescaped message bodies. It proves BecomeMonitor via loss of the
+monitor's acquired unique name and both harmless GetId query/reply boundaries,
+binds the systemd owner at both ends and detects ownership/disconnect/clock
+uncertainty. Optional frozen bus scopes extend the existing host capture; legacy
+plans continue working. The finite source never supplies a global intervention
+count or clears continuous coverage/authentication prerequisites.
+
+Actual Omniverse2 probes from isolated clean
+`/mnt/data/forge-c/inspector-014-b309039/host-bus-fbd8bc8/repo`:
+**user bus visibility PASS/exit 0**; **system bus BLOCKED/exit 2** (BecomeMonitor
+and boundary visibility not proven; fallback diagnostics); **kernel preflight
+BLOCKED/exit 2** (status unavailable). Native invocations preserve source SHA,
+clean start/end, command, exit, clocks and artifact hashes. No raw body, private
+credential, model call, service mutation, grant renewal or factory deployment.
+KI-014-030 distinguishes actual host prerequisites from incomplete software.
+
+Formal task count stays **30/58**. Remaining software includes continuous and
+rotation-safe sources, authenticated-control/actor correlation and complete
+source-derived intervention verification. Genuine product oracle production,
+the approved host fault window and elapsed 24/72/168-hour campaigns remain unrun;
+product success, learning benefit and operational availability are unproven.
+
+
+## 2026-10-27: caller/control provenance, transactional intent effects and useful bounded Qwen assistance
+
+Latest exact source **`7e1abb2849dfc6272a00c8b56f6be7a8ea0588d1`** (bus-name
+fix `818ab90`, oracle-test clarification `91f5ef4`, control source `7e1abb2`).
+The original 899-case core invocation had **846 PASS / 11 SKIP / 42 setup errors**,
+exit 1; all 42 errors were missing ignored ST documents in its worktree. No source
+assertion failed. A worktree with all 22 document hashes verified then passed the
+complete **45-case brownfield** file; the **two permission cases** also passed with
+an explicit private canary. The source-bound JUnit identity reconciliation is
+**890 PASS / 9 SKIP / zero open failures/errors across 899 unique cases**, not a
+single green full invocation. Both failed and successful invocations remain in
+Git. [Commands, artifacts and executable reconciliation](../../evidence/014-durable-local-autonomy/control-provenance-7e1abb2/summary.json).
+
+Release **13 PASS**; real Omniverse2 isolated control/bus tests **62 PASS** and
+finite user-bus visibility **PASS/exit 0**. History replay and all **seven isolated
+local systemd cases PASS** at this source. Current CRE remains
+**REJECTED/PROTECTED_PATH_CHANGE**. Spec/contracts, 14 design checks, handoff and
+changed-source/test Ruff PASS separately; full 1,840-test inherited cohort was
+not rerun here. Remaining skips are unavailable historical workspaces and the
+explicitly disabled live-Fabro validation.
+
+The existing CLI/dashboard authentication boundary now contributes a sanitized
+context to Intent and the existing lifecycle/action ledger. It binds epoch/mode,
+request/source hashes, process boot/start/namespace facts, UID mapping and bearer
+fingerprint without credentials, actor/reason text or arbitrary caller fields.
+The same intent lock spans one database transaction for both controls and all
+receipt/action rows. A pinned-old-function counterexample demonstrates stale
+resume effects contradicting a newer stop; the fixed concurrency case passes.
+Existing admission already honored STOPPED intent, so no unsafe service restart
+is inferred. SQL failure retains durable stop fencing; missing process metadata
+stays UNKNOWN and cannot prevent stop. Legacy control callers remain compatible.
+KI-014-031 is resolved deterministically; KI-014-030 retains incomplete independent
+audit ingestion/correlation and source coverage.
+
+The requested [external Qwen helper study](../../evidence/014-durable-local-autonomy/qwen-bus-query-review-20261027/summary.json)
+used the existing GPU queue and single-inflight gateway on Omniverse2: **one client
+and upstream request**, 1,819 input + 793 output tokens, 9.4334 s request wall.
+Total study wall 249.612356 s includes an initial zero-call UID-namespace preflight
+failure and its corrected continuation; the same one-call accounting was kept.
+The response was schema-valid but failed literal source references. A ceiling
+complaint was unsupported. A nonnumeric-name lead was independently checked
+against the primary D-Bus contract/native library, reproduced and externally
+fixed. Native library permissiveness on degenerate names is retained as an oracle
+limit; normative negative fixtures remain authoritative. Exact serialized-context
+hash replay passes without another inference call. Four factual experiences have
+three DEFERRED_BUDGET and one NO_NEW_LESSON dispositions, zero qualified lessons.
+No measured learning benefit, role competence or autonomous repair is claimed.
+The study's call budget is spent; do not retry it under a new name.
+
+Formal progress remains **30/58**, no task tick or ledger/CRLF rebaseline. Complete
+observer ingestion, native actor/control correlation, continuous/rotation-safe
+capture and full source-derived intervention verification remain software work.
+Kernel/system-bus prerequisites, genuine product oracle evidence, the approved
+external fault window and elapsed 24/72/168-hour campaigns remain unrun. No
+persistent deployment, promotion, inspector tuning, owner safety signature or
+merge occurred. Product success/learning benefit/availability remain separate and
+unproven.
+
+
+## 2026-10-27: frozen application-control source ingestion and replay
+
+Exact clean source **`2246a58b0a36ed4627e44462e4ca3b9fb0bb8097`**:
+**380 affected PASS / one historical HAL-r154 workspace SKIP / zero errors or
+failures** (34.483 s), **13 release PASS** (9.214 s). Actual isolated Omniverse2
+control/observer tests **83 PASS**, zero skips/errors (123.011 s). [Exact commands,
+clean revision receipts, JUnit and hashes](../../evidence/014-durable-local-autonomy/control-ingestion-2246a58/summary.json).
+Current independent CRE still **REJECTED/PROTECTED_PATH_CHANGE**. Static spec and
+contracts (58 mappings, six schemas, 38 fixtures), 14 design checks, handoff and
+new-source/test Ruff PASS separately. The broader reconciled 899-case cohort,
+history and seven systemd cases remain at `7e1abb2`; unchanged runtime service
+paths were not rerun for this observer-only increment. Full inherited 1,840-test
+cohort remains at `20650af`, not claimed on this source.
+
+`afo/control_observation.py` is now integrated into the existing external observer.
+An optional frozen `control_sources` object binds the reader and expected intent/
+CLI/dashboard source hashes. Legacy plans can omit it. The reader validates exact
+record/context fields and hashes before exporting event JSON and binds applied
+controls to real action rows in the same SQLite read transaction. Actual writes
+during observation, missing/mutated/duplicated rows, source mismatch, arbitrary
+fields, credentials, bad UID maps, malformed values, replayed flags and publication
+bounds are tested. Unsupported/corrupt sources preserve their hashes and UNKNOWN
+reason without leaking arbitrary source text. Historical producers can remain
+explicitly unmatched, not reclassified as authenticated.
+
+UID mapping is relative to the parent namespace; no host-principal inference is
+made. Provenance is exported as `intent_control_source`, separate from semantic
+mode/epoch/stop fields. A tested recovery-counter update changes source bytes
+without changing operator intent or breaking existing restoration comparisons.
+Custom action text is hashed; invalid paused/draining or stop-boolean values are
+not exported. Complete serialized observation size is bounded before publication.
+Loading captured samples recomputes context/source/action facts rather than
+trusting supplied match flags.
+
+This completes application-source ingestion only. Native actor/control/write/
+service correlation, continuous segmented/rotation-safe sources and full
+all-channel intervention verification remain software work; intervention count
+stays UNKNOWN. Genuine product oracle evidence and authorized external host
+fixtures/campaigns remain required. No new Qwen request, grant renewal, factory
+source activation, inspector change, merge or task checkbox. Formal **30/58** and
+ledger source_revision/CRLF remain unchanged. Product success, learning benefit,
+24/72/168-hour operation and the 30-day SLO remain unproven.
+
+
+## 2026-10-27: protected audit segments and executable byte-prefix replay
+
+Exact tested source `c38158cd687ac974056296662aa48b46e2fcdeca`: **434 affected
+PASS / 1 historical HAL-r154 SKIP / zero failures or errors**, 38.832 s; **13
+release PASS**, 9.124 s. Isolated Omniverse2 segment/kernel/bus source tests:
+**152 PASS**, 46.871 s. [Commands, raw JUnit/logs and hashes](../../evidence/014-durable-local-autonomy/audit-segments-c38158c/summary.json).
+
+`host_audit capture --previous-ref` and `verify-segments --segment-refs` extend the
+existing frozen observer/host plans and immutable qualification evidence. They
+provide bounded capture/resume and adjacent-prefix replay with retained-file
+identity/hashes, rolling anchors, parent/sequence bindings and descriptor-derived
+single-rotation handoff checks. Failed observations do not advance the cursor or
+erase history. Negative cases cover gaps, reordering, duplicates, malformed
+references, changed/truncated/deleted history, late retired writes, false writer
+handoffs, daemon PID mismatch, metadata/source budgets and privacy. See the
+[executable usage and limits](audit-source-capture.md).
+
+Ownership/UID protection is deliberately synthetic in deterministic fixtures;
+actual child-process descriptors and file IO are tested. A replayed byte prefix
+is not a complete compound-event/time/boot/host observation. Missed multiple
+rotations, missing retained history or aggregate bounds refuse. Batched continuous
+replay and complete compound-event replay remain unfinished. No global
+intervention count is inferred; it stays UNKNOWN.
+
+The same-revision **actual Omniverse2 preflight BLOCKED / exit 2** records
+`AUDITCTL_UNAVAILABLE`, `KERNEL_AUDIT_STATUS_UNAVAILABLE`,
+`SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED`, `AUTHENTICATED_CONTROL_CORRELATION_REQUIRED`.
+These host prerequisites and incomplete correlation are separate from the source
+tests. No rule, privilege, daemon, shared service or persistent deployment changed.
+Independent CRE remains **REJECTED / PROTECTED_PATH_CHANGE**. Static spec/contracts,
+fourteen design checks, handover and Ruff pass separately; no runtime qualification
+is inferred from static validation.
+
+Formal acceptance stays **30/58**, no new checkbox or ledger rebaseline. Prior
+broader reconciled 899-case core/systemd/history checks stay at 7e1abb2 and the
+full inherited 1840-test cohort at 20650af. No new model requests; spent studies
+remain spent. Product success, learning benefit, 24/72/168-hour operational campaigns
+and the thirty-day SLO remain unproven. Inspector freeze/owner signing boundaries
+and the seventeen known-issues-only omissions remain unchanged.
+
+
+## 2026-10-27: incremental selected-event replay on verified source segments
+
+Exact clean source `6b4166832ace78e791a5cb14c0a2ec8fc675648d`: **465 affected
+PASS / 1 historical HAL-r154 SKIP / zero failures/errors**, 38.570 s; **13 release
+PASS**, 9.086 s. Actual isolated Omniverse2 event/segment/kernel/bus source tests:
+**183 PASS**, 59.782 s. [Commands, JUnit/logs, preflight and hashes](../../evidence/014-durable-local-autonomy/event-replay-6b41668/summary.json).
+
+One bounded kernel-fact parser now handles legacy buffers and incremental ranges.
+Verified bytes are fed once; no second source pass or new persistence authority.
+Interleaved identities, partial UTF-8/line bytes and compound records survive
+capture and retained rotation boundaries. The new output binds input byte/hash
+and parser source, selected whitelisted fields, integrity records and duplicates.
+A native ENRICHED compatibility defect is fixed: Python `splitlines()` previously
+split 0x1D enrichment into invalid separate records. Private bodies remain excluded.
+
+Selected events need PATH index coverage and an observed PROCTITLE/EOE boundary;
+EOF does not force completion. Pending compound records, orphan groups and partial
+lines stay explicit. Malformed input or changed/unbound recorded boot produces
+blocked event facts (`null`), independently of retained byte-prefix replay. Byte,
+line, group, unique-record and final serialized-output bounds preserve uncertainty.
+Deterministic tests include independent expected record hashes, every-byte UTF-8
+splits, interleaving/duplicates, native separators, pending records, malformed
+sources, cumulative bounds, boot change, single-pass feed and retained rotation.
+Root/UID protection is synthetic; actual child-process/file IO is tested.
+
+[Tool usage and scope](audit-source-capture.md): this is selected-record replay,
+not full native payload completeness, independent host authentication or continuous
+window/boot/loss coverage. Native timeout inference and qualified batched continuous
+verification remain unfinished, alongside actor/control/write/service correlation.
+Global interventions stay UNKNOWN. Same-source actual remote preflight remains
+**BLOCKED / exit 2**, `AUDITCTL_UNAVAILABLE`, kernel status unavailable, continuous
+bus coverage and authenticated-control correlation required.
+
+Independent CRE remains **REJECTED / PROTECTED_PATH_CHANGE**. Static spec/contracts,
+fourteen design checks, handover and Ruff pass separately, with no runtime claim.
+Formal **30/58** stays unchanged; no new task or ledger baseline. Broader reconciled
+899-case core/systemd/history remain at 7e1abb2; full inherited 1840 at 20650af. No
+new model request, deployment, shared-service mutation, grant/mission reset or merge.
+Product success, learning benefit, operational campaigns and the thirty-day SLO
+remain unproven. Existing owner omissions/freeze/signing decisions stay in force.
+
+
+## 2026-10-27: owner development signature policy, A1 revalidation and remote Qwen assistance
+
+Owner **OD-2026-10-27-02** explicitly defers SSA/TAA signatures during Forge-C
+development. Source `1b32534eecfaa0481d4eb00ebf30fe478b42cb01` binds this policy
+and unchanged formal-policy hashes into new DEVELOPMENT work orders and brownfield
+identity. The finalizer defers exactly the two document files and seals explicit
+policy/deferral records. ASIL, all other quality checks and absence of safety
+approval remain. FORMAL_REVIEW and legacy orders use strict policies; malformed,
+changed or revoked bindings produce a blocking finding. Drafts remain unsigned.
+[Policy behavior and owner quote](development-safety-policy.md).
+
+Exact clean source: **1232 core/assurance PASS / 15 SKIP / zero failures or errors**,
+580.655 s; release **13 PASS**, 9.066 s. Final Omniverse2 **49 PASS**, 47.171 s.
+Native initial 44 PASS/5 FAIL (missing tool/data-root settings) and second 48
+PASS/1 FAIL (directory used as Fabro binary) are retained. The final environment
+uses the existing executable/PlantUML/LLVM with private state/home/archives. No
+source/test gate was weakened to pass. Total native test time including failures
+119.653 s. Skips list exact historical workspace/RM/archive, disabled live Fabro
+and two OS-identity fixture prerequisites. [Raw attempts, commands and hashes](../../evidence/014-durable-local-autonomy/development-safety-1b32534/summary.json).
+
+Synthetic READY fixture results prove mechanical packaging behavior only, not real
+driver success or safety approval. Native kernel-audit preflight remains BLOCKED
+(auditctl absent, continuous bus/control correlation missing). CRE retains
+REJECTED/PROTECTED_PATH_CHANGE. Static spec/contracts, design, handover and Ruff
+pass separately. Last full inherited 1840 cohort remains 20650af; this source's
+expanded core/assurance cohort has 1247 cases. No deployment or automatic merge.
+
+**Backlog A1:** Job 050 was already terminal. Existing 0/3 READY, three SWE.1 blocks,
+59 gaps each, source/package hashes and all 76 requests / 324810 input / 51810
+output tokens are revalidated against read-only remote artifacts. The published
+metadata secret-pattern scan and executable hash/count replay pass; an altered-count
+private copy is refused. [Terminal recheck](../../evidence/014-durable-local-autonomy/st3-driver-runs/publication-recheck-20261027.json).
+No live status/scorecard capture is invented; KI-014-018 rechecked and DA-T018 stays
+unticked. The actual SWE.1 failures still need engineering fixes; development
+signature deferral cannot repair them.
+
+Owner requested useful remote Qwen work. New distinct bounded job 080 reviewed the
+new policy source: **one upstream request**, 2574 input + 531 output tokens,
+7912.9 ms. Reference check FAIL (one exact quote, one inexact); both suggestions
+depend on hypothetical changes to protected fixed policies outside the input
+contract. Actual baseline replay PASS with zero actionable findings/code changes.
+Existing LessonStore APIs retain factual review and independent-check dispositions
+(DEFERRED_BUDGET, NO_NEW_LESSON), no invented repair incident, zero promoted lessons
+or measured benefit. [Sanitized study/accounting](../../evidence/014-durable-local-autonomy/qwen-development-safety-review-1b32534/summary.json).
+This one-call budget is SPENT; older ST3/bus-study budgets remain SPENT. It does not
+qualify a model role or prove autonomous self-healing. Final native qualification
+ran after the Qwen request completed; no competing inference or shared-service
+mutation was introduced.
+
+Formal **30/58** remains unchanged, no task/ledger baseline change. Product, learning
+benefit and actual 24/72/168-hour campaigns remain unproven. Continue backlog A2's
+independent observer, A3 comparison tooling, then A4 clean-worktree housekeeping.
+Owner-signature deferral is specific to development SSA/TAA; the remaining signing,
+authority, inspector-freeze and parked-case decisions remain in force.
+
+
+## 2026-10-27 — crash-replayable collection, Qwen authoring and controlled reports
+
+Runtime increments: collector `75d4bdc19dc95f1fdc469326adb3dd2c1c0e5632`, controlled
+reporting `d9d70e16523f1b928fd2d5f9ff265594e8f266f8`. Existing soak, frozen observer,
+host segment reader, qualification identities and independent audit producer reused.
+No scheduler, memory store, inference authority or production activation introduced.
+
+Exact clean collector checks: 521 PASS / 1 SKIP affected (41.437 s), release 13 PASS
+(9.319 s); isolated Omniverse2 194 PASS (386.299 s). Native preflight exits 2/BLOCKED:
+KERNEL_AUDIT_STATUS_UNAVAILABLE, SYSTEMD_BUS_AUDIT_COVERAGE_REQUIRED,
+AUTHENTICATED_CONTROL_CORRELATION_REQUIRED. Global interventions remain unknown.
+Latest exact clean d9d70e1 affected 541 PASS / 1 SKIP (49.069 s), release 13 PASS
+(9.047 s). Skip is the deliberately disabled live Fabro fixture. Exact commands,
+clean revisions, raw XML/logs and hashes are in the two increment folders' invocation
+and summary JSON. Initial WIP observer failure (changed refusal code) and comparison
+fixture failure (stale expected /99 after reducing fixture to two cases) are retained;
+fixes preserve inherited contracts and do not weaken gates.
+
+The collector serializes existing soak writers, records bounded immutable attempts,
+reuses captures/receipts after crashes, rejects partial/mixed histories, retains
+host failure/cursor chains and replays original sources in reports. Test clocks and
+probe fixtures are synthetic. Host-wide control/write/service correlation, native
+full-window evidence and batched continuation beyond 128 MiB remain unfinished.
+Read-only preparation confirms no durable AFO product binding exists for any Job050
+workspace. Those failed normal workorders are not relabeled as campaign jobs; no
+operation manifest or grants were created/renewed. Host-admin and fault-window
+prerequisites are recorded exactly. A2 remains IN_PROGRESS.
+
+A3's controlled report generator is tested. It requires one declared factor,
+unchanged source/cases/prompts/oracles/workload/admission/measurement/quality gates,
+frozen candidate registration, actual observed settings and independently audited
+outcomes/costs. All failed attempts and learning overhead count. Missing totals are
+null; no model self-assessment qualifies. Recorded-run suitability assessment found
+no qualifying pair; live DA-AT-028 remains NOT_RUN. RCC success is no prerequisite.
+
+New external Qwen authoring job 081 ran only on Omniverse2 through the existing
+one-admitted gateway, versioned role and structured packet: one client/upstream call,
+996 input + 579 output tokens, 7513 ms. Complete serialized context accounting,
+actual meter delta, terminal queue status and learning dispositions retained. Raw
+validator candidate accepted integer subclasses, contrary to the strict contract;
+manual independent adaptation corrected numeric types and explicitly checked hash
+strings before integration/testing. Raw candidate contract FAIL is retained, not
+claimed as self-healing or role qualification. Two factual learning dispositions are
+DEFERRED_BUDGET, zero qualified lessons and no measured benefit. One-call budget is
+SPENT; previous studies remain SPENT. No new inspector tuning, driver retry or
+baseline exposure occurred.
+
+A4 removed exactly the four owner-listed detached clean worktrees after no-live-use
+checks and verified backups of all ignored files. Private backups remain on loop10;
+public cleanup record reports 35.9 GiB available at that time.
+
+Evidence: `operational-collection-75d4bdc/`, `configuration-comparison-d9d70e1/`,
+`qwen-collection-validator-008c3e8/`, `worktree-cleanup-20261027.json` under the
+Feature014 evidence directory. Static checks are documentation/contract validation,
+separate from runtime tests and native qualification. No formal task tick (30/58),
+ledger-source change, live comparison, product/learning/availability success,
+protected-source promotion, grant renewal, merge or deployment is claimed.
+
+
+## 2026-10-27 — WWDG required SafeC capability limit, zero model cost
+
+After the owner questioned outcome progress, further uncommitted observer-window
+work was parked. The unchanged full WWDG scope was checked directly against the
+pinned native SafeC engine on Omniverse2. Twelve minimal required operation forms:
+9 UNSUPPORTED, 3 ordinary reads PASS plus independent Python contract derivation.
+The profile cannot represent rs or rc_w0 access, nor RMW beside rs. This is a
+specific verification-capability ceiling; no conclusion that every model answer
+was correct is drawn. Another model response cannot add missing engine semantics.
+
+Full-scope phase 14.055950 s; initial four-intent phase 2.243598 s; 16 engine
+invocations total, zero Qwen requests and no new product attempt. SDK source
+75d4bdc, unchanged pinned engine cf3b01b/binary hash in the evidence. Existing
+request/domain hashes bind the original source. Raw vendor domains, engine outputs
+and private source stay private. Sanitized checks/accounting and factual learning
+dispositions are published in wwdg-required-capability-20261027. No qualified
+lesson, measured benefit, semantic change, gate waiver or budget reset.
+
+Concrete proposed next scope: a versioned rs/rc_w0 SafeC extension with compatible
+Forge-C independent contract checks, legacy regressions and actual formal checks,
+then one new bounded WWDG attempt under valid authority. The private SafeC AGENTS
+requires confirmation for functional changes; the proposal does not authorize them
+or reopen parked DA-T036. See wwdg-safec-unblock.md. Formal 30/58 unchanged.
+
+## 2026-10-27 — approved opt-in WWDG capability extension
+
+Owner explicitly approved “I - Approve the scoped SafeC/Forge-C extension”.
+Only the relevant mandatory-operation preflight portion of parked DA-T036 is
+reopened; the full task remains unticked. Formal ledger/source/CSV stay30/58.
+
+Exact clean Forge-C a74baa91f15383012b997461c551b1e1c066e279:
+256 affected PASS, one missing local SPI-state fixture SKIP, 433.012s.
+Release/legacy quality/OSS gates29 PASS,9.822s. Omniverse2 new native bridge,
+preflight and WWDG tests35 PASS,1.830s. Separate static spec (58 mappings),
+contracts (six/38),14 design tests, handoff and Ruff PASS. Static validity is not
+runtime, model or operational qualification.
+
+New explicit register-io-0.2/domain3 and contract/oracle/obligations2 preserve
+legacy schema/default behavior. Rust remains semantic authority; Python derives
+accepted arithmetic, oracle cases and formal text independently. New WWDG work
+orders freeze12 mandatory forms; actual pinned-engine preflight happens before
+author packets/model calls, with finite60s/32form bounds and changed-scope refusal.
+Actual source-timeout/engine failure remains distinct from capability absence.
+
+Private semantic source c241a9a, opt-in register-io-v02 build, hash
+d1df63cea412d672fbe042b1a2b0e31f5167cfd1ea21c717c4dfcbdf81e8ef72:
+core31 PASS plus explicit actual CBMC formal run; bridge33 PASS each legacy/new.
+Affected fmt/Clippy pass with warnings denied. Actual CBMC6.11.0 proves five
+generated correct cases and rejects ten semantic/frame mutants within one-call
+32-bit register-image assumptions. No arbitrary hardware/timing/concurrency claim.
+Whole-private-workspace checks fail: inherited Linux CLI unused-mut lint and one
+retained-evidence replay failure. No-fail-fast workspace at docs-only30bea77:
+264 PASS/1 FAIL. S014-T008 remains unchecked; no golden is fabricated/auto-accepted.
+Private draft PR4 retains these failures; only interfaces/counts/digests are public.
+
+Native frozen WWDG domain:12/12 required forms pass versus prior9 UNSUPPORTED/3PASS.
+All36 validation/oracle/obligation derivations survive independent materialization.
+Unsafe values and profile mismatch controls reject. Final study accounting:
+53 bridge calls,52 engine run requests,1 client domain-binding refusal,0 model calls,
+0 product attempts. Original52-call harness completed the checks but failed while
+capturing unsupported SUCCESS; separate reconciliation captured factual PASS and
+NO_NEW_LESSON without redispatch. Additional correctly bound legacy-domain control
+was evaluated and refused by the actual engine. All raw failed runs are retained.
+
+Candidate WWDG-LL-v02-001 is prepared on Omniverse2 with original full scope,
+frozen12form manifest and accepted ST target-compiler intake after PATH correction.
+Its initial BUILD_NOT_RUN is retained. It is NOT_ADMITTED: available19 signed
+protocol grants do not name it, cumulative continuation mission and explicit
+isolated profile binding remain required. No grant renewal, historical mission
+reset, default pin/service change, inspector tuning, deployment or automatic merge.
+Original WWDG expenditure floor and later diagnosis uncertainty remain preserved.
+No driver READY, author/inspection/maintenance qualification, self-healing,
+learning-benefit, product benchmark or24/72/168-hour claim follows from this result.
+
+Evidence/commands/versions/hashes:
+evidence/014-durable-local-autonomy/wwdg-v02-a74baa9/.
+
+Follow-up: nonfunctional private CLI cleanup3256cb6 now passes whole-workspace
+fmt/Clippy with warnings denied. Exact3256cb6 no-fail-fast workspace264 PASS/1FAIL.
+tools/check.py reaches and refuses retained-evidence replay.16 original raw
+payload inputs are missing across eight retained cases; no matching original
+available, no logs fabricated, no manifest changed or check skipped. Restore exact
+recorded bytes to unblock. Candidate's fresh domain separately passed12 native
+preflight contracts in7.460138s (12 additional engine requests,0 model calls);
+its disposition is NO_NEW_LESSON. It remains NOT_ADMITTED.
+
+## 2026-10-27 — explicit candidate profile and frozen-context binding
+
+Runtime024a3fa55fe6b4cce85c61155382cf35aabf76cd adds the experimental
+local-rtx-v2-omniverse2-wwdg-v02 profile with the previously measured c241a9a engine.
+Models/runtime/admission/isolation/quality settings remain equal to the old
+reasoning-off profile. Actual workorder intake persists the new semantic marker;
+Context checks frozen identity/version/path/hash, prevents downgrade and refuses
+manifest changes before engine dispatch. Profile loading hashes the exact parsed
+byte snapshot, closing a concurrent-edit inconsistency without legacy shape drift.
+
+Exact clean local232 targeted PASS/0 SKIP/0 failures (112.601s),29 release/legacy
+gate PASS (8.872s). The two unchanged expensive solver/target-oracle cases are
+explicitly filtered, earlier measured at a74baa9; not a full inherited rerun.
+Omniverse2 native72 PASS/2 missing-owner-input SKIP (4.098s), followed by those2
+same compatibility cases PASS (2.033s) after restoring existing git-ignored inputs.
+No vendor content is published. Initial red9cases, fixture failures and the real
+intake-projection dropped-marker regression are retained with their corrections.
+
+Actual namespace-isolated intake-only code, real model identity/network/provider/
+isolation checks, ST target compiler, Context and12 independently checked mandatory
+forms PASS: candidateWWDG-LL-v02-002,12 engine requests/0 model calls/0 product
+attempts/10.945230s. Shared configuration/service record hashes unchanged;
+bounded meter append has0 non-sample records. New factual PASS disposition is
+NO_NEW_LESSON,0 qualified lessons/benefit; consolidation overhead not separately
+timed and no comparable evaluation claimed. Explicit profile preparation is now
+satisfied; no service/default-pin/deployment activation.
+
+Candidate remains NOT_ADMITTED: current product authority and cumulative mission
+continuation are unbound. An existing execution reference was requested, not inferred.
+Known observed historical minimum16calls/57,454tokens (49,697input/7,757output)
+is not an independently established upper bound. No budget reset/grant renewal.
+All original failures, uncertainty and spent studies remain preserved. No new
+formal checkbox, role/product/self-healing/availability success. Evidence:
+wwdg-profile-024a3fa under the Feature014 evidence directory.
+
+Exact024a3fa AFO/local-autonomy integration: 75 PASS in10.413s. Downstream assurance consumer version propagation is still a known source gap; intake-only results do not qualify oracle/proof/mutation consumers.
+
+## 2026-10-27 — downstream version propagation and independent native model mismatch
+
+Exact runtime466d87bef4688af6209937433ef056baa4a5d51f fixes oracle/proof/mutation
+consumers which rebuilt legacy domains and discarded profile metadata. Existing
+profile authority is reused; frozen engine/profile/hash checks precede independent
+domain/artifact verification. Three native positive tests first failed on that
+source defect; corrected positives and stale/mixed/rehashed negatives now pass.
+
+Exact clean219 affected/AFO PASS (45.525s),29 release/legacy PASS (11.061s),
+Omniverse2 native42 PASS (33.253s), changed legacy readers2checks PASS against
+actual old-engine records. Two unchanged expensive solver/target-oracle cases
+are explicitly excluded from this targeted rerun; no full inherited-suite claim.
+
+The full12-form WWDG set jointly passes all3 engine operations and all production
+consumers;7 source-derived mutation operators are generated. Real fingerprinted
+frozen ST functions compile through the existing CMSIS host adapter. Of44
+register-image comparisons,40 match and4 mismatch: GetPrescaler returns14336
+versus logical7 (2cases); ClearFlag_EWKUP host word0xfffffffe versus0 (2cases).
+These are API/access-model incompatibilities, not evidence of hardware
+incorrectness. No Qwen or product execution occurred, no phase PASS fabricated.
+
+Committed frozen reproducer factory/qualification/014/reproduce_wwdg_verification_model.py
+has measured source hashff68416dda948acac080352512f274ad3c384412bea392b94da60b38ab366b25.
+It imports the exact clean466 SDK, requires unchanged candidate002 inputs, writes a
+fresh isolated destination, caps engine CPU/wall20s and native host CPU5s/wall10s/
+address space256MiB. Original/private, first committed and final bounded trials
+all retain40/44 versus4/44,3engine requests each,0model/product requests, exit2.
+Overwrite refusal returns1 and preserves the previous summary hash. Compiler
+identity and source/input hashes retained. BLOCKED factual dispositions are
+DEFERRED_BUDGET,0 inference tokens/qualified lessons; no learning benefit claim.
+
+Full frozen-driver model qualification remains blocked before Qwen dispatch.
+Independent HSI/access-model evidence or an explicitly approved scoped alternative
+is required; no normalization, frozen-code edit or gate weakening. Current product
+authority and cumulative mission continuation also remain unbound. All prior costs,
+uncertainty, raw failures and candidates remain. Private broader replay still needs
+16 missing original inputs. Formal30/58 unchanged; operational campaigns and
+product/role/self-healing/learning-benefit qualification remain unproven.
+Evidence: wwdg-consumers-466d87b in the Feature014 evidence directory.
+
+## 2026-10-27 bounded collection replay (A2 increment)
+
+Exact runtime bf05e59b968f01abc6bc8ba60f8d369237e1c804. Existing collector source
+verification now uses single-sample batches across the whole frozen log prefix.
+It accepts no external starting checkpoint; new invocations replay from zero.
+Partial yields cannot produce a successful report. Each file, frozen sample
+allowance and log remains bounded. The final history hash prevents mixed-window
+campaign reports while collection can append between batches.
+
+Exact local 393 affected/AFO PASS (38.290s), 29 release/legacy PASS (11.104s).
+The actual 8-sample fixture verifies 134,234,326 source bytes across 24 files,
+beyond the old aggregate 134,217,728-byte ceiling. All original evidence remains.
+The initial exact-source run retains an unset-Fabro environment failure; the first
+release invocation retains a wrong-path NOT_RUN. Corrected commands pass.
+
+First broad native lane TIMEOUT at 180s; journal waiting was directly observed.
+No completed JUnit verdict. Both wrapper and pytest were confirmed terminal before
+the focused run. Same-source focused native 18 PASS (40.713s), fixture 134,233,135
+bytes, under the same 180s wall / 120s CPU / 3 GiB limits. The focused result does
+not replace or qualify the broad timeout. No Qwen/model request or product attempt.
+
+Evidence, commands, hashes and scope: collection-batches-bf05e59 in the Feature014
+evidence directory. Static validation remains separate from runtime qualification.
+This does not implement kernel-event continuation beyond its 128 MiB bound,
+native all-channel correlation or actual fault/work campaigns. Interventions
+UNKNOWN; formal tasks remain 30/58. No readiness, self-healing, learning-benefit or
+availability claim, signature, grant renewal, allowance reset, deployment or merge.
+
+## 2026-10-27 bounded kernel-event replay and crash storage (A2 increment)
+
+Exact runtime b321a8766947fa5f5174bbb4f61f5d05720b22d6: 521 local affected/AFO
+PASS (39.908s), 29 release/legacy PASS (10.150s), 81 native PASS (28.073s), no skips
+or failures. The exact source is clean at each qualified lane's start/end.
+
+The existing host-audit command opts into frozen, bounded external event grouping.
+Every original capture is rechecked; no external trusted checkpoint. Selected facts
+and counted integrity checks preserve late/duplicate records across the whole input.
+Output pages bind manifest/plan/ref digests. Defaults/legacy schemas/limits remain.
+Actual serialized metadata bytes, including whitespace, are charged to the bound.
+
+Generated local/native sources134,224,064 /134,224,080 bytes span17 ranges and retain
+one compound event across the prefix; five unique records,2,095 duplicates, no
+pending event/line or uncaptured final bytes. These are native-format synthetic
+fixtures and real retained IO, not qualification of actual kernel record coverage.
+Owned-child hard-kill fixtures cover init-slot reclamation and unlinked working
+storage. They preserve unowned/live/hard-linked/symlinked/exposed files. No service,
+Conductor, reboot or mount fault. Initial c4b601c qualification and failed anonymous
+descriptor-path prototype/cleanup assertions remain retained; not relabeled PASS.
+
+Actual host preflight is BLOCKED: kernel visibility, continuous system-bus coverage
+and authenticated-control correlation. Full native record/loss/window/boot and
+all-channel actor/control/write/service attribution remain incomplete. Interventions
+UNKNOWN;0 model/product attempts; no qualified lessons or measured benefit.
+Evidence and commands: kernel-continuation-b321a87 in the Feature014 evidence tree.
+Formal30/58 unchanged; no role/product/self-healing/availability qualification,
+grant renewal, mission reset, deployment, promotion or merge.
+
+
+## 2026-10-28 engineering recovery and official Qwen3.8 Q8 xhigh
+
+Runtime a7490b45e25a399c87e274f60c3f2fcaba1080c2:32 native profile/gateway/product/gate
+fixture PASS (25.297s),13 inherited governance/release PASS (9.658s).
+Predecessor24f5d00:241 local affected/AFO/learning/inherited PASS (110.203s),
+52 native fixture PASS (122.768s). These are separate exact-source cohorts.
+Counterexamples, initial environment failures and an incomplete native lane remain
+retained. Static schema/specification/design/handoff checks are not runtime evidence.
+
+Official owner-selected Qwen3.8-27B Q8 xhigh is deployed on Omniverse2. Five model
+blobs freshly verified; two native render-only calls prove distinct xhigh/medium
+instructions with zero generation tokens. No Qwen3.8 role is yet qualified.
+New scoped production grant preserves original expiry/limits and historical cost.
+
+Old RCC:BLOCKED,86000 charged; source-verified engineering prelaunch reconciliation
+is not autonomous healing. Actual fresh Qwen3.6 IWDG:31 requests,83631 reported
+tokens,116000 conservative charge,SWE.1 baseline but no inspection PASS, both
+products BLOCKED/INCOMPLETE. At least13 required packets remain against1 request;
+no feasible continuation under frozen allowances, no budget reset or model-accuracy
+conclusion. New recorder observes history only; model-free factory remains active.
+
+Full task ledger30/58 unchanged. Recovery/product/learning/operational qualification
+remain distinct and unproven. Evidence, commands, native JUnit hashes and limits:
+[golive-q38-20261028](../../evidence/014-durable-local-autonomy/golive-q38-20261028/README.md).
+
+
+## 2026-10-28 finite role envelopes and first actual Qwen3.8 request
+
+Exact2c774b440db65f47f5b78a4702ad974254fa6a96:139 local regression PASS(30.694s),
+75 clean-source native Omniverse2 fixture PASS(265.659s), no skips/failures in these
+two lanes. Baseline14 failures, initial missing helper import and missing real-Fabro
+environment are retained. All fixtures generate zero inference. New profile budgets
+are prospective, exact-bound and finite; complete first diagnosis requests are
+measured before charging. Legacy costs/reservations and every admission gate stay.
+
+Deployed with operator fencing and exact owned retirement, healthy backend/controller.
+Recorder history migration required a correction; old failure and all commits remain.
+One Qwen3.8 xhigh protocol request is actually running on Omniverse2 under a separately
+signed one-job/one-request65536-token seeded scope, deadline14:06:31Z. At10:48:42Z
+native API RUNNING, SENT request, HELD lease, unknown usage.99/100 cases remain unrun;
+no role/campaign/product/learning/availability success. Restore original production
+policy after independently proven native/request quiescence and audit the original row.
+Formal30/58 unchanged. [Evidence and exact commands](../../evidence/014-durable-local-autonomy/role-envelopes-2c774b4/README.md).
+
+
+## 2026-10-28 native routing, bounded workflow capacity and evaluation holdout
+
+Runtime fa901289fffbb3424b6cde5b38628760670e153d is deployed on Omniverse2,
+RUNNING epoch11; original production authority/deadline and failed mission costs
+are preserved. Implemented verified native endpoint/cache identity, finite gateway
+read timeout, optional independent request/tool caps, inherited workspace holdout
+and staged target compiler PATH. Native fixtures65PASS at1cfea7a and106PASS at19acb5b;
+finalfa125-case lane124PASS/1FAIL(PlantUML fixture), followed by exact failed-case
+PASS after attaching the existing read-only toolchain. No code/gate change to pass.
+Local exact19ac140PASS; holdout96PASS and toolpath19PASS candidate cohorts.
+All are separate fixture/regression commands with zero inference, not role qualification.
+
+The actual first Q38 trial ended FAILED_PROTOCOL, audited with1request/0receipts,
+0duplicates/0escapes. Its65536 conservative cost and UNKNOWN usage remain. Native
+SUCCEEDED transport is not semantic correctness. Exact provider retirement proof
+and native termination preceded physical release; engineering intervention means
+fully autonomous recovery remains unproven. Catalogue100/observed1/unrun99, reportFAIL.
+Production policy restored11:30:02Z; previous RUNNING/temporary-authority instructions
+above are historical. A new frozen CRC/RNG E2E scope through16:29:12Z is prepared,
+unsigned and awaiting explicit enlarged finite-cap approval. Both native delivered
+buildsPASS, no product/role/learning/operational claim. Formalledger30/58unchanged.
+
+[Detailed evidence and current next steps](../../evidence/014-durable-local-autonomy/workflow-runtime-fa90128/README.md).
+
+
+## 2026-10-28 actual Q38 CRC end-to-end execution
+
+Runtime d7fa97e41f6e265e55737478379052db8d6bd859 deployed, RUNNING epoch13. Final
+read-only inventory role now supports its own signed experimental identity; ordinary
+capability guard, MCP grants and deterministic release decisions remain. Baseline
+14PASS/1FAIL;101local candidatePASS20.172s. Native38-case34PASS/4fixtureFAIL25.307s;
+corrected inherited13PASS44.272s with actual binaries/read-only PlantUML. No fixture
+inference. Real workflow network/model/role/MCP launch preflightsPASS forCRC/RNG.
+
+Existing owner bounded qualification/SSH-agent approval established no additional
+reply was required; the previous pending-approval interpretation is superseded.
+No new reply was received or inferred. Exact prospective V3 scope signed/verified,
+activated12:46:05Z, cutoff16:29:12Z; historical missions/grants unchanged. CRC native
+01M618R74R8KQFQR9AJ4VQXZ5Q RUNNING, at12:48:38Z first requestQUIESCENT/4544accounted,
+secondSENT. Model fully resident perOllama GPUmetadata, utilization99%. RNG serially
+pending. Physical lease remainsHELD; no product or phasePASS inferred. One-shot exact
+old-policy restore scheduled16:29:15Z, fenced against newer intent; future action not
+yet verified. Formal30/58unchanged, role/product/learning/operational success unproven.
+
+[Evidence, actual authorization basis, exact revisions and next steps](../../evidence/014-durable-local-autonomy/e2e-window-d7fa97e/README.md).
+
+
+## 2026-10-28 preserve requested coverage after semantic-tool refusal
+
+Candidate dd870e1fe826fbf90a9ecd514a06ee693389a127 rejects not_covered entries
+for fields explicitly required by the owner scope, through both structured author
+paths; existing owner exclusions and exact field identity remain. Observed liveCRC
+packet dropped3required reversal fields and had0intents despite a localVALID label.
+This is an unresolved quality finding, not proof thatQwen repaired the missing tool
+capability. Runtime remainsd7fa97e; candidateNOT_DEPLOYED/nativeNOT_RUN while mission
+runs. Baseline4PASS/6FAIL0.250s; localcandidate31PASS4.608s;44inherited semanticPASS
+326.579s; exact10PASS0.158s;0skips/0model calls. No inspector/safety/engine semantics
+or old mission allowance changed. Formal30/58unchanged; no role/product/learning/
+availability claim. [Evidence and exact commands](../../evidence/014-durable-local-autonomy/scope-coverage-dd870e1/README.md).
+
+
+## Incremental IDR checkpoint — 2026-10-28
+
+Prospective runtime41a6c28; production remainsfcb15cb. Scoped IE-T001/002/003/005/006
+have evidence; the formal DA ledger remains30/58. Exact7a4bc51 passed120local and169
+Omniverse2 checks,0skips; exact545e102 passed11incremental checks after distinguishing
+reservations from execution; exact41a6c28 passed23preflight/context-refusal/advisory
+checks. Cohorts overlap. Actual build, host, Renode, Robot and release checks use
+explicit semantic-provider/review fixtures, never substituted tool PASS outcomes.
+
+The real d3f0b28 MTP/Q8/xhigh backend smoke passed two requests through actual MCP
+stdio and a normal one-use tool ticket, with an independently checked final JSON.
+It establishes only that small backend/protocol path, not general role competence.
+TIM reference preparation remains unqualified/unexposed. Historical cloud holdouts
+are excluded. Exposure, application and benefit remain separate.
+
+The prepared M1 preflight reports missing genuine requirements review; current
+objective authority and complete live role requests are not established. Positive
+dependency-independent provisional continuation remains incomplete (IE-T004).
+IE-T007 remains partial, IE-T008/009 NOT_RUN; no product, learning-benefit or 24/7
+availability claim. Spec/contracts/design checks remain documentation evidence.
+
+[Exact revisions, executable harnesses, XML, known failures and current blockers](../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md).
+[Incremental runbook](INCREMENTAL-RUNBOOK.md).
+
+
+### 2026-10-29 local implementation checkpoint
+
+Candidateaac50fc extends the current branch with bound inspector owner context,
+generic simulation instruction/time evidence through Renode/Robot/release,
+an actual approved9-requirement input and signed time-only mission continuation.
+The normal owner-reviewed import/freeze leaves inspection REINSPECT and injection
+REFUSED, with zero model calls. Actual local simulation and negative-control
+fixtures validate tooling; scripted semantic/provider fixtures prove no Qwen
+capability or product result. See the exact revision, commands, XML and limitations
+in [local follow-up evidence](../../evidence/014-durable-local-autonomy/m1-local-followup-20261029/README.md).
+
+Omniverse2 is owner-confirmed offline. The previous live grants expired at
+2026-10-29T05:00:00Z; none was renewed and no mission was amended or deployed here.
+Formal30/58 and incremental completion IDs remain unchanged. IE-T004 stays
+partial, IE-T008 blocked/unaccepted, IE-T009 unrun. Learning benefit and
+24/72/168-hour availability remain unqualified. Earlier dated checkpoints retain
+their historical missing-review/authority findings; current review is recorded.
+
+
+### Structured tool and inspection accounting — 2026-10-29
+
+c8daeb1 closes the direct structured-handler and standard/semantic inspection
+bypass of cumulative mission tool accounting. The same existing per-phase
+verification guard now covers structured calls. Recorded refusal is BLOCKED,
+never verification PASS; denied inspection creates no receipt. Concurrent
+native/structured calls share the cap, failed/crashed calls retain their debit,
+and an unresolved native lease stays held after task terminality.
+
+[Exact source, commands,109PASS/1liveSKIP XML, substitutions and historical uncertainty](../../evidence/014-durable-local-autonomy/m1-shared-tool-accounting-20261029/README.md).
+No ledger backfill or budget reset occurred. Historical direct-tool counts may
+be incomplete and must be audited on host recovery. This is local tooling
+evidence, not native Qwen/product/learning/operational qualification. IE-T004
+remains partial and formal task counts are unchanged.
+## Delivery-First native terminal and integrated verifier — 30 October 2026
+
+See [the bounded implementation ledger](DELIVERY-FIRST-IMPLEMENTATION.md) and
+[exact commands/results](../../evidence/014-durable-local-autonomy/delivery-first-independent-20261030/README.md).
+Original DA task progress remains30/58; no DA acceptance was closed here.
+
+- Implementation `58ef89b7c798b7fdeb05aef08813f1b26a24a6a9`:103PASS,
+  one disabled live Fabro skip, zero failures/errors. Before-change AFO graph
+  and correction-bound failures are retained. Strict/demonstration/policy
+  regressions and false-PASS controls are included; counts overlap older cohorts.
+- External Omniverse first-candidate verification atd846ec82:351target assertions
+  PASS;70samples/API,2instructions/20virtual ns maximum per API at100MIPS.
+  Wrong-read and tight-cost controls fail as expected. Post-hoc external fixture,
+  not an autonomous success for the original job or a hardware timing claim.
+- External integrated verification on clean58ef89b7: functionalPASS,
+  packageBLOCKED, archive integrityPASS. Final controlled mutationFAIL, no
+  extra correction. Zero model calls or active-workspace edits.
+- Real native01M6788GYKREQSS1YTZHS9N3TV atbeb48b49 completed21:43:09UTC:
+  all six author/inspector attempts, productBLOCKED57, archive integrityPASS;
+  legacy functionalINCONCLUSIVE. Candidate unchanged. Complete archive copied
+  and hash-verified on loop10; provider independently idle21:43:31.
+- Runtime source/model-role competence, AFO delivery admission, autonomousDF-M1,
+  repeatability, HAL, learning benefit and continuous operation remain distinct
+  unproven qualifications. Spec validation is SPEC_CONTRACTS_ONLY_NOT_RUNTIME.
+## Ten-hour real AFO qualification — 30 October22:35UTC
+
+The [overnight evidence record](../../evidence/014-durable-local-autonomy/afo-delivery-overnight-20261030/README.md)
+preserves two new implementation fixes and the actual admission sequence.
+History-count preservation at5440c474 passed134exact regression cases;
+initial fast-author role binding ata34fdd85 passed104cases with one disabled
+live Fabro skip. Failed-before receipts are retained; cohorts overlap.
+
+Actual native01M67ETTPXS1Q73QPMQ98DNJX0 at cleana34fdd85 is AFO-admitted,
+with a held inference lease and live durable request records. Its new candidate
+passed the full preregistered functional slice in-loop at22:31:19, correction0,
+including630host and351target assertions. Final package/all-six outcomes remain
+pending; DF-M1 and the full ASPICE LL/HAL goal are not declared achieved.
+
+The preceding zero-inference AFO trial was BLOCKED56 after stale-worker policy
+refusals; its history/reservation remain. Full namespace retirement and actual
+worker configuration verification corrected the setup. This is disclosed
+external engineering, not model self-healing. The owner-requested window ends
+31October07:57:59UTC; no automatic grant renewal. Formal DA ledger remains30/58.
+
+## PlantUML feedback scope — 30 October23:12UTC
+
+[Actual native feedback and before/after regressions](../../evidence/014-durable-local-autonomy/plantuml-diagnostics-20261030/README.md)
+show nine generic failures, including four debug-path calls that still checked
+the canonical architecture files. Three diagnostic regressions failed before
+the change. The checker now names each actual failing view and MCP makes the
+workspace-wide scope explicit. No gate was relaxed. Focused cohort5PASS;
+inherited architecture/MCP/delivery cohort58PASS/one disabled live Fabro skip,
+zero failures/errors. Ruff/diff/spec-contract checks PASS; cohorts overlap.
+The active AFO native remains unchanged at a34fdd85 and has reached SWE.2
+inspection. The fix is not deployed or qualified for model benefit; current
+terminal DF-M1 and fresh repeatability remain pending.
+
+## Recorded test-history export — 30 October23:55UTC
+
+[Native episode, snapshots and failed-before/after package checks](../../evidence/014-durable-local-autonomy/test-history-export-20261030/README.md)
+show Qwen correcting duplicate unit-test IDs in the active native:30checks with
+five IDs became30checks with30valid IDs, unchanged product-code hash and no
+operator code steering. This is test metadata correction, not CRE/factory
+self-healing, a repair incident or measured learning benefit. Host coverage
+reported100%line/function; branch/MC/DC null and target evidence false.
+
+The finalizer omitted the existing integrity log and historical test sources
+from the offline archive. Six synthetic counterexamples failed before the fix;
+afterwards6PASS and the inherited finalizer/delivery/product-outcome cohort53PASS,
+no failures/errors/skips. The unchanged v0.3 packager additionally passed7cases.
+New exports retain every referenced hash-verified snapshot and raw history;
+malformed/missing/corrupt/unsafe history yields an explicit major finding and
+BLOCKED package, with existing valid historical failures retained. No task
+checkbox changed. The code is not deployed; live sourcea34fdd85 reached SWE.5
+target author. Terminal milestone/repeatability/full LL/HAL stay unproven.
+# 31 October: package-order fix and preserved terminal qualification failure
+
+Exact source0e342eef3c68786d29e5b9843606892c4ab68b60:68deterministic framework
+testsPASS, zero failures/errors/skips. Two before-change counterexamples show
+premature sealing. The Delivery-First MCP path now defers sealing until final
+graph verification; finalPASS and finalFAIL, malformed receipts, strict packaging
+and write-once behavior are covered. Known inherited Feature009 graph-golden
+failure is retained; strict normalized hashes are unchanged. Static/spec checks
+are not runtime qualification. [Evidence and current limits](../../evidence/014-durable-local-autonomy/package-order-20261031/README.md).
+
+Actual earlier native completed all six phases and both independent checks,
+with BLOCKED30/integrityPASS, but the final receipt is missing from its sealed
+archive. DF-M1 remainsNOT_PROVEN. New source is active in a same-mission retry;
+initial independentPASS does not establish terminal qualification, and its
+write/edit provenance remains conservatively unverified. No original DA task
+checkbox changed; no repeatability, LL/HAL, production or24/7 claim.
+
+## 31 October — assertion identity and metadata-only repair guidance
+
+Exact source 6a4721ecbef8c85326dfd101811c232f6258174e: 90 PASS / 1 inherited
+live-Fabro-disabled SKIP / zero failures or errors, 34.320 s. The initial seven
+cases produced three passes and four failures; real MCP execution incorrectly
+accepted duplicate suffixed IDs before the fix. Three synthetic Robot execution
+cases are explicitly deselected, not claimed. Ruff and static 58-mapping /
+6-schema-38-fixture / 14-design checks PASS; these do not qualify runtime.
+[Raw JUnit, exact command/environment and source hashes](../../evidence/014-durable-local-autonomy/assertion-identity-6a4721ec/README.md).
+No inference, generated-Qwen-C execution locally, deployment, renewal, original
+DA task closure or live learning/model-benefit claim. Historical cohort stays
+2/3; full LL/HAL remains unproven.
+
+## 31 October — stopped product order projection
+
+Exact source c0777eadb595e25ac993ff2fa5f4b10e27299636: 152 PASS / 0 SKIP /
+zero failures or errors, 21.929s. Existing STOPPED intent fence plus durable
+queue transaction project only a bound current product's known shutdown
+outcome. Actual native liveness/capacity/accounting remain separate. Corrected
+counterexample4FAIL/2PASS; initial invalid fixture transition failures are
+retained as fixture errors. Changed-source Ruff and static mapping/contracts/
+design checks PASS. No live GPU/model/service activation or stopped-job learning
+completion is claimed. [Exact commands and raw receipts](../../evidence/014-durable-local-autonomy/shutdown-order-projection-c0777ead/README.md).
+The prior overnight cohort2/3 and original DA30/58 remain unchanged.
+
+## 31 October — retain shutdown source snapshot
+
+Exact a4bc71d186806afe45492d8c38cdd3a10e3bed7c repeats152 lifecycle cases with
+zero failures/errors/skips; two counterexamples fail before for absent snapshot.
+Ruff/design PASS. The existing queue event retains the full canonical-hash-bound
+source lifecycle record despite later updates. [Raw evidence](../../evidence/014-durable-local-autonomy/shutdown-source-snapshot-a4bc71d1/README.md).
+Counts overlap c0777ead. No deployment, native qualification, original task closure
+or learning/full-pipeline success claim.

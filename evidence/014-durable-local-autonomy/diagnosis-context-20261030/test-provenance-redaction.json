@@ -1,0 +1,17 @@
+{
+  "schema": "forge-c/test-privacy-redaction/1",
+  "raw_private_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/diagnosis-context-regression-local.xml",
+  "raw_sha256": "0db48a7a3057227b345dad82d42966571b3f8835b73f963ff3395b3413dcc379",
+  "public_redacted_sha256": "911aabdc308296ac1a46e36e41e0494054ac35accd48d2fb1e881a1046c66256",
+  "change": "Environment representation removed; test cases, failure, counts and timings unchanged",
+  "corrected_case": "test_afo_local_autonomy.py::test_real_skill_mcp_preflight_and_native_workflow_validation",
+  "corrected_result": "PASS with explicit FORGE_FABRO_BIN=/home/jefferson/.fabro/bin/fabro",
+  "causal_before_integration": {
+    "tests": "8",
+    "failures": "4",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "before_scope": "New adapter expectations failed before integration in working tree based on52e4158; not clean old-source qualification",
+  "before_raw_sha256": "506382edefc0e2c33558809fe702d5bec0a077f5b27caa076869dd096eba9af5"
+}

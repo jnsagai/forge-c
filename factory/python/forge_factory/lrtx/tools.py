@@ -4,7 +4,8 @@ An agent reaches an operation through its MCP server and a policy-hook ticket. A
 factory code acting for the node's role, so it calls the same operation handler directly. It does so only when the
 role registry grants that operation to the role, and it journals the result exactly like `mcp.sdk.invoke`
 (`evidence/tool-results.jsonl`, the record the gates and the finalizer read). Inputs are validated by the operation's
-own input model.
+own input model. Durable workspaces charge the existing cumulative mission tool
+allowance before handler execution, including failed/uncertain executions.
 """
 from __future__ import annotations
 
@@ -21,10 +22,11 @@ class ToolRefused(PermissionError):
     pass
 
 
-def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_id: str | None = None) -> dict:
+def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_id: str | None = None,
+         *, invocation_id: str | None = None) -> dict:
     from importlib import import_module
 
-    from ..mcp.sdk import ToolContext
+    from ..mcp.sdk import ToolContext, ToolDenied, result
     from ..registry.mcp_registry import load_registry
 
     ws = Path(ws).resolve()
@@ -36,9 +38,37 @@ def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_
     operation = next(o for o in mod.OPERATIONS if o.name == op)
     run = run_id or json.loads((ws / ".forge-run/manifest.json").read_text())["work_order"]
     ctx = ToolContext(server, op, role, phase, ws, run)
-    out = operation.handler(ctx, operation.model.model_validate(args))
+    if invocation_id is not None:
+        ctx.invocation_id = invocation_id  # Trusted controller correlation, never a model field.
+    validated = operation.model.model_validate(args)
+    from ..afo.durable import Refused
+    from ..afo.tool_accounting import charge
+    from ..development_execution import verification
+
+    verify = op.startswith(("run_", "check_", "compile", "build", "measure"))
+    debit = None
+    try:
+        debit = charge(ws, ctx.invocation_id)
+        if verify and not verification(ws, phase, role, key):
+            raise ToolDenied("DEVELOPMENT_PHASE_REPAIR_EXHAUSTED", key)
+    except (Refused, ToolDenied) as exc:
+        # Return the normal blocked MCP envelope, so callers record a phase failure
+        # rather than mistaking refusal for executed verification or an absent reply.
+        out = result(ctx, "BLOCKED", f"denied: {exc.code}", issues=[exc.code],
+                     metrics={"handler_executed": False})
+    else:
+        try:
+            out = operation.handler(ctx, validated)
+        except Exception:
+            if verify:
+                verification(ws, phase, role, key, "UNKNOWN")
+            raise
+        if verify:
+            verification(ws, phase, role, key, out["status"])
     rec = {"ts_utc": utc_now(), "server": server, "op": op, "role": role, "phase": phase, "run_id": run,
            "result": out, "caller": "lrtx-structured-runner"}
+    if debit is not None:
+        rec["mission_tool_charge"] = debit
     (ws / "evidence").mkdir(parents=True, exist_ok=True)
     with open(ws / "evidence" / "tool-results.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps(rec, sort_keys=True) + "\n")

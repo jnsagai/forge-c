@@ -1,0 +1,203 @@
+{
+  "archive": {
+    "remote_path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/archives/WO-AFO-7f71565db57f0a76-a1/forge-c-WO-AFO-7f71565db57f0a76-a1-review.zip",
+    "sha256": "3aced187a1d34d938f08e85d1b40160b0afe4f4c07b3adece51d4808f45174ef"
+  },
+  "at": "2026-10-31T05:02:16.717727+00:00",
+  "auditor_revision": "30371da548bad2790a9f3c21dafc8964047ce06d",
+  "automatic_factory_handoff": "NOT_QUALIFIED; inherited capacity backoff required external administrative retry before07",
+  "candidate_execution_by_auditor": false,
+  "candidate_hashes": {
+    "software/ll/stm32n6xx_ll_crc.h": "e52e3763dd46d25d8732613c953293dbacce6de907cfb1f808b7b0c3157d89f2"
+  },
+  "cohort_sha256": "a14bfe74a0365a47360a630e09cdaec0338b10385ecb8be7a1b4d3389d18e759",
+  "cohort_status": "ONE_OF_THREE_QUALIFIED; OTHER_TWO_NOT_YET_QUALIFIED",
+  "conditions": {
+    "1": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+          "sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+          "sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1"
+        }
+      ],
+      "status": "PASS"
+    },
+    "2": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+          "sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+          "sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1"
+        }
+      ],
+      "status": "PASS"
+    },
+    "3": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+          "sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+          "sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1"
+        }
+      ],
+      "status": "PASS"
+    },
+    "4": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+          "sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+          "sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1"
+        }
+      ],
+      "status": "PASS"
+    },
+    "5": {
+      "basis": "External session observation: zero post-launch job interventions/steering. Administrative retry of next07 occurred only after06terminal and is separately disclosed.",
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+          "sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+          "sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1"
+        }
+      ],
+      "status": "PASS"
+    },
+    "6": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+          "sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+          "sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1"
+        }
+      ],
+      "status": "PASS"
+    },
+    "7": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+          "sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+          "sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1"
+        }
+      ],
+      "status": "PASS"
+    },
+    "8": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+          "sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+          "sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native05-negative-control-index.json",
+          "sha256": "62f2e058492327f0cfb9f6d19b88cd8d62744ffaf00603ede5fd07ec1e85d88e"
+        }
+      ],
+      "status": "PASS"
+    },
+    "9": {
+      "evidence_refs": [
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-observation.json",
+          "sha256": "4c88dd35753795a478eebae7ebfe2012a635a07c43654c0ed2aa19266ae269dd"
+        },
+        {
+          "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/native06-terminal-source-audit.json",
+          "sha256": "eb347bb3c59e2928d099c70f5249219065d5e83558322183d784514ea3310cd1"
+        }
+      ],
+      "status": "PASS"
+    }
+  },
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "gap_count": 16,
+  "gates": {
+    "SWE.1": "PASS",
+    "SWE.2": "PASS",
+    "SWE.3": "REWORK",
+    "SWE.4": "PASS",
+    "SWE.5": "PASS",
+    "SWE.6": "PASS"
+  },
+  "metrics": {
+    "author_role_output_tokens": 156531,
+    "corrections": 0,
+    "native_usage": {
+      "timing": {
+        "active_time_ms": 5444838,
+        "inference_time_ms": 5204710,
+        "tool_time_ms": 240128,
+        "wall_time_ms": 5509388
+      },
+      "usage": {
+        "tokens": {
+          "cache_read": 8245199,
+          "cache_write": 0,
+          "input": 846767,
+          "output": 239538,
+          "reasoning": 0
+        }
+      }
+    },
+    "post_launch_job_interventions": 0,
+    "reasoning_breakdown": "UNKNOWN; provider0 is not a measurement of hidden reasoning",
+    "request_ledger_entries": 239
+  },
+  "model_calls_by_auditor": 0,
+  "native_id": "01M67ZJWDYS7H33828MPTK6E6D",
+  "observer_limits": "Session-scoped intervention observation, not a general tamper-proof detector",
+  "order_id": "afo-7f71565db57f0a76",
+  "phase_file_counts": {
+    "SWE.1": 3,
+    "SWE.2": 8,
+    "SWE.3": 11,
+    "SWE.4": 3,
+    "SWE.5": 3,
+    "SWE.6": 3
+  },
+  "process_qualification": "GAPS",
+  "producer": "CODEX_EXTERNAL_OBSERVER_NOT_OWNER_RELEASE_AUTHORITY",
+  "release_eligibility": "BLOCKED",
+  "remaining_claims_not_established": [
+    "full LL/HAL",
+    "strict release",
+    "production",
+    "assessed ASPICE",
+    "generic drivers",
+    "learning benefit",
+    "24/7 availability",
+    "three-run repeatability"
+  ],
+  "result": "FUNCTIONAL_MILESTONE_PASS",
+  "schema": "forge-c/delivery-first-fresh-trial-audit/1",
+  "scope": "ONLY_PREREGISTERED_CRC_IDR_TWO_FUNCTIONS",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "trial_request_id": "DF-AFO-CRC-IDR-20261030-06"
+}

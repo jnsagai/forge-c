@@ -1,0 +1,1 @@
+{"at": "2026-10-29T22:58:53.578523Z", "native": {"slots": [{"id": 0, "n_ctx": 262144, "is_processing": true, "id_task": 59126, "n_prompt_tokens": 56963, "n_prompt_tokens_processed": 12296}], "metrics_unavailable": "HTTPError"}, "gpu_numeric": "97, 46638, 298.94", "model_requests": 0, "generated_text_saved": false}

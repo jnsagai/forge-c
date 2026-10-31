@@ -62,19 +62,25 @@ class EngineFault(RuntimeError):
 # ---- context of one visit ------------------------------------------------------------------------------------------
 class Context:
     def __init__(self, ws: Path):
-        from .profile import load
+        from .profile import ProfileRefused, semantic_configuration
 
         self.ws = Path(ws)
-        m = V1._manifest(ws)
-        prof = load((m.get("local_profile") or {}).get("id", "local-rtx-v2"))
+        self.manifest_raw = (self.ws / ".forge-run/manifest.json").read_bytes()
+        m = json.loads(self.manifest_raw)
+        try:
+            prof = semantic_configuration(m)
+        except ProfileRefused as exc:
+            raise EngineFault(str(exc)) from exc
         e = prof["safec"]["engine"]
         self.pin = CL.EnginePin(Path(e["binary"]), e["binary_sha256"], e["source_commit_sha"], e["semantic_profile"])
         self.limits = CL.Limits(timeout_s=float(prof["safec"].get("timeout_s", 60)))
-        self.domain, self.domain_raw = D.build(ws)
+        self.domain, self.domain_raw = D.build(ws, semantic_profile=self.pin.semantic_profile)
         S.record(ws, "SWE.1/domain.json", self.domain)
-        man = (self.ws / ".forge-run/manifest.json").read_bytes()
+        if self.pin.semantic_profile == "register-io-0.2" and (
+                self.ws / ".forge-run/manifest.json").read_bytes() != self.manifest_raw:
+            raise EngineFault("WORKORDER_BINDING_CHANGED")
         self.binding = {"workorder_id": str(m.get("work_order") or self.ws.parent.name)[:128],
-                        "workorder_sha256": sha256_bytes(man),
+                        "workorder_sha256": sha256_bytes(self.manifest_raw),
                         "source_manifest_sha256": sha256_bytes(self.domain_raw),
                         "policy_sha256": prof["_sha256"]}
         self.facts = _facts(self.domain)
@@ -83,6 +89,9 @@ class Context:
 
     def validate(self, intents: list[dict], tag: str, operation: str = "validate_intents") -> \
             tuple[CL.Outcome, dict, Path]:
+        if self.pin.semantic_profile == "register-io-0.2" and (
+                self.ws / ".forge-run/manifest.json").read_bytes() != self.manifest_raw:
+            raise EngineFault("WORKORDER_BINDING_CHANGED")
         self.calls += 1
         req, raw = C.build_request(request_id=f"{tag}-{self.calls}"[:128], operation=operation,
                                    engine=self.pin.expected(), binding=self.binding, intents=intents)
@@ -106,6 +115,61 @@ def _facts(domain: dict) -> dict[str, dict]:
                 out[v["fact_id"]] = {"register": r["register_id"], "field": f["field_id"], "pages": v["pages"],
                                      "value": v["value"], "label": v["label"], "section": v["source_id"]}
     return out
+
+
+def preflight_required(ctx, required: list[dict], *, maximum_seconds: float = 60) -> dict:
+    """Ask the actual pinned engine about frozen mandatory operations before inference.
+
+    This is a scoped capability observation, not a substitute for the author's
+    complete requirements or the later independent gates. No model is called.
+    """
+    import math
+    import time
+    from dataclasses import replace
+
+    if (not isinstance(required, list) or not 1 <= len(required) <= 32
+            or type(maximum_seconds) not in (float, int) or not math.isfinite(maximum_seconds)
+            or not 0 < maximum_seconds <= 60):
+        raise EngineFault("REQUIRED_OPERATION_CONFIGURATION_INVALID")
+    started = time.monotonic()
+    result = {"schema": "forge-c/required-operation-preflight/1", "engine": ctx.pin.expected(),
+              "domain_sha256": sha256_bytes(ctx.domain_raw), "configuration_sha256": sha256_bytes(C.canonical_bytes(required)),
+              "model_calls": 0, "operations": [], "status": "PASS_REQUIRED_FORMS_ONLY"}
+    limits = ctx.limits
+    try:
+        for i, row in enumerate(required):
+            remaining = maximum_seconds - (time.monotonic() - started)
+            if remaining <= 0:
+                result["status"] = "INCOMPLETE_PREFLIGHT_DEADLINE"
+                break
+            ctx.limits = replace(limits, timeout_s=min(limits.timeout_s, remaining),
+                                 cpu_s=min(limits.cpu_s, max(1, math.ceil(remaining))))
+            if (not isinstance(row, dict) or not {"register", "field", "action"} <= set(row)
+                    or set(row) - {"register", "field", "action", "logical_value"}
+                    or row["action"] not in ("read_field", "set_field", "clear_field", "write_field")):
+                raise EngineFault("REQUIRED_OPERATION_CONFIGURATION_INVALID")
+            matches = [f for r in ctx.domain["registers"] if r["register_id"] == row["register"]
+                       for f in r["fields"] if f["field_id"] == row["field"]]
+            if len(matches) != 1:
+                raise EngineFault("REQUIRED_OPERATION_SOURCE_UNKNOWN")
+            it = {**row, "intent_id": f"mandatory-{i}", "source_fact_ids": [matches[0]["fact_id"]]}
+            outcome, _request, work = ctx.validate([it], f"mandatory-{i}")
+            result["operations"].append({"index": i, "status": outcome.status,
+                "admissible": outcome.admissible, "evidence": str(work.relative_to(ctx.ws)),
+                "check_ids": [f["check_id"] for f in (outcome.result or {}).get("findings", [])]})
+    except EngineFault as exc:
+        result.update(status="ENGINE_FAULT", error=str(exc)[:500])
+    finally:
+        ctx.limits = limits
+    result["elapsed_seconds"] = time.monotonic() - started
+    result["expected_operations"] = len(required)
+    if result["status"] == "PASS_REQUIRED_FORMS_ONLY":
+        if any(row["status"] not in ("PASS", "UNSUPPORTED") or
+               (row["status"] == "PASS" and row["admissible"] is not True) for row in result["operations"]):
+            result["status"] = "REQUIRED_OPERATION_INVALID"
+        elif any(row["status"] == "UNSUPPORTED" for row in result["operations"]):
+            result["status"] = "CAPABILITY_LIMIT"
+    return result
 
 
 # ---- packet ---------------------------------------------------------------------------------------------------------
@@ -163,7 +227,8 @@ def group_packet(ws: Path, g: dict, model: str, ctx: Context, findings: list[str
              "driver's prefix (e.g. LL_IWDG_Enable, LL_IWDG_IsActiveFlag_PVU, LL_RCC_HSI_Enable); the later "
              "architecture must define exactly this name. key is a short snake_case name. For every field of this "
              "task either write the "
-             "intents the scope demands or list it in not_covered with the scope reason. open_points lists "
+             "intents the scope demands or list it in not_covered with the scope reason. " + V1.SCOPE_COVERAGE_RULE +
+             " open_points lists "
              "ambiguities of the source (or nothing).")
     crit = ["every intent names a field of this task", "every field of the task has an intent or is in not_covered",
             "logical values are field values within the field width", "key writes cite their own value fact"]
@@ -297,7 +362,7 @@ def crosscut_rendered(ws: Path, doc: dict, inv: dict, sysname: str) -> dict:
 
 # ---- deterministic checks of one answer ------------------------------------------------------------------------------
 def local_checks(ws: Path, doc: dict, g: dict) -> list[str]:
-    out, keys = [], set()
+    out, keys = V1.required_scope_exclusions(ws, doc, g), set()
     excl = V1.out_of_scope_named(ws)
     for it in doc["intents"]:
         if it["key"] in keys:
@@ -409,6 +474,19 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     if inv["missing_sections"]:
         return V1.reply(ws, "FAILED", [f"LRTX_INVENTORY_SECTION_MISSING:{x}" for x in inv["missing_sections"]], budget)
     ctx = Context(ws)
+    manifest = V1._manifest(ws)
+    from ..layer import profile as peripheral_profile
+
+    peripheral = peripheral_profile(ws)
+    if "semantic_required_operations" in manifest or "semantic_required_operations" in peripheral:
+        if (manifest.get("peripheral_profile_sha256") != peripheral["sha256"]
+                or manifest.get("semantic_required_operations") != peripheral.get("semantic_required_operations")):
+            raise EngineFault("REQUIRED_OPERATION_SCOPE_CHANGED")
+        preflight = preflight_required(ctx, manifest["semantic_required_operations"])
+        S.record(ws, "SWE.1/required-operation-preflight.json", preflight)
+        if preflight["status"] != "PASS_REQUIRED_FORMS_ONLY":
+            return V1.reply(ws, "FAILED", ["LRTX_SEMANTIC_" + preflight["status"] +
+                            ": mandatory source-bound operation preflight; no model request made"], budget)
     idx = index(ws / "inputs/sections/RM0486")
     sysname = V1.system_name(ws)
     sem = [(g, _run_group(ws, g, model, ctx, sysname, budget, routed.get(f"requirements:{g['id']}")))

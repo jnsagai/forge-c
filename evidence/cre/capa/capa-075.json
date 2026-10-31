@@ -1,0 +1,101 @@
+{
+ "CAPA-075": {
+  "history": [
+   {
+    "at": "2026-10-31T14:35:30.504554Z",
+    "capa_id": "CAPA-075",
+    "evidence": "[\"swe1-ornith-standalone-20261031-copy-isolation\"]",
+    "from_state": null,
+    "reason": "Standalone Ornith SWE.1 run on Omniverse2 2026-10-31 (evidence/014-durable-local-autonomy/swe1-ornith-standalone-20261031): modelcmp copy rewrote the trial-06 source workspace development-execution.json (identical bytes, new mtime)",
+    "seq": 572,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-10-31T14:35:30.587144Z",
+    "capa_id": "CAPA-075",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 573,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-10-31T14:35:30.707175Z",
+    "capa_id": "CAPA-075",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-074 assigned",
+    "seq": 574,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-10-31T14:35:35.049734Z",
+    "capa_id": "CAPA-075",
+    "evidence": "[\"reproducer-run:rr-ff13b995de8605815980\", \"reproducer-run:rr-238ed70983265d1accd0\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 575,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-10-31T14:35:35.087826Z",
+    "capa_id": "CAPA-075",
+    "evidence": "[\"git:7490b6d8a4c8..2f2aefa0ab06\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 2f2aefa0ab06 (patch 4124 bytes)",
+    "seq": 576,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-10-31T14:38:29.912543Z",
+    "capa_id": "CAPA-075",
+    "evidence": "[\"reproducer-run:rr-d1137f963959182df3e4\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-074 absent at 2f2aefa0ab06",
+    "seq": 577,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-10-31T14:38:29.959425Z",
+    "capa_id": "CAPA-075",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 578,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-b036af7aa62f4621b9f6eecad2ec45d22ba8c3f9",
+   "7490b6d8a4c81377008d708fc5ac6e0e31c7039b",
+   "2f2aefa0ab06327ee89792ad5368b53a62ec083e",
+   "pd-27fa43ef4598a153fccb"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<2f2aefa0ab06"
+   ],
+   "candidate_patch_sha256": "0aa6a898ac365bd4453f0cfc55788a9c41640dde72f5005104664a428b29821a",
+   "capa_id": "CAPA-075",
+   "created_at": "2026-10-31T14:35:30.504554Z",
+   "event_ids": [],
+   "incident_ids": [
+    "swe1-ornith-standalone-20261031-copy-isolation"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-074",
+   "reproducer_id": "RPR-074",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-ff13b995de8605815980",
+    "reproducer-run:rr-238ed70983265d1accd0"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "visit.write_scoped builds its Authorizer from the copied binding.json whose absolute workspace is the source; Authorizer.decide -> development_execution.mutation_allowed(source) -> phase_state rewrites the source development-phase state",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-10-31T14:38:29.959425Z"
+  }
+ }
+}

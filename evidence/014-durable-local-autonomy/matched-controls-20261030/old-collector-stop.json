@@ -1,0 +1,8 @@
+{
+  "status": "OLD_READ_ONLY_COLLECTOR_STOPPED_AFTER_VERIFIED_TERMINAL_TRANSFER",
+  "pids": [
+    469001
+  ],
+  "archive_sha256": "c38f88ba8f88473a21b3b11327d629c22166ea99c9cc3dd22bdf58b112ebdba3",
+  "intake_or_model_calls": 0
+}

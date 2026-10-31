@@ -30,12 +30,13 @@ def plantuml_jar() -> Path | None:
     return None
 
 
-def _plantuml(args: list[str], cwd: Path) -> subprocess.CompletedProcess:
+def _plantuml(args: list[str], cwd: Path, *, source: str | None = None) -> subprocess.CompletedProcess:
     jar = plantuml_jar()
     if jar is None:
         raise FileNotFoundError("plantuml jar")
     return subprocess.run(["java", "-Djava.awt.headless=true", "-Xmx512m", "-jar", str(jar), *args], cwd=cwd,
-                          capture_output=True, text=True, timeout=120, check=False)
+                          input=source, capture_output=True, text=True,
+                          timeout=15 if source is not None else 120, check=False)
 
 
 def check_views(ws: Path, render: bool = False) -> dict:
@@ -65,16 +66,37 @@ def check_views(ws: Path, render: bool = False) -> dict:
     if layer != "LL" and "HAL_TIMEOUT" not in dy:
         findings.append("VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH")
     syntax = "NOT_RUN"
+    syntax_by_view = {name: "NOT_RUN" for name in files}
     if plantuml_jar() is None:
         findings.append("VIEWS:TOOL_MISSING:plantuml")
     else:
-        r = _plantuml(["-checkonly", STATIC, DYNAMIC], ws)
-        syntax = "PASS" if r.returncode == 0 else "FAIL"
-        if r.returncode != 0:
-            findings.append("VIEWS:SYNTAX:" + (r.stdout + r.stderr).strip().replace("\n", " ")[:200])
-        elif render:
+        # PlantUML can report only a generic error for a multi-file invocation.
+        # Name the failing source without weakening the complete workspace check.
+        for name, path in files.items():
+            rel = path.relative_to(ws).as_posix()
+            r = _plantuml(["-checkonly", rel], ws)
+            syntax_by_view[name] = "PASS" if r.returncode == 0 else "FAIL"
+            if r.returncode != 0:
+                detail = (r.stdout + r.stderr).strip().replace("\n", " ")[:200]
+                # The pinned CLI's stdin syntax mode reports a zero-based line.
+                # This extra diagnostic cannot turn the failed file check into PASS.
+                text = path.read_text(errors="replace")
+                try:
+                    diagnostic = _plantuml(["-syntax"], path.parent, source=text)
+                    lines = diagnostic.stdout.splitlines()
+                    if (diagnostic.returncode != 0 and len(lines) >= 3 and lines[0] == "ERROR"
+                            and re.fullmatch(r"[0-9]{1,8}", lines[1])
+                            and 0 <= int(lines[1]) < len(text.splitlines())):
+                        detail = f"line {int(lines[1]) + 1}:" + lines[2][:160]
+                except (OSError, subprocess.SubprocessError):
+                    pass  # retain the original failure when optional diagnostics are unavailable
+                findings.append("VIEWS:SYNTAX:" + rel + ":" + detail)
+        syntax = "PASS" if all(v == "PASS" for v in syntax_by_view.values()) else "FAIL"
+        if syntax == "PASS" and render:
             rr = _plantuml(["-tsvg", STATIC, DYNAMIC], ws)
             if rr.returncode != 0:
                 findings.append("VIEWS:RENDER_FAILED")
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
-            "stats": {"syntax": syntax, "allocated_apis": len(apis), "apis_in_dynamic_view": len(shown)}}
+            "stats": {"syntax": syntax, "allocated_apis": len(apis), "apis_in_dynamic_view": len(shown),
+                      "checked_static": STATIC, "checked_dynamic": DYNAMIC,
+                      **{"syntax_" + name: status for name, status in syntax_by_view.items()}}}

@@ -1,0 +1,15 @@
+{
+  "accepted_model_recovery_plans": 0,
+  "adopted_attempt_rows": 20,
+  "baseline_revision": "918c6a4a2577a0b7a6fbe6493e84351b5039e238",
+  "conservative_diagnosis_charge": 64856,
+  "native_export_sha256": "448c61310af39cbba492073c1fcb31dbb5f38c8669cbaef415dcda511f713a38",
+  "new_historical_implementation_attempts": 0,
+  "old_source_revision": "36ed0fc70bd8765f0cc90a45b21bbf02924b0269",
+  "private_dump_not_published": true,
+  "product_usage_unknown": true,
+  "reported_diagnosis_tokens": 54704,
+  "source_dump_sha256": "86e4142f533d6c5a792226194f87f9a6b6ec1aeee978df22b403bdc88bd60783",
+  "unique_product_executions": 5,
+  "v4_native_stopping_cause": "UNKNOWN"
+}

@@ -1,0 +1,272 @@
+{
+  "at": "2026-10-30T00:40:52.361508Z",
+  "operator": {
+    "mode": "RUNNING",
+    "epoch": 50
+  },
+  "source_revision": "b713e354b5c50744c549b1a9cada491c3ca017bd",
+  "order_id": "afo-83276a5a34a47931",
+  "model_requests_by_observer": 0,
+  "order": {
+    "state": "BLOCKED",
+    "terminal_reason": "LOCAL_DIAGNOSIS_FAILED:FAILED:afo-agent-2ae4c086f6e5cb032903e2a4",
+    "created_epoch": 1793319570.0501647
+  },
+  "attempts": [
+    {
+      "attempt_id": "afo-83276a5a34a47931-a1",
+      "seq": 1,
+      "state": "SUCCEEDED",
+      "record": {
+        "workspace_ref": "workorder:WO-AFO-83276a5a34a47931-a1",
+        "factory_revision": "b713e354b5c50744c549b1a9cada491c3ca017bd",
+        "fabro_run_id": "01M652TG29PWJYG7QSCQHZXVKC"
+      }
+    }
+  ],
+  "products": [
+    {
+      "job_id": "afo-product-d62627253f6b28e69543c4c2",
+      "workspace": "/mnt/data/forge-c/production-local-014/state/workorders/WO-AFO-83276a5a34a47931-a1/workspace",
+      "model": "qwen3.8:27b-q8_0",
+      "profile": "local-rtx-v2-omniverse2-q38-aspice-max-mtp",
+      "reserved_tokens": 1000000000,
+      "deadline_epoch": 1793347916,
+      "execution": {
+        "execution_liveness": "QUIESCENT",
+        "resource_lease": "RELEASED",
+        "native_run_ids": [
+          "01M652TG29PWJYG7QSCQHZXVKC"
+        ],
+        "task_outcome": "BLOCKED",
+        "terminal_reason": "PRODUCT_PACKAGE_BLOCKED:package BLOCKED / BLOCKED, 49 gaps"
+      },
+      "request_states": {
+        "QUIESCENT": 7
+      },
+      "reported_tokens_known": 88317,
+      "requests_with_unknown_usage": 0,
+      "last_request_fields": [
+        "accounting",
+        "body_sha256",
+        "cached_tokens",
+        "charge",
+        "created_at",
+        "input_tokens",
+        "input_tokens_reserved",
+        "job_id",
+        "mission_id",
+        "output_cap",
+        "output_tokens",
+        "provider_instance",
+        "provider_instance_sha256",
+        "quiescence_ref",
+        "reported_tokens",
+        "request_id",
+        "reserved_tokens",
+        "sent_at",
+        "state"
+      ],
+      "request_measurements": [
+        {
+          "state": "QUIESCENT",
+          "input_tokens_reserved": 10399,
+          "output_cap": 36864,
+          "reserved_tokens": 47263,
+          "reported_tokens": 15921,
+          "created_at": "2026-10-30T00:30:09.553990Z",
+          "sent_at": "2026-10-30T00:30:09.773928Z"
+        },
+        {
+          "state": "QUIESCENT",
+          "input_tokens_reserved": 10546,
+          "output_cap": 36864,
+          "reserved_tokens": 47410,
+          "reported_tokens": 12833,
+          "created_at": "2026-10-30T00:33:55.882902Z",
+          "sent_at": "2026-10-30T00:33:56.049404Z"
+        },
+        {
+          "state": "QUIESCENT",
+          "input_tokens_reserved": 12110,
+          "output_cap": 36864,
+          "reserved_tokens": 48974,
+          "reported_tokens": 10740,
+          "created_at": "2026-10-30T00:37:00.733971Z",
+          "sent_at": "2026-10-30T00:37:04.241204Z"
+        }
+      ],
+      "inspection_files": [],
+      "packet_progress": [
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_AHB1ENR.json",
+          "task": "requirements:RCC_AHB1ENR",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_AHB1RSTR.json",
+          "task": "requirements:RCC_AHB1RSTR",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_CR_1.json",
+          "task": "requirements:RCC_CR_1",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_CR_2.json",
+          "task": "requirements:RCC_CR_2",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_SR_1.json",
+          "task": "requirements:RCC_SR_1",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__RCC_SR_2.json",
+          "task": "requirements:RCC_SR_2",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        },
+        {
+          "path": ".forge-run/lrtx/SWE.1/packets/requirements__crosscutting.json",
+          "task": "requirements:crosscutting",
+          "status": "VALID",
+          "attempts": 1,
+          "error_count": 0
+        }
+      ],
+      "native_status_now": {
+        "01M652TG29PWJYG7QSCQHZXVKC": "SUCCEEDED"
+      },
+      "native_metadata_keys": [
+        "ask_fabro",
+        "automation",
+        "children_count",
+        "created_by",
+        "current_question",
+        "diff",
+        "goal",
+        "id",
+        "labels",
+        "lifecycle",
+        "links",
+        "models",
+        "origin",
+        "pull_request",
+        "repository",
+        "retried_from",
+        "sandbox",
+        "size",
+        "source_directory",
+        "superseded_by",
+        "timestamps",
+        "timing",
+        "title",
+        "usage",
+        "workflow"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "resource": "inference",
+      "holder": null,
+      "epoch": 46
+    },
+    {
+      "resource": "generation",
+      "holder": null,
+      "epoch": 1040
+    }
+  ],
+  "mission": {
+    "authorization_ref": "AUTH-014-RCC-TIME-20261030-V1",
+    "created_at": "2026-10-27T22:31:02.178374Z",
+    "limits": {
+      "deadline": 1793347916,
+      "max_attempts": 1000,
+      "max_corrections": 1,
+      "max_jobs": 1000,
+      "max_requests": 100000,
+      "max_tokens": 100000000000,
+      "max_tools": 1000000
+    },
+    "lineage": "F014-ROLE-EXPERIMENT-20261027-RCC",
+    "mission_id": "F014-NIGHT-20261027-RCC",
+    "initial_limits": {
+      "deadline": 1793161857.1740136,
+      "max_attempts": 3,
+      "max_corrections": 1,
+      "max_jobs": 4,
+      "max_requests": 32,
+      "max_tokens": 120000,
+      "max_tools": 32
+    },
+    "initial_authorization_ref": "AUTH-014-OMNIVERSE2-GOLIVE-20261027-V1",
+    "deadline_extensions": [
+      {
+        "old_deadline": 1793161857.1740136,
+        "deadline_epoch": 1793347916,
+        "authorization_ref": "AUTH-014-RCC-TIME-20261030-V1",
+        "accepted_at": "2026-10-30T00:15:57.142624Z"
+      }
+    ],
+    "capacity_amendments": [
+      {
+        "authorization_ref": "AUTH-014-RCC-CAPACITY-20261030-V1",
+        "old_limits": {
+          "max_attempts": 3,
+          "max_corrections": 1,
+          "max_jobs": 4,
+          "max_requests": 32,
+          "max_tokens": 120000,
+          "max_tools": 32
+        },
+        "document": {
+          "authorization_ref": "AUTH-014-RCC-CAPACITY-20261030-V1",
+          "limits": {
+            "max_attempts": 1000,
+            "max_corrections": 1,
+            "max_jobs": 1000,
+            "max_requests": 100000,
+            "max_tokens": 100000000000,
+            "max_tools": 1000000
+          },
+          "mission_id": "F014-NIGHT-20261027-RCC",
+          "operator_epoch": 50,
+          "reason": "Owner explicitly requested extraordinary high finite limits; same RCC lineage, old charges and uncertainty, no exhausted mission reset",
+          "request": {
+            "driver_class": "LL",
+            "model": "qwen3.8:27b-q8_0",
+            "order_id": "f014-rcc-ll-aspice-20261030-v1"
+          },
+          "schema": "forge-c/mission-capacity-amendment/1",
+          "snapshot_sha256": "2875dbb11d2de75585243868b5b0ca4fdc5c11662253455141019d75fb51b6ad"
+        },
+        "accepted_at": "2026-10-30T00:15:45.195395Z"
+      }
+    ],
+    "attempts": 3,
+    "jobs": 2,
+    "requests": 9,
+    "tools": 0,
+    "corrections": 0,
+    "charged_tokens": 1000217072,
+    "usage_unknown": true,
+    "unique_executions": 5,
+    "unbounded_historical_usage": false
+  }
+}

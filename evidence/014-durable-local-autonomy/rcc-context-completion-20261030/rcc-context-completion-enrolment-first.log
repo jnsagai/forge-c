@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/enrol-rcc-context-completion.py", line 46, in <module>
+    assert not held or held[0]<=time.time(), 'SCHEDULER_LEASE_NOT_EXPIRED'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: SCHEDULER_LEASE_NOT_EXPIRED

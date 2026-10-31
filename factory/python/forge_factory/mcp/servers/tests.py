@@ -50,6 +50,27 @@ def _with_setter(expr: str, src_before: str) -> str:
 
 
 HOST_CHECK = re.compile(r'\bCHECK\(\s*"([^"]+)"\s*,(.*?)\)\s*;', re.S)
+# Consume comments and literals before scanning code, so example text is not a
+# second assertion. The CHECK alternative owns its complete first argument.
+CHECK_ID_TOKEN = re.compile(
+    r'/\*.*?\*/|//[^\n]*|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|'
+    r'\bCHECK\s*\(\s*"(?P<check_id>[^"\\\r\n]+)"\s*,', re.S)
+
+
+def check_ids(paths: list[Path]) -> dict[str, int]:
+    """Count complete static assertion identities across the selected test files.
+
+    A suffix is part of an ID: UT-001 and UT-001-RESULT are distinct, but two
+    UT-001-RESULT assertions are ambiguous. This is lexical metadata validation,
+    not proof that a predicate ran or that a runtime loop covers its scope.
+    """
+    seen: dict[str, int] = {}
+    for path in paths:
+        for token in CHECK_ID_TOKEN.finditer(path.read_text(errors="replace")):
+            identity = token.group("check_id")
+            if identity is not None:
+                seen[identity] = seen.get(identity, 0) + 1
+    return seen
 
 
 def _host_check_exprs(test: Path, out: bytes, limit: int = 8) -> list[str]:
@@ -80,10 +101,12 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
 
     fake = level == "unit" and (ctx.workspace / FAKE_DIR).is_dir()  # CAPA-038: the LL test double wins the include
     from ...brownfield.cmsis import host_flags
+    from ...delivery_first import include_flags
 
     # feature 008 (ST pilot): a CMSIS delivery compiles on the host against the generated host device directory
-    incs = host_flags(ctx.workspace) + [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS +
-                                        [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()]
+    incs = (host_flags(ctx.workspace) + include_flags(ctx.workspace)
+            + [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS
+               + [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()])
     if fake and modified(ctx.workspace):
         return result(ctx, "FAIL", "generated LL test double was modified", issues=[
             f"GENERATED_TEST_DOUBLE_MODIFIED:{fake_header(ctx.workspace)} (generated from the provided LL header; "
@@ -125,15 +148,12 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             issues += exprs or _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
     # CAPA-022 (r86): UT-015/016 were used by two test functions; an id must name exactly one check (trace and
     # report cite ids), so duplicates fail the run deterministically instead of being found by the inspector
-    seen: dict[str, int] = {}
-    for t in tests:
-        code = re.sub(r"/\*.*?\*/|//[^\n]*", "", t.read_text(errors="replace"), flags=re.S)
-        for cid in re.findall(r'\bCHECK\s*\(\s*"([A-Z]+-\d+)"', code):
-            seen[cid] = seen.get(cid, 0) + 1
+    seen = check_ids(tests)
     dups = sorted(k for k, v in seen.items() if v > 1)
     if dups:
         failed += 1
-        issues += [f"DUPLICATE_TEST_ID:{d}:used by {seen[d]} checks - give each check its own id" for d in dups[:10]]
+        issues += [f"DUPLICATE_TEST_ID:{d}:used by {seen[d]} checks - give each check its own id; preserve predicates "
+                   "and order, use a unique suffix, do not combine checks" for d in dups[:10]]
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
     op = "run_unit" if level == "unit" else "run_integration"
     record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",
@@ -371,6 +391,13 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                       "build_failed": sorted(builds), "unobserved": sorted(
                           {i.split(":")[1] for i in unobserved if i.startswith("REQUIREMENT_NOT_OBSERVED:")})})
     undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, "run_robot") if ok else []
+    from ...afo.durable import digest
+    from ...simulation_performance import selected
+
+    performance = selected(ctx.workspace)
+    contract = {"simulation_performance_contract": json.dumps({
+        **performance, "budget_sha256": digest(performance),
+        "scope": "DECLARED_INPUT_CONTRACT_NOT_A_MEASUREMENT"}, separators=(",", ":"))} if performance else {}
     return result(ctx, "PASS" if ok and not undeclared else "FAIL",
                   f"robot: {passed}/{len(tests)} tests passed; {len(covered & set(reqs))}/{len(reqs)} requirements "
                   "verified (Renode STM32N6 model + host measurements)"
@@ -378,7 +405,7 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
                   [ctx.store(xml.read_bytes(), "xml")], (undeclared + issues)[:30],
                   {"tests": len(tests), "passed": passed, "failed": len(tests) - passed, "requirements": len(reqs),
                    "requirements_verified": len(covered & set(reqs)), "environment": "robotframework 6.1 + renode "
-                   "1.17.0 (simulated cortex-m55)", "silicon_verified": False},
+                   "1.17.0 (simulated cortex-m55)", "silicon_verified": False, **contract},
                   "robotframework", tool_version(py, ("-m", "robot", "--version")), r.exit_code, r.duration_ms,
                   a.model_dump(), r.stdout + r.stderr)
 

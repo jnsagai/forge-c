@@ -1,0 +1,10 @@
+{
+  "scope": "READ_ONLY_CONSISTENT_COPY_MODEL_FREE_NOT_NATIVE_QWEN_QUALIFICATION",
+  "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/supervisor/incidents.sqlite3",
+  "source_mutated": false,
+  "copy_sha256": "4db24fd3e86882c3cc2d7dd903848802f74127abd418ea817cf60db3215e92d5",
+  "counts": {
+    "cre_failure_observations": 2637,
+    "cre_promotion_decisions": 181
+  }
+}

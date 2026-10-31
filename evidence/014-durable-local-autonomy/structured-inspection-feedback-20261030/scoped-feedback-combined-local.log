@@ -1,0 +1,396 @@
+.............................................s.......................... [ 46%]
+....................................................FFFFFFF............. [ 93%]
+..........                                                               [100%]
+=================================== FAILURES ===================================
+_ test_actual_preparation_exposes_same_bound_scope_to_native_and_structured_inspectors _
+
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+
+    def test_actual_preparation_exposes_same_bound_scope_to_native_and_structured_inspectors(prepared):  # noqa: F811
+>       ws, man = imported(prepared)
+                  ^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_inspection_assessment_context.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_incremental_delivery.py:107: in imported
+    rep = P.materialize(ws)
+          ^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/provided_requirements.py:85: in materialize
+    swe1.assemble(ws, inv, results, cross)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-113/test_actual_preparation_expose0/STATE/workorders/WO-IDR-PLUMBING/workspace')
+inv = {'generated_at': '2026-10-30T05:14:24.066329Z', 'items': ['CRC_IDR.IDR'], 'missing_sections': [], 'registers': [{'fiel...nputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md', 'offset': 4, 'pages': [1172, 1173], ...}], ...}
+results = [({'fields': {'IDR': {'access': ['rw'], 'description': 'General-purpose 32-bit data register bits', 'lsb': 0, 'msb': 3...driver shall return the current 32-bit value of CRC_IDR.IDR.', ...}]}, 'status': 'VALID', 'task': 'provided:CRC_IDR'})]
+cross = {'doc': {'not_covered': [], 'open_points': ['No safety assurance, safe-state allocation or error-return contract is as...C LL driver shall complete without polling a status flag.', ...}]}, 'status': 'VALID', 'task': 'provided:crosscutting'}
+
+    def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict) -> dict:
+        """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
+        from ..layer import profile
+    
+        ws = Path(ws)
+        m = _manifest(ws)
+        sysname, pid = system_name(ws), profile(ws)["id"]
+        rows: list[dict] = []
+        for g, rec in results:
+            for r in rec["doc"]["requirements"]:
+                rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
+                             "upstream": f"RM0486-{_page_section(ws, r['source_page'], g['section'])}"})
+        first = inv["registers"][0]["section"] if inv["registers"] else "?"
+        for r in cross["doc"]["requirements"]:
+            rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
+                         "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}"})
+        rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
+        for n, r in enumerate(rows, 1):
+            r["swr"] = f"SWR-{n:03d}"
+        opens, open_points = [], {}
+        for group, rec in results + [(None, cross)]:
+            for raw in rec["doc"]["open_points"]:
+                text = raw.strip()
+                if not text:
+                    continue
+                ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+                origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+>                         "packet_input_hash": rec["base_hash"]}
+                                               ^^^^^^^^^^^^^^^^
+E               KeyError: 'base_hash'
+
+factory/python/forge_factory/lrtx/swe1.py:499: KeyError
+__________ test_performance_gap_still_fails_the_real_inspection_gate ___________
+
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+
+    def test_performance_gap_still_fails_the_real_inspection_gate(prepared):  # noqa: F811
+>       ws, _ = imported(prepared)
+                ^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_inspection_assessment_context.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_incremental_delivery.py:107: in imported
+    rep = P.materialize(ws)
+          ^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/provided_requirements.py:85: in materialize
+    swe1.assemble(ws, inv, results, cross)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-113/test_performance_gap_still_fai0/STATE/workorders/WO-IDR-PLUMBING/workspace')
+inv = {'generated_at': '2026-10-30T05:14:24.928665Z', 'items': ['CRC_IDR.IDR'], 'missing_sections': [], 'registers': [{'fiel...nputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md', 'offset': 4, 'pages': [1172, 1173], ...}], ...}
+results = [({'fields': {'IDR': {'access': ['rw'], 'description': 'General-purpose 32-bit data register bits', 'lsb': 0, 'msb': 3...driver shall return the current 32-bit value of CRC_IDR.IDR.', ...}]}, 'status': 'VALID', 'task': 'provided:CRC_IDR'})]
+cross = {'doc': {'not_covered': [], 'open_points': ['No safety assurance, safe-state allocation or error-return contract is as...C LL driver shall complete without polling a status flag.', ...}]}, 'status': 'VALID', 'task': 'provided:crosscutting'}
+
+    def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict) -> dict:
+        """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
+        from ..layer import profile
+    
+        ws = Path(ws)
+        m = _manifest(ws)
+        sysname, pid = system_name(ws), profile(ws)["id"]
+        rows: list[dict] = []
+        for g, rec in results:
+            for r in rec["doc"]["requirements"]:
+                rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
+                             "upstream": f"RM0486-{_page_section(ws, r['source_page'], g['section'])}"})
+        first = inv["registers"][0]["section"] if inv["registers"] else "?"
+        for r in cross["doc"]["requirements"]:
+            rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
+                         "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}"})
+        rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
+        for n, r in enumerate(rows, 1):
+            r["swr"] = f"SWR-{n:03d}"
+        opens, open_points = [], {}
+        for group, rec in results + [(None, cross)]:
+            for raw in rec["doc"]["open_points"]:
+                text = raw.strip()
+                if not text:
+                    continue
+                ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+                origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+>                         "packet_input_hash": rec["base_hash"]}
+                                               ^^^^^^^^^^^^^^^^
+E               KeyError: 'base_hash'
+
+factory/python/forge_factory/lrtx/swe1.py:499: KeyError
+_ test_unbound_or_changed_assessment_context_refuses_before_inspection[purpose] _
+
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+field = 'purpose'
+
+    @pytest.mark.parametrize("field", ["purpose", "scope", C.FIELD])
+    def test_unbound_or_changed_assessment_context_refuses_before_inspection(prepared, field):  # noqa: F811
+>       ws, man = imported(prepared)
+                  ^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_inspection_assessment_context.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_incremental_delivery.py:107: in imported
+    rep = P.materialize(ws)
+          ^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/provided_requirements.py:85: in materialize
+    swe1.assemble(ws, inv, results, cross)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-113/test_unbound_or_changed_assess0/STATE/workorders/WO-IDR-PLUMBING/workspace')
+inv = {'generated_at': '2026-10-30T05:14:25.769718Z', 'items': ['CRC_IDR.IDR'], 'missing_sections': [], 'registers': [{'fiel...nputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md', 'offset': 4, 'pages': [1172, 1173], ...}], ...}
+results = [({'fields': {'IDR': {'access': ['rw'], 'description': 'General-purpose 32-bit data register bits', 'lsb': 0, 'msb': 3...driver shall return the current 32-bit value of CRC_IDR.IDR.', ...}]}, 'status': 'VALID', 'task': 'provided:CRC_IDR'})]
+cross = {'doc': {'not_covered': [], 'open_points': ['No safety assurance, safe-state allocation or error-return contract is as...C LL driver shall complete without polling a status flag.', ...}]}, 'status': 'VALID', 'task': 'provided:crosscutting'}
+
+    def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict) -> dict:
+        """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
+        from ..layer import profile
+    
+        ws = Path(ws)
+        m = _manifest(ws)
+        sysname, pid = system_name(ws), profile(ws)["id"]
+        rows: list[dict] = []
+        for g, rec in results:
+            for r in rec["doc"]["requirements"]:
+                rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
+                             "upstream": f"RM0486-{_page_section(ws, r['source_page'], g['section'])}"})
+        first = inv["registers"][0]["section"] if inv["registers"] else "?"
+        for r in cross["doc"]["requirements"]:
+            rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
+                         "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}"})
+        rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
+        for n, r in enumerate(rows, 1):
+            r["swr"] = f"SWR-{n:03d}"
+        opens, open_points = [], {}
+        for group, rec in results + [(None, cross)]:
+            for raw in rec["doc"]["open_points"]:
+                text = raw.strip()
+                if not text:
+                    continue
+                ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+                origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+>                         "packet_input_hash": rec["base_hash"]}
+                                               ^^^^^^^^^^^^^^^^
+E               KeyError: 'base_hash'
+
+factory/python/forge_factory/lrtx/swe1.py:499: KeyError
+_ test_unbound_or_changed_assessment_context_refuses_before_inspection[scope] __
+
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+field = 'scope'
+
+    @pytest.mark.parametrize("field", ["purpose", "scope", C.FIELD])
+    def test_unbound_or_changed_assessment_context_refuses_before_inspection(prepared, field):  # noqa: F811
+>       ws, man = imported(prepared)
+                  ^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_inspection_assessment_context.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_incremental_delivery.py:107: in imported
+    rep = P.materialize(ws)
+          ^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/provided_requirements.py:85: in materialize
+    swe1.assemble(ws, inv, results, cross)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-113/test_unbound_or_changed_assess1/STATE/workorders/WO-IDR-PLUMBING/workspace')
+inv = {'generated_at': '2026-10-30T05:14:26.642086Z', 'items': ['CRC_IDR.IDR'], 'missing_sections': [], 'registers': [{'fiel...nputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md', 'offset': 4, 'pages': [1172, 1173], ...}], ...}
+results = [({'fields': {'IDR': {'access': ['rw'], 'description': 'General-purpose 32-bit data register bits', 'lsb': 0, 'msb': 3...driver shall return the current 32-bit value of CRC_IDR.IDR.', ...}]}, 'status': 'VALID', 'task': 'provided:CRC_IDR'})]
+cross = {'doc': {'not_covered': [], 'open_points': ['No safety assurance, safe-state allocation or error-return contract is as...C LL driver shall complete without polling a status flag.', ...}]}, 'status': 'VALID', 'task': 'provided:crosscutting'}
+
+    def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict) -> dict:
+        """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
+        from ..layer import profile
+    
+        ws = Path(ws)
+        m = _manifest(ws)
+        sysname, pid = system_name(ws), profile(ws)["id"]
+        rows: list[dict] = []
+        for g, rec in results:
+            for r in rec["doc"]["requirements"]:
+                rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
+                             "upstream": f"RM0486-{_page_section(ws, r['source_page'], g['section'])}"})
+        first = inv["registers"][0]["section"] if inv["registers"] else "?"
+        for r in cross["doc"]["requirements"]:
+            rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
+                         "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}"})
+        rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
+        for n, r in enumerate(rows, 1):
+            r["swr"] = f"SWR-{n:03d}"
+        opens, open_points = [], {}
+        for group, rec in results + [(None, cross)]:
+            for raw in rec["doc"]["open_points"]:
+                text = raw.strip()
+                if not text:
+                    continue
+                ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+                origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+>                         "packet_input_hash": rec["base_hash"]}
+                                               ^^^^^^^^^^^^^^^^
+E               KeyError: 'base_hash'
+
+factory/python/forge_factory/lrtx/swe1.py:499: KeyError
+_ test_unbound_or_changed_assessment_context_refuses_before_inspection[inspection_assessment_context] _
+
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+field = 'inspection_assessment_context'
+
+    @pytest.mark.parametrize("field", ["purpose", "scope", C.FIELD])
+    def test_unbound_or_changed_assessment_context_refuses_before_inspection(prepared, field):  # noqa: F811
+>       ws, man = imported(prepared)
+                  ^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_inspection_assessment_context.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_incremental_delivery.py:107: in imported
+    rep = P.materialize(ws)
+          ^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/provided_requirements.py:85: in materialize
+    swe1.assemble(ws, inv, results, cross)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-113/test_unbound_or_changed_assess2/STATE/workorders/WO-IDR-PLUMBING/workspace')
+inv = {'generated_at': '2026-10-30T05:14:27.556917Z', 'items': ['CRC_IDR.IDR'], 'missing_sections': [], 'registers': [{'fiel...nputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md', 'offset': 4, 'pages': [1172, 1173], ...}], ...}
+results = [({'fields': {'IDR': {'access': ['rw'], 'description': 'General-purpose 32-bit data register bits', 'lsb': 0, 'msb': 3...driver shall return the current 32-bit value of CRC_IDR.IDR.', ...}]}, 'status': 'VALID', 'task': 'provided:CRC_IDR'})]
+cross = {'doc': {'not_covered': [], 'open_points': ['No safety assurance, safe-state allocation or error-return contract is as...C LL driver shall complete without polling a status flag.', ...}]}, 'status': 'VALID', 'task': 'provided:crosscutting'}
+
+    def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict) -> dict:
+        """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
+        from ..layer import profile
+    
+        ws = Path(ws)
+        m = _manifest(ws)
+        sysname, pid = system_name(ws), profile(ws)["id"]
+        rows: list[dict] = []
+        for g, rec in results:
+            for r in rec["doc"]["requirements"]:
+                rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
+                             "upstream": f"RM0486-{_page_section(ws, r['source_page'], g['section'])}"})
+        first = inv["registers"][0]["section"] if inv["registers"] else "?"
+        for r in cross["doc"]["requirements"]:
+            rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
+                         "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}"})
+        rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
+        for n, r in enumerate(rows, 1):
+            r["swr"] = f"SWR-{n:03d}"
+        opens, open_points = [], {}
+        for group, rec in results + [(None, cross)]:
+            for raw in rec["doc"]["open_points"]:
+                text = raw.strip()
+                if not text:
+                    continue
+                ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+                origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+>                         "packet_input_hash": rec["base_hash"]}
+                                               ^^^^^^^^^^^^^^^^
+E               KeyError: 'base_hash'
+
+factory/python/forge_factory/lrtx/swe1.py:499: KeyError
+____ test_legacy_context_and_historical_checklist_identity_remain_unchanged ____
+
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+
+    def test_legacy_context_and_historical_checklist_identity_remain_unchanged(prepared):  # noqa: F811
+>       ws, man = imported(prepared)
+                  ^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_inspection_assessment_context.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_incremental_delivery.py:107: in imported
+    rep = P.materialize(ws)
+          ^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/provided_requirements.py:85: in materialize
+    swe1.assemble(ws, inv, results, cross)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-113/test_legacy_context_and_histor0/STATE/workorders/WO-IDR-PLUMBING/workspace')
+inv = {'generated_at': '2026-10-30T05:14:28.438785Z', 'items': ['CRC_IDR.IDR'], 'missing_sections': [], 'registers': [{'fiel...nputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md', 'offset': 4, 'pages': [1172, 1173], ...}], ...}
+results = [({'fields': {'IDR': {'access': ['rw'], 'description': 'General-purpose 32-bit data register bits', 'lsb': 0, 'msb': 3...driver shall return the current 32-bit value of CRC_IDR.IDR.', ...}]}, 'status': 'VALID', 'task': 'provided:CRC_IDR'})]
+cross = {'doc': {'not_covered': [], 'open_points': ['No safety assurance, safe-state allocation or error-return contract is as...C LL driver shall complete without polling a status flag.', ...}]}, 'status': 'VALID', 'task': 'provided:crosscutting'}
+
+    def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict) -> dict:
+        """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
+        from ..layer import profile
+    
+        ws = Path(ws)
+        m = _manifest(ws)
+        sysname, pid = system_name(ws), profile(ws)["id"]
+        rows: list[dict] = []
+        for g, rec in results:
+            for r in rec["doc"]["requirements"]:
+                rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
+                             "upstream": f"RM0486-{_page_section(ws, r['source_page'], g['section'])}"})
+        first = inv["registers"][0]["section"] if inv["registers"] else "?"
+        for r in cross["doc"]["requirements"]:
+            rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
+                         "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}"})
+        rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
+        for n, r in enumerate(rows, 1):
+            r["swr"] = f"SWR-{n:03d}"
+        opens, open_points = [], {}
+        for group, rec in results + [(None, cross)]:
+            for raw in rec["doc"]["open_points"]:
+                text = raw.strip()
+                if not text:
+                    continue
+                ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+                origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+>                         "packet_input_hash": rec["base_hash"]}
+                                               ^^^^^^^^^^^^^^^^
+E               KeyError: 'base_hash'
+
+factory/python/forge_factory/lrtx/swe1.py:499: KeyError
+___________ test_old_pass_is_not_reused_for_a_new_assessment_context ___________
+
+prepared = (PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followu...he work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)'}, 'code_mode': 'FROZEN', ...})
+
+    def test_old_pass_is_not_reused_for_a_new_assessment_context(prepared):  # noqa: F811
+>       ws, man = imported(prepared)
+                  ^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_inspection_assessment_context.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_incremental_delivery.py:107: in imported
+    rep = P.materialize(ws)
+          ^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/provided_requirements.py:85: in materialize
+    swe1.assemble(ws, inv, results, cross)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ws = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/pytest-of-jefferson/pytest-113/test_old_pass_is_not_reused_fo0/STATE/workorders/WO-IDR-PLUMBING/workspace')
+inv = {'generated_at': '2026-10-30T05:14:29.423699Z', 'items': ['CRC_IDR.IDR'], 'missing_sections': [], 'registers': [{'fiel...nputs/sections/RM0486/26.4.2_CRC_independent_data_register_CRC_IDR.md', 'offset': 4, 'pages': [1172, 1173], ...}], ...}
+results = [({'fields': {'IDR': {'access': ['rw'], 'description': 'General-purpose 32-bit data register bits', 'lsb': 0, 'msb': 3...driver shall return the current 32-bit value of CRC_IDR.IDR.', ...}]}, 'status': 'VALID', 'task': 'provided:CRC_IDR'})]
+cross = {'doc': {'not_covered': [], 'open_points': ['No safety assurance, safe-state allocation or error-return contract is as...C LL driver shall complete without polling a status flag.', ...}]}, 'status': 'VALID', 'task': 'provided:crosscutting'}
+
+    def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict) -> dict:
+        """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
+        from ..layer import profile
+    
+        ws = Path(ws)
+        m = _manifest(ws)
+        sysname, pid = system_name(ws), profile(ws)["id"]
+        rows: list[dict] = []
+        for g, rec in results:
+            for r in rec["doc"]["requirements"]:
+                rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
+                             "upstream": f"RM0486-{_page_section(ws, r['source_page'], g['section'])}"})
+        first = inv["registers"][0]["section"] if inv["registers"] else "?"
+        for r in cross["doc"]["requirements"]:
+            rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
+                         "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}"})
+        rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
+        for n, r in enumerate(rows, 1):
+            r["swr"] = f"SWR-{n:03d}"
+        opens, open_points = [], {}
+        for group, rec in results + [(None, cross)]:
+            for raw in rec["doc"]["open_points"]:
+                text = raw.strip()
+                if not text:
+                    continue
+                ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+                origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+>                         "packet_input_hash": rec["base_hash"]}
+                                               ^^^^^^^^^^^^^^^^
+E               KeyError: 'base_hash'
+
+factory/python/forge_factory/lrtx/swe1.py:499: KeyError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_inspection_assessment_context.py::test_actual_preparation_exposes_same_bound_scope_to_native_and_structured_inspectors
+FAILED factory/python/tests/test_inspection_assessment_context.py::test_performance_gap_still_fails_the_real_inspection_gate
+FAILED factory/python/tests/test_inspection_assessment_context.py::test_unbound_or_changed_assessment_context_refuses_before_inspection[purpose]
+FAILED factory/python/tests/test_inspection_assessment_context.py::test_unbound_or_changed_assessment_context_refuses_before_inspection[scope]
+FAILED factory/python/tests/test_inspection_assessment_context.py::test_unbound_or_changed_assessment_context_refuses_before_inspection[inspection_assessment_context]
+FAILED factory/python/tests/test_inspection_assessment_context.py::test_legacy_context_and_historical_checklist_identity_remain_unchanged
+FAILED factory/python/tests/test_inspection_assessment_context.py::test_old_pass_is_not_reused_for_a_new_assessment_context

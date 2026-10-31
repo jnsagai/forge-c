@@ -1,0 +1,20 @@
+test_all_agent_tools_in_mcp_registry (__main__.ForgeV04Design.test_all_agent_tools_in_mcp_registry) ... ok
+test_all_twenty_role_skills (__main__.ForgeV04Design.test_all_twenty_role_skills) ... ok
+test_audit_capture_and_view_policy (__main__.ForgeV04Design.test_audit_capture_and_view_policy) ... ok
+test_dashboard_contract_and_filters (__main__.ForgeV04Design.test_dashboard_contract_and_filters) ... ok
+test_editable_drawio (__main__.ForgeV04Design.test_editable_drawio) ... ok
+test_example_contracts (__main__.ForgeV04Design.test_example_contracts) ... ok
+test_legacy_workflow_not_mislabeled (__main__.ForgeV04Design.test_legacy_workflow_not_mislabeled) ... ok
+test_model_free_supervisor (__main__.ForgeV04Design.test_model_free_supervisor) ... ok
+test_project_constitution (__main__.ForgeV04Design.test_project_constitution) ... ok
+test_readonly_roles_not_given_mutation (__main__.ForgeV04Design.test_readonly_roles_not_given_mutation) ... ok
+test_release_package_survives (__main__.ForgeV04Design.test_release_package_survives) ... ok
+test_spec_and_task_traceability (__main__.ForgeV04Design.test_spec_and_task_traceability) ... ok
+test_swe_author_inspector_pairs (__main__.ForgeV04Design.test_swe_author_inspector_pairs) ... ok
+test_token_policy_enforced_in_design (__main__.ForgeV04Design.test_token_policy_enforced_in_design) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.107s
+
+OK
+PASS: 14 static design tests. This does NOT validate runtime integrations.

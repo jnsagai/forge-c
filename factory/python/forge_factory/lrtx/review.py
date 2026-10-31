@@ -14,6 +14,7 @@ import re
 from pathlib import Path
 
 from ..common import sha256_bytes, utc_now
+from ..inspection.ears import STARTUP_NO_CALL
 from . import structured as S
 from . import visit as V
 
@@ -26,6 +27,27 @@ VERDICT_SCHEMA = {"type": "object", "additionalProperties": False, "required": [
 MAX_FILE_CHARS = 40_000
 
 
+def source_char_limit(ws: Path) -> int:
+    """A pinned loading bound, separate from complete-request context admission.
+
+    Large peripherals can have a requirements file larger than the inherited
+    40k envelope. An explicit profile override loads the WHOLE frozen file;
+    S.packet and the gateway still independently refuse an oversized request.
+    This does not qualify a tokenizer, enlarge model context or waive review.
+    """
+    manifest = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+    selected = (manifest.get("local_profile") or {}).get("id")
+    if not selected:
+        return MAX_FILE_CHARS
+    from .profile import load
+
+    structured = load(selected).get("structured") or {}
+    limit = structured.get("inspection_max_source_chars", MAX_FILE_CHARS)
+    if type(limit) is not int or not 1 <= limit <= 4 * 1024 * 1024:
+        raise ValueError("PROFILE_INSPECTION_SOURCE_LIMIT_INVALID")
+    return limit
+
+
 def _notes(ws: Path, phase: str, item: str) -> list[str]:
     from ..layer import profile
     from ..workflow import prompts
@@ -33,6 +55,10 @@ def _notes(ws: Path, phase: str, item: str) -> list[str]:
     out = []
     if phase == "SWE.1":  # the agent inspector reads it once for all items (prompts.inspector_prompt); lrtx9: the
         out.append(prompts.OWNER_SCOPE_NOTE)  # SWE1-05 packets lacked it and failed the recorded gaps
+        from .c_language_context import for_workspace
+
+        if note := for_workspace(ws):
+            out.append(note)
     if phase in ("SWE.2", "SWE.3"):  # the work order's peripheral (feature 009), as the builder sets it for agents
         prof = profile(ws)
         saved = prompts.PERIPHERAL["profile"]
@@ -66,7 +92,8 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     if phase != "SWE.1":
         files += [f for f in ("workproducts/SWE.1/software_requirements.md", "workproducts/SWE.1/register_effects.json")
                   if f not in files]
-    srcs = [S.source(ws, f, max_chars=MAX_FILE_CHARS) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
+    limit = source_char_limit(ws)
+    srcs = [S.source(ws, f, max_chars=limit) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
     for f in [f for f in files if f in ENGINE_FILES and (Path(ws) / f).is_file()]:
         data = (Path(ws) / f).read_bytes()
         note = json.dumps({"path": f, "sha256": sha256_bytes(data), "bytes": len(data), "content": ENGINE_NOTE}, indent=1)
@@ -76,6 +103,13 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
                       "budgets": m["budgets"], "upstream": m.get("upstream")}, indent=1)
     srcs.append({"path": ".forge-run/manifest.json#scope-target-budgets", "text": ctx,
                  "sha256": sha256_bytes(ctx.encode())})
+    from ..inspection.assessment_context import view
+
+    context = view(m)
+    if context is not None:
+        text = json.dumps(context, sort_keys=True)
+        srcs.append({"path": ".forge-run/manifest.json#inspection-assessment-context", "text": text,
+                     "sha256": sha256_bytes(text.encode())})
     return bl, srcs
 
 
@@ -90,7 +124,7 @@ def item_packet(ws: Path, phase: str, item: dict, bl: dict, srcs: list[dict], mo
     return S.packet(phase=phase, task=f"inspect:{item['id']}", role=f"swe{phase[-1]}-inspector", instructions=instr,
                     sources=srcs, criteria=[f"{item['id']}: {' '.join(str(item['criterion']).split())}"],
                     output_schema=VERDICT_SCHEMA, model=model, findings=findings, previous=previous,
-                    output_reserve=2048)
+                    output_reserve=2048, assessment_workspace=Path(ws))
 
 
 PENDING_RX = re.compile(r"pending|not (?:yet )?allocated|allocation review|no software safety requirement", re.I)
@@ -104,11 +138,11 @@ UPSTREAM_RX = re.compile(r"\bHSI\b|\bbudget|\bupstream\b|interface contract|safe
 LATER_RX = re.compile(r"no test (?:file|procedure|case|script)|test (?:file|procedure)s? (?:is|are)? ?(?:not )?"
                       r"(?:provided|present|available)|no (?:test )?evidence .{0,80}(?:measured|verified)|not "
                       r"(?:explicitly )?measured", re.I)
-# the negation must govern reset/startup within one clause ("do not specify failure handling, reset/startup ...",
-# "reset behaviour is not specified"); lrtx8: "do not specify safe states. While SWR-014 addresses startup" is not one
-NO_STARTUP_RX = re.compile(r"\b(?:no|not|without|missing|lacks?)\s+(?:[\w,]+\s+){0,4}?(?:reset|start-?up)\b|"
-                           r"\b(?:reset|start-?up)[/\w\s-]{0,30}?\b(?:is|are)\s+(?:not|missing|absent|unspecified)\b",
-                           re.I)
+# A no-write startup invariant refutes only an explicit denial of startup behaviour.
+# Register-reset bits/values/semantics are distinct obligations and must retain their findings.
+STARTUP_BEHAVIOUR = r"(?:reset(?:/start-?up)?|start-?up)\s+behaviou?r"
+NO_STARTUP_RX = re.compile(r"\b(?:no|not|without|missing|lacks?)\s+(?:[\w,]+\s+){0,4}?" + STARTUP_BEHAVIOUR + r"\b|"
+                           r"\b" + STARTUP_BEHAVIOUR + r"\s+(?:is|are)\s+(?:not|missing|absent|unspecified)\b", re.I)
 
 
 def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list[str]:
@@ -127,7 +161,7 @@ def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list
     known = set(re.findall(r"\*\*(SWR-\d{3})\*\*", text))
     gaps_p = ws / "traceability/upstream_gaps.md"
     recorded_gap = gaps_p.is_file() and "NOT_PROVIDED" in gaps_p.read_text()
-    startup = re.search(r"\*\*(SWR-\d{3})\*\*\s+(While no .*?after reset.*?)\n", text, re.I)
+    startup = re.search(r"\*\*(SWR-\d{3})\*\*\s+(" + STARTUP_NO_CALL + r"[^\n]*)\n", text, re.I)
     for f in findings:
         # lrtx7 (2026-10-21): the Claude inspector passed SWE1-01..06 of rc1 with the same recorded gaps; the Qwen
         # inspector failed them for the gap itself, for later-phase evidence and for a startup rule the document has
@@ -189,8 +223,7 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume
 
 def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
     from ..inspection.engine import Store
-    from ..mcp.sdk import ToolContext
-    from ..mcp.servers import evidence as EV
+    from . import tools as T
 
     ws = Path(ws)
     role = f"swe{phase[-1]}-inspector"
@@ -220,17 +253,16 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
                 issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
                 continue
             contested[it["id"]] = conf
-        verdicts[it["id"]] = {"verdict": d["verdict"], "findings": [f[:200] for f in d["findings"]],
+        verdicts[it["id"]] = {"verdict": d["verdict"], "findings": list(d["findings"]),
                               "evidence_refs": [f"configuration/baselines/{phase}/{bl['baseline_id']}.json",
                                                 *d["evidence_checked"][:8]]}
     if issues:  # incomplete: nothing is recorded (an aggregate never invents a verdict)
         return _reply(ws, phase, "FAILED", issues, budget)
     if st.latest_baseline(phase)["baseline_hash"] != bl["baseline_hash"]:
         return _reply(ws, phase, "FAILED", ["BASELINE_CHANGED_DURING_INSPECTION"], budget)
-    ctx = ToolContext(server="forge-evidence-mcp", op="check_inspection", role=role, phase=phase, workspace=ws,
-                      run_id=json.loads((ws / ".forge-run/manifest.json").read_text())["work_order"])
     try:
-        res = EV.check_inspection(ctx, EV.InspectIn(phase=phase, baseline_id=bl["baseline_id"], verdicts=verdicts))
+        res = T.call(ws, "forge-evidence-mcp", "check_inspection",
+                     {"phase": phase, "baseline_id": bl["baseline_id"], "verdicts": verdicts}, role, phase)
     except ValueError as exc:  # pydantic ValidationError: a contract mismatch is a factory finding, not a crash
         return _reply(ws, phase, "FAILED", [f"LRTX_INSPECTION_RECORD_REFUSED:{' '.join(str(exc).split())[:240]}"],
                       budget)

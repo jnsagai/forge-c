@@ -46,10 +46,16 @@ def _p(ws: Path) -> dict:
 
 
 def files(ws: Path) -> dict[str, str]:
+    from ..simulation_performance import selected
+
     pid = _p(ws)["id"]
-    return {"target": f"software/tests/target/test_{pid}_target.c",
-            "target_timeout": f"software/tests/target/test_{pid}_target_timeout.c",
-            "integration": f"software/tests/integration/test_{pid}_integration.c"}
+    result = {"target": f"software/tests/target/test_{pid}_target.c",
+              "target_timeout": f"software/tests/target/test_{pid}_target_timeout.c",
+              "integration": f"software/tests/integration/test_{pid}_integration.c"}
+    performance = selected(ws)
+    if performance:
+        result["target_performance"] = performance["test_source"]
+    return result
 
 
 def interface_ids(ws: Path) -> list[str]:
@@ -104,8 +110,23 @@ def file_packet(ws: Path, kind: str, model: str, findings=None, previous=None) -
                  f"from: {ifs}> SWC_LL */' (IT-001, IT-002 ...), and every CHECK id of that function starts with its "
                  "IT id (IT-001, IT-001-A ...; each id used once). main() clears the array, calls every test and "
                  "returns (failures == 0) ? 0 : 1. Expected values come from the requirements and their cases.")
+    artifacts = _context(ws)
+    if kind == "target_performance":
+        from .. import simulation_performance as performance
+
+        contract = {**performance.selected(ws), "measurement_symbols": performance.symbols(ws)}
+        text = json.dumps(contract, sort_keys=True)
+        artifacts.append({"path": "simulation-performance-contract", "text": text,
+                          "sha256": sha256_bytes(text.encode())})
+        instr += (" This is the opt-in performance stimulus program. Also include forge_performance_calls.h. "
+                  "Call every listed measurement symbol at least once with valid, bounded, specification-derived "
+                  "inputs and setup. A forge_measure_ wrapper has the original function's parameters and return "
+                  "type. Observe a functional result with TCHECK, using the requirements/model as the oracle. "
+                  "Do not estimate costs, add driver definitions, or invent timing TCHECKs. Independent Renode "
+                  "hooks measure completed calls, instructions and virtual time; other functional target and "
+                  "integration tests remain required. No physical hardware WCET claim.")
     return S.packet(phase=PHASE, task=f"file:{kind}", role="swe5-author", instructions=instr, sources=[],
-                    artifacts=_context(ws), criteria=["expected values from requirements/model, not the code",
+                    artifacts=artifacts, criteria=["expected values from requirements/model, not the code",
                                                       "every interface id is verified"],
                     output_schema=FILE_SCHEMA, model=model, findings=findings, previous=previous, output_reserve=4096)
 
@@ -115,6 +136,17 @@ def validate_file(ws: Path, kind: str, doc: dict) -> list[str]:
 
     p = _p(ws)
     code, out = doc["code"], []
+    if kind == "target_performance":
+        from .. import simulation_performance as performance
+        from ..brownfield.scope import strip_comments
+
+        # Textual validation assists bounded repair; only compiled, completed
+        # direct calls accepted by the independent observer prove coverage.
+        executable = strip_comments(code)
+        out += ["missing measurement call " + name for name in performance.symbols(ws)
+                if not re.search(r"\b" + re.escape(name) + r"\s*\(", executable)]
+        if '#include "forge_performance_calls.h"' not in code:
+            out.append("missing the forge_performance_calls.h include")
     known = set(re.findall(r"#define\s+(\w+)", _header(ws).read_text()))
     api = {f["name"] for f in interfaces(ws)["functions"]}
     ifs = set(interface_ids(ws))
@@ -183,7 +215,7 @@ def visit_tests(ws: Path, model: str, max_calls: int | None = None, resume: bool
     role = {a.id: a for a in load_agents()[0]}["swe5-author"]
     since = V.last_finished(ws, PHASE)
     budget, findings = V.open_visit(ws, PHASE, resume, lambda: V.rework_findings(ws, PHASE, since) if since else [],
-                                    max_calls or role.max_turns, time_budget_s)
+                                    V.author_call_limit(ws, PHASE, role.max_turns, max_calls), time_budget_s)
     try:
         return _visit_tests(ws, model, budget, findings)
     except V.Continue as c:

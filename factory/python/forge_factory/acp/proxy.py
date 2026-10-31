@@ -17,12 +17,15 @@ the gate servers are set in session/new instead (ACP mcpServers, each allowed wi
 _meta.claudeCode.options that remove every built-in tool and every settings source; the rest is identical.
 Everything denied is logged to .forge-run/acp/<node>.proxy.jsonl (method and reason, no content), and so is the
 token usage the agent reports in each prompt result (counts and model ID only; feature 007, CR-T029).
+A prompt that ends in a JSON-RPC error is logged as `prompt_error` (code + redacted, truncated message): the run's
+only workspace evidence that the agent backend was unavailable (F015: 'ACP turn failed' at sign-in, 2026-10-25).
 """
 from __future__ import annotations
 
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import threading
@@ -37,6 +40,7 @@ TOOL_NOTE = ("[factory tool note] You have no shell. Files: mcp__forge_fs__read_
              "list_dir, write_file, edit_file; load your skill with mcp__forge_fs__use_skill (skill_name = your role). "
              "Factory MCP operations keep their names (e.g. mcp__forge_build_mcp__compile). Writes outside your role "
              "scope are refused by policy.")
+SECRET = re.compile(r"(?i)(api[_-]?key|token|secret|password|bearer)\s*[:=]\s*\S+|sk-[A-Za-z0-9]{12,}|eyJ[\w-]{20,}")
 # CAPA-045 (r143-r154: Codex added prose to most replies; r153 SWE.1 blocked on two replies with no JSON at all).
 # Owner decision 2026-10-19: produce only what is expected. Appended LAST so it is the most recent instruction.
 REPLY_NOTE = ("[factory reply rule] Your final message must be exactly the JSON object the task asks for: no text "
@@ -49,6 +53,7 @@ def gate_servers(binding: Path, node: str, ws: Path) -> dict[str, dict]:
     keys = sorted(((run.get("run") or {}).get("agent") or {}).get("mcps", {}))
     env = {"PYTHONPATH": str(Path(__file__).resolve().parents[2]),
            "FORGE_STATE_DIR": os.environ.get("FORGE_STATE_DIR", str(data_root() / "state")),
+           "FORGE_DATA_ROOT": str(data_root()),
            "PATH": os.environ.get("PATH", "/usr/bin:/bin")}
 
     def srv(server: str) -> dict:
@@ -105,6 +110,7 @@ class Proxy:
         from ..policy.authz import Binding
 
         self.binding_path, self.node, self.kind = binding, node, agent
+        self.visit_budget_started = False
         self.prompts = set()  # ids of session/prompt requests whose results carry usage (feature 007)
         self.ws = Path(os.path.realpath(Binding.load(binding).workspace))
         self.fin, self.fout, self.lock = fin, fout, threading.Lock()
@@ -118,6 +124,7 @@ class Proxy:
                "CODEX_PATH": str(data_root() / codex_home.CODEX),
                "CODEX_CONFIG": json.dumps({"features": {f: False for f in codex_home.DISABLED_FEATURES},
                                         "model_verbosity": codex_home.VERBOSITY,
+                                        "developer_instructions": codex_home.REPLY_INSTRUCTIONS,
                                            "mcp_servers": gate_servers(binding, node, self.ws)})}
         argv = agent_argv or [str(data_root() / CODEX_ACP)]
         self.agent = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
@@ -154,6 +161,21 @@ class Proxy:
                               "disableBuiltInTools": True}
             self._log({"event": "session", "method": meth, "client_mcp_servers_dropped": dropped})
         elif meth == "session/prompt" and isinstance(p, dict) and isinstance(p.get("prompt"), list):
+            if getattr(self, "visit_budget_started", None) is False:
+                # ACP tool calls bypass Fabro's native pre-tool hook. Start the
+                # existing per-visit counter once for this proxy lifetime, not
+                # once per prompt/retry. Shared mission charges are untouched.
+                from ..policy.authz import Binding
+                from ..policy.fabro_hook import handle
+
+                binding = Binding.load(self.binding_path)
+                run = self.ws / ".forge-run/fabro_run_id"
+                rid = run.read_text().strip() if run.is_file() else "acp"
+                result = handle({"event": "stage_start", "run_id": rid, "node_id": self.node}, binding)
+                if not result.allow:
+                    raise ValueError("ACP_VISIT_BUDGET_START_REFUSED")
+                self.visit_budget_started = True
+                self._log({"event": "visit_budget_started", "run_id": rid, "node": self.node})
             if "id" in m:
                 if self.prompts is None:
                     self.prompts = set()
@@ -178,6 +200,11 @@ class Proxy:
             rec = usage_record(m["result"], claude_home.MODEL if self.kind == "claude" else codex_home.MODEL)
             if rec:
                 self._log(rec)
+        elif "id" in m and "error" in m and self.prompts and m["id"] in self.prompts:
+            self.prompts.discard(m["id"])
+            err = m["error"] if isinstance(m["error"], dict) else {"message": str(m["error"])}
+            self._log({"event": "prompt_error", "code": err.get("code"),
+                       "message": SECRET.sub("[REDACTED]", str(err.get("message", "")))[:160]})
         self.to_client(m)
 
     def run(self) -> int:

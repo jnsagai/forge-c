@@ -1,0 +1,9 @@
+{
+  "schema": "forge-c/production-agent-signing-delegation/1",
+  "authorization_id": "AUTH-014-OMNIVERSE2-GOLIVE-20261027-V1",
+  "owner_answer": "Authorize SSH-agent signing for this production grant",
+  "method": "ssh-keygen -Y sign -U with existing public agent identity; no private key read or copy",
+  "message_sha256": "556a477c0abf6f34e885ee6921bf239d3eb5b2d9686f295b21bb2381e18f1df8",
+  "signature_sha256": "cfc7caa01ff95e640c9b6bf69e46f106ef27f2c5ff075199f9d5cc4fefc5375a",
+  "scope": "EXACT_PREPARED_PRODUCTION_GRANT_ONLY"
+}

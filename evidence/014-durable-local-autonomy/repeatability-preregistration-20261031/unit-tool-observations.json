@@ -1,0 +1,106 @@
+{
+  "at": "2026-10-31T02:25:59.476000Z",
+  "observations": [
+    {
+      "at": "2026-10-31T02:19:34.816880Z",
+      "role": "swe4-author",
+      "op": "run_unit",
+      "status": "FAIL",
+      "summary": "unit: 1 passed, 1 failed (HOST)",
+      "issues": [
+        "DUPLICATE_TEST_ID:UT-001:used by 10 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-002:used by 10 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-003:used by 10 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-004:used by 3 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-005:used by 5 checks - give each check its own id",
+        "DUPLICATE_TEST_ID:UT-006:used by 7 checks - give each check its own id"
+      ],
+      "metrics": {
+        "environment": "host",
+        "executables": 1,
+        "failed": 1,
+        "passed": 1,
+        "target_evidence": false
+      }
+    },
+    {
+      "at": "2026-10-31T02:20:21.577828Z",
+      "role": "swe4-author",
+      "op": "validate_trace",
+      "status": "FAIL",
+      "summary": "12/12 requirements traced; 6 test links planned (test files are due at SWE.4)",
+      "issues": [
+        "TEST_ID_NOT_IN_FILE:UT-007:software/tests/unit/test_crc.c"
+      ],
+      "metrics": {
+        "planned_test_links": 6,
+        "requirements": 12,
+        "rows": 12,
+        "test_files_required": true,
+        "traced": 12
+      }
+    },
+    {
+      "at": "2026-10-31T02:23:59.183358Z",
+      "role": "swe4-author",
+      "op": "run_unit",
+      "status": "PASS",
+      "summary": "unit: 1 passed, 0 failed (HOST)",
+      "issues": [],
+      "metrics": {
+        "environment": "host",
+        "executables": 1,
+        "failed": 0,
+        "passed": 1,
+        "target_evidence": false
+      }
+    },
+    {
+      "at": "2026-10-31T02:24:02.578368Z",
+      "role": "swe4-author",
+      "op": "validate_trace",
+      "status": "PASS",
+      "summary": "12/12 requirements traced; 6 test links planned (test files are due at SWE.4)",
+      "issues": [],
+      "metrics": {
+        "planned_test_links": 6,
+        "requirements": 12,
+        "rows": 12,
+        "test_files_required": true,
+        "traced": 12
+      }
+    },
+    {
+      "at": "2026-10-31T02:24:02.770416Z",
+      "role": "swe4-author",
+      "op": "llvm_coverage",
+      "status": "PASS",
+      "summary": "line 100.0% branch None% MC/DC None% (host)",
+      "issues": [],
+      "metrics": {
+        "branch_pct": null,
+        "environment": "host",
+        "function_pct": 100,
+        "line_pct": 100,
+        "mcdc_pct": null,
+        "region_pct": 100,
+        "target_evidence": false
+      }
+    },
+    {
+      "at": "2026-10-31T02:25:00.386291Z",
+      "role": "swe4-author",
+      "op": "run_unit",
+      "status": "PASS",
+      "summary": "unit: 1 passed, 0 failed (HOST)",
+      "issues": [],
+      "metrics": {
+        "environment": "host",
+        "executables": 1,
+        "failed": 0,
+        "passed": 1,
+        "target_evidence": false
+      }
+    }
+  ]
+}

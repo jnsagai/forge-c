@@ -1,0 +1,26 @@
+{
+  "source_revision": "66c3d13d38b401129023b2a20b3e0239ef844f74",
+  "local": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "127",
+    "time": "18.854",
+    "timestamp": "2026-10-27T22:25:14.341466+00:00",
+    "hostname": "master"
+  },
+  "native_focused": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "11",
+    "time": "0.693",
+    "timestamp": "2026-10-27T22:28:53.528447+00:00",
+    "hostname": "omniverse2"
+  },
+  "native_broad": "FAILED_INCOMPLETE:missing_authoritative_volume_marker_in_isolated_fixture;interruption_transaction_teardown_error;private_log_retained",
+  "model_progress": "Two real durable requests reached QUIESCENT;RCC RUNNING;model resident25,460MiB. This is no product success claim.",
+  "formal_task_ledger": "30/58;NO_NEW_TASK_CLOSED"
+}

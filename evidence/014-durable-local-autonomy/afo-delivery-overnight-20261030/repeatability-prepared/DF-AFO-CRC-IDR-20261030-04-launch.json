@@ -1,0 +1,19 @@
+{
+  "example": "examples/0014g-st-crc-idr-qwen-delivery",
+  "profile": "local-rtx-v2-omniverse2-q38-delivery-first",
+  "model_profile": "qwen3.8:27b-q8_0",
+  "model": "qwen3.8:27b-q8_0",
+  "provider": "ollama",
+  "purpose": "QM",
+  "evaluation_holdout": true,
+  "product_role_trial": {
+    "path": "afo/product-role-trials/852b655778a7db4d96de78b066fd9e753dd2a7aa89a9121cb4acdc50cb90db5c.json",
+    "sha256": "852b655778a7db4d96de78b066fd9e753dd2a7aa89a9121cb4acdc50cb90db5c"
+  },
+  "product_attempt_token_reservations": [
+    67108864
+  ],
+  "mission_id": "mission-feature014-delivery-first-20261030",
+  "scope_sha256": "0fe46b9d80ac8fe680b2de88304a4621fdcdb3b3beeff5dbe37a50de98a1f3b2",
+  "candidate_reuse": false
+}

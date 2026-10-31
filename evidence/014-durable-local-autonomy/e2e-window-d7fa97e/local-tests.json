@@ -1,0 +1,30 @@
+[
+  {
+    "revision": "a74c3a6a09d3c9b4dc76c9877d2e3da0648a336e+new-regression",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "1",
+      "skipped": "0",
+      "tests": "15",
+      "time": "0.487",
+      "timestamp": "2026-10-28T12:33:26.039809+00:00",
+      "hostname": "master"
+    },
+    "junit_sha256": "51df6a834f8ab2d4e5cce2be168571c07731595833cceddb7fc1ca718c3caee0"
+  },
+  {
+    "revision": "a74c3a6a09d3c9b4dc76c9877d2e3da0648a336e+d7fa97e-patch",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "101",
+      "time": "20.172",
+      "timestamp": "2026-10-28T12:33:56.937768+00:00",
+      "hostname": "master"
+    },
+    "junit_sha256": "fc84c7f47f129115168ef5c6f6c3d7c7ce6ba18ae251319d3c21ccfda2af5f76"
+  }
+]

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/mnt/data/forge-c/production-local-014/deployment/afo-repair-live-20261029-v1/enrol-afo-repair.py", line 69, in <module>
+    assert not preflight,preflight
+           ^^^^^^^^^^^^^
+AssertionError: ['MODEL_GATEWAY_UNAVAILABLE']

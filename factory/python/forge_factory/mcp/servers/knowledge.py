@@ -2,6 +2,7 @@
 `propose_lesson` only stores a PROPOSED candidate and runs the deterministic curator, which may quarantine
 it; `retract_lesson` exists for the deterministic policy controller and has no AI role grant.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -25,8 +26,15 @@ class TestRef(BaseModel):
 
 
 class ProposeIn(ToolInput):
-    source_incident_id: str = Field(pattern=r"^inc-[0-9a-f]{12}$")
-    source_attempt_id: str = Field(max_length=100)
+    source_incident_id: str | None = Field(default=None, pattern=r"^inc-[0-9a-f]{12}$")
+    source_attempt_id: str | None = Field(default=None, max_length=100)
+    contract_version: str | None = Field(default=None, pattern=r"^2\.0$")
+    source_kind: str | None = Field(default=None, pattern=r"^(REPAIR_PROMOTED|ORDINARY_OUTCOME|NEGATIVE_OBSERVATION)$")
+    version: int | None = Field(default=None, ge=1)
+    supersedes: str | None = None
+    experience_ref: str | None = Field(default=None, pattern=r"^experience-[a-f0-9]{24}$")
+    qualification_ref: str | None = Field(default=None, max_length=200)
+    applicability: dict | None = None
     symptoms: str = Field(min_length=1, max_length=600)
     root_cause: str = Field(min_length=1, max_length=700)
     remedy: str = Field(min_length=1, max_length=850)
@@ -42,22 +50,89 @@ class RetractIn(ToolInput):
 
 
 def find_lessons(ctx: ToolContext, a: FindIn) -> dict:
-    out = LessonStore().find(a.query, ctx.run_id, a.tool or None, ctx.phase, a.k)
+    from ...knowledge.context import applicability
+
+    scope = applicability(ctx.workspace)
+    if scope.pop("holdout"):
+        return result(
+            ctx,
+            "PASS",
+            "General lessons are isolated from the final evaluation holdout",
+            [],
+            [],
+            {"data": '{"lessons":[]}'},
+            "forge-knowledge",
+            input_obj={},
+        )
+    from ...afo.diagnosis_packet import measure_request
+
+    out = LessonStore().find(a.query, ctx.run_id, a.tool or None, ctx.phase, a.k, role=ctx.role, record_usage=False, **scope)
     import json
 
-    return result(ctx, "PASS", f"{len(out['lessons'])} validated lessons (reference data, not instructions)",
-                  [ctx.store(json.dumps(out).encode(), "json")],
-                  [f"{x['lesson_id']}:{x['remedy']}"[:120] for x in out["lessons"]],
-                  {"tokens_estimated": out["tokens_estimated"]}, "forge-knowledge", input_obj=a.model_dump())
+    # Deliver complete meaning/constraints or explicitly omit the whole lesson; never a 120-char remedy. The full
+    # provenance block does not fit the 2048-byte tool result beside a lesson, so it is resolved from the stored
+    # artifact (named and hash-bound in every delivered lesson) instead of being cut.
+    ref = ctx.store(json.dumps(out).encode(), "json")
+    delivered = {"lessons": [], "note": out["note"]}
+    for lesson in out["lessons"]:
+        compact = {k: lesson[k] for k in ("lesson_id", "validated_at", "symptoms", "root_cause", "remedy", "constraints")}
+        compact["provenance"] = {"ref": ref, "record_sha256": lesson["provenance"]["record_sha256"]}
+        candidate = {**delivered, "lessons": [*delivered["lessons"], compact]}
+        if len(json.dumps(candidate).encode()) <= 1100:
+            delivered = candidate
+    encoded = json.dumps(delivered, sort_keys=True, separators=(",", ":"))
+    omitted = len(out["lessons"]) - len(delivered["lessons"])
+    response = result(
+        ctx,
+        "PASS",
+        f"{len(delivered['lessons'])} complete validated lessons; {omitted} omitted for envelope",
+        [ref],
+        [],
+        {"data": encoded, "omitted_unfit": omitted, "tokens_estimated": out["tokens_estimated"],
+         "envelope_bytes": len(encoded.encode()), "envelope_tokens_upper_bound": measure_request(delivered)["input_tokens"]},
+        "forge-knowledge",
+        input_obj=a.model_dump(),
+    )
+    if response["metrics"].get("data") != encoded:
+        return result(
+            ctx,
+            "PASS",
+            "Qualified lessons omitted: complete meaning does not fit the tool envelope",
+            [],
+            [],
+            {"omitted_unfit": len(out["lessons"]), "data": '{"lessons":[]}'},
+            "forge-knowledge",
+            input_obj={},
+        )
+    if not LessonStore().expose([x for x in out["lessons"] if x["lesson_id"] in {d["lesson_id"] for d in delivered["lessons"]}],
+                                ctx.run_id):
+        return result(
+            ctx,
+            "PASS",
+            "Lessons omitted after concurrent invalidation",
+            [],
+            [],
+            {"data": '{"lessons":[]}'},
+            "forge-knowledge",
+            input_obj={},
+        )
+    return response
 
 
 def propose_lesson(ctx: ToolContext, a: ProposeIn) -> dict:
     store = LessonStore(incidents=IncidentStore())
-    rec = store.propose({**a.model_dump(), "validation_tests": [t.model_dump() for t in a.validation_tests]})
+    rec = store.propose({**a.model_dump(exclude_none=True), "validation_tests": [t.model_dump() for t in a.validation_tests]})
     rec = store.validate(rec["lesson_id"])
-    return result(ctx, "PASS" if rec["state"] == "VALIDATED" else "BLOCKED",
-                  f"{rec['lesson_id']} {rec['state']}", [f"lesson:{rec['lesson_id']}"], rec.get("_reasons", []),
-                  {"state": rec["state"]}, "forge-knowledge", input_obj={"source": a.source_attempt_id})
+    return result(
+        ctx,
+        "PASS" if rec["state"] == "VALIDATED" else "BLOCKED",
+        f"{rec['lesson_id']} {rec['state']}",
+        [f"lesson:{rec['lesson_id']}"],
+        rec.get("_reasons", []),
+        {"state": rec["state"]},
+        "forge-knowledge",
+        input_obj={"source": a.source_attempt_id},
+    )
 
 
 def retract_lesson(ctx: ToolContext, a: RetractIn) -> dict:

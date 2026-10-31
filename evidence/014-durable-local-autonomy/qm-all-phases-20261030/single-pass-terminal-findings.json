@@ -1,0 +1,104 @@
+{
+  ".forge-run/lrtx/SWE.1/packets/requirements__crosscutting.json": {
+    "task": "requirements:crosscutting",
+    "status": "INVALID",
+    "errors": [
+      "CALL_REFUSED:DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"
+    ],
+    "attempts": [
+      {
+        "errors": [
+          "the cross-cutting task must state the reset/startup behaviour, e.g. 'While no LL function has been called after reset, the RCC LL driver shall not write any RCC register.' (verified_by target_robot_test)"
+        ],
+        "finish_reason": "stop",
+        "usage": {
+          "completion_tokens": 11041,
+          "prompt_tokens": 3204,
+          "prompt_tokens_details": {
+            "cached_tokens": 541
+          },
+          "total_tokens": 14245
+        },
+        "wall_ms": 196295.2
+      },
+      {
+        "errors": [
+          "CALL_REFUSED:DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"
+        ],
+        "finish_reason": null,
+        "usage": null,
+        "wall_ms": 0
+      }
+    ]
+  },
+  ".forge-run/lrtx/SWE.2/packets/interfaces.json": {
+    "task": "interfaces",
+    "status": "INVALID",
+    "errors": [
+      "CALL_REFUSED:DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"
+    ],
+    "attempts": [
+      {
+        "errors": [
+          "SWR-000 is not a functional requirement of this task (component-level or unknown)"
+        ],
+        "finish_reason": "stop",
+        "usage": {
+          "completion_tokens": 3990,
+          "prompt_tokens": 1569,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 5559
+        },
+        "wall_ms": 82483.3
+      },
+      {
+        "errors": [
+          "CALL_REFUSED:DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"
+        ],
+        "finish_reason": null,
+        "usage": null,
+        "wall_ms": 0
+      }
+    ]
+  },
+  "phase_steps": {
+    "SWE.1": [
+      "author",
+      "demonstration_snapshot",
+      "inspect"
+    ],
+    "SWE.2": [
+      "author",
+      "demonstration_snapshot",
+      "inspect"
+    ],
+    "SWE.3": [
+      "author",
+      "demonstration_snapshot",
+      "inspect",
+      "verify"
+    ],
+    "SWE.4": [
+      "author",
+      "demonstration_snapshot",
+      "inspect"
+    ],
+    "SWE.5": [
+      "author",
+      "demonstration_snapshot",
+      "inspect"
+    ],
+    "SWE.6": [
+      "author",
+      "demonstration_snapshot",
+      "inspect"
+    ]
+  },
+  "package": {
+    "package_status": "BLOCKED",
+    "archive_sha256": "cc9044697a328b9f8ce2c8a2074b72d854bc007bfd27b0bf4ee81b756445ae00",
+    "gap_count": 49
+  }
+}

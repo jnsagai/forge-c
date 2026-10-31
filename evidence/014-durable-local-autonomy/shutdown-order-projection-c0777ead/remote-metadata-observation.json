@@ -1,0 +1,70 @@
+{
+  "after": {
+    "current_time": "2026-10-31 08:39:43 UTC"
+  },
+  "before": {
+    "current_time": "2026-10-31 08:39:33 UTC"
+  },
+  "decoded_observation": {
+    "configured_authorizations": [
+      {
+        "authorization_id": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+        "expired_by_host_clock": true,
+        "expires_utc": "2026-10-31T07:57:59Z"
+      },
+      {
+        "authorization_id": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V2",
+        "expired_by_host_clock": true,
+        "expires_utc": "2026-10-31T07:57:59Z"
+      },
+      {
+        "authorization_id": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V3",
+        "expired_by_host_clock": true,
+        "expires_utc": "2026-10-31T07:57:59Z"
+      },
+      {
+        "authorization_id": "AUTH-014-DF-AFO-OVERNIGHT-20261031-V4",
+        "expired_by_host_clock": true,
+        "expires_utc": "2026-10-31T07:57:59Z"
+      },
+      {
+        "authorization_id": "AUTH-014-DF-AFO-ROLES-20261030-V2",
+        "expired_by_host_clock": true,
+        "expires_utc": "2026-10-31T07:57:59Z"
+      },
+      {
+        "authorization_id": "AUTH-014-DF-AFO-ROLES-20261030-V3",
+        "expired_by_host_clock": true,
+        "expires_utc": "2026-10-31T07:57:59Z"
+      },
+      {
+        "authorization_id": "AUTH-014-DF-AFO-ROLES-20261031-V4",
+        "expired_by_host_clock": true,
+        "expires_utc": "2026-10-31T07:57:59Z"
+      },
+      {
+        "authorization_id": "AUTH-014-DF-AFO-ROLES-20261031-V4B",
+        "expired_by_host_clock": true,
+        "expires_utc": "2026-10-31T07:57:59Z"
+      }
+    ],
+    "effective_stop": true,
+    "held_executions": 0,
+    "host_clock_utc": "2026-10-31T08:38:36.043385+00:00",
+    "inference_owner": [
+      null,
+      12
+    ],
+    "nonquiescent_requests": 0,
+    "operations_epoch": 7,
+    "operations_mode": "STOPPED",
+    "scope": "READ_ONLY_METADATA_NOT_NEW_KERNEL_OR_SIGNATURE_OR_MODEL_QUALIFICATION"
+  },
+  "result": {
+    "chunk_id": "96b19d",
+    "exit_code": 0,
+    "original_token_count": 344,
+    "output": "{\"scope\": \"READ_ONLY_METADATA_NOT_NEW_KERNEL_OR_SIGNATURE_OR_MODEL_QUALIFICATION\", \"host_clock_utc\": \"2026-10-31T08:38:36.043385+00:00\", \"operations_mode\": \"STOPPED\", \"operations_epoch\": 7, \"effective_stop\": true, \"inference_owner\": [null, 12], \"held_executions\": 0, \"nonquiescent_requests\": 0, \"configured_authorizations\": [{\"authorization_id\": \"AUTH-014-DF-AFO-OVERNIGHT-20261030-V1\", \"expires_utc\": \"2026-10-31T07:57:59Z\", \"expired_by_host_clock\": true}, {\"authorization_id\": \"AUTH-014-DF-AFO-OVERNIGHT-20261030-V2\", \"expires_utc\": \"2026-10-31T07:57:59Z\", \"expired_by_host_clock\": true}, {\"authorization_id\": \"AUTH-014-DF-AFO-OVERNIGHT-20261030-V3\", \"expires_utc\": \"2026-10-31T07:57:59Z\", \"expired_by_host_clock\": true}, {\"authorization_id\": \"AUTH-014-DF-AFO-OVERNIGHT-20261031-V4\", \"expires_utc\": \"2026-10-31T07:57:59Z\", \"expired_by_host_clock\": true}, {\"authorization_id\": \"AUTH-014-DF-AFO-ROLES-20261030-V2\", \"expires_utc\": \"2026-10-31T07:57:59Z\", \"expired_by_host_clock\": true}, {\"authorization_id\": \"AUTH-014-DF-AFO-ROLES-20261030-V3\", \"expires_utc\": \"2026-10-31T07:57:59Z\", \"expired_by_host_clock\": true}, {\"authorization_id\": \"AUTH-014-DF-AFO-ROLES-20261031-V4\", \"expires_utc\": \"2026-10-31T07:57:59Z\", \"expired_by_host_clock\": true}, {\"authorization_id\": \"AUTH-014-DF-AFO-ROLES-20261031-V4B\", \"expires_utc\": \"2026-10-31T07:57:59Z\", \"expired_by_host_clock\": true}]}\n",
+    "wall_time_seconds": 0.08729547
+  }
+}

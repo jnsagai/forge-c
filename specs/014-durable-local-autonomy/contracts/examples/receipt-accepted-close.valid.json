@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "receipt_id": "rcpt-example-001",
+  "revision": 2,
+  "previous_receipt_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "created_at": "2026-10-25T10:00:00Z",
+  "mission_id": "mission-example",
+  "order_id": "order-example",
+  "attempt_id": "attempt-example",
+  "job_id": "job-example",
+  "case_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "launch_nonce": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "proposal_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "proposal_hash_basis": "CANONICAL_JSON",
+  "proposal_ref": "proposal:example",
+  "decision": "CLOSE_BLOCKED",
+  "submission_state": "STORED",
+  "admissibility_state": "ACCEPTED",
+  "admissibility_receipt_ref": "admission:example",
+  "bound_plan": {
+    "plan_id": "afo-plan-example",
+    "artifact_ref": "plan:example",
+    "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "execution_state": "NOT_APPLICABLE",
+  "execution_id": null,
+  "verification_receipt_ref": null,
+  "reason_codes": []
+}

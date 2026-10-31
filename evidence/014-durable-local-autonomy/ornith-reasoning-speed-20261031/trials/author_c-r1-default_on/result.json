@@ -1,0 +1,68 @@
+{
+  "case": "author_c",
+  "config": "default_on",
+  "generation": {
+    "final_characters": 997,
+    "finish_reason": "stop",
+    "first_generated_token_seconds": 0.23078315472230315,
+    "reasoning_content_collected": false,
+    "reasoning_tokens_retokenized": 4229,
+    "timings": {
+      "cache_n": 0,
+      "predicted_ms": 29939.749,
+      "predicted_n": 4563,
+      "predicted_per_second": 152.37268689193084,
+      "predicted_per_token_ms": 6.562855984217449,
+      "prompt_ms": 127.119,
+      "prompt_n": 296,
+      "prompt_per_second": 2328.5268134582557,
+      "prompt_per_token_ms": 0.4294560810810811
+    },
+    "usage": {
+      "completion_tokens": 4563,
+      "prompt_tokens": 296,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 4859
+    },
+    "wall_seconds": 30.170608952641487
+  },
+  "gpu_after": {
+    "columns": [
+      "memory_MiB",
+      "gpu_percent",
+      "temperature_C",
+      "power_W",
+      "sm_MHz"
+    ],
+    "exit_code": 0,
+    "rows": [
+      "42742, 95, 79, 281.78, 2700"
+    ]
+  },
+  "gpu_before": {
+    "columns": [
+      "memory_MiB",
+      "gpu_percent",
+      "temperature_C",
+      "power_W",
+      "sm_MHz"
+    ],
+    "exit_code": 0,
+    "rows": [
+      "42742, 95, 74, 270.04, 2715"
+    ]
+  },
+  "repeat": 1,
+  "request_sha256": "408da2b3726709f1282558d79e607620c1ba3bc96ca4bd96965ec942afa69230",
+  "trial": "author_c-r1-default_on",
+  "verification": {
+    "candidate_sha256": "635c121e94de1cb71f2490e48d7b306276f806150fbfc2676516f2aa10c90b2d",
+    "compile_exit": 0,
+    "oracle_exit": 1,
+    "oracle_summary": "checks=31878 failures=21",
+    "status": "FAIL",
+    "verification_seconds": 0.0777411381714046
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "command": [
+    [
+      "python",
+      "specs/014-durable-local-autonomy/validate_spec.py"
+    ],
+    [
+      "python",
+      "specs/014-durable-local-autonomy/contracts/validate_contracts.py"
+    ],
+    [
+      "python",
+      "tests/spec/validate_design.py"
+    ]
+  ],
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-implementation",
+  "document_snapshot_sha256": {
+    "evidence/014-durable-local-autonomy/acceptance-evidence-map.json": "df21bd8d3de3bdac9e0ce7beee19fe7b853fe1e1a69caf66c52936b6db41dcbf",
+    "evidence/014-durable-local-autonomy/implementation-status.json": "502f7c7cc585e156fb38697cd176bdac886bb999313892e7fbd958d5893121b1",
+    "specs/014-durable-local-autonomy/acceptance-tests.md": "88b89262768c966894542b235aeb5512387b8ae3f8e527f3b64e200bc5794892",
+    "specs/014-durable-local-autonomy/implementation-status.csv": "ff23e484cd98d0bd5c046d9669ed9868fdbc42a4d61faf07ad2561dd0b1c3dd9",
+    "specs/014-durable-local-autonomy/tasks.md": "35efcfb091a3110ee354953d8cd9ee91fe52c95509c0d2a57ec018a772943fa9",
+    "specs/014-durable-local-autonomy/validation.md": "58760ffaac6de6cc8a693290eb94960e6c6c14b4e9618e7447f5b00ed990d922"
+  },
+  "duration_s": null,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "17e6cbde02bbe87ca21bce27a9a0728b80ccc351",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/DA014-docs/20261025T130055.log",
+  "log_sha256": "5cdcf685ac55e2eb5e8a966ee5a9c3637cdb897bcc19928d26fc0cbbf2924929",
+  "schema": "forge-c/task-evidence/0.4",
+  "scope": "SPECIFICATION_CONTRACTS_DESIGN_AND_EVIDENCE_CONSISTENCY_ONLY_NOT_RUNTIME_QUALIFICATION",
+  "status": "PASS",
+  "task": "DA014-docs",
+  "ts_utc": "2026-10-25T13:00:55.754676+00:00"
+}

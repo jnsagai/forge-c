@@ -15,7 +15,7 @@ import urllib.request
 from pathlib import Path
 from urllib.parse import urlparse
 
-from ..common import REPO_ROOT, sha256_file
+from ..common import REPO_ROOT, sha256_bytes
 
 PROFILE_DIR = REPO_ROOT / "config/factory/profiles"
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
@@ -35,11 +35,54 @@ def load(profile_id: str, directory: Path | None = None) -> dict:
     p = (directory or PROFILE_DIR) / f"{profile_id}.yaml"
     if not p.is_file():
         raise ProfileRefused([f"PROFILE_UNKNOWN:{profile_id}"])
-    data = yaml.safe_load(p.read_text())
+    raw = p.read_bytes()
+    data = yaml.safe_load(raw.decode("utf-8"))
     if data.get("schema") != "forge-c/local-profile/1" or data.get("id") != profile_id:
         raise ProfileRefused([f"PROFILE_INVALID:{profile_id}"])
     return {**data, "_path": str(p.relative_to(REPO_ROOT) if p.is_relative_to(REPO_ROOT) else p),
-            "_sha256": sha256_file(p)}
+            "_sha256": sha256_bytes(raw)}
+
+
+def role_job_tokens(prof: dict, role: str, registry_default: int) -> int:
+    """Prospective per-job capacity, not a capability receipt or mission allowance.
+
+    Profiles without an AFO override keep the role registry unchanged. The
+    controller must separately bind the profile and enforce its signed policy
+    and cumulative mission. A multi-turn job may spend more than one context:
+    every individual request still passes independent context admission.
+    Never clamp an invalid configured envelope.
+    """
+    afo = prof.get("afo", {})
+    if not isinstance(afo, dict):
+        raise ProfileRefused(["PROFILE_ROLE_ENVELOPE_INVALID"])
+    limits = afo.get("role_job_tokens", {})
+    try:
+        context = int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ProfileRefused(["PROFILE_ROLE_ENVELOPE_INVALID"]) from exc
+    if (not isinstance(limits, dict)
+            or context < 1
+            or not set(limits) <= {"afo-recovery-planner", "afo-factory-maintainer"}
+            or any(type(n) is not int or n <= 0 for n in limits.values())):
+        raise ProfileRefused(["PROFILE_ROLE_ENVELOPE_INVALID"])
+    return limits.get(role, registry_default)
+
+
+def semantic_configuration(manifest: dict) -> dict:
+    """Resolve the existing semantic profile authority and validate new frozen bindings."""
+    local = manifest.get("local_profile") or {}
+    if not isinstance(local, dict):
+        raise ProfileRefused(["PROFILE_BINDING_INVALID"])
+    prof = load(local.get("id", "local-rtx-v2"))
+    engine = prof["safec"]["engine"]
+    if (engine["semantic_profile"] == "register-io-0.2" or "semantic_profile" in local) and (
+            local.get("id") != prof["id"]
+            or local.get("semantic_profile") != engine["semantic_profile"]
+            or type(local.get("version")) is not int or local["version"] != prof["version"]
+            or local.get("config") != prof["_path"]
+            or local.get("config_sha256") != prof["_sha256"]):
+        raise ProfileRefused(["PROFILE_BINDING_CHANGED_OR_MISSING"])
+    return prof
 
 
 def selection_issues(prof: dict, *, model: str, provider: str, code_model: str | None, acp_authors: str | None,
@@ -196,7 +239,7 @@ def select(profile_id: str, *, model: str, provider: str, code_model: str | None
     issues += [f"MODEL_IDENTITY_{m['status']}:{m['model']}" for m in models if m["status"] != "MATCH"]
     if issues:
         raise ProfileRefused(issues)
-    return {"id": prof["id"], "version": prof["version"], "status": prof["status"], "config": prof["_path"],
+    record = {"id": prof["id"], "version": prof["version"], "status": prof["status"], "config": prof["_path"],
             "config_sha256": prof["_sha256"], "local_only": True, "provider": prof["provider"], "models": models,
             "runtime": runtime_record(env), "admission": prof["admission"],
             "timeout_scale": prof["runtime"]["timeout_scale"],
@@ -206,3 +249,8 @@ def select(profile_id: str, *, model: str, provider: str, code_model: str | None
                                      "name alone is not enforcement"},
             "roots": {k: str(Path(env[k]).resolve()) for k in prof["deployment"]["writable_env"]},
             "qualification": "NOT_QUALIFIED (feature 010 acceptance pending)"}
+    semantic = ((prof.get("safec") or {}).get("engine") or {}).get("semantic_profile")
+    if semantic == "register-io-0.2":
+        # The frozen marker makes a later profile downgrade detectable too.
+        record["semantic_profile"] = semantic
+    return record

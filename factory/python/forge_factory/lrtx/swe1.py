@@ -18,17 +18,22 @@ import json
 import re
 from pathlib import Path
 
-from ..common import sha256_bytes, utc_now
+from ..common import canonical_json, sha256_bytes, utc_now
+from ..inspection.ears import RESET_AFTER, STARTUP_NO_CALL
 from . import structured as S
 from . import visit as V
 
 MAX_FIELDS = 5
+SCOPE_COVERAGE_RULE = (
+    "A REGISTER.FIELD explicitly named in the in-scope work-order text must not be listed in not_covered. "
+    "A verifier limitation is an unresolved verification gap, not permission to remove a requested field."
+)
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 REQS = "workproducts/SWE.1/software_requirements.md"
 CSV = "traceability/requirements_to_tests.csv"
 GAPS = "traceability/upstream_gaps.md"
 SAFETY = "safety/software_safety_requirements.md"
-STARTUP = re.compile(r"^\s*While no .*after reset", re.I)
+STARTUP = re.compile(r"^\s*" + STARTUP_NO_CALL, re.I)
 
 EFFECT_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["case", "register", "field", "op", "value"],
                  "properties": {"case": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,47}$"},
@@ -83,8 +88,20 @@ def inventory(ws: Path) -> dict:
 
     ws = Path(ws)
     prof, pfx, secs = profile(ws), register_prefix(ws), _section_files(ws)
+    manifest = _manifest(ws)
+    local = manifest.get("local_profile") or {}
+    structured = {}
+    if local.get("id"):
+        from .profile import load
+
+        structured = load(local["id"]).get("structured") or {}
+    selected = list(prof["rm"]["key_sections"])
+    if structured.get("complete_scope_sections") is True:
+        from .obligations import scope_sections
+
+        selected = scope_sections(manifest["scope"], prof["rm"]["doc"], selected)
     regs, missing = [], []
-    for num in prof["rm"]["key_sections"]:
+    for num in selected:
         s = secs.get(num)
         if s is None:
             missing.append(num)
@@ -103,20 +120,28 @@ def inventory(ws: Path) -> dict:
                                                     "description": desc.get(k, "")}
                                                 for k, v in r["fields"].items()}})
     items = [f"{r['register']}.{f}" for r in regs for f in r["fields"]]
-    return {"schema": "forge-c/lrtx-swe1-inventory/1", "registers": regs, "items": items, "missing_sections": missing,
-            "generated_at": utc_now()}
+    inv = {"schema": "forge-c/lrtx-swe1-inventory/1", "registers": regs, "items": items, "missing_sections": missing,
+           "generated_at": utc_now()}
+    if structured.get("complete_scope_sections") is True:
+        inv["scope_sections"] = {"document": prof["rm"]["doc"], "catalog_seeds": prof["rm"]["key_sections"],
+                                 "required_sections": selected, "basis": "LITERAL_OWNER_REFERENCES_AND_CATALOG"}
+    if structured.get("coherent_scope_groups") is True:
+        from .obligations import scope_field_sets
+
+        inv["coherent_field_sets"] = scope_field_sets(manifest["scope"])
+    return inv
 
 
 def groups(inv: dict) -> list[dict]:
     """One packet per register, split at MAX_FIELDS fields (field order of the RM section kept)."""
+    from .obligations import partition
+
     out = []
     for r in inv["registers"]:
         names = list(r["fields"])
-        n = -(-len(names) // MAX_FIELDS) or 1  # balanced parts, none larger than MAX_FIELDS
-        size = -(-len(names) // n) if names else 0
-        for i in range(0, len(names), size or 1):
-            part = names[i:i + size]
-            gid = f"{r['register']}" + (f"_{i // size + 1}" if n > 1 else "")
+        parts = partition(r["register"], names, inv.get("coherent_field_sets", []), MAX_FIELDS)
+        for i, part in enumerate(parts):
+            gid = f"{r['register']}" + (f"_{i + 1}" if len(parts) > 1 else "")
             out.append({"id": gid, "register": r["register"], "section": r["section"], "file": r["file"],
                         "pages": r["pages"], "fields": {f: r["fields"][f] for f in part}})
     return out
@@ -178,7 +203,23 @@ def out_of_scope_named(ws: Path) -> set[str]:
     return set(re.findall(rf"\b{register_prefix(ws)}_[A-Z0-9]+(?:\.[A-Z0-9_]+)?\b", out_txt))
 
 
+def required_scope_exclusions(ws: Path, doc: dict, g: dict) -> list[str]:
+    """Enforce explicit owner scope only; unmentioned hardware fields acquire no new requirement."""
+    text = " ".join(x for x in _manifest(ws)["scope"] if not x.lower().startswith("out of scope"))
+    excluded = {x["field"] if "." in x["field"] else f"{g['register']}.{x['field']}"
+                for x in doc["not_covered"]}
+    required = []
+    for field in g["fields"]:
+        full = f"{g['register']}.{field}"
+        if full in excluded and re.search(rf"(?<![\w.]){re.escape(full)}(?![\w.])", text):
+            required.append(full)
+    return [f"REQUIRED_SCOPE_FIELD_EXCLUDED:{full}: keep the requested scope and report the verification gap"
+            for full in sorted(required)]
+
+
 def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = None, previous: dict | None = None) -> dict:
+    from .c_language_context import for_workspace
+
     m = _manifest(ws)
     sysname = system_name(ws)
     hints = scope_hints(ws, g)
@@ -190,7 +231,8 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
              "other registers are separate tasks, and reset/startup behaviour and rules for all functions belong to a "
              "separate cross-cutting task - never write them here. Every requirement of this task names a field of this "
              "task as REGISTER.FIELD. For every field of this task either write the requirements the scope "
-             "demands for it or list it in not_covered with the scope reason. Each statement uses EARS "
+             "demands for it or list it in not_covered with the scope reason. " + SCOPE_COVERAGE_RULE +
+             " Each statement uses EARS "
              f"(The/When/While/Where/If..then), exactly one 'shall', the subject 'the {sysname}', and ends with a period; "
              "name the field as REGISTER.FIELD. verification states the test and its pass criterion ('... passes "
              "when ...'), checking register bits and return values on the register array - never a count of register "
@@ -201,6 +243,8 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
     crit = [f"every requirement's subject is exactly 'the {sysname}'", "every field of the task is covered or listed "
             "in not_covered", "every effect names a field of this task that its statement names",
             "a statement that sets, clears or writes a field has an effect for it"]
+    if note := for_workspace(ws):
+        instr += " " + note
     return S.packet(phase="SWE.1", task=f"requirements:{g['id']}", role="swe1-author", instructions=instr,
                     sources=[S.source(ws, g["file"])], criteria=crit, output_schema=GROUP_SCHEMA, model=model,
                     findings=findings, previous=previous)
@@ -208,6 +252,8 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
 
 def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list[str] | None = None,
                     previous: dict | None = None) -> dict:
+    from .c_language_context import for_workspace
+
     m = _manifest(ws)
     sysname = system_name(ws)
     listing = "\n".join(f"- [{r['key']}] {r['statement']}" for r in functional)
@@ -220,9 +266,12 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
              "(e.g. that a write changes only the named bits). Work-order scope: " + " | ".join(m["scope"]) +
              f". Coverage rules: {coverage_guidance(ws)} "
              "Do NOT write flash/RAM/stack budget requirements: the factory adds them from the owner's work-order "
-             "budgets. Same statement, verification and source_page rules as the register tasks; reset/startup "
-             "requirements are target_robot_test. effects stay empty unless a statement sets, clears or writes a named "
-             "field. not_covered stays empty.")
+             "budgets. Every statement uses EARS (The/When/While/Where/If..then), exactly one 'shall', "
+             f"the subject 'the {sysname}', and ends with a period. "
+             "verification states the test and its explicit pass criterion ('... passes when ...'). "
+             "source_page is the RM0486 page supporting the requirement, from the provided sources. "
+             "Reset/startup requirements are target_robot_test. effects stay empty unless a statement sets, clears or writes a "
+             "named field. not_covered stays empty.")
     art = {"path": "lrtx:functional_requirements", "text": listing, "sha256": sha256_bytes(listing.encode())}
     secs = _section_files(ws)
     from ..layer import profile
@@ -230,6 +279,8 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
     chapter = str(profile(ws)["rm"]["chapter"])
     func = [n for n, s in secs.items() if n.startswith(chapter + ".") and "functional" in s["title"].lower()]
     srcs = [S.source(ws, secs[n]["file"], max_chars=20_000) for n in func[:1]]
+    if note := for_workspace(ws):
+        instr += " " + note
     return S.packet(phase="SWE.1", task="requirements:crosscutting", role="swe1-author", instructions=instr,
                     sources=srcs, artifacts=[art], criteria=[f"subject exactly 'the {sysname}'",
                                                              "no budget requirements"],
@@ -269,7 +320,7 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
             out.append(f"[{k}] duplicate key")
         keys.add(k)
         st = r["statement"]
-        if g is not None and (STARTUP.match(st) or re.search(r"\bafter (?:a )?reset\b|\breset (?:value|state)\b", st,
+        if g is not None and (STARTUP.match(st) or re.search(RESET_AFTER + r"|\breset (?:value|state)\b", st,
                                                              re.I)):
             # lrtx6 (2026-10-21): a reset-state requirement with effects stayed in a register task over 3 repairs
             out.append(f"[{k}] is a reset/startup requirement: those belong to the cross-cutting task - remove "
@@ -326,6 +377,7 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         if _needs_contract(st, pfx) and not r["effects"]:  # the gate's rule (CONTRACT_SWR_NOT_COVERED)
             out.append(f"[{k}] the statement names a field it sets or clears but has no effect entry")
     if g is not None:
+        out += required_scope_exclusions(ws, doc, g)
         covered = named | {f"{e['register']}.{e['field']}" for r in doc["requirements"] for e in r["effects"]}
         excluded = {x["field"] if "." in x["field"] else f"{g['register']}.{x['field']}" for x in doc["not_covered"]}
         for f in g["fields"]:
@@ -377,7 +429,7 @@ def budget_requirements(ws: Path, sysname: str) -> list[dict]:
     b = _manifest(ws)["budgets"]
     src = "work-order budget (owner development target)"
     robot = "SWE.6 Robot suite checks the target linker map, size-tool and stack-usage evidence of the driver image; "
-    return [{"key": "budget_flash", "statement": f"The {sysname} shall occupy at most {b['flash_bytes']} bytes of flash.",
+    requirements = [{"key": "budget_flash", "statement": f"The {sysname} shall occupy at most {b['flash_bytes']} bytes of flash.",
              "source": src, "verification": robot + f"passes when the driver flash usage is at most {b['flash_bytes']} "
              "bytes.", "verified_by": "target_robot_test", "effects": [], "upstream": "WO-BUDGET"},
             {"key": "budget_static_ram", "statement": f"The {sysname} shall use at most {b['static_ram_bytes']} bytes "
@@ -388,6 +440,23 @@ def budget_requirements(ws: Path, sysname: str) -> list[dict]:
              "for any public API call.", "source": src, "verification": robot + "passes when the worst-case stack usage "
              f"of every public API call chain is at most {b['stack_bytes']} bytes.", "verified_by": "target_robot_test",
              "effects": [], "upstream": "WO-BUDGET"}]
+    from ..simulation_performance import selected
+
+    performance = selected(ws)
+    if performance:
+        source = "work-order simulation-only performance allocation; not a reference-manual or silicon timing claim"
+        for key, limit, units in (("cpu", performance["instructions_per_call"], "executed target instructions"),
+                                  ("time", performance["microseconds_per_call"], "microseconds of virtual time")):
+            requirements.append({"key": "budget_simulation_" + key,
+                                 "statement": f"When a scoped API is measured in the pinned Renode profile at "
+                                 f"{performance['performance_mips']} MIPS without injected interrupts or bus stalls, "
+                                 f"the {sysname} shall complete each measured call within {limit} {units}.",
+                                 "source": source, "verification": "SWE.6 Robot checks the independent Renode entry/return "
+                                 "instruction and virtual-time records for every scoped function; missing, incomplete or "
+                                 "over-budget measurements fail. Run Target Scenario on the declared test, then "
+                                 "Simulation Performance Should Meet Budget; no hardware WCET is established.",
+                                 "verified_by": "target_robot_test", "effects": [], "upstream": "WO-SIMULATION-PERFORMANCE"})
+    return requirements
 
 
 def _scope_ids(alloc: str) -> tuple[str, str]:
@@ -399,6 +468,13 @@ def _scope_ids(alloc: str) -> tuple[str, str]:
 def safety_text(ws: Path) -> str | None:
     """The SWE.1 safety statement exactly as the SWE.1 author instructions prescribe it; None when an allocation exists
     (then the safety-relevant SWRs must come from an upstream SSR task - not implemented here: the visit fails)."""
+    from ..release import qm
+    if qm.workspace_record(ws):
+        return "# Quality management scope\n\n" + qm.STATEMENT + "\n"
+    from ..release.aspice import STATEMENT, workspace_record
+
+    if workspace_record(ws):
+        return "# Assurance scope\n\n" + STATEMENT + "\n"
     alloc = _manifest(ws)["target"].get("safety_allocation", "")
     if "OUT_OF_SCOPE" in alloc:
         return ("# Software safety requirements\n\nQM development scope: no software safety requirements are allocated "
@@ -431,9 +507,29 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
     for n, r in enumerate(rows, 1):
         r["swr"] = f"SWR-{n:03d}"
-    opens = []
-    for _g, rec in results + [(None, cross)]:
-        opens += [o.strip() for o in rec["doc"]["open_points"] if o.strip() and o.strip() not in opens]
+    opens, open_points = [], {}
+    for group, rec in results + [(None, cross)]:
+        for raw in rec["doc"]["open_points"]:
+            text = raw.strip()
+            if not text:
+                continue
+            ident = "OP-" + sha256_bytes((rec["task"] + "\0" + text).encode())[:16]
+            origin = {"task": rec["task"], "text": text, "text_sha256": sha256_bytes(text.encode()),
+                      "packet_input_hash": rec.get("base_hash"), "record_sha256": sha256_bytes(canonical_json(rec))}
+            # Reviewed provided requirements have a materialized record, not a model packet.
+            if m.get("provided_requirements"):
+                origin["provided_input_sha256"] = m["provided_requirements"]["sha256"]
+            if group is not None:
+                origin.update(register=group["register"], source_section=group["section"], source_file=group["file"])
+                scope = f"{group['register']}; source section {group['section']}"
+            else:
+                scope = "cross-cutting requirements"
+            if ident in open_points:
+                if open_points[ident] != origin:
+                    raise ValueError("OPEN_POINT_ID_COLLISION")
+                continue
+            open_points[ident] = origin
+            opens.append(f"**{ident}** (input scope: {scope}): {text}")
     up = m.get("upstream", {}).get("status", "NOT_PROVIDED")
     opens += [f"Upstream inputs (HSI contract, safety allocation, budgets): {up}.",
               f"Safety allocation as stated in the manifest: {m['target'].get('safety_allocation', 'UNSPECIFIED')}.",
@@ -469,8 +565,9 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     for r in rows:
         by_up.setdefault(r["upstream"], []).append(r["swr"])
     t = m["target"]
-    reg_swr = [r["swr"] for r in rows if r["upstream"] != "WO-BUDGET"]
-    bud_swr = [r["swr"] for r in rows if r["upstream"] == "WO-BUDGET"]
+    budget_origins = ("WO-BUDGET", "WO-SIMULATION-PERFORMANCE")
+    reg_swr = [r["swr"] for r in rows if r["upstream"] not in budget_origins]
+    bud_swr = [r["swr"] for r in rows if r["upstream"] in budget_origins]
     gaps = ["# Upstream coverage", "", "| Input | Status as stated in the manifest | Affected SWR IDs |",
             "| --- | --- | --- |",
             f"| HSI contract | {t.get('hsi_contract', 'NOT_PROVIDED')}; upstream.status: {up} | {', '.join(reg_swr)} |",
@@ -493,7 +590,7 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     write_scoped(ws, files)
     amap = {"schema": "forge-c/lrtx-swe1-assembly/1", "at": utc_now(),
             "swr": {r["swr"]: {"task": r["task"], "key": r["key"]} for r in rows},
-            "case": {e["case"]: e["swr"] for e in effects}, "files": sorted(files)}
+            "case": {e["case"]: e["swr"] for e in effects}, "files": sorted(files), "open_points": open_points}
     S.record(ws, "SWE.1/assembly.json", amap)
     return amap
 
@@ -595,7 +692,7 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
     amap_p = ws / ".forge-run/lrtx/SWE.1/assembly.json"
     amap = json.loads(amap_p.read_text()) if amap_p.is_file() else None
     budget, findings = V.open_visit(ws, "SWE.1", resume, lambda: rework_findings(ws, since) if since else [],
-                                    max_calls or role.max_turns, time_budget_s)
+                                    V.author_call_limit(ws, "SWE.1", role.max_turns, max_calls), time_budget_s)
     try:
         return _visit(ws, model, budget, route_findings(findings, amap) if findings else {})
     except V.Continue as c:
@@ -625,15 +722,23 @@ def _repair_rounds(ws: Path, model: str, results: list[tuple[dict, dict]], budge
 
 def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> dict:
     from ..assurance.hardware import index
+    from .obligations import CoherentScopeRefused
 
-    inv = inventory(ws)
+    try:
+        inv = inventory(ws)
+    except CoherentScopeRefused as exc:
+        return reply(ws, "FAILED", ["CAPABILITY_LIMIT:" + str(exc)], budget)
     S.record(ws, "SWE.1/inventory.json", inv)
     if inv["missing_sections"]:
         return reply(ws, "FAILED", [f"LRTX_INVENTORY_SECTION_MISSING:{x}" for x in inv["missing_sections"]], budget)
+    try:
+        obligations = groups(inv)
+    except CoherentScopeRefused as exc:
+        return reply(ws, "FAILED", ["CAPABILITY_LIMIT:" + str(exc)], budget)
     idx = index(ws / "inputs/sections/RM0486")
     sysname = system_name(ws)
     results = []
-    for g in groups(inv):
+    for g in obligations:
         task = f"requirements:{g['id']}"
         rec = run_task(ws, task, lambda fi, pr, g=g: group_packet(ws, g, model, fi, pr),
                        lambda d, g=g: validate_group(ws, d, g, sysname, idx), budget, routed.get(task))

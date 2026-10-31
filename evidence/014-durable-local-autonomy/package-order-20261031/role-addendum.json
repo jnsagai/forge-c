@@ -1,0 +1,44 @@
+{
+  "kind": "SOURCE_IDENTITY_CORRECTION_AND_UNUSED_ORDER_SUBSET",
+  "primary_scope_sha256": "83c919dcc947cf003db192a2936dd093c19021ce0fa80c3702f8cfe68a2f1a34",
+  "primary_authorization": "AUTH-014-DF-AFO-OVERNIGHT-20261031-V4",
+  "policy_sha256": "36d4b97e3a0d66360a94224a9f717e3f8ecfdc34aa292fe54ac039b45aa33caf",
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "previous_role_trial_sha256": "65604fcbec48ad0f4107573e142274b24046375c3c2bc6df77be51567a5ed7e2",
+  "role_trial_sha256": "cdaab4b07799909a54f0d30050008f4ebf483d34a1593160af4e26c7fdafc7f6",
+  "role_authorization": "AUTH-014-DF-AFO-ROLES-20261031-V4B",
+  "predeclared_orders": [
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-05",
+      "order_id": "afo-ee4282b25001a15d"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-06",
+      "order_id": "afo-7f71565db57f0a76"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-07",
+      "order_id": "afo-f83452175591716f"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-08",
+      "order_id": "afo-48b5f7eb60495e69"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-09",
+      "order_id": "afo-de6809c9be417bd6"
+    },
+    {
+      "request_id": "DF-AFO-CRC-IDR-20261030-10",
+      "order_id": "afo-2786814af730ce77"
+    }
+  ],
+  "blocked_prelaunch_order": "afo-002d8ed0e31b5cc1",
+  "binding_correction": "Set every role identity adapter_revision to the already approved/tested source; no model, precision, reasoning, context, schema, sampling or task-class change",
+  "deadline_utc": "2026-10-31T07:57:59Z",
+  "mission_id": "mission-feature014-delivery-first-20261030",
+  "mission_allowances_changed": false,
+  "new_primary_grant": false,
+  "candidate_reuse": false,
+  "progression": "Retry DF-M1 first; no fresh repeatability trial before terminal independent package audit PASS"
+}

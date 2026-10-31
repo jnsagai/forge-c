@@ -1,0 +1,37 @@
+{
+  "schema": "forge-c/afo-repair-preparation-review/1",
+  "trial_id": "F014-AFO-MCP-ROOT-REPAIR-20261029",
+  "status": "PREPARED_CONTROLS_VERIFIED_NOT_ENROLLED_NOT_RUN",
+  "inventory_check": {
+    "status": "ALL_LISTED_MEMBERS_HASH_AND_SIZE_VERIFIED",
+    "members": 1488,
+    "unlisted_pytest_directory_symlinks_not_extracted": [
+      "afo-repair-trial-20261029-v2/operator/baseline-tmp/pytest-of-omniverse2/pytest-0/test_isolated_mcp_and_hook_rescurrent",
+      "afo-repair-trial-20261029-v2/operator/baseline-tmp/pytest-of-omniverse2/pytest-current",
+      "afo-repair-trial-20261029-v2/operator/positive-control-tmp/pytest-of-omniverse2/pytest-0/test_isolated_mcp_and_hook_rescurrent",
+      "afo-repair-trial-20261029-v2/operator/positive-control-tmp/pytest-of-omniverse2/pytest-current"
+    ]
+  },
+  "private_local_archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/operations/feature014/incremental-m1-followup-20261029/afo-repair-native-v2.tar.gz",
+  "private_local_archive_sha256": "e60a0c1bfc95fac4aed0764a2b3edc86322c131033e874081385a00c23a35f44",
+  "remote_root": "/mnt/data/forge-c/production-local-014/deployment/afo-repair-trial-20261029-v2",
+  "published_inventory_scope": "inventory.json binds full private native V2 packet; only selected files published",
+  "sandbox_smoke_scope": "Separately executed V1 sandbox proof; not a member of V2 preparation inventory",
+  "model_requests": 0,
+  "orders_created": 0,
+  "task_checkboxes_changed": false,
+  "live_trial": "NOT_RUN",
+  "candidate_repair": "NOT_RUN",
+  "baseline": {
+    "tests": 2,
+    "failed": 2,
+    "exit_code": 1
+  },
+  "positive_control": {
+    "tests": 2,
+    "passed": 2,
+    "exit_code": 0
+  },
+  "private_source_and_solution_withheld_from_model": true,
+  "source_helper_sha256": "38182a6f2da2ced0c1c1345a68ea6b1f389a269e04121bc36247a4453d827cf2"
+}

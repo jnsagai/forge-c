@@ -1,0 +1,596 @@
+{
+  "schema": "forge-c/product-role-trial/1",
+  "qualification_only": true,
+  "order_ids": [
+    "afo-ee4282b25001a15d",
+    "afo-7f71565db57f0a76",
+    "afo-f83452175591716f",
+    "afo-48b5f7eb60495e69",
+    "afo-de6809c9be417bd6",
+    "afo-2786814af730ce77"
+  ],
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+  "profile": "local-rtx-v2-omniverse2-q38-delivery-first",
+  "profile_sha256": "823942772335b7ef500f9f11926732405ac12dbff0dcc7f0ab39e345db3358e7",
+  "model": "qwen3.8:27b-q8_0",
+  "deadline_epoch": 1793433479.0,
+  "roles": {
+    "swe1-author": [
+      {
+        "role": "swe1-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe1-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe1-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe1-inspector": [
+      {
+        "role": "swe1-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe1-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe1-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe2-author": [
+      {
+        "role": "swe2-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe2-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe2-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe2-inspector": [
+      {
+        "role": "swe2-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe2-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe2-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe3-author": [
+      {
+        "role": "swe3-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe3-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe3-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe3-inspector": [
+      {
+        "role": "swe3-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe3-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe3-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe4-author": [
+      {
+        "role": "swe4-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe4-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe4-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe4-inspector": [
+      {
+        "role": "swe4-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe4-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe4-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe5-author": [
+      {
+        "role": "swe5-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe5-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe5-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe5-inspector": [
+      {
+        "role": "swe5-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe5-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe5-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe6-author": [
+      {
+        "role": "swe6-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe6-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe6-author",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "swe6-inspector": [
+      {
+        "role": "swe6-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe6-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "swe6-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ],
+    "release-manager": [
+      {
+        "role": "release-manager",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "release-manager",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "unconstrained",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      },
+      {
+        "role": "release-manager",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null,
+          "top_p": null
+        },
+        "task_class": "PRODUCT_ROLE_EXPERIMENT"
+      }
+    ]
+  },
+  "authorization_ref": "AUTH-014-DF-AFO-ROLES-20261031-V4B",
+  "context_allocation_ref": {
+    "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/context-allocation-v4.json",
+    "sha256": "b4f40b1a3f3d9e66efb5ca522baca0d306fc8f8d27e356aba0cacfb981112675"
+  }
+}

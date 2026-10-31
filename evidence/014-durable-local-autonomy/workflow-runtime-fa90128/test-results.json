@@ -1,0 +1,112 @@
+[
+  {
+    "revision": "19acb5bf7ca81ba3c9e92373e7093b7026790cf7",
+    "scope": "EXACT_LOCAL",
+    "junit_sha256": "3a0b8d598d288bd3012e98c7556ec59fdd752a4d89608dd4789183497de2f1c5",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "140",
+      "time": "19.631",
+      "timestamp": "2026-10-28T11:56:13.167318+00:00",
+      "hostname": "master"
+    }
+  },
+  {
+    "revision": "19acb5bf7ca81ba3c9e92373e7093b7026790cf7+holdout-patch",
+    "scope": "LOCAL_CANDIDATE",
+    "junit_sha256": "b29aac03e455fadc31189997aaaee854027f43b9a9dbf6bd22095e0c832f5483",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "96",
+      "time": "83.724",
+      "timestamp": "2026-10-28T12:05:12.883208+00:00",
+      "hostname": "master"
+    }
+  },
+  {
+    "revision": "d36feb7f6694143866601f6b4e29dac04f81124f+toolpath-patch",
+    "scope": "LOCAL_CANDIDATE",
+    "junit_sha256": "017b4fe79e68a5c2e8e2e12f8625237eeea59c595bcb411d020aab4b3a2873fa",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "19",
+      "time": "3.589",
+      "timestamp": "2026-10-28T12:17:04.578013+00:00",
+      "hostname": "master"
+    }
+  },
+  {
+    "lane": "qualification-1cfea7a",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "65",
+      "time": "163.894",
+      "timestamp": "2026-10-28T11:19:35.560390+00:00",
+      "hostname": "omniverse2"
+    },
+    "invocation": {
+      "revision": "1cfea7ad69b43ffecf0aaf40a243d05078584d05",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_native_endpoint.py",
+        "factory/python/tests/test_da014_protocol.py",
+        "factory/python/tests/test_da014_provider_recovery.py",
+        "--basetemp=/mnt/data/forge-c/production-local-014/deployment/qualification-1cfea7a/tmp",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-1cfea7a/tests.xml"
+      ],
+      "scope": "ISOLATED_NATIVE_FIXTURES_ZERO_MODEL_CALLS",
+      "start_dirty": "",
+      "exit_code": 0,
+      "end_dirty": ""
+    }
+  },
+  {
+    "lane": "qualification-19acb5b",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "106",
+      "time": "207.898",
+      "timestamp": "2026-10-28T11:58:34.376593+00:00",
+      "hostname": "omniverse2"
+    },
+    "invocation": {
+      "revision": "19acb5bf7ca81ba3c9e92373e7093b7026790cf7",
+      "command": [
+        "/mnt/data/forge-c/production-local-014/venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "factory/python/tests/test_da014_workflow_capacity.py",
+        "factory/python/tests/test_llm_gateway.py",
+        "factory/python/tests/test_da014_native_endpoint.py",
+        "factory/python/tests/test_da014_q38_quality_profile.py",
+        "factory/python/tests/test_da014_integration.py",
+        "factory/python/tests/test_afo_m0_policy_authz.py",
+        "--basetemp=/mnt/data/forge-c/production-local-014/deployment/qualification-19acb5b/tmp",
+        "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-19acb5b/tests.xml"
+      ],
+      "scope": "ISOLATED_NATIVE_FIXTURES_ZERO_MODEL_CALLS",
+      "start_dirty": "",
+      "exit_code": 0,
+      "end_dirty": ""
+    }
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "source_revision": "f206e3aa26837f892c2267ec67c46dcc61844c60",
+  "command": [
+    "/mnt/data/forge-c/production-local-014/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_development_diagnostics.py",
+    "factory/python/tests/test_incremental_delivery.py",
+    "factory/python/tests/test_lrtx_tool_accounting.py",
+    "factory/python/tests/test_lrtx_inspection_accounting.py",
+    "factory/python/tests/test_incremental_incident_resume.py",
+    "factory/python/tests/test_lrtx_compat.py",
+    "factory/python/tests/test_da014_high_allowance.py",
+    "factory/python/tests/test_aspice_development.py",
+    "--junitxml=/mnt/data/forge-c/production-local-014/deployment/qualification-independent-f206e3a/pytest-corrected.xml"
+  ],
+  "environment": {
+    "PYTHONPATH": "/mnt/data/forge-c/production-local-014/deployment/qualification-independent-f206e3a/repo/factory/python",
+    "FORGE_REPO_ROOT": "/mnt/data/forge-c/production-local-014/deployment/qualification-independent-f206e3a/repo",
+    "FORGE_DATA_ROOT": "/mnt/data/forge-c/production-local-014/deployment/qualification-independent-f206e3a/data",
+    "FORGE_STATE_DIR": "/mnt/data/forge-c/production-local-014/deployment/qualification-independent-f206e3a/state",
+    "FORGE_EVENTS_DIR": "/mnt/data/forge-c/production-local-014/deployment/qualification-independent-f206e3a/events",
+    "TMPDIR": "/mnt/data/forge-c/production-local-014/deployment/qualification-independent-f206e3a/tmp",
+    "PATH": "/mnt/data/forge-c/production-local-014/venv/bin:/mnt/data/forge-c/production-local-014/toolchains/LLVM-19.1.7-Linux-X64/bin:/usr/local/bin:/usr/bin:/bin:/mnt/data/forge-c/production-local-014/toolchains/formal/bin:/mnt/data/forge-c/production-local-014/toolchains/sysroot/usr/bin",
+    "FORGE_FABRO_LIVE": "0"
+  },
+  "input_correction": "Verified original hashes, replaced external primary-input symlinks with private in-checkout copies",
+  "source_clean_before": true,
+  "started_epoch": 1793266004.5615833,
+  "model_requests_expected": 0,
+  "deployment_changed": false,
+  "services_changed": false,
+  "authority_created_or_renewed": false,
+  "exit_code": 0,
+  "source_clean_after": true,
+  "completed_epoch": 1793266349.1564956
+}

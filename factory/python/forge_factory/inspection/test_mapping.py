@@ -8,7 +8,9 @@ import csv
 import re
 from pathlib import Path
 
-STARTUP = re.compile(r"\bWhile\b[^.]*\bafter (?:a |the )?reset\b", re.I)
+from .ears import RESET_AFTER
+
+STARTUP = re.compile(r"\bWhile\b[^.\n]*" + RESET_AFTER, re.I)
 TRACE = "traceability/requirements_to_tests.csv"
 
 

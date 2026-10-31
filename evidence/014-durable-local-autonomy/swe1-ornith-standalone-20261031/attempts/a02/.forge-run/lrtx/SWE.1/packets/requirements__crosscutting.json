@@ -1,0 +1,97 @@
+{
+  "at": "2026-10-31T13:43:31.349779Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 7208,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 7080,
+          "sha256": "b8e5e655e81cd27ce2890c953a786fcb22ec96e1c7d70518d4fb5a56a40dc3c8"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2021,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 5384
+      },
+      "errors": [
+        "[write_idr_stores_value] effect VALID_ACCESSIBLE_INSTANCE: value '32-bit caller-supplied value' must be a number that fits CRC_IDR.IDR (32 bits)",
+        "[read_idr_returns_current_value] effect VALID_ACCESSIBLE_INSTANCE: value must be \"\" for op no_write",
+        "[write_idr_stores_value] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [write_idr_stores_value] from the cross-cutting task",
+        "[read_idr_returns_current_value] acts on CRC_IDR, which the CRC_IDR task covers - remove requirement [read_idr_returns_current_value] from the cross-cutting task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "4cb35d34720caf938bf08f10e785a1af6907ff7968f1885705ed0f847a6cfb7b",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 576,
+        "prompt_tokens": 1337,
+        "prompt_tokens_details": {
+          "cached_tokens": 241
+        },
+        "total_tokens": 1913
+      },
+      "wall_ms": 4141.3
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 10139,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 10011,
+          "sha256": "b64c7d8c69199ec3806018db1dc7dade0ceb2c25e5dea8cd4a540709175fe5a5"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3026,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8146
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "e74021cf6bf7f4d5de505562dd80a1a9c0d1804334236c51de62b3d4d7dc9b9d",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 228,
+        "prompt_tokens": 2090,
+        "prompt_tokens_details": {
+          "cached_tokens": 241
+        },
+        "total_tokens": 2318
+      },
+      "wall_ms": 1872.6
+    }
+  ],
+  "base_hash": "4cb35d34720caf938bf08f10e785a1af6907ff7968f1885705ed0f847a6cfb7b",
+  "doc": {
+    "not_covered": [],
+    "open_points": [
+      "No failure-handling or error-return contract is specified, as invalid pointers and inaccessible hardware fall outside the supported invocation domain defined by the work order.",
+      "Caller-owned clock, power, security and register-access setup is a precondition and is not specified or verified by these LL functions.",
+      "The write and read of CRC_IDR.IDR are covered by the CRC_IDR task and are outside the scope of this cross-cutting work order slice."
+    ],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "no_autonomous_startup_writes",
+        "source_page": 1170,
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any register.",
+        "verification": "No LL call is invoked at startup; the test passes when no register write to any CRC register occurs before the first explicit function call.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Process lab experiment record (design rev 4 \u00a79)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "experiment_id",
+    "arm",
+    "drivers",
+    "profiles",
+    "units_file",
+    "oracles",
+    "reservations",
+    "mission_caps",
+    "end_utc",
+    "thresholds"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/process-lab-experiment/1"
+    },
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,31}$"
+    },
+    "arm": {
+      "enum": [
+        "A",
+        "B"
+      ]
+    },
+    "drivers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]{1,31}$"
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "profile",
+          "profile_sha256",
+          "model_key",
+          "model_digest"
+        ],
+        "properties": {
+          "role": {
+            "enum": [
+              "AUTHOR",
+              "INSPECT",
+              "REWORK"
+            ]
+          },
+          "profile": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "profile_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "model_key": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "model_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "units_file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "oracles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sha256",
+          "reviewer",
+          "review_utc"
+        ],
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "reviewer": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "review_utc": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "reservations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "AUTHOR",
+        "INSPECT",
+        "REWORK"
+      ],
+      "properties": {
+        "AUTHOR": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "INSPECT": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "REWORK": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "mission_caps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_requests",
+        "max_tools",
+        "max_tokens"
+      ],
+      "properties": {
+        "max_requests": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_tools": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_tokens": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "end_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "noncritical_coverage",
+        "judgeable"
+      ],
+      "properties": {
+        "noncritical_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "judgeable": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  }
+}

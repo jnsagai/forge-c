@@ -1,0 +1,48 @@
+{
+  "schema": "forge-c/ornith-protocol-test/1",
+  "owner_authorization": "2026-10-31 \"have a subagent testing Ornith model\"",
+  "status": "ABORTED_AT_PREFLIGHT",
+  "preflight_at": "2026-10-31T12:12:11Z",
+  "host": "omniverse2",
+  "server_started": false,
+  "model_requests_made": 0,
+  "files_written_on_host": ["/mnt/data/forge-c/operations/ornith-protocol-20261031/ (this abort record only)"],
+  "checks": {
+    "gpu": {"name": "NVIDIA RTX 6000 Ada Generation", "memory_used_MiB": 936, "memory_total_MiB": 49140,
+            "utilization_percent": 0, "compute_processes": [], "limit": "<=2048 MiB and no compute process", "result": "PASS"},
+    "factory_intent": {"path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/operations.json",
+                       "mode": "STOPPED", "epoch": 7, "effective_stop": true, "result": "PASS", "modified": false},
+    "own_forge_processes": {
+      "rule": "No forge conductor/gateway/llama-server/ollama process of ours may be running (ps -u omniverse2)",
+      "result": "FAIL",
+      "llama_server": [],
+      "conductor": [{"pid": 3699940, "args": "/mnt/data/forge-c/production-local-014/venv/bin/python -m forge_factory.afo.conductor --interval 15",
+                     "started": "2026-10-30T17:40:22 local", "intent": "/home/omniverse2/.local/state/forge-c-production-014/operations.json",
+                     "intent_mode": "PAUSED", "intent_epoch": 111, "heartbeat_mode": "OBSERVE_ONLY", "heartbeat_detail": "operations_wait",
+                     "last_decision_issue": "MODE_PILOT_NOT_AUTHORIZED:AUTH_NOT_CURRENT (authorization expired 2026-10-30T19:40:00Z)"}],
+      "ollama_serve": [
+        {"pid": 711138, "args": "/mnt/data/forge-c/ollama-0.34.0/bin/ollama serve"},
+        {"pid": 781146, "args": "/mnt/data/forge-c/lrtx-v2/ollama-0.34.0/bin/ollama serve"},
+        {"pid": 1969697, "args": "/mnt/data/forge-c/qualification-014-20f6b02/lrtx/ollama-0.34.0/bin/ollama serve"},
+        {"pid": 1978122, "args": "/mnt/data/forge-c/qualification-014-e35ed0a/lrtx/ollama-0.34.0/bin/ollama serve"},
+        {"pid": 2624464, "args": "/mnt/data/forge-c/inspector-014-b309039/lrtx/ollama-0.34.0/bin/ollama serve"}],
+      "llm_gateway": [
+        {"pid": 212513, "args": "forge_factory.llm_gateway --port 11460 (delivery-first-014-20261030)"},
+        {"pid": 781321, "args": "forge_factory.llm_gateway --port 11456 (lrtx-v2)"},
+        {"pid": 1969873, "args": "forge_factory.llm_gateway --port 11456 (qualification-014-20f6b02)"},
+        {"pid": 1978292, "args": "forge_factory.llm_gateway --port 11456 (qualification-014-e35ed0a)"},
+        {"pid": 2624654, "args": "forge_factory.llm_gateway --port 11456 (inspector-014-b309039)"}],
+      "gpu_job_queue_runner": [{"pid": 2742646, "args": "/bin/bash /mnt/data/forge-c/inspector-014-b309039/runs/gpuq-runner.sh",
+                                "state": "idle (sleep 30 poll), pending/ and running/ empty, no STOP file, last job 2026-10-27T16:33:19Z"}],
+      "also_present_not_named_in_rule": "fabro servers, socat bridges, a dashboard (port 8786), fixture-backend.py for several installations"
+    },
+    "other_users": {"matss": "graphical session :1 since 2026-09-24; not inspected or touched"}
+  },
+  "verdicts": {"Q1": "NOT_RUN", "Q2": "NOT_RUN", "Q3": "NOT_RUN", "Q4": "NOT_RUN", "Q5": "NOT_RUN", "Q6": "NOT_RUN"},
+  "static_code_findings_no_model_run": [
+    "stack.llama_server_spec emits --reasoning-format deepseek only when reasoning_effort is set; design s11 says the default 'stays deepseek, so existing argv is unchanged' - true only for profiles that set reasoning_effort.",
+    "structured.call() sends no chat_template_kwargs/thinking_budget_tokens and collects only delta.content; with --reasoning on/auto the probe's output_reserve=256 also has to cover thinking tokens.",
+    "structured._parse_json accepts a fenced answer and a WRAPPED_JSON answer (text around one {...}) without adding an error; design s11 fixtures say fenced or trailing-text JSON is INVALID.",
+    "structured.call() appends OUTPUT_TRUNCATED_AT_RESERVE when finish_reason == length (consistent with design s11)."
+  ]
+}

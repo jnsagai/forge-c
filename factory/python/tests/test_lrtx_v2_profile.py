@@ -44,7 +44,9 @@ def test_v2_refuses_cloud_acp_and_unlisted_models_before_launch(kw, issue):
 def test_v2_builds_the_same_graph_as_v1_and_names_semantic_swe1():
     s1 = workorder.local_profile_structured({"id": "local-rtx-v1"}, {"layer": "LL"}, "qwen3-coder:30b")
     s2 = workorder.local_profile_structured({"id": "local-rtx-v2"}, {"layer": "LL"}, "qwen3-coder:30b")
-    assert s1 == s2  # the runner, not the graph, selects the semantic SWE.1 author
+    # the runner, not the graph, selects the semantic SWE.1 author; the one graph difference is the owner-decided
+    # advisory continuation of v2 (2026-10-26, "Advisory + calibrate"), which v1 keeps off (and its record unchanged)
+    assert "advisory" not in s1 and s2["advisory"] is True and {**s1, "advisory": True} == s2
     assert V2["structured"]["semantic_phases"] == ["SWE.1"] and "semantic_phases" not in V1["structured"]
 
 
@@ -126,3 +128,35 @@ def test_fabro_command_nodes_carry_the_local_profile_only_inside_a_local_stack(m
     assert "FORGE_LRTX_PROFILE" not in plain
     monkeypatch.setenv("FORGE_LRTX_PROFILE", "local-rtx-v2-omniverse2")
     assert builder._env() == plain + " FORGE_LRTX_PROFILE=local-rtx-v2-omniverse2"
+
+
+def test_reasoning_off_variant_differs_from_omniverse2_only_in_the_qwen36_reasoning_factor():
+    """Feature 014 (owner 2026-10-25): one controlled configuration factor for the diagnosis comparison."""
+    from forge_factory.llm_gateway import sanitize_request
+    from forge_factory.lrtx.profile import load
+
+    base, variant = load("local-rtx-v2-omniverse2"), load("local-rtx-v2-omniverse2-q36-noreason")
+    ignored = {"id", "status", "description", "_path", "_sha256", "gateway", "deployment"}
+    assert {k: v for k, v in base.items() if k not in ignored} == {k: v for k, v in variant.items() if k not in ignored}
+    assert {k: v for k, v in base["deployment"].items() if k != "default_root"} == \
+        {k: v for k, v in variant["deployment"].items() if k != "default_root"}
+    reasoning = dict(base["gateway"]["reasoning"])
+    assert reasoning.pop("qwen3.6:35b-a3b") == {"effort": "high", "extra_output_tokens": 16384}
+    assert variant["gateway"] == {**base["gateway"], "reasoning": reasoning}
+    body = {"model": "qwen3.6:35b-a3b", "max_tokens": 2048, "messages": []}
+    assert sanitize_request(body, policy=variant["gateway"]["reasoning"])["reasoning_effort"] == "none"
+    assert sanitize_request(body, policy=variant["gateway"]["reasoning"])["max_tokens"] == 2048
+
+
+def test_qwen38_variant_only_adds_the_verified_model_without_reasoning():
+    """Feature 014 (owner 2026-10-25): diagnosis model comparison against the reasoning-off qwen3.6 batch."""
+    from forge_factory.lrtx.profile import load
+
+    base, variant = load("local-rtx-v2-omniverse2"), load("local-rtx-v2-omniverse2-q38")
+    ignored = {"id", "status", "description", "_path", "_sha256", "models", "deployment"}
+    assert {k: v for k, v in base.items() if k not in ignored} == {k: v for k, v in variant.items() if k not in ignored}
+    allowed = dict(variant["models"]["allowed"])
+    added = allowed.pop("qwen3.8:27b-q8_0")
+    assert added["digest"] == "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039" and added["quantization"] == "Q8_0"
+    assert allowed == base["models"]["allowed"] and variant["models"]["default"] == base["models"]["default"]
+    assert "qwen3.8:27b-q8_0" not in variant["gateway"]["reasoning"]

@@ -24,7 +24,7 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
-from typing import Any
+from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
@@ -89,7 +89,13 @@ def normalize_args(tool_name: str, args: dict) -> dict:
         if k not in model.model_fields:
             del args[k]
     for k, f in model.model_fields.items():
-        if not f.is_required() and k in args and args[k] == f.default:
+        # MCP materializes builtin container factories before calling the
+        # wrapper. FieldInfo.default is Undefined for these, so comparing only
+        # that value makes a valid hook ticket differ from defines=[] (or an
+        # empty tool_versions map) injected by MCP. Do not execute arbitrary or
+        # context-dependent factories while authenticating arguments.
+        default = f.default_factory() if f.default_factory in (list, dict) else f.default
+        if not f.is_required() and k in args and args[k] == default:
             del args[k]
     return args
 
@@ -301,7 +307,20 @@ def invoke(server: str, operation: Operation, args: dict) -> dict:
         except ValidationError as exc:
             loc = ",".join(map(str, exc.errors()[0].get("loc", ())))
             raise ToolDenied("INPUT_INVALID", loc) from exc
-        out = operation.handler(ctx, parsed)
+        from ..development_execution import verification
+
+        verify = operation.name.startswith(("run_", "check_", "compile", "build", "measure"))
+        key = server + "." + operation.name
+        if verify and not verification(ws, phase, role, key):
+            raise ToolDenied("DEVELOPMENT_PHASE_REPAIR_EXHAUSTED", key)
+        try:
+            out = operation.handler(ctx, parsed)
+        except Exception:
+            if verify:
+                verification(ws, phase, role, key, "UNKNOWN")
+            raise
+        if verify:
+            verification(ws, phase, role, key, out["status"])
         try:  # durable, append-only record of every tool result for deterministic gates/finalizer
             rec = {"ts_utc": utc_now(), "server": server, "op": operation.name, "role": role, "phase": phase,
                    "run_id": run, "result": out}
@@ -335,11 +354,13 @@ def build_server(server_id: str, operations: list[Operation]):
             return tool
 
         fn = make(op)
-        # Expose the pydantic model's fields as the MCP input schema.
-        fn.__annotations__ = {**{k: f.annotation for k, f in op.model.model_fields.items()}, "return": str}
+        # Preserve FieldInfo: bare annotations lose bounds/descriptions when MCP
+        # rebuilds its argument model from this callable signature.
+        annotations = {k: Annotated[f.annotation, f] for k, f in op.model.model_fields.items()}
+        fn.__annotations__ = {**annotations, "return": str}
         import inspect
 
-        params = [inspect.Parameter(k, inspect.Parameter.KEYWORD_ONLY, annotation=f.annotation,
+        params = [inspect.Parameter(k, inspect.Parameter.KEYWORD_ONLY, annotation=annotations[k],
                                     default=(inspect.Parameter.empty if f.is_required() else f.default))
                   for k, f in op.model.model_fields.items()]
         fn.__signature__ = inspect.Signature(params, return_annotation=str)  # type: ignore[attr-defined]

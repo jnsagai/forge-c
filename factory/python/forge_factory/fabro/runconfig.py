@@ -14,7 +14,7 @@ import sys
 from collections.abc import Mapping
 from pathlib import Path
 
-from ..common import REPO_ROOT, state_dir
+from ..common import REPO_ROOT, data_root, state_dir
 from ..policy.authz import Binding
 
 GIT_ENV = {"GIT_AUTHOR_NAME": "forge-factory", "GIT_AUTHOR_EMAIL": "factory@forge-c.local",
@@ -54,6 +54,7 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
                     hook_env: dict[str, str] | None = None) -> str:
     py = sys.executable
     pp = str(REPO_ROOT / "factory" / "python")
+    context_env = {"PYTHONPATH": pp, "FORGE_DATA_ROOT": str(data_root()), "FORGE_STATE_DIR": str(state_dir())}
     lines = ["_version = 1", "[workflow]", f"graph = {toml_str(graph_file)}", "[run]", f"goal = {toml_str(goal)}",
              "[run.model]", f"name = {toml_str(model)}", f"provider = {toml_str(provider)}"]
     for name, spec in sorted((mcp_servers or {}).items()):
@@ -62,16 +63,14 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
                   "command = [" + ", ".join(toml_str(c) for c in [py, "-m", spec["module"]]) + "]",
                   f'startup_timeout = "{spec.get("startup_timeout", "20s")}"',
                   f'tool_timeout = "{spec.get("tool_timeout", "200s")}"',
-                  f"[run.agent.mcps.{key}.env]", f"PYTHONPATH = {toml_str(pp)}",
-                  f"FORGE_STATE_DIR = {toml_str(str(state_dir()))}",
-                  f"FORGE_BINDING_ID = {toml_str(binding_id)}",
-                  f"PATH = {toml_str(os.environ.get('PATH', '/usr/bin:/bin'))}"]
-        for k, v in sorted(spec.get("env", {}).items()):
+                  f"[run.agent.mcps.{key}.env]"]
+        env = {**context_env, "FORGE_BINDING_ID": binding_id,
+               "PATH": os.environ.get("PATH", "/usr/bin:/bin"), **spec.get("env", {})}
+        for k, v in sorted(env.items()):
             lines.append(f"{k} = {toml_str(str(v))}")
-    hook = f"PYTHONPATH={pp} FORGE_STATE_DIR={state_dir()} {py} -m forge_factory.policy.fabro_hook " \
-           f"--binding {binding_path}"
-    if hook_env:
-        hook = " ".join(f"{k}={shlex.quote(v)}" for k, v in sorted(hook_env.items())) + " " + hook
+    hook_context = {**context_env, **(hook_env or {})}
+    hook = " ".join(f"{k}={shlex.quote(v)}" for k, v in sorted(hook_context.items()))
+    hook += f" {shlex.quote(py)} -m forge_factory.policy.fabro_hook --binding {shlex.quote(str(binding_path))}"
     lines += ["[[run.hooks]]", 'id = "forge-policy-gate"', 'event = "pre_tool_use"', f"script = {toml_str(hook)}",
               "blocking = true", "sandbox = false", 'timeout = "20s"',
               "[[run.hooks]]", 'id = "forge-governor-stage-reset"', 'event = "stage_start"', f"script = {toml_str(hook)}",

@@ -1,0 +1,66 @@
+{
+  "runtime_revision": "d7fa97e41f6e265e55737478379052db8d6bd859",
+  "native_run_id": "01M618R74R8KQFQR9AJ4VQXZ5Q",
+  "whole_phase_pass": false,
+  "observation": "Partial packet metadata observed during live SWE.1 authoring; no model output text or primary sources retained here.",
+  "swe1_gate": {
+    "phase": "SWE.1",
+    "decision": "REWORK",
+    "reason": "NO_BASELINE",
+    "failed_inspections": 0,
+    "max_rework_cycles": 3
+  },
+  "packets": [
+    {
+      "task": "requirements:CRC_IDR",
+      "status": "VALID",
+      "errors": [],
+      "attempt_count": 1,
+      "intent_actions": [
+        {
+          "key": "read_independent_data",
+          "field": "CRC_IDR.IDR",
+          "action": "read_field"
+        },
+        {
+          "key": "write_independent_data",
+          "field": "CRC_IDR.IDR",
+          "action": "write_field"
+        }
+      ],
+      "excluded_fields": []
+    },
+    {
+      "task": "requirements:CRC_CR_1",
+      "status": "VALID",
+      "errors": [],
+      "attempt_count": 1,
+      "intent_actions": [],
+      "excluded_fields": [
+        "CRC_CR.REV_OUT",
+        "CRC_CR.RTYPE_OUT",
+        "CRC_CR.RTYPE_IN"
+      ]
+    },
+    {
+      "task": "requirements:CRC_DR",
+      "status": "VALID",
+      "errors": [],
+      "attempt_count": 1,
+      "intent_actions": [
+        {
+          "key": "feed_data_word",
+          "field": "CRC_DR.DR",
+          "action": "write_field"
+        },
+        {
+          "key": "read_current_result",
+          "field": "CRC_DR.DR",
+          "action": "read_field"
+        }
+      ],
+      "excluded_fields": []
+    }
+  ],
+  "baseline_files": []
+}
