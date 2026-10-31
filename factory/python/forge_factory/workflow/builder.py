@@ -332,6 +332,8 @@ def structured_authors(dot: str, structured: dict) -> str:
         for phase in PHASES:
             n = phase[-1]
             rt, ri, ins = f"swe{n}_route", f"swe{n}_reinspect", f"swe{n}_inspector"
+            if f"  {rt} [" not in dot:
+                continue  # a phase outside a phase-scoped graph (--stop-after)
             m = re.search(rf'^  {rt} -> (\w+) \[condition="outcome=succeeded"\]$', dot, re.M)
             if not m:
                 raise ValueError(f"STRUCTURED_ROUTE_MISSING:{rt}")

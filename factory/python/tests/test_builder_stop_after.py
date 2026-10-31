@@ -82,3 +82,20 @@ def test_cli_passes_stop_after(monkeypatch, tmp_path):
     assert seen["stop_after"] == "SWE.1"
     workorder.main(["--example", str(tmp_path), "--wo", "WO-X"])
     assert seen["stop_after"] is None
+
+
+@pytest.mark.parametrize("profile", ["local-rtx-v2-omniverse2-q38-aspice-stepwise-medium",
+                                     "local-rtx-v2-omniverse2-q38-qm-demo-mtp", "local-rtx-v2-omniverse2"])
+def test_real_profile_structured_settings_build_a_swe1_only_graph(profile):
+    """The run's own path: the profile's structured settings (reinspect_direct, advisory, ...) as the work order
+    derives them. A fixture without reinspect missed STRUCTURED_ROUTE_MISSING:swe2_route (review, 2026-10-31)."""
+    from forge_factory.workorder import local_profile_structured
+
+    st = local_profile_structured({"id": profile}, {"layer": "LL"}, "qwen3.8:27b-q8_0")
+    dot, nodes = build("WO-X", layer="LL", trace=True, peripheral="crc", structured=st, stop_after="SWE.1")
+    defined = set(NODE.findall(dot)) - {"graph"}
+    assert not [n for n in defined if re.match(r"(swe[2-6]_|upstream_swe[2-6]|return_swe)", n)]
+    assert reachable(dot) == defined
+    assert not [(a, b) for a, b, _c in edges(dot) if not {a, b} <= defined]
+    if st and st.get("reinspect"):
+        assert "swe1_reinspect" in defined
