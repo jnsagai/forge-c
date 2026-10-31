@@ -180,6 +180,15 @@ itself.
     A budget of 0 is ignored by the server, so only `enable_thinking: false` turns thinking off. A thinking-on Ornith
     arm needs its own measured experiment.
 
+*   **D13 — Standalone first (owner, 2026-10-31).** In the owner's words: "before thinking about AFO, we need to
+    guarantee that the factory is being able to run and produce artifacts". Phase 1 runs SWE.1 standalone, on the
+    real structured author, gate and inspector code (`lrtx/modelcmp`, `lrtx.runner inspect`, the factory gateway),
+    guarded the same way as the protocol test: factory intent STOPPED or PAUSED, a free-GPU check, a queue watch,
+    one server we own, a time limit, and a read-only proof of the source workspaces. AFO integration (§3–§4, the
+    revision 5 operator layer) follows once this is shown.
+    *   First result: `evidence/014-durable-local-autonomy/swe1-ornith-standalone-20261031/`. The Ornith author was
+        gate FROZEN 2/2, and the Qwen inspection passed the inspect gate.
+
 The remaining choices below each have a single defensible answer under D1′–D12 and the cited code. The re-review may
 challenge any of them.
 
