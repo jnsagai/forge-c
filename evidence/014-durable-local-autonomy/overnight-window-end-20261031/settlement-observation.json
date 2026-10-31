@@ -1,0 +1,228 @@
+{
+  "at": "2026-10-31T07:56:22.595581Z",
+  "candidate_execution": false,
+  "executions": [
+    {
+      "authorization_state": "VALID",
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-af2c3b6fc3d6986baacf3568",
+      "native_run_ids": [
+        "01M67E5YEMFM4F5GR62AM0F9EM"
+      ],
+      "quiescence_evidence_ref": "native-terminals:8cc9ac02f73440b2e8f87a6e6f687cf1d9cd9a402cba5f30a4040f73d0a4c301",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED",
+      "terminal_reason": "PRODUCT_PACKAGE_BLOCKED:package BLOCKED / BLOCKED, 56 gaps"
+    },
+    {
+      "authorization_state": "VALID",
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-221ded78874865909a532471",
+      "native_run_ids": [
+        "01M67ETTPXS1Q73QPMQ98DNJX0"
+      ],
+      "quiescence_evidence_ref": "native-terminals:ca8106a640548f6db61de2abb448a6008b50e9c688ac8fd9f65e6dd353192f48",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED",
+      "terminal_reason": "PRODUCT_PACKAGE_BLOCKED:package BLOCKED / BLOCKED, 30 gaps"
+    },
+    {
+      "authorization_state": "VALID",
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-0fbf506c5889f9f7faa87f04",
+      "native_run_ids": [
+        "01M67R1HNE9TKPWCYJ2SVKEPJS"
+      ],
+      "quiescence_evidence_ref": "native-terminals:178d91058a5032232b5133520767e934a3d7c3da76dcbd6854e1563cdbb7ba6b",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED",
+      "terminal_reason": "PRODUCT_PACKAGE_BLOCKED:package BLOCKED / BLOCKED, 25 gaps"
+    },
+    {
+      "authorization_state": "VALID",
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-f6dbe535b2814ef1fdd350f2",
+      "native_run_ids": [
+        "01M67ZJWDYS7H33828MPTK6E6D"
+      ],
+      "quiescence_evidence_ref": "native-terminals:d6b99771a3606aa439020d728c6e7b26b50325cf901feb5c0b5ccdcefbed957b",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED",
+      "terminal_reason": "PRODUCT_PACKAGE_BLOCKED:package BLOCKED / BLOCKED, 16 gaps"
+    },
+    {
+      "authorization_state": "VALID",
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-f10b3072a163ab219641cbd8",
+      "native_run_ids": [
+        "01M6855WHNYHGCV6PFB5HPHAVH"
+      ],
+      "quiescence_evidence_ref": "native-terminals:3f2eb2194c67d996a3b8e18e5a76eb57b49a90a5b92ae9110faac94c4482984f",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED",
+      "terminal_reason": "PRODUCT_PACKAGE_BLOCKED:package BLOCKED / BLOCKED, 35 gaps"
+    },
+    {
+      "authorization_state": "REVOKED",
+      "execution_liveness": "QUIESCENT",
+      "job_id": "afo-product-db4a6451b1d049d5966ddcc2",
+      "native_run_ids": [
+        "01M68CMQAZNN7QGRZSX5DGRMYY"
+      ],
+      "quiescence_evidence_ref": "native-terminals:da26dbf7bf8d9b1145aa7dd48ad390715265de888ef3943a16efad42823b27a5",
+      "resource_lease": "RELEASED",
+      "task_outcome": "BLOCKED",
+      "terminal_reason": "OPERATOR_SHUTDOWN"
+    }
+  ],
+  "guard_end": {
+    "at": "2026-10-31T07:56:14.666724Z",
+    "attempt_count": 4,
+    "last_attempt": {
+      "at": "2026-10-31T07:56:14.666698Z",
+      "result": {
+        "serving_settlement": {
+          "instance_sha256": "d1b2e48cb4078c58ac2ebae36d602aaa2063b7f4aee7dc03d6ea84b7d41545b0",
+          "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+          "observed_at": "2026-10-31T07:56:12.263618Z",
+          "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd"
+        },
+        "settled": true,
+        "unresolved_native_jobs": []
+      }
+    },
+    "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/control/window-end-v4.json",
+    "renewed": false,
+    "settled": true,
+    "sha256": "df91e2fccbf4f56e0733a52dc1822ff5e6a0240b12730426af48f684e162298e"
+  },
+  "inference_ownership": [
+    {
+      "epoch": 12,
+      "holder": null,
+      "resource": "inference"
+    },
+    {
+      "epoch": 2448,
+      "holder": null,
+      "resource": "generation"
+    }
+  ],
+  "intent": {
+    "changed_at": "2026-10-31T07:55:39.653910Z",
+    "effective_stop": true,
+    "epoch": 7,
+    "mode": "STOPPED",
+    "pending_start": false,
+    "reason": "Enforce original ten-hour owner window with external UTC margin; no renewal"
+  },
+  "last_native_status": "FAILED",
+  "limits": "Physical serving/native/request settlement only, not product/learning/availability qualification; no renewal",
+  "mission": {
+    "attempts": 7,
+    "authorization_ref": "AUTH-014-DF-AFO-OVERNIGHT-20261030-V1",
+    "charged_tokens": 467140608,
+    "corrections": 0,
+    "created_at": "2026-10-30T22:02:18.150036Z",
+    "jobs": 0,
+    "limits": {
+      "deadline": 1793433479.0,
+      "max_attempts": 10,
+      "max_corrections": 20,
+      "max_jobs": 1,
+      "max_requests": 8000,
+      "max_tokens": 1073741824,
+      "max_tools": 100000
+    },
+    "lineage": "CRC-IDR-native-20261030-shared-lineage",
+    "mission_id": "mission-feature014-delivery-first-20261030",
+    "requests": 1470,
+    "tools": 2583,
+    "unbounded_historical_usage": false,
+    "unique_executions": 7,
+    "usage_unknown": true
+  },
+  "model_calls": 0,
+  "orders": [
+    {
+      "order_id": "afo-22d0705cdd38628b",
+      "state": "BLOCKED",
+      "terminal_reason": "package BLOCKED / BLOCKED, 56 gaps"
+    },
+    {
+      "order_id": "afo-5faf7b5e42e6d55f",
+      "state": "BLOCKED",
+      "terminal_reason": "package BLOCKED / BLOCKED, 30 gaps"
+    },
+    {
+      "order_id": "afo-002d8ed0e31b5cc1",
+      "state": "BLOCKED",
+      "terminal_reason": null
+    },
+    {
+      "order_id": "afo-ee4282b25001a15d",
+      "state": "BLOCKED",
+      "terminal_reason": "package BLOCKED / BLOCKED, 25 gaps"
+    },
+    {
+      "order_id": "afo-7f71565db57f0a76",
+      "state": "BLOCKED",
+      "terminal_reason": "package BLOCKED / BLOCKED, 16 gaps"
+    },
+    {
+      "order_id": "afo-f83452175591716f",
+      "state": "BLOCKED",
+      "terminal_reason": "package BLOCKED / BLOCKED, 35 gaps"
+    },
+    {
+      "order_id": "afo-48b5f7eb60495e69",
+      "state": "RUNNING",
+      "terminal_reason": null
+    }
+  ],
+  "provider_init_pid": 2564278,
+  "provider_quiet_proof": {
+    "instance_sha256": "d1b2e48cb4078c58ac2ebae36d602aaa2063b7f4aee7dc03d6ea84b7d41545b0",
+    "kind": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED",
+    "observed_at": "2026-10-31T07:56:22.595780Z",
+    "observed_boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd"
+  },
+  "requests": [
+    {
+      "job_id": "afo-product-0fbf506c5889f9f7faa87f04",
+      "n": 297,
+      "state": "QUIESCENT"
+    },
+    {
+      "job_id": "afo-product-221ded78874865909a532471",
+      "n": 332,
+      "state": "QUIESCENT"
+    },
+    {
+      "job_id": "afo-product-db4a6451b1d049d5966ddcc2",
+      "n": 92,
+      "state": "QUIESCENT"
+    },
+    {
+      "job_id": "afo-product-f10b3072a163ab219641cbd8",
+      "n": 264,
+      "state": "QUIESCENT"
+    },
+    {
+      "job_id": "afo-product-f6dbe535b2814ef1fdd350f2",
+      "n": 239,
+      "state": "QUIESCENT"
+    }
+  ],
+  "schema": "forge-c/owner-window-settlement-observation/1",
+  "serving_instance_sha256": "d1b2e48cb4078c58ac2ebae36d602aaa2063b7f4aee7dc03d6ea84b7d41545b0",
+  "settlement_conditions": {
+    "effective_stop": true,
+    "intent_STOPPED": true,
+    "no_held_execution": true,
+    "no_inference_holder": true,
+    "no_nonquiescent_requests": true,
+    "provider_kernel_quiet": true
+  },
+  "source_revision": "0e342eef3c68786d29e5b9843606892c4ab68b60"
+}

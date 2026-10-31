@@ -1,5 +1,46 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Window CLOSED — 31 October07:57:19externalUTC
+
+**Do not resume inference or deploy under the expired grant.** Original10hwindow
+ended07:57:59UTC; explicit shutdown requested07:56:35, full physical/native/request
+settlement verified07:57:19. OperationsSTOPPED7/effective_stop=true, managed
+provider namespace ended, all inference ownership/requests quiet. No renewal.
+
+Final scoped fresh yield **2/3**, not repeatabilityPASS.08native
+01M68CMQAZNN7QGRZSX5DGRMYY FAILED during owner stop at SWE.3inspection; order
+BLOCKED/OPERATOR_SHUTDOWN after disclosed model-free existing-dispatch projection.
+Initial630host/351simulated checksPASS on unchangedc0851300...; no final verifier
+or native package, phase files3/8/9/0/0/0. Audit67a84e87...NOT_PROVEN; summary
+71b8773f...retains all3denominator.05baseline excluded.06audit3e73552f/release
+BLOCKED16;07auditbf2dc88a/releaseBLOCKED35, missing SWE.6report/Robot retained.
+DF-T001–009scoped complete, DF-T010NOT_COMPLETE; DA30/58 unchanged.
+
+[Final facts, clock bounds, shutdown proof, budgets, all4actual candidate headers and partial-transfer hashes](../../evidence/014-durable-local-autonomy/overnight-window-end-20261031/README.md).
+Mission still7attempts/1470requests/2583tools/0corrections/467140608charged-reserved,
+historicalusageUNKNOWN, same lineage/ceilings/deadline; no reset/refund.
+
+Private local results B/inspection/feature014/2026-10-30-qwen/overnight-afo-delivery/:
+sealed02/03/05/06/07copies unchanged;08PARTIAL/final-operator-stop has87hash-verified
+files and candidateSHA c0851300..., privateZIP c2037d61... . Earlier active76file
+snapshot05bf0b88...preserved. No Qwen C executed locally. These are not new sealed
+review packages or release approval. Stopped08learning currentlyonlySWE.1/2PASS,
+finalJOB/SWE.3disposition absent; do not claim automatic every-outcome learning.
+
+Prepared inactive implementation **60619be076d36d50f42aef0c1b467aa2c2c14e76**:
+MCP empty-container ticket defaults; bounded local-capacity retry; declared API
+target prompt; existing gateway admission queue before durable reservation.
+Exact gateway79PASS and separate inherited22PASS; failed-before5cases, no skips
+in those cohorts. Prior combinedd49cf1ee171PASS/2disabled-live-FabroSKIP; followup
+declaration3788ace6 79PASS/2SKIP. Counts overlap. Producerremained0e, not606.
+No measured live effectiveness of inactive fixes. Known RCCgolden and scheduler
+import-order lint findings remain. FullLL/HAL/production/learning benefit/24/7
+still unproven. New bounded native qualification/window needed; preserve old
+cohort and account all future continuation attempts. No silent grant renewal.
+
+Owner requested a new Astra report published on main; publication is report-only
+from isolated latest-main checkout, implementation stays on feature branch/PR42.
+
 ## Overnight checkpoint — 31 October 07:12 UTC: fresh cohort2/3
 
 07native01M6855WHNYHGCV6PFB5HPHAVH completed07:04:11remoteUTC, initial/final

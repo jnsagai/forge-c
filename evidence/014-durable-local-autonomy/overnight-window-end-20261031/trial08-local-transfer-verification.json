@@ -1,0 +1,12 @@
+{
+  "archive_sha256": "c2037d61215b9040c14c3a2b148068a2cd1cec1cb8a20c8f53088fd92d280e63",
+  "candidate_execution_locally": false,
+  "candidate_sha256": "c0851300b39ff6a8b782887ffd51a13a45190e3bbf8320765718de95b9aa9535",
+  "classification": "OWNER_FIXED_WINDOW_STOP; NOT_MODEL_FAILURE",
+  "file_hashes_verified": 87,
+  "final_verification": "NOT_RUN",
+  "initial_verification": "PASS",
+  "partial_snapshot_not_sealed_native_package": true,
+  "scope": "TRANSFER_AND_CAPTURED_BYTE_HASHES_ONLY; NOT_RELEASE_OR_FUNCTIONAL_FINALITY",
+  "zip_crc": "PASS"
+}

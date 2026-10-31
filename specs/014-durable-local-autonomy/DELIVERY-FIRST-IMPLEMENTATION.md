@@ -1,5 +1,14 @@
 # Delivery-First implementation and evidence ledger
 
+Owner10hwindow CLOSED with physical/native/request quiescence verified before
+deadline: STOPPED7/effective07:57:19externalUTC. Final fresh yield **2/3**, all3
+denominator retained.08operator-stopped during SWE.3, nativeFAILED/orderBLOCKED,
+initialPASS on unchangedC, no final verifier/native package. Audit67a84e87...
+NOT_PROVEN; summary71b8773f...false for all_frozen_trials_qualified.
+[Final immutable facts, shutdown and preserved budgets](../../evidence/014-durable-local-autonomy/overnight-window-end-20261031/README.md).
+DF-T010NOT_COMPLETE; DF-T001–009remain scoped complete, originalDA30/58 unchanged.
+No expired-grant reuse, deployment, model restart, benchmark or24/7claim.
+
 07:12UTC: fresh scoped functional yield **2/3qualified**, DF-T010RUNNING.
 07archive8a02a835.../auditbf2dc88a... binds initial/final independentPASS;
 nativeSUCCEEDED/releaseBLOCKED35. Its SWE.6authors failed429during prior request
@@ -122,7 +131,7 @@ separate. No budget or oracle was relaxed to make this control pass.
 | DF-T007 | COMPLETE truthful traversal: native05 has all six author/inspector attempts and archived substantive files3/8/9/3/3/3. SWE.1/6PASS; SWE.2–5REWORK. Unit mixed-coverage rewrite and target harness adaptation remain recorded. Earlier missing/failed stages are not repaired retrospectively. |
 | DF-T008 | COMPLETE for scoped M1: archive4a20153d... integrityPASS contains the byte-exact final verifier receipt/report entry, candidate, pinned configuration and25strict release gaps. Source0e defers early sealing; old archive2cbfa28a... remains unchanged andNOT_PROVEN. |
 | DF-T009 | COMPLETE scoped DF-M1: external nine-condition audit9ffc4f56... binds actual native05, archive, local Qwen origin, terminal source provenance, independent controls, metrics and observed interventions. Strict releaseBLOCKED25. No full LL/HAL, production or availability claim. |
-| DF-T010 | RUNNING2/3qualified, not complete: frozen06audit3e73552f/releaseBLOCKED16 and07auditbf2dc88a/releaseBLOCKED35;07missing SWE.6verification/SWE.5inspection explicitly retained.08running initialPASS, terminal unqualified. Both administrative handoffs disclosed; no unattended operation claim. All3denominator and fixed07:57:59UTC expiry. |
+| DF-T010 | NOT_COMPLETE, window closed2/3qualified:06audit3e73552f/releaseBLOCKED16;07auditbf2dc88a/releaseBLOCKED35 with missing SWE.6verification/SWE.5inspection retained.08audit67a84e87 NOT_PROVEN after operator stop, initialPASS only; no final verifier/native package. Summary71b8773f preserves all3denominator. No replacement, renewal/reset or unattended operation claim. |
 | DF-T011 | DEFERRED by specification until DF-T010; no new provisional dependency implementation. |
 | DF-T012 | DEFERRED by specification until DF-T010; strict release remains unchanged meanwhile. |
 
