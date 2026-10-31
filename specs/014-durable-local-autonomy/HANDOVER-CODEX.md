@@ -2,6 +2,14 @@
 
 ## Overnight checkpoint — 31 October 05:05 UTC: fresh cohort 1/3
 
+06:03remoteUTC:07native01M6855WHNYHGCV6PFB5HPHAVH reached SWE.4inspection,
+146completed requests/oneSENT; source70d55587... and initialPASS unchanged.
+Actual unit metadataFAIL→PASS followed predicate aggregation27quoted CHECKs/
+10IDs→9/9 (including foldedUT-001a), changed pattern order/short-circuit behavior.
+No ID-only/assertion-preservation/learning-gain claim. Product hash unchanged;
+[protected sources, exact outcomes and counter correction](../../evidence/014-durable-local-autonomy/fresh07-unit-history-20261031/README.md)
+preserve original observations. No new terminal qualification;08queued.
+
 05:50UTC read-only existing LessonStore observationSHA b83e4356... confirms
 completed03/05/06 JOB/all6phase facts and durable dispositions. Store totals
 33NO_NEW_LESSON/39DEFERRED_BUDGET, zero qualified lessons/transfers. These are
