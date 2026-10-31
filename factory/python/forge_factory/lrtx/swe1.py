@@ -314,8 +314,11 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
     m = _manifest(ws)
     sysname = system_name(ws)
     obl = owner_obligations(ws)
-    listing = "\n".join(f"- [{r['key']}] {r['statement']}" + (f" (obligations: {', '.join(r.get('obligations') or [])})"
-                                                              if obl is not None else "") for r in functional)
+    if obl is None:
+        listing = "\n".join(f"- [{r['key']}] {r['statement']}" for r in functional)
+    else:  # CAPA-082: the answer schema's own field names, so obligation ids are never mistaken for statement text
+        listing = "\n".join(json.dumps({"key": r["key"], "statement": r["statement"],
+                                        "obligations": r.get("obligations") or []}) for r in functional)
     instr = (f"The register-level requirements of the {sysname} are already written (listed below as CURRENT "
              "ARTIFACT). Write only the requirements that do not belong to one register field: the reset/startup "
              f"behaviour (e.g. 'While no LL function has been called after reset, the {sysname} shall not write any "
@@ -384,6 +387,10 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
             out.append(f"[{k}] duplicate key")
         keys.add(k)
         st = r["statement"]
+        tagged = re.search(r"\(\s*obligations?\s*:[^)]*\)|\bOBL-[a-z0-9][a-z0-9-]*", st, re.I)
+        if tagged:  # CAPA-082 (run -06): ten repairs answered only "end the statement with a period"
+            out.append(f"[{k}] the statement contains owner-obligation ids ('{tagged.group(0)}'): remove them from the "
+                       "statement text and list them only in the obligations field")
         if g is not None and (STARTUP.match(st) or re.search(RESET_AFTER + r"|\breset (?:value|state)\b", st,
                                                              re.I)):
             # lrtx6 (2026-10-21): a reset-state requirement with effects stayed in a register task over 3 repairs

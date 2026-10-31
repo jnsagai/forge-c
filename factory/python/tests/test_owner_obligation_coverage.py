@@ -302,3 +302,26 @@ def test_crosscutting_register_requirement_for_an_effect_obligation_is_removed_n
                for f in out)
     p = swe1.crosscut_packet(ws, [], "qwen3.8:27b-q8_0")
     assert "implemented by the register tasks, not here: OBL-start-key." in p["instructions"]
+
+
+def test_obligation_ids_in_a_statement_get_an_explicit_finding_and_the_listing_uses_fields(ws):
+    """CAPA-082 (run -06): Ornith copied the listing's '(obligations: ...)' into its statements; the only finding was
+    'end the statement with a period', and ten repairs kept the text."""
+    from forge_factory.assurance.hardware import index
+
+    declare(ws, DOC_P)
+    idx = index(ws / "inputs/sections/RM0486")
+    sysn = swe1.system_name(ws)
+    startup = {"key": "startup", "statement": f"While no LL function has been called after reset, the {SYS} shall not "
+               "write any IWDG register. (obligations: OBL-no-startup-writes)", "source_page": 2989,
+               "verification": "Robot test passes when no write.", "verified_by": "target_robot_test", "effects": [],
+               "obligations": ["OBL-no-startup-writes"]}
+    doc = {"requirements": [startup], "not_covered": [], "open_points": [], "obligation_gaps": []}
+    out = swe1.validate_group(ws, doc, None, sysn, idx)
+    assert any(f.startswith("[startup] the statement contains owner-obligation ids") and "obligations field" in f
+               for f in out), out
+    functional = [{"key": "start", "statement": f"When LL_IWDG_Enable is called, the {SYS} shall write 0xCCCC to "
+                   "IWDG_KR.KEY.", "obligations": ["OBL-start-key"]}]
+    p = swe1.crosscut_packet(ws, functional, "qwen3.8:27b-q8_0")
+    text = " ".join(str(m.get("content")) for m in p["_messages"])
+    assert "(obligations:" not in text and '"obligations": ["OBL-start-key"]' in text
