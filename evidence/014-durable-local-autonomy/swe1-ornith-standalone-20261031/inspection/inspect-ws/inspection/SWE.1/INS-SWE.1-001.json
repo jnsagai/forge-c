@@ -1,0 +1,107 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "b6af5383c8720b970c2da239ebc202781b44dd8fccba980447266b1dc27ed168",
+  "baseline_id": "BL-SWE.1-001",
+  "checklist_sha256": "baffe47eeb5b33095a500378e6b6e5db44105a0929cbaa3148fa6a1cb4a1bdd9",
+  "checklist_version": "0.4",
+  "findings": [],
+  "inspection_id": "INS-SWE.1-001",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context",
+        "workproducts/SWE.1/register_effects.json",
+        "safety/software_safety_requirements.md"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "workproducts/SWE.1/register_effects.json",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "safety/software_safety_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "workproducts/SWE.1/register_effects.json",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context",
+        "safety/software_safety_requirements.md",
+        "traceability/upstream_gaps.md",
+        "traceability/requirements_to_tests.csv"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        ".forge-run/manifest.json#scope-target-budgets (budgets: flash_bytes=4096, static_ram_bytes=64, stack_bytes=128)"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "safety/software_safety_requirements.md",
+        "traceability/requirements_to_tests.csv"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-31T135815.486819Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-31T135815.821486Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-31T13:58:15.821756Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "PASS"
+}

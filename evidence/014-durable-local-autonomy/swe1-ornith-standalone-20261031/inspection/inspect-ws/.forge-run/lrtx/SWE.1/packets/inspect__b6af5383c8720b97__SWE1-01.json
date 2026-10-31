@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-31T13:55:17.944559Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 19040,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 18912,
+          "sha256": "4e51dcc62ed4e2cadedd8376920cdc11095f8d5ae75ee872cd74cac18c9238df"
+        },
+        "context_basis": "profile:local-rtx-v2-omniverse2-q38-delivery-first",
+        "context_tokens": 262144,
+        "estimated_prompt_tokens": 6565,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 17880
+      },
+      "errors": [
+        "a PASS verdict carries no findings (use FAIL when a finding exists)"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "d1572df2ea37d765dd4427826757baf44b29ed3f01fc2d031f3be984004c2a91",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 1449,
+        "prompt_tokens": 5006,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 6455
+      },
+      "wall_ms": 23384.0
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 20756,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 20628,
+          "sha256": "bd9ff082936f029a13a1cff7e5d04e5185f23260407daa22caa3de0b74b37d41"
+        },
+        "context_basis": "profile:local-rtx-v2-omniverse2-q38-delivery-first",
+        "context_tokens": 262144,
+        "estimated_prompt_tokens": 7170,
+        "fits": true,
+        "output_reserve": 2048,
+        "serialized_chars": 19543
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "f2bee659a2badfe1666fda854fe841d6a19879e38ae87c387688ac4bd4d6dac9",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 5471,
+        "prompt_tokens_details": {
+          "cached_tokens": 4490
+        },
+        "total_tokens": 5727
+      },
+      "wall_ms": 4555.3
+    }
+  ],
+  "base_hash": "d1572df2ea37d765dd4427826757baf44b29ed3f01fc2d031f3be984004c2a91",
+  "doc": {
+    "evidence_checked": [
+      "workproducts/SWE.1/software_requirements.md",
+      "traceability/requirements_to_tests.csv",
+      "traceability/upstream_gaps.md",
+      ".forge-run/manifest.json#scope-target-budgets",
+      ".forge-run/manifest.json#inspection-assessment-context",
+      "workproducts/SWE.1/register_effects.json",
+      "safety/software_safety_requirements.md"
+    ],
+    "findings": [],
+    "verdict": "PASS"
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "inspect:b6af5383c8720b97:SWE1-01"
+}

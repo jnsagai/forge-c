@@ -1,0 +1,102 @@
+{
+  "by_model": {
+    "ornith-1.5-35b-a3b-q8": {
+      "attempts": 2,
+      "calls_median": 3.0,
+      "gate_frozen": 2,
+      "load_ms_median": "UNKNOWN (no load observed)",
+      "per_task": {
+        "requirements:CRC_IDR": {
+          "attempts": 2,
+          "call_wall_ms_median": 3533.05,
+          "calls_median": 1.0,
+          "first_call_valid": 2,
+          "tokens_median": 2331.0,
+          "valid": 2
+        },
+        "requirements:crosscutting": {
+          "attempts": 2,
+          "call_wall_ms_median": 8228.5,
+          "calls_median": 2.0,
+          "first_call_valid": 0,
+          "tokens_median": 4735.5,
+          "valid": 2
+        }
+      },
+      "visit_pass": 2,
+      "wall_s_median": 12.399999999999999
+    }
+  },
+  "generated_at": "2026-10-31T13:43:31.767958Z",
+  "mixed_estimate": null,
+  "models": [
+    "ornith-1.5-35b-a3b-q8"
+  ],
+  "note": "Authors only; inspector qualification is a separate decision. Pilot measurement on one work order, not a model qualification.",
+  "phase": "SWE.1",
+  "repeat": 2,
+  "rows": [
+    {
+      "calls": 3,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "ornith-1.5-35b-a3b-q8",
+      "model_loads": [],
+      "n": 1,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:CRC_IDR": {
+          "call_wall_ms": 3748.3,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 513,
+          "prompt_tokens": 1839,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 10443.1,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 1491,
+          "prompt_tokens": 3749,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 15.1,
+      "workspace": "/mnt/data/forge-c/operations/swe1-ornith-20261031/report-workspaces/ornith-1.5-35b-a3b-q8-01/workspace"
+    },
+    {
+      "calls": 3,
+      "gate": "FROZEN",
+      "issues": [],
+      "model": "ornith-1.5-35b-a3b-q8",
+      "model_loads": [],
+      "n": 2,
+      "phase": "SWE.1",
+      "tasks": {
+        "requirements:CRC_IDR": {
+          "call_wall_ms": 3317.8,
+          "calls": 1,
+          "first_call_valid": true,
+          "output_tokens": 471,
+          "prompt_tokens": 1839,
+          "status": "VALID"
+        },
+        "requirements:crosscutting": {
+          "call_wall_ms": 6013.9,
+          "calls": 2,
+          "first_call_valid": false,
+          "output_tokens": 804,
+          "prompt_tokens": 3427,
+          "status": "VALID"
+        }
+      },
+      "visit": "PASS",
+      "wall_s": 9.7,
+      "workspace": "/mnt/data/forge-c/operations/swe1-ornith-20261031/report-workspaces/ornith-1.5-35b-a3b-q8-02/workspace"
+    }
+  ],
+  "schema": "forge-c/lrtx-modelcmp/1",
+  "start_workspace": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace"
+}
