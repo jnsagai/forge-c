@@ -25,10 +25,32 @@ workspace and bind it to that order's archived candidate before external review.
 
 Observere5cdc45f has actual live-partial/queued/refusal checks recorded in
 [observer evidence](../../../evidence/014-durable-local-autonomy/cohort-observer-20261031/README.md).
-These are tooling checks, not fresh-model or terminal qualification. Its full
-terminal branch remains unrun until a fresh cohort native finishes. All three
+These are tooling checks, not fresh-model qualification. Its actual terminal
+branch subsequently passed on fresh06; see
+[terminal bindings and separate external audit](../../../evidence/014-durable-local-autonomy/fresh06-terminal-20261031/README.md).
+All three
 cases, including cancellations/unfinished work, retain the preregistered
 denominator and07:57:59UTC expiry. No new scheduler or authority is created.
+
+Summarize pinned external audit results without dropping missing or failed
+trials (safe offline; no candidate execution or model invocation):
+
+```bash
+python factory/qualification/014/summarize_delivery_cohort.py \
+  --cohort <frozen-cohort.json> --cohort-sha256 <expected-sha256> \
+  --audit <external-trial-audit.json> <expected-original-sha256> \
+  --out <new-summary.json>
+```
+
+Repeat --audit for each available trial; do not create a substitute trial for
+an absent or unfavorable case. The summary verifies hash/comparability/trial
+bindings and nine-condition PASS assertions, rejects duplicate trials/native
+IDs, and retains every frozen item in the denominator. It trusts the explicitly
+pinned external audits; it does not reproduce their checks, establish missing
+intervention evidence, qualify a new job, change runtime state or grant release.
+It refuses output overwrites. Release status/metrics/handoff limitations remain
+separate from the reported scoped functional yield. Never supply a model's
+self-assessment as an independent trial audit.
 
 Size AFO reads from recorded Codex-author workspaces without contacting a model:
 `python factory/qualification/014/measure_codex_driver_files.py --state-root <workorders> --out <new-json>`.
