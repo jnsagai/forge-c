@@ -1867,3 +1867,22 @@ zero failures/errors. Ruff/diff/spec-contract checks PASS; cohorts overlap.
 The active AFO native remains unchanged at a34fdd85 and has reached SWE.2
 inspection. The fix is not deployed or qualified for model benefit; current
 terminal DF-M1 and fresh repeatability remain pending.
+
+## Recorded test-history export — 30 October23:55UTC
+
+[Native episode, snapshots and failed-before/after package checks](../../evidence/014-durable-local-autonomy/test-history-export-20261030/README.md)
+show Qwen correcting duplicate unit-test IDs in the active native:30checks with
+five IDs became30checks with30valid IDs, unchanged product-code hash and no
+operator code steering. This is test metadata correction, not CRE/factory
+self-healing, a repair incident or measured learning benefit. Host coverage
+reported100%line/function; branch/MC/DC null and target evidence false.
+
+The finalizer omitted the existing integrity log and historical test sources
+from the offline archive. Six synthetic counterexamples failed before the fix;
+afterwards6PASS and the inherited finalizer/delivery/product-outcome cohort53PASS,
+no failures/errors/skips. The unchanged v0.3 packager additionally passed7cases.
+New exports retain every referenced hash-verified snapshot and raw history;
+malformed/missing/corrupt/unsafe history yields an explicit major finding and
+BLOCKED package, with existing valid historical failures retained. No task
+checkbox changed. The code is not deployed; live sourcea34fdd85 reached SWE.5
+target author. Terminal milestone/repeatability/full LL/HAL stay unproven.

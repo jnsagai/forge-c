@@ -457,6 +457,62 @@ def owner_safety_documents(wo: dict, stage: Path) -> list[str]:
     return lines
 
 
+def stage_test_history(ws: Path, stage: Path) -> dict | None:
+    """Export existing test integrity records and their hash-bound historical sources."""
+    from ..inspection.defects import INTEGRITY_LOG, SNAPSHOTS
+
+    log = ws / INTEGRITY_LOG
+    if not log.exists() and not log.is_symlink():
+        return None  # legacy/no-test work orders do not acquire invented test evidence
+    index = {"schema": "forge-c/test-history-export/1", "scope": "RECORDED_TEST_HISTORY_NOT_TEST_ACCEPTANCE",
+             "records": 0, "snapshots": 0, "issues": []}
+    issues, references = index["issues"], set()
+    root = ws.resolve()
+    if log.is_symlink() or not log.resolve().is_relative_to(root):
+        issues.append("TEST_HISTORY_LOG_UNSAFE")
+    else:
+        try:
+            raw = log.read_bytes()
+            _w(stage, "verification/test-history/integrity.jsonl", raw)
+            for number, line in enumerate(raw.decode("utf-8").splitlines(), 1):
+                if not line.strip():
+                    continue
+                try:
+                    record = json.loads(line)
+                    files = record.get("files") if isinstance(record, dict) else None
+                    if not isinstance(files, dict):
+                        raise ValueError("test history files must be a mapping")
+                    index["records"] += 1
+                    for digest in files.values():
+                        if (not isinstance(digest, str) or len(digest) != 64
+                                or any(c not in "0123456789abcdef" for c in digest)):
+                            issues.append(f"TEST_HISTORY_DIGEST_INVALID:{number}")
+                        else:
+                            references.add(digest)
+                except (ValueError, TypeError):
+                    issues.append(f"TEST_HISTORY_RECORD_INVALID:{number}")
+        except (OSError, UnicodeError):
+            issues.append("TEST_HISTORY_LOG_UNREADABLE")
+    for digest in sorted(references):
+        source = ws / SNAPSHOTS / digest
+        if source.is_symlink() or not source.resolve().is_relative_to(root):
+            issues.append("TEST_SNAPSHOT_UNSAFE:" + digest)
+            continue
+        try:
+            data = source.read_bytes()
+        except OSError:
+            issues.append("TEST_SNAPSHOT_MISSING_OR_UNREADABLE:" + digest)
+            continue
+        if sha256_bytes(data) != digest:
+            issues.append("TEST_SNAPSHOT_HASH_MISMATCH:" + digest)
+            continue
+        _w(stage, "verification/test-history/snapshots/" + digest, data)
+        index["snapshots"] += 1
+    index["status"] = "INCOMPLETE" if issues else "COMPLETE"
+    _w(stage, "verification/test-history/index.json", pretty_json(index))
+    return index
+
+
 def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) -> dict:
     if stage.exists():
         shutil.rmtree(stage)
@@ -508,6 +564,12 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
             if item.get("role", "").startswith("delivery_first"):
                 _w(stage, item["path"], (ws / item["path"]).read_bytes())
     checks, findings, detail = derive_gates(ws, budgets)
+    history = stage_test_history(ws, stage)
+    if history is not None:
+        checks["test_history_integrity"] = history["status"] == "COMPLETE"
+        if history["issues"]:
+            findings.append({"id": "TEST_HISTORY_INTEGRITY", "severity": "major",
+                             "detail": "; ".join(history["issues"])})
     from ..brownfield.package import stage as delivery_stage  # feature 008: delivery record (FR-017); [] greenfield
 
     owner_docs += delivery_stage(ws, stage)
