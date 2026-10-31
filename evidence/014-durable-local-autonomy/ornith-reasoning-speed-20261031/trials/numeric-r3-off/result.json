@@ -1,0 +1,71 @@
+{
+  "case": "numeric",
+  "config": "off",
+  "generation": {
+    "final_characters": 52,
+    "finish_reason": "stop",
+    "first_generated_token_seconds": 0.2710474939085543,
+    "reasoning_content_collected": false,
+    "reasoning_tokens_retokenized": 0,
+    "timings": {
+      "cache_n": 0,
+      "predicted_ms": 219.621,
+      "predicted_n": 34,
+      "predicted_per_second": 150.25885502752467,
+      "predicted_per_token_ms": 6.655181818181818,
+      "prompt_ms": 118.824,
+      "prompt_n": 161,
+      "prompt_per_second": 1354.9451289301824,
+      "prompt_per_token_ms": 0.7380372670807454
+    },
+    "usage": {
+      "completion_tokens": 34,
+      "prompt_tokens": 161,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 195
+    },
+    "wall_seconds": 0.490613364148885
+  },
+  "gpu_after": {
+    "columns": [
+      "memory_MiB",
+      "gpu_percent",
+      "temperature_C",
+      "power_W",
+      "sm_MHz"
+    ],
+    "exit_code": 0,
+    "rows": [
+      "42746, 95, 82, 252.92, 2655"
+    ]
+  },
+  "gpu_before": {
+    "columns": [
+      "memory_MiB",
+      "gpu_percent",
+      "temperature_C",
+      "power_W",
+      "sm_MHz"
+    ],
+    "exit_code": 0,
+    "rows": [
+      "42746, 95, 85, 292.74, 2655"
+    ]
+  },
+  "repeat": 3,
+  "request_sha256": "fe9eee1d01566067369df5e55e7a46375b65b81480f99613ea104c3e85e5df00",
+  "trial": "numeric-r3-off",
+  "verification": {
+    "answer_correct_after_optional_fence": false,
+    "expected": {
+      "extracted": 92,
+      "updated": 2774293157,
+      "x": 487050
+    },
+    "json_contract_valid": true,
+    "status": "FAIL",
+    "verification_seconds": 0.00714015681296587
+  }
+}

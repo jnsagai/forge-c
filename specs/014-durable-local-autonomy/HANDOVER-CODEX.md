@@ -1,5 +1,35 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## 31 October — owner-requested Ornith Q8 speed study completed
+
+New explicit owner request authorized a standalone Ornith-1.5-35B-A3B Q8
+benchmark, without renewing the expired factory campaign or activating a new
+factory model. All 36 matched serial trials ran on Omniverse2: three synthetic
+cases, three seeds and four thinking configurations. Decode medians: off148.9,
+512-budget154.7, 2048-budget153.9, default-on153.3 tokens/s. Full task-contract
+passes:1/9,0/9,2/9,4/9. The2048 semantic/functional total is3/9; one correct
+review used a forbidden JSON fence. Default-on includes one8192-total-token
+truncation. No accuracy, repair or full-pipeline qualification is established.
+[Report, interpretation, native timings and all final artifacts](../../evidence/014-durable-local-autonomy/ornith-reasoning-speed-20261031/README.md).
+
+Actual model SHA de46c4ba... verified, runtime0f3a71be1, one262144 context slot,
+f16KV, MTPoff. Named low/medium/high/xhigh render identically in the actual
+template; explicit thinking budgets were used. Positive31878-assertion control
+and all3seeded-negative controls behaved as expected after inference. All36
+timed API records match native numeric logs; one warm-up excluded. No thought
+text collected. Benchmark server ended, endpoint closed and GPU process absent;
+factory STOPPED7 and original7attempt/1470request/467140608charged-reserved
+accounting unchanged. Full outcomes copied/hash-verified locally under
+B/operations/feature014/incremental-m1-followup-20261029/ornith-speed-20261031/.
+
+The typed-register adapter work was interrupted before implementation by this
+owner request. Its uncommitted test draft is preserved with SHA in
+A3/typed-register-interface-draft-20261031/; before receipt
+A3/typed-register-interface-before.xml has14FAIL/8PASS. It is a draft/counterexample,
+not a delivered adapter; no failing draft test was left in the feature checkout.
+The existing execution-window/reference question remains pending for factory
+continuation. This benchmark did not resume an expired factory job.
+
 ## Local continuation — 31 October: retain projection source evidence
 
 Latest source `a4bc71d186806afe45492d8c38cdd3a10e3bed7c` retains the full

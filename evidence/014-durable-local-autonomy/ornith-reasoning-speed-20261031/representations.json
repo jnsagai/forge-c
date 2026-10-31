@@ -1,0 +1,16 @@
+{
+  "trials.csv": {
+    "encoding": "gzip",
+    "raw_decoded_sha256": "274f0cd0da27fb1bc52ed77f7deca7a9122c2910ea0f25335cbb972faec01a51",
+    "raw_storage": "trials.csv.raw.gz",
+    "view_sha256": "3d3d8b1b9e04f1a41fda95ad83e684d3f7aa9cdf83898ed7d1d8fc7aad17f4d4",
+    "view_transform": "LF newlines and trailing-whitespace removal only"
+  },
+  "trials/author_c-r2-off/oracle.stderr": {
+    "encoding": "gzip",
+    "raw_decoded_sha256": "ee49326dca0522c777139ab18c46ff23a4217a4c1cd5f3ffd26c06b6dbac9fe3",
+    "raw_storage": "trials/author_c-r2-off/oracle.stderr.raw.gz",
+    "view_sha256": "bda6953756cf98bb305e07fe94644a1392fbab9efd3db917d3f97f019c3827f3",
+    "view_transform": "LF newlines and trailing-whitespace removal only"
+  }
+}

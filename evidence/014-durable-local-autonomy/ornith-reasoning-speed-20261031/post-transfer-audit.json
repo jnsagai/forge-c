@@ -1,0 +1,23 @@
+{
+  "actual_prompt_tokens_by_case": {
+    "author_c": [
+      296,
+      298
+    ],
+    "numeric": [
+      159,
+      161
+    ],
+    "review_c": [
+      537,
+      539
+    ]
+  },
+  "cached_prompt_tokens_values": [
+    0
+  ],
+  "candidate_hashes_match": true,
+  "native_timing_correlation": true,
+  "reported_completion_tokens": 55297,
+  "unique_trials": 36
+}
