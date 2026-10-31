@@ -1,0 +1,26 @@
+{
+ "schema": "forge-c/owner-obligations/1",
+ "status": "DRAFT_FOR_OWNER_REVIEW",
+ "owner": "jnsagai (draft transcribed by Claude Code from IDR-CONTRACT.md; not owner-approved)",
+ "source_inputs": ["IDR-CONTRACT.md", "IDR-API.h"],
+ "obligations": [
+  {"id": "OBL-write-idr-all-bits", "critical": true,
+   "statement": "Write all 32 supplied bits to its IDR.",
+   "effects": [{"register": "CRC_IDR", "field": "IDR", "op": "write"}]},
+  {"id": "OBL-read-idr-stored-value", "critical": true,
+   "statement": "Read returns the independently stored 32-bit IDR value.",
+   "effects": [{"register": "CRC_IDR", "field": "IDR", "op": "no_write"}]},
+  {"id": "OBL-preserve-other-registers", "critical": true,
+   "statement": "Preserve every other register and other peripheral instances."},
+  {"id": "OBL-no-startup-accesses", "critical": true,
+   "statement": "No startup accesses occur in this scope."},
+  {"id": "OBL-no-status-polling", "critical": true,
+   "statement": "No status polling occurs in this scope."},
+  {"id": "OBL-no-allocation-or-setup", "critical": false,
+   "statement": "No allocation or setup occur in this scope."},
+  {"id": "OBL-no-error-code-valid-call", "critical": false,
+   "statement": "The public functions are exactly void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData) and uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx); the caller supplies a valid accessible instance, so a call reports no error code."},
+  {"id": "OBL-out-of-domain", "critical": false,
+   "statement": "Invalid pointers/inaccessible hardware and CRC polynomial/calculation/configuration are outside this invocation domain."}
+ ]
+}
