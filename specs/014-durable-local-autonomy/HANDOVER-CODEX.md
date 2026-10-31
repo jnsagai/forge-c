@@ -1,5 +1,48 @@
 # Feature 014 handover to Codex — 2026-10-27
 
+## Overnight checkpoint — 31 October 04:19 UTC
+
+Scoped M1audit9ffc4f56... remainsPASS; original DA30/58/full LL/HAL/24/7 remain
+open. Source0e/profile3/auditor303 unchanged. Fresh06native01M67ZJWDYS7H33828MPTK6E6D
+is at SWE.4 inspection,147completed request-ledger entries/oneSENT. New e52e3763...
+candidate passed initial independent verification03:22:50UTC,351simulated
+assertions, correction0. Early read-only303source audit confirms its native
+origin, receiptSHAfa49bb4bdc750c7c4e58e08cfe22b2da79ea9a81c15da885bfb8f26ef74fe3fc
+underE/control/qualification-observations/cohort/afo-7f71565db57f0a76/.
+Repeat it against terminal archived bytes; no terminal cohort PASS yet.
+07/08remainQUEUED, all3denominator. OperationsRUNNING6, heartbeat/guard healthy.
+
+Actual unit metadataFAIL→FAIL→PASS followed predicate grouping16CHECK calls/6IDs
+to6calls/6IDs, added other-instance checks and changed check ordering. No driver
+edit or assertion-preservation/learning-benefit claim. Protected versions and
+[exact tool results](../../evidence/014-durable-local-autonomy/fresh06-unit-history-20261031/README.md)
+are pushed as3823861e. New read-only observere5cdc45f, sourceSHAc5bf3b9c...,
+is staged asE/control/repeatability-20261031-v4b/collect_delivery_trial-e5cdc45f.py.
+It resolves actual order/attempt/native/workspace, writes only outside jobs,
+and never infers a milestone. Live-partial/queued/two-refusal checks recorded;
+its terminal branch is stillNOT_RUN until a fresh case finishes. Use that exact
+tool for each case, then pinned303source audit and actual archive/receipt/input/
+phase/intervention checks. Existing collector copies terminal outcomes onloop10.
+Source d0090099target prompt fix remains inactive; do not alter the comparison.
+
+The [25-gap triage](../../evidence/014-durable-local-autonomy/functional-m1-20261031/QUALITY-GAP-TRIAGE.md)
+separates genuine missing author metadata from legacy array/define checker
+incompatibility and normal release-package evidence. It changes no gate/status.
+
+Stop deadline remains07:57:59UTC; remote clock trails tool UTC about49seconds.
+At about07:55collect current partial facts/source evidence while API is alive.
+By07:56:30toolUTC, request the existing intent shutdown with expected_epoch6;
+the already-running guard performs exact-instance provider settlement. Do not
+start another watchdog or renew a grant. A prepared, NOT_EXECUTED request helper
+is onloop10 atA3/request-owner-window-stop-v6.py, using existing operations:
+pass --request-stop --owner-clock-utc <actual tool UTC> ONLY at window end.
+It requests STOPPED but explicitly does not claim physical quiescence; observe
+guardE/control/window-end-v4.json, native/request reconciliation and provider
+identity afterward. Fence any newer operator intent; preserve productionPAUSED111.
+Actual guard script read: guard-delivery-first-afo-window-20261031-v4b.py,
+already PID2564269. It uses existing synchronize/settle_shutdown, no unrelated
+systemd action. A prepared helper default call made NO stop or model request.
+
 ## Overnight checkpoint — 31 October 03:22 UTC: scoped M1 PASS
 
 **DF-M1 FUNCTIONAL_MILESTONE_PASS** for CRC IDR two functions only. External
