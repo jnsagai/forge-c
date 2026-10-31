@@ -231,10 +231,15 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
 
 
 def write_scoped(ws: Path, files: dict[str, str], node: str) -> None:
-    """Every write is decided by the same role authorization the Fabro policy hook applies to the author node."""
+    """Every write is decided by the same role authorization the Fabro policy hook applies to the author node.
+
+    CAPA-075: the decision is made against the workspace being WRITTEN. A workspace copy (lrtx/modelcmp, lrtx/seeded,
+    lrtx/campaign) keeps the source's binding.json, whose absolute `workspace` would otherwise make the Authorizer
+    read and update the source's development-phase state. Node roles and phases still come from the binding."""
     from ..policy.authz import Authorizer, Binding
 
-    auth = Authorizer(Binding.load(Path(ws) / ".forge-run/binding.json"))
+    bound = Binding.load(Path(ws) / ".forge-run/binding.json")
+    auth = Authorizer(Binding(bound.binding_id, str(Path(ws)), bound.nodes))
     for rel, text in files.items():
         d = auth.decide(node, "write_file", {"path": rel, "content": ""})
         if not d.allow:
