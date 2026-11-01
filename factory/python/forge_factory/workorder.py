@@ -457,6 +457,34 @@ RESUME_EXTRA = ["configuration/baselines", "inspection", "verification", "eviden
 TARGET_BUILD = "build/target-cm55-gcc"
 
 
+# CAPA-090 (run WO-F014-SWE3-IWDG-20261101-01): later structured phases read the validated checkpoints of earlier ones
+# (SWE.3 the SWE.2 interface task, SWE.6 the SWE.1 requirement map). A resume carries them for the passed phases; the
+# run state of the source (visit state, repair budget, locks, visit logs) stays behind.
+CHECKPOINT_FILES = ("assembly.json", "inventory.json", "generated-header.h", "code-assembly.json", "tests-assembly.json",
+                    "generated-harness.c")
+
+
+def carry_checkpoints(src: Path, ws: Path, phases: list[str]) -> list[str]:
+    copied = []
+    for ph in phases:
+        s, d = Path(src) / ".forge-run/lrtx" / ph, Path(ws) / ".forge-run/lrtx" / ph
+        for f in sorted((s / "packets").glob("*.json")) if (s / "packets").is_dir() else []:
+            try:
+                if json.loads(f.read_text()).get("status") != "VALID":
+                    continue  # only validated task answers are carried
+            except (OSError, ValueError):
+                continue
+            (d / "packets").mkdir(parents=True, exist_ok=True)
+            shutil.copy2(f, d / "packets" / f.name)
+            copied.append(f"{ph}/packets/{f.name}")
+        for name in CHECKPOINT_FILES:
+            if (s / name).is_file():
+                d.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(s / name, d / name)
+                copied.append(f"{ph}/{name}")
+    return copied
+
+
 def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = None) -> list[str]:
     """Carry over the leading phases of an earlier work order that genuinely PASSED (gate PASS on an intact,
     non-stale baseline with its recorded inspection), stopping at the first phase that did not - or at `upto`
@@ -523,6 +551,7 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
                     shutil.copy2(src / rel, ws / rel)
                 copied.append(rel)
     if stable:
+        carry_checkpoints(src, ws, stable)
         for rel in RESUME_EXTRA:  # baselines/inspections/verification reports/tool evidence of the stable phases
             if (src / rel).is_dir():
                 shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True)
