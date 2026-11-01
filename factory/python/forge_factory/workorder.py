@@ -631,6 +631,13 @@ def suspension(provider: str, path: Path | None = None) -> dict | None:
     return None
 
 
+# CAPA-086 (run WO-F014-SWE1-RCC-20261101-02): Fabro ends a node that reports no activity for 1800 s, and a command
+# node reports activity only when it exits. The structured time box ends a node after the call in progress and the
+# continuation node resumes it, so the box plus the longest measured call (448 s, Ornith thinking) must stay below
+# 1800 s. Profiles asking for more (21600) are capped; the requested value is recorded.
+MAX_VISIT_TIME_S = 1200
+
+
 def local_profile_structured(local: dict | None, manifest: dict, model: str) -> dict | None:
     """Feature 010: the structured-author phases the selected local profile defines for this layer (None without a
     profile, which keeps the existing graph unchanged)."""
@@ -661,8 +668,10 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         "reinspect": bool(st.get("reinspect_direct")),
         "model": model,
         "timeout_s": st.get("timeout_s", 3600),
-        "visit_time_s": st.get("visit_time_s", 1200),
+        "visit_time_s": min(int(st.get("visit_time_s", 1200)), MAX_VISIT_TIME_S),
     }
+    if int(st.get("visit_time_s", 1200)) > MAX_VISIT_TIME_S:
+        out["visit_time_requested_s"] = int(st["visit_time_s"])
     if st.get("role_models"):  # in-run model swap (owner 2026-10-31): author and inspector models per role
         out["author_model"] = st["role_models"]["author"]
         out["inspector_model"] = st["role_models"]["inspector"]
