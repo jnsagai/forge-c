@@ -14,3 +14,8 @@
 - 75fc4f05 (a bar in every cell: measured task progress, estimate against the node's typical duration, check steps,
   waiting; owner "yes, build it as described"): pd-905a76038fe452996236 ELIGIBLE against 5d6a4da0. test_factory_floor:
   10 passed. Deployed: Omniverse2 monitor worktree at 75fc4f05, unit restarted.
+- 09f03cb3 (a cancelled run is stopped, from the Fabro lifecycle): pd-a2ef7c7a677c85d5c06b ELIGIBLE against b9ff12cc.
+- 815c52c8 (shift view lights a hall only while an order is in it; order focus): pd-161f0bdf35362da51c0f ELIGIBLE against
+  09f03cb3.
+- fc6848bb (when every task is valid, "running the tool checks"): pd-44a03ea0b2048c2e2b70 ELIGIBLE against e1292cb3.
+- 103a938e (Tool station cell from the journaled tool runs): pd-1439586bc34c9b30fb65 ELIGIBLE against fc6848bb.

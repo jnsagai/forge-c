@@ -960,3 +960,23 @@ reproducers:
     operations: [lrtx/review.source_char_limit, config/factory/profiles (think profile)]
     root_cause: "The Ornith thinking profile kept the inherited 40 000-character per-source bound; the frozen 61-group RCC register_effects.json (107 kB) was refused by the inspector before any model call (SOURCE_TOO_LARGE) and CAPA-085 stopped the run."
     remedy: "Profile v4 sets inspection_max_source_chars 1048576 as the other Omniverse2 profiles; the gateway still refuses a request over the model context."
+  - id: RPR-089
+    script: rpr089_swe2_call_contract_compiles_late.py
+    sha256: 9265c27bfe7b0325957f6f1951191ab2ee13ec5a941db5d583c04248314b9b91
+    symptom_signature: "a brownfield SWE.2 call contract that does not compile against the delivered header passes the SWE.2 author gate"
+    observed_in: "Fabro runs WO-F014-SWE2-CRCK-20261101-01 -> WO-F014-SWE3-CRCK-20261101-01 (01M6BAGDS0H7Z93R4PFHRMH6AY) on Omniverse2 2026-11-01, brownfield CRC IDR"
+    baseline_revision: 20ca687af658f5bf59c58aa0337b84c3195ba396
+    error_codes: []
+    operations: [inspection/gate.step_author, assurance/register_contract.check_compiles]
+    root_cause: "The brownfield SWE.2 call contract passed the undeclared CRC_Instance; only the SWE.3 gate compiled it, SWE.3 may not edit SWE.2 files and filed no upstream defect, and three author cycles ended STUCK."
+    remedy: "For orders with delivered code the SWE.2 freeze gate compiles the call contract against the delivered headers; the SWE.3 compile finding tells the author to report an ARCHITECTURE defect for the carried SWE.2 contract instead of editing it."
+  - id: RPR-090
+    script: rpr090_resume_drops_structured_checkpoints.py
+    sha256: 0cb341db195fd7a2feea5f95c33901ae44fe02466345c356e48351f7175fa465
+    symptom_signature: "a greenfield resume does not carry the validated structured checkpoints of the passed phases"
+    observed_in: "Fabro runs WO-F014-SWE3-IWDG-20261101-01 and WO-F014-SWE3-OBL-20261101-01 on Omniverse2 2026-11-01, greenfield resumes for SWE.3"
+    baseline_revision: 815c52c829cdfea37990bbd6c1b1398070a784b8
+    error_codes: []
+    operations: [workorder.resume_from, lrtx/swe3.interfaces]
+    root_cause: "A greenfield resume copied the frozen work products and gate records of the passed phases but not their validated structured checkpoints; structured SWE.3 reads the SWE.2 interface task and refused at once (LRTX_SWE3_NEEDS_STRUCTURED_SWE2_INTERFACE)."
+    remedy: "resume_from carries the VALID task packets and the assembly/inventory/generated-header records of the carried phases; the source's run state (visit state, repair budget, locks, visit logs) stays behind."
