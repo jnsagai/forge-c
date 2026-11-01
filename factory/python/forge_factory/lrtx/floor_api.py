@@ -239,6 +239,42 @@ def history(now: float) -> dict:
     return _HISTORY
 
 
+# The deterministic tool checks the structured author runs after its tasks, per phase (journaled tool calls,
+# evidence/tool-results.jsonl). Owner 2026-11-01: "the tools phase should be a node and a cell right?" -> a cell now.
+TOOLS = {"SWE.3": [("forge-build-mcp", "compile", "target build"), ("forge-build-mcp", "compile", "host build"),
+                   ("forge-docs-mcp", "validate_artifact", "design and code rules"),
+                   ("forge-analysis-mcp", "cppcheck", "static analysis")],
+         "SWE.4": [("forge-tests-mcp", "run_unit", "unit tests"), ("forge-tests-mcp", "llvm_coverage", "coverage")],
+         "SWE.5": [("forge-tests-mcp", "run_integration", "integration tests")],
+         "SWE.6": [("forge-tests-mcp", "run_robot", "target tests (Renode)")]}
+
+
+def tool_rounds(ws: Path, phase: str) -> list[list[dict]]:
+    """The phase author's tool runs, grouped into rounds (a round starts at the phase's first tool)."""
+    want = TOOLS.get(phase) or []
+    if not want:
+        return []
+    keys = {(s_, o) for s_, o, _l in want}
+    rounds: list[list[dict]] = []
+    p = ws / "evidence/tool-results.jsonl"
+    for line in (p.read_text().splitlines() if p.is_file() else []):
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if r.get("phase") != phase or not str(r.get("role") or "").endswith("-author") or \
+                (r.get("server"), r.get("op")) not in keys:
+            continue
+        res = r.get("result") or {}
+        label = next(lab for s_, o, lab in want if (s_, o) == (r["server"], r["op"]))
+        if r["op"] == "compile":
+            label = "target build" if "relocatable_elf" in (res.get("metrics") or {}) else "host build"
+        if label == want[0][2] or not rounds:
+            rounds.append([])
+        rounds[-1].append({"tool": label, "status": res.get("status"), "at": _ts(r.get("ts_utc"))})
+    return rounds
+
+
 def _work_products(ws: Path, phase: str) -> int:
     try:
         from ..inspection.engine import Store
@@ -335,8 +371,12 @@ def order(ws: Path, now: float | None = None) -> dict:
         note = "every phase at first inspection" if all(p["first_pass"] for p in phases.values() if p["inspections"]) \
             else f"{rw} rework cycle{'s' if rw != 1 else ''}"
     wp = {"have": _work_products(ws, at), "phase": at} if state == "RUNNING" else None
+    tools = {ph: tool_rounds(ws, ph) for ph in TOOLS if ph in phases}
+    newest_task = max([_ts((_load(Path(f)) or {}).get("at")) or 0
+                       for f in glob.glob(str(ws / ".forge-run/lrtx" / at / "packets/*.json"))] + [0])
     return {"wo": man.get("work_order") or ws.parent.name, "part": man.get("driver"), "target": target, "at": at,
             "state": state, "note": note, "created": created, "phases": phases, "active": active, "node": node, "wp": wp,
+            "tools": tools, "newest_task": newest_task,
             "resumed_from": resumed, "newest": max([p["last"] or 0 for p in phases.values()] + [created or 0])}
 
 
@@ -344,6 +384,35 @@ STEP = {"FROZEN": "passed", "PASS": "passed", "INJECTED": "passed", "UNCHANGED":
         "REWORK": "rejected", "BLOCKED": "stopped"}
 WAIT_FOR = {"tool": None, "author": "the tool changer", "freeze": "the author cell", "inspector": "the freeze gate",
             "gate": "the inspection cell", "router": "the inspection gate"}
+
+
+def _tool_cell(phase: str, run: dict | None, here: list[dict], a: dict) -> dict | None:
+    """The tool station: the phase's deterministic tool runs (last round per tool: passed / failed / pending)."""
+    want = TOOLS.get(phase)
+    if not want:
+        return None
+    rounds = (run or {}).get("tools", {}).get(phase) or []
+    last = rounds[-1] if rounds else []
+    labels = [lab for _s, _o, lab in want]
+    state, why = "idle", None
+    if run is not None:
+        failed = [t for t in last if t["status"] not in ("PASS", None)]
+        tools_newer = bool(last) and max(t["at"] or 0 for t in last) >= (run.get("newest_task") or 0)
+        if a.get("checking") and (not last or tools_newer or not failed):
+            state = "working"
+        elif failed:
+            state = "rework"
+            why = "found " + ", ".join(t["tool"] for t in failed) + " issues; the author repairs them"
+        else:
+            state = "waiting"
+    seen = {t["tool"]: t["status"] for t in last}
+    steps = [{"label": lab, "status": "passed" if seen.get(lab) == "PASS" else "failed" if lab in seen else "pending"}
+             for lab in labels]
+    allr = [t for o in here for r in (o.get("tools") or {}).get(phase, []) for t in r]
+    return {"id": "tools", "name": "Tool station", "tag": "qualified tools, deterministic", "state": state,
+            "bar": {"kind": "tools", "steps": steps, "round": len(rounds)} if run is not None else {"kind": "idle"},
+            "why": why, "what": "Builds and checks the work products: " + ", ".join(labels) + ".",
+            "counters": [["tool runs", len(allr)], ["failed", sum(1 for t in allr if t["status"] not in ("PASS", None))]]}
 
 
 def _bar(cell: str, run: dict | None, a: dict, nd: dict | None, at_cell: str | None, phase: str, now: float) -> dict:
@@ -370,7 +439,7 @@ def _bar(cell: str, run: dict | None, a: dict, nd: dict | None, at_cell: str | N
     last = {"freeze": p.get("last_author"), "gate": p.get("last_inspect"), "router": p.get("last_route")}.get(cell)
     if last in STEP:  # the router's REWORK is a repair it granted, not a rejection
         return {"kind": "step", "step": "rework" if cell == "router" and last == "REWORK" else STEP[last], "decision": last}
-    return {"kind": "waiting", "for": WAIT_FOR.get(cell)}
+    return {"kind": "waiting", "for": "the tool station" if cell == "freeze" and phase in TOOLS else WAIT_FOR.get(cell)}
 
 
 def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dict]:
@@ -446,6 +515,9 @@ def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dic
          "counters": [["repairs granted", agg("reworks")], ["stopped", sum(1 for o in here if o["state"] == "STOPPED"
                                                                              and o["at"] == phase)]]},
     ]
+    tc = _tool_cell(phase, run, here, a)
+    if tc is not None:
+        cells.insert(2, tc)  # between the author cell and the freeze gate
     return cells
 
 

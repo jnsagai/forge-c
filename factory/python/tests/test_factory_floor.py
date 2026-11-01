@@ -238,3 +238,33 @@ def test_a_visit_with_every_task_valid_says_the_tool_checks_are_running(tmp_path
     a = {c["id"]: c for c in next(h for h in d["halls"] if h["id"] == "SWE.3")["cells"]}["author"]
     assert a["bar"]["done"] == a["bar"]["total"] == 2 and "tool checks" in a["bar"]["sub"] and "tool checks" in a["job"]
     assert "running the tool checks" in d["orders"][0]["note"]
+
+
+def _tools(ws, rows):
+    (ws / "evidence").mkdir(exist_ok=True)
+    (ws / "evidence/tool-results.jsonl").write_text("".join(json.dumps(
+        {"ts_utc": _iso(t), "phase": "SWE.3", "role": "swe3-author", "server": srv, "op": op,
+         "result": {"status": st, "metrics": m}}) + "\n" for t, srv, op, st, m in rows))
+
+
+def test_the_tool_station_shows_the_last_round_of_tool_runs(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    ws = _order(tmp_path, "WO-T3", [{"phase": "SWE.2", "step": I, "gate": {"decision": "PASS"}}], package=False,
+                stop_after="SWE.3", visit="SWE.3", packets=[("SWE.3", "code:SWU-LL-01", "VALID", 1)])
+    b, c = "forge-build-mcp", "compile"
+    _tools(ws, [(NOW - 200, b, c, "PASS", {"relocatable_elf": True}), (NOW - 199, b, c, "PASS", {}),
+                (NOW - 198, "forge-docs-mcp", "validate_artifact", "PASS", {}), (NOW - 197, "forge-analysis-mcp", "cppcheck", "FAIL", {}),
+                (NOW - 30, b, c, "PASS", {"relocatable_elf": True})])  # a second round has started
+    cells = {x["id"]: x for x in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.3")["cells"]}
+    t = cells["tools"]
+    assert [x["id"] for x in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.3")["cells"]][:3] == \
+        ["tool", "author", "tools"]
+    assert t["state"] == "working" and t["bar"]["round"] == 2
+    assert [s["status"] for s in t["bar"]["steps"]] == ["passed", "pending", "pending", "pending"]
+    assert ["tool runs", 5] in t["counters"] and ["failed", 1] in t["counters"]
+    assert cells["freeze"]["bar"] == {"kind": "waiting", "for": "the tool station"}
+
+
+def test_phases_without_tools_have_no_tool_station(plant):
+    ids = [c["id"] for c in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.2")["cells"]]
+    assert "tools" not in ids

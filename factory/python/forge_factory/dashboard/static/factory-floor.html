@@ -309,6 +309,11 @@ function barHtml(b, c) {
     return `<div class="prog"><div class="steps">${steps.map(([cls, label], i) => `<span class="step ${i === 0 ? (b.step === "checking" ? "now" : "done") : (b.step === "checking" ? "" : cls)}">${esc(label)}</span>`).join('<span class="step-sep">▸</span>')}</div>
       <div class="row"><span>${tag("measured")} ${b.step === "checking" ? "check running" : `last decision <b>${esc(b.decision || b.step)}</b>`}</span></div></div>`;
   }
+  if (b.kind === "tools") {
+    const cls = {passed: "passed", failed: "rejected", pending: ""};
+    return `<div class="prog"><div class="steps">${b.steps.map((t) => `<span class="step ${cls[t.status] || ""}${t.status === "pending" && c.state === "working" ? " now" : ""}" title="${esc(t.status)}">${esc(t.label)}</span>`).join("")}</div>
+      <div class="row"><span>${tag("measured")} ${b.round ? `round <b>${b.round}</b>` : "no tool run yet"}</span><span>${b.steps.filter((t) => t.status === "passed").length}/${b.steps.length} passed</span></div></div>`;
+  }
   if (b.kind === "waiting") return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">${b.for ? `waiting for ${esc(b.for)}` : "ready"}</span></div></div>`;
   return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">idle</span></div></div>`;
 }
