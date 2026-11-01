@@ -232,6 +232,26 @@ def _coverage(cov: dict) -> tuple[list[str], list[str]]:
     return lines, gaps
 
 
+ERROR_WORDS = re.compile(r"\b(errors?|fail(s|ed|ure)?|invalid|time-?outs?|reject(s|ed)?|abort(s|ed)?|HAL_ERROR|HAL_TIMEOUT)\b",
+                         re.I)
+
+
+def _kind_gap(kind: str, uc: list[dict]) -> str:
+    """CAPA-101 (run WO-F014-SWE4-IWDG-20261101-L4, SWE4-02): 'none declared: error' was read as missing error tests for
+    LL accessors that have no error behaviour. A kind without a test is stated NOT COVERED, or not applicable with the
+    deterministic reason (no cited requirement states an error behaviour and no error status is returned; no value
+    is taken). The inspector judges the statement."""
+    fn = uc[0]["unit"]["function"]
+    swrs = ", ".join(dict.fromkeys(c["swr"] for c in uc))
+    if kind == "error" and not any(ERROR_WORDS.search(c["statement"] or "") for c in uc) and \
+            not re.search(r"Status|Error", str(fn.get("returns") or "")):
+        return (f"error: not applicable - no requirement of this unit ({swrs}) states an error behaviour and "
+                f"{fn['name']} returns {fn.get('returns') or 'void'} without an error status")
+    if kind == "boundary" and not _takes_value(fn):
+        return f"boundary: not applicable - {fn['name']} takes no value"
+    return f"{kind}: NOT COVERED"
+
+
 def _declared_kinds(ws: Path, ut: str) -> list[str]:
     ck = V._ckpt(ws, PHASE, f"test:{ut}")
     doc = json.loads(ck.read_text()).get("doc") if ck.is_file() else None
@@ -403,7 +423,8 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     for uid in dict.fromkeys(c["unit"]["id"] for c in cs):
         got = sorted({k for c in cs if c["unit"]["id"] == uid for k in kinds[c["ut"]]}, key=KINDS.index)
         none = [k for k in KINDS if k not in got]
-        md.append(f"- {uid}: {', '.join(got) or 'none'}" + (f"; none declared: {', '.join(none)}" if none else ""))
+        uc = [c for c in cs if c["unit"]["id"] == uid]
+        md.append(f"- {uid}: {', '.join(got) or 'none'}" + "".join(f"; {_kind_gap(k, uc)}" for k in none))
     md += ["", "## Mock fidelity", "", "Plain RAM register array: no write-1-to-clear, read-only or hardware side "
            "effects; flags are preset by the test. Limitation: hardware update latency (e.g. PVU/RVU) is not modelled.",
            "", "## Static analysis", ""]

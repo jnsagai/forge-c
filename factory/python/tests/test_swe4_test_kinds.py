@@ -37,4 +37,4 @@ def test_report_shows_the_declared_kinds(ws3, monkeypatch):
     swe4.visit_report(ws3)
     rpt = (ws3 / "workproducts/SWE.4/unit_verification_report.md").read_text()
     assert "| UT-005 | LL_IWDG_SetPrescaler | SWR-005 | positive, negative, boundary |" in rpt
-    assert "## Test design per unit" in rpt and "none declared: " in rpt
+    assert "## Test design per unit" in rpt and ("not applicable" in rpt or "NOT COVERED" in rpt)
