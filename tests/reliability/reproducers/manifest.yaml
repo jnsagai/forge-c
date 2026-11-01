@@ -1040,3 +1040,13 @@ reproducers:
     operations: [lrtx/swe6.scenario_packet, config/factory/peripherals/crc.yaml prompt.target_model]
     root_cause: "SWR-003/SWR-005 concern every CRC register; the scenario packet's generated defines cover only the in-scope CRC_IDR and the CRC target model named reset values by register only, so the author guessed the other offsets and TCHECK 3 failed on target twice."
     remedy: "The CRC target model states the offset and reset value of every register the behavioural model implements (CRC_DR 0x000, CRC_IDR 0x004, CRC_CR 0x008, CRC_INIT 0x010, CRC_POL 0x014)."
+  - id: RPR-097
+    script: rpr097_swe3_design_pass_hides_code_failure.py
+    sha256: 76ed592666dcca7f110912d15fb62e8ba7fe5f655d0886da1df75f8af9c818ad
+    symptom_signature: "the SWE.3 design visit answers PASS while the code visit left cppcheck findings open"
+    observed_in: "Fabro run WO-F014-SWE3-IWDG-20261101-L1 on Omniverse2 2026-11-01, IWDG LL greenfield SWE.3 resumed from WO-F014-SWE2-IWDG-20261101-02"
+    baseline_revision: ded15e35e552bc5dbf2ac462bb30a573f9af221a
+    error_codes: []
+    operations: [lrtx/swe3.visit_design, lrtx/runner (code then design node)]
+    root_cause: "The structured SWE.3 code visit ended FAILED with cppcheck MISRA findings open; the deterministic design node, next in the workflow, replaced that reply with PASS and the author gate froze the code with the open findings; SWE.4 then failed SWE4-04 on them."
+    remedy: "The code visit records its final tool issues; the design visit refuses while they are open and when its own cppcheck measurement is FAIL."
