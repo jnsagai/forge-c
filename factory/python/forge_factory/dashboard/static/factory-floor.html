@@ -79,6 +79,12 @@ h3 { font-size: 17px; text-transform: uppercase; letter-spacing: .04em; }
 .hall .crates { display: flex; flex-wrap: wrap; gap: 4px; min-height: 18px; }
 .crate { font-family: var(--mono); font-size: 10px; padding: 1px 5px; border-radius: 3px; background: var(--safety); color: var(--safety-ink); }
 .crate.idle { background: var(--lamp-off); color: var(--muted); }
+.crate[data-wo] { cursor: pointer; }
+.crate[data-wo]:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.picker { display: inline-flex; align-items: center; gap: 6px; }
+.picker select { font: inherit; font-size: 13px; padding: 3px 6px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); max-width: 70vw; }
+.hall.h-history .facts b { color: var(--muted); }
+.hall.h-out { opacity: .45; background-image: repeating-linear-gradient(135deg, transparent 0 8px, color-mix(in srgb, var(--line) 60%, transparent) 8px 10px); }
 .conveyor { height: 10px; border-radius: 5px; background: var(--belt); margin: 0 3px;
   background-image: repeating-linear-gradient(90deg, transparent 0 6px, rgba(255,255,255,.18) 6px 9px); }
 .conveyor.moving { animation: belt 0.9s linear infinite; }
@@ -220,7 +226,8 @@ tr:last-child td { border-bottom: 0; }
   <section class="floor" aria-labelledby="floor-title">
     <div class="floor-head">
       <h2 id="floor-title">Shop floor</h2>
-      <span class="note">Select a hall to open its cells. Crates are work orders in that hall now.</span>
+      <label class="picker"><span class="label">Show</span> <select id="focus" aria-label="Show the whole shift or one order"><option value="">Whole shift</option></select></label>
+      <span class="note" id="floor-note">Halls light up only while an order is in them; the numbers are today's. Click a crate to follow that order.</span>
     </div>
     <div class="lineup"><div class="halls" id="halls"></div></div>
   </section>
@@ -243,6 +250,7 @@ const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
 const stack = (big) => `<span class="stack${big ? " big" : ""}" aria-hidden="true"><i class="r"></i><i class="a"></i><i class="g"></i></span>`;
 const STATE_TEXT = {working: "Working", rework: "Rework", stopped: "Stopped", idle: "Idle", waiting: "Waiting", ready: "Ready", done: "Done"};
 let DATA = null, lastOk = 0, selected = null;
+let focus = new URLSearchParams(location.search).get("order") || "";
 
 function arm() {
   return `<svg viewBox="0 0 112 86" aria-hidden="true">
@@ -321,6 +329,22 @@ function cellCard(c) {
 }
 function renderKpis(d) {
   const k = d.kpis;
+  if (d.focus) {
+    const f = d.focus;
+    $("#kpis").innerHTML = [
+      `<div class="kpi"><span class="label">Order</span><span class="v" style="font-size:22px">${esc(f.wo.replace("WO-F014-", ""))}</span><span class="n">${esc((f.part || "").replace("STM32N6 ", ""))}</span></div>`,
+      `<div class="kpi"><span class="label">State</span><span class="v" style="font-size:26px">${esc(f.state.toLowerCase())}</span><span class="n">${esc(f.state === "RUNNING" ? "now in " + f.at : "target " + f.target)}${f.elapsed_min != null ? ` · ${f.elapsed_min} min since release` : ""}</span></div>`,
+      `<div class="kpi"><span class="label">Phases passed</span><span class="v">${f.phases_passed}<small> / ${f.phases_in_route}</small></span><span class="n">route SWE.1 → ${esc(f.target)}${f.resumed_from ? " · resumed" : ""}</span></div>`,
+      `<div class="kpi"><span class="label">Rework cycles</span><span class="v">${f.reworks}</span><span class="n">failed inspections sent back</span></div>`,
+      `<div class="kpi gauge-kpi">${gauge(k.line_tok_s, 200, "line speed", "tok/s")}<div><span class="label">Model work, this order</span><div class="v" style="font-size:24px">${f.model_hours}<small> h</small></div><span class="n">${fmt(f.out_tokens)} output tokens</span></div></div>`,
+      stationTile(k.station),
+    ].join("");
+    const st = f.state === "RUNNING" ? "working" : f.state === "STOPPED" ? "stopped" : "done";
+    $("#plant-status").className = "plant-status s-" + st;
+    $("#plant-status").innerHTML = `${stack(true)}<span>Following ${esc(f.wo.replace("WO-F014-", ""))}</span>`;
+    $("#sub").textContent = `ASPICE QM · one order · updated ${d.updated_at.slice(11, 19)} UTC`;
+    return;
+  }
   $("#kpis").innerHTML = [
     `<div class="kpi"><span class="label">On the floor now</span><span class="v">${k.on_floor}</span><span class="n">${esc(d.orders.filter((o) => o.state === "RUNNING").map((o) => o.wo.replace("WO-F014-", "") + " in " + o.at).join(", ") || "no order running")}</span></div>`,
     `<div class="kpi"><span class="label">Orders completed</span><span class="v">${k.completed}<small> / ${k.orders}</small></span><span class="n">reached their target phase</span></div>`,
@@ -342,13 +366,19 @@ function stationTile(st) {
   return `<div class="kpi station-kpi"><span class="label">GPU station · RTX 6000 Ada</span><div class="gauges">${gauge(Math.round(st.util_pct), 100, "load", "%")}${gauge(Math.round(st.power_w), 300, "power", "W")}</div><span class="n">${st.temp_c} °C · ${(st.mem_used_mib / 1024).toFixed(1)} of ${(st.mem_total_mib / 1024).toFixed(0)} GB · loaded: ${esc(model)}</span></div>`;
 }
 function renderHalls(d) {
+  const HALL_STATE = {working: "working", history: "history", idle: "idle", out: "out", pending: "waiting", carried: "done",
+    done: "done", stopped: "stopped"};
+  const FOCUS_TEXT = {working: "in work now", done: "passed", stopped: "stopped here", pending: "not reached yet",
+    carried: "carried over (resumed)", out: "not in this order"};
   $("#halls").innerHTML = d.halls.map((h, i) => {
-    const facts = h.id === "SHIP" ? `<div><span class="label">released</span><b>0</b></div><div><span class="label">mode</span><b>review</b></div>`
+    const facts = d.focus ? `<div style="grid-column:1/-1"><span class="label">this order</span><b>${esc(FOCUS_TEXT[h.state] || h.state)}</b></div>` +
+        (h.state !== "out" && h.id !== "SHIP" ? `<div><span class="label">reworks</span><b>${h.reworks}</b></div><div><span class="label">time</span><b>${h.cycle_min != null ? h.cycle_min + " min" : "—"}</b></div>` : "")
+      : h.id === "SHIP" ? `<div><span class="label">released</span><b>0</b></div><div><span class="label">mode</span><b>review</b></div>`
       : `<div><span class="label">done</span><b>${h.passed}/${h.entered}</b></div><div><span class="label">first pass</span><b>${pct(h.first_pass, h.inspected)}</b></div><div><span class="label">avg time</span><b>${h.cycle_min != null ? h.cycle_min + " min" : "—"}</b></div><div><span class="label">reworks</span><b>${h.reworks}</b></div>`;
-    const crates = h.running.map((w) => `<span class="crate">${esc(w.split("-")[1] || w)}</span>`).join("") || '<span class="crate idle">empty</span>';
+    const crates = h.running.map((w) => `<span class="crate" role="button" tabindex="0" data-wo="${esc(w)}" title="Follow ${esc(w)}">${esc(w.split("-")[1] || w)}</span>`).join("") || '<span class="crate idle">empty</span>';
     const next = d.halls[i + 1];
     const belt = next ? `<div class="conveyor${h.running.length ? " moving" : ""}" aria-hidden="true"></div>` : "";
-    return `<div class="hall-slot"><button class="hall s-${h.state}" data-hall="${h.id}" aria-pressed="${h.id === selected}">
+    return `<div class="hall-slot"><button class="hall s-${HALL_STATE[h.state] || h.state} h-${h.state}" data-hall="${h.id}" aria-pressed="${h.id === selected}">
       <div class="top"><div><div class="code">${h.id}</div><div class="name">${esc(h.name)}</div></div>${stack(true)}</div>
       <div class="facts">${facts}</div><div class="crates">${crates}</div></button>${belt}</div>`;
   }).join("");
@@ -357,7 +387,7 @@ function renderHall(d) {
   const h = d.halls.find((x) => x.id === selected) || d.halls[0];
   const kpis = h.id === "SHIP" ? "" : `<div class="hall-kpis"><div><span class="label">entered</span><b>${h.entered}</b></div><div><span class="label">passed</span><b>${h.passed}</b></div><div><span class="label">first-pass yield</span><b>${pct(h.first_pass, h.inspected)}</b></div><div><span class="label">avg time to pass</span><b>${h.cycle_min != null ? h.cycle_min + " min" : "—"}</b></div><div><span class="label">stopped</span><b>${h.stopped}</b></div></div>`;
   $("#hall-detail").innerHTML = `<div class="hall-detail-head"><div><span class="label">Hall</span><h2>${h.id} · ${esc(h.name)}</h2></div>${kpis}</div>` +
-    (h.cells.length ? `<div class="cells">${h.cells.map(cellCard).join("")}</div>` : `<p class="note">${esc(h.note || "No orders have reached this hall in this shift. Its cells appear here when the first order arrives.")}</p>`);
+    (h.cells.length ? `<div class="cells">${h.cells.map(cellCard).join("")}</div>` : `<p class="note">${esc(h.state === "out" ? "This hall is not in the route of the order you are following." : h.note || "No orders have reached this hall in this shift. Its cells appear here when the first order arrives.")}</p>`);
 }
 function renderOrders(d) {
   $("#orders").innerHTML = d.orders.slice().reverse().map((o) => `<tr><td class="mono">${esc(o.wo.replace("WO-F014-", ""))}</td><td>${esc((o.part || "").replace("STM32N6 ", ""))}</td>
@@ -375,11 +405,28 @@ function render() {
     const h = (location.hash || "").slice(1).toUpperCase().replace("-", ".");
     selected = DATA.halls.some((x) => x.id === h) ? h : (DATA.halls.find((x) => x.running.length) || DATA.halls[0]).id;
   }
-  renderKpis(DATA); renderHalls(DATA); renderHall(DATA); renderOrders(DATA);
+  renderPicker(DATA); renderKpis(DATA); renderHalls(DATA); renderHall(DATA); renderOrders(DATA);
+}
+function renderPicker(d) {
+  const sel = $("#focus"), short = (w) => w.replace("WO-F014-", "");
+  const opts = [["", "Whole shift"], ...d.orders.slice().reverse().sort((a, b) => (b.state === "RUNNING") - (a.state === "RUNNING"))
+    .map((o) => [short(o.wo), `${short(o.wo)} · ${o.state.toLowerCase()}`])];
+  const html = opts.map(([v, t]) => `<option value="${esc(v)}"${v === focus ? " selected" : ""}>${esc(t)}</option>`).join("");
+  if (sel.innerHTML !== html) sel.innerHTML = html;
+  $("#floor-note").textContent = d.focus ? "Following one order: only the halls of its route are lit." :
+    "Halls light up only while an order is in them; the numbers are today's. Click a crate to follow that order.";
+}
+function setFocus(v) {
+  focus = v || "";
+  const u = new URL(location.href);
+  if (focus) u.searchParams.set("order", focus); else u.searchParams.delete("order");
+  history.replaceState(null, "", u);
+  selected = null;
+  load();
 }
 async function load() {
   try {
-    const r = await fetch("floor.json", {cache: "no-store"});
+    const r = await fetch("floor.json" + (focus ? "?order=" + encodeURIComponent(focus) : ""), {cache: "no-store"});
     if (!r.ok) throw new Error("HTTP " + r.status);
     DATA = await r.json(); lastOk = Date.now();
     $("#stale").hidden = true;
@@ -393,7 +440,14 @@ async function load() {
     }
   }
 }
+document.addEventListener("change", (e) => { if (e.target.id === "focus") setFocus(e.target.value); });
+document.addEventListener("keydown", (e) => {
+  const c = e.target.closest && e.target.closest("[data-wo]");
+  if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setFocus(c.dataset.wo); }
+});
 document.addEventListener("click", (e) => {
+  const c = e.target.closest("[data-wo]");
+  if (c) { e.stopPropagation(); setFocus(c.dataset.wo); return; }
   const b = e.target.closest("[data-hall]");
   if (b) { selected = b.dataset.hall; location.hash = selected.replace(".", "-").toLowerCase(); render(); }
 });

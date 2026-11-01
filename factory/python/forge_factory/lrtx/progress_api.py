@@ -214,7 +214,7 @@ class Handler(BaseHTTPRequestHandler):
             from .floor_api import floor
 
             since = (q.get("since") or [None])[0]
-            body = floor(since=_ts(since) if since else None)
+            body = floor(since=_ts(since) if since else None, focus=(q.get("order") or [None])[0])
         elif u.path == "/progress":
             body = {"schema": "forge-c/lrtx-progress/1",
                     "work_orders": collect((q.get("run") or [None])[0], (q.get("wo") or [None])[0])}

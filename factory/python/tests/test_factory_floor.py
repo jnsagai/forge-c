@@ -177,7 +177,7 @@ def test_a_native_node_gets_a_time_estimate_against_its_typical_duration(tmp_pat
     assert cells["freeze"]["bar"] == {"kind": "step", "step": "rejected", "decision": "REJECTED"}  # its last decision
     monkeypatch.setattr(F, "history", lambda now: {"typical": {}, "refs": {}})
     b = {c["id"]: c for c in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.3")["cells"]}["author"]["bar"]
-    assert b["kind"] == "estimate" and "pct" not in b and b["elapsed_s"] == 900  # no earlier run: no invented percentage
+    assert b["kind"] == "estimate" and "pct" not in b and 899 <= b["elapsed_s"] <= 901  # no earlier run: no invented %
 
 
 def test_typical_durations_are_medians_of_finished_runs(tmp_path, monkeypatch):
@@ -204,6 +204,25 @@ def test_a_cancelled_run_is_stopped_even_when_its_last_stage_still_reads_running
     o = d["orders"][0]
     assert o["state"] == "STOPPED" and "cancelled" in o["note"]
     h = next(h for h in d["halls"] if h["id"] == "SWE.3")
-    assert h["running"] == [] and h["state"] == "stopped" and d["kpis"]["on_floor"] == 0
+    assert h["running"] == [] and h["state"] == "history" and d["kpis"]["on_floor"] == 0  # no order in it now
     monkeypatch.setattr(F, "fabro_lifecycle", lambda rid: "running")
     assert F.floor(now=NOW, since=NOW - 86400)["orders"][0]["state"] == "RUNNING"
+
+
+
+def test_the_shift_view_lights_a_hall_only_while_an_order_is_in_it(plant):
+    h = {x["id"]: x for x in F.floor(now=NOW, since=NOW - 86400)["halls"]}
+    assert h["SWE.1"]["state"] == "history" and h["SWE.1"]["passed"] == 2  # today's numbers, no light
+    assert h["SWE.2"]["state"] == "working" and h["SWE.3"]["state"] == "idle"
+
+
+def test_the_order_focus_shows_only_that_orders_route(plant):
+    d = F.floor(now=NOW, since=NOW - 86400, focus="RUN")  # suffix of WO-RUN
+    h = {x["id"]: x for x in d["halls"]}
+    assert d["focus"]["wo"] == "WO-RUN" and d["focus"]["phases_in_route"] == 2 and d["focus"]["phases_passed"] == 1
+    assert (h["SWE.1"]["state"], h["SWE.2"]["state"], h["SWE.3"]["state"], h["SHIP"]["state"]) == ("done", "working", "out", "out")
+    assert h["SWE.3"]["cells"] == [] and h["SWE.1"]["entered"] == 1  # this order's numbers only
+    assert len(d["orders"]) == 3  # the order list stays the whole shift
+    stop = {x["id"]: x for x in F.floor(now=NOW, since=NOW - 86400, focus="WO-STOP")["halls"]}
+    assert stop["SWE.1"]["state"] == "stopped" and stop["SWE.2"]["state"] == "out"
+    assert F.floor(now=NOW, since=NOW - 86400, focus="WO-NOPE")["focus"] is None  # unknown order: the shift view

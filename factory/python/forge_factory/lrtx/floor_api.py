@@ -447,7 +447,26 @@ def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dic
     return cells
 
 
-def floor(now: float | None = None, since: float | None = None) -> dict:
+def _focus_state(o: dict, ph: str) -> str:
+    """A hall's state for one order: out of its route, carried over, working, done, stopped or pending."""
+    route = PHASES[:PHASES.index(o["target"]) + 1] if o.get("target") in PHASES else list(PHASES)
+    if ph not in route:
+        return "out"
+    p = o["phases"].get(ph)
+    if p and p.get("carried"):
+        return "carried"
+    if o["state"] == "RUNNING" and o["at"] == ph:
+        return "working"
+    if p and p.get("passed"):
+        return "done"
+    if o["state"] == "STOPPED" and o["at"] == ph:
+        return "stopped"
+    return "pending"
+
+
+def floor(now: float | None = None, since: float | None = None, focus: str | None = None) -> dict:
+    """The shift (every order since `since`, default 00:00 UTC), or with `focus` (a work order id or its suffix) the
+    halls and cells of that one order; shift KPIs and the order list are always the whole shift."""
     now = now or time.time()
     start = shift_start(now, since)
     orders = []
@@ -463,12 +482,14 @@ def floor(now: float | None = None, since: float | None = None) -> dict:
             orders.append({"wo": ws.parent.name, "state": "UNKNOWN", "note": f"{type(exc).__name__}", "phases": {},
                            "at": "SWE.1", "target": "SWE.1"})
     orders.sort(key=lambda o: o.get("created") or 0)
+    sel = next((o for o in orders if focus and (o["wo"] == focus or o["wo"].endswith(focus))), None)
+    scope = [sel] if sel else orders
     halls = []
     for ph in PHASES:
-        here = [o for o in orders if ph in o["phases"] and not o["phases"][ph]["carried"]]
+        here = [o for o in scope if ph in o["phases"] and not o["phases"][ph]["carried"]]
         insp = [o for o in here if o["phases"][ph]["inspections"]]
         passed = [o for o in here if o["phases"][ph]["passed"]]
-        running = [o for o in orders if o["state"] == "RUNNING" and o["at"] == ph]
+        running = [o for o in scope if o["state"] == "RUNNING" and o["at"] == ph]
         stopped = [o for o in here if o["state"] == "STOPPED" and o["at"] == ph]
         cyc = []
         for o in passed:
@@ -476,16 +497,18 @@ def floor(now: float | None = None, since: float | None = None) -> dict:
             entry = max(prev) if prev else o.get("created")
             if entry and o["phases"][ph]["last"]:
                 cyc.append((o["phases"][ph]["last"] - entry) / 60)
-        last_stop = max([o["phases"][ph]["last"] or 0 for o in stopped] + [0])
-        last_pass = max([o["phases"][ph]["last"] or 0 for o in passed] + [0])
-        # the hall's andon: working while an order is in it, red when its newest outcome was a stop, else green/grey
-        state = "working" if running else "stopped" if stopped and last_stop > last_pass else "done" if passed else "idle"
+        # owner 2026-11-01 ("Shift view + order focus"): in the shift view a hall lights up only while an order is in it;
+        # what happened earlier is history, not a light. In the order focus, the hall shows that order's state in it.
+        if sel:
+            state = _focus_state(sel, ph)
+        else:
+            state = "working" if running else "history" if passed or stopped else "idle"
         halls.append({"id": ph, "name": HALL_NAMES[ph], "state": state, "entered": len(here), "passed": len(passed),
                       "inspected": len(insp), "first_pass": sum(1 for o in insp if o["phases"][ph]["first_pass"]),
                       "reworks": sum(o["phases"][ph]["reworks"] for o in here), "stopped": len(stopped),
                       "cycle_min": round(sum(cyc) / len(cyc)) if cyc else None,
                       "running": [o["wo"].replace("WO-F014-", "") for o in running],
-                      "cells": _cells(ph, orders, now) if here else []})
+                      "cells": _cells(ph, scope, now) if here and state != "out" else []})
     done = [o for o in orders if o["state"] == "DONE"]
     model_s = sum(p["model_s"] for o in orders for p in o["phases"].values())
     out_tokens = sum(p["out_tokens"] for o in orders for p in o["phases"].values())
@@ -497,7 +520,8 @@ def floor(now: float | None = None, since: float | None = None) -> dict:
         elif o["state"] == "RUNNING" and o["phases"].get(o["at"], {}).get("model_s"):
             p = o["phases"][o["at"]]
             line = round(p["out_tokens"] / p["model_s"])
-    halls.append({"id": "SHIP", "name": HALL_NAMES["SHIP"], "state": "idle", "entered": 0, "passed": 0, "inspected": 0,
+    ship = ("pending" if sel.get("target") == "SWE.6" else "out") if sel else "idle"
+    halls.append({"id": "SHIP", "name": HALL_NAMES["SHIP"], "state": ship, "entered": 0, "passed": 0, "inspected": 0,
                   "first_pass": 0, "reworks": 0, "stopped": 0, "cycle_min": None, "running": [], "cells": [],
                   "note": "Offline review candidates only; nothing is released."})
     return {"schema": "forge-c/factory-floor/1", "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
@@ -508,6 +532,15 @@ def floor(now: float | None = None, since: float | None = None) -> dict:
                      "model_hours": round(model_s / 3600, 1), "out_tokens": out_tokens, "line_tok_s": line,
                      "station": station(now)},
             "halls": halls,
+            "focus": None if sel is None else {
+                "wo": sel["wo"], "part": sel.get("part"), "target": sel.get("target"), "state": sel["state"],
+                "at": sel["at"], "note": sel.get("note"), "resumed_from": sel.get("resumed_from"),
+                "phases_passed": sum(1 for p in sel["phases"].values() if p["passed"]),
+                "phases_in_route": len(PHASES[:PHASES.index(sel["target"]) + 1]) if sel.get("target") in PHASES else 6,
+                "reworks": sum(p["reworks"] for p in sel["phases"].values()),
+                "model_hours": round(sum(p["model_s"] for p in sel["phases"].values()) / 3600, 1),
+                "out_tokens": sum(p["out_tokens"] for p in sel["phases"].values()),
+                "elapsed_min": round((now - sel["created"]) / 60) if sel.get("created") and sel["state"] == "RUNNING" else None},
             "orders": [{k: o.get(k) for k in ("wo", "part", "target", "at", "state", "note", "resumed_from")} |
                        {"route": {ph: ("carried" if v["carried"] else "ok" if v["passed"]
                                        else "run" if o["state"] == "RUNNING" and o["at"] == ph
