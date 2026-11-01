@@ -41,6 +41,8 @@ from . import visit as V
 
 PHASE = "SWE.4"
 KINDS = ("positive", "negative", "boundary", "error")
+UPSTREAM_ITEMS = ("SWE4-04:",)  # findings on the SWE.3 code's static analysis: no SWE.4 test can address them
+DEVIATIONS = "workproducts/SWE.3/misra_deviations.md"
 # CAPA-092 (run WO-F014-SWE4-IWDG-20261101-L1, SWE4-02): the test author declares the kinds of check its test holds;
 # the report shows them instead of labelling every structured test 'positive'.
 TEST_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["code", "kinds"],
@@ -282,6 +284,10 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                        budget)
     routed: dict[str, list[str]] = {}
     for f in findings:
+        if f.startswith(UPSTREAM_ITEMS) and not re.search(r"\bUT-\d+\b", f):
+            # CAPA-093 (run WO-F014-SWE4-IWDG-20261101-L1): a static-analysis/coding-rule gap of the frozen SWE.3 code
+            # was routed to every test task, which cannot change that code; ~1.5 h of repair calls without effect.
+            continue
         for ut in re.findall(r"\bUT-\d+\b", f) or [c["ut"] for c in cs]:
             routed.setdefault(f"test:{ut}", []).append(f)
     recs = []
@@ -377,6 +383,13 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
            "", "## Static analysis", ""]
     md += [f"- {r['op']} ({r['phase']}): status {r['result']['status']}; \"{r['result']['summary']}\"; issues "
            f"{r['result']['issues']}" for r in sa[-2:]] or ["- not run"]
+    dev = ws / DEVIATIONS
+    md += ["", f"Coding-rule record of the frozen SWE.3 code ({DEVIATIONS}), quoted as recorded:", ""]
+    md += ([f"> {ln}" for ln in dev.read_text().splitlines() if ln.strip()][:20] if dev.is_file() else ["> missing"])
+    open_gaps = sa and any(r["result"]["status"] != "PASS" for r in sa[-2:])
+    md += ["", "Review status: " + ("the static-analysis findings above are OPEN coding-rule gaps of the SWE.3 code; "
+                                    "SWE.4 cannot change that code and approves no deviation (deviation approval is the "
+                                    "owner's)." if open_gaps else "no open static-analysis finding.")]
     md += ["", "## Coverage", "", "Goal: 100% statement/branch of the driver code. Reported exactly as the tool reported "
            f"it: status {cov['status']}; \"{cov['summary']}\"; metrics {json.dumps(cov.get('metrics') or {}, sort_keys=True)}.",
            "", "## Results", "", f"run_unit: status {run['status']}; \"{run['summary']}\". validate_trace: status "
