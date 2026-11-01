@@ -63,6 +63,11 @@ def interfaces(ws: Path) -> dict:
     rec = json.loads(p.read_text()) if p.is_file() else None
     if not rec or rec.get("status") != "VALID":
         raise ValueError("LRTX_SWE3_NEEDS_STRUCTURED_SWE2_INTERFACE")
+    # CAPA-091 (run WO-F014-SWE3-OBL-20261101-L1): a named-function SWE.2 answer (structured.swe2_named_functions) is
+    # stored as named_functions/other_functions; SWE.3 reads the same normalized shape the SWE.2 checks and renderer read
+    from .swe2 import normalize_interfaces
+
+    rec = {**rec, "doc": normalize_interfaces(ws, rec["doc"])}
     return rec["doc"]
 
 
