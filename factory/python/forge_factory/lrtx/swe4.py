@@ -40,8 +40,13 @@ from . import structured as S
 from . import visit as V
 
 PHASE = "SWE.4"
-TEST_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["code"],
-               "properties": {"code": {"type": "string", "minLength": 60}}}
+KINDS = ("positive", "negative", "boundary", "error")
+# CAPA-092 (run WO-F014-SWE4-IWDG-20261101-L1, SWE4-02): the test author declares the kinds of check its test holds;
+# the report shows them instead of labelling every structured test 'positive'.
+TEST_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["code", "kinds"],
+               "properties": {"code": {"type": "string", "minLength": 60},
+                              "kinds": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": True,
+                                        "items": {"type": "string", "enum": list(KINDS)}}}}
 REPAIR_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["verdict", "reason", "code"],
                  "properties": {"verdict": {"type": "string", "enum": ["test_wrong", "code_defect"]},
                                 "reason": {"type": "string", "minLength": 20},
@@ -112,14 +117,22 @@ def test_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> 
              "requirement and its cases below (the oracle), never from guessing an implementation: a write case checks "
              "the field equals the case value (mask with the _MSK define), set/clear cases check the bit, query cases "
              "check the return value for the flag set AND clear, and a field update also checks that bits outside the "
-             "field are preserved (preset them to 1 first). Use only the harness (ut_reset_regs, CHECK), the function "
+             "field are preserved (preset them to 1 first). Design the test beyond the single case value: when the "
+             "function takes a value argument, also check the boundaries of the field - the minimum (0) and the maximum "
+             "(every field bit set, the _MSK value shifted down) - each with its own call after ut_reset_regs() or a "
+             "fresh preset; check that what must NOT change does not change (bits outside the field, the other register "
+             "words, a flag that is clear reads 0). Declare in kinds the kinds of check the test really contains: "
+             "positive (the case value gives the required effect), boundary (field minimum/maximum checked), negative "
+             "(a state or bit that must not change or must read 0 is checked), error (ONLY if the requirement states an "
+             "error behaviour - never invent one). Use only the harness (ut_reset_regs, CHECK), the function "
              "under test, the register block and the generated defines below - no #include, no #define, no other "
              f"functions. Put exactly this block directly above the test: '/** @test {c['ut']} @verifies <the USPEC "
              f"ids of {u['id']} this test verifies> */' (USPEC ids only: {', '.join(s['id'] for s in specs) or 'none'}).")
     art = _oracle_artifacts(ws, c)
     return S.packet(phase=PHASE, task=f"test:{c['ut']}", role="swe4-author", instructions=instr, sources=[],
                     artifacts=art, criteria=["expected values come from the oracle", "compiles in the harness",
-                                             f"exactly one CHECK, id {c['ut']}"],
+                                             f"exactly one CHECK, id {c['ut']}",
+                                             "kinds declares only the kinds of check the code contains"],
                     output_schema=TEST_SCHEMA, model=model, findings=findings, previous=previous, output_reserve=3072)
 
 
@@ -168,6 +181,15 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
                    "names exactly one check)")
     if re.search(r"^\s*#", code, re.M):
         out.append("no #include or #define in a test")
+    kinds = list(doc.get("kinds") or [])
+    fn = c["unit"]["function"]
+    ncalls = len(re.findall(rf"\b{re.escape(fn['name'])}\s*\(", code.split("{", 1)[-1]))
+    if "positive" not in kinds:
+        out.append("kinds must include positive (the case value of the oracle)")
+    if _takes_value(fn) and "boundary" not in kinds:
+        out.append(f"{fn['name']} takes a value: check the field minimum and maximum too and declare kind boundary")
+    if "boundary" in kinds and ncalls < 2:
+        out.append(f"kind boundary needs the field minimum/maximum checked with further calls of {fn['name']}")
     i = _ident(ws)
     known = set(re.findall(r"#define\s+(\w+)", _header(ws).read_text()))
     used = set(re.findall(rf"\bLL_{i['pfx']}_\w+", code)) - {c["unit"]["function"]["name"]}
@@ -180,6 +202,17 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
     if not out:
         out += _compile_test(ws, name, code)
     return out
+
+
+def _declared_kinds(ws: Path, ut: str) -> list[str]:
+    ck = V._ckpt(ws, PHASE, f"test:{ut}")
+    doc = json.loads(ck.read_text()).get("doc") if ck.is_file() else None
+    return [k for k in KINDS if k in ((doc or {}).get("kinds") or [])]
+
+
+def _takes_value(fn: dict) -> bool:
+    """A parameter that is not the instance pointer: the value the function writes into a field."""
+    return any("*" not in p["type"] for p in fn.get("params") or [])
 
 
 def _compile_test(ws: Path, name: str, code: str) -> list[str]:
@@ -283,7 +316,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                                             requirement_quote=c["statement"][:300])["id"])
             except defects.DefectError as exc:
                 filed.append(f"REFUSED:{exc}")
-        elif validate_test(ws, {"code": d["code"]}, c) == []:
+        elif validate_test(ws, {"code": d["code"], "kinds": rec["doc"].get("kinds")}, c) == []:
             try:  # a test corrected after it failed is declared, never silently bent (ADR-0008 L4)
                 defects.report(ws, detected_phase=PHASE, reported_by="swe4-author", kind="TEST",
                                summary=f"{c['ut']} corrected: {d['reason']}"[:400], requirement_ids=[c["swr"]],
@@ -293,7 +326,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                 continue
             ck = V._ckpt(ws, PHASE, f"test:{c['ut']}")
             st = json.loads(ck.read_text())
-            st["doc"] = {"code": d["code"]}
+            st["doc"] = {"code": d["code"], "kinds": rec["doc"].get("kinds")}
             st["declared_correction"] = d["reason"][:300]
             ck.write_text(json.dumps(st, indent=1))
     if fails:
@@ -322,7 +355,7 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     tr = T.call(ws, "forge-evidence-mcp", "validate_trace", {}, "swe4-author", PHASE)
     sa = [json.loads(x) for x in (ws / "evidence/tool-results.jsonl").read_text().splitlines()
           if '"op": "cppcheck"' in x or '"op": "clang_analyze"' in x]
-    kinds = {"write": "positive", "set": "positive", "clear": "positive", "no_write": "positive"}
+    kinds = {c["ut"]: _declared_kinds(ws, c["ut"]) for c in cs}
     md = ["# Unit verification report", "",
           "## Measures, environment, entry/exit criteria and regression", "",
           "Host clang build of the self-checking unit tests against the header-only LL driver on a plain RAM register "
@@ -330,7 +363,15 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
           "coverage goal met or a deviation recorded. Regression: the full suite is re-run on every change.", "",
           "## Test cases", "", "| UT id | function | SWR ids | kind | result |", "| --- | --- | --- | --- | --- |"]
     md += [f"| {c['ut']} | {c['unit']['function']['name']} | {c['swr']} | "
-           f"{kinds.get((c['effects'] or [{}])[0].get('op'), 'positive')} | {run['status']} (suite) |" for c in cs]
+           f"{', '.join(kinds[c['ut']]) or 'not declared'} | {run['status']} (suite) |" for c in cs]
+    md += ["", "## Test design per unit", "",
+           "Kinds are declared per test by the test author and checked deterministically: positive is required, and "
+           "boundary (field minimum and maximum, further calls) is required for every function that takes a value. "
+           "Error tests are written only where a requirement states an error behaviour.", ""]
+    for uid in dict.fromkeys(c["unit"]["id"] for c in cs):
+        got = sorted({k for c in cs if c["unit"]["id"] == uid for k in kinds[c["ut"]]}, key=KINDS.index)
+        none = [k for k in KINDS if k not in got]
+        md.append(f"- {uid}: {', '.join(got) or 'none'}" + (f"; none declared: {', '.join(none)}" if none else ""))
     md += ["", "## Mock fidelity", "", "Plain RAM register array: no write-1-to-clear, read-only or hardware side "
            "effects; flags are preset by the test. Limitation: hardware update latency (e.g. PVU/RVU) is not modelled.",
            "", "## Static analysis", ""]
