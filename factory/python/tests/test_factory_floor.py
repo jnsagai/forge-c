@@ -190,3 +190,20 @@ def test_typical_durations_are_medians_of_finished_runs(tmp_path, monkeypatch):
     monkeypatch.setattr(F, "fabro_stages", lambda rid, finished: runs.get(rid))
     monkeypatch.setitem(F._HISTORY, "at", 0.0)
     assert F.history(NOW)["typical"]["swe3_author"] == {"s": 600, "n": 3}
+
+
+def test_a_cancelled_run_is_stopped_even_when_its_last_stage_still_reads_running(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    ws = _order(tmp_path, "WO-CANCEL", [{"phase": "SWE.3", "step": A, "result": "REJECTED"}], package=False, stop_after="SWE.3")
+    (ws / ".forge-run/fabro_run_id").write_text("RUNX")
+    stages = {"swe3_author@1": {"state": "running", "model": {"model_id": "qwen3.8:27b-q8_0"}, "started_at": _iso(NOW - 300),
+                                "usage": {"tokens": {"output": 100}}, "live_inference_ms": 1000}}
+    monkeypatch.setattr(F, "fabro_stages", lambda rid, finished: stages)
+    monkeypatch.setattr(F, "fabro_lifecycle", lambda rid: "failed:cancelled")
+    d = F.floor(now=NOW, since=NOW - 86400)
+    o = d["orders"][0]
+    assert o["state"] == "STOPPED" and "cancelled" in o["note"]
+    h = next(h for h in d["halls"] if h["id"] == "SWE.3")
+    assert h["running"] == [] and h["state"] == "stopped" and d["kpis"]["on_floor"] == 0
+    monkeypatch.setattr(F, "fabro_lifecycle", lambda rid: "running")
+    assert F.floor(now=NOW, since=NOW - 86400)["orders"][0]["state"] == "RUNNING"

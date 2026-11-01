@@ -96,6 +96,35 @@ def fabro_stages(run_id: str | None, finished: bool) -> dict | None:
     return stages
 
 
+_ENDED: dict[str, str] = {}  # a run Fabro reports as ended never runs again
+
+
+def fabro_lifecycle(run_id: str | None) -> str | None:
+    """Fabro's run status ('running', 'succeeded', 'failed:cancelled', ...); None when unavailable."""
+    url = os.environ.get("FORGE_FLOOR_FABRO_URL")
+    if not url or not run_id:
+        return None
+    if run_id in _ENDED:
+        return _ENDED[run_id]
+    import urllib.request
+
+    req = urllib.request.Request(f"{url.rstrip('/')}/runs/{run_id}", headers={"Accept": "application/json"})
+    tok = _fabro_token()
+    if tok:
+        req.add_header("Authorization", "Bearer " + tok)
+    try:
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        with opener.open(req, timeout=4) as r:
+            st = (json.load(r).get("lifecycle") or {}).get("status") or {}
+    except Exception:  # noqa: BLE001
+        return None
+    kind = st.get("kind") if isinstance(st, dict) else st
+    status = f"{kind}:{st.get('reason')}" if isinstance(st, dict) and st.get("reason") else str(kind)
+    if kind in ("succeeded", "failed", "cancelled", "canceled", "aborted"):
+        _ENDED[run_id] = status
+    return status
+
+
 def node_cell(node: str) -> str:
     """The floor cell a workflow node belongs to."""
     n = node.split("@")[0]
@@ -255,7 +284,9 @@ def order(ws: Path, now: float | None = None) -> dict:
     created = _ts(man.get("created_at"))
     active = prog.get("active")
     rid = prog.get("fabro_run_id")
-    nat = native(fabro_stages(rid, pkg is not None), now) if rid else {"phases": {}, "node": None}
+    life = fabro_lifecycle(rid) if pkg is None and rid else None
+    ended = bool(life) and life.split(":")[0] in ("succeeded", "failed", "cancelled", "canceled", "aborted")
+    nat = native(fabro_stages(rid, pkg is not None or ended), now) if rid else {"phases": {}, "node": None}
     for ph, n in nat["phases"].items():  # native agent phases write no task packets: Fabro has their model work
         if ph in phases and phases[ph]["calls"] == 0:
             phases[ph].update(n)
@@ -264,7 +295,11 @@ def order(ws: Path, now: float | None = None) -> dict:
                           "rejected": 0, "blocked": None, "last": None, "carried": False, "last_author": None,
                           "last_inspect": None, "last_route": None, **n}
     phases = {ph: phases[ph] for ph in PHASES if ph in phases}
-    node = nat["node"] if pkg is None else None  # structured progress stays primary; the node says where the order is
+    # structured progress stays primary; the node says where the order is. A run Fabro reports as ended has no node
+    # at work, even when its last stage was left 'running' (a cancelled node)
+    node = nat["node"] if pkg is None and not ended else None
+    if ended:
+        active = None
     worked = [ph for ph in PHASES if ph in phases and [e for e in log if e.get("phase") == ph]]
     at = active["phase"] if active else (node["phase"] if node and node["phase"] else
                                          worked[-1] if worked else list(phases)[-1] if phases else "SWE.1")
@@ -278,6 +313,8 @@ def order(ws: Path, now: float | None = None) -> dict:
         phases = {ph: phases[ph] for ph in PHASES if ph in phases}
     if pkg is not None:
         state = "DONE" if (phases.get(target) or {}).get("passed") else "STOPPED"
+    elif ended:
+        state = "STOPPED"
     elif active or node:
         state = "RUNNING"
     else:
@@ -286,7 +323,8 @@ def order(ws: Path, now: float | None = None) -> dict:
     note = None
     if state == "STOPPED":
         note = next((p["blocked"] for p in reversed(list(phases.values())) if p["blocked"]), None) or \
-            ("the node stopped before the phase finished" if prog.get("stopped_visit") else "ended before its target phase")
+            (f"Fabro run ended ({life.replace(':', ', ')}) before its target phase" if ended else
+             "the node stopped before the phase finished" if prog.get("stopped_visit") else "ended before its target phase")
     elif state == "RUNNING" and active:
         note = active["text"]
     elif state == "RUNNING" and node:
