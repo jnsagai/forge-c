@@ -155,7 +155,8 @@ def test_without_a_fabro_url_nothing_is_requested(monkeypatch):
 
 def test_every_cell_has_a_bar_that_says_whether_it_is_measured_or_an_estimate(plant):
     cells = {c["id"]: c for c in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.2")["cells"]}
-    assert cells["author"]["bar"] == {"kind": "measured", "done": 1, "total": 2, "unit": "tasks", "eta": cells["author"]["bar"]["eta"]}
+    assert cells["author"]["bar"] == {"kind": "measured", "done": 1, "total": 2, "unit": "tasks", "eta": cells["author"]["bar"]["eta"],
+                                      "sub": None}
     assert cells["inspector"]["bar"] == {"kind": "waiting", "for": "the freeze gate"}
     idle = {c["id"]: c for c in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.1")["cells"]}
     assert all(c["bar"] == {"kind": "idle"} for c in idle.values())  # no order in SWE.1 now
@@ -226,3 +227,14 @@ def test_the_order_focus_shows_only_that_orders_route(plant):
     stop = {x["id"]: x for x in F.floor(now=NOW, since=NOW - 86400, focus="WO-STOP")["halls"]}
     assert stop["SWE.1"]["state"] == "stopped" and stop["SWE.2"]["state"] == "out"
     assert F.floor(now=NOW, since=NOW - 86400, focus="WO-NOPE")["focus"] is None  # unknown order: the shift view
+
+
+
+def test_a_visit_with_every_task_valid_says_the_tool_checks_are_running(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    _order(tmp_path, "WO-CHK", [{"phase": "SWE.2", "step": I, "gate": {"decision": "PASS"}}], package=False,
+           stop_after="SWE.3", visit="SWE.3", packets=[("SWE.3", "code:SWU-LL-01", "VALID", 1), ("SWE.3", "code:SWU-LL-02", "VALID", 2)])
+    d = F.floor(now=NOW, since=NOW - 86400)
+    a = {c["id"]: c for c in next(h for h in d["halls"] if h["id"] == "SWE.3")["cells"]}["author"]
+    assert a["bar"]["done"] == a["bar"]["total"] == 2 and "tool checks" in a["bar"]["sub"] and "tool checks" in a["job"]
+    assert "running the tool checks" in d["orders"][0]["note"]

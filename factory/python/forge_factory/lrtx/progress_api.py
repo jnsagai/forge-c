@@ -157,8 +157,11 @@ def progress(ws: Path) -> dict:
         cur = (current or "").split(":")[-1] or None
         step = "inspect" if inspect else "author"
         text = f"{phase} {step}: {done}/{total} {unit}"
+        checking = bool(total) and done >= total and not invalid
         if cur:
             text += f", now {cur}"
+        elif checking:  # every task of the visit is valid; the node runs its deterministic tool checks or assembly
+            text += ", all valid, running the tool checks (build, static analysis)"
         text += f", {st.get('calls', 0)} calls"
         if st.get("continuations"):
             text += f", {st['continuations']} continuations"
@@ -169,7 +172,7 @@ def progress(ws: Path) -> dict:
         active = {"phase": phase, "step": step, "done": done, "total": total, "unit": unit, "current": cur,
                   "invalid": [x.split(":")[-1] for x in invalid], "calls": st.get("calls", 0),
                   "continuations": st.get("continuations", 0), "elapsed_s": elapsed, "eta_s": eta_s,
-                  "eta_utc": eta_utc, "text": text}
+                  "eta_utc": eta_utc, "checking": checking, "text": text}
     return {"work_order": man.get("work_order") or ws.parent.name,
             "fabro_run_id": rid.read_text().strip() if rid.is_file() else None,
             "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

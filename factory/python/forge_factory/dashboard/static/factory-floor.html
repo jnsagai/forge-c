@@ -296,7 +296,7 @@ function barHtml(b, c) {
   if (!b) return "";
   const tag = (k) => `<span class="bar-kind ${k}">${k}</span>`;
   if (b.kind === "measured") {
-    return `<div class="prog">${segs(b.done, b.total)}<div class="row"><span>${tag("measured")} <b>${b.done}</b> / ${b.total} ${esc(b.unit)}</span><span>${b.eta ? `ETA <b>${esc(b.eta)}</b>` : ""}</span></div></div>`;
+    return `<div class="prog">${segs(b.done, b.total)}<div class="row"><span>${tag("measured")} <b>${b.done}</b> / ${b.total} ${esc(b.unit)}</span><span>${b.eta ? `ETA <b>${esc(b.eta)}</b>` : ""}</span></div>${b.sub ? `<div class="row"><span class="steps"><span class="step now">${esc(b.sub)}</span></span></div>` : ""}</div>`;
   }
   if (b.kind === "estimate") {
     const known = b.pct != null;

@@ -353,7 +353,7 @@ def _bar(cell: str, run: dict | None, a: dict, nd: dict | None, at_cell: str | N
         return {"kind": "idle"}
     if a and cell == at_cell and a.get("total"):
         return {"kind": "measured", "done": a.get("done"), "total": a.get("total"), "unit": a.get("unit"),
-                "eta": a.get("eta_utc")}
+                "eta": a.get("eta_utc"), "sub": "running the tool checks (build, static analysis)" if a.get("checking") else None}
     if nd and cell == at_cell:
         if cell in ("freeze", "gate", "router"):
             return {"kind": "step", "step": "checking", "node": nd["node"]}
@@ -397,6 +397,8 @@ def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dic
         wo = run["wo"].replace("WO-F014-", "")
         if a.get("current"):
             job = f"{wo} · now {a['current']}"
+        elif a.get("checking"):
+            job = f"{wo} · all {a.get('total')} tasks valid, tool checks"
         elif nd:
             job = f"{wo} · node {nd['node']}" + (f", {nd['elapsed_s'] // 60} min" if nd.get("elapsed_s") else "")
         else:
