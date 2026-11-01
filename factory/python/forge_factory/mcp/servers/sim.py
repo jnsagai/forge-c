@@ -212,7 +212,16 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
     log, issues, per = b"", [], {}
     asserted: list[Path] = []
     passed = failed = 0
-    for t in tests:
+    from .tests import write_progress
+
+    n_ok = n_bad = 0  # owner 2026-11-01: live floor bar, one step per target image
+    write_progress(ctx.workspace, ctx.phase, "run_renode", "images", len(tests), 0)
+    f0 = 0
+    for k, t in enumerate(tests):
+        if k:  # the previous image is done: it failed if it added a failure
+            n_ok, n_bad = (n_ok, n_bad + 1) if failed > f0 else (n_ok + 1, n_bad)
+            write_progress(ctx.workspace, ctx.phase, "run_renode", "images", len(tests), k, n_ok, n_bad)
+        f0 = failed
         scenario = "never_ready" if t.stem.endswith("_timeout") else "default"
         elf = wd / f"{t.stem}.elf"
         ok_build, blog, errs = build_image(ctx.workspace, t, elf)
@@ -241,6 +250,9 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
             asserted.append(t)  # runtime check failures (not build errors) - ADR-0008 test-integrity record
         if res["passed"] == 0:
             issues.append(f"NO_CHECKS:{t.name}")
+    if tests:
+        n_ok, n_bad = (n_ok, n_bad + 1) if failed > f0 else (n_ok + 1, n_bad)
+    write_progress(ctx.workspace, ctx.phase, "run_renode", "images", len(tests), len(tests), n_ok, n_bad, running=False)
     ok = not issues and passed > 0
     record_integrity(ctx.workspace, ctx.phase, "run_renode", "PASS" if ok else "FAIL",
                      integrity(ctx.workspace, tests, asserted))

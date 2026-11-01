@@ -292,6 +292,12 @@ function segs(done, total) {
   return `<div class="segs" aria-hidden="true">${Array.from({length: 20}, (_, i) => `<i class="${i < on ? "on" : i === on && done < total ? "head" : ""}"></i>`).join("")}</div>`;
 }
 const mins = (s) => s == null ? "—" : s < 90 ? `${Math.round(s)} s` : `${Math.round(s / 60)} min`;
+function testsBar(t) {  // owner 2026-11-01: tests to run and tests already run, live while the tool runs
+  if (!t) return "";
+  const u = esc(t.unit || "tests");
+  if (t.total == null) return `<div class="row"><span>${esc(t.label)}: counting ${u}…</span></div>`;
+  return `${segs(t.done, t.total)}<div class="row"><span>${esc(t.label)}: <b>${t.done}</b> / ${t.total} ${u} ${t.running ? "run" : "ran"}</span><span>${t.passed || 0} passed${t.failed ? `, <span class="late">${t.failed} failed</span>` : ""}</span></div>`;
+}
 function barHtml(b, c) {
   if (!b) return "";
   const tag = (k) => `<span class="bar-kind ${k}">${k}</span>`;
@@ -312,7 +318,7 @@ function barHtml(b, c) {
   if (b.kind === "tools") {
     const cls = {passed: "passed", failed: "rejected", pending: ""};
     return `<div class="prog"><div class="steps">${b.steps.map((t) => `<span class="step ${cls[t.status] || ""}${t.status === "pending" && c.state === "working" ? " now" : ""}" title="${esc(t.status)}">${esc(t.label)}</span>`).join("")}</div>
-      <div class="row"><span>${tag("measured")} ${b.round ? `round <b>${b.round}</b>` : "no tool run yet"}</span><span>${b.steps.filter((t) => t.status === "passed").length}/${b.steps.length} passed</span></div></div>`;
+      <div class="row"><span>${tag("measured")} ${b.round ? `round <b>${b.round}</b>` : "no tool run yet"}</span><span>${b.steps.filter((t) => t.status === "passed").length}/${b.steps.length} passed</span></div>${testsBar(b.tests)}</div>`;
   }
   if (b.kind === "waiting") return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">${b.for ? `waiting for ${esc(b.for)}` : "ready"}</span></div></div>`;
   return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">idle</span></div></div>`;
