@@ -435,6 +435,23 @@ def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck
     ]
 
 
+SAME_ITEM_LIMIT = 3  # owner 2026-11-01 ("N can be 3")
+
+
+def repeated_failed_item(store: Store, phase: str, n: int = SAME_ITEM_LIMIT) -> str | None:
+    """CAPA-087 (run WO-F014-SWE2-IWDG-20261101-01): the last `n` inspections of the phase in this budget epoch all
+    failed one checklist item, however the findings were worded (the inspector reworded the same SWE1-04 objection
+    five times; unchanged_failed_inspection compares exact findings). Returns the item id(s), else None."""
+    since = store.budget_start()
+    rows = [r for r in store.inspections(phase) if str(r.get("recorded_at") or "") >= since]
+    if len(rows) < n:
+        return None
+    failed = [{k for k, v in (r.get("items") or {}).items() if (v or {}).get("verdict") not in ("PASS", None)}
+              for r in rows[-n:]]
+    common = set.intersection(*failed) if all(failed) else set()
+    return ",".join(sorted(common)) or None
+
+
 def unchanged_failed_inspection(store: Store, phase: str) -> bool:
     """A cached failed verdict on the same frozen baseline is not another engineering attempt."""
     rows = store.inspections(phase)
@@ -468,6 +485,8 @@ def step_route(store: Store, phase: str) -> int:
         stuck = stuck_signature(store.workspace, phase, store.budget_start()) if high else None
         if high and unchanged_failed_inspection(store, phase):
             stuck = ("UNCHANGED_FAILED_INSPECTION",)
+        if high and not stuck and (item := repeated_failed_item(store, phase)):
+            stuck = (f"SAME_ITEM_FAILED_{SAME_ITEM_LIMIT}X:{item}",)
         refused = g["decision"] == "BLOCKED" and str(g.get("reason", "")).startswith("INSPECTOR_REFUSED_REPEATEDLY:")
         if stuck or refused:
             allowed = False  # Owner's stop-and-rethink direction: quota does not excuse a deterministic stall.
@@ -475,7 +494,8 @@ def step_route(store: Store, phase: str) -> int:
                   "development_ladder": development.ladder(store.workspace, phase),
                   "reason": ("high-allowance development repair" if high else "one bounded development repair")
                   if allowed else f"STUCK: {g['reason']}; external diagnosis required" if refused else
-                  "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
+                  f"STUCK: {stuck[0]}; external diagnosis required" if stuck and str(stuck[0]).startswith("SAME_ITEM")
+                  else "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
                   "development repair exhausted; dependent continuation requires independently valid inputs"}
         _state(store.workspace, phase, {"step": "route", "gate": result})
         print(json.dumps(result))
