@@ -11,3 +11,6 @@
 - Deployed read-only on Omniverse2: user unit forge-c-floor-swe1.service, from the pinned worktree at 2a6f8c3c's content
   (f9b20cc5bc on change/floor-native). Reached at http://master.local:8788 through the loop10 tunnel unit.
 - Eligible for OFFLINE review only. No merge to main.
+- 75fc4f05 (a bar in every cell: measured task progress, estimate against the node's typical duration, check steps,
+  waiting; owner "yes, build it as described"): pd-905a76038fe452996236 ELIGIBLE against 5d6a4da0. test_factory_floor:
+  10 passed. Deployed: Omniverse2 monitor worktree at 75fc4f05, unit restarted.
