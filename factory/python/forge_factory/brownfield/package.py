@@ -24,9 +24,17 @@ def static_findings(ws: Path) -> list[str]:
 
     p = Path(ws) / DELIVERED_STATIC
     try:
-        return list(json.loads(p.read_text()).get("findings") or []) if p.is_file() else []
+        out = list(json.loads(p.read_text()).get("findings") or []) if p.is_file() else []
     except ValueError:
-        return ["STATIC_ANALYSIS:REPORT_UNREADABLE"]
+        out = ["STATIC_ANALYSIS:REPORT_UNREADABLE"]
+    from ..mcp.servers.analysis import DELIVERED_CPPCHECK
+
+    c = Path(ws) / DELIVERED_CPPCHECK  # owner 2026-11-01: cppcheck findings in FROZEN code go to the owner, never repaired
+    try:
+        out += [f"STATIC_ANALYSIS:{x}" for x in json.loads(c.read_text()).get("findings") or []] if c.is_file() else []
+    except ValueError:
+        out.append("STATIC_ANALYSIS:CPPCHECK_REPORT_UNREADABLE")
+    return out
 
 
 def _vendor_findings(ws: Path) -> list[str]:
