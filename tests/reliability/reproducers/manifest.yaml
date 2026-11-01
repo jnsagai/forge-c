@@ -940,3 +940,13 @@ reproducers:
     operations: [workorder.local_profile_structured, workflow.builder.continuation]
     root_cause: "The profile asked for a 21600 s structured time box; the SWE.1 author node (9 RCC register tasks, Ornith thinking) ran 30 min without exiting, and a command node reports activity to Fabro only when it exits, so Fabro's 1800 s stall watchdog ended the run."
     remedy: "The structured time box is capped at 1200 s (longest measured call 448 s) and the requested value is recorded; the continuation node resumes the work."
+  - id: RPR-087
+    script: rpr087_same_item_reworded_findings.py
+    sha256: 21da40b459146c2608f133ab0a6e81b054ab956db0992e1315fd61f6333aaab2
+    symptom_signature: "the same checklist item failing three inspections in a row with reworded findings is reworked again"
+    observed_in: "Fabro run WO-F014-SWE2-IWDG-20261101-01 (01M6AHMG3GCVVHHNS2ZTM45NCE) on Omniverse2 2026-11-01, high-allowance policy, cancelled after 5 failed SWE.1 inspections"
+    baseline_revision: e03eb0227d5ab9dfeb89301e4cfafe693ec1c936
+    error_codes: []
+    operations: [inspection/gate.step_route, inspection/gate.repeated_failed_item]
+    root_cause: "Under the high-allowance policy (1000 repair passes) stuck detection compared exact findings; the inspector failed SWE1-04 five times with reworded findings, so the route kept granting rework until the run was cancelled."
+    remedy: "The last 3 inspections of the phase in the budget epoch sharing a failed checklist item stop the high-allowance route as STUCK (owner: N = 3)."

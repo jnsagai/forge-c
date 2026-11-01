@@ -1,0 +1,101 @@
+{
+ "CAPA-087": {
+  "history": [
+   {
+    "at": "2026-11-01T09:07:04.457268Z",
+    "capa_id": "CAPA-087",
+    "evidence": "[\"fabro-swe2-iwdg-01-same-item-loop\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE2-IWDG-20261101-01: SWE1-04 failed 5 inspections with reworded findings under the high-allowance policy; cancelled",
+    "seq": 659,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T09:07:04.490594Z",
+    "capa_id": "CAPA-087",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 660,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T09:07:04.592902Z",
+    "capa_id": "CAPA-087",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-087 assigned",
+    "seq": 661,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T09:07:09.900972Z",
+    "capa_id": "CAPA-087",
+    "evidence": "[\"reproducer-run:rr-8cea3dd33ce0fa0696eb\", \"reproducer-run:rr-e07faa453a31cdab3c40\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 662,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T09:07:09.970893Z",
+    "capa_id": "CAPA-087",
+    "evidence": "[\"git:e03eb0227d5a..22a2ba06142c\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 22a2ba06142c (patch 6320 bytes)",
+    "seq": 663,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T09:09:57.560462Z",
+    "capa_id": "CAPA-087",
+    "evidence": "[\"reproducer-run:rr-9bfbaa38c7e84b0fd715\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-087 absent at 22a2ba06142c",
+    "seq": 664,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T09:09:57.596755Z",
+    "capa_id": "CAPA-087",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 665,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-8ef2ed547476cd3a4bf23656a67e658d02210bb4",
+   "e03eb0227d5ab9dfeb89301e4cfafe693ec1c936",
+   "22a2ba06142c002fe08fcef444d64376675b8cbf",
+   "pd-2d58f7421f5daf07c3c2"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<22a2ba06142c"
+   ],
+   "candidate_patch_sha256": "fd9ea2b0b8289ea9a462a81649583a79030137fed3b10fa2770b1e6a4f300c2c",
+   "capa_id": "CAPA-087",
+   "created_at": "2026-11-01T09:07:04.457268Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe2-iwdg-01-same-item-loop"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-087",
+   "reproducer_id": "RPR-087",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-8cea3dd33ce0fa0696eb",
+    "reproducer-run:rr-e07faa453a31cdab3c40"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Stuck detection compared exact findings, so a reworded repeated item failure was never stuck",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T09:09:57.596755Z"
+  }
+ }
+}
