@@ -174,7 +174,12 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
     out += [f"@verifies {v} is not a specification item of {c['unit']['id']}" for v in ver if v not in specs]
     if re.search(r"@verifies[^@*]*\b(SWR|SWU|IF)-", tags):
         out.append("@verifies lists USPEC ids only (never SWR-, SWU- or IF- ids)")
-    ids = re.findall(r'\bCHECK\s*\(\s*"([^"]+)"', code)
+    from ..brownfield.scope import strip_comments
+
+    # CAPA-095 (run WO-F014-SWE4-OBL-20261101-L3): the comment "read back unchanged (all bits set)" was taken for a call
+    # to `unchanged`; the checks of calls and identifiers read the code without its comments
+    nc = strip_comments(code)
+    ids = re.findall(r'\bCHECK\s*\(\s*"([^"]+)"', code)  # string literal content is blanked in nc
     if not ids:
         out.append(f'the test checks nothing: use CHECK("{c["ut"]}", <condition>)')
     out += [f"CHECK id {x} must be {c['ut']}" for x in sorted(set(ids)) if x != c["ut"]]
@@ -185,7 +190,7 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
         out.append("no #include or #define in a test")
     kinds = list(doc.get("kinds") or [])
     fn = c["unit"]["function"]
-    ncalls = len(re.findall(rf"\b{re.escape(fn['name'])}\s*\(", code.split("{", 1)[-1]))
+    ncalls = len(re.findall(rf"\b{re.escape(fn['name'])}\s*\(", nc.split("{", 1)[-1]))
     if "positive" not in kinds:
         out.append("kinds must include positive (the case value of the oracle)")
     if _takes_value(fn) and "boundary" not in kinds:
@@ -194,10 +199,10 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
         out.append(f"kind boundary needs the field minimum/maximum checked with further calls of {fn['name']}")
     i = _ident(ws)
     known = set(re.findall(r"#define\s+(\w+)", _header(ws).read_text()))
-    used = set(re.findall(rf"\bLL_{i['pfx']}_\w+", code)) - {c["unit"]["function"]["name"]}
+    used = set(re.findall(rf"\bLL_{i['pfx']}_\w+", nc)) - {c["unit"]["function"]["name"]}
     allowed_fn = {c["unit"]["function"]["name"]}
     out += [f"{x} is not a generated define" for x in sorted(used - known) if x not in allowed_fn]
-    body = code.split("{", 1)[-1]
+    body = nc.split("{", 1)[-1]
     calls = set(re.findall(r"\b([A-Za-z_]\w*)\s*\(", body)) - {"if", "sizeof", "CHECK", "ut_reset_regs", "return"}
     out += [f"call to {x}: a test calls only ut_reset_regs, CHECK and {c['unit']['function']['name']}"
             for x in sorted(calls - allowed_fn)]
