@@ -1,0 +1,101 @@
+{
+ "CAPA-086": {
+  "history": [
+   {
+    "at": "2026-11-01T05:33:39.545935Z",
+    "capa_id": "CAPA-086",
+    "evidence": "[\"fabro-swe1-rcc-02-stall-watchdog\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE1-RCC-20261101-02: Fabro stall watchdog ended the SWE.1 author node after 1800 s without activity (time box 21600 s)",
+    "seq": 652,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T05:33:39.646878Z",
+    "capa_id": "CAPA-086",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 653,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T05:33:39.780194Z",
+    "capa_id": "CAPA-086",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-086 assigned",
+    "seq": 654,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T05:33:44.921627Z",
+    "capa_id": "CAPA-086",
+    "evidence": "[\"reproducer-run:rr-ba5c3db0f644df2c4088\", \"reproducer-run:rr-6fd948bada2875e2f1d9\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 655,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T05:33:44.948355Z",
+    "capa_id": "CAPA-086",
+    "evidence": "[\"git:79a445dafcb5..99132bb8fe13\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 99132bb8fe13 (patch 3641 bytes)",
+    "seq": 656,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T05:36:19.449820Z",
+    "capa_id": "CAPA-086",
+    "evidence": "[\"reproducer-run:rr-c411ced38a305a0a660b\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-086 absent at 99132bb8fe13",
+    "seq": 657,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T05:36:19.464783Z",
+    "capa_id": "CAPA-086",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 658,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-eda1cb055926dc1c4737ed594fe16896f8a0b9b5",
+   "79a445dafcb522bb29a173b0de5cac963292242f",
+   "99132bb8fe1368626482d6b954c492df13ecbdaf",
+   "pd-226f88d993926c726dac"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<99132bb8fe13"
+   ],
+   "candidate_patch_sha256": "b3d5b917ceb3b25ced87cf80704e67166150ebb043b1ef27582d239e6b228753",
+   "capa_id": "CAPA-086",
+   "created_at": "2026-11-01T05:33:39.545935Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe1-rcc-02-stall-watchdog"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-086",
+   "reproducer_id": "RPR-086",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-ba5c3db0f644df2c4088",
+    "reproducer-run:rr-6fd948bada2875e2f1d9"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "A structured time box at or above the Fabro stall watchdog lets a long node run silent until Fabro ends the run",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T05:36:19.464783Z"
+  }
+ }
+}

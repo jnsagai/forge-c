@@ -930,3 +930,13 @@ reproducers:
     operations: [inspection/engine.Store.gate, inspection/gate.step_route]
     root_cause: "The structured inspector refused the frozen SWE.1 baseline before any model call (SOURCE_TOO_LARGE on a cited input) and recorded nothing; the route gate answered REINSPECT each time and the high-allowance ladder granted rework, 166 cycles in 4 minutes until Fabro ended the run."
     remedy: "Three consecutive inspector replies since the baseline froze that are FAILED with zero calls and identical issues make the route gate BLOCKED (INSPECTOR_REFUSED_REPEATEDLY); the high-allowance ladder does not override it; failures after model calls keep re-inspection."
+  - id: RPR-086
+    script: rpr086_time_box_beyond_fabro_watchdog.py
+    sha256: 6c51e9ebc569dba866ee6e776def7e2bcfbb83692aa62fe8bee64e9fe880b96e
+    symptom_signature: "the structured author node's time box is not below Fabro's 1800 s stall watchdog"
+    observed_in: "Fabro SWE.1 run WO-F014-SWE1-RCC-20261101-02 (01M6AMZB126SW8SQY9CB4C80E1) on Omniverse2 2026-11-01, Ornith thinking profile"
+    baseline_revision: 79a445dafcb522bb29a173b0de5cac963292242f
+    error_codes: []
+    operations: [workorder.local_profile_structured, workflow.builder.continuation]
+    root_cause: "The profile asked for a 21600 s structured time box; the SWE.1 author node (9 RCC register tasks, Ornith thinking) ran 30 min without exiting, and a command node reports activity to Fabro only when it exits, so Fabro's 1800 s stall watchdog ended the run."
+    remedy: "The structured time box is capped at 1200 s (longest measured call 448 s) and the requested value is recorded; the continuation node resumes the work."
