@@ -860,3 +860,63 @@ reproducers:
     operations: [lrtx/swe1.validate_group, lrtx/swe1._visit, lrtx/visit.run_task]
     root_cause: "The cross-cutting validator refuses a requirement that names a register-task register with 'remove requirement [k] from the cross-cutting task'. A preservation obligation's natural requirement names that register, so the instruction contradicted the obligation; and obligation coverage was checked only after assembly, so its repair needed a second repair pass that the development policy does not grant. The earlier attempts' errors were overwritten in the checkpoint."
     remedy: "A cross-cutting requirement that cites an owner obligation is told to restate the rule for all scoped functions without naming the register (the no-register-requirement rule is unchanged); the cross-cutting task's own check reports uncovered obligations without register effects, so they share the task's repair pass; task checkpoints keep earlier repair rounds' attempts (history, last 12)."
+  - id: RPR-079
+    script: rpr079_crosscut_keeps_register_obligation.py
+    sha256: 1a2eaa46c8fea8eea438fdf0fb8e9dd83327f41892cd70dc76dc59f8ee9b5aa7
+    symptom_signature: "cross-cutting validator tells the author to keep a register requirement for an obligation with register effects"
+    observed_in: "Fabro SWE.1 run WO-F014-SWE1-OBL-20261031-04 (01M6A06BN8W1P087TFAVH3PGKR) on Omniverse2 2026-10-31, Ornith author"
+    baseline_revision: 4fcfa3a9038ffb98a35373913a8babfed13594ba
+    error_codes: []
+    operations: [lrtx/swe1.validate_group, lrtx/swe1.obligation_rule]
+    root_cause: "Since CAPA-079 the cross-cutting validator answered 'keep [k] for owner obligation(s)' for every obligation-citing requirement, including obligations whose register effects the register task implements."
+    remedy: "Only effect-free obligations get 'keep, rephrase'; requirements for obligations with register effects are told to be removed (the register task implements them) and the instructions name those obligations."
+  - id: RPR-081
+    script: rpr081_obligation_ids_in_statement.py
+    sha256: 90acf77daa2f67ad845e567255ba50f641232305ee99516eb781421ebc8a5978
+    symptom_signature: "a statement carrying '(obligations: ...)' gets no finding that names the obligation text"
+    observed_in: "Fabro SWE.1 run WO-F014-SWE1-OBL-20261031-06 (01M6A2RCBX2NQM3876DNST90MJ) on Omniverse2 2026-10-31, Ornith author, high-allowance policy"
+    baseline_revision: 87e96ac308233e4de584935d374186cebcf0752e
+    error_codes: [EARS_MISSING_TERMINATOR]
+    operations: [lrtx/swe1.crosscut_packet, lrtx/swe1.validate_group]
+    root_cause: "The cross-cutting listing showed each functional requirement as 'statement (obligations: ...)'; the author copied the annotation into its statements, which then did not end with a period; the only finding was the generic EARS terminator."
+    remedy: "The listing is one JSON object per requirement (key, statement, obligations); a statement containing obligation ids gets a finding naming the text and the obligations field."
+  - id: RPR-080
+    script: rpr080_launch_before_model_ready.py
+    sha256: 2316b560cb5538d2dff5bbb2c26ebb7a82a49c1540b334f4e475c4b7f629257f
+    symptom_signature: "work order launch accepted while the stack's recorded llama-server is not healthy"
+    observed_in: "Fabro SWE.1 run WO-F014-SWE1-OBL-20261031-01 (01M69RSGN1WH2G86F45818P9J4) on Omniverse2 2026-10-31"
+    baseline_revision: efb15d55b59ab992b0a3c1933aaf0b9ea0d97205
+    error_codes: [unavailable_error]
+    operations: [lrtx/profile.select, lrtx/profile.served_model_issues]
+    root_cause: "Profile selection at launch did not check that the stack's recorded llama-server was healthy; the work order started, the gateway refused the first calls and those calls used the development repair budget (counted by design)."
+    remedy: "Selection waits (bounded, model_ready_wait_s, default 120 s) for the recorded llama-server health URL and refuses MODEL_SERVER_NOT_READY; the repair-budget rule is unchanged."
+  - id: RPR-082
+    script: rpr082_aspice_safe_state_note.py
+    sha256: a808e5841d42e36cabe1c8e6ad2f1c7c607ac07035f6b463b02a01f3536509d6
+    symptom_signature: "ASPICE-only SWE1-03 inspection is not told that the allocated safe state is outside the owner scope"
+    observed_in: "Fabro SWE.1 run WO-F014-SWE1-OBL-20261031-11 (01M6A546XH8MY9DHN975QSP1Z1) on Omniverse2 2026-10-31"
+    baseline_revision: 89c4a2a986e3e2095f0a87a7074f72a6c24bc4aa
+    error_codes: []
+    operations: [lrtx/review._notes, lrtx/swe1.assemble]
+    root_cause: "On ASPICE-only orders the allocated safety safe state is outside the owner scope, but the SWE1-03 inspector got no note and the baseline did not say so; the inspector failed the item for a missing safe state."
+    remedy: "The baseline states that no software safe state is allocated; the SWE1-03 inspector note says this satisfies the safe-state part (failure handling and startup are still judged)."
+  - id: RPR-083
+    script: rpr083_repair_stuck_same_findings.py
+    sha256: 3f848e3b7db7bd2b8b5a659d6e03c36bf5b46f1ca227dc1e15d0b19b4116e52d
+    symptom_signature: "a repair answer with the same findings keeps consuming repair calls"
+    observed_in: "Fabro SWE.1 runs WO-F014-SWE1-OBL-20261031-06 and -08 on Omniverse2 2026-10-31, Ornith author"
+    baseline_revision: 0651912ba1d19cc3028e941e3c276edd8ebbeb4b
+    error_codes: []
+    operations: [lrtx/visit.run_task]
+    root_cause: "run_task kept repairing while each answer returned exactly the findings it was given, so a stuck task spent the whole budget (up to ten identical repairs)."
+    remedy: "A repair answer with the same findings as the answer it repaired stops the task (LRTX_REPAIR_STUCK); repair limits are unchanged."
+  - id: RPR-085
+    script: rpr085_repair_stuck_same_findings_exact_signature.py
+    sha256: 1a445547572cae9ae338d0b18c20fc50d407a8e90e78b516246be0cb9ea5dbcf
+    symptom_signature: "a repair answer with the same findings keeps consuming repair calls"
+    observed_in: "Fabro SWE.1 runs WO-F014-SWE1-OBL-20261031-06 and -08 on Omniverse2 2026-10-31, Ornith author (replaces RPR-083 for CAPA-084: RPR-083 printed the call count after its signature, gate pd-cd8be450 REJECTED as BASELINE_NOT_REPRODUCED:ERROR)"
+    baseline_revision: 0651912ba1d19cc3028e941e3c276edd8ebbeb4b
+    error_codes: []
+    operations: [lrtx/visit.run_task]
+    root_cause: "run_task kept repairing while each answer returned exactly the findings it was given, so a stuck task spent the whole budget (up to ten identical repairs)."
+    remedy: "A repair answer with the same findings as the answer it repaired stops the task (LRTX_REPAIR_STUCK); repair limits are unchanged."

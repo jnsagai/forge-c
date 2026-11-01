@@ -1,0 +1,101 @@
+{
+ "CAPA-081": {
+  "history": [
+   {
+    "at": "2026-11-01T01:53:50.176509Z",
+    "capa_id": "CAPA-081",
+    "evidence": "[\"fabro-swe1-obl-01-model-not-ready\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE1-OBL-20261031-01: launched before llama-server was healthy; gateway unavailable_error used the one development repair pass; 0 tokens",
+    "seq": 621,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T01:53:50.200964Z",
+    "capa_id": "CAPA-081",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 622,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T01:53:50.291357Z",
+    "capa_id": "CAPA-081",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-080 assigned",
+    "seq": 623,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T01:53:54.909003Z",
+    "capa_id": "CAPA-081",
+    "evidence": "[\"reproducer-run:rr-92d4e975e2fd56f1b8a4\", \"reproducer-run:rr-fc75da05ca35e0b7bc6d\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 624,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T01:53:54.939798Z",
+    "capa_id": "CAPA-081",
+    "evidence": "[\"git:efb15d55b59a..89c4a2a986e3\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 89c4a2a986e3 (patch 4590 bytes)",
+    "seq": 625,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T01:58:10.022882Z",
+    "capa_id": "CAPA-081",
+    "evidence": "[\"reproducer-run:rr-2186878bac09defcfaea\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-080 absent at 89c4a2a986e3",
+    "seq": 626,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T01:58:10.041132Z",
+    "capa_id": "CAPA-081",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 627,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-01e970c033e956a7729e8f3a2b10558bbb20e98a",
+   "efb15d55b59ab992b0a3c1933aaf0b9ea0d97205",
+   "89c4a2a986e3e2095f0a87a7074f72a6c24bc4aa",
+   "pd-87dc89388201909c8d3f"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<89c4a2a986e3"
+   ],
+   "candidate_patch_sha256": "8bcc9ac1b3b44a5c2139e4d59c9965ee0ed8356e61dfdd4cd5046a60c4173e42",
+   "capa_id": "CAPA-081",
+   "created_at": "2026-11-01T01:53:50.176509Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe1-obl-01-model-not-ready"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-080",
+   "reproducer_id": "RPR-080",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-92d4e975e2fd56f1b8a4",
+    "reproducer-run:rr-fc75da05ca35e0b7bc6d"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Launch-time profile selection checked model identity but not that the stack's llama-server answers",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T01:58:10.041132Z"
+  }
+ }
+}

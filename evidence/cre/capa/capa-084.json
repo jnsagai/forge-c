@@ -1,0 +1,128 @@
+{
+ "CAPA-084": {
+  "history": [
+   {
+    "at": "2026-11-01T02:00:41.871050Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[\"fabro-swe1-obl-06-08-repair-stuck\"]",
+    "from_state": null,
+    "reason": "Runs WO-F014-SWE1-OBL-20261031-06/-08 (Ornith): cross-cutting repairs returned the same finding up to ten times, spending the repair budget",
+    "seq": 635,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T02:00:41.895646Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 636,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T02:00:41.980049Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-083 assigned",
+    "seq": 637,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T02:00:46.232613Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[\"reproducer-run:rr-303a0cf452f629012c1c\", \"reproducer-run:rr-8081cd8b7a13dc4b8262\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "BASELINE_NOT_REPRODUCED:ERROR",
+    "seq": 638,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-01T02:02:29.410174Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 639,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T02:02:29.510941Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-085 assigned",
+    "seq": 640,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T02:02:33.848659Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[\"reproducer-run:rr-5dc965808dac8b6536c6\", \"reproducer-run:rr-4e9d5746171604fd0062\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 641,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T02:02:33.876619Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[\"git:0651912ba1d1..13edee4f4a56\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 13edee4f4a56 (patch 5334 bytes)",
+    "seq": 642,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T02:05:18.950034Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[\"reproducer-run:rr-26cd8c06df19fb6bd90e\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-085 absent at 13edee4f4a56",
+    "seq": 643,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T02:05:18.965545Z",
+    "capa_id": "CAPA-084",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 644,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-4f92825f80f88175229ed257452dc25d5bbd21f4",
+   "0651912ba1d19cc3028e941e3c276edd8ebbeb4b",
+   "13edee4f4a56d0f4213e08dc76f61ab5f3e3ccbb",
+   "pd-91d473082a1e4dc8a373"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<13edee4f4a56"
+   ],
+   "candidate_patch_sha256": "c0d00faf823215c62b6171e2f5dde450a09b62b92e9c063e308712b76f92b4a8",
+   "capa_id": "CAPA-084",
+   "created_at": "2026-11-01T02:00:41.871050Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe1-obl-06-08-repair-stuck"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-085",
+   "reproducer_id": "RPR-085",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-5dc965808dac8b6536c6",
+    "reproducer-run:rr-4e9d5746171604fd0062"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "run_task repaired while findings were unchanged (re-triage with RPR-085: RPR-083's output did not match its frozen signature)",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T02:05:18.965545Z"
+  }
+ }
+}
