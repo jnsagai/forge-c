@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Forge-C Plant Floor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+.stale { background: color-mix(in srgb, var(--stop) 18%, var(--panel)); border: 1px solid var(--stop); color: var(--ink); border-radius: 6px; padding: 8px 12px; font-size: 13px; }
+
+/* Layout: a plant control board - KPI strip, a floor map of halls joined by conveyors, then the selected hall's cells. */
+:root {
+  --floor: #e6e9eb; --panel: #f7f8f9; --panel-2: #eef1f3; --ink: #27323b; --muted: #66737e; --line: #c7cfd5;
+  --safety: #e0a100; --safety-ink: #1d1a12;
+  --go: #23955a; --warn: #d48500; --stop: #c63a30; --idle: #9aa4ad; --lamp-off: #c9cfd4;
+  --steel: #7c8a96; --steel-dark: #4d5a65; --belt: #545f69;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --floor: #12171c; --panel: #1b2229; --panel-2: #222b33; --ink: #dce4ea; --muted: #8f9ba5; --line: #2e3943;
+  --safety: #f2b705; --safety-ink: #15130b;
+  --go: #3fc37b; --warn: #f0a62c; --stop: #f05a4e; --idle: #5d6974; --lamp-off: #333e48;
+  --steel: #8b99a5; --steel-dark: #5b6874; --belt: #3a444e; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --floor: #12171c; --panel: #1b2229; --panel-2: #222b33; --ink: #dce4ea; --muted: #8f9ba5; --line: #2e3943;
+  --safety: #f2b705; --safety-ink: #15130b;
+  --go: #3fc37b; --warn: #f0a62c; --stop: #f05a4e; --idle: #5d6974; --lamp-off: #333e48;
+  --steel: #8b99a5; --steel-dark: #5b6874; --belt: #3a444e; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--floor); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px 40px; }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: .02em; margin: 0; text-wrap: balance; }
+h1 { font-size: 30px; text-transform: uppercase; }
+h2 { font-size: 21px; text-transform: uppercase; }
+h3 { font-size: 17px; text-transform: uppercase; letter-spacing: .04em; }
+.num, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.muted { color: var(--muted); }
+
+/* header plate */
+.plate { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px;
+  border-bottom: 3px solid var(--safety); padding-bottom: 12px; }
+.plate .sub { color: var(--muted); font-size: 13px; }
+.plant-status { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 18px; font-weight: 600; text-transform: uppercase; }
+
+/* KPI strip */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: grid; gap: 2px; align-content: start; }
+.kpi .v { font-family: var(--display); font-size: 34px; font-weight: 700; line-height: 1.05; }
+.kpi .v small { font-size: 17px; color: var(--muted); font-weight: 600; }
+.kpi .n { font-size: 12px; color: var(--muted); }
+.kpi.gauge-kpi { grid-template-columns: auto 1fr; align-items: center; gap: 10px; }
+
+/* floor map */
+.floor { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 12px; }
+.floor-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.lineup { overflow-x: auto; padding-bottom: 6px; }
+.halls { display: grid; grid-template-columns: repeat(7, minmax(150px, 1fr)); gap: 0; min-width: 1050px; align-items: stretch; }
+.hall-slot { display: grid; grid-template-columns: 1fr 22px; align-items: center; }
+.hall-slot:last-child { grid-template-columns: 1fr; }
+.hall { appearance: none; text-align: left; font: inherit; color: inherit; cursor: pointer; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 6px; padding: 10px 10px 12px; display: grid; gap: 8px; min-height: 182px; position: relative; }
+.hall:hover { border-color: var(--steel); }
+.hall:focus-visible, .cell:focus-visible, .tab:focus-visible { outline: 3px solid var(--safety); outline-offset: 2px; }
+.hall[aria-pressed="true"] { border-color: var(--safety); box-shadow: inset 0 0 0 1px var(--safety); }
+.hall .top { display: flex; justify-content: space-between; align-items: start; gap: 6px; }
+.hall .code { font-family: var(--display); font-weight: 700; font-size: 20px; }
+.hall .name { font-size: 12px; color: var(--muted); }
+.hall .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; font-size: 12px; }
+.hall .facts b { font-family: var(--mono); font-weight: 500; display: block; font-size: 15px; }
+.hall .crates { display: flex; flex-wrap: wrap; gap: 4px; min-height: 18px; }
+.crate { font-family: var(--mono); font-size: 10px; padding: 1px 5px; border-radius: 3px; background: var(--safety); color: var(--safety-ink); }
+.crate.idle { background: var(--lamp-off); color: var(--muted); }
+.conveyor { height: 10px; border-radius: 5px; background: var(--belt); margin: 0 3px;
+  background-image: repeating-linear-gradient(90deg, transparent 0 6px, rgba(255,255,255,.18) 6px 9px); }
+.conveyor.moving { animation: belt 0.9s linear infinite; }
+@keyframes belt { to { background-position: 18px 0; } }
+
+/* stack light */
+.stack { display: inline-grid; gap: 2px; padding: 3px; background: var(--steel-dark); border-radius: 3px; flex: none; }
+.stack i { display: block; width: 10px; height: 8px; border-radius: 2px; background: var(--lamp-off); }
+.stack.big i { width: 14px; height: 11px; }
+.s-working .stack i.g { background: var(--go); box-shadow: 0 0 6px var(--go); animation: pulse 1.6s ease-in-out infinite; }
+.s-rework  .stack i.a { background: var(--warn); box-shadow: 0 0 6px var(--warn); animation: blink .7s steps(2, start) infinite; }
+.s-stopped .stack i.r { background: var(--stop); box-shadow: 0 0 6px var(--stop); animation: blink 1.4s steps(2, start) infinite; }
+.s-done    .stack i.g { background: var(--go); }
+@keyframes pulse { 50% { opacity: .55; } }
+@keyframes blink { to { visibility: hidden; } }
+
+/* hall detail */
+.hall-detail { display: grid; gap: 14px; }
+.hall-detail-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px 20px; }
+.hall-kpis { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.hall-kpis div { display: grid; }
+.hall-kpis b { font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.1; }
+.cells { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 12px; }
+.cell { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; display: grid; grid-template-rows: auto auto 1fr; overflow: hidden; }
+.cell-head { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
+.cell-head .t { display: grid; min-width: 0; }
+.cell-head .t span { font-size: 11px; color: var(--muted); }
+.state-tag { margin-left: auto; font-family: var(--display); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; padding: 1px 7px; border-radius: 3px; border: 1px solid currentColor; }
+.s-working .state-tag { color: var(--go); }
+.s-rework .state-tag { color: var(--warn); }
+.s-stopped .state-tag { color: var(--stop); }
+.s-idle .state-tag, .s-waiting .state-tag { color: var(--muted); }
+.s-stopped .cell-head { background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--stop) 22%, transparent) 0 10px, transparent 10px 20px); }
+.machine { display: grid; grid-template-columns: 112px 1fr; gap: 10px; padding: 10px 11px 4px; align-items: center; }
+.machine svg { width: 112px; height: 86px; display: block; }
+.readout { display: grid; gap: 6px; min-width: 0; }
+.job { font-size: 12px; }
+.job b { font-family: var(--mono); font-weight: 500; }
+.cell-foot { padding: 6px 11px 11px; display: grid; gap: 8px; align-content: start; }
+.counters { display: flex; gap: 14px; font-size: 12px; color: var(--muted); }
+.counters b { font-family: var(--mono); color: var(--ink); font-weight: 500; }
+.what { font-size: 12px; color: var(--muted); }
+.why { font-size: 12px; color: var(--stop); }
+
+/* progress counter */
+.prog { display: grid; gap: 3px; }
+.segs { display: grid; grid-template-columns: repeat(20, 1fr); gap: 2px; height: 12px; }
+.segs i { background: var(--lamp-off); border-radius: 1px; }
+.segs i.on { background: var(--go); }
+.s-rework .segs i.on { background: var(--warn); }
+.segs i.head { animation: pulse 1.2s ease-in-out infinite; background: var(--go); }
+.prog .row { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+.prog .row b { color: var(--ink); font-family: var(--mono); font-weight: 500; }
+
+/* gauge */
+.gauge { width: 92px; flex: none; }
+.gauge svg { width: 92px; height: 56px; display: block; }
+.gauge .g-val { font-family: var(--mono); font-size: 12px; text-align: center; margin-top: -4px; }
+.gauge .g-lab { font-size: 10px; text-align: center; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.needle { transition: transform 1.2s cubic-bezier(.2,.8,.2,1); transform-origin: 46px 50px; }
+.gauges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* robot arm */
+.arm-lower { transform-origin: 40px 66px; }
+.arm-upper { transform-origin: 60px 38px; }
+.grip { transform-origin: 82px 44px; }
+.s-working .arm-lower { animation: lower 2.6s ease-in-out infinite alternate; }
+.s-working .arm-upper { animation: upper 2.6s ease-in-out infinite alternate; }
+.s-working .grip { animation: grip 1.3s ease-in-out infinite alternate; }
+.s-rework .arm-lower { animation: lower 4.2s ease-in-out infinite alternate-reverse; }
+.s-rework .arm-upper { animation: upper 4.2s ease-in-out infinite alternate-reverse; }
+.s-stopped .arm-lower { transform: rotate(28deg); }
+.s-stopped .arm-upper { transform: rotate(42deg); }
+.s-stopped .grip { transform: rotate(-18deg); }
+.s-idle .arm-lower, .s-waiting .arm-lower { transform: rotate(-12deg); }
+.s-idle .arm-upper, .s-waiting .arm-upper { transform: rotate(-38deg); }
+@keyframes lower { from { transform: rotate(-16deg); } to { transform: rotate(14deg); } }
+@keyframes upper { from { transform: rotate(-30deg); } to { transform: rotate(22deg); } }
+@keyframes grip { from { transform: rotate(0); } to { transform: rotate(-14deg); } }
+.spark { opacity: 0; }
+.s-working .spark { animation: spark 1.3s ease-in-out infinite alternate; }
+@keyframes spark { to { opacity: 1; } }
+.redo { opacity: 0; }
+.s-rework .redo { opacity: 1; animation: spin 2.4s linear infinite; transform-origin: 94px 16px; }
+@keyframes spin { to { transform: rotate(-360deg); } }
+.machine .part { fill: var(--safety); }
+.s-idle .part, .s-waiting .part { fill: var(--lamp-off); }
+
+/* legend + orders */
+.legend { display: flex; flex-wrap: wrap; gap: 10px; }
+.legend .mini { display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px 6px 6px; }
+.legend svg { width: 64px; height: 50px; }
+.legend .mini div { display: grid; font-size: 12px; }
+.legend .mini b { font-family: var(--display); text-transform: uppercase; font-size: 14px; letter-spacing: .04em; }
+.orders { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 13px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+.pill { display: inline-block; font-family: var(--display); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; font-size: 12px; padding: 0 7px; border-radius: 3px; border: 1px solid currentColor; }
+.pill.DONE { color: var(--go); } .pill.RUNNING { color: var(--safety); } .pill.STOPPED { color: var(--stop); }
+.route { display: flex; gap: 4px; flex-wrap: wrap; }
+.route span { font-family: var(--mono); font-size: 11px; padding: 0 5px; border-radius: 3px; background: var(--panel-2); border: 1px solid var(--line); }
+.route span.ok { border-color: var(--go); color: var(--go); }
+.route span.run { border-color: var(--safety); color: var(--ink); background: color-mix(in srgb, var(--safety) 25%, transparent); }
+.route span.no { border-color: var(--stop); color: var(--stop); }
+.note { font-size: 12px; color: var(--muted); max-width: 80ch; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 560px) { .machine { grid-template-columns: 90px 1fr; } .machine svg { width: 90px; height: 70px; } h1 { font-size: 25px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="plate">
+    <div>
+      <h1>Forge-C Plant · Omniverse2 line</h1>
+      <div class="sub" id="sub">ASPICE QM · one GPU station (RTX 6000 Ada)</div>
+    </div>
+    <div class="plant-status" id="plant-status"></div>
+  </header>
+  <div class="stale" id="stale" hidden></div>
+  <section class="kpis" id="kpis" aria-label="Shift KPIs"></section>
+  <section class="floor" aria-labelledby="floor-title">
+    <div class="floor-head">
+      <h2 id="floor-title">Shop floor</h2>
+      <span class="note">Select a hall to open its cells. Crates are work orders in that hall now.</span>
+    </div>
+    <div class="lineup"><div class="halls" id="halls"></div></div>
+  </section>
+  <section class="hall-detail" id="hall-detail" aria-live="polite"></section>
+  <section aria-labelledby="legend-title" style="display:grid;gap:8px">
+    <h3 id="legend-title">Cell states</h3>
+    <div class="legend" id="legend"></div>
+  </section>
+  <section aria-labelledby="orders-title" style="display:grid;gap:8px">
+    <h2 id="orders-title">Orders this shift</h2>
+    <div class="orders"><table><thead><tr><th>Order</th><th>Part</th><th>Route</th><th>State</th><th>Note</th></tr></thead><tbody id="orders"></tbody></table></div>
+  </section>
+  <p class="note">Read-only view of the recorded runs: gate decisions, task packets and visit states, refreshed every 5 s. No model is called; model reasoning is never shown. Offline review candidates only, never a release.</p>
+</div>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const fmt = (n) => n == null ? "—" : n >= 1e6 ? (n / 1e6).toFixed(2) + " M" : n >= 1e3 ? (n / 1e3).toFixed(0) + " k" : String(n);
+const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
+const stack = (big) => `<span class="stack${big ? " big" : ""}" aria-hidden="true"><i class="r"></i><i class="a"></i><i class="g"></i></span>`;
+const STATE_TEXT = {working: "Working", rework: "Rework", stopped: "Stopped", idle: "Idle", waiting: "Waiting", ready: "Ready", done: "Done"};
+let DATA = null, lastOk = 0, selected = null;
+
+function arm() {
+  return `<svg viewBox="0 0 112 86" aria-hidden="true">
+    <rect x="4" y="74" width="104" height="7" rx="2" fill="var(--belt)"/>
+    <rect class="part" x="78" y="64" width="18" height="10" rx="1.5"/>
+    <rect x="26" y="64" width="28" height="10" rx="2" fill="var(--steel-dark)"/>
+    <g class="arm-lower">
+      <rect x="35" y="36" width="10" height="32" rx="4" fill="var(--steel)"/>
+      <circle cx="40" cy="66" r="6" fill="var(--steel-dark)"/>
+      <g class="arm-upper" style="transform-origin:40px 38px">
+        <rect x="38" y="33" width="44" height="9" rx="4" fill="var(--steel)"/>
+        <circle cx="40" cy="38" r="5" fill="var(--steel-dark)"/>
+        <g class="grip" style="transform-origin:82px 38px">
+          <rect x="80" y="36" width="5" height="14" rx="1.5" fill="var(--steel-dark)"/>
+          <rect x="85" y="44" width="6" height="3" rx="1" fill="var(--steel-dark)"/>
+          <rect x="77" y="44" width="5" height="3" rx="1" fill="var(--steel-dark)"/>
+        </g>
+      </g>
+    </g>
+    <g class="spark"><circle cx="87" cy="60" r="2.2" fill="var(--safety)"/><circle cx="92" cy="56" r="1.4" fill="var(--safety)"/><circle cx="83" cy="55" r="1.2" fill="var(--safety)"/></g>
+    <g class="redo"><path d="M94 9a7 7 0 1 1-6.6 4.7" fill="none" stroke="var(--warn)" stroke-width="2.4" stroke-linecap="round"/><path d="M85 10l2.6 4.4 4.1-2.9" fill="none" stroke="var(--warn)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+  </svg>`;
+}
+function gauge(value, max, label, unit) {
+  const v = value == null ? 0 : value, f = Math.max(0, Math.min(1, v / max)), ang = -90 + f * 180;
+  const arc = (a0, a1, color) => {
+    const p = (a) => [46 + 38 * Math.cos((a - 90) * Math.PI / 180), 50 + 38 * Math.sin((a - 90) * Math.PI / 180)];
+    const [x0, y0] = p(a0), [x1, y1] = p(a1);
+    return `<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} A38 38 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="none" stroke="${color}" stroke-width="7"/>`;
+  };
+  return `<div class="gauge" role="img" aria-label="${esc(label)}: ${value ?? "unknown"} ${esc(unit)}">
+    <svg viewBox="0 0 92 56">${arc(-90, 90, "var(--lamp-off)")}${f > 0 ? arc(-90, ang, "var(--go)") : ""}
+      <g class="needle" style="transform: rotate(${ang}deg)"><line x1="46" y1="50" x2="46" y2="18" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/></g>
+      <circle cx="46" cy="50" r="4" fill="var(--ink)"/></svg>
+    <div class="g-val">${value == null ? "—" : esc(value)} <span class="muted">${esc(unit)}</span></div><div class="g-lab">${esc(label)}</div></div>`;
+}
+function segs(done, total) {
+  const on = total ? Math.round(done / total * 20) : 0;
+  return `<div class="segs" aria-hidden="true">${Array.from({length: 20}, (_, i) => `<i class="${i < on ? "on" : i === on && done < total ? "head" : ""}"></i>`).join("")}</div>`;
+}
+function cellCard(c) {
+  const st = c.state === "ready" ? "idle" : c.state, p = c.progress, s = c.speed;
+  return `<article class="cell s-${st}" tabindex="0" aria-label="${esc(c.name)}: ${STATE_TEXT[c.state] || c.state}">
+    <div class="cell-head">${stack()}<div class="t"><h3>${esc(c.name)}</h3><span>${esc(c.tag)}</span></div><span class="state-tag">${STATE_TEXT[c.state] || esc(c.state)}</span></div>
+    <div class="machine">${arm()}<div class="readout">
+      ${c.job ? `<div class="job">${esc(c.job)}</div>` : `<div class="job muted">No job</div>`}
+      ${p && p.total ? `<div class="prog">${segs(p.done, p.total)}<div class="row"><span><b>${p.done}</b> / ${p.total} ${esc(p.unit)}</span><span>${p.eta ? `ETA <b>${esc(p.eta)}</b>` : ""}</span></div></div>` : ""}
+    </div></div>
+    <div class="cell-foot">
+      ${s ? `<div class="gauges">${gauge(s.tok_s, 200, "speed", "tok/s")}${s.per_h != null ? gauge(s.per_h, 30, "output", "per h") : ""}</div>` : ""}
+      <div class="counters">${(c.counters || []).map(([k, v]) => `<span>${esc(k)} <b>${esc(typeof v === "number" && v >= 1000 ? fmt(v) : v)}</b></span>`).join("")}</div>
+      ${c.why ? `<div class="why">${esc(c.why)}</div>` : ""}
+      <div class="what">${esc(c.what)}</div>
+    </div></article>`;
+}
+function renderKpis(d) {
+  const k = d.kpis;
+  $("#kpis").innerHTML = [
+    `<div class="kpi"><span class="label">On the floor now</span><span class="v">${k.on_floor}</span><span class="n">${esc(d.orders.filter((o) => o.state === "RUNNING").map((o) => o.wo.replace("WO-F014-", "") + " in " + o.at).join(", ") || "no order running")}</span></div>`,
+    `<div class="kpi"><span class="label">Orders completed</span><span class="v">${k.completed}<small> / ${k.orders}</small></span><span class="n">reached their target phase</span></div>`,
+    `<div class="kpi"><span class="label">First-pass yield SWE.1</span><span class="v">${pct(k.fpy_swe1[0], k.fpy_swe1[1]).replace("%", "")}<small>${k.fpy_swe1[1] ? "%" : ""}</small></span><span class="n">${k.fpy_swe1[0]} of ${k.fpy_swe1[1]} inspected orders</span></div>`,
+    `<div class="kpi"><span class="label">Rework cycles</span><span class="v">${k.reworks}</span><span class="n">failed inspections sent back</span></div>`,
+    `<div class="kpi"><span class="label">Stopped orders</span><span class="v" style="color:${k.stopped ? "var(--stop)" : "inherit"}">${k.stopped}</span><span class="n">see the notes below</span></div>`,
+    `<div class="kpi gauge-kpi">${gauge(k.line_tok_s, 200, "line speed", "tok/s")}<div><span class="label">Model work this shift</span><div class="v" style="font-size:24px">${k.model_hours}<small> h</small></div><span class="n">${fmt(k.out_tokens)} output tokens</span></div></div>`,
+  ].join("");
+  const status = k.on_floor ? "working" : "idle";
+  $("#plant-status").className = "plant-status s-" + status;
+  $("#plant-status").innerHTML = `${stack(true)}<span>${k.on_floor ? "Line running" : "Line idle"}</span>`;
+  $("#sub").textContent = `ASPICE QM · shift since ${d.shift_start.slice(0, 16).replace("T", " ")} UTC · one GPU station (RTX 6000 Ada) · updated ${d.updated_at.slice(11, 19)} UTC`;
+}
+function renderHalls(d) {
+  $("#halls").innerHTML = d.halls.map((h, i) => {
+    const facts = h.id === "SHIP" ? `<div><span class="label">released</span><b>0</b></div><div><span class="label">mode</span><b>review</b></div>`
+      : `<div><span class="label">done</span><b>${h.passed}/${h.entered}</b></div><div><span class="label">first pass</span><b>${pct(h.first_pass, h.inspected)}</b></div><div><span class="label">avg time</span><b>${h.cycle_min != null ? h.cycle_min + " min" : "—"}</b></div><div><span class="label">reworks</span><b>${h.reworks}</b></div>`;
+    const crates = h.running.map((w) => `<span class="crate">${esc(w.split("-")[1] || w)}</span>`).join("") || '<span class="crate idle">empty</span>';
+    const next = d.halls[i + 1];
+    const belt = next ? `<div class="conveyor${h.running.length ? " moving" : ""}" aria-hidden="true"></div>` : "";
+    return `<div class="hall-slot"><button class="hall s-${h.state}" data-hall="${h.id}" aria-pressed="${h.id === selected}">
+      <div class="top"><div><div class="code">${h.id}</div><div class="name">${esc(h.name)}</div></div>${stack(true)}</div>
+      <div class="facts">${facts}</div><div class="crates">${crates}</div></button>${belt}</div>`;
+  }).join("");
+}
+function renderHall(d) {
+  const h = d.halls.find((x) => x.id === selected) || d.halls[0];
+  const kpis = h.id === "SHIP" ? "" : `<div class="hall-kpis"><div><span class="label">entered</span><b>${h.entered}</b></div><div><span class="label">passed</span><b>${h.passed}</b></div><div><span class="label">first-pass yield</span><b>${pct(h.first_pass, h.inspected)}</b></div><div><span class="label">avg time to pass</span><b>${h.cycle_min != null ? h.cycle_min + " min" : "—"}</b></div><div><span class="label">stopped</span><b>${h.stopped}</b></div></div>`;
+  $("#hall-detail").innerHTML = `<div class="hall-detail-head"><div><span class="label">Hall</span><h2>${h.id} · ${esc(h.name)}</h2></div>${kpis}</div>` +
+    (h.cells.length ? `<div class="cells">${h.cells.map(cellCard).join("")}</div>` : `<p class="note">${esc(h.note || "No orders have reached this hall in this shift. Its cells appear here when the first order arrives.")}</p>`);
+}
+function renderOrders(d) {
+  $("#orders").innerHTML = d.orders.slice().reverse().map((o) => `<tr><td class="mono">${esc(o.wo.replace("WO-F014-", ""))}</td><td>${esc((o.part || "").replace("STM32N6 ", ""))}</td>
+    <td><div class="route">${Object.entries(o.route).map(([ph, r]) => `<span class="${r === "carried" ? "ok" : r}" title="${r === "carried" ? "carried over from " + esc(o.resumed_from) : ""}">${ph}${r === "carried" ? " ↺" : ""}</span>`).join("")}</div></td>
+    <td><span class="pill ${esc(o.state)}">${esc(o.state.toLowerCase())}</span></td><td>${esc(o.note || "")}</td></tr>`).join("");
+}
+function renderLegend() {
+  const items = [["working", "Working", "arm moves, green light pulses"], ["rework", "Rework", "slow reverse motion, amber blinks"],
+    ["stopped", "Stopped", "arm drops, red blinks, hazard band"], ["idle", "Idle", "arm parked, lights off"]];
+  $("#legend").innerHTML = items.map(([s, t, x]) => `<div class="mini s-${s}">${stack()}${arm()}<div><b>${t}</b><span class="muted">${x}</span></div></div>`).join("");
+}
+function render() {
+  if (!DATA) return;
+  if (!selected) {
+    const h = (location.hash || "").slice(1).toUpperCase().replace("-", ".");
+    selected = DATA.halls.some((x) => x.id === h) ? h : (DATA.halls.find((x) => x.running.length) || DATA.halls[0]).id;
+  }
+  renderKpis(DATA); renderHalls(DATA); renderHall(DATA); renderOrders(DATA);
+}
+async function load() {
+  try {
+    const r = await fetch("floor.json", {cache: "no-store"});
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    DATA = await r.json(); lastOk = Date.now();
+    $("#stale").hidden = true;
+    render();
+  } catch (e) {
+    if (DATA) {
+      $("#stale").hidden = false;
+      $("#stale").textContent = `The floor data is not updating (${e.message}); last update ${Math.round((Date.now() - lastOk) / 1000)} s ago. The values below are not live.`;
+    } else {
+      $("#hall-detail").innerHTML = `<p class="note">The floor data could not be loaded (${esc(e.message)}). It retries every 5 s.</p>`;
+    }
+  }
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-hall]");
+  if (b) { selected = b.dataset.hall; location.hash = selected.replace(".", "-").toLowerCase(); render(); }
+});
+window.addEventListener("hashchange", () => { const h = location.hash.slice(1).toUpperCase().replace("-", "."); if (DATA && DATA.halls.some((x) => x.id === h)) { selected = h; render(); } });
+renderLegend(); load(); setInterval(load, 5000);
+</script>
+</body>
+</html>
