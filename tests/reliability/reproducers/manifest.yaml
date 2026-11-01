@@ -980,3 +980,13 @@ reproducers:
     operations: [workorder.resume_from, lrtx/swe3.interfaces]
     root_cause: "A greenfield resume copied the frozen work products and gate records of the passed phases but not their validated structured checkpoints; structured SWE.3 reads the SWE.2 interface task and refused at once (LRTX_SWE3_NEEDS_STRUCTURED_SWE2_INTERFACE)."
     remedy: "resume_from carries the VALID task packets and the assembly/inventory/generated-header records of the carried phases; the source's run state (visit state, repair budget, locks, visit logs) stays behind."
+  - id: RPR-091
+    script: rpr091_swe3_named_function_interface.py
+    sha256: 5be4f1bad3f4a1386aaf6c48f0fb4d4ad42681fc376c69c6058e595f769a6dae
+    symptom_signature: "structured SWE.3 derives no code units from a named-function SWE.2 interface"
+    observed_in: "Fabro run WO-F014-SWE3-OBL-20261101-L1 on Omniverse2 2026-11-01, CRC IDR greenfield SWE.3 resumed from WO-F014-SWE2-OBL-20261101-01"
+    baseline_revision: 29c8ca10705334d64ac09bd67edb22d8e66c828d
+    error_codes: []
+    operations: [lrtx/swe3.interfaces]
+    root_cause: "The SWE.2 interface checkpoint was in the named-function shape (named_functions + other_functions); swe3.interfaces returned it unnormalized, structured SWE.3 found no units (UNIT:NO_UNITS) and the route stopped the order STUCK."
+    remedy: "swe3.interfaces normalizes the SWE.2 interface with swe2.normalize_interfaces, the same view the SWE.2 checks validated."
