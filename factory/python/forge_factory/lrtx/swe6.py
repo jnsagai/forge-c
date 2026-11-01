@@ -229,6 +229,24 @@ def _write(ws: Path, pl: dict, recs: dict[str, dict]) -> None:
     V.write_scoped(ws, files, "swe6_test_author")
 
 
+def _last_failing_topics(ws: Path, pl: dict) -> dict[str, list[str]]:
+    """Topics whose scenario failed at runtime in this phase's latest run_robot, with the failing SWR ids."""
+    p = Path(ws) / "evidence/tool-results.jsonl"
+    last = None
+    for line in (p.read_text().splitlines() if p.is_file() else []):
+        if '"op": "run_robot"' in line:
+            r = json.loads(line)
+            if r.get("phase") == PHASE:
+                last = r
+    out: dict[str, list[str]] = {}
+    if last and (last.get("result") or {}).get("status") != "PASS":
+        for i in last["result"].get("issues") or []:
+            if i.startswith("ROBOT_FAIL:"):
+                for t in _topic_of(i, pl):
+                    out.setdefault(t, []).extend(re.findall(r"SWR-\d{3}", i))
+    return out
+
+
 def _topic_of(issue: str, pl: dict) -> list[str]:
     hit = [t for t, swrs in pl["topics"].items() if any(s in issue for s in swrs) or f"scn_{t}" in issue]
     m = re.search(r"#(\d+):", issue)
@@ -267,10 +285,24 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
         for t in _topic_of(f, pl) or list(pl["topics"]):
             routed.setdefault(f"scenario:{t}", []).append(f)
     recs = {}
+    failing = _last_failing_topics(ws, pl)
     for topic, swrs in pl["topics"].items():
+        ck = V._ckpt(ws, PHASE, f"scenario:{topic}")
+        before = (json.loads(ck.read_text()).get("doc") if ck.is_file() else None)
         recs[topic] = V.run_task(ws, PHASE, f"scenario:{topic}",
                                  lambda fi, pr, t=topic, sw=swrs: scenario_packet(ws, t, sw, model, fi, pr),
                                  lambda d, sw=swrs: validate_scenarios(ws, d, sw), budget, routed.get(f"scenario:{topic}"))
+        if topic in failing and before is not None and recs[topic]["status"] == "VALID" and recs[topic]["doc"] != before:
+            # CAPA-099: a scenario that failed at runtime and is re-authored by a rework visit is a corrected test; it
+            # is declared (TEST) before it runs again, never left as an undeclared change that blocks a passing run
+            ids = sorted(set(failing[topic]) & set(swrs)) or list(swrs)
+            try:
+                defects.report(ws, detected_phase=PHASE, reported_by="swe6-author", kind="TEST",
+                               summary=f"scn_{topic} re-authored after failing: {'; '.join(routed.get(f'scenario:{topic}') or [])}"[:400],
+                               requirement_ids=ids[:5], test_files=[f for f in scn_files(topic) if (ws / f).is_file()],
+                               evidence_refs=[], requirement_quote=V.requirement_quote(ws, ids))
+            except defects.DefectError:
+                pass  # the run tool then reports the undeclared change; the gate decides
     bad = [r for r in recs.values() if r["status"] != "VALID"]
     if bad:
         return V.reply(ws, PHASE, "FAILED", [f"{r['task']}: {e}" for r in bad for e in r["errors"][:4]], budget)
@@ -306,7 +338,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                                                 summary=f"scn_{topic}: {d['reason']}"[:400], requirement_ids=swr_ids,
                                                 test_files=[scn_files(topic)[0]], evidence_refs=[
                                                     f"run_robot:{res['summary']}"[:120]],
-                                                requirement_quote=d["reason"][:300])["id"])
+                                                requirement_quote=V.requirement_quote(ws, swr_ids, d["reason"]))["id"])
                 except defects.DefectError as exc:
                     filed.append(f"REFUSED:{exc}")
             else:
@@ -317,7 +349,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                     defects.report(ws, detected_phase=PHASE, reported_by="swe6-author", kind="TEST",
                                    summary=f"scn_{topic} corrected: {d['reason']}"[:400], requirement_ids=swr_ids,
                                    test_files=[f for f in scn_files(topic) if (ws / f).is_file()], evidence_refs=[],
-                                   requirement_quote=d["reason"][:300])
+                                   requirement_quote=V.requirement_quote(ws, swr_ids, d["reason"]))
                 except defects.DefectError as exc:
                     filed.append(f"REFUSED:{exc}")
                     continue

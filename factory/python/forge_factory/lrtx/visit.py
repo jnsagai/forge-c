@@ -268,6 +268,15 @@ def write_scoped(ws: Path, files: dict[str, str], node: str) -> None:
         p.write_text(text)
 
 
+def requirement_quote(ws: Path, swr_ids: list[str], fallback: str = "") -> str:
+    """CAPA-099 (run WO-F014-SWE6-OBL-20261101-L5): the verbatim text of the first cited requirement, for a CODE/TEST
+    declaration (defects.report demands a verbatim quote; the model's own reason was refused)."""
+    from ..assurance.register_contract import _requirements
+
+    reqs = _requirements(ws)
+    return next((reqs[s].strip()[:300] for s in swr_ids if reqs.get(s, "").strip()), fallback[:300])
+
+
 def rework_findings(ws: Path, phase: str, since: str) -> list[str]:
     """Findings addressed to the phase since the last visit: author-gate rejections, failed inspection items and the
     phase's defects in fix. Text only; mapping to tasks happens through the SWR ids they name."""
