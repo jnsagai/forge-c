@@ -990,3 +990,33 @@ reproducers:
     operations: [lrtx/swe3.interfaces]
     root_cause: "The SWE.2 interface checkpoint was in the named-function shape (named_functions + other_functions); swe3.interfaces returned it unnormalized, structured SWE.3 found no units (UNIT:NO_UNITS) and the route stopped the order STUCK."
     remedy: "swe3.interfaces normalizes the SWE.2 interface with swe2.normalize_interfaces, the same view the SWE.2 checks validated."
+  - id: RPR-092
+    script: rpr092_swe4_positive_only_tests.py
+    sha256: 1880f4e52c2c2b83419124282b4b06ac4737e42ecce9ef2f0bef8202f28a0731
+    symptom_signature: "a structured SWE.4 test of a value-taking function that checks only the single case value is accepted"
+    observed_in: "Fabro run WO-F014-SWE4-IWDG-20261101-L1 on Omniverse2 2026-11-01, IWDG LL SWE.4 resumed from WO-F014-SWE3-IWDG-20261101-L1"
+    baseline_revision: 3be64c954cee6bd8b372e204c94ce103f63463a0
+    error_codes: []
+    operations: [lrtx/swe4.test_packet, lrtx/swe4.validate_test, lrtx/swe4.visit_report]
+    root_cause: "Every structured SWE.4 test checked only the single case value of its register-effect case; the report labelled all 11 tests positive and the inspector failed SWE4-02 (no negative, boundary or error tests)."
+    remedy: "The test answer declares its kinds; positive is required and boundary (field minimum and maximum with further calls) is required for value-taking functions; the report shows the declared kinds per test and unit."
+  - id: RPR-093
+    script: rpr093_swe4_static_finding_routed_to_tests.py
+    sha256: d919a27376bab6518afe05be3234312a545d94d50f0a56fb0136c31cab6dcb97
+    symptom_signature: "a SWE4-04 static-analysis finding on the SWE.3 code is routed to the SWE.4 test tasks"
+    observed_in: "Fabro run WO-F014-SWE4-IWDG-20261101-L1 on Omniverse2 2026-11-01, IWDG LL SWE.4 resumed from WO-F014-SWE3-IWDG-20261101-L1"
+    baseline_revision: d5abd1443e71cd07f671777f190ed904de7d7368
+    error_codes: []
+    operations: [lrtx/swe4._visit_tests routing, lrtx/swe4.visit_report]
+    root_cause: "The SWE4-04 finding (cppcheck MISRA gaps of the frozen SWE.3 header) named no UT id and was routed to every SWE.4 test task, which cannot change SWE.3 code; about 1.5 h of repair calls without effect until the order was cancelled."
+    remedy: "SWE4-04 findings without a UT id are not routed to the test tasks; the SWE.4 report quotes the SWE.3 coding-rule record and states open gaps as open (no deviation approved by SWE.4)."
+  - id: RPR-094
+    script: rpr094_swe4_branch_coverage_not_applicable.py
+    sha256: fdbab68755e963f10cf045d6979a3e600e5b732f96d418c1f3bfacb7ecbbdbca
+    symptom_signature: "the SWE.4 report states a branch coverage goal for code without branch points and no applicability"
+    observed_in: "Fabro run WO-F014-SWE4-OBL-20261101-L2 on Omniverse2 2026-11-01, CRC IDR greenfield SWE.4 resumed from WO-F014-SWE3-OBL-20261101-L2"
+    baseline_revision: c780dadc96dc2b12aed5ecb6341b3c700df49f44
+    error_codes: []
+    operations: [lrtx/swe4.visit_report]
+    root_cause: "The straight-line LL code has no branch points and llvm-cov reported branch None%; the generated SWE.4 report stated a 100% statement/branch goal next to it with no finding, the inspector failed SWE4-05 and no test rework can change the generated report."
+    remedy: "The report states each coverage measure as met, not met (recorded as a COVERAGE_GOAL_NOT_MET finding) or not applicable when llvm-cov counted no branch points or decisions."
