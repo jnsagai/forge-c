@@ -1,0 +1,5 @@
+# Process-lab disposition signers (docs/designs/forge-c-process-first-ornith-qwen.md section 9): the owner's PUBLIC key
+# only (same key as afo-allowed-signers); the private key never leaves the owner. Namespace forge-process-lab-disposition
+# so a disposition signature can never stand in for an AFO authorization or a review disposition.
+# Owner 2026-11-01: "I approve it" (allowed-signers line for forge-process-lab-disposition).
+jnsagai namespaces="forge-process-lab-disposition" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ05MTERxTyyIDfAjm4XDIXKjeW6ElTQwxmGtfMwUtJk
