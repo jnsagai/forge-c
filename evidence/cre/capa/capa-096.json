@@ -1,0 +1,101 @@
+{
+ "CAPA-096": {
+  "history": [
+   {
+    "at": "2026-11-01T21:19:55.155448Z",
+    "capa_id": "CAPA-096",
+    "evidence": "[\"fabro-swe6-obl-l4-crc-offsets\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE6-OBL-20261101-L4: SWR-003 TCHECK 3 failed on target twice, guessed CRC register offsets; cancelled",
+    "seq": 722,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T21:19:55.229564Z",
+    "capa_id": "CAPA-096",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 723,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T21:19:55.361422Z",
+    "capa_id": "CAPA-096",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-096 assigned",
+    "seq": 724,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T21:19:59.718948Z",
+    "capa_id": "CAPA-096",
+    "evidence": "[\"reproducer-run:rr-03cbfc8ae45229b2a40d\", \"reproducer-run:rr-f7184c5e5e7ef0959632\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 725,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T21:19:59.753817Z",
+    "capa_id": "CAPA-096",
+    "evidence": "[\"git:ded15e35e552..a4759d7d90b7\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix a4759d7d90b7 (patch 1573 bytes)",
+    "seq": 726,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T21:22:35.658929Z",
+    "capa_id": "CAPA-096",
+    "evidence": "[\"reproducer-run:rr-006fab49b2ecaa0b2988\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-096 absent at a4759d7d90b7",
+    "seq": 727,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T21:22:35.671571Z",
+    "capa_id": "CAPA-096",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 728,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-e9734031606c954e493a4113f6006270e6817887",
+   "ded15e35e552bc5dbf2ac462bb30a573f9af221a",
+   "a4759d7d90b7e4b8f9f1e3c5d737a8521aef8288",
+   "pd-678897e2d9329287054f"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<a4759d7d90b7"
+   ],
+   "candidate_patch_sha256": "cceaa70495d94a6a55ece783e78fc33700626107c3ace8604a748badd27a36ba",
+   "capa_id": "CAPA-096",
+   "created_at": "2026-11-01T21:19:55.155448Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe6-obl-l4-crc-offsets"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-096",
+   "reproducer_id": "RPR-096",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-03cbfc8ae45229b2a40d",
+    "reproducer-run:rr-f7184c5e5e7ef0959632"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "The CRC target model gives no offsets for registers outside the in-scope generated defines",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T21:22:35.671571Z"
+  }
+ }
+}
