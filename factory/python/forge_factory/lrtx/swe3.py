@@ -305,7 +305,7 @@ def _visit_code(ws: Path, model: str, budget: dict, findings: list[str]) -> dict
             return V.reply(ws, PHASE, "FAILED", [f"{r['task']}: {e}" for r in bad for e in r["errors"][:4]], budget)
         assemble_code(ws, recs)
         issues, _res = tool_findings(ws)
-    S.record(ws, "SWE.3/code-assembly.json", {"at": utc_now(), "units": [u["id"] for u, _r in recs]})
+    S.record(ws, "SWE.3/code-assembly.json", {"at": utc_now(), "units": [u["id"] for u, _r in recs], "issues": issues[:20]})
     if issues:
         return V.reply(ws, PHASE, "FAILED", issues[:20], budget)
     return V.reply(ws, PHASE, "PASS", [], budget, artifacts=[str(_header(ws).relative_to(ws))])
@@ -324,6 +324,13 @@ def visit_design(ws: Path, model: str = "", **_k) -> dict:
         us = units(ws)
     except ValueError as exc:
         return V.reply(ws, PHASE, "FAILED", [str(exc)])
+    # CAPA-097 (run WO-F014-SWE3-IWDG-20261101-L1): the code node's FAILED reply (cppcheck MISRA findings left after the
+    # tool repair round) was replaced by this design node's PASS and the author gate froze the code with open findings
+    asm = Path(ws) / ".forge-run/lrtx/SWE.3/code-assembly.json"
+    open_issues = (json.loads(asm.read_text()).get("issues") or []) if asm.is_file() else []
+    if open_issues:
+        return V.reply(ws, PHASE, "FAILED", ["the last code visit left tool findings open; SWE.3 freezes only when they "
+                                             "are fixed"] + open_issues[:19])
     recs = {}
     for u in us:
         ck = V._ckpt(ws, PHASE, f"code:{u['id']}")
@@ -379,4 +386,7 @@ def visit_design(ws: Path, model: str = "", **_k) -> dict:
     files["workproducts/SWE.3/detailed_design.md"] = "\n".join(dd)
     V.write_scoped(ws, files, "swe3_author")
     _pu  # noqa: B018 - parse_units is the format the gate reads (kept imported for readers)
+    if res["cppcheck"]["status"] == "FAIL":  # CAPA-097: measured again here; open findings never freeze
+        return V.reply(ws, PHASE, "FAILED", [f"cppcheck: {x}" for x in res["cppcheck"]["issues"][:20]] or
+                       [f"cppcheck: status {res['cppcheck']['status']}"], None, artifacts=sorted(files))
     return V.reply(ws, PHASE, "PASS", [], None, artifacts=sorted(files))
