@@ -950,3 +950,13 @@ reproducers:
     operations: [inspection/gate.step_route, inspection/gate.repeated_failed_item]
     root_cause: "Under the high-allowance policy (1000 repair passes) stuck detection compared exact findings; the inspector failed SWE1-04 five times with reworded findings, so the route kept granting rework until the run was cancelled."
     remedy: "The last 3 inspections of the phase in the budget epoch sharing a failed checklist item stop the high-allowance route as STUCK (owner: N = 3)."
+  - id: RPR-088
+    script: rpr088_think_profile_inspector_source_limit.py
+    sha256: 899aeec58383130082f3e8e1173f012d7dd54dc13c48064d2fc5b40947b100ba
+    symptom_signature: "the thinking profile's inspector refuses a frozen RCC-size register_effects.json as too large"
+    observed_in: "Fabro SWE.1 run WO-F014-SWE1-RCC-20261101-03 (01M6AX62VKEJ0RY4S57NED425T) on Omniverse2 2026-11-01, Ornith thinking profile v3"
+    baseline_revision: 7eb50799a55c2651d0a253e89f4d4d92cc6913e5
+    error_codes: []
+    operations: [lrtx/review.source_char_limit, config/factory/profiles (think profile)]
+    root_cause: "The Ornith thinking profile kept the inherited 40 000-character per-source bound; the frozen 61-group RCC register_effects.json (107 kB) was refused by the inspector before any model call (SOURCE_TOO_LARGE) and CAPA-085 stopped the run."
+    remedy: "Profile v4 sets inspection_max_source_chars 1048576 as the other Omniverse2 profiles; the gateway still refuses a request over the model context."
