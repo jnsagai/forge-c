@@ -98,6 +98,18 @@ def scaffold(ws: Path) -> dict:
     return {"units": sorted(set(tags) | set(existing)), "deviations": dev}
 
 
+def _justified_lines(ws: Path) -> list[str]:
+    """Owner 2026-11-01: findings the SWE.3 author justified instead of fixing (never approved deviations)."""
+    p = ws / "workproducts/SWE.3/coding_rule_justifications.json"
+    try:
+        just = json.loads(p.read_text()).get("justified") or [] if p.is_file() else []
+    except ValueError:
+        just = []
+    return [f"- Findings justified by the author (judged at inspection, NOT approved deviations): {len(just)}" +
+            ("" if just else " (none)")] + [f"  - {j.get('rule')} in {j.get('function')}: {j.get('rationale')}"
+                                            for j in just]
+
+
 def misra_statement(ws: Path) -> dict:
     from ..assurance.swe3 import deviation_findings
 
@@ -123,6 +135,7 @@ def misra_statement(ws: Path) -> dict:
              ("" if unapproved else " (none)"),
              "- Deviations: " + ("; ".join(f"{d.get('rule')} in {d.get('file')} approved by {d.get('approved_by')}"
                                           for d in records) or "none"),
+             *_justified_lines(ws),
              "- MISRA C:2012 compliance: NOT CLAIMED (addon subset only; undecidable and unsupported rules need manual "
              "review)", ""]
     p = ws / DEVIATIONS_MD

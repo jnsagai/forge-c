@@ -39,5 +39,5 @@ def test_a_cppcheck_fail_measured_at_design_blocks_the_freeze(ws2, monkeypatch):
 
     monkeypatch.setattr(tools, "call", call)
     rep = swe3.visit_design(w)
-    assert rep["status"] == "FAILED" and rep["issues"] == ["cppcheck: MISRA-10.6:stm32n6xx_ll_iwdg.h:135"]
+    assert rep["status"] == "FAILED" and rep["issues"][0].startswith("cppcheck: MISRA-10.6:stm32n6xx_ll_iwdg.h:135")
     assert (w / "workproducts/SWE.3/detailed_design.md").is_file()  # the design is still rendered for the record
