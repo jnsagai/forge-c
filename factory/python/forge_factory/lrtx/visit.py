@@ -277,7 +277,7 @@ def rework_findings(ws: Path, phase: str, since: str) -> list[str]:
     for line in log.read_text().splitlines() if log.is_file() else []:
         d = json.loads(line)
         if d.get("phase") == phase and d.get("ts", "") > since and d.get("result") in ("REJECTED", "FAIL", "REWORK"):
-            out += [str(i).removeprefix("LRTX_TASK_INVALID:") for i in d.get("issues") or []]
+            out += [full_issue(ws, phase, str(i)).removeprefix("LRTX_TASK_INVALID:") for i in d.get("issues") or []]
     ins = sorted((ws / "inspection" / phase).glob("INS-*.json")) if (ws / "inspection" / phase).is_dir() else []
     if ins:
         d = json.loads(ins[-1].read_text())
@@ -334,12 +334,31 @@ def route_findings(findings: list[str], amap: dict | None, default: str) -> dict
     return out
 
 
+ISSUE_MAX = 120  # specs/002-self-healing-factory/contracts/agent-output.schema.json issues[].maxLength (protected)
+
+
+def full_issue(ws: Path, phase: str, issue: str) -> str:
+    """The full text of a reply issue the agent-output contract bounded to ISSUE_MAX characters (CAPA-098)."""
+    p = Path(ws) / ".forge-run/lrtx" / phase / "reply-issues.json"
+    try:
+        full = json.loads(p.read_text()).get("issues") or [] if p.is_file() else []
+    except ValueError:
+        full = []
+    if len(issue) < ISSUE_MAX:
+        return issue
+    return next((f for f in full if f[:ISSUE_MAX] == issue[:ISSUE_MAX]), issue)
+
+
 def reply(ws: Path, phase: str, status: str, issues: list[str], budget: dict | None = None,
           artifacts: list[str] | None = None) -> dict:
     """The compact author reply the unchanged author gate reads (agent-output contract), plus the visit record."""
-    doc = {"status": status, "artifacts": artifacts or [], "issues": [i[:300] for i in issues[:20]],
+    # CAPA-098 (runs WO-F014-SWE2-IWDG-20261101-01, WO-F014-SWE4-IWDG-20261101-L1): issues were cut to 300 characters,
+    # beyond the protected agent-output contract (120), so every long rejection also failed AGENT_OUTPUT_SCHEMA and the
+    # gate kept 120-character fragments. The reply keeps the contract; the full text is a side record rework reads.
+    doc = {"status": status, "artifacts": artifacts or [], "issues": [i[:ISSUE_MAX] for i in issues[:20]],
            "next_action": "next" if status == "PASS" else "rework"}
     S.record(ws, f"{phase}/reply.json", doc)
+    S.record(ws, f"{phase}/reply-issues.json", {"issues": [i[:2000] for i in issues[:20]]})
     if status != "CONTINUE":
         close_visit(budget)
     calls = (budget or {}).get("log", [])

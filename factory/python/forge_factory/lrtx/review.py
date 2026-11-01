@@ -313,9 +313,10 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
 
 def _reply(ws: Path, phase: str, status: str, issues: list[str], budget: dict | None = None,
            artifacts: list[str] | None = None) -> dict:
-    doc = {"status": status, "artifacts": artifacts or [], "issues": [i[:300] for i in issues[:20]],
-           "next_action": "next" if status == "PASS" else "rework"}
+    doc = {"status": status, "artifacts": artifacts or [], "issues": [i[:V.ISSUE_MAX] for i in issues[:20]],
+           "next_action": "next" if status == "PASS" else "rework"}  # CAPA-098: the agent-output contract bound
     S.record(ws, f"{phase}/inspect-reply.json", doc)
+    S.record(ws, f"{phase}/inspect-reply-issues.json", {"issues": [i[:2000] for i in issues[:20]]})
     if status != "CONTINUE":
         V.close_visit(budget)
     p = Path(ws) / ".forge-run/lrtx" / phase / "inspections.jsonl"
