@@ -224,7 +224,11 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         if any(error in NON_REPAIRABLE_REFUSALS for error in errs):
             break
         before = attempts[-2]["errors"] if len(attempts) > 1 else (list(findings or [])[:20] if start is not None else None)
-        if before is not None and sorted(errs[:20]) == sorted(before[:20]):
+        # only a parsed AUTHOR answer can be stuck (schema or check findings): a call that returned no answer
+        # (technical failure, refusal) is retried by design, and an inspector keeping its finding is recorded as
+        # contested (lrtx8)
+        judged = r["doc"] is not None and p.get("role", "").endswith("-author")
+        if judged and before is not None and sorted(errs[:20]) == sorted(before[:20]):
             # CAPA-084 (runs -06/-08): a repair that answers with exactly the findings it was given is stuck; more
             # calls repeated the same finding up to ten times. Stop and report it instead of spending the budget.
             errs = errs + ["LRTX_REPAIR_STUCK: the repair answer has the same findings as the answer it repaired"]
