@@ -132,6 +132,22 @@ h3 { font-size: 17px; text-transform: uppercase; letter-spacing: .04em; }
 .segs i.head { animation: pulse 1.2s ease-in-out infinite; background: var(--go); }
 .prog .row { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
 .prog .row b { color: var(--ink); font-family: var(--mono); font-weight: 500; }
+.bar-kind { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; padding: 0 4px; border-radius: 2px; border: 1px solid currentColor; margin-right: 4px; }
+.bar-kind.measured { color: var(--go); }
+.bar-kind.estimate { color: var(--muted); }
+.est-track { height: 12px; border-radius: 2px; background: var(--lamp-off); overflow: hidden; }
+.est-track span { display: block; height: 100%; background: repeating-linear-gradient(135deg, var(--go) 0 6px, color-mix(in srgb, var(--go) 60%, transparent) 6px 12px); transition: width 1s ease; }
+.est-track.over span { background: repeating-linear-gradient(135deg, var(--warn) 0 6px, color-mix(in srgb, var(--warn) 60%, transparent) 6px 12px); }
+.s-working .est-track span { animation: slide 1.2s linear infinite; background-size: 17px 17px; }
+@keyframes slide { to { background-position: 17px 0; } }
+.late { color: var(--warn); font-weight: 600; }
+.steps { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.step { font-family: var(--display); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 1px 8px; border-radius: 3px; background: var(--lamp-off); color: var(--muted); }
+.step.done, .step.passed { background: color-mix(in srgb, var(--go) 22%, transparent); color: var(--go); }
+.step.rejected { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
+.step.stopped { background: color-mix(in srgb, var(--stop) 22%, transparent); color: var(--stop); }
+.step.now { background: color-mix(in srgb, var(--safety) 35%, transparent); color: var(--ink); animation: pulse 1s ease-in-out infinite; }
+.step-sep { color: var(--muted); font-size: 11px; }
 
 /* gauge */
 .gauge { width: 92px; flex: none; }
@@ -267,13 +283,34 @@ function segs(done, total) {
   const on = total ? Math.round(done / total * 20) : 0;
   return `<div class="segs" aria-hidden="true">${Array.from({length: 20}, (_, i) => `<i class="${i < on ? "on" : i === on && done < total ? "head" : ""}"></i>`).join("")}</div>`;
 }
+const mins = (s) => s == null ? "—" : s < 90 ? `${Math.round(s)} s` : `${Math.round(s / 60)} min`;
+function barHtml(b, c) {
+  if (!b) return "";
+  const tag = (k) => `<span class="bar-kind ${k}">${k}</span>`;
+  if (b.kind === "measured") {
+    return `<div class="prog">${segs(b.done, b.total)}<div class="row"><span>${tag("measured")} <b>${b.done}</b> / ${b.total} ${esc(b.unit)}</span><span>${b.eta ? `ETA <b>${esc(b.eta)}</b>` : ""}</span></div></div>`;
+  }
+  if (b.kind === "estimate") {
+    const known = b.pct != null;
+    const wp = b.work_products ? `<div class="row"><span>work products <b>${b.work_products.have}</b>${b.work_products.expect ? ` of ~${b.work_products.expect}` : ""}</span><span class="muted">${b.work_products.expect ? "from an earlier run" : "no earlier run to compare"}</span></div>` : "";
+    return `<div class="prog"><div class="est-track${b.over ? " over" : ""}"><span style="width:${known ? b.pct : 0}%"></span></div>
+      <div class="row"><span>${tag("estimate")} ${known ? `<b>${mins(b.elapsed_s)}</b> of ~${mins(b.typical_s)} typical (${b.n} run${b.n === 1 ? "" : "s"})` : `<b>${mins(b.elapsed_s)}</b> in this node · no earlier run of it`}</span><span>${b.over ? '<span class="late">longer than usual</span>' : known ? `${b.pct}%` : ""}</span></div>${wp}</div>`;
+  }
+  if (b.kind === "step") {
+    const steps = [["checking", "checking"], [b.step === "rejected" || b.step === "rework" ? "rejected" : b.step === "stopped" ? "stopped" : "passed", b.step === "checking" ? "result" : b.step]];
+    return `<div class="prog"><div class="steps">${steps.map(([cls, label], i) => `<span class="step ${i === 0 ? (b.step === "checking" ? "now" : "done") : (b.step === "checking" ? "" : cls)}">${esc(label)}</span>`).join('<span class="step-sep">▸</span>')}</div>
+      <div class="row"><span>${tag("measured")} ${b.step === "checking" ? "check running" : `last decision <b>${esc(b.decision || b.step)}</b>`}</span></div></div>`;
+  }
+  if (b.kind === "waiting") return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">${b.for ? `waiting for ${esc(b.for)}` : "ready"}</span></div></div>`;
+  return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">idle</span></div></div>`;
+}
 function cellCard(c) {
   const st = c.state === "ready" ? "idle" : c.state, p = c.progress, s = c.speed;
   return `<article class="cell s-${st}" tabindex="0" aria-label="${esc(c.name)}: ${STATE_TEXT[c.state] || c.state}">
     <div class="cell-head">${stack()}<div class="t"><h3>${esc(c.name)}</h3><span>${esc(c.tag)}</span></div><span class="state-tag">${STATE_TEXT[c.state] || esc(c.state)}</span></div>
     <div class="machine">${arm()}<div class="readout">
       ${c.job ? `<div class="job">${esc(c.job)}</div>` : `<div class="job muted">No job</div>`}
-      ${p && p.total ? `<div class="prog">${segs(p.done, p.total)}<div class="row"><span><b>${p.done}</b> / ${p.total} ${esc(p.unit)}</span><span>${p.eta ? `ETA <b>${esc(p.eta)}</b>` : ""}</span></div></div>` : ""}
+      ${barHtml(c.bar, c)}
     </div></div>
     <div class="cell-foot">
       ${s ? `<div class="gauges">${gauge(s.tok_s, 200, "speed", "tok/s")}${s.per_h != null ? gauge(s.per_h, 30, "output", "per h") : ""}</div>` : ""}

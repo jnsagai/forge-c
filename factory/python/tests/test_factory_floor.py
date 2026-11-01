@@ -151,3 +151,42 @@ def test_without_a_fabro_url_nothing_is_requested(monkeypatch):
     assert F.fabro_stages("RUN1", False) is None and F.node_cell("swe2_author_more_serve@3") == "tool"
     assert [F.node_cell(n) for n in ("swe1_author_gate", "swe3_delivery_check", "swe1_inspector_more", "swe1_route")] == \
         ["freeze", "freeze", "inspector", "router"]
+
+
+def test_every_cell_has_a_bar_that_says_whether_it_is_measured_or_an_estimate(plant):
+    cells = {c["id"]: c for c in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.2")["cells"]}
+    assert cells["author"]["bar"] == {"kind": "measured", "done": 1, "total": 2, "unit": "tasks", "eta": cells["author"]["bar"]["eta"]}
+    assert cells["inspector"]["bar"] == {"kind": "waiting", "for": "the freeze gate"}
+    idle = {c["id"]: c for c in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.1")["cells"]}
+    assert all(c["bar"] == {"kind": "idle"} for c in idle.values())  # no order in SWE.1 now
+
+
+def test_a_native_node_gets_a_time_estimate_against_its_typical_duration(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    ws = _order(tmp_path, "WO-NATIVE", [{"phase": "SWE.3", "step": A, "result": "REJECTED"}], package=False, stop_after="SWE.3")
+    (ws / ".forge-run/fabro_run_id").write_text("RUN1")
+    stages = {"swe3_fix_author@1": {"state": "running", "model": {"model_id": "qwen3.8:27b-q8_0"}, "started_at": _iso(NOW - 900),
+                                    "usage": {"tokens": {"output": 30000}}, "live_inference_ms": 600000}}
+    monkeypatch.setattr(F, "fabro_stages", lambda rid, finished: stages if rid == "RUN1" else None)
+    monkeypatch.setattr(F, "history", lambda now: {"typical": {"swe3_fix_author": {"s": 600, "n": 3}},
+                                                    "refs": {("STM32N6 IWDG LL driver", "SWE.3"): 5}})
+    cells = {c["id"]: c for c in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.3")["cells"]}
+    b = cells["author"]["bar"]
+    assert b["kind"] == "estimate" and b["pct"] == 95 and b["over"] is True and b["typical_s"] == 600 and b["n"] == 3
+    assert b["work_products"] == {"have": 0, "expect": 5}
+    assert cells["freeze"]["bar"] == {"kind": "step", "step": "rejected", "decision": "REJECTED"}  # its last decision
+    monkeypatch.setattr(F, "history", lambda now: {"typical": {}, "refs": {}})
+    b = {c["id"]: c for c in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.3")["cells"]}["author"]["bar"]
+    assert b["kind"] == "estimate" and "pct" not in b and b["elapsed_s"] == 900  # no earlier run: no invented percentage
+
+
+def test_typical_durations_are_medians_of_finished_runs(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    for i, secs in enumerate((300, 600, 900)):
+        ws = _order(tmp_path, f"WO-H{i}", [{"phase": "SWE.3", "step": I, "gate": {"decision": "PASS"}}], stop_after="SWE.3")
+        (ws / ".forge-run/fabro_run_id").write_text(f"H{i}")
+    runs = {f"H{i}": {"swe3_author@1": {"state": "succeeded", "timing": {"wall_time_ms": s * 1000}}}
+            for i, s in enumerate((300, 600, 900))}
+    monkeypatch.setattr(F, "fabro_stages", lambda rid, finished: runs.get(rid))
+    monkeypatch.setitem(F._HISTORY, "at", 0.0)
+    assert F.history(NOW)["typical"]["swe3_author"] == {"s": 600, "n": 3}

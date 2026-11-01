@@ -166,6 +166,59 @@ def station(now: float) -> dict:
             "temp_c": g.get("temp_c"), "mem_used_mib": g.get("mem_used_mib"), "mem_total_mib": g.get("mem_total_mib")}
 
 
+HISTORY_S = 7 * 86400
+_HISTORY: dict = {"at": 0.0, "typical": {}, "refs": {}}
+
+
+def _median(xs: list[float]) -> float:
+    xs = sorted(xs)
+    return xs[len(xs) // 2] if len(xs) % 2 else (xs[len(xs) // 2 - 1] + xs[len(xs) // 2]) / 2
+
+
+def history(now: float) -> dict:
+    """Typical durations of the workflow nodes and the work-product count of each phase, from the finished runs of the
+    last 7 days (Fabro node visits, read-only; cached, recomputed at most every 10 minutes)."""
+    if now - _HISTORY["at"] < 600:
+        return _HISTORY
+    durs: dict[str, list[float]] = {}
+    refs: dict[tuple, tuple] = {}
+    for w in glob.glob(str(state_root() / "workorders/*/workspace")):
+        ws = Path(w)
+        pkg, rid = ws / ".forge-run/package.json", ws / ".forge-run/fabro_run_id"
+        try:
+            if not pkg.is_file() or os.path.getmtime(pkg) < now - HISTORY_S:
+                continue
+        except OSError:
+            continue
+        for sid, st in (fabro_stages(rid.read_text().strip() if rid.is_file() else None, True) or {}).items():
+            ms = (st.get("timing") or {}).get("wall_time_ms")
+            if st.get("state") == "succeeded" and ms:
+                durs.setdefault(sid.split("@")[0], []).append(ms / 1000)
+        driver = (_load(ws / ".forge-run/manifest.json") or {}).get("driver")
+        log = _gate_log(ws)
+        for ph in PHASES:
+            if not any(e.get("phase") == ph and e.get("step") == "inspect" and _result(e) == "PASS" for e in log):
+                continue
+            bls = sorted(glob.glob(str(ws / "configuration/baselines" / ph / "BL-*.json")))
+            bl = _load(Path(bls[-1])) if bls else None
+            if bl and bl.get("files"):
+                t = os.path.getmtime(bls[-1])
+                if t > refs.get((driver, ph), (0, 0))[0]:
+                    refs[(driver, ph)] = (t, len(bl["files"]))
+    _HISTORY.update(at=now, typical={n: {"s": round(_median(v)), "n": len(v)} for n, v in durs.items()},
+                    refs={k: v[1] for k, v in refs.items()})
+    return _HISTORY
+
+
+def _work_products(ws: Path, phase: str) -> int:
+    try:
+        from ..inspection.engine import Store
+
+        return len(Store(ws).files_of(phase))
+    except Exception:  # noqa: BLE001
+        return 0
+
+
 def order(ws: Path, now: float | None = None) -> dict:
     """One work order as the floor sees it."""
     now = now or time.time()
@@ -194,6 +247,10 @@ def order(ws: Path, now: float | None = None) -> dict:
             "last": max(t) if t else None,
             "calls": len(calls), "out_tokens": sum(c["out"] for c in calls), "model_s": round(sum(c["s"] for c in calls)),
             "carried": False,
+            "last_author": next((_result(e) for e in reversed(L) if e.get("step") == "author"), None),
+            "last_inspect": next((_result(e) for e in reversed(L) if e.get("step") == "inspect"
+                                  and _result(e) != "REINSPECT"), None),
+            "last_route": next((_result(e) for e in reversed(L) if e.get("step") == "route"), None),
         }
     created = _ts(man.get("created_at"))
     active = prog.get("active")
@@ -204,7 +261,8 @@ def order(ws: Path, now: float | None = None) -> dict:
             phases[ph].update(n)
         elif ph not in phases and n["calls"]:
             phases[ph] = {"inspections": [], "passed": False, "first_pass": False, "reworks": 0, "frozen": 0,
-                          "rejected": 0, "blocked": None, "last": None, "carried": False, **n}
+                          "rejected": 0, "blocked": None, "last": None, "carried": False, "last_author": None,
+                          "last_inspect": None, "last_route": None, **n}
     phases = {ph: phases[ph] for ph in PHASES if ph in phases}
     node = nat["node"] if pkg is None else None  # structured progress stays primary; the node says where the order is
     worked = [ph for ph in PHASES if ph in phases and [e for e in log if e.get("phase") == ph]]
@@ -216,7 +274,7 @@ def order(ws: Path, now: float | None = None) -> dict:
             if not [e for e in log if e.get("phase") == ph]:
                 phases[ph] = {"inspections": [], "passed": True, "first_pass": False, "reworks": 0, "frozen": 0,
                               "rejected": 0, "blocked": None, "last": None, "calls": 0, "out_tokens": 0, "model_s": 0,
-                              "carried": True}
+                              "carried": True, "last_author": None, "last_inspect": None, "last_route": None}
         phases = {ph: phases[ph] for ph in PHASES if ph in phases}
     if pkg is not None:
         state = "DONE" if (phases.get(target) or {}).get("passed") else "STOPPED"
@@ -238,12 +296,46 @@ def order(ws: Path, now: float | None = None) -> dict:
         rw = sum(p["reworks"] for p in phases.values())
         note = "every phase at first inspection" if all(p["first_pass"] for p in phases.values() if p["inspections"]) \
             else f"{rw} rework cycle{'s' if rw != 1 else ''}"
+    wp = {"have": _work_products(ws, at), "phase": at} if state == "RUNNING" else None
     return {"wo": man.get("work_order") or ws.parent.name, "part": man.get("driver"), "target": target, "at": at,
-            "state": state, "note": note, "created": created, "phases": phases, "active": active, "node": node,
+            "state": state, "note": note, "created": created, "phases": phases, "active": active, "node": node, "wp": wp,
             "resumed_from": resumed, "newest": max([p["last"] or 0 for p in phases.values()] + [created or 0])}
 
 
-def _cells(phase: str, orders: list[dict]) -> list[dict]:
+STEP = {"FROZEN": "passed", "PASS": "passed", "INJECTED": "passed", "UNCHANGED": "passed", "REJECTED": "rejected",
+        "REWORK": "rejected", "BLOCKED": "stopped"}
+WAIT_FOR = {"tool": None, "author": "the tool changer", "freeze": "the author cell", "inspector": "the freeze gate",
+            "gate": "the inspection cell", "router": "the inspection gate"}
+
+
+def _bar(cell: str, run: dict | None, a: dict, nd: dict | None, at_cell: str | None, phase: str, now: float) -> dict:
+    """The cell's bar: measured task progress, a time estimate against the node's typical duration, a step of a
+    deterministic check, or waiting/idle. Every bar says which kind it is."""
+    if run is None:
+        return {"kind": "idle"}
+    if a and cell == at_cell and a.get("total"):
+        return {"kind": "measured", "done": a.get("done"), "total": a.get("total"), "unit": a.get("unit"),
+                "eta": a.get("eta_utc")}
+    if nd and cell == at_cell:
+        if cell in ("freeze", "gate", "router"):
+            return {"kind": "step", "step": "checking", "node": nd["node"]}
+        typ = history(now)["typical"].get(nd["node"])
+        el = nd.get("elapsed_s") or 0
+        bar = {"kind": "estimate", "elapsed_s": el, "node": nd["node"]}
+        if typ and typ["s"]:
+            bar.update(pct=min(95, round(el / typ["s"] * 100)), typical_s=typ["s"], n=typ["n"], over=el > typ["s"])
+        if cell == "author" and run.get("wp"):
+            ref = history(now)["refs"].get((run.get("part"), phase))
+            bar["work_products"] = {"have": run["wp"]["have"], "expect": ref}
+        return bar
+    p = run["phases"].get(phase) or {}
+    last = {"freeze": p.get("last_author"), "gate": p.get("last_inspect"), "router": p.get("last_route")}.get(cell)
+    if last in STEP:  # the router's REWORK is a repair it granted, not a rejection
+        return {"kind": "step", "step": "rework" if cell == "router" and last == "REWORK" else STEP[last], "decision": last}
+    return {"kind": "waiting", "for": WAIT_FOR.get(cell)}
+
+
+def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dict]:
     """The hall's cells, their state now, and today's counters."""
     here = [o for o in orders if phase in o["phases"] and not o["phases"][phase]["carried"]]
     run = next((o for o in orders if o["state"] == "RUNNING" and o["at"] == phase), None)
@@ -286,27 +378,29 @@ def _cells(phase: str, orders: list[dict]) -> list[dict]:
     if a.get("done") and a.get("elapsed_s"):
         per_h = round(a["done"] / (a["elapsed_s"] / 3600), 1)
     insp = [o for o in here if o["phases"][phase]["inspections"]]
+    now = now or time.time()
+    bar = lambda cell: _bar(cell, run, a, nd, at_cell, phase, now)  # noqa: E731
     cells = [
-        {"id": "tool", "name": "Tool changer", "tag": "loads Ornith or Qwen", "state": state("tool"),
+        {"id": "tool", "bar": bar("tool"), "name": "Tool changer", "tag": "loads Ornith or Qwen", "state": state("tool"),
          "what": "Loads the right model on the GPU before each cell (6-10 s per swap).", "counters": []},
-        {"id": "author", "name": "Author cell", "tag": author_tag, "state": state("author"),
+        {"id": "author", "bar": bar("author"), "name": "Author cell", "tag": author_tag, "state": state("author"),
          "job": job if at_cell == "author" else None, "progress": prog if step == "author" else None,
          "speed": {"tok_s": speed, "per_h": per_h, "unit": a.get("unit")} if at_cell == "author" else None,
          "what": "Writes the work products, one task at a time.",
          "counters": [["calls", agg("calls")], ["output tokens", agg("out_tokens")], ["model hours", round(agg("model_s") / 3600, 1)]]},
-        {"id": "freeze", "name": "Freeze gate", "tag": "deterministic check", "state": state("freeze"),
+        {"id": "freeze", "bar": bar("freeze"), "name": "Freeze gate", "tag": "deterministic check", "state": state("freeze"),
          "what": "Checks format, coverage and obligations, then freezes the baseline.",
          "counters": [["frozen", agg("frozen")], ["rejected", agg("rejected")]]},
-        {"id": "inspector", "name": "Inspection cell", "tag": insp_tag, "state": state("inspector"),
+        {"id": "inspector", "bar": bar("inspector"), "name": "Inspection cell", "tag": insp_tag, "state": state("inspector"),
          "job": job if at_cell == "inspector" else None, "progress": prog if step == "inspect" else None,
          "speed": {"tok_s": speed, "per_h": None, "unit": None} if at_cell == "inspector" and nd else None,
          "what": "Independent review of every checklist item against the frozen baseline.",
          "counters": [["orders inspected", len(insp)]]},
-        {"id": "gate", "name": "Inspection gate", "tag": "deterministic check", "state": state("gate"),
+        {"id": "gate", "bar": bar("gate"), "name": "Inspection gate", "tag": "deterministic check", "state": state("gate"),
          "what": "Records PASS or sends the findings back for rework.",
          "counters": [["first pass", f"{sum(1 for o in insp if o['phases'][phase]['first_pass'])}/{len(insp)}"],
                       ["reworks", agg("reworks")]]},
-        {"id": "router", "name": "Rework router", "tag": "deterministic", "state": state("router"),
+        {"id": "router", "bar": bar("router"), "name": "Rework router", "tag": "deterministic", "state": state("router"),
          "why": stopped_recent["note"] if stopped_recent is not None else None,
          "what": "Grants another repair cycle, or stops an order that is stuck.",
          "counters": [["repairs granted", agg("reworks")], ["stopped", sum(1 for o in here if o["state"] == "STOPPED"
@@ -353,7 +447,7 @@ def floor(now: float | None = None, since: float | None = None) -> dict:
                       "reworks": sum(o["phases"][ph]["reworks"] for o in here), "stopped": len(stopped),
                       "cycle_min": round(sum(cyc) / len(cyc)) if cyc else None,
                       "running": [o["wo"].replace("WO-F014-", "") for o in running],
-                      "cells": _cells(ph, orders) if here else []})
+                      "cells": _cells(ph, orders, now) if here else []})
     done = [o for o in orders if o["state"] == "DONE"]
     model_s = sum(p["model_s"] for o in orders for p in o["phases"].values())
     out_tokens = sum(p["out_tokens"] for o in orders for p in o["phases"].values())
