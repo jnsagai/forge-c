@@ -57,6 +57,34 @@ CHECK_ID_TOKEN = re.compile(
     r'\bCHECK\s*\(\s*"(?P<check_id>[^"\\\r\n]+)"\s*,', re.S)
 
 
+PROGRESS_DIR = ".forge-run/tool-progress"
+
+
+def progress_path(ws: Path, phase: str | None, op: str) -> Path:
+    return Path(ws) / PROGRESS_DIR / f"{phase or 'none'}-{op}.json"
+
+
+def write_progress(ws: Path, phase: str | None, op: str, unit: str, total: int | None, done: int, passed: int = 0,
+                   failed: int = 0, running: bool = True) -> None:
+    """Owner 2026-11-01: the factory floor shows how many tests a running tool has to run and how many already ran.
+    Display only (the tool result stays the evidence); a write failure never affects the tool."""
+    import time
+
+    p = progress_path(ws, phase, op)
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        old = json.loads(p.read_text()) if p.is_file() else {}
+        started = old.get("started") if old.get("running") else time.time()
+        rec = {"schema": "forge-c/tool-progress/1", "op": op, "phase": phase, "unit": unit, "total": total,
+               "done": done, "passed": passed, "failed": failed, "running": running, "started": started or time.time(),
+               "updated": time.time()}
+        tmp = p.with_suffix(".tmp")
+        tmp.write_text(json.dumps(rec))
+        tmp.replace(p)
+    except OSError:
+        pass
+
+
 def check_ids(paths: list[Path]) -> dict[str, int]:
     """Count complete static assertion identities across the selected test files.
 
@@ -122,6 +150,10 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     bdir.mkdir(parents=True)
     log, passed, failed, issues, ms = b"", 0, 0, [], 0.0
     asserted: list[Path] = []  # runtime (not build) failures - ADR-0008 test-integrity record
+    pop = "run_unit" if level == "unit" else "run_integration"
+    per_file = {t: len(check_ids([t])) or 1 for t in tests}  # tests = check ids (one executable may hold many)
+    n_done = n_pass = n_fail = 0
+    write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), 0)
     for t in tests:
         exe = bdir / t.stem
         argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
@@ -129,6 +161,8 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         b = run_argv(argv, bdir, 180, ALLOW)
         log += b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr
         if b.exit_code != 0:
+            n_done, n_fail = n_done + per_file[t], n_fail + per_file[t]
+            write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), n_done, n_pass, n_fail)
             failed += 1
             issues.append(f"BUILD_FAIL:{t.name}")
             # the agent cannot fix what it cannot see; r76: link errors named only 'linker command failed'
@@ -138,6 +172,9 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
                      env_extra={"LLVM_PROFILE_FILE": str(bdir / f"{t.stem}.profraw")} if coverage else None)
         ms += r.duration_ms
         log += f"$ {exe.name} -> exit {r.exit_code}\n".encode() + r.stdout + r.stderr  # full raw output kept by ref
+        n_done += per_file[t]
+        n_pass, n_fail = (n_pass + per_file[t], n_fail) if r.exit_code == 0 else (n_pass, n_fail + per_file[t])
+        write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), n_done, n_pass, n_fail)
         if r.exit_code == 0:
             passed += 1
         else:
@@ -155,6 +192,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         issues += [f"DUPLICATE_TEST_ID:{d}:used by {seen[d]} checks - give each check its own id; preserve predicates "
                    "and order, use a unique suffix, do not combine checks" for d in dups[:10]]
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
+    write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), n_done, n_pass, n_fail, running=False)
     op = "run_unit" if level == "unit" else "run_integration"
     record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",
                      integrity(ctx.workspace, tests, asserted))
@@ -310,12 +348,16 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
     env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000",
            **{k: os.environ[k] for k in ("FORGE_STATE_DIR", "FORGE_DATA_ROOT") if os.environ.get(k)}}
     # -I: isolated mode, so modules in the (agent-written) workspace cannot shadow stdlib/robot/ForgeTarget imports
+    prog = progress_path(ctx.workspace, ctx.phase, "run_robot")
+    write_progress(ctx.workspace, ctx.phase, "run_robot", "tests", None, 0)  # the listener writes the suite's total
     r = run_argv([py, "-I", "-m", "robot", "--pythonpath", str(REPO_ROOT / "factory/sim/stm32n6"), "--pythonpath",
                   str(REPO_ROOT / "factory/python"), "--outputdir", str(out), "--consolecolors", "off",
+                  "--listener", f"forge_robot_progress.Progress:{prog}",
                   "--console", "dotted", *[str(s) for s in suites]], ctx.workspace, 570, {os.path.basename(py)},
                  env_extra=env, mem_mb=65536, fsize_mb=512)
     xml = out / "output.xml"
     if not xml.is_file():
+        write_progress(ctx.workspace, ctx.phase, "run_robot", "tests", None, 0, running=False)
         return result(ctx, "FAIL", "robot produced no output.xml", [ctx.store(r.stdout + r.stderr)],
                       ["ROBOT_NO_OUTPUT"], tool="robotframework", exit_code=r.exit_code)
     tests, issues, covered = [], [], set()
@@ -337,6 +379,9 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
             else:
                 issues.append(f"ROBOT_FAIL:{t.get('name')}:{full[:120]}")
                 failing.append(([g for g in tags if SWR.fullmatch(g)], full))
+    npass = sum(1 for x in tests if x["status"] == "PASS")
+    write_progress(ctx.workspace, ctx.phase, "run_robot", "tests", len(tests), len(tests), npass, len(tests) - npass,
+                   running=False)
     req = ctx.workspace / "workproducts/SWE.1/software_requirements.md"
     reqs = sorted(set(re.findall(r"\*\*(SWR-[A-Z0-9_.-]+)\*\*", req.read_text()))) if req.is_file() else []
     issues += [f"UNCOVERED_REQUIREMENT:{x}" for x in reqs if x not in covered]
