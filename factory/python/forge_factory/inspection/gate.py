@@ -104,6 +104,11 @@ def _structured_task_issues(store: Store, res) -> list[str]:
     return [f"LRTX_TASK_INVALID:{str(i)[:200]}" for i in res.issues]
 
 
+UPSTREAM_CALLS_HINT = (" - the call contract workproducts/SWE.2/api_calls.json belongs to SWE.2: if its call is wrong, "
+                       "record it with mcp__forge_evidence_mcp__report_defect kind ARCHITECTURE (target SWE.2) instead of "
+                       "editing it; if your code is wrong, fix the code")  # CAPA-089
+
+
 def step_author(store: Store, phase: str, text: str) -> int:
     res = parse(text)
     prose_violation = None
@@ -143,12 +148,22 @@ def step_author(store: Store, phase: str, text: str) -> int:
             generated += RC.check_effects(store.workspace, "LL" if lay == "LL" else "HAL")
         elif phase == "SWE.2":
             generated += RC.check_calls(store.workspace)
+            from ..brownfield import is_brownfield, manifest_of
+
+            if is_brownfield(manifest_of(store.workspace)):
+                # CAPA-089 (run WO-F014-SWE3-CRCK-20261101-01): the delivered headers exist from the SWE.1 freeze on, so
+                # the call contract SWE.2 writes is compiled where it is made, not first at SWE.3 (which may not edit it)
+                from ..layer import hal_h, ll_header
+
+                hdr = Path(ll_header(store.workspace) if lay == "LL" else hal_h(store.workspace)).name
+                generated += RC.check_compiles(store.workspace, [store.workspace / "software/hal",
+                                                                 store.workspace / "software/ll"], hdr)
         elif phase == "SWE.3":
             from ..layer import hal_h, ll_header
 
             hdr = Path(ll_header(store.workspace) if lay == "LL" else hal_h(store.workspace)).name  # feature 009
-            generated += RC.check_compiles(store.workspace, [store.workspace / "software/hal",
-                                                             store.workspace / "software/ll"], hdr)
+            generated += [f + UPSTREAM_CALLS_HINT for f in RC.check_compiles(
+                store.workspace, [store.workspace / "software/hal", store.workspace / "software/ll"], hdr)]
     from ..assurance.scope import workspace_scope_findings  # CAPA-044: stated safety level = owner scope
 
     generated += workspace_scope_findings(store.workspace, phase)
