@@ -1,12 +1,13 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-ornith-think-author-q38-inspector
-version: 2
+version: 3
 work_order_purpose: ASPICE_ONLY
 status: EXPERIMENT_ONLY_NOT_QUALIFIED
 description: 'Owner 2026-10-31 (''Ornith with thinking on''; reverses D12 for this test only): as local-rtx-v2-omniverse2-ornith-author-q38-inspector,
   but Ornith authors with thinking ON. Its template has no effort variable (thinking on/off only); 16384 extra output tokens
   leave room for the thinking. Version 2 (owner 2026-10-31: ''increase output cap to maximum''): Ornith context 262144,
-  thinking allowance 229376, node timeout 21600 s.'
+  thinking allowance 229376, node timeout 21600 s. Version 3 (owner 2026-11-01: "yes, proceed with answer tokens
+  only"): gateway.live_tap streams the relayed answer tokens to a display-only socket (no reasoning, nothing stored).'
 host_reference:
   gpu: RTX 6000 Ada 48 GB
   cpu: Core Ultra 9 285K
@@ -119,6 +120,7 @@ structured:
     inspector: qwen3.8:27b-q8_0
 gateway:
   drop_retries: 0
+  live_tap: true
   request_timeout_s: 21600
   reasoning:
     qwen3.8:27b-q8_0:

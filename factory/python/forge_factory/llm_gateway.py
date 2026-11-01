@@ -334,6 +334,9 @@ def create_app(
 
     app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     meter = Meter(meter_path or state_dir() / "llm-gateway" / "usage.jsonl")
+    from .live_tap import LiveTap
+
+    tap = LiveTap.from_env()  # display-only answer tokens (owner 2026-11-01); a no-op without FORGE_GATEWAY_LIVE_TAP
     timeout = httpx.Timeout(float(request_timeout_s), connect=min(10.0, request_timeout_s))
     client = httpx.AsyncClient(base_url=upstream, timeout=timeout, transport=transport)
     # F014 (owner 2026-10-26: a runtime that serves parallel requests): a local profile may serve a model from its own
@@ -487,6 +490,7 @@ def create_app(
                 lines: list[str] = []
                 usage, stripped = None, False
                 shape: dict[str, Any] = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
+                live = await tap.begin(body.get("model"), detect_role(body.get("messages") or []))
                 try:
                     async for line in upstream_resp.aiter_lines():
                         if line.startswith("data: ") and line[6:].strip() not in ("", "[DONE]"):
@@ -500,6 +504,7 @@ def create_app(
                             usage = chunk.get("usage") or usage
                             for ch in chunk.get("choices") or []:
                                 delta = ch.get("delta") or {}
+                                tap.delta(live, delta)  # after strip_reasoning: answer text only
                                 shape["content_chars"] += len(delta.get("content") or "")
                                 shape["tool_calls"] += len(delta.get("tool_calls") or [])
                                 shape["finish_reason"] = ch.get("finish_reason") or shape["finish_reason"]
@@ -508,6 +513,7 @@ def create_app(
                             lines.append(line + "\n")
                 finally:
                     await upstream_resp.aclose()
+                    tap.end(live, shape["finish_reason"], usage)
                 return upstream_resp.status_code, lines, usage, stripped, shape
 
             for n in range(DROP_RETRIES + 1):  # buffered so an empty (dropped) upstream answer can be retried
@@ -534,6 +540,9 @@ def create_app(
             if isinstance(data, dict) and data.get("choices"):
                 ch = data["choices"][0]
                 msg = ch.get("message") or {}
+                live = await tap.begin(body.get("model"), detect_role(body.get("messages") or []))
+                tap.delta(live, msg)  # the whole stripped answer at once
+                tap.end(live, ch.get("finish_reason"), data.get("usage"))
                 nshape = {
                     "content_chars": len(msg.get("content") or ""),
                     "tool_calls": len(msg.get("tool_calls") or []),
@@ -713,6 +722,9 @@ def create_app(
             if isinstance(data, dict) and data.get("choices"):
                 ch = data["choices"][0]
                 msg = ch.get("message") or {}
+                live = await tap.begin(body.get("model"), detect_role(body.get("messages") or []))
+                tap.delta(live, msg)  # the whole stripped answer at once
+                tap.end(live, ch.get("finish_reason"), data.get("usage"))
                 shape = {
                     "content_chars": len(msg.get("content") or ""),
                     "tool_calls": len(msg.get("tool_calls") or []),
@@ -731,6 +743,7 @@ def create_app(
         resp = await up.send(up.build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True)
         lines: list[str] = []
         usage, stripped, first, last, deltas = None, False, None, None, 0
+        live = await tap.begin(body.get("model"), detect_role(body.get("messages") or []))
         try:
             async for line in resp.aiter_lines():
                 if line.startswith("data: ") and line[6:].strip() not in ("", "[DONE]"):
@@ -744,6 +757,7 @@ def create_app(
                     usage = chunk.get("usage") or usage
                     for ch in chunk.get("choices") or []:
                         delta = ch.get("delta") or {}
+                        tap.delta(live, delta)  # after strip_reasoning: answer text only
                         if delta.get("content") or delta.get("tool_calls"):
                             now = time.monotonic()
                             first = first or now
@@ -757,6 +771,7 @@ def create_app(
                     lines.append(line + "\n")
         finally:
             await resp.aclose()
+            tap.end(live, shape["finish_reason"], usage)
         end = time.monotonic()
         ms = lambda a, b: round((b - a) * 1000, 1)  # noqa: E731
         timing = {

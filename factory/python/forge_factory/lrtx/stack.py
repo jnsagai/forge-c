@@ -637,6 +637,8 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         gw_env["FORGE_GATEWAY_MEASURE_UNBOUND"] = "1"
         gw_env["FORGE_GATEWAY_NATIVE_CONTEXT_LIMIT"] = str(prof["runtime"]["context_limit_tokens"])
     gw_env["FORGE_GATEWAY_REQUEST_TIMEOUT_S"] = str(gateway_timeout(prof))
+    if prof.get("gateway", {}).get("live_tap") is True:  # owner 2026-11-01: display-only answer tokens (live_tap.py)
+        gw_env["FORGE_GATEWAY_LIVE_TAP"] = str(live_tap_path(r))
     if "drop_retries" in prof.get("gateway", {}):
         retries = prof["gateway"]["drop_retries"]
         if type(retries) is not int or not 0 <= retries <= 2:
@@ -1032,6 +1034,11 @@ def status(s: dict) -> dict:
         "netns": os.readlink(f"/proc/{holder}/ns/net"),
         "health": {n: _probe(holder, env, v["health"]) for n, v in (rec.get("processes") or {}).items()},
     }
+
+
+def live_tap_path(root: Path) -> Path:
+    """The gateway's display-only answer-token socket (forge_factory.live_tap), in the stack's run folder."""
+    return Path(root) / "run" / "gateway-live.sock"
 
 
 def exec_in(s: dict, argv: list[str]) -> int:
