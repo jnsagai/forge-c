@@ -278,7 +278,8 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                                             requirement_ids=sorted(set(re.findall(r"SWR-\d{3}", d["reason"])))[:5],
                                             test_files=[rel], evidence_refs=[f"{k}:{r['summary']}"[:120]
                                                                              for k, r in res.items()],
-                                            requirement_quote=d["reason"][:300])["id"])
+                                            requirement_quote=V.requirement_quote(
+                                                ws, sorted(set(re.findall(r"SWR-\d{3}", d["reason"]))), d["reason"]))["id"])
             except defects.DefectError as exc:
                 filed.append(f"REFUSED:{exc}")
         elif validate_file(ws, kind, {"code": d["code"]}) == []:
@@ -286,7 +287,8 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                 defects.report(ws, detected_phase=PHASE, reported_by="swe5-author", kind="TEST",
                                summary=f"{Path(rel).name} corrected: {d['reason']}"[:400],
                                requirement_ids=sorted(set(re.findall(r"SWR-\d{3}", d["reason"])))[:5],
-                               test_files=[rel], evidence_refs=[], requirement_quote=d["reason"][:300])
+                               test_files=[rel], evidence_refs=[], requirement_quote=V.requirement_quote(
+                                   ws, sorted(set(re.findall(r"SWR-\d{3}", d["reason"]))), d["reason"]))
             except defects.DefectError as exc:
                 filed.append(f"REFUSED:{exc}")
                 continue
