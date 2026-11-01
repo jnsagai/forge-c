@@ -1,6 +1,6 @@
 schema: forge-c/local-profile/1
 id: local-rtx-v2-omniverse2-ornith-think-author-q38-inspector
-version: 4
+version: 5
 work_order_purpose: ASPICE_ONLY
 status: EXPERIMENT_ONLY_NOT_QUALIFIED
 description: 'Owner 2026-10-31 (''Ornith with thinking on''; reverses D12 for this test only): as local-rtx-v2-omniverse2-ornith-author-q38-inspector,
@@ -9,7 +9,10 @@ description: 'Owner 2026-10-31 (''Ornith with thinking on''; reverses D12 for th
   thinking allowance 229376, node timeout 21600 s. Version 3 (owner 2026-11-01: "yes, proceed with answer tokens
   only"): gateway.live_tap streams the relayed answer tokens to a display-only socket (no reasoning, nothing stored).
   Version 4 (CAPA-088, run RCC-03): inspection_max_source_chars 1048576 as the other Omniverse2 profiles, so a large part''s
-  frozen register_effects.json (RCC: 107 kB) reaches the inspector whole; the gateway still refuses an oversized request.'
+  frozen register_effects.json (RCC: 107 kB) reaches the inspector whole; the gateway still refuses an oversized request.
+  Version 5 (owner 2026-11-01: per-call thinking cap, "you choose"): a structured node reports activity only when it
+  exits and Fabro ends it after 1800 s; a call may start until the time box ends. Ornith thinking allowance 131072
+  (+16384 answer: about 1340 s at the measured ~110 tok/s) and time box 240 s keep the worst case near 1580 s.'
 host_reference:
   gpu: RTX 6000 Ada 48 GB
   cpu: Core Ultra 9 285K
@@ -115,7 +118,7 @@ structured:
   - SWE.2
   reinspect_direct: true
   timeout_s: 21600
-  visit_time_s: 21600
+  visit_time_s: 240
   inspection_max_source_chars: 1048576
   c_parameter_list_note: true
   role_models:
@@ -131,7 +134,7 @@ gateway:
       extra_output_tokens: 32768
     hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0:
       effort: medium
-      extra_output_tokens: 229376
+      extra_output_tokens: 131072
 afo:
   role_job_tokens:
     afo-recovery-planner: 1048576
