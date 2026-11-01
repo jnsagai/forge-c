@@ -920,3 +920,13 @@ reproducers:
     operations: [lrtx/visit.run_task]
     root_cause: "run_task kept repairing while each answer returned exactly the findings it was given, so a stuck task spent the whole budget (up to ten identical repairs)."
     remedy: "A repair answer with the same findings as the answer it repaired stops the task (LRTX_REPAIR_STUCK); repair limits are unchanged."
+  - id: RPR-084
+    script: rpr084_inspector_refusal_loop.py
+    sha256: 82bd951467906aa538fd5ba73a343e903d8fd7b1832ec5b9ab2b3902fb7c15e6
+    symptom_signature: "an inspector refusal that repeats with zero model calls is re-inspected without bound"
+    observed_in: "Fabro SWE.1 run WO-F014-SWE1-IWDG-20261101-02 (01M6A9BAMW93JGYA9X91TS7RDW) on Omniverse2 2026-11-01, generated obligations"
+    baseline_revision: 5ac47d205befe71c58496484a7833d3d26ebabc3
+    error_codes: []
+    operations: [inspection/engine.Store.gate, inspection/gate.step_route]
+    root_cause: "The structured inspector refused the frozen SWE.1 baseline before any model call (SOURCE_TOO_LARGE on a cited input) and recorded nothing; the route gate answered REINSPECT each time and the high-allowance ladder granted rework, 166 cycles in 4 minutes until Fabro ended the run."
+    remedy: "Three consecutive inspector replies since the baseline froze that are FAILED with zero calls and identical issues make the route gate BLOCKED (INSPECTOR_REFUSED_REPEATEDLY); the high-allowance ladder does not override it; failures after model calls keep re-inspection."
