@@ -384,3 +384,18 @@ def test_consistency_finds_the_same_write_in_other_words():
                                               "0xAAAA to IWDG_KR.KEY - remove it here")]
     found = swe1.consistency([({}, rec("requirements:IWDG_KR", a))], rec("requirements:crosscutting", b))
     assert found and found[0][0] == "requirements:crosscutting"  # removed from the cross-cutting task
+
+
+def test_aspice_only_baseline_states_no_safe_state_and_the_inspector_is_told(ws, monkeypatch):
+    """CAPA-083 (run -11): SWE1-03 failed for a missing safe state on an ASPICE-only order where the allocated safety
+    safe state is outside the owner scope."""
+    from forge_factory.lrtx import review
+
+    monkeypatch.setattr(review, "safe_state_outside_scope", lambda _ws: True)
+    monkeypatch.setattr(S, "call", _scripted(ANSWERS, []))
+    assert swe1.visit(ws, "qwen3-coder:30b")["status"] == "PASS"
+    assert "Safe state: no software safe state is allocated" in (ws / swe1.REQS).read_text()
+    assert review.SAFE_STATE_NOTE in review._notes(ws, "SWE.1", "SWE1-03")
+    assert review.SAFE_STATE_NOTE not in review._notes(ws, "SWE.1", "SWE1-02")
+    monkeypatch.setattr(review, "safe_state_outside_scope", lambda _ws: False)
+    assert review.SAFE_STATE_NOTE not in review._notes(ws, "SWE.1", "SWE1-03")

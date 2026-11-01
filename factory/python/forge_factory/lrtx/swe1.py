@@ -608,6 +608,7 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     from ..layer import profile
 
     from ..assurance import owner_obligations as OO
+    from . import review as R
 
     ws = Path(ws)
     m = _manifest(ws)
@@ -650,6 +651,9 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     up = m.get("upstream", {}).get("status", "NOT_PROVIDED")
     opens += [f"Upstream inputs (HSI contract, safety allocation, budgets): {up}.",
               f"Safety allocation as stated in the manifest: {m['target'].get('safety_allocation', 'UNSPECIFIED')}.",
+              *(["Safe state: no software safe state is allocated; the allocated safety safe state is outside this "
+                 "ASPICE-only work order's owner scope (inspection-assessment-context)."]
+                if R.safe_state_outside_scope(ws) else []),
               f"Target silicon revision: {m['target'].get('silicon_revision', 'UNSPECIFIED')}.",
               f"Flash, static RAM and stack limits: {m['budgets'].get('status', 'work-order budgets')}."]
     md = ["# Software requirements", "",

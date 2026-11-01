@@ -48,6 +48,26 @@ def source_char_limit(ws: Path) -> int:
     return limit
 
 
+SAFE_STATE_NOTE = ("This work order is ASPICE-only: the allocated safety safe state is outside the owner scope "
+                   "(inspection-assessment-context outside_owner_scope). The safe-state part of SWE1-03 is satisfied "
+                   "when the baseline states that no software safe state is allocated; do not fail SWE1-03 for a "
+                   "missing safe state. Failure handling and reset/startup behaviour are still judged.")
+
+
+def safe_state_outside_scope(ws: Path) -> bool:
+    """CAPA-083: the order's assessment view puts the allocated safety safe state outside the owner scope."""
+    from ..inspection.assessment_context import view
+
+    p = Path(ws) / ".forge-run/manifest.json"
+    if not p.is_file():
+        return False
+    try:
+        v = view(json.loads(p.read_text())) or {}
+    except ValueError:
+        return False
+    return "allocated safety safe state" in (v.get("outside_owner_scope") or [])
+
+
 def _notes(ws: Path, phase: str, item: str) -> list[str]:
     from ..layer import profile
     from ..workflow import prompts
@@ -59,6 +79,8 @@ def _notes(ws: Path, phase: str, item: str) -> list[str]:
 
         if note := for_workspace(ws):
             out.append(note)
+        if item == "SWE1-03" and safe_state_outside_scope(ws):  # CAPA-083 (run -11)
+            out.append(SAFE_STATE_NOTE)
     if phase in ("SWE.2", "SWE.3"):  # the work order's peripheral (feature 009), as the builder sets it for agents
         prof = profile(ws)
         saved = prompts.PERIPHERAL["profile"]
