@@ -325,3 +325,26 @@ def test_obligation_ids_in_a_statement_get_an_explicit_finding_and_the_listing_u
     p = swe1.crosscut_packet(ws, functional, "qwen3.8:27b-q8_0")
     text = " ".join(str(m.get("content")) for m in p["_messages"])
     assert "(obligations:" not in text and '"obligations": ["OBL-start-key"]' in text
+
+
+def test_a_repair_with_the_same_findings_is_stopped_as_stuck(ws, monkeypatch):
+    """CAPA-084 (runs -06/-08): ten repairs returned the same finding; the task now stops at the first repeat."""
+    from forge_factory.lrtx import visit as V
+
+    calls = []
+    broken = {"requirements": [_req_like("x", "The IWDG driver should maybe write IWDG_KR.KEY")], "not_covered": [],
+              "open_points": []}
+    monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_KR": broken}, calls))
+    rec = V.run_task(ws, "SWE.1", "requirements:IWDG_KR",
+                     lambda fi, pr: swe1.group_packet(ws, swe1.groups(swe1.inventory(ws))[0], "m", fi, pr),
+                     lambda d: swe1.validate_group(ws, d, swe1.groups(swe1.inventory(ws))[0], swe1.system_name(ws),
+                                                   __import__("forge_factory.assurance.hardware", fromlist=["index"])
+                                                   .index(ws / "inputs/sections/RM0486")),
+                     {"calls": 0, "max_calls": 40}, max_repairs=5)
+    assert rec["status"] == "INVALID" and len(calls) == 2
+    assert any(e.startswith("LRTX_REPAIR_STUCK") for e in rec["errors"])
+
+
+def _req_like(key, st):
+    return {"key": key, "statement": st, "source_page": 2989, "verified_by": "host_unit_test", "effects": [],
+            "verification": "Host unit test passes when the field holds the value."}

@@ -142,7 +142,8 @@ def test_invalid_answer_is_never_assembled(ws, monkeypatch):
     rep = swe1.visit(ws, "qwen3-coder:30b", max_calls=40)
     assert rep["status"] == "FAILED" and any("requirements:IWDG_KR" in i for i in rep["issues"])
     assert not (ws / swe1.REQS).exists()
-    assert len([p for p in calls if p["task"] == "requirements:IWDG_KR"]) == 3  # bounded: 1 + 2 repairs
+    # bounded: 1 call + 1 repair; the repair repeats the same findings, which stops the task (CAPA-084)
+    assert len([p for p in calls if p["task"] == "requirements:IWDG_KR"]) == 2
     assert _gate(ws, monkeypatch) != 0
 
 
@@ -301,8 +302,8 @@ def test_repairs_get_a_bounded_extension_only_while_the_answer_improves(ws, monk
     (ws / ".forge-run/lrtx/SWE.1/packets/requirements__IWDG_PR.json").unlink()
     monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_PR": stuck}, calls))
     assert swe1.visit(ws, "m")["status"] == "FAILED"
-    # no improvement: no extension, and the in-visit repair round stops after one round (3 + 3 calls)
-    assert len([c for c in calls if c["task"] == "requirements:IWDG_PR"]) == 6
+    # no improvement: the repeated findings stop the task (CAPA-084) in the visit and in its repair round (2 + 2)
+    assert len([c for c in calls if c["task"] == "requirements:IWDG_PR"]) == 4
 
 
 def test_reset_state_requirements_are_moved_out_of_register_tasks(ws):
