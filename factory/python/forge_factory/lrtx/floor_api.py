@@ -58,6 +58,114 @@ def _calls(ws: Path, phase: str) -> list[dict]:
     return out
 
 
+_FINISHED: dict[str, dict] = {}  # Fabro state of finished runs never changes
+
+
+def _fabro_token() -> str | None:
+    p = os.environ.get("FORGE_FLOOR_FABRO_ENV")  # the stack's server.env; the token never leaves this process
+    try:
+        for line in Path(p).read_text().splitlines() if p else []:
+            if line.startswith("FABRO_DEV_TOKEN="):
+                return line.split("=", 1)[1].strip().strip('"')
+    except OSError:
+        return None
+    return None
+
+
+def fabro_stages(run_id: str | None, finished: bool) -> dict | None:
+    """Read-only GET of the Fabro run state (stages with node, model, tokens, inference time). None when unavailable."""
+    url = os.environ.get("FORGE_FLOOR_FABRO_URL")
+    if not url or not run_id:
+        return None
+    if run_id in _FINISHED:
+        return _FINISHED[run_id]
+    import urllib.request
+
+    req = urllib.request.Request(f"{url.rstrip('/')}/runs/{run_id}/state", headers={"Accept": "application/json"})
+    tok = _fabro_token()
+    if tok:
+        req.add_header("Authorization", "Bearer " + tok)
+    try:
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        with opener.open(req, timeout=4) as r:
+            stages = json.load(r).get("stages") or {}
+    except Exception:  # noqa: BLE001 - the floor degrades to the recorded files
+        return None
+    if finished:
+        _FINISHED[run_id] = stages
+    return stages
+
+
+def node_cell(node: str) -> str:
+    """The floor cell a workflow node belongs to."""
+    n = node.split("@")[0]
+    if n.endswith("_serve"):
+        return "tool"
+    if "inspect_gate" in n:
+        return "gate"
+    if "author_gate" in n or "delivery_check" in n or "freeze" in n:
+        return "freeze"
+    if "inspector" in n:
+        return "inspector"
+    if "author" in n:
+        return "author"
+    return "router"
+
+
+def native(stages: dict | None, now: float) -> dict:
+    """Per phase: model work of the Fabro nodes (output tokens, inference seconds, model-node visits); the node at work."""
+    out: dict = {"phases": {}, "node": None}
+    for sid, st in (stages or {}).items():
+        node = sid.split("@")[0]
+        ph = f"SWE.{node[3]}" if node.startswith("swe") and node[3:4].isdigit() else None
+        tokens = ((st.get("usage") or {}).get("tokens") or {}).get("output") or 0
+        inf_ms = (st.get("timing") or {}).get("inference_time_ms") or st.get("live_inference_ms") or 0
+        if ph:
+            p = out["phases"].setdefault(ph, {"calls": 0, "out_tokens": 0, "model_s": 0})
+            if st.get("model") or st.get("agent"):
+                p["calls"] += 1
+            p["out_tokens"] += tokens
+            p["model_s"] += round(inf_ms / 1000)
+        if st.get("state") == "running" and not node.endswith("_cont"):
+            started = _ts(st.get("started_at"))
+            out["node"] = {"node": node, "phase": ph, "cell": node_cell(node),
+                           "model": (st.get("model") or {}).get("model_id"),
+                           "elapsed_s": round(now - started) if started else None,
+                           "tok_s": round(tokens / (inf_ms / 1000)) if inf_ms else None}
+    return out
+
+
+def station(now: float) -> dict:
+    """The GPU station from the gateway's resource samples (every 10 s) and the model loaded by the last swap."""
+    meter = state_root() / "llm-gateway/usage.jsonl"
+    sample = None
+    try:
+        with meter.open("rb") as f:
+            f.seek(max(0, meter.stat().st_size - 16384))
+            for line in reversed(f.read().decode(errors="replace").splitlines()):
+                try:
+                    rec = json.loads(line)
+                except ValueError:
+                    continue
+                if "sample" in rec:
+                    sample = rec
+                    break
+    except OSError:
+        pass
+    model = None
+    try:
+        last = (state_root().parent / "run/model-swaps.jsonl").read_text().strip().splitlines()[-1]
+        model = json.loads(last).get("to")
+    except (OSError, IndexError, ValueError):
+        pass
+    if sample is None:
+        return {"available": False, "model": model}
+    g = (sample.get("sample") or {}).get("gpu") or {}
+    age = round(now - (sample["sample"].get("ts") or 0))
+    return {"available": age < 120, "age_s": age, "model": model, "util_pct": g.get("util_pct"), "power_w": g.get("power_w"),
+            "temp_c": g.get("temp_c"), "mem_used_mib": g.get("mem_used_mib"), "mem_total_mib": g.get("mem_total_mib")}
+
+
 def order(ws: Path, now: float | None = None) -> dict:
     """One work order as the floor sees it."""
     now = now or time.time()
@@ -89,8 +197,19 @@ def order(ws: Path, now: float | None = None) -> dict:
         }
     created = _ts(man.get("created_at"))
     active = prog.get("active")
+    rid = prog.get("fabro_run_id")
+    nat = native(fabro_stages(rid, pkg is not None), now) if rid else {"phases": {}, "node": None}
+    for ph, n in nat["phases"].items():  # native agent phases write no task packets: Fabro has their model work
+        if ph in phases and phases[ph]["calls"] == 0:
+            phases[ph].update(n)
+        elif ph not in phases and n["calls"]:
+            phases[ph] = {"inspections": [], "passed": False, "first_pass": False, "reworks": 0, "frozen": 0,
+                          "rejected": 0, "blocked": None, "last": None, "carried": False, **n}
+    phases = {ph: phases[ph] for ph in PHASES if ph in phases}
+    node = nat["node"] if pkg is None else None  # structured progress stays primary; the node says where the order is
     worked = [ph for ph in PHASES if ph in phases and [e for e in log if e.get("phase") == ph]]
-    at = active["phase"] if active else (worked[-1] if worked else list(phases)[-1] if phases else "SWE.1")
+    at = active["phase"] if active else (node["phase"] if node and node["phase"] else
+                                         worked[-1] if worked else list(phases)[-1] if phases else "SWE.1")
     resumed = (man.get("resumed_from") or {}).get("source_work_order")
     if resumed:  # phases carried over by --resume-from passed in the source order; not this order's work
         for ph in PHASES[:PHASES.index(at)]:
@@ -101,7 +220,7 @@ def order(ws: Path, now: float | None = None) -> dict:
         phases = {ph: phases[ph] for ph in PHASES if ph in phases}
     if pkg is not None:
         state = "DONE" if (phases.get(target) or {}).get("passed") else "STOPPED"
-    elif active:
+    elif active or node:
         state = "RUNNING"
     else:
         newest = max([p["last"] or 0 for p in phases.values()] + [created or 0])
@@ -112,12 +231,15 @@ def order(ws: Path, now: float | None = None) -> dict:
             ("the node stopped before the phase finished" if prog.get("stopped_visit") else "ended before its target phase")
     elif state == "RUNNING" and active:
         note = active["text"]
+    elif state == "RUNNING" and node:
+        note = f"{at} {node['cell']} cell: node {node['node']} ({node['model'] or 'deterministic'})" + \
+            (f", {node['elapsed_s'] // 60} min in this node" if node.get("elapsed_s") else "")
     elif state == "DONE":
         rw = sum(p["reworks"] for p in phases.values())
         note = "every phase at first inspection" if all(p["first_pass"] for p in phases.values() if p["inspections"]) \
             else f"{rw} rework cycle{'s' if rw != 1 else ''}"
     return {"wo": man.get("work_order") or ws.parent.name, "part": man.get("driver"), "target": target, "at": at,
-            "state": state, "note": note, "created": created, "phases": phases, "active": active,
+            "state": state, "note": note, "created": created, "phases": phases, "active": active, "node": node,
             "resumed_from": resumed, "newest": max([p["last"] or 0 for p in phases.values()] + [created or 0])}
 
 
@@ -131,29 +253,35 @@ def _cells(phase: str, orders: list[dict]) -> list[dict]:
     agg = lambda k: sum(o["phases"][phase][k] for o in here)  # noqa: E731
     reworking = run is not None and any(o is run and o["phases"].get(phase, {}).get("reworks") for o in here)
     step = a.get("step")
+    nd = (run or {}).get("node") if not a else None  # a native agent node at work (Fabro run state)
+    at_cell = {"author": "author", "inspect": "inspector"}.get(step) if a else (nd or {}).get("cell")
 
     def state(cell: str) -> str:
         if run is None:
             return "stopped" if stopped_recent is not None and cell == "router" else "idle"
-        if cell == "author":
-            if step is None:  # a native agent phase writes no task progress: the author cell is the one at work
-                return "working"
-            return ("rework" if reworking else "working") if step == "author" else "waiting"
-        if cell == "inspector":
-            return "working" if step == "inspect" else "waiting"
-        if cell == "tool":
-            return "ready"
-        return "waiting"
+        if cell == at_cell:
+            return "rework" if cell == "author" and reworking else "working"
+        return "ready" if cell == "tool" else "waiting"
     job = None
     if run is not None:
-        job = f"{run['wo'].replace('WO-F014-', '')} · " + (f"now {a['current']}" if a.get("current") else
-                                                          "native agent (task detail in Fabro)" if step is None else "")
+        wo = run["wo"].replace("WO-F014-", "")
+        if a.get("current"):
+            job = f"{wo} · now {a['current']}"
+        elif nd:
+            job = f"{wo} · node {nd['node']}" + (f", {nd['elapsed_s'] // 60} min" if nd.get("elapsed_s") else "")
+        else:
+            job = wo
     prog = {"done": a.get("done"), "total": a.get("total"), "unit": a.get("unit"), "eta": a.get("eta_utc")} if a else None
     speed = None
-    if run is not None:
+    if nd and nd.get("tok_s"):
+        speed = nd["tok_s"]
+    elif run is not None:
         out = run["phases"].get(phase, {})
         if out.get("model_s"):
             speed = round(out["out_tokens"] / out["model_s"])
+    short = lambda m: "Ornith 35B" if m and "ornith" in m.lower() else (m or "").split(":")[0].replace("qwen", "Qwen")  # noqa: E731
+    author_tag = f"{short(nd['model'])}, native agent" if nd and nd["cell"] == "author" and nd.get("model") else "Ornith 35B, thinking on"
+    insp_tag = f"{short(nd['model'])}, native agent" if nd and nd["cell"] == "inspector" and nd.get("model") else "Qwen3.8 27B"
     per_h = None
     if a.get("done") and a.get("elapsed_s"):
         per_h = round(a["done"] / (a["elapsed_s"] / 3600), 1)
@@ -161,16 +289,17 @@ def _cells(phase: str, orders: list[dict]) -> list[dict]:
     cells = [
         {"id": "tool", "name": "Tool changer", "tag": "loads Ornith or Qwen", "state": state("tool"),
          "what": "Loads the right model on the GPU before each cell (6-10 s per swap).", "counters": []},
-        {"id": "author", "name": "Author cell", "tag": "Ornith 35B, thinking on", "state": state("author"),
-         "job": job if step in ("author", None) else None, "progress": prog if step == "author" else None,
-         "speed": {"tok_s": speed, "per_h": per_h, "unit": a.get("unit")} if step == "author" else None,
+        {"id": "author", "name": "Author cell", "tag": author_tag, "state": state("author"),
+         "job": job if at_cell == "author" else None, "progress": prog if step == "author" else None,
+         "speed": {"tok_s": speed, "per_h": per_h, "unit": a.get("unit")} if at_cell == "author" else None,
          "what": "Writes the work products, one task at a time.",
          "counters": [["calls", agg("calls")], ["output tokens", agg("out_tokens")], ["model hours", round(agg("model_s") / 3600, 1)]]},
         {"id": "freeze", "name": "Freeze gate", "tag": "deterministic check", "state": state("freeze"),
          "what": "Checks format, coverage and obligations, then freezes the baseline.",
          "counters": [["frozen", agg("frozen")], ["rejected", agg("rejected")]]},
-        {"id": "inspector", "name": "Inspection cell", "tag": "Qwen3.8 27B", "state": state("inspector"),
-         "job": job if step == "inspect" else None, "progress": prog if step == "inspect" else None,
+        {"id": "inspector", "name": "Inspection cell", "tag": insp_tag, "state": state("inspector"),
+         "job": job if at_cell == "inspector" else None, "progress": prog if step == "inspect" else None,
+         "speed": {"tok_s": speed, "per_h": None, "unit": None} if at_cell == "inspector" and nd else None,
          "what": "Independent review of every checklist item against the frozen baseline.",
          "counters": [["orders inspected", len(insp)]]},
         {"id": "gate", "name": "Inspection gate", "tag": "deterministic check", "state": state("gate"),
@@ -231,7 +360,9 @@ def floor(now: float | None = None, since: float | None = None) -> dict:
     h1 = next(h for h in halls if h["id"] == "SWE.1")
     line = None
     for o in orders:
-        if o["state"] == "RUNNING" and o["phases"].get(o["at"], {}).get("model_s"):
+        if o["state"] == "RUNNING" and (o.get("node") or {}).get("tok_s"):
+            line = o["node"]["tok_s"]
+        elif o["state"] == "RUNNING" and o["phases"].get(o["at"], {}).get("model_s"):
             p = o["phases"][o["at"]]
             line = round(p["out_tokens"] / p["model_s"])
     halls.append({"id": "SHIP", "name": HALL_NAMES["SHIP"], "state": "idle", "entered": 0, "passed": 0, "inspected": 0,
@@ -242,7 +373,8 @@ def floor(now: float | None = None, since: float | None = None) -> dict:
             "kpis": {"on_floor": sum(1 for o in orders if o["state"] == "RUNNING"), "completed": len(done),
                      "orders": len(orders), "fpy_swe1": [h1["first_pass"], h1["inspected"]],
                      "reworks": sum(h["reworks"] for h in halls), "stopped": sum(1 for o in orders if o["state"] == "STOPPED"),
-                     "model_hours": round(model_s / 3600, 1), "out_tokens": out_tokens, "line_tok_s": line},
+                     "model_hours": round(model_s / 3600, 1), "out_tokens": out_tokens, "line_tok_s": line,
+                     "station": station(now)},
             "halls": halls,
             "orders": [{k: o.get(k) for k in ("wo", "part", "target", "at", "state", "note", "resumed_from")} |
                        {"route": {ph: ("carried" if v["carried"] else "ok" if v["passed"]

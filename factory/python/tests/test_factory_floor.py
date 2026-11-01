@@ -108,3 +108,46 @@ def test_the_server_serves_the_page_and_the_floor(plant):
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+def test_a_native_agent_node_shows_its_model_tokens_and_speed_from_fabro(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    ws = _order(tmp_path, "WO-NATIVE", [{"phase": "SWE.3", "step": A, "result": "REJECTED"},
+                                       {"phase": "SWE.3", "step": R, "gate": {"decision": "REWORK"}}],
+                package=False, stop_after="SWE.3")
+    (ws / ".forge-run/fabro_run_id").write_text("RUN1")
+    stages = {"swe3_author@1": {"state": "succeeded", "model": {"model_id": "qwen3.8:27b-q8_0"},
+                                "usage": {"tokens": {"output": 20000}}, "timing": {"inference_time_ms": 400000}},
+              "swe3_fix_author@1": {"state": "running", "model": {"model_id": "qwen3.8:27b-q8_0"}, "started_at": _iso(NOW - 900),
+                                    "usage": {"tokens": {"output": 30000}}, "live_inference_ms": 600000},
+              "swe3_author_gate@1": {"state": "failed", "usage": {"tokens": {"output": 0}}, "timing": {"inference_time_ms": 0}}}
+    monkeypatch.setattr(F, "fabro_stages", lambda rid, finished: stages if rid == "RUN1" else None)
+    d = F.floor(now=NOW, since=NOW - 86400)
+    o = d["orders"][0]
+    assert o["state"] == "RUNNING" and o["at"] == "SWE.3" and "swe3_fix_author" in o["note"]
+    cells = {c["id"]: c for c in next(h for h in d["halls"] if h["id"] == "SWE.3")["cells"]}
+    a = cells["author"]
+    assert a["state"] == "working" and a["tag"] == "Qwen3.8, native agent" and "15 min" in a["job"]
+    assert a["speed"]["tok_s"] == 50 and ["output tokens", 50000] in a["counters"] and ["calls", 2] in a["counters"]
+    assert cells["freeze"]["state"] == "waiting" and d["kpis"]["line_tok_s"] == 50
+
+
+def test_the_gpu_station_reads_the_latest_gateway_sample(tmp_path, monkeypatch):
+    state = tmp_path / "state"
+    (state / "llm-gateway").mkdir(parents=True)
+    (tmp_path / "run").mkdir()
+    sample = {"sample": {"ts": NOW - 5, "gpu": {"util_pct": 97.0, "power_w": 298.6, "temp_c": 84.0,
+                                               "mem_used_mib": 46611.0, "mem_total_mib": 49140.0}}}
+    (state / "llm-gateway/usage.jsonl").write_text(json.dumps({"model": "m", "tokens_output": 3}) + "\n" + json.dumps(sample) + "\n")
+    (tmp_path / "run/model-swaps.jsonl").write_text(json.dumps({"to": "qwen3.8:27b-q8_0"}) + "\n")
+    monkeypatch.setenv("FORGE_STATE_DIR", str(state))
+    st = F.station(NOW)
+    assert st["available"] is True and st["util_pct"] == 97.0 and st["model"] == "qwen3.8:27b-q8_0"
+    assert F.station(NOW + 600)["available"] is False  # an old sample is not presented as live
+
+
+def test_without_a_fabro_url_nothing_is_requested(monkeypatch):
+    monkeypatch.delenv("FORGE_FLOOR_FABRO_URL", raising=False)
+    assert F.fabro_stages("RUN1", False) is None and F.node_cell("swe2_author_more_serve@3") == "tool"
+    assert [F.node_cell(n) for n in ("swe1_author_gate", "swe3_delivery_check", "swe1_inspector_more", "swe1_route")] == \
+        ["freeze", "freeze", "inspector", "router"]

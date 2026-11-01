@@ -57,6 +57,7 @@ h3 { font-size: 17px; text-transform: uppercase; letter-spacing: .04em; }
 .kpi .v small { font-size: 17px; color: var(--muted); font-weight: 600; }
 .kpi .n { font-size: 12px; color: var(--muted); }
 .kpi.gauge-kpi { grid-template-columns: auto 1fr; align-items: center; gap: 10px; }
+.kpi.station-kpi .gauges { gap: 2px; }
 
 /* floor map */
 .floor { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 12px; }
@@ -290,11 +291,18 @@ function renderKpis(d) {
     `<div class="kpi"><span class="label">Rework cycles</span><span class="v">${k.reworks}</span><span class="n">failed inspections sent back</span></div>`,
     `<div class="kpi"><span class="label">Stopped orders</span><span class="v" style="color:${k.stopped ? "var(--stop)" : "inherit"}">${k.stopped}</span><span class="n">see the notes below</span></div>`,
     `<div class="kpi gauge-kpi">${gauge(k.line_tok_s, 200, "line speed", "tok/s")}<div><span class="label">Model work this shift</span><div class="v" style="font-size:24px">${k.model_hours}<small> h</small></div><span class="n">${fmt(k.out_tokens)} output tokens</span></div></div>`,
+    stationTile(k.station),
   ].join("");
   const status = k.on_floor ? "working" : "idle";
   $("#plant-status").className = "plant-status s-" + status;
   $("#plant-status").innerHTML = `${stack(true)}<span>${k.on_floor ? "Line running" : "Line idle"}</span>`;
   $("#sub").textContent = `ASPICE QM · shift since ${d.shift_start.slice(0, 16).replace("T", " ")} UTC · one GPU station (RTX 6000 Ada) · updated ${d.updated_at.slice(11, 19)} UTC`;
+}
+function stationTile(st) {
+  if (!st) return "";
+  const model = st.model ? (st.model.toLowerCase().includes("ornith") ? "Ornith 35B" : st.model.split(":")[0].replace("qwen", "Qwen")) : "—";
+  if (!st.available) return `<div class="kpi"><span class="label">GPU station</span><span class="v" style="font-size:22px">no reading</span><span class="n">loaded: ${esc(model)}${st.age_s != null ? ` · last sample ${Math.round(st.age_s / 60)} min ago` : ""}</span></div>`;
+  return `<div class="kpi station-kpi"><span class="label">GPU station · RTX 6000 Ada</span><div class="gauges">${gauge(Math.round(st.util_pct), 100, "load", "%")}${gauge(Math.round(st.power_w), 300, "power", "W")}</div><span class="n">${st.temp_c} °C · ${(st.mem_used_mib / 1024).toFixed(1)} of ${(st.mem_total_mib / 1024).toFixed(0)} GB · loaded: ${esc(model)}</span></div>`;
 }
 function renderHalls(d) {
   $("#halls").innerHTML = d.halls.map((h, i) => {
