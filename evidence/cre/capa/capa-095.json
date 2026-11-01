@@ -1,0 +1,101 @@
+{
+ "CAPA-095": {
+  "history": [
+   {
+    "at": "2026-11-01T20:13:46.924565Z",
+    "capa_id": "CAPA-095",
+    "evidence": "[\"fabro-swe4-obl-l3-comment-call\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE4-OBL-20261101-L3: UT-002 rejected for 'call to unchanged' taken from a comment; repair stuck, cancelled",
+    "seq": 713,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T20:13:46.948580Z",
+    "capa_id": "CAPA-095",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 714,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T20:13:47.043220Z",
+    "capa_id": "CAPA-095",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-095 assigned",
+    "seq": 715,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T20:13:50.346035Z",
+    "capa_id": "CAPA-095",
+    "evidence": "[\"reproducer-run:rr-bdea6a2207ce277cc433\", \"reproducer-run:rr-2029317bfc26becc051b\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 716,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T20:13:50.365184Z",
+    "capa_id": "CAPA-095",
+    "evidence": "[\"git:77ceea02245a..1ca5c95a09c1\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 1ca5c95a09c1 (patch 4412 bytes)",
+    "seq": 717,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T20:16:48.520857Z",
+    "capa_id": "CAPA-095",
+    "evidence": "[\"reproducer-run:rr-5a5766c2d7fb45217c4b\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-095 absent at 1ca5c95a09c1",
+    "seq": 720,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T20:16:48.534817Z",
+    "capa_id": "CAPA-095",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 721,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-ea31915b7b7f1aa87c3249cd75f57f29b7ea66bb",
+   "77ceea02245aa3212ffb4e4738682ab55cffd8a2",
+   "1ca5c95a09c10cfc3158b8bd7771f7b8dd002c1e",
+   "pd-1b8db2218379c2e28545"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<1ca5c95a09c1"
+   ],
+   "candidate_patch_sha256": "321672f2c2e2a76e43a5e078adadb50ff7abc073f8ca5c37d00b2ee3e6d987a5",
+   "capa_id": "CAPA-095",
+   "created_at": "2026-11-01T20:13:46.924565Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe4-obl-l3-comment-call"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-095",
+   "reproducer_id": "RPR-095",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-bdea6a2207ce277cc433",
+    "reproducer-run:rr-2029317bfc26becc051b"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "The SWE.4 test validator scans comments for calls",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T20:16:48.534817Z"
+  }
+ }
+}

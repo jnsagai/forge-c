@@ -1020,3 +1020,13 @@ reproducers:
     operations: [lrtx/swe4.visit_report]
     root_cause: "The straight-line LL code has no branch points and llvm-cov reported branch None%; the generated SWE.4 report stated a 100% statement/branch goal next to it with no finding, the inspector failed SWE4-05 and no test rework can change the generated report."
     remedy: "The report states each coverage measure as met, not met (recorded as a COVERAGE_GOAL_NOT_MET finding) or not applicable when llvm-cov counted no branch points or decisions."
+  - id: RPR-095
+    script: rpr095_swe4_comment_taken_for_call.py
+    sha256: ceed38643dfcbc6c01d566956402d15652796620d13271247e526df193da767a
+    symptom_signature: "a word before a parenthesis in a comment of a structured SWE.4 test is reported as a call"
+    observed_in: "Fabro run WO-F014-SWE4-OBL-20261101-L3 on Omniverse2 2026-11-01, CRC IDR greenfield SWE.4 resumed from WO-F014-SWE3-OBL-20261101-L2"
+    baseline_revision: 77ceea02245aa3212ffb4e4738682ab55cffd8a2
+    error_codes: []
+    operations: [lrtx/swe4.validate_test]
+    root_cause: "The UT-002 test labelled its checks in comments; validate_test scanned the comment text for calls, took 'unchanged (' for a call to unchanged and every repair stayed invalid (LRTX_REPAIR_STUCK)."
+    remedy: "Calls, generated-define identifiers and the call count are read from the code with comments blanked; the CHECK id check keeps the original text."
