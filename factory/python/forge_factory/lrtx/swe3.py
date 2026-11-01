@@ -36,6 +36,7 @@ from . import structured as S
 from . import visit as V
 
 PHASE = "SWE.3"
+JUSTIFICATIONS = "workproducts/SWE.3/coding_rule_justifications.json"
 CODE_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["code", "spec_items"],
                "properties": {"code": {"type": "string", "minLength": 40},
                               "spec_items": {"type": "array", "minItems": 1, "items": {
@@ -44,7 +45,12 @@ CODE_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["co
                                   "properties": {"id": {"type": "string", "pattern": "^USPEC-LL-[0-9]{2,}-[0-9]{2,}$"},
                                                  "behaviour": {"type": "string", "minLength": 20},
                                                  "traces": {"type": "array", "minItems": 1, "items": {
-                                                     "type": "string", "pattern": "^SWR-[0-9]{3}$"}}}}}}}
+                                                     "type": "string", "pattern": "^SWR-[0-9]{3}$"}}}}},
+                              # owner 2026-11-01: SWE.3 fixes or justifies coding-rule findings before freeze
+                              "coding_rule_justifications": {"type": "array", "maxItems": 6, "items": {
+                                  "type": "object", "additionalProperties": False, "required": ["rule", "rationale"],
+                                  "properties": {"rule": {"type": "string", "pattern": "^MISRA-[0-9]+[.][0-9]+$"},
+                                                 "rationale": {"type": "string", "minLength": 40}}}}}}
 FORBIDDEN = [(re.compile(r"\(\s*(?:volatile\s+)?(?:uint32_t|unsigned|int|void)\s*\*\s*\)"), "integer-to-pointer cast"),
              (re.compile(r"^\s*#", re.M), "preprocessor directive"),
              (re.compile(r"\bwhile\b|\bfor\b|\bgoto\b"), "loop or goto (LL functions never wait)"),
@@ -120,7 +126,10 @@ def code_packet(ws: Path, u: dict, model: str, findings=None, previous=None) -> 
              "once, clears the field with its _MSK define, ORs the new value shifted by its _POS define and masked, "
              "then writes once; a write-only key register is written whole (never read). A query returns 1U when the "
              "flag bit is set, else 0U. MISRA C:2012 style: one return statement at the end, unsigned constants with a "
-             "U suffix, no implicit conversions. code = the complete function definition preceded by exactly this "
+             "U suffix, no implicit conversions. A cppcheck MISRA finding in this function is fixed in the code; only "
+             "when a fix would contradict the requirement or the register contract, keep the code and answer "
+             "coding_rule_justifications [{rule, rationale}] stating why the rule cannot be met here and why the "
+             "behaviour stays correct (judged by the inspector; never an approved deviation). code = the complete function definition preceded by exactly this "
              f"Doxygen block: '/**', ' * @brief <one line>', ' * @unit {u['id']}', ' * @spec <spec ids>', ' */'. "
              f"spec_items: the unit's specification items USPEC-LL-{u['n']:02d}-01, -02 ... (one per distinct "
              "behaviour), each with the behaviour the unit shall implement and the requirement ids it refines (traces, "
@@ -246,8 +255,51 @@ def tool_findings(ws: Path) -> tuple[list[str], dict]:
     r = T.call(ws, "forge-analysis-mcp", "cppcheck", {}, "swe3-author", PHASE)
     res["cppcheck"] = r
     if r["status"] != "PASS":
-        out += [f"cppcheck: {i}" for i in r["issues"][:8]]
+        try:
+            open_, _just = coding_rule_findings(ws, r["issues"], units(ws))
+        except (OSError, ValueError, KeyError):
+            open_ = r["issues"]
+        out += [f"cppcheck: {i}" for i in open_[:8]]  # justified findings are judged at inspection
     return out, res
+
+
+_CPP = re.compile(r"^(MISRA-\d+\.\d+):([^:]+):(\d+)")
+
+
+def _function_at(ws: Path, line: int) -> str | None:
+    """The LL function whose definition contains `line` of the generated header (comments/literals masked)."""
+    from ..inspection.guideline import strip_c
+
+    masked = strip_c(_header(ws).read_text())
+    for m in re.finditer(r"^[ \t]*static\s+inline\s+\w+\s+(\w+)\s*\([^;{}]*\)\s*\{", masked, re.M):
+        depth, end = 1, m.end()
+        while end < len(masked) and depth:
+            depth += (masked[end] == "{") - (masked[end] == "}")
+            end += 1
+        if masked.count("\n", 0, m.start()) + 1 <= line <= masked.count("\n", 0, end) + 1:
+            return m.group(1)
+    return None
+
+
+def coding_rule_findings(ws: Path, issues: list[str], us: list[dict]) -> tuple[list[str], list[dict]]:
+    """cppcheck MISRA findings attributed to their function: (open findings naming the function, justified findings).
+    A finding is justified only by the code task of the unit whose function contains it, for that rule."""
+    docs = {}
+    for u in us:
+        ck = V._ckpt(ws, PHASE, f"code:{u['id']}")
+        rec = json.loads(ck.read_text()) if ck.is_file() else {}
+        docs[u["function"]["name"]] = (u["id"], (rec.get("doc") or {}).get("coding_rule_justifications") or [])
+    open_, justified = [], []
+    for i in issues:
+        m = _CPP.match(i)
+        fn = _function_at(ws, int(m.group(3))) if m and Path(m.group(2)).name == _header(ws).name else None
+        just = [j for j in docs.get(fn, (None, []))[1] if j["rule"] == m.group(1)] if fn else []
+        if just:
+            justified.append({"finding": i, "function": fn, "unit": docs[fn][0], "rule": m.group(1),
+                              "rationale": just[0]["rationale"]})
+        else:
+            open_.append(f"{i} (in {fn})" if fn else i)
+    return open_, justified
 
 
 def _route(findings: list[str], us: list[dict]) -> dict[str, list[str]]:
@@ -377,6 +429,14 @@ def visit_design(ws: Path, model: str = "", **_k) -> dict:
         r = res[k]
         dd.append(f"- {k}: status {r['status']}; summary \"{r['summary']}\"; issues {r['issues']}; metrics "
                   f"{json.dumps(r.get('metrics') or {}, sort_keys=True)}")
+    _open, just = coding_rule_findings(ws, res["cppcheck"]["issues"], us) if res["cppcheck"]["status"] == "FAIL" \
+        else ([], [])
+    files[JUSTIFICATIONS] = json.dumps({"schema": "forge-c/coding-rule-justifications/1", "justified": just,
+                                        "approved_deviation": False}, indent=1, sort_keys=True) + "\n"
+    dd += ["", "### Coding-rule findings justified by the author", "",
+           "Owner policy 2026-11-01: SWE.3 fixes or justifies each finding before freeze. A justification is the "
+           "author's, judged at inspection; it is not an approved deviation and MISRA compliance stays NOT CLAIMED.", ""]
+    dd += [f"- {j['rule']} in {j['function']} ({j['unit']}, {j['finding']}): {j['rationale']}" for j in just] or ["- none"]
     dd += ["", "## Resource usage", ""]
     for k in ("measure_elf", "stack_usage"):
         r = res[k]
@@ -387,6 +447,8 @@ def visit_design(ws: Path, model: str = "", **_k) -> dict:
     V.write_scoped(ws, files, "swe3_author")
     _pu  # noqa: B018 - parse_units is the format the gate reads (kept imported for readers)
     if res["cppcheck"]["status"] == "FAIL":  # CAPA-097: measured again here; open findings never freeze
-        return V.reply(ws, PHASE, "FAILED", [f"cppcheck: {x}" for x in res["cppcheck"]["issues"][:20]] or
-                       [f"cppcheck: status {res['cppcheck']['status']}"], None, artifacts=sorted(files))
+        open_, _just = coding_rule_findings(ws, res["cppcheck"]["issues"], us)
+        if open_ or not res["cppcheck"]["issues"]:
+            return V.reply(ws, PHASE, "FAILED", [f"cppcheck: {x}" for x in open_[:20]] or
+                           [f"cppcheck: status {res['cppcheck']['status']}"], None, artifacts=sorted(files))
     return V.reply(ws, PHASE, "PASS", [], None, artifacts=sorted(files))
