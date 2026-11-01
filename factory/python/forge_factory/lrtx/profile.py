@@ -235,6 +235,29 @@ def runtime_record(env: dict[str, str] | None = None) -> dict:
     return {"status": "RECORDED", **json.loads(p.read_text())}
 
 
+def served_model_issues(prof: dict, env: dict[str, str] | None = None, wait_s: float | None = None) -> list[str]:
+    """CAPA-081 (run WO-F014-SWE1-OBL-20261031-01): the work order was launched before the stack's llama-server was
+    healthy; the gateway refused the first calls and they used the one development repair pass. When this stack records
+    a llama-server, wait (bounded) for its health before anything starts; refuse if it never becomes healthy. Without a
+    recorded llama-server (no stack, Ollama-only profiles) nothing is checked."""
+    import time
+
+    rec = runtime_record(env)
+    pr = ((rec.get("processes") or {}).get("llama_server") or {}) if rec.get("status") == "RECORDED" else {}
+    if not (prof.get("runtime") or {}).get("llama_server") or not pr.get("health"):
+        return []
+    wait = float(wait_s if wait_s is not None else (prof["runtime"].get("model_ready_wait_s") or 120))
+    end = time.monotonic() + wait
+    while True:
+        try:
+            with urllib.request.urlopen(pr["health"], timeout=5):  # noqa: S310 - the stack's loopback health URL
+                return []
+        except OSError:
+            if time.monotonic() >= end:
+                return [f"MODEL_SERVER_NOT_READY:{pr['health']}"]
+            time.sleep(1)
+
+
 def select(profile_id: str, *, model: str, provider: str, code_model: str | None, acp_authors: str | None,
            acp_inspectors: str | None, env: dict[str, str] | None = None, require_network_denied: bool = True) -> dict:
     """All pre-launch checks; returns the provenance record (T007) or raises ProfileRefused."""
@@ -252,6 +275,8 @@ def select(profile_id: str, *, model: str, provider: str, code_model: str | None
     models = [model_identity(prof, m, env.get("FORGE_OLLAMA_URL", ""))
               for m in sorted({model, code_model, *role_models(prof).values()} - {None})]
     issues += [f"MODEL_IDENTITY_{m['status']}:{m['model']}" for m in models if m["status"] != "MATCH"]
+    if not issues:  # CAPA-081: nothing starts while the served model is not answering
+        issues += served_model_issues(prof, env)
     if issues:
         raise ProfileRefused(issues)
     record = {"id": prof["id"], "version": prof["version"], "status": prof["status"], "config": prof["_path"],

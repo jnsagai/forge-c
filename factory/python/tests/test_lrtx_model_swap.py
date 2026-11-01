@@ -265,3 +265,31 @@ def test_identity_accepts_the_reported_quantization_label_but_still_pins_the_dig
     tags["models"][0]["name"] = QWEN
     tags["models"][0]["details"]["quantization_level"] = "unknown"
     assert lp.model_identity(prof, QWEN, "http://o")["status"] == "MISMATCH"  # Qwen keeps its strict Q8_0 label
+
+
+def test_selection_waits_for_the_recorded_model_server_and_refuses_if_it_never_answers(tmp_path, monkeypatch):
+    """CAPA-081 (run -01): the work order started before llama-server was healthy."""
+    import http.server
+    import socket
+    import threading
+
+    prof = lp.load(PID)
+    root = tmp_path / "lrtx"
+    (root / "run").mkdir(parents=True)
+    with socket.socket() as sk:
+        sk.bind(("127.0.0.1", 0))
+        port = sk.getsockname()[1]
+    (root / "run/services.json").write_text(json.dumps({"processes": {"llama_server": {
+        "pid": 1, "health": f"http://127.0.0.1:{port}/health"}}}))
+    env = {"FORGE_LRTX_ROOT": str(root)}
+    issues = lp.served_model_issues(prof, env, wait_s=0.5)
+    assert issues == [f"MODEL_SERVER_NOT_READY:http://127.0.0.1:{port}/health"]
+    srv = http.server.HTTPServer(("127.0.0.1", port), type("H", (http.server.BaseHTTPRequestHandler,), {
+        "do_GET": lambda self: (self.send_response(200), self.end_headers(), self.wfile.write(b"{}")),
+        "log_message": lambda *a: None}))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        assert lp.served_model_issues(prof, env, wait_s=5) == []
+    finally:
+        srv.shutdown()
+    assert lp.served_model_issues(prof, {}, wait_s=0) == []  # no stack record: nothing to check
