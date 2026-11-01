@@ -206,6 +206,27 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
     return out
 
 
+def _coverage(cov: dict) -> tuple[list[str], list[str]]:
+    """CAPA-094 (run WO-F014-SWE4-OBL-20261101-L2, SWE4-05): llvm-cov reports no branch/MC/DC percentage (None) when it
+    counts no branch points or decisions (mcp/servers/tests.py: count 0); the report stated a 100% branch goal next to
+    'branch None%' and the inspector found the goal neither met nor deviated. Each measure is now stated as met, not met
+    (recorded as a finding) or not applicable."""
+    m = cov.get("metrics") or {}
+    lines, gaps = [], []
+    for label, key, what in (("statement/line", "line_pct", "lines"), ("branch", "branch_pct", "branch points"),
+                             ("MC/DC", "mcdc_pct", "MC/DC decisions")):
+        v = m.get(key)
+        if v is None:
+            lines.append(f"- {label}: not applicable - llvm-cov counted no {what} in the measured driver code "
+                         "(no percentage is defined; nothing is left uncovered)")
+        elif float(v) >= 100.0:
+            lines.append(f"- {label}: {v}% - goal met")
+        else:
+            lines.append(f"- {label}: {v}% - goal NOT met (recorded under Findings)")
+            gaps.append(f"COVERAGE_GOAL_NOT_MET: {label} {v}% (< 100%)")
+    return lines, gaps
+
+
 def _declared_kinds(ws: Path, ut: str) -> list[str]:
     ck = V._ckpt(ws, PHASE, f"test:{ut}")
     doc = json.loads(ck.read_text()).get("doc") if ck.is_file() else None
@@ -390,11 +411,13 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     md += ["", "Review status: " + ("the static-analysis findings above are OPEN coding-rule gaps of the SWE.3 code; "
                                     "SWE.4 cannot change that code and approves no deviation (deviation approval is the "
                                     "owner's)." if open_gaps else "no open static-analysis finding.")]
-    md += ["", "## Coverage", "", "Goal: 100% statement/branch of the driver code. Reported exactly as the tool reported "
-           f"it: status {cov['status']}; \"{cov['summary']}\"; metrics {json.dumps(cov.get('metrics') or {}, sort_keys=True)}.",
-           "", "## Results", "", f"run_unit: status {run['status']}; \"{run['summary']}\". validate_trace: status "
+    cov_lines, cov_gaps = _coverage(cov)
+    md += ["", "## Coverage", "", "Goal: 100% statement (line) coverage of the driver code, and 100% branch and MC/DC "
+           "coverage where the code has branch points or decisions. Reported exactly as the tool reported it: status "
+           f"{cov['status']}; \"{cov['summary']}\"; metrics {json.dumps(cov.get('metrics') or {}, sort_keys=True)}.", "",
+           *cov_lines, "", "## Results", "", f"run_unit: status {run['status']}; \"{run['summary']}\". validate_trace: status "
            f"{tr['status']}; \"{tr.get('summary', '')}\".", "", "## Findings", ""]
-    findings = [*run.get("issues", [])[:10], *tr.get("issues", [])[:10]]
+    findings = [*run.get("issues", [])[:10], *tr.get("issues", [])[:10], *cov_gaps]
     md += [f"- {f}" for f in findings] or ["none"]
     V.write_scoped(ws, {"workproducts/SWE.4/unit_verification_report.md": "\n".join(md) + "\n"}, "swe4_author")
     status = "PASS" if run["status"] == "PASS" else "FAILED"
