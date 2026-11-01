@@ -350,6 +350,27 @@ class Store:
         return {**checklist, "checks": [c for c in checklist["checks"]
                                         if c.get("applies_when") != "owner_trace_profile" or on]}
 
+    REFUSAL_LIMIT = 3
+
+    def inspector_refusal(self, phase: str, bl: dict) -> str | None:
+        """CAPA-085 (run WO-F014-SWE1-IWDG-20261101-02): the structured inspector refused the current baseline before
+        any model call (calls 0) with the same issues on its last REFUSAL_LIMIT replies. Such a refusal is
+        deterministic, records no inspection and so never counts as a rework cycle; re-inspecting repeats it without
+        bound (166 cycles in 4 min). Returns the first issue, else None. Failures after a model call (timeouts,
+        incomplete answers) keep the existing re-inspection path."""
+        p = self.workspace / ".forge-run/lrtx" / phase / "inspections.jsonl"
+        if not p.is_file():
+            return None
+        since = str(bl.get("frozen_at") or "")
+        rows = [json.loads(x) for x in p.read_text().splitlines() if x.strip()]
+        rows = [r for r in rows if str(r.get("at") or "") >= since]
+        tail = rows[-self.REFUSAL_LIMIT:]
+        if len(tail) < self.REFUSAL_LIMIT or any(r.get("status") != "FAILED" or r.get("calls") != 0 for r in tail):
+            return None
+        if len({json.dumps(r.get("issues") or [], sort_keys=True) for r in tail}) != 1 or not tail[0].get("issues"):
+            return None
+        return str(tail[0]["issues"][0])[:200]
+
     def gate(self, phase: str) -> dict:
         checklist = self.checklist(phase)
         max_cycles = int(checklist["policy"]["maximum_rework_cycles"])
@@ -368,6 +389,9 @@ class Store:
                 decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), stale
             elif last is None or last["baseline_hash"] != bl["baseline_hash"]:
                 decision, reason = "REINSPECT", "NO_INSPECTION_FOR_CURRENT_BASELINE"
+                refused = self.inspector_refusal(phase, bl)
+                if refused:
+                    decision, reason = "BLOCKED", f"INSPECTOR_REFUSED_REPEATEDLY:{refused}"
             elif "assessment_context" in checklist and last.get("checklist_sha256") != checklist["sha256"]:
                 decision, reason = "REINSPECT", "INSPECTION_ASSESSMENT_CONTEXT_CHANGED"
             elif last["verdict"] == "PASS":

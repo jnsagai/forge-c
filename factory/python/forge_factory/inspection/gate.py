@@ -468,12 +468,14 @@ def step_route(store: Store, phase: str) -> int:
         stuck = stuck_signature(store.workspace, phase, store.budget_start()) if high else None
         if high and unchanged_failed_inspection(store, phase):
             stuck = ("UNCHANGED_FAILED_INSPECTION",)
-        if stuck:
+        refused = g["decision"] == "BLOCKED" and str(g.get("reason", "")).startswith("INSPECTOR_REFUSED_REPEATEDLY:")
+        if stuck or refused:
             allowed = False  # Owner's stop-and-rethink direction: quota does not excuse a deterministic stall.
         result = {**g, "decision": "REWORK" if allowed else "BLOCKED",
                   "development_ladder": development.ladder(store.workspace, phase),
                   "reason": ("high-allowance development repair" if high else "one bounded development repair")
-                  if allowed else "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
+                  if allowed else f"STUCK: {g['reason']}; external diagnosis required" if refused else
+                  "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
                   "development repair exhausted; dependent continuation requires independently valid inputs"}
         _state(store.workspace, phase, {"step": "route", "gate": result})
         print(json.dumps(result))
