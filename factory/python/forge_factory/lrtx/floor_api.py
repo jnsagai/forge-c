@@ -192,7 +192,7 @@ def cloud_station(now: float) -> dict | None:
                                            "today": _api_zero(), "hour": _api_zero(), "priced": False})
         u = dict(r.get("usage") or {})
         rate = rates.get(r["model"])
-        if u.get("cost_usd") is None and rate and u:
+        if u.get("cost_usd") is None and rate and u and u.get("billing") != "account":
             cached = int(u.get("cached_prompt_tokens") or 0)
             u["cost_usd"] = ((int(u.get("prompt_tokens") or 0) - cached) * rate.get("input", 0) + cached * rate.get("cached", 0)
                              + int(u.get("completion_tokens") or 0) * rate.get("output", 0)) / 1e6
@@ -213,7 +213,8 @@ def cloud_station(now: float) -> dict | None:
     for m in models.values():
         m["last_s"] = round(now - m.pop("last_ts")) if m.get("last_ts") else None
     return {"kind": "cloud_api", "available": True, "models": sorted(models.values(), key=lambda x: x["model"]),
-            "cost_today_usd": round(sum(m["today"]["cost_usd"] for m in models.values()), 2), "claude_mode": claude_mode()}
+            "cost_today_usd": round(sum(m["today"]["cost_usd"] for m in models.values()), 2), "claude_mode": claude_mode(),
+            "inspector_mode": claude_mode("inspector")}
 
 
 def _api_zero() -> dict:
@@ -224,47 +225,53 @@ def _api_zero() -> dict:
 CLAUDE_MODES = ("api", "account")
 
 
-def claude_mode_file() -> Path:
-    return state_root() / "cloud-bridge/claude-mode.json"
+MODE_TARGETS = {"claude": "claude-mode.json", "inspector": "inspector-mode.json"}  # author (Anthropic), inspector (OpenAI)
 
 
-def claude_mode() -> dict:
+def claude_mode_file(target: str = "claude") -> Path:
+    return state_root() / "cloud-bridge" / MODE_TARGETS[target]
+
+
+def claude_mode(target: str = "claude") -> dict:
     """Owner 2026-11-02 ("Claude API/Account mode"): which way the cloud line's Claude calls go. The bridge reads the same
     file per call; missing or unreadable is `api` (the authorized default)."""
     try:
-        d = json.loads(claude_mode_file().read_text())
+        d = json.loads(claude_mode_file(target).read_text())
     except (OSError, ValueError):
         return {"mode": "api", "since": None}
     mode = d.get("mode") if isinstance(d, dict) and d.get("mode") in CLAUDE_MODES else "api"
     return {"mode": mode, "since": d.get("since") if isinstance(d, dict) else None}
 
 
-def log_claude_mode_attempt(code: int, why: str, client: str, origin: str | None, host: str | None) -> None:
+def log_claude_mode_attempt(code: int, why: str, client: str, origin: str | None, host: str | None,
+                            target: str = "claude") -> None:
     """A refused switch is logged too (no body, no cookies), so a control that does nothing can be diagnosed."""
     d = state_root() / "cloud-bridge"
     if not d.is_dir():
         return
     rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "refused": code, "why": why, "client": client[:64],
+           "target": target,
            "origin": (origin or "")[:120], "host": (host or "")[:120]}
     with (d / "claude-mode-changes.jsonl").open("a") as log:
         log.write(json.dumps(rec, sort_keys=True) + "\n")
 
 
-def set_claude_mode(mode: str, client: str) -> dict:
+def set_claude_mode(mode: str, client: str, target: str = "claude") -> dict:
     """The floor's only write: the Claude mode, one of two values; every switch is logged (who, from, to, when)."""
     if mode not in CLAUDE_MODES:
         raise ValueError("CLAUDE_MODE_INVALID")
     if not (state_root() / "cloud-bridge").is_dir():
         raise FileNotFoundError("NO_CLOUD_LINE")
-    before = claude_mode()["mode"]
+    before = claude_mode(target)["mode"]
     now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    f = claude_mode_file()
+    f = claude_mode_file(target)
     tmp = f.with_suffix(".tmp")
     tmp.write_text(json.dumps({"schema": "forge-c/claude-mode/1", "mode": mode, "since": now}) + "\n")
     os.replace(tmp, f)
     with (f.parent / "claude-mode-changes.jsonl").open("a") as log:
-        log.write(json.dumps({"ts": now, "from": before, "to": mode, "client": client[:64]}, sort_keys=True) + "\n")
-    return claude_mode()
+        log.write(json.dumps({"ts": now, "from": before, "to": mode, "client": client[:64], "target": target},
+                             sort_keys=True) + "\n")
+    return claude_mode(target)
 
 
 def station(now: float) -> dict:

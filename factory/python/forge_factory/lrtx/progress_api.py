@@ -273,23 +273,25 @@ class Handler(BaseHTTPRequestHandler):
         """The floor's only control (owner 2026-11-02): the cloud line's Claude mode, `api` or `account`. A JSON body,
         the control header and (when the browser sends one) a same-host Origin; nothing else is writable."""
         u = urlparse(self.path)
-        if u.path != "/claude-mode":
+        target = {"/claude-mode": "claude", "/inspector-mode": "inspector"}.get(u.path)
+        if target is None:
             self.send_error(404)
             return
         from .floor_api import log_claude_mode_attempt, set_claude_mode
 
         def refuse(code: int, why: str) -> None:
-            log_claude_mode_attempt(code, why, self.client_address[0], self.headers.get("Origin"), self.headers.get("Host"))
+            log_claude_mode_attempt(code, why, self.client_address[0], self.headers.get("Origin"), self.headers.get("Host"),
+                                    target)
             self.send_error(code, why)
 
         # the custom header makes a cross-site request need a CORS preflight, which this server never grants
-        if self.headers.get("X-Forge-Control") != "claude-mode":
+        if self.headers.get("X-Forge-Control") != u.path.lstrip("/"):
             return refuse(403, "control header missing")
         n = int(self.headers.get("Content-Length") or 0)
         if not 0 < n <= 200 or "application/json" not in (self.headers.get("Content-Type") or ""):
             return refuse(400, "JSON body required")
         try:
-            body = set_claude_mode(str(json.loads(self.rfile.read(n)).get("mode")), self.client_address[0])
+            body = set_claude_mode(str(json.loads(self.rfile.read(n)).get("mode")), self.client_address[0], target)
         except (ValueError, AttributeError):
             return refuse(400, "mode must be api or account")
         except FileNotFoundError:

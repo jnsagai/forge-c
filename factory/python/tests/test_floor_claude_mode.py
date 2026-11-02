@@ -73,3 +73,29 @@ def test_the_cloud_station_shows_the_mode_and_account_calls_without_api_cost(tmp
     m = st["models"][0]
     assert st["claude_mode"]["mode"] == "account" and st["cost_today_usd"] == 0.5
     assert m["today"]["calls"] == 2 and m["today"]["account_calls"] == 1 and m["today"]["list_cost_usd"] == 0.25
+
+
+def test_the_inspector_has_its_own_mode_switch_and_account_calls_are_not_priced(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("FORGE_FLOOR_API_PRICES", json.dumps({"gpt-6.1-sol": {"input": 2.0, "cached": 0.1, "output": 10.0}}))
+    (tmp_path / "cloud-bridge").mkdir()
+    srv, url = _serve()
+    try:
+        req = urllib.request.Request(url + "/inspector-mode", data=b'{"mode": "account"}', method="POST", headers={
+            "Content-Type": "application/json", "X-Forge-Control": "inspector-mode"})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            assert json.loads(r.read())["mode"] == "account"
+        assert _post(url, {"mode": "account"}, {"X-Forge-Control": "inspector-mode"})[0] == 403  # header names its target
+    finally:
+        srv.shutdown()
+    assert F.claude_mode("inspector")["mode"] == "account" and F.claude_mode()["mode"] == "api"
+    import time
+    now = time.time()
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - 60))
+    rows = [{"ts": ts, "model": "gpt-6.1-sol", "backend": "openai", "ok": True, "usage": {"prompt_tokens": 1000000, "completion_tokens": 0}},
+            {"ts": ts, "model": "gpt-6.1-sol", "backend": "codex", "ok": True,
+             "usage": {"prompt_tokens": 1000000, "completion_tokens": 0, "billing": "account"}}]
+    (tmp_path / "cloud-bridge/calls.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+    st = F.cloud_station(now)
+    assert st["inspector_mode"]["mode"] == "account" and st["models"][0]["today"]["account_calls"] == 1
+    assert st["cost_today_usd"] == 2.0  # only the API call is priced at the display rate

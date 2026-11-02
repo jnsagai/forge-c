@@ -392,34 +392,44 @@ function apiTile(m) {
     <span class="n">last hour: ${fmt(h.calls)} calls · ${fmt(h.prompt + h.completion)} tokens${m.priced ? ` · $${h.cost_usd.toFixed(2)}` : ""}${m.last_s != null ? ` · last call ${m.last_s < 90 ? m.last_s + " s" : Math.round(m.last_s / 60) + " min"} ago` : ""}</span></div>`;
 }
 // owner 2026-11-02 ("Claude API/Account mode"): the floor's only control - where the cloud line's Claude calls go
-let modeArm = null, modeMsg = "";  // two taps confirm a switch (some phone browsers silently block confirm())
-function modeTile(cm) {
-  if (!cm) return "";
-  const armed = modeArm && modeArm.until > Date.now() ? modeArm.mode : null;
-  const b = (m, label) => `<button class="line-tab${cm.mode === m ? " on" : ""}" aria-pressed="${cm.mode === m}" data-claude-mode="${m}">${armed === m ? "Tap again: " + label : label}</button>`;
-  return `<div class="kpi"><span class="label">Claude mode</span><div style="display:flex;gap:6px;margin:6px 0">${b("api", "API")}${b("account", "Account")}</div>
-    <span class="n">${cm.mode === "account" ? "structured calls use the owner's Claude account (no API charge); tool calls stay on the API" : "all Claude calls use the Anthropic API (billed)"}${cm.since ? ` · since ${esc(cm.since.slice(11, 16))} UTC` : ""}</span>${modeMsg ? `<span class="n late">${esc(modeMsg)}</span>` : ""}</div>`;
+let modeArm = null, modeMsg = {};  // two taps confirm a switch (some phone browsers silently block confirm())
+const MODE_ROWS = [
+  {target: "claude", key: "claude_mode", label: "Claude (author)", acct: "the owner's Claude account", api: "Anthropic API"},
+  {target: "inspector", key: "inspector_mode", label: "gpt-6.1-sol (inspector)", acct: "the owner's ChatGPT login (Codex CLI)", api: "OpenAI API"}];
+function modeTile(st) {
+  const rows = MODE_ROWS.filter((r) => st[r.key]);
+  if (!rows.length) return "";
+  const armed = modeArm && modeArm.until > Date.now() ? modeArm : null;
+  const row = (r) => {
+    const cm = st[r.key];
+    const b = (m, label) => `<button class="line-tab${cm.mode === m ? " on" : ""}" aria-pressed="${cm.mode === m}" data-mode-target="${r.target}" data-mode="${m}">${armed && armed.target === r.target && armed.mode === m ? "Tap again: " + label : label}</button>`;
+    return `<span class="n" style="margin-top:6px">${r.label}</span><div style="display:flex;gap:6px;margin:4px 0">${b("api", "API")}${b("account", "Account")}</div>
+      <span class="n">${cm.mode === "account" ? `structured calls use ${r.acct} (no API charge); tool calls stay on the API` : `all calls use the ${r.api} (billed)`}${cm.since ? ` · since ${esc(cm.since.slice(11, 16))} UTC` : ""}</span>${modeMsg[r.target] ? `<span class="n late">${esc(modeMsg[r.target])}</span>` : ""}`;
+  };
+  return `<div class="kpi"><span class="label">Model access</span>${rows.map(row).join("")}</div>`;
 }
 document.addEventListener("click", async (e) => {
-  const t = e.target.closest("[data-claude-mode]");
+  const t = e.target.closest("[data-mode-target]");
   if (!t) return;
   e.stopPropagation();
-  const mode = t.dataset.claudeMode;
-  const cur = DATA && DATA.kpis && DATA.kpis.station && DATA.kpis.station.claude_mode;
+  const target = t.dataset.modeTarget, mode = t.dataset.mode;
+  const r0 = MODE_ROWS.find((r) => r.target === target);
+  const cur = DATA && DATA.kpis && DATA.kpis.station && DATA.kpis.station[r0.key];
   if (cur && cur.mode === mode) return;
-  if (!modeArm || modeArm.mode !== mode || modeArm.until < Date.now()) {
-    modeArm = {mode, until: Date.now() + 10000}; modeMsg = ""; render(); setTimeout(() => { modeArm = null; render(); }, 10500); return;
+  if (!modeArm || modeArm.target !== target || modeArm.mode !== mode || modeArm.until < Date.now()) {
+    modeArm = {target, mode, until: Date.now() + 10000}; modeMsg[target] = ""; render(); setTimeout(() => { modeArm = null; render(); }, 10500); return;
   }
   modeArm = null;
+  const path = target + "-mode";
   try {
-    const r = await fetch("claude-mode", {method: "POST", headers: {"Content-Type": "application/json", "X-Forge-Control": "claude-mode"}, body: JSON.stringify({mode})});
-    modeMsg = r.ok ? "" : `not changed (HTTP ${r.status})`;
-  } catch (err) { modeMsg = "not changed (" + err.message + ")"; }
+    const r = await fetch(path, {method: "POST", headers: {"Content-Type": "application/json", "X-Forge-Control": path}, body: JSON.stringify({mode})});
+    modeMsg[target] = r.ok ? "" : `not changed (HTTP ${r.status})`;
+  } catch (err) { modeMsg[target] = "not changed (" + err.message + ")"; }
   load();
 }, true);
 function stationTile(st) {
   if (!st) return "";
-  if (st.kind === "cloud_api") return modeTile(st.claude_mode) + ((st.models || []).map(apiTile).join("") ||
+  if (st.kind === "cloud_api") return modeTile(st) + ((st.models || []).map(apiTile).join("") ||
     `<div class="kpi"><span class="label">Cloud APIs</span><span class="v" style="font-size:22px">no call today</span></div>`);
   const model = st.model ? (st.model.toLowerCase().includes("ornith") ? "Ornith 35B" : st.model.split(":")[0].replace("qwen", "Qwen")) : "—";
   if (!st.available) return `<div class="kpi"><span class="label">GPU station</span><span class="v" style="font-size:22px">no reading</span><span class="n">loaded: ${esc(model)}${st.age_s != null ? ` · last sample ${Math.round(st.age_s / 60)} min ago` : ""}</span></div>`;
