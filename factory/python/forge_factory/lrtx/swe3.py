@@ -104,7 +104,23 @@ def _defines(ws: Path, fields: list[str]) -> str:
 
 
 def _sig(f: dict) -> str:
-    return f"static inline {f['returns']} {f['name']}({', '.join(p['type'] + ' ' + p['name'] for p in f['params']) or 'void'})"
+    from .swe2 import _param
+
+    return f"static inline {f['returns']} {f['name']}({', '.join(_param(p) for p in f['params']) or 'void'})"
+
+
+def _access_rule(ws: Path, fields: list[str]) -> str:
+    """How a unit reaches its registers: the register-block array, or (instance mode) the caller's typed instance."""
+    from ..layer import ll_instance
+
+    i, inst = _ident(ws), ll_instance(ws)
+    if inst is None:
+        return f"the register-block array {i['block']} indexed as {i['block']}[LL_{i['pfx']}_<REG>_OFFSET / 4U]"
+    regs = dict.fromkeys(f.split(".")[0] for f in fields)
+    members = ", ".join(f"{r} as {inst['parameter']}->{inst['members'][r]}" for r in regs if r in inst["members"])
+    return (f"the caller-supplied instance {inst['parameter']} ({inst['type_name']} * of the pinned device header "
+            f"{inst['device_header']}): access {members or 'each register as ' + inst['parameter'] + '-><MEMBER>'}, "
+            "never a register-block array, the instance macro or an address")
 
 
 def code_packet(ws: Path, u: dict, model: str, findings=None, previous=None) -> dict:
@@ -120,8 +136,8 @@ def code_packet(ws: Path, u: dict, model: str, findings=None, previous=None) -> 
         + (f" value {e['value']}" if e.get("value") is not None else "") for e in cases)
     defs = _defines(ws, f["fields"])
     instr = (f"Implement software unit {u['id']}: the single function `{_sig(f)}` of the header-only "
-             f"{i['header']} - {f['operation']}. Use ONLY the generated defines listed below and the register-block "
-             f"array {i['block']} indexed as {i['block']}[LL_{i['pfx']}_<REG>_OFFSET / 4U]: no integer-to-pointer "
+             f"{i['header']} - {f['operation']}. Use ONLY the generated defines listed below and "
+             f"{_access_rule(ws, f['fields'])}: no integer-to-pointer "
              "casts, no loops or waiting, no other function calls, no static state. A field update reads the register "
              "once, clears the field with its _MSK define, ORs the new value shifted by its _POS define and masked, "
              "then writes once; a write-only key register is written whole (never read). A query returns 1U when the "
@@ -173,14 +189,17 @@ def _compile_alone(ws: Path, code: str, function: str) -> list[str]:
         candidate = hdr[:definition.start()] + code + hdr[end:]
     else:
         candidate = hdr.replace(marker, code + "\n" + marker, 1)
+    from ..layer import instance_flags, ll_instance
+
+    inst = ll_instance(ws)
     with tempfile.TemporaryDirectory() as td:
         h = Path(td) / "unit.h"
         h.write_text(candidate)
         c = Path(td) / "unit.c"
-        c.write_text('#include "unit.h"\nvolatile uint32_t ' + _ident(ws)["block"] + "[LL_" + _ident(ws)["pfx"]
-                     + "_REG_COUNT];\n")
-        r = subprocess.run(["gcc", "-std=c99", "-Wall", "-Wextra", "-Wconversion", "-Werror", "-fsyntax-only", str(c)],
-                           capture_output=True, text=True, cwd=td)
+        c.write_text('#include "unit.h"\n' if inst is not None else '#include "unit.h"\nvolatile uint32_t '
+                     + _ident(ws)["block"] + "[LL_" + _ident(ws)["pfx"] + "_REG_COUNT];\n")
+        r = subprocess.run(["gcc", "-std=c99", "-Wall", "-Wextra", "-Wconversion", "-Werror", "-fsyntax-only",
+                            *instance_flags(ws, host=True), str(c)], capture_output=True, text=True, cwd=td)
     return [f"compile: {ln.split(' error: ', 1)[1][:160]}" for ln in r.stderr.splitlines() if " error: " in ln][:6] \
         or ([f"compile failed: {r.stderr.strip()[:160]}"] if r.returncode else [])
 
@@ -417,8 +436,14 @@ def visit_design(ws: Path, model: str = "", **_k) -> dict:
     res["cppcheck"] = T.call(ws, "forge-analysis-mcp", "cppcheck", {}, "swe3-author", PHASE)
     res["clang_analyze"] = T.call(ws, "forge-analysis-mcp", "clang_analyze", {}, "swe3-author", PHASE)
     i = _ident(ws)
+    from ..layer import ll_instance
+
+    inst = ll_instance(ws)
+    access = ("extern volatile register-block array" if inst is None else
+              f"the caller-supplied {inst['type_name']} instance {inst['parameter']} of the pinned device header "
+              f"{inst['device_header']}")
     dd = ["# Detailed design", "", f"SWC_LL is implemented by {i['header']} as {len(us)} static inline functions, one "
-          "software unit each, on the generated register map (extern volatile register-block array; no state, no "
+          f"software unit each, on the generated register map ({access}; no state, no "
           "waiting). Behaviour per unit: workproducts/SWE.3/unit_specifications.md.", "",
           "| Function | Purpose | Registers/bits | SWR IDs |", "| --- | --- | --- | --- |"]
     dd += [f"| {u['function']['name']} | {u['function']['operation']} | {', '.join(u['function']['fields']) or '-'} | "

@@ -406,3 +406,125 @@ def test_structured_swe2_interface_task_in_instance_mode(inst_ws, monkeypatch):
     # SEPARATE DEFECT (not changed here, reported): validate_design asks for a caller-bounded polling loop whenever a
     # function returns uint32_t, so the value read LL_CRC_Read_IDR draws an invented polling step.
     assert rep["status"] == "FAILED" and any("polling loop" in i for i in rep["issues"]), rep
+
+
+# ---- stage 4: register map and SWE.3 -------------------------------------------------------------------------------
+WRITE_UNIT = """/**
+ * @brief Writes the caller value to the independent data register.
+ * @unit SWU-LL-01
+ * @spec USPEC-LL-01-01
+ */
+static inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)
+{
+    CRCx->IDR = InData;
+}"""
+READ_UNIT = """/**
+ * @brief Returns the independent data register.
+ * @unit SWU-LL-02
+ * @spec USPEC-LL-02-01
+ */
+static inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)
+{
+    uint32_t value = CRCx->IDR;
+    return value;
+}"""
+
+
+def _swe2(ws):
+    """SWE.1 fixture + the rendered SWE.2 products and the VALID structured interface checkpoint SWE.3 reads."""
+    from forge_factory.lrtx import swe2
+
+    _swe1(ws)
+    for rel, text in swe2.render(ws, swe2.normalize_interfaces(ws, IFACE), DESIGN).items():
+        (ws / rel).parent.mkdir(parents=True, exist_ok=True)
+        (ws / rel).write_text(text)
+    ck = ws / ".forge-run/lrtx/SWE.2/packets/interfaces.json"
+    ck.parent.mkdir(parents=True, exist_ok=True)
+    ck.write_text(json.dumps({"status": "VALID", "doc": IFACE}))
+    return ws
+
+
+def _code(ws, units=(WRITE_UNIT, READ_UNIT)):
+    """The generated header with the fixture units at the generator's marker (as assemble_code places them)."""
+    from forge_factory.inspection import regmap
+
+    assert regmap.generate(ws)["status"] == "PASS"
+    hdr = ws / "software/ll/stm32n6xx_ll_crc.h"
+    text = hdr.read_text()
+    marker = regmap.functions_marker(ws)
+    hdr.write_text(text.replace(marker, "\n\n".join(units) + "\n\n" + marker, 1))
+    return hdr
+
+
+def test_generated_header_uses_the_pinned_device_header_only_in_instance_mode(inst_ws, legacy_ws):
+    from forge_factory.inspection import regmap
+
+    regs = [{"name": "CRC_IDR", "source": "inputs/sections/RM0486/26.4.2_x.md", "offset": 4, "fields": {"IDR": (31, 0)}}]
+    inst, legacy = regmap.render(regs, inst_ws), regmap.render(regs, legacy_ws)
+    assert '#include "forge_crc_device.h"' in inst and "ll_crc_regs" not in inst and "REG_COUNT" not in inst
+    assert "extern volatile uint32_t ll_crc_regs[LL_CRC_REG_COUNT];" in legacy and "forge_crc_device.h" not in legacy
+    assert "#define LL_CRC_REG_COUNT 256U" in legacy
+    assert "#define LL_CRC_IDR_IDR_MSK 0xFFFFFFFFU" in inst and "#define LL_CRC_IDR_IDR_MSK 0xFFFFFFFFU" in legacy
+
+
+def test_swe3_unit_task_validates_and_compiles_the_instance_signature(inst_ws, monkeypatch):
+    from forge_factory.lrtx import swe3
+
+    ws = _swe2(inst_ws)
+    _code(ws, units=())
+    us = swe3.units(ws)
+    assert swe3._sig(us[0]["function"]) == "static inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)"
+    doc = {"code": WRITE_UNIT, "spec_items": [{"id": "USPEC-LL-01-01", "behaviour": "writes the caller value to IDR",
+                                               "traces": ["SWR-001"]}]}
+    assert swe3.validate_code(ws, doc, us[0]) == []
+    wrong = {**doc, "code": WRITE_UNIT.replace("CRCx->IDR = InData;", "CRCx->DATA = InData;")}
+    assert any(f.startswith("compile:") for f in swe3.validate_code(ws, wrong, us[0]))
+    legacy_sig = {**doc, "code": WRITE_UNIT.replace("CRC_TypeDef *CRCx, uint32_t InData", "uint32_t InData")}
+    assert "signature must be exactly: static inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)" in \
+        swe3.validate_code(ws, legacy_sig, us[0])
+    seen = []
+    real = swe3.S.packet
+    monkeypatch.setattr(swe3.S, "packet", lambda **k: seen.append(k["instructions"]) or real(**k))
+    swe3.code_packet(ws, us[0], "m")
+    assert "CRC_IDR as CRCx->IDR" in seen[0] and "register-block array ll_crc_regs indexed" not in seen[0]
+
+
+def test_swe3_checks_accept_the_instance_header_and_keep_the_guideline(inst_ws):
+    from forge_factory.inspection.guideline import check_workspace
+    from forge_factory.inspection.implementation import check_implementation
+    from forge_factory.inspection.regmap import check_regmap
+
+    ws = _swe2(inst_ws)
+    _code(ws)
+    reg = check_regmap(ws)
+    assert reg["verdict"] == "PASS" and reg["stats"]["layout_compile"] == "PASS", reg
+    assert reg["stats"]["defines_checked"] > 0
+    impl = check_implementation(ws)
+    assert impl["verdict"] == "PASS", impl
+    hdr = ws / "software/ll/stm32n6xx_ll_crc.h"
+    hdr.write_text(hdr.read_text().replace("LL_CRC_IDR_IDR_POS 0U", "LL_CRC_IDR_IDR_POS 1U"))
+    assert check_regmap(ws)["verdict"] == "FAIL"  # the RM-checked defines stay checked in instance mode
+    # OPEN OWNER DECISION (reported, not changed): the declared API contract names CRCx/InData; the Cube2 guideline
+    # subset GL-ARG-01 (parameters in lower case, major) still reports them.
+    g = check_workspace(ws)
+    assert {v["rule"] for v in g["violations"] if v["severity"] == "major"} == {"GL-ARG-01"}, g["violations"]
+
+
+def test_swe3_header_from_the_legacy_path_is_unchanged(legacy_ws):
+    from forge_factory.inspection import regmap
+
+    _swe1(legacy_ws)
+    from forge_factory.lrtx import swe2
+
+    legacy_iface = {**IFACE, "functions": [{**f, "returns": r, "params": p} for f, r, p in zip(IFACE["functions"], (
+        "void", "uint32_t"), ([{"name": "value", "type": "uint32_t"}], []), strict=True)], "calls": [
+        {"case": "WRITE_IDR", "function": "LL_CRC_Write_IDR", "args": ["0x12345678U"]},
+        {"case": "READ_IDR", "function": "LL_CRC_Read_IDR", "args": []}]}
+    for rel, text in swe2.render(legacy_ws, legacy_iface, DESIGN).items():
+        (legacy_ws / rel).parent.mkdir(parents=True, exist_ok=True)
+        (legacy_ws / rel).write_text(text)
+    assert regmap.generate(legacy_ws)["status"] == "PASS"
+    text = (legacy_ws / "software/ll/stm32n6xx_ll_crc.h").read_text()
+    assert "extern volatile uint32_t ll_crc_regs[LL_CRC_REG_COUNT];" in text and "forge_crc_device" not in text
+    md = (legacy_ws / swe2.ARCH).read_text()
+    assert "Register block: `extern volatile uint32_t ll_crc_regs[];`" in md and "register-array access" in md
