@@ -1110,3 +1110,13 @@ reproducers:
     operations: [lrtx/swe5.validate_file, lrtx/swe4.validate_test, lrtx/swe6.validate_scenarios]
     root_cause: "The integration test indexed the register block by the byte offset (block[LL_IWDG_PR_OFFSET]); it passed validation, failed on correct code and the triage filed a wrong CODE defect (DEF-001)."
     remedy: "The structured test validators reject block[LL_<P>_<REG>_OFFSET] without / 4U before any tool run."
+  - id: RPR-104
+    script: rpr104_brownfield_swe1_scope_drops_injection.py
+    sha256: 32aabdea160bd3bacd0c9007ae2d4e6b6c2cf5d45ef87a8636962c581f9acb76
+    symptom_signature: "a brownfield workflow graph scoped to SWE.1 has no delivery_inject node"
+    observed_in: "Fabro run WO-F014-SWE1-CRCK-20261101-L9 on Omniverse2 2026-11-02, brownfield ST CRC IDR, --stop-after SWE.1"
+    baseline_revision: a4c2208173a04bc9bd5ad9542dd87c2b0cfeb7a1
+    error_codes: []
+    operations: [workflow/builder (stop_after), brownfield/inject]
+    root_cause: "The delivery_inject node was built only with SWE.2, so a brownfield graph scoped to SWE.1 dropped it; SWE.1 passed without injection.json and the SWE.2 resume was refused (RESUME_RECORD_UNREADABLE:injection.json)."
+    remedy: "A brownfield graph whose last phase is SWE.1 runs delivery_inject after the SWE.1 inspection gate."
