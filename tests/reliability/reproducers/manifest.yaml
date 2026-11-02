@@ -1090,3 +1090,23 @@ reproducers:
     operations: [lrtx/swe4.visit_report]
     root_cause: "The generated SWE.4 report listed 'none declared: error' for LL accessors without error behaviour; the inspector read it as missing error tests and failed SWE4-02; no test rework can change the report."
     remedy: "Each test kind without a test is stated NOT COVERED, or not applicable with the deterministic reason (no cited requirement states an error behaviour and no error status is returned; no value is taken)."
+  - id: RPR-102
+    script: rpr102_status_note_routed_to_every_test_file.py
+    sha256: f10e2dc111000d0f520b0538bb62485a90a558149b673c1df394ac8756894e74
+    symptom_signature: "a visit status note (defect filed) is routed to every SWE.5 test file as a repair finding"
+    observed_in: "Fabro run WO-F014-SWE5-IWDG-20261101-L5 on Omniverse2 2026-11-02, IWDG LL greenfield SWE.5 resumed from WO-F014-SWE4-IWDG-20261101-L5"
+    baseline_revision: c5e27afc2a59f567b9dddaa662a65fb96bfc2ca8
+    error_codes: []
+    operations: [lrtx/swe4, lrtx/swe5, lrtx/swe6 rework routing]
+    root_cause: "The visit status note 'defect filed: DEF-001' names no file; routed as a finding it reached every SWE.5 file and the passing target test was re-authored (about 10 minutes per call) until the order was cancelled."
+    remedy: "visit.routable drops status notes before the SWE.4/5/6 routing."
+  - id: RPR-103
+    script: rpr103_byte_offset_register_index.py
+    sha256: d61c4ab1e45bde46343ee6863adf4728f77fe57e013166cf6d78799dd517b4f5
+    symptom_signature: "a structured test indexing the register block by a byte offset passes validation"
+    observed_in: "Fabro run WO-F014-SWE5-IWDG-20261101-L5 on Omniverse2 2026-11-02, IWDG LL greenfield SWE.5"
+    baseline_revision: c5e27afc2a59f567b9dddaa662a65fb96bfc2ca8
+    error_codes: []
+    operations: [lrtx/swe5.validate_file, lrtx/swe4.validate_test, lrtx/swe6.validate_scenarios]
+    root_cause: "The integration test indexed the register block by the byte offset (block[LL_IWDG_PR_OFFSET]); it passed validation, failed on correct code and the triage filed a wrong CODE defect (DEF-001)."
+    remedy: "The structured test validators reject block[LL_<P>_<REG>_OFFSET] without / 4U before any tool run."
