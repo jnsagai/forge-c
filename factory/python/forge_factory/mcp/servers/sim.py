@@ -78,7 +78,10 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
     from ...brownfield.cmsis import target_flags
     from ...delivery_first import include_flags
 
+    from ...layer import instance_flags
+
     incs += target_flags(ws) + include_flags(ws)  # pinned target adapter, explicit work-order selection
+    incs += instance_flags(ws, host=False)  # instance mode: the pinned device header (CRC -> its secure base)
     from ... import simulation_performance as performance
 
     budget = performance.selected(ws)

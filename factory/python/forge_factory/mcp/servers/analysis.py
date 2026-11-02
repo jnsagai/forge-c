@@ -36,11 +36,18 @@ def srcs(ctx: ToolContext) -> list[str]:
     return out
 
 
-def incs(ctx: ToolContext) -> list[str]:
+def incs(ctx: ToolContext, cppcheck: bool = False) -> list[str]:
     from ...brownfield.cmsis import host_flags
+    from ...layer import instance_flags
 
+    # instance mode: the pinned device/API headers are system headers for the clang tools; cppcheck reads them for the
+    # types and reports nothing located in them (pinned inputs, not authored code). [] for every other work order.
+    inst = instance_flags(ctx.workspace, host=False)
+    if inst and cppcheck:
+        inst = ["-I", inst[1], f"--suppress=*:{inst[1]}/*"]
     # feature 008 (ST pilot): a CMSIS delivery is analysed on the host device map (the core headers are Arm-only)
-    return host_flags(ctx.workspace) + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()]
+    return host_flags(ctx.workspace) + inst + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS
+                                               if (ctx.workspace / d).is_dir()]
 
 
 def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
@@ -51,7 +58,7 @@ def cppcheck(ctx: ToolContext, a: AnalyzeIn) -> dict:
         return result(ctx, "BLOCKED", "no sources", issues=["NO_SOURCES"], tool="cppcheck")
     # No --inline-suppr: a suppression comment written by an AI agent is a self-granted MISRA deviation and is ignored.
     argv = ["cppcheck", "--xml", "--xml-version=2", "--enable=warning,style,performance,portability",
-            "--std=c11", "--error-exitcode=0", f"--addon={MISRA_ADDON}", *incs(ctx), *files]
+            "--std=c11", "--error-exitcode=0", f"--addon={MISRA_ADDON}", *incs(ctx, cppcheck=True), *files]
     r = run_argv(argv, ctx.workspace, 170, ALLOW, mem_mb=4096)
     issues, misra_hits, general = [], set(), 0
     frozen, frozen_found = frozen_paths(ctx.workspace), []

@@ -88,8 +88,11 @@ def includes(ctx: ToolContext, profile: str = "target-cm55-gcc") -> list[str]:
     from ...delivery_first import include_flags
 
     # feature 008 (ST pilot): a CMSIS delivery needs the vendor device headers (target) or the host device map (host)
+    from ...layer import instance_flags
+
     vendor = target_flags(ctx.workspace) if profile.startswith("target") else host_flags(ctx.workspace)
-    return (vendor + include_flags(ctx.workspace)
+    # instance mode: the pinned device header as a system header (the host profiles already define FORGE_HOST_BUILD)
+    return (vendor + include_flags(ctx.workspace) + instance_flags(ctx.workspace, host=False)
             + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()])
 
 
