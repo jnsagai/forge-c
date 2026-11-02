@@ -9,6 +9,15 @@ Test cases (agent-written, one per requirement, tagged with its SWR id) call the
     Driver Static RAM Should Be At Most    64                 # measured .data+.bss (bytes)
     Driver Stack Should Be At Most    128                     # worst-case call chain from gcc -fcallgraph-info=su
 
+Register-access log (owner 2026-11-02): the peripheral model records every register read/write of the last run with
+the phase the scenario set with FORGE_ACCESS_PHASE(p) (forge_target_test.h; phase 0 = from reset until the first
+FORGE_ACCESS_PHASE). A prohibition is verified on that log, never on final register contents:
+
+    Register Accesses Before First Call Should Be Empty       # no access in phase 0; FORGE_ACCESS_PHASE(1U)
+                                                              # directly before the first LL/HAL call
+    Register Accesses In Phase Should Be Empty    2           # no access while phase 2 was set
+    Register Access Log Should Not Contain    phase=2    access=W    offset=0x018    # no matching entry
+
 Scenario C files live in software/tests/software/ and use forge_target_test.h (TCHECK, mailbox). `scenario` is
 "default" (RCC_SR ready flags follow RCC_CR enable bits) or "never_ready" (waits must time out).
 Results are simulated target evidence (behavioural RCC model), not silicon verification.
@@ -44,6 +53,7 @@ class ForgeTarget:
         self.last: dict | None = None
         self.last_name = ""
         self.last_src: Path | None = None
+        self.last_accesses: list[dict] | None = None
 
     def _scenario_file(self, source: str) -> Path:
         p = Path(source)
@@ -71,7 +81,10 @@ class ForgeTarget:
         res, _out = run_image(renode, elf, scenario, self.wd, self.ws)
         if res is None or not res["magic_ok"] or not res["done"]:
             raise AssertionError(f"{src.name} [{scenario}] produced no complete result on the target model")
+        from forge_factory.mcp.servers.sim import access_log_path, read_access_log
+
         self.last, self.last_name, self.last_src = res, f"{src.name} [{scenario}]", src
+        self.last_accesses = read_access_log(access_log_path(elf, self.wd))
         return res
 
     def _need(self) -> dict:
@@ -99,6 +112,56 @@ class ForgeTarget:
         if r["failed"] or r["passed"] == 0:
             raise AssertionError(f"{self.last_name}: {r['passed']} passed, {r['failed']} failed "
                                  f"(failed ids {r['failed_ids']})")
+
+    def _accesses(self, phase: int | None = None) -> list[dict]:
+        """The last run's register-access log; a phase the scenario never sets is refused (no vacuous pass)."""
+        self._need()
+        if self.last_accesses is None:
+            raise AssertionError(f"ACCESS_LOG_MISSING: {self.last_name} left no register-access log")
+        src = self.last_src.read_text(errors="replace") if self.last_src else ""
+        marks = {int(m) for m in re.findall(r"\bFORGE_ACCESS_PHASE\(\s*(\d+)[uU]?\s*\)", src)}
+        if phase is not None and phase != 0 and phase not in marks:
+            raise AssertionError(f"ACCESS_PHASE_NOT_SET: {self.last_name} never calls FORGE_ACCESS_PHASE({phase}U)")
+        return self.last_accesses
+
+    @staticmethod
+    def _show(entries: list[dict]) -> str:
+        return "; ".join(f"#{e['index']} {e['access']} {e['offset']:#05x}={e['value']:#010x} phase {e['phase']}"
+                         + (f" pc {e['pc']:#010x}" if e["pc"] is not None else "") for e in entries[:6]) \
+            + (f" (+{len(entries) - 6} more)" if len(entries) > 6 else "")
+
+    @keyword("Register Accesses Before First Call Should Be Empty")
+    def register_accesses_before_first_call_should_be_empty(self) -> None:
+        log = self._accesses()
+        if not re.search(r"\bFORGE_ACCESS_PHASE\(", self.last_src.read_text(errors="replace")):
+            raise AssertionError(f"ACCESS_PHASE_NOT_SET: {self.last_name} marks no first call: put "
+                                 "FORGE_ACCESS_PHASE(1U) directly before the first LL/HAL call")
+        early = [e for e in log if e["phase"] == 0]
+        if early:
+            raise AssertionError(f"{self.last_name}: {len(early)} register access(es) before the first call: "
+                                 f"{self._show(early)}")
+        if not log:  # the marked call was never observed: an empty log proves nothing about the window
+            raise AssertionError(f"ACCESS_FIRST_CALL_NOT_OBSERVED: {self.last_name} logged no register access at all")
+
+    @keyword("Register Accesses In Phase Should Be Empty")
+    def register_accesses_in_phase_should_be_empty(self, phase: int) -> None:
+        hit = [e for e in self._accesses(int(phase)) if e["phase"] == int(phase)]
+        if hit:
+            raise AssertionError(f"{self.last_name}: {len(hit)} register access(es) in phase {int(phase)}: "
+                                 f"{self._show(hit)}")
+
+    @keyword("Register Access Log Should Not Contain")
+    def register_access_log_should_not_contain(self, phase: str = "*", access: str = "*", offset: str = "*") -> None:
+        if phase == access == offset == "*":
+            raise AssertionError("ACCESS_FILTER_EMPTY: give phase=, access= (R|W) and/or offset=")
+        if access not in ("*", "R", "W"):
+            raise AssertionError(f"ACCESS_FILTER_INVALID: access={access} (R|W)")
+        log = self._accesses(None if phase == "*" else int(phase))
+        hit = [e for e in log if (phase == "*" or e["phase"] == int(phase)) and (access == "*" or e["access"] == access)
+               and (offset == "*" or e["offset"] == int(str(offset), 0))]
+        if hit:
+            raise AssertionError(f"{self.last_name}: {len(hit)} matching register access(es) "
+                                 f"(phase={phase} access={access} offset={offset}): {self._show(hit)}")
 
     @keyword("Simulation Performance Should Meet Budget")
     def simulation_performance_should_meet_budget(self) -> None:

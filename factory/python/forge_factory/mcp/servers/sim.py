@@ -6,6 +6,11 @@ run_renode (Renode 1.17.0, pinned portable build on the data volume) builds each
 platform: CPU + NVIC + AXISRAM + a *behavioural* RCC model at 0x56028000 (ready flags follow enable bits;
 `*_timeout.c` tests run with the never-ready scenario). Results are read from the RAM mailbox. This is
 simulated target evidence of the driver logic on the target ISA, not silicon verification.
+Owner 2026-11-02 ("Allow access logging"): run_image appends the register-access observer
+(factory/sim/stm32n6/forge_access_log.py) to the loaded model; every register read/write is logged to
+<image>.access.log (read_access_log) and counted in the RAM access-log block at 0x341F0100 that
+forge_target_test.h reads (FORGE_ACCESS_PHASE / FORGE_ACCESS_COUNT / FORGE_ACCESS_COUNT_IN). Observation only:
+model behaviour, the run result dict and the virtual clock / instruction counts are unchanged.
 run_hwsim stays UNSUPPORTED (no HwSim model).
 `inject_fault` writes a deterministic, seeded register-fault plan (`verification/integration/fault_plan.json`)
 that host integration tests may consume through the driver's host register hook; it never touches hardware.
@@ -146,6 +151,38 @@ def linker_script(ws: Path | None, wd: Path) -> Path:
     return out
 
 
+ACCESS_LOG_OBSERVER = SIM_DIR / "forge_access_log.py"
+ACCESS_LOG_BASE = 0x341F0100  # RAM access-log block (forge_target_test.h FORGE_ACCESS_LOG_ADDR)
+ACCESS_LINE = re.compile(r"^(\d+) ([RW]) 0x([0-9A-F]+) 0x([0-9A-F]{8}) (\d+) (0x[0-9A-F]{8}|-)$")
+
+
+def observed_model(model_text: str) -> str:
+    """The peripheral model with the Forge-C register-access observer appended (owner 2026-11-02): the model handles
+    the access first, the observer only records it."""
+    return model_text.rstrip("\n") + "\n\n" + ACCESS_LOG_OBSERVER.read_text()
+
+
+def access_log_path(elf: Path, wd: Path) -> Path:
+    return wd / f"{elf.stem}.access.log"
+
+
+def read_access_log(path: Path) -> list[dict] | None:
+    """Parse a register-access log: [{index, access R|W, offset, value, phase, pc|None}], or None when the run left
+    no log (no complete observation - never an empty, vacuously passing log)."""
+    if not path.is_file():
+        return None
+    out = []
+    for line in path.read_text(errors="replace").splitlines():
+        m = ACCESS_LINE.match(line.strip())
+        if not m:
+            raise ValueError(f"ACCESS_LOG_MALFORMED:{line[:60]}")
+        out.append({"index": int(m[1]), "access": m[2], "offset": int(m[3], 16), "value": int(m[4], 16),
+                    "phase": int(m[5]), "pc": None if m[6] == "-" else int(m[6], 16)})
+    if [e["index"] for e in out] != list(range(len(out))):
+        raise ValueError("ACCESS_LOG_NOT_CONTIGUOUS")
+    return out
+
+
 def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None = None) -> tuple[dict | None, bytes]:
     """Run an image on the Forge-C STM32N6 platform with the given model scenario; read the RAM mailbox. Feature 009:
     the peripheral model and platform come from the work order's profile (RCC by default)."""
@@ -154,8 +191,10 @@ def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None =
     pr = profile(ws)
     stem = Path(pr["sim"]["model"]).stem
     model = wd / f"{stem}_{scenario}.py"
-    model.write_text(re.sub(r'^SCENARIO = .*$', f'SCENARIO = "{scenario}"',
-                            (SIM_DIR / pr["sim"]["model"]).read_text(), flags=re.M))
+    model.write_text(observed_model(re.sub(r'^SCENARIO = .*$', f'SCENARIO = "{scenario}"',
+                                           (SIM_DIR / pr["sim"]["model"]).read_text(), flags=re.M)))
+    access_log = access_log_path(elf, wd)  # the observer writes it (FORGE_ACCESS_LOG); stale logs never survive
+    access_log.unlink(missing_ok=True)
     repl = wd / f"platform_{scenario}.repl"
     repl.write_text((SIM_DIR / pr["sim"]["platform"]).read_text().replace(f"{pr['register_prefix']}_MODEL_PATH",
                                                                           str(model)))
@@ -192,7 +231,8 @@ def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None =
     resc.write_text(f'mach create "stm32n6"\nmachine LoadPlatformDescription @{repl}\nsysbus LoadELF @{elf}\n'
                     f'cpu VectorTableOffset 0x34000000\n{extra}emulation RunFor "0.2"\n{words}\nquit\n')
     # .NET under the sandbox rlimits: no W^X double-mapping file (RLIMIT_FSIZE) and a bounded GC heap (RLIMIT_AS)
-    env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000"}
+    env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000",
+           "FORGE_ACCESS_LOG": str(access_log.resolve())}
     r = run_argv([renode, "--disable-gui", "--console", "--plain", "-e", f"include @{resc}"], wd, 170,
                  {os.path.basename(renode)}, env_extra=env, mem_mb=65536, fsize_mb=512)
     if instrumentation and (any(instrumentation[k] != v for k, v in performance.inputs(ws).items())
