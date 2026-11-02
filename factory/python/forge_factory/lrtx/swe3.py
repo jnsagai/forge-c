@@ -223,6 +223,12 @@ def validate_code(ws: Path, doc: dict, u: dict) -> list[str]:
     out += [f"{x} is not a generated define (use only the defines listed)" for x in sorted(used - known)]
     calls = set(re.findall(r"\b([A-Za-z_]\w*)\s*\(", code.split("{", 1)[-1])) - {"if", "return", "sizeof"}
     out += [f"call to {c}: LL functions call no other function" for c in sorted(calls)]
+    from ..inspection.implementation import instance_body_findings
+    from ..layer import ll_instance
+
+    inst = ll_instance(ws)
+    if inst is not None:  # instance mode: the body uses the caller's instance, never the macro or the host object
+        out += [x.removeprefix("IMPL:") for x in instance_body_findings(code, inst, i["fn"])]
     d = fns[0] if fns else {"units": [], "specs": []}
     ids = sorted(s["id"] for s in doc["spec_items"])
     if d["units"] != [u["id"]]:

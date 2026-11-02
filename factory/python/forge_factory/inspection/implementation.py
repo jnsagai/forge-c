@@ -132,6 +132,27 @@ def _reg_block_defined(ws: Path) -> list[str]:
     return out
 
 
+def instance_body_findings(code: str, inst: dict, prefix: str) -> list[str]:
+    """Instance mode: an LL function reaches its registers only through its instance parameter. The instance macro and
+    the host object name the same RAM object in host tests, so a body using them passes every host check while
+    ignoring the caller's instance; any other `x->` is an alias of the instance and is refused likewise."""
+    masked, out, param = strip_c(code), [], inst["parameter"]
+    for m in re.finditer(r"^[ \t]*static\s+inline\s+[\w\s*]+?\b(" + re.escape(prefix) + r"\w+)\s*\([^;{}]*\)\s*\{",
+                         masked, re.M):
+        depth, end = 1, m.end()
+        while end < len(masked) and depth:
+            depth += (masked[end] == "{") - (masked[end] == "}")
+            end += 1
+        body, name = masked[m.end():end - 1], m.group(1)
+        out += [f"IMPL:INSTANCE_BYPASSED:{name}:{x} (access registers only through the parameter {param})"
+                for x in (inst["macro"], inst["host_object"]) if re.search(rf"\b{re.escape(x)}\b", body)]
+        out += [f"IMPL:INSTANCE_BYPASSED:{name}:{x}-> (access registers only through the parameter {param})"
+                for x in sorted(set(re.findall(r"\b([A-Za-z_]\w*)\s*->", body)) - {param})]
+        if not re.search(rf"\b{re.escape(param)}\s*->", body):
+            out.append(f"IMPL:INSTANCE_NOT_USED:{name} (no register access through {param}->)")
+    return out
+
+
 def _check_ll(ws: Path) -> dict:
     """ADR-0009 LL work order: every LL_RCC_ function allocated in SWE.2 is a static inline definition in the LL
     header; no commented-out code; the register block is only declared (extern)."""
@@ -170,6 +191,11 @@ def _check_ll(ws: Path) -> dict:
     # CAPA-019 (r84): the author replaced the generated register block by a pointer API; the unit harness, regmap and
     # measurement all use the extern array, and SWE.2/SWE.3 contradicted each other until the loop budget ran out
     typed = selected(ws) is not None
+    from ..layer import ll_instance
+
+    inst = ll_instance(ws)
+    if inst is not None:
+        findings += instance_body_findings(txt, inst, pfx)
     if txt and not typed and not re.search(r"\bextern\s+volatile\s+uint32_t\s+" + blk + r"\s*\[[^\]]+\]", code):
         findings.append("IMPL:LL_REG_BLOCK_DECLARATION_MISSING")
     for m in re.finditer(r"^[ \t]*static\s+inline\s+[\w\s*]+?\b(" + re.escape(pfx) + r"\w+)\s*\(([^)]*)\)\s*\{",

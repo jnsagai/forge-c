@@ -206,21 +206,32 @@ def c_source(cases: list[dict], include: str, extra: list[dict] | None = None, b
 
 
 INSTANCE_WORDS = "FORGE_ORACLE_WORDS"
+ORACLE_INSTANCE = "forge_oracle_inst"
 
 
 def instance_prelude(include: str, inst: dict, offsets: dict[str, int]) -> list[str]:
-    """Instance mode: the oracle's register words are the words of the device header's host RAM instance. Its layout
-    is asserted against the RM offsets the oracle uses (a mismatch does not compile), so a word index is a register."""
+    """Instance mode: the oracle passes its own instance object (ORACLE_INSTANCE, never the instance macro) and its
+    register words are that object's words. Its layout is asserted against the RM offsets the oracle uses (a mismatch
+    does not compile), so a word index is a register. Every word starts from a non-zero background, and the macro's
+    host object (the same RAM object as the macro in host builds) must not change: a
+    driver that ignores its instance argument fails."""
     t, obj = inst["type_name"], inst["host_object"]
+    w = INSTANCE_WORDS
     asserts = [f'_Static_assert(offsetof({t}, {inst["members"][r]}) == {off}U, "RM offset of {r}");'
                for r, off in sorted(offsets.items())]
     return ["#define FORGE_HOST_DEVICE_IMPLEMENTATION /* the RAM instance is defined once, here */",
             f'#include "{include}"', "#include <stddef.h>", "#include <stdio.h>", "#include <string.h>",
-            f"#define {INSTANCE_WORDS} (sizeof({t}) / 4U)",
+            f"#define {w} (sizeof({t}) / 4U)",
             f'_Static_assert((sizeof({t}) % 4U) == 0U, "{t} is a whole number of register words");', *asserts,
-            f"#define regs (*(volatile uint32_t (*)[{INSTANCE_WORDS}])(void *)&{obj})",
+            f"static {t} {ORACLE_INSTANCE}; /* the instance the oracle passes; never the instance macro */",
+            f"#define regs (*(volatile uint32_t (*)[{w}])(void *)&{ORACLE_INSTANCE})",
             "unsigned long shim_n; /* instance mode: register accesses are not counted */", "static int fails;",
-            "int main(void)", "{", f"    uint32_t before[{INSTANCE_WORDS}];"]
+            "static void forge_instance_background(void)", "{", "    unsigned i;",
+            f"    for (i = 0U; i < {w}; i++) {{ regs[i] = 0xA5A50000U | i; }}",
+            f"    (void)memset((void *)&{obj}, 0xC3, sizeof({obj}));", "}",
+            "static int forge_host_unchanged(const uint32_t *h)", "{",
+            f"    return memcmp(h, (const void *)&{obj}, sizeof({obj})) == 0;", "}",
+            "int main(void)", "{", f"    uint32_t before[{w}];", f"    uint32_t host_before[{w}];"]
 
 
 def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs", count: int = 1024,
@@ -243,6 +254,8 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
         t = 5 if c["never_ready"] or c.get("busy") else 10
         lines += [f"    /* {c['swr']} {c['case']}: {c['op']} {c.get('register', '')}.{c.get('field', '')} via "
                   f"{c['function']} (contract + RM constants) */", "    memset((void *)regs, 0, sizeof regs);"]
+        if instance is not None:  # every word from a non-zero background; the case word is preset below
+            lines.append("    forge_instance_background();")
         if c["op"] != "no_write":
             other = 0xA5A5A5A5 & ~c["mask"] & 0xFFFFFFFF
             pre = c["mask"] if c["op"] == "clear" and not c["never_ready"] else 0
@@ -254,6 +267,9 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
         if c.get("busy"):  # a status flag held set: the call must give up after a bounded wait
             lines.append(f"    regs[{c['busy'][0]}U] |= 0x{c['busy'][1]:08X}U; /* busy, never clears */")
         lines += ["    memcpy(before, (const void *)regs, sizeof before);", "    shim_n = 0UL;"]
+        if instance is not None:
+            lines.append(f"    memcpy(host_before, (const void *)&{instance['host_object']}, sizeof host_before);")
+            c = {**c, "args": [f"&{ORACLE_INSTANCE}" if a.strip() == instance["macro"] else a for a in c["args"]]}
         call = call_text(c, f"{t}U")
         lines.append(f"    {{ hal_status_t st = {call};" if c["status"] else f"    {{ (void){call};")
         conds = []
@@ -272,6 +288,8 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
             conds.append(f"(shim_n <= {4 * (t + 2) + 8}UL) && (shim_n >= {t}UL)")
         if c["status"]:
             conds.append(f"(st == {c['status']})")
+        if instance is not None:
+            conds.append("forge_host_unchanged(host_before)")
         lines += [f"      int ok = {' && '.join(conds)};",
                   f'      printf("OR-{i:03d} {c["swr"]} {c["case"]} %s\\n", ok ? "PASS" : "FAIL"); fails += !ok; }}']
     lines += ["    return fails ? 1 : 0;", "}", ""]
