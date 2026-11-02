@@ -124,6 +124,59 @@ def _section_files(ws: Path) -> dict[str, dict]:
     return out
 
 
+def _file_pages(text: str, start: int | None) -> list[int]:
+    """The RM pages of one section file: its header's start page, its page anchors and the index start page."""
+    return sorted({int(p) for p in re.findall(r"p\.(\d+)", text.split("\n", 1)[0])} |
+                  {int(p) for p in re.findall(r'id="p-(\d+)"', text)} | ({start} if start else set()))
+
+
+def section_pages(ws: Path, num: str, secs: dict[str, dict] | None = None) -> list[int]:
+    """CAPA-114: the pages of RM section `num` and of its subsections (inputs/index.md and the section files); [] when
+    the index has no such section."""
+    secs = _section_files(ws) if secs is None else secs
+    out: set[int] = set()
+    for n, s in secs.items():
+        if n == num or n.startswith(num + "."):
+            f = Path(ws) / s["file"]
+            out |= set(_file_pages(f.read_text(errors="replace"), s["page"]) if f.is_file() else
+                       ([s["page"]] if s["page"] else []))
+    return sorted(out)
+
+
+def cited_sections(ws: Path, text: str, secs: dict[str, dict] | None = None) -> list[str]:
+    """CAPA-114: the RM section ids a requirement text cites ('<RM doc> 26.4.3', 'section 26.4.3', 'sections 26.4.3 and
+    26.4.4') that the work order's section index lists."""
+    from ..layer import profile
+
+    secs = _section_files(ws) if secs is None else secs
+    try:
+        doc = str((profile(ws).get("rm") or {}).get("doc") or "")
+    except Exception:  # noqa: BLE001 - a workspace without a profile still has the generic section wording
+        doc = ""
+    lead = (re.escape(doc) + r"\s+(?:sections?\s+)?|" if doc else "") + r"\bsections?\s+"
+    num = r"\d+(?:\.\d+)+"
+    out = []
+    for m in re.finditer(rf"(?:{lead})({num}(?:\s*(?:,|and|or|/)\s*{num})*)", text, re.I):
+        out += [n for n in re.findall(num, m.group(1)) if n in secs and n not in out]
+    return out
+
+
+def cited_page_findings(ws: Path, r: dict, secs: dict[str, dict] | None = None) -> list[str]:
+    """CAPA-114 (run WO-F014-SWE1-CRCL-20261102-L12, SWR-006): a requirement whose text cites an RM section must take
+    its source_page from that section; otherwise the page-derived trace row names another section than the text (the
+    inspector failed SWE1-01/SWE1-05 and the author never saw why). Passes when the page lies in any cited section."""
+    secs = _section_files(ws) if secs is None else secs
+    cited = cited_sections(ws, r["statement"], secs)
+    ranges = {n: section_pages(ws, n, secs) for n in cited}
+    ranges = {n: p for n, p in ranges.items() if p}
+    page = r.get("source_page")
+    if not ranges or not isinstance(page, int) or any(min(p) <= page <= max(p) for p in ranges.values()):
+        return []
+    where = "; ".join(f"section {n}: pages {min(p)}-{max(p)}" for n, p in ranges.items())
+    return [f"[{r['key']}] source_page {page} is not a page of the RM section its statement cites ({where}): set "
+            "source_page to the page of the cited section that states the fact, or cite the section of that page"]
+
+
 def system_name(ws: Path) -> str:
     from ..layer import layer_of, profile
 
@@ -163,8 +216,7 @@ def inventory(ws: Path) -> dict:
         if r is None:
             missing.append(num)
             continue
-        pages = sorted({int(p) for p in re.findall(r"p\.(\d+)", text.split("\n", 1)[0])} |
-                       {int(p) for p in re.findall(r'id="p-(\d+)"', text)} | ({s["page"]} if s["page"] else set()))
+        pages = _file_pages(text, s["page"])
         desc = {m.group(3): " ".join(m.group(4).split())[:120] for m in re.finditer(
             r"^\s*Bits?\s+(\d+)(?::(\d+))?\s+([A-Z][A-Z0-9_]*)(?:\[[^\]]*\])?\s*:\s*(.+)$", text, re.M)}
         regs.append({"section": num, "file": s["file"], "register": r["name"], "offset": r["offset"],
@@ -391,6 +443,7 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
     from ..layer import register_prefix
 
     pfx = register_prefix(ws)
+    secs = _section_files(ws) if (Path(ws) / "inputs/index.md").is_file() else {}  # no index: no citable section
     out, keys, named = [], set(), set()
     for r in doc["requirements"]:
         k = r["key"]
@@ -419,6 +472,7 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
             out.append(f"[{k}] a startup/reset invariant is verified by target_robot_test, not a host unit test")
         if g is not None and g["pages"] and not (min(g["pages"]) <= r["source_page"] <= max(g["pages"]) + 2):
             out.append(f"[{k}] source_page {r['source_page']} is outside the section pages {g['pages']}")
+        out += cited_page_findings(ws, r, secs)
         for f in re.findall(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z0-9_]+)", st):
             named.add(f"{f[0]}.{f[1]}")
             if f[0] not in idx or f[1] not in idx[f[0]]["fields"]:
