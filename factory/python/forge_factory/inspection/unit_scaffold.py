@@ -39,8 +39,11 @@ def _activity(unit_id: str, name: str, fns: list[str], bodies: dict[str, list[st
              "note right", "  USPEC: TODO", "end note"]
     for fn in fns:
         lines += [f"partition {fn} {{", "start"]
-        for s in bodies.get(fn, [])[:20]:
-            s = s.replace(";", "").replace('"', "'")[:110]
+        # CAPA-117 (run WO-F014-CMP-SWE3-IWDG-20261102-08): a 110-character cut ended a label mid-identifier
+        # ('... & (uint32_t)LL_IWDG_KR_K') and a 20-statement cap dropped the tail of longer functions, so the as-built
+        # diagram no longer matched the code (SWE3-06). Every statement is rendered whole.
+        for s in bodies.get(fn, []):
+            s = s.replace(";", "").replace('"', "'")
             if s.startswith(("if ", "if(", "while", "for ", "for(", "else")):
                 lines.append(f":{s} (control);")
             elif s.startswith("return"):

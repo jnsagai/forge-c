@@ -527,3 +527,23 @@ def test_capa042_unit_function_list_follows_the_code_tags(ws):
     assert not any("UNIT_FUNCTION_NOT_IN_CODE" in x
                    for x in swtrace.build_all(ws, render=False, doxygen=False, upto="SWE.3")["findings"]["SWE.3"])
     assert (ws / unit_scaffold.SYNC_LOG).is_file() and unit_scaffold.sync_trace(ws)["functions"] == []   # idempotent
+
+
+def test_capa117_as_built_activity_renders_every_statement_whole(tmp_path):
+    """CAPA-117 (run WO-F014-CMP-SWE3-IWDG-20261102-08): the as-built unit design cut a statement at 110 characters
+    mid-identifier ('... & (uint32_t)LL_IWDG_KR_K') and dropped statements after the 20th; SWE3-06 failed on it."""
+    from forge_factory.inspection import unit_scaffold
+
+    stmt = ("ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = (((uint32_t)0x0000CCCCU << LL_IWDG_KR_KEY_POS) & "
+            "(uint32_t)LL_IWDG_KR_KEY_MSK);")
+    code = ("static inline void LL_IWDG_Enable(void)\n{\n    " + stmt + "\n}\n\nstatic inline void LL_IWDG_Many(void)\n{\n"
+            + "".join(f"    ll_iwdg_regs[{i}U] = {i}U;\n" for i in range(24)) + "}\n")
+    puml = unit_scaffold._activity("SWU-LL-01", "", ["LL_IWDG_Enable", "LL_IWDG_Many"], unit_scaffold._bodies(code))
+    assert f":{stmt[:-1]};" in puml
+    assert all(f":ll_iwdg_regs[{i}U] = {i}U;" in puml for i in range(24))
+    p = tmp_path / "SWU-LL-01.puml"
+    p.write_text(puml)
+    ok, why = swtrace.render_ok(p)
+    if why == "PLANTUML_NOT_AVAILABLE":
+        pytest.skip("PlantUML not installed")
+    assert ok, why
