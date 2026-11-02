@@ -383,7 +383,8 @@ const API_NAME = {anthropic: "Anthropic API", openai: "OpenAI API", codex: "Code
 function apiName(m) { return m.model.startsWith("claude") ? "Claude · " + (API_NAME[m.backend] || m.backend) : m.model + " · " + (API_NAME[m.backend] || m.backend); }
 function apiTile(m) {
   const t = m.today, h = m.hour;
-  const cost = m.priced ? `<div class="v" style="font-size:26px">$${t.cost_usd.toFixed(2)}<small> today</small></div>` :
+  const est = m.price_source ? `<span class="n" title="${esc(m.price_source)}">≈ estimated from ${esc(m.price_source)}</span>` : "";
+  const cost = m.priced ? `<div class="v" style="font-size:26px">${m.price_source ? "≈" : ""}$${t.cost_usd.toFixed(2)}<small> today</small></div>${est}` :
     `<div class="v" style="font-size:20px">price not set</div>`;
   return `<div class="kpi api-kpi"><span class="label">${esc(apiName(m))}</span>${cost}
     <span class="n">${fmt(t.calls)} calls${t.failed ? `, <span class="late">${t.failed} failed</span>` : ""} · in ${fmt(t.prompt)}${t.cached ? ` (${fmt(t.cached)} cached)` : ""} · out ${fmt(t.completion)}${t.reasoning ? ` (${fmt(t.reasoning)} reasoning)` : ""} tokens</span>

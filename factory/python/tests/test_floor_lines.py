@@ -86,3 +86,19 @@ def test_the_cloud_line_shows_an_api_station_instead_of_the_gpu(tmp_path, monkey
     assert gpt["priced"] is False and gpt["today"]["calls"] == 2 and gpt["today"]["failed"] == 1 and gpt["today"]["reasoning"] == 40
     (tmp_path / "cloud-bridge/calls.jsonl").unlink()
     assert F.station(now).get("kind") != "cloud_api"  # no meter: the GPU station as before
+
+
+def test_a_display_rate_prices_an_unpriced_model_and_is_labelled(tmp_path, monkeypatch):
+    import time as _t
+
+    from forge_factory.lrtx import floor_api as F
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("FORGE_FLOOR_API_PRICES", json.dumps({"gpt-6.1-sol": {"input": 2, "cached": 0.1, "output": 10,
+                                                                              "source": "public pricing pages"}}))
+    (tmp_path / "cloud-bridge").mkdir()
+    ts = _t.strftime("%Y-%m-%dT%H:%M:%SZ", _t.gmtime())
+    (tmp_path / "cloud-bridge/calls.jsonl").write_text(json.dumps({"ts": ts, "model": "gpt-6.1-sol", "backend": "openai", "ok": True,
+        "usage": {"prompt_tokens": 1_000_000, "cached_prompt_tokens": 500_000, "completion_tokens": 100_000}}) + "\n")
+    m = F.station(_t.time())["models"][0]
+    assert m["priced"] and m["price_source"] == "public pricing pages" and m["today"]["cost_usd"] == 2.05

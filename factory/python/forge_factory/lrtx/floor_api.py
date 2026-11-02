@@ -174,6 +174,12 @@ def cloud_station(now: float) -> dict | None:
     day = time.strftime("%Y-%m-%d", time.gmtime(now))
     hour_ago = now - 3600
     models: dict[str, dict] = {}
+    # owner 2026-11-02 ("apply them"): display rates for a model the bridge does not price (gpt-6.1-sol, from public
+    # pricing pages, unverified) - FORGE_FLOOR_API_PRICES {model: {input, cached, output, source}} USD per 1M tokens
+    try:
+        rates = json.loads(os.environ.get("FORGE_FLOOR_API_PRICES") or "{}")
+    except ValueError:
+        rates = {}
     for line in meter.read_text(errors="replace").splitlines():
         try:
             r = json.loads(line)
@@ -184,7 +190,13 @@ def cloud_station(now: float) -> dict | None:
             continue
         m = models.setdefault(r["model"], {"model": r["model"], "backend": r.get("backend"), "last_ts": 0,
                                            "today": _api_zero(), "hour": _api_zero(), "priced": False})
-        u = r.get("usage") or {}
+        u = dict(r.get("usage") or {})
+        rate = rates.get(r["model"])
+        if u.get("cost_usd") is None and rate and u:
+            cached = int(u.get("cached_prompt_tokens") or 0)
+            u["cost_usd"] = ((int(u.get("prompt_tokens") or 0) - cached) * rate.get("input", 0) + cached * rate.get("cached", 0)
+                             + int(u.get("completion_tokens") or 0) * rate.get("output", 0)) / 1e6
+            m["price_source"] = rate.get("source", "floor display rate")
         m["priced"] = m["priced"] or u.get("cost_usd") is not None
         m["last_ts"] = max(m["last_ts"], t)
         for k in (["today", "hour"] if t >= hour_ago else ["today"]):
