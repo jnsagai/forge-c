@@ -103,6 +103,40 @@ ENGINE_NOTE = ("SafeC engine output (register obligations / register oracle), ch
                "listed by hash only, not inspected text: judge the requirements, effects and traceability")
 
 
+# CAPA-116 (run WO-F014-CMP-SWE3-OBL-20261102-08): the frozen work products of the previous phase each checklist judges
+# the phase against (SWE3-01/03 "match the software architecture"; SWE4-02/06 the units, unit specifications and design
+# the tests verify; SWE5-02/05 "match the architecture"). SWE.6 judges against SWE.1, which every phase already gets.
+CHECKLIST_UPSTREAM = {"SWE.3": ("SWE.2",), "SWE.4": ("SWE.3",), "SWE.5": ("SWE.2",)}
+
+
+def upstream_sources(ws: Path, phase: str, bl: dict) -> list[str]:
+    """CAPA-116: the frozen baseline records (files, hashes, upstream baselines: the change/trace provenance of SWE3-06),
+    the files of the exact upstream baseline the phase was frozen on, and in instance mode the pinned device header and
+    API contract the code is written to. An upstream baseline that is missing or changed raises (never omitted)."""
+    from ..common import sha256_file
+    from ..inspection.engine import Store
+    from ..layer import ll_instance
+
+    if phase not in CHECKLIST_UPSTREAM:
+        return []
+    ws = Path(ws)
+    out = [f"configuration/baselines/{phase}/{bl['baseline_id']}.json"]
+    for up in CHECKLIST_UPSTREAM[phase]:
+        want = (bl.get("upstream") or {}).get(up)
+        ub = next((b for b in reversed(Store(ws).baselines(up)) if want and b["baseline_hash"] == want), None)
+        if ub is None:
+            raise ValueError(f"UPSTREAM_BASELINE_NOT_FOUND:{phase}:{up}")
+        if any(not (ws / f).is_file() or sha256_file(ws / f) != h for f, h in ub["files"].items()):
+            raise ValueError(f"UPSTREAM_CHANGED:{up}")
+        out.append(f"configuration/baselines/{up}/{ub['baseline_id']}.json")
+        out += [f for f in ub["files"] if not f.endswith((".svg", ".reqif"))]
+    if ll_instance(ws) is not None:  # validated: a declared but changed input raises
+        iface = json.loads((ws / ".forge-run/manifest.json").read_text())["operation_scope"]["instance"][
+            "register_interface"]
+        out += [iface["device_header"], iface["api_contract"]]
+    return out
+
+
 def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     """The newest frozen baseline of the phase and its files (plus the upstream SWE.1 requirements for SWE.2+)."""
     from ..inspection.engine import Store
@@ -115,6 +149,7 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     if phase != "SWE.1":
         files += [f for f in ("workproducts/SWE.1/software_requirements.md", "workproducts/SWE.1/register_effects.json")
                   if f not in files]
+        files += [f for f in upstream_sources(ws, phase, bl) if f not in files]  # CAPA-116
     if phase == "SWE.1":  # owner 2026-10-31 (option 1): the declared owner obligations and the inputs they cite
         from ..assurance.owner_obligations import source_paths
 
