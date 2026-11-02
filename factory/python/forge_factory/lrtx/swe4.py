@@ -144,6 +144,10 @@ def test_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> 
              "under test, the register block and the generated defines below - no #include, no #define, no other "
              f"functions. Put exactly this block directly above the test: '/** @test {c['ut']} @verifies <the USPEC "
              f"ids of {u['id']} this test verifies> */' (USPEC ids only: {', '.join(s['id'] for s in specs) or 'none'}).")
+    from .swe5 import HOST_ACCESS_RULE, has_prohibition
+
+    if has_prohibition(c.get("statement", "")):
+        instr += " " + HOST_ACCESS_RULE
     art = _oracle_artifacts(ws, c)
     return S.packet(phase=PHASE, task=f"test:{c['ut']}", role="swe4-author", instructions=instr, sources=[],
                     artifacts=art, criteria=["expected values come from the oracle", "compiles in the harness",

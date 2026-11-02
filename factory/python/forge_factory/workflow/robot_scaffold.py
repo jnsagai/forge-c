@@ -30,6 +30,10 @@ HEADER = f"""{MARKER}: one test case per SWE.1 requirement (names and tags fixed
 #   Driver Flash Size Should Be At Most    <bytes>
 #   Driver Static RAM Should Be At Most    <bytes>
 #   Driver Stack Should Be At Most    <bytes>          (worst-case call chain of the driver)
+#   Register Accesses Before First Call Should Be Empty   (register-access log of the last run; the scenario
+#                                                          sets FORGE_ACCESS_PHASE(1U) before the first call)
+#   Register Accesses In Phase Should Be Empty    <phase>   (FORGE_ACCESS_PHASE(<phase>U) in the scenario)
+#   Register Access Log Should Not Contain    phase=<p>    access=<R|W>    offset=<0x...>
 #   Target Check Should Pass needs a TCHECK with that number in the scenario that was run last
 # Scenario files live next to this suite: software/tests/software/scn_<topic>.c
 # Register access in scenarios: ll_rcc_regs[LL_RCC_<REG>_OFFSET / 4U] & LL_RCC_<REG>_<FIELD>_MSK (e.g. LL_RCC_CR_HSION_MSK)

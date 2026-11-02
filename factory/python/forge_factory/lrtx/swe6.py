@@ -144,6 +144,10 @@ def scenario_packet(ws: Path, topic: str, swrs: list[str], model: str, findings=
              "call. Polls are "
              "bounded by the caller (at most 1000 iterations). Use only the interface functions, the generated "
              "defines and the register block.")
+    from .swe5 import TARGET_ACCESS_RULE, requirement_prohibitions
+
+    if requirement_prohibitions(ws, swrs):
+        instr += " " + TARGET_ACCESS_RULE
     return S.packet(phase=PHASE, task=f"scenario:{topic}", role="swe6-author", instructions=instr, sources=[],
                     artifacts=_context(ws, swrs), criteria=["one TCHECK per requirement, numbered as given",
                                                             "expected values from the requirement and the model"],

@@ -56,6 +56,36 @@ def registers_rule(p: dict) -> str:
             f"array {p['block']})")
 
 
+# Owner 2026-11-02 ("Allow access logging"): a register-access prohibition is verified on the simulated target's
+# register-access log (factory/sim/stm32n6/forge_access_log.py), never on final register contents - a write that restores
+# the original value, or a read, leaves no trace there. The host RAM register block has no access log.
+PROHIBITION = re.compile(r"(?i:\bshall not (?:read|write|access)\b)[^.]*(?:(?i:\bregisters?\b)|\b[A-Z][A-Z0-9]*_[A-Z0-9_]+\b)"
+                         r"|(?i:register-access log)")
+TARGET_ACCESS_RULE = (
+    "A requirement that the driver shall not read/write/access a register (before its first call, outside a call, "
+    "or in a stated situation) is checked on the simulation's register-access log (forge_target_test.h), never by "
+    "final register values: 'TCHECK(<n>, FORGE_ACCESS_COUNT() == 0U);' at the start of main before any LL call; "
+    "around other code 'FORGE_ACCESS_PHASE(<p>U);' (p 1..15) and then 'TCHECK(<n>, FORGE_ACCESS_COUNT_IN(<p>U) == "
+    "0U);'. The model counts every register access, including the test's own register reads, so set a phase that "
+    "contains only the code under check.")
+HOST_ACCESS_RULE = (
+    "The host RAM register block has no access log: a requirement that the driver shall not read/write/access a "
+    "register is verified only on the simulated target's register-access log (SWE.5/SWE.6 target tests); here check "
+    "only the register and return-value effects the requirement states and claim nothing about absent accesses.")
+
+
+def has_prohibition(*texts: str) -> bool:
+    return any(PROHIBITION.search(t or "") for t in texts)
+
+
+def requirement_prohibitions(ws: Path, swrs: list[str] | None = None) -> bool:
+    """Whether the SWE.1 requirements (or the given ones) contain a register-access prohibition."""
+    from ..assurance.register_contract import _requirements
+
+    reqs = _requirements(ws)
+    return has_prohibition(*(reqs.get(s, "") for s in swrs) if swrs is not None else reqs.values())
+
+
 def instance_findings(p: dict, code: str) -> list[str]:
     """Instance mode: a test that uses the register-block array of the legacy layout cannot build."""
     from ..brownfield.scope import strip_comments
@@ -120,6 +150,8 @@ def file_packet(ws: Path, kind: str, model: str, findings=None, previous=None) -
                  f"on LL return values and {registers_rule(p)}. Expected values "
                  "follow the target model and the requirements. A poll is bounded by the caller (at most 1000 iterations). "
                  "Use only the interface functions, the generated defines and the register block.")
+        if requirement_prohibitions(ws):
+            instr += " " + TARGET_ACCESS_RULE
     else:
         scope = " ".join(str(p["prompt"].get("integration") or "the LL sequences of the SWE.2 dynamic view").split())
         instr = (f"Write the complete host integration test program {rel} for the {p['header']} LL on a plain RAM "
@@ -143,6 +175,8 @@ def file_packet(ws: Path, kind: str, model: str, findings=None, previous=None) -
             instr = instr.replace("main() clears the array,", f"main() clears the instance with (void)memset((void *)&"
                                   f"{obj}, 0, sizeof({obj})),")
             instr += (f" Registers are read and preset as {registers_rule(p)}; every LL call passes {inst['macro']}.")
+        if requirement_prohibitions(ws):
+            instr += " " + HOST_ACCESS_RULE
     artifacts = _context(ws)
     if kind == "target_performance":
         from .. import simulation_performance as performance
