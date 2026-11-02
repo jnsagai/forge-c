@@ -1200,3 +1200,13 @@ reproducers:
     operations: [workorder prepare (brownfield intake), lrtx/swe1 author packet, lrtx/review SWE.1 evidence]
     root_cause: "A FROZEN brownfield order's SWE.1 author and inspector never received the delivered API's argument constants (FR-007 kept the whole delivery out until after SWE.1): the requirements of LL_CRC_SetPolynomialSize and LL_CRC_Set*DataReverseMode named sizes and reversal modes without the LL_CRC_POLYLENGTH_* / LL_CRC_*DATA_REVERSE_* argument values, and the inspector failed SWE1-02 (not feasible / objectively verifiable against the frozen interface) three times: BLOCKED STUCK SAME_ITEM_FAILED_3X."
     remedy: "At intake the factory extracts, for each scoped delivered function, the constant names its arguments accept and its queries return (the function's @arg lists, kept only for object-like macros of the delivered code) with their evaluated values, declares them as the hash-bound input inputs/delivered-interface.json, and gives it to the SWE.1 register-task authors and the SWE.1 inspector; no function body, declaration or comment text is included."
+  - id: RPR-113
+    script: rpr113_required_constraint_gap_refuted.py
+    sha256: e9259c013085f7f6b61f06436017388c32fa5a61252ca2c1cb3b05301e1ea05f
+    symptom_signature: "a missing required CPU/timing constraint finding is refuted because the owner recorded the input as NOT_PROVIDED"
+    observed_in: "Omniverse2 local runs WO-F014-SWE1-IWDG-20261101-03 and WO-F014-SWE1-CRCL-20261102-L12 (cloud cross-inspection 2026-11-02, class X2)"
+    baseline_revision: e7ec0083726c32a0a7822df1b5735d97599fb972
+    error_codes: []
+    operations: [lrtx/review fact_conflicts (SWE.1 inspector refutation)]
+    root_cause: "fact_conflicts refuted every SWE.1 finding that matched GAP_RX and UPSTREAM_RX when upstream_gaps.md recorded NOT_PROVIDED, so the local inspector withdrew its correct SWE1-04 findings that no CPU/timing constraint is allocated and the baseline PASSED, contradicting the bound assessment view (missing_required_constraint: OPEN_INPUT_GAP_NOT_SATISFIED)."
+    remedy: "Under a bound assessment view whose missing_required_constraint is OPEN_INPUT_GAP_NOT_SATISFIED, a finding that a measurable resource/timing constraint is missing is not refuted by its recorded gap; HSI-contract and safety-allocation gaps, objections to the status of stated budgets and orders without a view stay as before."
