@@ -882,6 +882,8 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
         except CoherentScopeRefused:
             tasks = None  # the visit itself reports the refused scope
         routed = route_findings(findings, amap, tasks, ws)
+        V.attach_keep_fixed(ws, "SWE.1", budget,
+                            lambda fs: V.attribute_findings(fs, amap, "requirements:crosscutting", tasks)[0])
     try:
         return _visit(ws, model, budget, routed)
     except V.Continue as c:

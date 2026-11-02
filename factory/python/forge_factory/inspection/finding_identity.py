@@ -68,6 +68,14 @@ def same_finding(a: str, b: str) -> bool:
     return compare(a, b)["same"]
 
 
+def related(a: str, b: str) -> bool:
+    """The same finding, or the same defect wording on other requirement ids (Dice >= SAME_DEFECT whatever ids are
+    cited). Used where calling a finding FIXED needs the stricter side: an earlier finding whose defect is still
+    raised on renumbered or neighbouring requirements is not 'previously fixed'."""
+    m = compare(a, b)
+    return m["same"] or m["dice"] >= SAME_DEFECT
+
+
 def item_findings(rec: dict, item: str) -> list[str]:
     """The full finding texts an inspection record holds for one checklist item: the published item findings, else
     the record's compact per-finding details (older records and fixtures)."""

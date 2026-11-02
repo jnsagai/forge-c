@@ -655,6 +655,8 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
     since = V.last_finished(ws, PHASE)
     budget, findings = V.open_visit(ws, PHASE, resume, lambda: V.rework_findings(ws, PHASE, since) if since else [],
                                     V.author_call_limit(ws, PHASE, role.max_turns, max_calls), time_budget_s)
+    if findings:
+        V.attach_keep_fixed(ws, PHASE, budget, route)
     try:
         return _visit(ws, model, budget, findings)
     except V.Continue as c:
