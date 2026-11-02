@@ -170,3 +170,41 @@ def test_swe3_inspector_receives_the_frozen_swe2_architecture_and_baseline_recor
         review.evidence(ws2, "SWE.3")
     with pytest.raises(ValueError, match="UPSTREAM_BASELINE_NOT_FOUND:SWE.3:SWE.2"):
         review.upstream_sources(ws2, "SWE.3", {**bl, "upstream": {"SWE.1": bl["upstream"]["SWE.1"]}})
+
+
+@pytest.mark.skipif(not TOOLS, reason="gcc/arm-none-eabi-gcc/clang/cppcheck not installed")
+def test_capa118_baseline_frozen_after_rework_carries_the_reworked_as_built_design(ws2, monkeypatch):
+    """CAPA-118 (run WO-F014-CMP-SWE3-IWDG-20261102-08): the as-built design was written once, so the baselines frozen
+    after code rework carried the round-1 diagram. The scaffold before each author round re-renders it from the code."""
+    from forge_factory.common import sha256_file
+    from forge_factory.inspection import unit_scaffold
+    from forge_factory.inspection.engine import Store
+    from forge_factory.lrtx import visit as V
+
+    def round_(code):
+        monkeypatch.setattr(S, "call", _scripted(code, []))
+        assert swe3.visit_code(ws2, "m")["status"] == "PASS"
+        unit_scaffold.scaffold(ws2)
+        assert swe3.visit_design(ws2)["status"] == "PASS"
+        assert _gate(ws2, "SWE.3", monkeypatch) == 0
+        return Store(ws2).latest_baseline("SWE.3")
+
+    rel = "workproducts/SWE.3/detailed_design/SWU-LL-01.puml"
+    old = ":ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = 0x0000CCCCU;"
+    first = round_(CODE)
+    assert old in (ws2 / rel).read_text()
+    V._ckpt(ws2, "SWE.3", "code:SWU-LL-01").unlink()  # rework: the unit's code task is answered again
+    body = "    const uint32_t key = 0x0000CCCCU;\n    ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = key;"
+    second = round_({**CODE, "code:SWU-LL-01": _doc(1, "LL_IWDG_Enable", "void", [], body, "write 0x0000CCCCU to "
+                                                    "IWDG_KR", ["SWR-001"])})
+    assert second["baseline_id"] != first["baseline_id"] and second["files"][rel] == sha256_file(ws2 / rel)
+    text = (ws2 / rel).read_text()
+    assert ":const uint32_t key = 0x0000CCCCU;" in text and ":ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = key;" in text
+    assert old not in text
+    hdr = (ws2 / "software/ll/stm32n6xx_ll_iwdg.h").read_text()
+    want = unit_scaffold._activity("SWU-LL-01", "LL_IWDG_Enable", ["LL_IWDG_Enable"], unit_scaffold._bodies(hdr))
+    assert unit_scaffold._generated_form(text) == unit_scaffold._generated_form(want)
+    # an author-changed design is kept (the agent line refines the scaffold's design)
+    (ws2 / rel).write_text(text.replace("@enduml", "note left: refined by the author\n@enduml"))
+    unit_scaffold.scaffold(ws2)
+    assert "refined by the author" in (ws2 / rel).read_text()
