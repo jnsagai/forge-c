@@ -388,12 +388,34 @@ function apiTile(m) {
     `<div class="v" style="font-size:20px">price not set</div>`;
   return `<div class="kpi api-kpi"><span class="label">${esc(apiName(m))}</span>${cost}
     <span class="n">${fmt(t.calls)} calls${t.failed ? `, <span class="late">${t.failed} failed</span>` : ""} · in ${fmt(t.prompt)}${t.cached ? ` (${fmt(t.cached)} cached)` : ""} · out ${fmt(t.completion)}${t.reasoning ? ` (${fmt(t.reasoning)} reasoning)` : ""} tokens</span>
+    ${t.account_calls ? `<span class="n">${fmt(t.account_calls)} of them via the Claude account (not billed; list-price equivalent $${t.list_cost_usd.toFixed(2)})</span>` : ""}
     <span class="n">last hour: ${fmt(h.calls)} calls · ${fmt(h.prompt + h.completion)} tokens${m.priced ? ` · $${h.cost_usd.toFixed(2)}` : ""}${m.last_s != null ? ` · last call ${m.last_s < 90 ? m.last_s + " s" : Math.round(m.last_s / 60) + " min"} ago` : ""}</span></div>`;
 }
+// owner 2026-11-02 ("Claude API/Account mode"): the floor's only control - where the cloud line's Claude calls go
+function modeTile(cm) {
+  if (!cm) return "";
+  const b = (m, label) => `<button class="line-tab${cm.mode === m ? " on" : ""}" aria-pressed="${cm.mode === m}" data-claude-mode="${m}">${label}</button>`;
+  return `<div class="kpi"><span class="label">Claude mode</span><div style="display:flex;gap:6px;margin:6px 0">${b("api", "API")}${b("account", "Account")}</div>
+    <span class="n">${cm.mode === "account" ? "structured calls use the owner's Claude account (no API charge); tool calls stay on the API" : "all Claude calls use the Anthropic API (billed)"}${cm.since ? ` · since ${esc(cm.since.slice(11, 16))} UTC` : ""}</span></div>`;
+}
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("[data-claude-mode]");
+  if (!t) return;
+  e.stopPropagation();
+  const mode = t.dataset.claudeMode;
+  const cur = DATA && DATA.kpis && DATA.kpis.station && DATA.kpis.station.claude_mode;
+  if (cur && cur.mode === mode) return;
+  if (!confirm(`Switch Claude to ${mode === "account" ? "the Claude account" : "the Anthropic API"}? It applies from the next model call.`)) return;
+  try {
+    const r = await fetch("claude-mode", {method: "POST", headers: {"Content-Type": "application/json", "X-Forge-Control": "claude-mode"}, body: JSON.stringify({mode})});
+    if (!r.ok) throw new Error("HTTP " + r.status);
+  } catch (err) { alert("The Claude mode was not changed (" + err.message + ")."); }
+  load();
+}, true);
 function stationTile(st) {
   if (!st) return "";
-  if (st.kind === "cloud_api") return (st.models || []).map(apiTile).join("") ||
-    `<div class="kpi"><span class="label">Cloud APIs</span><span class="v" style="font-size:22px">no call today</span></div>`;
+  if (st.kind === "cloud_api") return modeTile(st.claude_mode) + ((st.models || []).map(apiTile).join("") ||
+    `<div class="kpi"><span class="label">Cloud APIs</span><span class="v" style="font-size:22px">no call today</span></div>`);
   const model = st.model ? (st.model.toLowerCase().includes("ornith") ? "Ornith 35B" : st.model.split(":")[0].replace("qwen", "Qwen")) : "—";
   if (!st.available) return `<div class="kpi"><span class="label">GPU station</span><span class="v" style="font-size:22px">no reading</span><span class="n">loaded: ${esc(model)}${st.age_s != null ? ` · last sample ${Math.round(st.age_s / 60)} min ago` : ""}</span></div>`;
   return `<div class="kpi station-kpi"><span class="label">GPU station · RTX 6000 Ada</span><div class="gauges">${gauge(Math.round(st.util_pct), 100, "load", "%")}${gauge(Math.round(st.power_w), 300, "power", "W")}</div><span class="n">${st.temp_c} °C · ${(st.mem_used_mib / 1024).toFixed(1)} of ${(st.mem_total_mib / 1024).toFixed(0)} GB · loaded: ${esc(model)}</span></div>`;

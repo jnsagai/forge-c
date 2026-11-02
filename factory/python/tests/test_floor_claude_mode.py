@@ -1,0 +1,66 @@
+"""Owner 2026-11-02 ("Claude API/Account mode"): the floor's only control switches the cloud line's Claude calls between
+the Anthropic API and the owner's Claude account. Two values only, a control header, a same-host Origin, every switch
+logged; account calls are shown without an API charge."""
+import json
+import threading
+import urllib.error
+import urllib.request
+from http.server import ThreadingHTTPServer
+
+from forge_factory.lrtx import floor_api as F
+from forge_factory.lrtx import progress_api as P
+
+
+def _serve():
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), P.Handler)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv, f"http://127.0.0.1:{srv.server_address[1]}"
+
+
+def _post(url, body, headers=None):
+    h = {"Content-Type": "application/json", "X-Forge-Control": "claude-mode", **(headers or {})}
+    req = urllib.request.Request(url + "/claude-mode", data=json.dumps(body).encode(), headers=h, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return r.status, json.loads(r.read())
+    except urllib.error.HTTPError as exc:
+        return exc.code, None
+
+
+def test_the_floor_switches_the_claude_mode_and_logs_it(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    srv, url = _serve()
+    try:
+        assert _post(url, {"mode": "account"})[0] == 409  # no cloud line on this floor
+        (tmp_path / "cloud-bridge").mkdir()
+        assert F.claude_mode()["mode"] == "api"
+        code, body = _post(url, {"mode": "account"}, {"Origin": url})
+        assert code == 200 and body["mode"] == "account" and body["since"]
+        assert json.loads((tmp_path / "cloud-bridge/claude-mode.json").read_text())["mode"] == "account"
+        assert _post(url, {"mode": "free"})[0] == 400
+        assert _post(url, {"mode": "api"}, {"X-Forge-Control": "x"})[0] == 403
+        assert _post(url, {"mode": "api"}, {"Origin": "http://evil.example"})[0] == 403
+        assert _post(url, {"mode": "api"})[0] == 200
+        log = [json.loads(x) for x in (tmp_path / "cloud-bridge/claude-mode-changes.jsonl").read_text().splitlines()]
+        assert [(r["from"], r["to"]) for r in log] == [("api", "account"), ("account", "api")]
+        assert all(r["client"] == "127.0.0.1" for r in log)
+    finally:
+        srv.shutdown()
+
+
+def test_the_cloud_station_shows_the_mode_and_account_calls_without_api_cost(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    import time
+    now = time.time()
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - 60))
+    (tmp_path / "cloud-bridge").mkdir()
+    rows = [{"ts": ts, "model": "claude-opus-5-5", "backend": "anthropic", "ok": True,
+             "usage": {"prompt_tokens": 100, "completion_tokens": 10, "cost_usd": 0.5}},
+            {"ts": ts, "model": "claude-opus-5-5", "backend": "claude-cli", "ok": True, "claude_mode": "account",
+             "usage": {"prompt_tokens": 100, "completion_tokens": 10, "billing": "account", "list_cost_usd": 0.25}}]
+    (tmp_path / "cloud-bridge/calls.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+    F.set_claude_mode("account", "test")
+    st = F.cloud_station(now)
+    m = st["models"][0]
+    assert st["claude_mode"]["mode"] == "account" and st["cost_today_usd"] == 0.5
+    assert m["today"]["calls"] == 2 and m["today"]["account_calls"] == 1 and m["today"]["list_cost_usd"] == 0.25

@@ -269,6 +269,33 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._send(json.dumps(body, ensure_ascii=False).encode(), "application/json")
 
+    def do_POST(self):  # noqa: N802 - http.server API
+        """The floor's only control (owner 2026-11-02): the cloud line's Claude mode, `api` or `account`. A JSON body,
+        the control header and (when the browser sends one) a same-host Origin; nothing else is writable."""
+        u = urlparse(self.path)
+        if u.path != "/claude-mode":
+            self.send_error(404)
+            return
+        origin = self.headers.get("Origin")
+        if self.headers.get("X-Forge-Control") != "claude-mode" or (origin and urlparse(origin).netloc != self.headers.get("Host")):
+            self.send_error(403)
+            return
+        n = int(self.headers.get("Content-Length") or 0)
+        if not 0 < n <= 200 or "application/json" not in (self.headers.get("Content-Type") or ""):
+            self.send_error(400)
+            return
+        from .floor_api import set_claude_mode
+
+        try:
+            body = set_claude_mode(str(json.loads(self.rfile.read(n)).get("mode")), self.client_address[0])
+        except (ValueError, AttributeError):
+            self.send_error(400, "mode must be api or account")
+            return
+        except FileNotFoundError:
+            self.send_error(409, "no cloud line on this floor")
+            return
+        self._send(json.dumps(body).encode(), "application/json")
+
     def _send(self, data: bytes, ctype: str) -> None:
         self.send_response(200)
         self.send_header("Content-Type", ctype)

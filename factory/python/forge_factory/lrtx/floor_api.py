@@ -197,7 +197,7 @@ def cloud_station(now: float) -> dict | None:
             u["cost_usd"] = ((int(u.get("prompt_tokens") or 0) - cached) * rate.get("input", 0) + cached * rate.get("cached", 0)
                              + int(u.get("completion_tokens") or 0) * rate.get("output", 0)) / 1e6
             m["price_source"] = rate.get("source", "floor display rate")
-        m["priced"] = m["priced"] or u.get("cost_usd") is not None
+        m["priced"] = m["priced"] or u.get("cost_usd") is not None or u.get("billing") == "account"
         m["last_ts"] = max(m["last_ts"], t)
         for k in (["today", "hour"] if t >= hour_ago else ["today"]):
             a = m[k]
@@ -207,14 +207,53 @@ def cloud_station(now: float) -> dict | None:
                            ("cached", "cached_prompt_tokens"), ("cached", "cache_read_tokens")):
                 a[f] += int(u.get(key) or 0)
             a["cost_usd"] = round(a["cost_usd"] + float(u.get("cost_usd") or 0), 4)
+            if u.get("billing") == "account":  # answered by the owner's Claude account: no API charge
+                a["account_calls"] += 1
+                a["list_cost_usd"] = round(a["list_cost_usd"] + float(u.get("list_cost_usd") or 0), 4)
     for m in models.values():
         m["last_s"] = round(now - m.pop("last_ts")) if m.get("last_ts") else None
     return {"kind": "cloud_api", "available": True, "models": sorted(models.values(), key=lambda x: x["model"]),
-            "cost_today_usd": round(sum(m["today"]["cost_usd"] for m in models.values()), 2)}
+            "cost_today_usd": round(sum(m["today"]["cost_usd"] for m in models.values()), 2), "claude_mode": claude_mode()}
 
 
 def _api_zero() -> dict:
-    return {"calls": 0, "failed": 0, "prompt": 0, "completion": 0, "reasoning": 0, "cached": 0, "cost_usd": 0.0}
+    return {"calls": 0, "failed": 0, "prompt": 0, "completion": 0, "reasoning": 0, "cached": 0, "cost_usd": 0.0,
+            "account_calls": 0, "list_cost_usd": 0.0}
+
+
+CLAUDE_MODES = ("api", "account")
+
+
+def claude_mode_file() -> Path:
+    return state_root() / "cloud-bridge/claude-mode.json"
+
+
+def claude_mode() -> dict:
+    """Owner 2026-11-02 ("Claude API/Account mode"): which way the cloud line's Claude calls go. The bridge reads the same
+    file per call; missing or unreadable is `api` (the authorized default)."""
+    try:
+        d = json.loads(claude_mode_file().read_text())
+    except (OSError, ValueError):
+        return {"mode": "api", "since": None}
+    mode = d.get("mode") if isinstance(d, dict) and d.get("mode") in CLAUDE_MODES else "api"
+    return {"mode": mode, "since": d.get("since") if isinstance(d, dict) else None}
+
+
+def set_claude_mode(mode: str, client: str) -> dict:
+    """The floor's only write: the Claude mode, one of two values; every switch is logged (who, from, to, when)."""
+    if mode not in CLAUDE_MODES:
+        raise ValueError("CLAUDE_MODE_INVALID")
+    if not (state_root() / "cloud-bridge").is_dir():
+        raise FileNotFoundError("NO_CLOUD_LINE")
+    before = claude_mode()["mode"]
+    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    f = claude_mode_file()
+    tmp = f.with_suffix(".tmp")
+    tmp.write_text(json.dumps({"schema": "forge-c/claude-mode/1", "mode": mode, "since": now}) + "\n")
+    os.replace(tmp, f)
+    with (f.parent / "claude-mode-changes.jsonl").open("a") as log:
+        log.write(json.dumps({"ts": now, "from": before, "to": mode, "client": client[:64]}, sort_keys=True) + "\n")
+    return claude_mode()
 
 
 def station(now: float) -> dict:
