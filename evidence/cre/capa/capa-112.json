@@ -1,0 +1,101 @@
+{
+ "CAPA-112": {
+  "history": [
+   {
+    "at": "2026-11-02T14:25:55.279098Z",
+    "capa_id": "CAPA-112",
+    "evidence": "[\"cmp-swe1-crcl-api-constants-unavailable\"]",
+    "from_state": null,
+    "reason": "Run CMP-SWE1-CRCL-06 BLOCKED STUCK: SWE.1 had no delivered argument constants",
+    "seq": 840,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T14:25:55.340499Z",
+    "capa_id": "CAPA-112",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 841,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T14:25:55.463227Z",
+    "capa_id": "CAPA-112",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-112 assigned",
+    "seq": 842,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T14:26:03.773974Z",
+    "capa_id": "CAPA-112",
+    "evidence": "[\"reproducer-run:rr-df4599a9436bb737cc78\", \"reproducer-run:rr-88d11499664be6d03c88\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 843,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T14:26:03.798653Z",
+    "capa_id": "CAPA-112",
+    "evidence": "[\"git:b846dc8157cb..1089e6b22ccf\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 1089e6b22ccf (patch 17373 bytes)",
+    "seq": 844,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T14:29:23.143488Z",
+    "capa_id": "CAPA-112",
+    "evidence": "[\"reproducer-run:rr-899a252c76fe6e9bedcf\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-112 absent at 1089e6b22ccf",
+    "seq": 845,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T14:29:23.162640Z",
+    "capa_id": "CAPA-112",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 846,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-5072d280d7e8a916588263ddb3595e3337c29f38",
+   "b846dc8157cb3602c14dd82c081568965e307d41",
+   "1089e6b22ccfa611f2760331bba5a6a23b580d82",
+   "pd-9ee21faa57aff5952ca4"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<1089e6b22ccf"
+   ],
+   "candidate_patch_sha256": "32ec3006f613362df79137399410b62a38ad1537a5d64d6967d74a68b5fb51a6",
+   "capa_id": "CAPA-112",
+   "created_at": "2026-11-02T14:25:55.279098Z",
+   "event_ids": [],
+   "incident_ids": [
+    "cmp-swe1-crcl-api-constants-unavailable"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-112",
+   "reproducer_id": "RPR-112",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-df4599a9436bb737cc78",
+    "reproducer-run:rr-88d11499664be6d03c88"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T14:29:23.162640Z"
+  }
+ }
+}

@@ -1190,3 +1190,13 @@ reproducers:
     operations: [lrtx/review inspector notes]
     root_cause: "In instance mode the SWE.2 inspector notes carried the fixed ADR-0009 text (driver uses only the extern volatile uint32_t register array), so the correct caller-instance architecture failed SWE2-02/04/06 three times (BLOCKED STUCK SAME_ITEM_FAILED_3X)."
     remedy: "An instance-mode work order's SWE.2/SWE.3 inspectors get the declared caller instance (type, parameter, device header, instance macro) as the required register access."
+  - id: RPR-112
+    script: rpr112_brownfield_swe1_without_api_constants.py
+    sha256: 9b3a571a32c4dcc216ab3529bd2ebd06ed041368e0e198a8734edcff53fd161f
+    symptom_signature: "brownfield SWE.1 author or inspector sources lack the frozen API argument constants of a scoped function"
+    observed_in: "Fabro runs WO-F014-CMP-SWE1-CRCL-20261102-05 and -06 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: b846dc8157cb3602c14dd82c081568965e307d41
+    error_codes: []
+    operations: [workorder prepare (brownfield intake), lrtx/swe1 author packet, lrtx/review SWE.1 evidence]
+    root_cause: "A FROZEN brownfield order's SWE.1 author and inspector never received the delivered API's argument constants (FR-007 kept the whole delivery out until after SWE.1): the requirements of LL_CRC_SetPolynomialSize and LL_CRC_Set*DataReverseMode named sizes and reversal modes without the LL_CRC_POLYLENGTH_* / LL_CRC_*DATA_REVERSE_* argument values, and the inspector failed SWE1-02 (not feasible / objectively verifiable against the frozen interface) three times: BLOCKED STUCK SAME_ITEM_FAILED_3X."
+    remedy: "At intake the factory extracts, for each scoped delivered function, the constant names its arguments accept and its queries return (the function's @arg lists, kept only for object-like macros of the delivered code) with their evaluated values, declares them as the hash-bound input inputs/delivered-interface.json, and gives it to the SWE.1 register-task authors and the SWE.1 inspector; no function body, declaration or comment text is included."
