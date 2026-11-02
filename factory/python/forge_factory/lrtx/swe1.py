@@ -569,14 +569,18 @@ def budget_requirements(ws: Path, sysname: str) -> list[dict]:
 
     performance = selected(ws)
     if performance:
+        from ..mcp.servers.sim import measurement_profile
+
+        where = measurement_profile(ws)  # CAPA-110: name the one measurement configuration, not "the pinned profile"
         source = "work-order simulation-only performance allocation; not a reference-manual or silicon timing claim"
         for key, limit, units in (("cpu", performance["instructions_per_call"], "executed target instructions"),
                                   ("time", performance["microseconds_per_call"], "microseconds of virtual time")):
             requirements.append({"key": "budget_simulation_" + key,
-                                 "statement": f"When a scoped API is measured in the pinned Renode profile at "
+                                 "statement": f"When a scoped API is measured in the factory's pinned Renode simulation at "
                                  f"{performance['performance_mips']} MIPS without injected interrupts or bus stalls, "
                                  f"the {sysname} shall complete each measured call within {limit} {units}.",
-                                 "source": source, "verification": "SWE.6 Robot checks the independent Renode entry/return "
+                                 "source": source, "verification": f"Measurement configuration: {where}. "
+                                 "SWE.6 Robot checks the independent Renode entry/return "
                                  "instruction and virtual-time records for every scoped function; missing, incomplete or "
                                  "over-budget measurements fail. Run Target Scenario on the declared test, then "
                                  "Simulation Performance Should Meet Budget; no hardware WCET is established.",
