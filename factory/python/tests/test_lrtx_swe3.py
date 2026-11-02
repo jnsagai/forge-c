@@ -208,3 +208,41 @@ def test_capa118_baseline_frozen_after_rework_carries_the_reworked_as_built_desi
     (ws2 / rel).write_text(text.replace("@enduml", "note left: refined by the author\n@enduml"))
     unit_scaffold.scaffold(ws2)
     assert "refined by the author" in (ws2 / rel).read_text()
+
+
+@pytest.mark.skipif(not TOOLS, reason="gcc/arm-none-eabi-gcc/clang/cppcheck not installed")
+def test_capa121_design_carries_the_static_call_bound_of_the_simulation_budget(ws2, monkeypatch):
+    """CAPA-121 (runs WO-F014-CMP-SWE3-OBL/IWDG-20261102-09): the rendered design gave flash/RAM/stack but no bound for
+    the simulation performance requirements and SWE3-03 failed three times. The factory renders the static per-call
+    bound of the measured wrappers (frozen evidence file); orders without the budget are unchanged."""
+    from forge_factory import static_timing as ST
+    from forge_factory.inspection import unit_scaffold
+    from forge_factory.inspection.engine import Store
+    from forge_factory.lrtx import review
+
+    monkeypatch.setattr(S, "call", _scripted(CODE, []))
+    assert swe3.visit_code(ws2, "m")["status"] == "PASS"
+    unit_scaffold.scaffold(ws2)
+    assert swe3.visit_design(ws2)["status"] == "PASS"
+    assert "## Timing bound" not in (ws2 / "workproducts/SWE.3/detailed_design.md").read_text()
+    assert not (ws2 / ST.EVIDENCE).exists()
+    mp = ws2 / ".forge-run/manifest.json"
+    m = json.loads(mp.read_text())
+    m["simulation_performance"] = {"schema": "forge-c/simulation-performance-budget/1", "instructions_per_call": 64,
+                                   "microseconds_per_call": 100, "performance_mips": 100,
+                                   "test_source": "software/tests/target/test_performance.c"}
+    mp.write_text(json.dumps(m, indent=1))
+    assert swe3.visit_design(ws2)["status"] == "PASS"
+    dd = (ws2 / "workproducts/SWE.3/detailed_design.md").read_text()
+    rec = json.loads((ws2 / ST.EVIDENCE).read_text())
+    assert rec["status"] == "WITHIN_BUDGET" and len(rec["functions"]) == 9
+    for fn, r in rec["functions"].items():
+        assert f"| {fn} | {r['static_instructions']} | {r['virtual_ns_bound']} | WITHIN_BUDGET |" in dd
+    assert "## Timing bound (static analysis)" in dd and "hardware WCET is not claimed" in dd
+    assert _gate(ws2, "SWE.3", monkeypatch) == 0
+    bl = Store(ws2).latest_baseline("SWE.3")
+    assert ST.EVIDENCE in bl["files"]
+    got, srcs = review.evidence(ws2, "SWE.3")
+    assert json.loads({s["path"]: s["text"] for s in srcs}[ST.EVIDENCE]) == rec
+    item = next(c for c in Store(ws2).applicable(Store(ws2).checklist("SWE.3"))["checks"] if c["id"] == "SWE3-03")
+    assert review.item_packet(ws2, "SWE.3", item, got, srcs, "m")["accounting"]["fits"]
