@@ -66,7 +66,7 @@ def test_the_paired_swe1_mutations_seed_one_named_defect_each(tmp_path):
     base = ws.parent / "base"
     shutil.copytree(ws, base)
     cases = {c["id"]: c for c in SD.CATALOGUE}
-    assert SD.CATALOGUE_VERSION == "lrtx-seeded-2"
+    assert SD.CATALOGUE_VERSION == "lrtx-seeded-3"
     for cid, target, check in (
             ("S1-EFFECT", "SWR-001", lambda w: json.loads((w / "workproducts/SWE.1/register_effects.json").read_text())
              ["effects"][0]["op"] == "clear"),

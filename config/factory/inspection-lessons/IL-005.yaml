@@ -1,0 +1,33 @@
+# Cloud cross-inspection 2026-11-02, class X5 (candidate IL-C1): the local inspector passed value-taking requirements
+# whose input domain was undecided (2 of the 5 local false PASSes; downstream SWE.4/SWE.6 rework)
+id: IL-005
+version: 1
+purpose: DETECTION
+state: PROPOSED
+scope:
+  phase: SWE.1
+  items: [SWE1-02, SWE1-03]
+  layers: [LL, HAL]
+  requires: [workproducts/SWE.1/software_requirements.md]
+statement: >-
+  A requirement that writes a caller-supplied value into a field of limited width is complete only when it states
+  what happens to every value of its parameter type: a caller precondition that excludes the values the field cannot
+  hold, or the driver behaviour for them (masking, rejection or saturation), with a matching verification. An open
+  point that leaves this choice or a recommended minimum value undecided is an ambiguity of the requirement, not a
+  documented assumption.
+source: {kind: contract, ref: "factory/python/forge_factory/inspection/assessment_context.py#view"}
+origin: {owner_decision: "2026-11-02: production uses local models only; cloud findings the local inspector missed become validated lessons", harvest: "cloud cross-inspection 2026-11-02", classes: [X5]}
+evidence_refs:
+  - factory/release-manager/checklists/SWE.1.yaml
+  - factory/python/forge_factory/inspection/assessment_context.py
+pending_evidence_refs:  # the cloud cross-inspection evidence, to be committed (must resolve before VALIDATED)
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/results.json
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/harvest.json
+must_still_detect: [S1-DOMAIN]
+detection:
+  real_misses:
+    - {work_order: WO-F014-SWE2-IWDG-20261101-02, baseline_id: BL-SWE.1-001, baseline_hash: 2fbf1e2b4f3908c0dc47d5c38a52e916d88893fa358b6028d76666a133db9f0c, item: SWE1-02, element: SWR-005}
+    - {work_order: WO-F014-SWE1-IWDG-20261101-03, baseline_id: BL-SWE.1-003, baseline_hash: 247af052ddd811c7ec0c71339ebb9a0e4c1b6c169d42d96f76c3e1015c4a6cb2, item: SWE1-02, element: SWR-005}
+  certified_clean:  # gpt-6.1-sol fresh cross-inspection PASS on every SWE.1 item (2026-11-02)
+    - {holdout: WO-F014-CMP-SWE1-OBL-20261102-05, baseline_id: BL-SWE.1-003, baseline_hash: 079c0dc3c798b0bde768c7f5774fe8b79d397297fd8215acac2425127aa4d835, certified_by: "cloud cross-inspection INS-SWE.1-004 PASS"}
+    - {holdout: WO-F014-CMP-SWE1-CRCL-20261102-07, baseline_id: BL-SWE.1-002, baseline_hash: 33fc327d6a717fd5ae4f8a89effbfbff6044d7b6d37213d95fe7dc14538b98c5, certified_by: "cloud cross-inspection PASS"}
