@@ -1,0 +1,32 @@
+# Cloud cross-inspection 2026-11-02, class X7 (candidate IL-C3): verification criteria that a wrong implementation
+# also passes (SWE.1 analogue of S4-VACUOUS)
+id: IL-008
+version: 1
+purpose: DETECTION
+state: PROPOSED
+scope:
+  phase: SWE.1
+  items: [SWE1-02, SWE1-06]
+  layers: [LL, HAL]
+  requires: [workproducts/SWE.1/software_requirements.md]
+statement: >-
+  A verification criterion must be able to fail for a wrong implementation: the value a write case uses differs from
+  the initial and reset contents of the field, a value-dependent requirement is checked with a value that a constant
+  implementation would not produce, a preservation case starts from non-zero surrounding contents, and every function
+  a requirement names has its own pass condition.
+source: {kind: contract, ref: "factory/release-manager/checklists/SWE.1.yaml#SWE1-02"}
+origin: {owner_decision: "2026-11-02: production uses local models only; cloud findings the local inspector missed become validated lessons", harvest: "cloud cross-inspection 2026-11-02", classes: [X7]}
+evidence_refs:
+  - factory/release-manager/checklists/SWE.1.yaml
+  - factory/python/forge_factory/inspection/assessment_context.py
+pending_evidence_refs:  # the cloud cross-inspection evidence, to be committed (must resolve before VALIDATED)
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/results.json
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/harvest.json
+must_still_detect: [S1-VERIFRESET]
+detection:
+  real_misses:
+    - {work_order: WO-F014-SWE2-OBL-20261101-01, baseline_id: BL-SWE.1-001, baseline_hash: 5c1770617b28b2992a34b356d205df3ca1545225a3ba800bd703405e4173df01, item: SWE1-02, element: SWR-001}
+    - {work_order: WO-F014-SWE2-OBL-20261101-01, baseline_id: BL-SWE.1-001, baseline_hash: 5c1770617b28b2992a34b356d205df3ca1545225a3ba800bd703405e4173df01, item: SWE1-06, element: SWR-005}
+  certified_clean:  # gpt-6.1-sol fresh cross-inspection PASS on every SWE.1 item (2026-11-02)
+    - {holdout: WO-F014-CMP-SWE1-OBL-20261102-05, baseline_id: BL-SWE.1-003, baseline_hash: 079c0dc3c798b0bde768c7f5774fe8b79d397297fd8215acac2425127aa4d835, certified_by: "cloud cross-inspection INS-SWE.1-004 PASS"}
+    - {holdout: WO-F014-CMP-SWE1-CRCL-20261102-07, baseline_id: BL-SWE.1-002, baseline_hash: 33fc327d6a717fd5ae4f8a89effbfbff6044d7b6d37213d95fe7dc14538b98c5, certified_by: "cloud cross-inspection PASS"}

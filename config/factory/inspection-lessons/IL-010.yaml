@@ -1,0 +1,33 @@
+# OPTIONAL. Cloud cross-inspection 2026-11-02, class X11 (candidate IL-C6): the trace row names another section than
+# the requirement text. Fallback only: if the deterministic trace-section check (harvest R3, another change) covers
+# this class, retract this lesson instead of trialling it.
+id: IL-010
+version: 1
+purpose: DETECTION
+state: PROPOSED
+optional: "only if the deterministic trace-section check (harvest R3) does not cover class X11"
+scope:
+  phase: SWE.1
+  items: [SWE1-01, SWE1-05]
+  layers: [LL, HAL]
+  requires: [workproducts/SWE.1/software_requirements.md, traceability/upstream_gaps.md]
+statement: >-
+  Each requirement traces to the section that describes the behaviour it states. When the requirement text names one
+  section and its source page or trace row names another, the trace is inconsistent; an open point that mentions the
+  right section does not correct the trace row.
+source: {kind: contract, ref: "factory/release-manager/checklists/SWE.1.yaml#SWE1-05"}
+origin: {owner_decision: "2026-11-02: production uses local models only; cloud findings the local inspector missed become validated lessons", harvest: "cloud cross-inspection 2026-11-02", classes: [X11]}
+evidence_refs:
+  - factory/release-manager/checklists/SWE.1.yaml
+  - factory/python/forge_factory/inspection/assessment_context.py
+pending_evidence_refs:  # the cloud cross-inspection evidence, to be committed (must resolve before VALIDATED)
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/results.json
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/harvest.json
+must_still_detect: [S1-TRACESEC]
+detection:
+  real_misses:
+    - {work_order: WO-F014-SWE1-CRCL-20261102-L12, baseline_id: BL-SWE.1-001, baseline_hash: 95824649ba5be476ce9c29d1d88f098bd53e0deddb1d9f1ddb4cc583d7f330d4, item: SWE1-05, element: SWR-006}
+    - {work_order: WO-F014-SWE1-CRCL-20261102-L12, baseline_id: BL-SWE.1-001, baseline_hash: 95824649ba5be476ce9c29d1d88f098bd53e0deddb1d9f1ddb4cc583d7f330d4, item: SWE1-01, element: SWR-006}
+  certified_clean:  # gpt-6.1-sol fresh cross-inspection PASS on every SWE.1 item (2026-11-02)
+    - {holdout: WO-F014-CMP-SWE1-OBL-20261102-05, baseline_id: BL-SWE.1-003, baseline_hash: 079c0dc3c798b0bde768c7f5774fe8b79d397297fd8215acac2425127aa4d835, certified_by: "cloud cross-inspection INS-SWE.1-004 PASS"}
+    - {holdout: WO-F014-CMP-SWE1-CRCL-20261102-07, baseline_id: BL-SWE.1-002, baseline_hash: 33fc327d6a717fd5ae4f8a89effbfbff6044d7b6d37213d95fe7dc14538b98c5, certified_by: "cloud cross-inspection PASS"}

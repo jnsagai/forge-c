@@ -28,7 +28,8 @@ from pathlib import Path
 
 from ..common import pretty_json, sha256_bytes, utc_now
 
-CATALOGUE_VERSION = "lrtx-seeded-2"  # -2 (F011-T045): the paired SWE.1 defects of the inspection lessons
+CATALOGUE_VERSION = "lrtx-seeded-3"  # -2 (F011-T045): the paired SWE.1 defects of the inspection lessons; -3 (owner
+# 2026-11-02): the paired SWE.1 defects of the detection lessons
 LESSON_SET: dict = {"value": None}  # F011-T044: the inspection lesson set of this run (--lessons), in every report
 OPTIONS: dict = {"value": None}  # F011-T048/T049: the semantic inspector's sampling and coverage switch, in every report
 TRIAL: dict = {"value": None}  # a detection lesson's paired trial arm (knowledge/detection_trial.py), in every report
@@ -166,6 +167,262 @@ def vacuous_test(ws: Path) -> str:
     return m.group(1)
 
 
+# lrtx-seeded-3 (owner 2026-11-02, cloud cross-inspection): the SWE.1 defect classes the local inspector missed, paired
+# with the PROPOSED detection lessons. Generic synthetic mutations of one requirement each; a holdout without a site for
+# a class is NOT_APPLICABLE for it (never forced).
+def _req_blocks(md: str) -> list[tuple[str, int, int]]:
+    """(SWR id, start, end) of each requirement block (its line and its indented sub-lines)."""
+    return [(m.group(1), m.start(), m.end()) for m in
+            re.finditer(r"^- \*\*(SWR-\d{3})\*\*.*\n(?:  - .*\n?)*", md, re.M)]
+
+
+def _statement(block: str) -> str:
+    return block.split("\n", 1)[0]
+
+
+def _write_swrs(ws: Path) -> list[str]:
+    _p, eff = _effects(ws)
+    return list(dict.fromkeys(e["swr"] for e in eff.get("effects") or [] if e.get("op") in ("write", "set", "clear")))
+
+
+def _open_point(md: str, swr: str, text: str) -> str:
+    op = f"- **OP-{sha256_bytes(f'seeded:{swr}:{text}'.encode())[:16]}** (input scope: {swr}): {text}"
+    if re.search(r"^## Open points\s*$", md, re.M):
+        return re.sub(r"(^## Open points\s*\n(?:\s*\n)?)", lambda m: m.group(1) + op + "\n", md, count=1, flags=re.M)
+    return md.rstrip("\n") + "\n\n## Open points\n\n" + op + "\n"
+
+
+DOMAIN_CLAUSES = (  # the clause of a value-taking requirement that decides its input domain
+    re.compile(r"\s+(?:in|within) (?:the|its) [\w -]*?range(?: (?:of )?[\w.]+ (?:through|to|-) [\w.]+)?", re.I),
+    re.compile(r",?\s+(?:masking|masked|confined|truncated|saturated|clamped|limited) (?:it |the value )?to [^.]*", re.I),
+    re.compile(r"\s+and discards? (?:all )?(?:requested )?bits above [^.,;]*", re.I),
+)
+VALUE_TAKING = re.compile(r"\b(?:requested|supplied|caller-supplied|given|argument|parameter)\b", re.I)
+
+
+def undecided_domain(ws: Path) -> str:
+    """S1-DOMAIN: the input-domain clause of the first value-taking write requirement is removed and an open point
+    says the handling of out-of-range values (and a minimum value) is undecided."""
+    md = _req_md(ws).read_text()
+    writes = set(_write_swrs(ws))
+    for swr, a, b in _req_blocks(md):
+        st = _statement(md[a:b])
+        if swr not in writes or not VALUE_TAKING.search(st):
+            continue
+        new = st
+        for rx in DOMAIN_CLAUSES:
+            new = rx.sub("", new)
+        new = re.sub(r"\bbits [\d:]+ of (the requested value)", r"\1", new)
+        if new != st:
+            md = md[:a] + md[a:b].replace(st, new, 1) + md[b:]
+            _req_md(ws).write_text(_open_point(md, swr, (
+                "It is undecided whether a requested value outside the field range is rejected, masked or excluded "
+                "by a caller precondition, and which minimum value the driver supports.")))
+            return swr
+    raise ValueError("NO_MUTATION_SITE:undecided_domain")
+
+
+def _obligations(ws: Path) -> tuple[dict, dict[str, list[str]]]:
+    from ..assurance.owner_obligations import declared, parse
+
+    doc = declared(ws)
+    if doc is None:
+        raise ValueError("NO_MUTATION_SITE:no owner obligations declared")
+    return doc, parse(_req_md(ws).read_text())[0]
+
+
+def decline_obligation(ws: Path) -> str:
+    """S1-OBLDECLINE: an implemented owner obligation (non-critical first) is filed as an obligation gap 'because the
+    rules forbid an invented contract'; a requirement that implemented only it is removed with its effects."""
+    doc, mapping = _obligations(ws)
+    cited = [o for o in sorted(doc["obligations"], key=lambda o: bool(o.get("critical")))
+             if any(o["id"] in ids for ids in mapping.values())]
+    if not cited:
+        raise ValueError("NO_MUTATION_SITE:decline_obligation")
+    obl = cited[0]["id"]
+    md = _req_md(ws).read_text()
+    for swr, ids in mapping.items():
+        if obl not in ids:
+            continue
+        rest = [i for i in ids if i != obl]
+        if rest:
+            md = re.sub(rf"(^- \*\*{swr}\*\*.*\n(?:  - .*\n)*?)  - Obligations:.*\n",
+                        lambda m: m.group(1) + f"  - Obligations: {', '.join(rest)}\n", md, count=1, flags=re.M)
+        else:
+            md = re.sub(rf"^- \*\*{swr}\*\*.*\n(?:  - .*\n)*", "", md, count=1, flags=re.M)
+            p, eff = _effects(ws)
+            eff["effects"] = [e for e in eff.get("effects") or [] if e.get("swr") != swr]
+            p.write_text(json.dumps(eff, indent=2))
+    reason = ("It asserts a behavioural contract the inputs do not establish, and the rules forbid inventing a "
+              "contract, so no requirement is written for it.")
+    bullet = f"- **{obl}**: {reason}"
+    if re.search(r"^## Obligation gaps\s*$", md, re.M):
+        md = re.sub(r"(^## Obligation gaps\s*\n(?:\s*\n)?)", lambda m: m.group(1) + bullet + "\n", md, count=1,
+                    flags=re.M)
+    else:
+        md = md.rstrip("\n") + "\n\n## Obligation gaps\n\n" + bullet + "\n"
+    _req_md(ws).write_text(md)
+    csv_p = ws / "traceability/obligations_to_requirements.csv"
+    if csv_p.is_file():
+        import csv
+
+        rows = list(csv.reader(io.StringIO(csv_p.read_text())))
+        rows = [rows[0]] + [r for r in rows[1:] if r and r[0] != obl] + [[obl, "", reason]]
+        out = io.StringIO()
+        csv.writer(out, lineterminator="\n").writerows(rows)
+        csv_p.write_text(out.getvalue())
+    return obl
+
+
+NARROW = re.compile(r"\b(not|no|never|without)\s+(read or write|read and write|reads or writes|reading or writing|"
+                    r"access(?:es|ing)?)\b(?!\s+(?:setup|rights?|control|protection))", re.I)
+NARROWED = {"read or write": "write", "read and write": "write", "reads or writes": "writes",
+            "reading or writing": "writing", "access": "write", "accesses": "writes", "accessing": "writing"}
+
+
+def narrow_obligation(ws: Path) -> str:
+    """S1-OBLNARROW: a requirement that implements an owner obligation prohibiting accesses is narrowed to prohibit
+    writes only; the obligation mapping stays and no gap reason is given."""
+    _doc, mapping = _obligations(ws)
+    md = _req_md(ws).read_text()
+    for swr, a, b in _req_blocks(md):
+        st = _statement(md[a:b])
+        if mapping.get(swr) and NARROW.search(st):
+            new = NARROW.sub(lambda m: f"{m.group(1)} {NARROWED[m.group(2).lower()]}", st, count=1)
+            _req_md(ws).write_text(md[:a] + md[a:b].replace(st, new, 1) + md[b:])
+            return swr
+    raise ValueError("NO_MUTATION_SITE:narrow_obligation")
+
+
+PRECONDITIONS = (  # a caller precondition that establishes the hardware enabling condition of a write
+    re.compile(r"^(- \*\*SWR-\d{3}\*\* )While (?!no )[^,]+, (\w)", re.I),
+    re.compile(r",? provided (?:that )?[^,.;]+", re.I),
+    re.compile(r",? only (?:when|if|after|once) [^,.;]+", re.I),
+    re.compile(r"\s+(?:after|once) the caller has [^,.;]+", re.I),
+)
+
+
+def drop_precondition(ws: Path) -> str:
+    """S1-PRECOND: the caller-precondition clause of the first write requirement that has one is deleted."""
+    md = _req_md(ws).read_text()
+    writes = set(_write_swrs(ws))
+    for swr, a, b in _req_blocks(md):
+        st = _statement(md[a:b])
+        if swr not in writes:
+            continue
+        for i, rx in enumerate(PRECONDITIONS):
+            if rx.search(st):
+                new = rx.sub(lambda m: m.group(1) + m.group(2).upper(), st, count=1) if i == 0 else rx.sub("", st,
+                                                                                                         count=1)
+                _req_md(ws).write_text(md[:a] + md[a:b].replace(st, new, 1) + md[b:])
+                return swr
+    raise ValueError("NO_MUTATION_SITE:drop_precondition")
+
+
+def _reset_literal(lit: str, text: str) -> str:
+    """The field's reset value when the verification states one, else the zero-initialised register-array contents."""
+    m = re.search(r"reset value (?:of \S+ )?\(?(0[xX][0-9A-Fa-f]+[uU]?)", text)
+    if m:
+        return m.group(1)
+    h = re.fullmatch(r"(0[xX])([0-9A-Fa-f]+)([uU]?)", lit)
+    return f"{h.group(1)}{'0' * len(h.group(2))}{h.group(3)}" if h else "0U"
+
+
+def reset_value_verification(ws: Path) -> str:
+    """S1-VERIFRESET: the verification of the first caller-value write requirement only checks the field's reset (or
+    zero-initialised) value, so an implementation that never writes passes; its effects case is made consistent."""
+    md = _req_md(ws).read_text()
+    p, eff = _effects(ws)
+    cases = {e["swr"]: e for e in eff.get("effects") or [] if e.get("op") == "write" and e.get("value") is not None}
+    for swr, a, b in _req_blocks(md):
+        block = md[a:b]
+        st = _statement(block)
+        e = cases.get(swr)
+        ver = re.search(r"^  - Verification:.*$", block, re.M)
+        if e is None or ver is None or str(e["value"]) in st or not VALUE_TAKING.search(st) or \
+                not re.search(r"\bshall write\b", st) or f"{e.get('register')}.{e.get('field')}" not in st:
+            continue
+        reset = _reset_literal(str(e["value"]), ver.group(0))
+        new = (f"  - Verification: Host unit test calls the function of this requirement once with the value {reset} "
+               f"on the register array and passes when the written field holds {reset}.")
+        md = md[:a] + block.replace(ver.group(0), new, 1) + md[b:]
+        _req_md(ws).write_text(md)
+        e["value"] = reset if isinstance(e["value"], str) else int(reset.rstrip("uU"), 0)
+        for c in e.get("api_calls") or []:
+            c["args"] = [int(reset.rstrip("uU"), 0) if isinstance(x, int) else x for x in c.get("args") or []]
+        p.write_text(json.dumps(eff, indent=2))
+        return swr
+    raise ValueError("NO_MUTATION_SITE:reset_value_verification")
+
+
+PRESERVATION = re.compile(r"\b(?:change|modify|alter)s? only the (?:named|addressed|specified)\b|"
+                          r"\bleave (?:the )?(?:remaining|other) bits\b|"
+                          r"\bleave every (?:other )?(?:register )?(?:field|bit)s?\b[^.]*\bunchanged\b", re.I)
+FIELD_REF = re.compile(r"\b([A-Z][A-Z0-9]*_[A-Z0-9]+)\.([A-Z][A-Z0-9_]*)\b")
+
+
+def exactly_one_field(ws: Path) -> str:
+    """S1-XCUT: the cross-cutting preservation requirement is rewritten as 'exactly one named field changes per call'
+    while another requirement of the baseline changes two fields of one register."""
+    from .review_semantic import STARTUP
+
+    md = _req_md(ws).read_text()
+    _p, eff = _effects(ws)
+    per: dict[str, set] = {}
+    for e in eff.get("effects") or []:
+        if e.get("op") in ("write", "set", "clear"):
+            per.setdefault((e["swr"], e.get("register")), set()).add(e.get("field"))
+    multi = any(len(f) > 1 for f in per.values())
+    for swr, a, b in _req_blocks(md):
+        st = _statement(md[a:b])
+        regs: dict[str, set] = {}
+        for r, f in FIELD_REF.findall(st):
+            regs.setdefault(r, set()).add(f)
+        multi = multi or (swr in _write_swrs(ws) and any(len(f) > 1 for f in regs.values()))
+    if not multi:
+        raise ValueError("NO_MUTATION_SITE:exactly_one_field (no requirement changes two fields)")
+    for swr, a, b in _req_blocks(md):
+        st = _statement(md[a:b])
+        if STARTUP.search(st) or not PRESERVATION.search(st) or FIELD_REF.search(st):
+            continue  # the rule stated for all functions, not one function's own preservation clause
+        subj = re.search(r"\bthe ([^,]+?) shall\b", st)
+        if not subj:
+            continue
+        new = (f"- **{swr}** When writing to a register, the {subj.group(1)} shall change exactly one named field of "
+               "that register per call and leave every other bit of that register unchanged.")
+        _req_md(ws).write_text(md[:a] + md[a:b].replace(st, new, 1) + md[b:])
+        return swr
+    raise ValueError("NO_MUTATION_SITE:exactly_one_field (no cross-cutting preservation requirement)")
+
+
+def neighbour_trace_section(ws: Path) -> str:
+    """S1-TRACESEC (optional, paired with the optional trace-section lesson): one requirement's trace row (both trace
+    tables, kept consistent) names another source section of the baseline than the one its text and page cite."""
+    p = ws / "traceability/upstream_gaps.md"
+    if not p.is_file():
+        raise ValueError("NO_MUTATION_SITE:neighbour_trace_section")
+    t = p.read_text()
+    rows = re.findall(r"^\| (SWR-\d{3}) \| ([^|\s]+) \|$", t, re.M)
+    ups = list(dict.fromkeys(u for _s, u in rows if not u.upper().startswith("WO-")))
+    for swr, up in rows:
+        if up not in ups or len(ups) < 2:
+            continue
+        other = ups[(ups.index(up) + 1) % len(ups)]
+        t = re.sub(rf"^\| {swr} \| {re.escape(up)} \|$", f"| {swr} | {other} |", t, count=1, flags=re.M)
+
+        def move(m, swr=swr, up=up, other=other):
+            ids = [x.strip() for x in m.group(2).split(",") if x.strip()]
+            if m.group(1) == up:
+                ids = [x for x in ids if x != swr]
+            elif m.group(1) == other and swr not in ids:
+                ids = sorted(ids + [swr])
+            return f"| {m.group(1)} | {', '.join(ids)} |"
+        t = re.sub(r"^\| ([^|\s]+) \| ((?:SWR-\d{3}(?:, )?)+) \|$", move, t, flags=re.M)
+        p.write_text(t)
+        return swr
+    raise ValueError("NO_MUTATION_SITE:neighbour_trace_section")
+
+
 CATALOGUE = [
     {"id": "S1-OMIT", "phase": "SWE.1", "class": "omitted requirement", "apply": omit_requirement},
     {"id": "S1-QM", "phase": "SWE.1", "class": "safety-scope contradiction", "apply": safety_scope_qm},
@@ -179,6 +436,15 @@ CATALOGUE = [
     },
     {"id": "S1-GAPROW", "phase": "SWE.1", "class": "upstream gap not recorded", "apply": unrecord_allocation_gap},
     {"id": "S1-NOBUDGET", "phase": "SWE.1", "class": "missing resource budget", "apply": omit_budget, "alt": "budget_missing"},
+    {"id": "S1-DOMAIN", "phase": "SWE.1", "class": "undecided input domain", "apply": undecided_domain},
+    {"id": "S1-OBLDECLINE", "phase": "SWE.1", "class": "owner obligation filed as a gap", "apply": decline_obligation},
+    {"id": "S1-OBLNARROW", "phase": "SWE.1", "class": "requirement narrower than its obligation",
+     "apply": narrow_obligation},
+    {"id": "S1-PRECOND", "phase": "SWE.1", "class": "hardware enabling condition unassigned", "apply": drop_precondition},
+    {"id": "S1-VERIFRESET", "phase": "SWE.1", "class": "verification cannot fail", "apply": reset_value_verification},
+    {"id": "S1-XCUT", "phase": "SWE.1", "class": "cross-cutting rule contradicts a requirement",
+     "apply": exactly_one_field},
+    {"id": "S1-TRACESEC", "phase": "SWE.1", "class": "trace row names another section", "apply": neighbour_trace_section},
     {"id": "S3-INVERT", "phase": "SWE.3", "class": "inverted behaviour", "apply": invert_behaviour},
     {"id": "S3-COMMENT", "phase": "SWE.3", "class": "commented-out code", "apply": comment_out_write},
     {"id": "S4-VACUOUS", "phase": "SWE.4", "class": "wrong test property", "apply": vacuous_test},
