@@ -73,7 +73,9 @@ def open_visit(ws: Path, phase: str, resume: bool, findings_fn, max_calls: int, 
     sp.parent.mkdir(parents=True, exist_ok=True)
     sp.write_text(pretty_json(st))
     budget = {"calls": st["calls"], "max_calls": max_calls, "state": str(sp),
-              "deadline": time.monotonic() + time_budget_s if time_budget_s else None}
+              "deadline": time.monotonic() + time_budget_s if time_budget_s else None,
+              # CAPA-108: which visit and which of its node executions a rework answer was made in
+              "visit": st["started_at"], "execution": st.get("continuations", 0)}
     return budget, st["findings"]
 
 
@@ -149,6 +151,24 @@ def inherited_task(ws: Path, phase: str, task: str, base: dict, check) -> dict |
                                       "record_sha256": sha256_bytes(raw), "validated_at": utc_now()}}
 
 
+def _rework_mark(budget: dict, findings: list[str] | None) -> dict | None:
+    """The identity of a rework answer: its visit, node execution and the exact findings it answered (CAPA-108)."""
+    if not findings or not budget.get("visit"):
+        return None
+    from ..common import canonical_json, sha256_bytes
+
+    return {"visit": budget["visit"], "execution": budget.get("execution", 0),
+            "findings_sha256": sha256_bytes(canonical_json(list(findings)))}
+
+
+def _answered(old: dict | None, mark: dict) -> bool:
+    """The checkpoint answered these findings in an EARLIER node execution of this visit. Within one node execution a
+    repeated call with the same findings (a joint-check round) still re-runs the task as before."""
+    return (isinstance(old, dict) and old.get("visit") == mark["visit"]
+            and old.get("findings_sha256") == mark["findings_sha256"]
+            and isinstance(old.get("execution"), int) and old["execution"] < mark["execution"])
+
+
 def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findings: list[str] | None = None,
              max_repairs: int = 2) -> dict:
     """Build -> call -> validate -> localized repair, with checkpoint reuse. `build(findings, previous)` returns the
@@ -158,6 +178,17 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
     ck = _ckpt(ws, phase, task)
     prev = json.loads(ck.read_text()) if ck.is_file() else None
     base = build(None, None)
+    # author tasks only: an inspector's repeated round keeps its existing behaviour (inspection independence)
+    mark = _rework_mark(budget, findings) if str(base.get("role", "")).endswith("-author") else None
+    if (mark and prev and prev.get("status") == "VALID" and prev.get("base_hash") == base["input_hash"]
+            and _answered(prev.get("rework"), mark)):
+        # CAPA-108 (run WO-F014-CMP-SWE1-RCC-20261102-03): every resumed node execution of a rework visit re-sent the
+        # visit's findings to tasks that had already answered them in an earlier node execution; the visit restarted
+        # at its first task after each time box and never reached the rest. An answer to the same findings, on the
+        # same inputs, in the same visit, is that task's rework result: reuse it like an unchanged task.
+        errors = S.validate(prev.get("doc"), base["output_schema"]) or check(prev["doc"])
+        if not errors:
+            return {**prev, "reused": True}
     if prev is None and not findings:
         prev = inherited_task(ws, phase, task, base, check)
         if prev is not None:
@@ -241,6 +272,8 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         p = build(errs[:12], r["doc"]) if r["doc"] is not None and not r["errors"] else p
     rec = {"task": task, "status": "VALID" if doc is not None and not errs else "INVALID", "doc": doc,
            "errors": errs, "base_hash": base["input_hash"], "attempts": attempts, "at": utc_now(), "reused": False}
+    if mark and rec["status"] == "VALID":
+        rec["rework"] = mark
     earlier = ((prev or {}).get("history") or []) + ((prev or {}).get("attempts") or []) if findings else []
     if earlier:  # CAPA-079: a repair round keeps the earlier rounds' attempts (errors, usage), bounded
         rec["history"] = earlier[-12:]
@@ -331,20 +364,70 @@ def rework_findings(ws: Path, phase: str, since: str) -> list[str]:
     return out
 
 
-def route_findings(findings: list[str], amap: dict | None, default: str) -> dict[str, list[str]]:
-    """Task -> findings: by the SWR ids or effect case ids a finding names; anything unmapped goes to every task whose
-    requirements it might concern is unknown, so it is attached to the cross-cutting task and reported."""
+NOT_AUTHORED = frozenset({"budgets"})  # deterministic work-order rows: no author task can re-author them
+_SWR = r"SWR-\d{3,}"
+_SWR_RANGE = re.compile(rf"\b({_SWR})\s*(?:\u2013|\u2014|-|\.\.|to|through)\s*(?:SWR-)?(\d{{3,}})\b")
+_FIELD_MIN = 4  # a bare field name shorter than this is too likely ordinary text; REG.FIELD is always attributed
+
+
+def _named_swrs(f: str) -> list[str]:
+    """SWR ids a finding names, ranges ('SWR-001-SWR-010', 'SWR-001 to SWR-010') expanded (CAPA-108)."""
+    out = re.findall(rf"\b{_SWR}\b", f)
+    for m in _SWR_RANGE.finditer(f):
+        lo, hi = int(m.group(1)[4:]), int(m.group(2))
+        if lo < hi <= lo + 999:
+            out += [f"SWR-{n:03d}" for n in range(lo, hi + 1)]
+    return list(dict.fromkeys(out))
+
+
+def _named_tasks(f: str, tasks: dict) -> tuple[set[str], list[str]]:
+    """Register tasks a finding names by register, register field or RM section (CAPA-108). Named fields narrow a
+    register or section to the split tasks that own them; a register or section alone reaches all of its tasks."""
+    found, basis = set(), []
+    for reg in sorted({t["register"] for t in tasks.values()}):
+        regs = {k for k, t in tasks.items() if t["register"] == reg}
+        qualified = set(re.findall(rf"\b{re.escape(reg)}\.([A-Z][A-Z0-9_]*)\b", f))
+        bare = {fld for k in regs for fld in tasks[k]["fields"] if len(fld) >= _FIELD_MIN
+                and re.search(rf"(?<![A-Za-z0-9_.]){re.escape(fld)}\b", f)}
+        owners = {k for k in regs if (qualified | bare) & set(tasks[k]["fields"])}
+        section = next(iter({tasks[k]["section"] for k in regs}))
+        named = re.search(rf"\b{re.escape(reg)}\b", f) or (
+            section.count(".") >= 2 and re.search(rf"(?<![\d.]){re.escape(section)}(?![\d.])", f))
+        if owners:
+            found |= owners
+            basis.append(f"field:{reg}")
+        elif named:
+            found |= regs
+            basis.append(f"register:{reg}")
+    return found, basis
+
+
+def attribute_findings(findings: list[str], amap: dict | None, default: str,
+                       tasks: dict[str, dict] | None = None) -> tuple[dict[str, list[str]], list[dict]]:
+    """Task -> findings, with one attribution record per finding (CAPA-108).
+
+    A finding reaches the tasks it names: task ids, SWR ids (and ranges) through the assembly map, effect cases,
+    open point ids or texts and, with `tasks` ({task: {register, section, fields}}), register/field/section names.
+    An open-points mention that names no locatable note reaches the tasks the finding otherwise names. Only a finding
+    that names no author task keeps the earlier fan-out (every note origin for an open-points mention, otherwise the
+    default task) and is recorded as unattributed; nothing is dropped."""
     out: dict[str, list[str]] = {}
+    report: list[dict] = []
     for f in findings:
-        tasks = set(re.findall(r"\b(requirements:[A-Za-z0-9_]+)", f))  # a visit's own findings name their task
-        for swr in re.findall(r"SWR-\d{3}", f):
+        text, basis = f, []
+        named = set(re.findall(r"\b(requirements:[A-Za-z0-9_]+)", f))  # a visit's own findings name their task
+        if named:
+            basis.append("task")
+        for swr in _named_swrs(f):
             if amap and swr in amap["swr"]:
                 t = amap["swr"][swr]
-                tasks.add(t["task"])
-                f = f.replace(swr, f"{swr} [{t['key']}]")
+                named.add(t["task"])
+                basis.append(f"swr:{swr}")
+                text = re.sub(rf"\b{swr}\b(?! \[)", f"{swr} [{t['key']}]", text)
         for case, swr in (amap or {}).get("case", {}).items():
             if re.search(rf"\b{re.escape(case)}\b", f) and swr in (amap or {}).get("swr", {}):
-                tasks.add(amap["swr"][swr]["task"])
+                named.add(amap["swr"][swr]["task"])
+                basis.append(f"case:{case}")
         points = (amap or {}).get("open_points") or {}
         mentions_points = re.search(r"\bopen[\s_-]+points?\b", f, re.I)
         owners = set()
@@ -353,14 +436,31 @@ def route_findings(findings: list[str], amap: dict | None, default: str) -> dict
             if (ident in f or origin.get("text") and origin["text"] in f
                     or mentions_points and register and re.search(rf"\b{re.escape(register)}\b", f)):
                 owners.add(origin["task"])
-        if mentions_points and not owners:
-            # Unknown note location conservatively reaches all known note origins, never just a cited SWR task.
-            owners = {origin["task"] for origin in points.values()}
-        tasks.update(owners)
-        for t in tasks or {default}:
-            if t != "budgets":
-                out.setdefault(t, []).append(f)
-    return out
+                basis.append(f"open_point:{ident}")
+        named |= owners
+        if tasks:
+            regs, why = _named_tasks(f, tasks)
+            named |= regs
+            basis += why
+        authored = named - NOT_AUTHORED
+        fallback = None
+        if not authored:
+            # unattributable: keep the earlier route (never drop a finding) and say so
+            if mentions_points and points:
+                authored, fallback = {o["task"] for o in points.values()} - NOT_AUTHORED, "open_point_origins"
+            authored, fallback = (authored, fallback) if authored else ({default}, "default")
+        for t in sorted(authored):
+            out.setdefault(t, []).append(text)
+        report.append({"finding": f[:300], "tasks": sorted(authored), "basis": list(dict.fromkeys(basis)),
+                       "unattributed": fallback is not None, **({"fallback": fallback} if fallback else {}),
+                       **({"open_points_unlocated": True} if mentions_points and not owners else {})})
+    return out, report
+
+
+def route_findings(findings: list[str], amap: dict | None, default: str,
+                   tasks: dict[str, dict] | None = None) -> dict[str, list[str]]:
+    """Task -> findings (see attribute_findings)."""
+    return attribute_findings(findings, amap, default, tasks)[0]
 
 
 ISSUE_MAX = 120  # specs/002-self-healing-factory/contracts/agent-output.schema.json issues[].maxLength (protected)

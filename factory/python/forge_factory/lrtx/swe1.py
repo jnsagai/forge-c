@@ -829,8 +829,23 @@ def rework_findings(ws: Path, since: str) -> list[str]:
     return V.rework_findings(ws, "SWE.1", since)
 
 
-def route_findings(findings: list[str], amap: dict | None) -> dict[str, list[str]]:
-    return V.route_findings(findings, amap, "requirements:crosscutting")
+def task_index(obligations: list[dict]) -> dict[str, dict]:
+    """Register task -> what it covers (register, RM section, fields): the names a finding is attributed by."""
+    return {f"requirements:{g['id']}": {"register": g["register"], "section": g["section"], "fields": list(g["fields"])}
+            for g in obligations}
+
+
+def route_findings(findings: list[str], amap: dict | None, tasks: dict[str, dict] | None = None,
+                   ws: Path | None = None) -> dict[str, list[str]]:
+    """CAPA-108: each finding goes to the tasks it names; with `ws` the attribution is recorded (rework-routing.json),
+    including every finding that named no author task and kept the earlier fan-out."""
+    routed, report = V.attribute_findings(findings, amap, "requirements:crosscutting", tasks)
+    if ws is not None:
+        S.record(ws, "SWE.1/rework-routing.json", {"schema": "forge-c/lrtx-rework-routing/1", "at": utc_now(),
+                                                   "assembly_at": (amap or {}).get("at"), "findings": report,
+                                                   "tasks": sorted(routed),
+                                                   "unattributed": sum(r["unattributed"] for r in report)})
+    return routed
 
 
 def reply(ws: Path, status: str, issues: list[str], budget: dict | None = None, artifacts: list[str] | None = None) -> dict:
@@ -854,8 +869,17 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
     amap = json.loads(amap_p.read_text()) if amap_p.is_file() else None
     budget, findings = V.open_visit(ws, "SWE.1", resume, lambda: rework_findings(ws, since) if since else [],
                                     V.author_call_limit(ws, "SWE.1", role.max_turns, max_calls), time_budget_s)
+    routed = {}
+    if findings:  # CAPA-108: attributed with this inventory's register tasks, so only the named tasks re-author
+        from .obligations import CoherentScopeRefused
+
+        try:
+            tasks = task_index(groups(inventory(ws)))
+        except CoherentScopeRefused:
+            tasks = None  # the visit itself reports the refused scope
+        routed = route_findings(findings, amap, tasks, ws)
     try:
-        return _visit(ws, model, budget, route_findings(findings, amap) if findings else {})
+        return _visit(ws, model, budget, routed)
     except V.Continue as c:
         return reply(ws, "CONTINUE", [f"time box used; the next node execution resumes at {c}"], budget)
 
@@ -898,6 +922,7 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
         return reply(ws, "FAILED", ["CAPABILITY_LIMIT:" + str(exc)], budget)
     idx = index(ws / "inputs/sections/RM0486")
     sysname = system_name(ws)
+    tasks = task_index(obligations)
     results = []
 
     def cross_check(d: dict) -> list[str]:
@@ -943,7 +968,7 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     amap = assemble(ws, inv, results, cross)
     checks = self_check(ws)
     if checks and budget["calls"] < budget["max_calls"]:  # one localized repair round on the gate's own findings
-        for task, fs in route_findings(checks, amap).items():
+        for task, fs in route_findings(checks, amap, tasks).items():
             g = next((g for g, _r in results if f"requirements:{g['id']}" == task), None)
             if g is not None:
                 rec = run_task(ws, task, lambda fi, pr, g=g: group_packet(ws, g, model, fi, pr),
