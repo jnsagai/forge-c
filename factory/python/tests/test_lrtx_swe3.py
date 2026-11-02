@@ -138,3 +138,35 @@ def test_structured_code_and_design_pass_the_unchanged_swe3_gate(ws2, monkeypatc
     um = (ws2 / "workproducts/SWE.3/unit_specifications.md").read_text()
     assert "TODO" not in um and "Traces: SWR-001, SWR-010, SWR-011, SWR-012, SWR-013" in um
     assert _gate(ws2, "SWE.3", monkeypatch) == 0
+
+
+def test_swe3_inspector_receives_the_frozen_swe2_architecture_and_baseline_records(ws2):
+    """CAPA-116 (run WO-F014-CMP-SWE3-OBL-20261102-08): SWE3-01/03 judge the design against the software architecture
+    and SWE3-06 the change/trace provenance; the structured inspector receives the frozen SWE.2 baseline it was frozen
+    on and both baseline records, never a changed or missing upstream silently."""
+    from forge_factory.inspection.engine import Store
+    from forge_factory.lrtx import review
+
+    st = Store(ws2)
+    bl = st.freeze("SWE.3", "swe3-author")
+    up = st.latest_baseline("SWE.2")
+    assert bl["upstream"]["SWE.2"] == up["baseline_hash"]
+    got, srcs = review.evidence(ws2, "SWE.3")
+    texts = {s["path"]: s["text"] for s in srcs}
+    assert got == bl
+    want = [f for f in up["files"] if not f.endswith((".svg", ".reqif"))]
+    assert "workproducts/SWE.2/software_architecture.md" in want
+    assert all(texts[f] == (ws2 / f).read_text() for f in want)
+    for rec in (f"configuration/baselines/SWE.3/{bl['baseline_id']}.json",
+                f"configuration/baselines/SWE.2/{up['baseline_id']}.json"):
+        assert json.loads(texts[rec]) == json.loads((ws2 / rec).read_text())
+    assert not any(p.startswith("inputs/") for p in texts)  # no instance declaration: no device header
+    item = next(c for c in st.applicable(st.checklist("SWE.3"))["checks"] if c["id"] == "SWE3-01")
+    assert review.item_packet(ws2, "SWE.3", item, got, srcs, "m")["accounting"]["fits"]
+    assert all(review.upstream_sources(ws2, p, bl) == [] for p in ("SWE.1", "SWE.2", "SWE.6"))
+    arch = ws2 / "workproducts/SWE.2/software_architecture.md"
+    arch.write_text(arch.read_text() + "\nchanged after the freeze\n")
+    with pytest.raises(ValueError, match="UPSTREAM_CHANGED:SWE.2"):
+        review.evidence(ws2, "SWE.3")
+    with pytest.raises(ValueError, match="UPSTREAM_BASELINE_NOT_FOUND:SWE.3:SWE.2"):
+        review.upstream_sources(ws2, "SWE.3", {**bl, "upstream": {"SWE.1": bl["upstream"]["SWE.1"]}})
