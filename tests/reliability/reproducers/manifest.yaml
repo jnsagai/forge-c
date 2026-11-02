@@ -1050,3 +1050,13 @@ reproducers:
     operations: [lrtx/swe3.visit_design, lrtx/runner (code then design node)]
     root_cause: "The structured SWE.3 code visit ended FAILED with cppcheck MISRA findings open; the deterministic design node, next in the workflow, replaced that reply with PASS and the author gate froze the code with the open findings; SWE.4 then failed SWE4-04 on them."
     remedy: "The code visit records its final tool issues; the design visit refuses while they are open and when its own cppcheck measurement is FAIL."
+  - id: RPR-098
+    script: rpr098_structured_reply_breaks_issue_contract.py
+    sha256: f808908c307f1411e199eaac9e913c324fc3914fa328ec6fa4c26e468e025752
+    symptom_signature: "a structured author reply with an issue longer than 120 characters violates the agent-output contract"
+    observed_in: "Fabro runs WO-F014-SWE2-IWDG-20261101-01 and WO-F014-SWE4-IWDG-20261101-L1 on Omniverse2 2026-11-01"
+    baseline_revision: d733b0ec6c45a9caa6f314da5d2d1c4dff7401b3
+    error_codes: []
+    operations: [lrtx/visit.reply, lrtx/review._reply]
+    root_cause: "Structured replies cut issues to 300 characters while the protected agent-output contract allows 120; long rejections also failed AGENT_OUTPUT_SCHEMA and the gate kept 120-character fragments."
+    remedy: "Replies bound issues to 120 characters (contract unchanged); the full text is a side record that rework_findings restores."

@@ -1,0 +1,101 @@
+{
+ "CAPA-098": {
+  "history": [
+   {
+    "at": "2026-11-02T00:07:30.279048Z",
+    "capa_id": "CAPA-098",
+    "evidence": "[\"fabro-swe4-iwdg-l1-agent-output-length\"]",
+    "from_state": null,
+    "reason": "Runs SWE2-IWDG-01, SWE4-IWDG-L1: long structured issues failed AGENT_OUTPUT_SCHEMA",
+    "seq": 736,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T00:07:30.393187Z",
+    "capa_id": "CAPA-098",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 737,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T00:07:30.544355Z",
+    "capa_id": "CAPA-098",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-098 assigned",
+    "seq": 738,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T00:07:35.478012Z",
+    "capa_id": "CAPA-098",
+    "evidence": "[\"reproducer-run:rr-61387a7b132982925054\", \"reproducer-run:rr-9f7746cc7fc6c80b2bf8\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 739,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T00:07:35.515524Z",
+    "capa_id": "CAPA-098",
+    "evidence": "[\"git:d733b0ec6c45..7092fefdcba6\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 7092fefdcba6 (patch 5446 bytes)",
+    "seq": 740,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T00:10:25.257280Z",
+    "capa_id": "CAPA-098",
+    "evidence": "[\"reproducer-run:rr-c6aa58d258ef75773561\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-098 absent at 7092fefdcba6",
+    "seq": 741,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T00:10:25.273526Z",
+    "capa_id": "CAPA-098",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 742,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-e891d4b522af4d82beedaaa3141328abc4cc1c02",
+   "d733b0ec6c45a9caa6f314da5d2d1c4dff7401b3",
+   "7092fefdcba67047327265a1aaff2f46be67542d",
+   "pd-3ccf51486a5023b45b0a"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<7092fefdcba6"
+   ],
+   "candidate_patch_sha256": "2c019f9d6cfafb8f42e141f251757a48a704e8d967a74719f1fbd0100322a663",
+   "capa_id": "CAPA-098",
+   "created_at": "2026-11-02T00:07:30.279048Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe4-iwdg-l1-agent-output-length"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-098",
+   "reproducer_id": "RPR-098",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-61387a7b132982925054",
+    "reproducer-run:rr-9f7746cc7fc6c80b2bf8"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "visit.reply cut issues at 300 characters, beyond the protected 120",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T00:10:25.273526Z"
+  }
+ }
+}
