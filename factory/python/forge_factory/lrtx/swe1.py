@@ -29,6 +29,46 @@ SCOPE_COVERAGE_RULE = (
     "A REGISTER.FIELD explicitly named in the in-scope work-order text must not be listed in not_covered. "
     "A verifier limitation is an unresolved verification gap, not permission to remove a requested field."
 )
+# Owner change 2026-11-02 ("Build all four"; harvest of the cloud cross-inspection of local SWE.1 baselines, classes
+# X5-X12): author contract rules of the SWE.1 author packets, in generic wording (no peripheral, register or vendor text).
+AR_DOMAIN = (
+    "AR-1 argument domain: for a function that takes a value, the requirement decides the supported argument domain. "
+    "When the parameter type can hold values the field cannot, either state a caller precondition that excludes them "
+    "or state the driver handling (masking, rejection or saturation) - never leave this decision, or a recommended "
+    "minimum or maximum, to an open point. Its verification uses the minimum and the maximum supported value, and one "
+    "out-of-domain value when the driver handles it.")
+AR_ENABLING = (
+    "AR-2 enabling conditions: when the source names conditions under which a field write takes no effect or is not "
+    "allowed (write protection, an update still in progress, missing access rights), the statement states them as an "
+    "EARS While-clause ('While <condition>, when <call>, the ... shall ...'), so they are caller preconditions of the "
+    "supported domain.")
+AR_DISCRIMINATING = (
+    "AR-3 verification that can fail: a write case's value differs from the field's reset and initial contents (a "
+    "boundary case equal to the reset value starts from other contents), the surrounding bits of the register are "
+    "pre-set to non-zero values before a write or preservation check, and each function the requirement names has its "
+    "own pass condition.")
+AR_OBLIGATIONS = (
+    "AR-4 owner obligations: an owner-approved obligation is a provided source, not invented behaviour - implement it "
+    "in full and with its own scope (an obligation on accesses is not narrowed to writes).")
+AR_OBLIGATION_GAPS = (
+    " obligation_gaps only when an input the obligation needs is missing; the reason names that input. When the "
+    "requirements implement only part of an obligation, write the remainder, or (non-critical obligations only) record "
+    "the remainder in obligation_gaps with the reason.")
+AR_PRESERVATION = (
+    "AR-5 preservation: a rule for all functions is worded 'changes only the fields its requirement names, except the "
+    "side effects the source documents' (also when a coverage rule says a write changes only the named bit), so it "
+    "never contradicts a requirement that changes several fields together.")
+AR_PAGE = "AR-6 source page: source_page is a page of the section the statement cites."
+PROHIBITION_RULE = (
+    "A requirement that prohibits an access (no read, no write, no access before the first call or in another window) "
+    "is verified_by target_robot_test, never host_unit_test (the host fake register block keeps no access log): its "
+    "verification passes when the target simulation's register-access log shows no such access in the prohibited "
+    "window - never by final register contents alone.")
+# a statement that prohibits a register access (X12); startup invariants are matched by STARTUP as before
+PROHIBITION = re.compile(r"\bshall\s+(?:not|never)\s+(?:read|write|access)\b|"
+                         r"\bshall\s+(?:perform|make|issue)\s+no\s+(?:\w+\s+)?(?:reads?|writes?|access(?:es)?)\b", re.I)
+REGISTER_RULES = " ".join((AR_DOMAIN, AR_ENABLING, AR_DISCRIMINATING, AR_PAGE))
+CROSSCUT_RULES = " ".join((AR_DISCRIMINATING, AR_PRESERVATION, AR_PAGE))
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 REQS = "workproducts/SWE.1/software_requirements.md"
 CSV = "traceability/requirements_to_tests.csv"
@@ -90,7 +130,7 @@ def obligation_rule(obl: dict, crosscutting: bool) -> str:
     rule = (f" Owner obligations ({obl['_path']}, a provided source): obligations lists the ids of the owner "
             "obligations a requirement implements ([] if none). Cite an id only when the statement implements that "
             "obligation; an obligation that names register effects is implemented only by a requirement with those "
-            "effects.")
+            "effects. " + AR_OBLIGATIONS)
     if crosscutting:
         critical = [o["id"] for o in obl["obligations"] if o.get("critical")]
         register = [o["id"] for o in obl["obligations"] if o.get("effects")]
@@ -98,7 +138,7 @@ def obligation_rule(obl: dict, crosscutting: bool) -> str:
                  "and that is not a single register field's behaviour (e.g. no status polling, no error code, other "
                  "fields and registers preserved). A non-critical obligation the inputs cannot support goes into "
                  "obligation_gaps with the reason; never drop an obligation silently. obligation_gaps stays empty "
-                 "otherwise.")
+                 "otherwise." + AR_OBLIGATION_GAPS)
         if critical:
             rule += (" Critical obligations always need an implementing requirement and can never be obligation gaps: "
                      + ", ".join(critical) + ".")
@@ -346,11 +386,11 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
              " Each statement uses EARS "
              f"(The/When/While/Where/If..then), exactly one 'shall', the subject 'the {sysname}', and ends with a period; "
              "name the field as REGISTER.FIELD. verification states the test and its pass criterion ('... passes "
-             "when ...'), checking register bits and return values on the register array - never a count of register "
-             "accesses. verified_by is host_unit_test, except startup/reset behaviour ('While no ... after reset') which "
-             f"is target_robot_test. source_page is the RM0486 page of the cited fact ({', '.join(map(str, g['pages']))}). "
+             "when ...'), checking register bits and return values on the register array. " + PROHIBITION_RULE +
+             " verified_by is host_unit_test, except startup/reset behaviour ('While no ... after reset') and access "
+             f"prohibitions, which are target_robot_test. source_page is the RM0486 page of the cited fact ({', '.join(map(str, g['pages']))}). "
              + effect_rule(ws) + " key is a short snake_case name of the requirement. open_points lists ambiguities of "
-             "the source (or nothing).")
+             "the source (or nothing). Author rules: " + REGISTER_RULES)
     crit = [f"every requirement's subject is exactly 'the {sysname}'", "every field of the task is covered or listed "
             "in not_covered", "every effect names a field of this task that its statement names",
             "a statement that sets, clears or writes a field has an effect for it"]
@@ -388,15 +428,16 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
              "register.'), the failure handling the work-order scope states (e.g. that the driver never waits on a "
              "status flag because the caller bounds its polling; SWE1-03 requires failure handling, reset/startup "
              "behaviour and safe states to be specified) and any rule the coverage rules state for all functions "
-             "(e.g. that a write changes only the named bits). Work-order scope: " + " | ".join(m["scope"]) +
+             "(e.g. that a function changes only the fields its requirement names, except the side effects the source "
+             "documents). Work-order scope: " + " | ".join(m["scope"]) +
              f". Coverage rules: {coverage_guidance(ws)} "
              "Do NOT write flash/RAM/stack budget requirements: the factory adds them from the owner's work-order "
              "budgets. Every statement uses EARS (The/When/While/Where/If..then), exactly one 'shall', "
              f"the subject 'the {sysname}', and ends with a period. "
-             "verification states the test and its explicit pass criterion ('... passes when ...'). "
-             "source_page is the RM0486 page supporting the requirement, from the provided sources. "
+             "verification states the test and its explicit pass criterion ('... passes when ...'). " + PROHIBITION_RULE +
+             " source_page is the RM0486 page supporting the requirement, from the provided sources. "
              "Reset/startup requirements are target_robot_test. effects stay empty unless a statement sets, clears or writes a "
-             "named field. not_covered stays empty.")
+             "named field. not_covered stays empty. Author rules: " + CROSSCUT_RULES)
     art = {"path": "lrtx:functional_requirements", "text": listing, "sha256": sha256_bytes(listing.encode())}
     secs = _section_files(ws)
     from ..layer import profile
@@ -470,6 +511,11 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
             out.append(f"[{k}] verification has no pass criterion ('passes when ...')")
         if STARTUP.match(st) and r["verified_by"] != "target_robot_test":
             out.append(f"[{k}] a startup/reset invariant is verified by target_robot_test, not a host unit test")
+        elif PROHIBITION.search(st) and r["verified_by"] != "target_robot_test":
+            # owner 2026-11-02 (X12, "Allow access logging"): only the target simulation logs register accesses
+            out.append(f"[{k}] prohibits a register access: verified_by is target_robot_test - only the target "
+                       "simulation's register-access log can show that no such access happens (the host fake keeps no "
+                       "access log); state the pass condition on that log")
         if g is not None and g["pages"] and not (min(g["pages"]) <= r["source_page"] <= max(g["pages"]) + 2):
             out.append(f"[{k}] source_page {r['source_page']} is outside the section pages {g['pages']}")
         out += cited_page_findings(ws, r, secs)
