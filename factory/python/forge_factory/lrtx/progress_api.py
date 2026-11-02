@@ -89,6 +89,31 @@ def _inspect_items(ws: Path, phase: str) -> list[str]:
         return []
 
 
+def _resume_task(ws: Path, visit: str, started: float | None) -> str | None:
+    """The task the visit's last time-boxed node execution named as its resume point ("time box used; the next node
+    execution resumes at test:UT-008"), from .forge-run/lrtx/<visit>/visits.jsonl of the current visit; else None."""
+    p = Path(ws) / ".forge-run/lrtx" / visit / "visits.jsonl"
+    try:
+        lines = p.read_text().splitlines()
+    except OSError:
+        return None
+    for line in reversed(lines[-5:]):
+        try:
+            rec = json.loads(line)
+        except ValueError:
+            continue
+        if started and (_ts(rec.get("at")) or 0) < started:
+            return None
+        if rec.get("status") != "CONTINUE":
+            return None
+        for issue in rec.get("issues") or []:
+            m = re.search(r"resumes at (\S+)", str(issue))
+            if m:
+                return m.group(1).rstrip(".,;")
+        return None
+    return None
+
+
 def _eta(done: int, total: int | None, elapsed: float | None) -> tuple[float | None, str | None]:
     if not total or not done or not elapsed or done >= total:
         return None, None
@@ -154,11 +179,20 @@ def progress(ws: Path) -> dict:
                 cross = (packs.get("requirements:crosscutting") or {}).get("status") == "VALID"
                 done, total = done - cross, (total or 1) - 1
                 unit = "register groups" + (" + cross-cutting done" if cross else "")
+        # owner 2026-11-02 ("the author cell [says] running tool checks, but the tool station is saying no SWE.4 tool
+        # run yet"): a phase's task list is known only from its packets, so "every known task valid" is not the end of
+        # the visit. The visit's own last record says where the next node execution resumes; while that task is not
+        # done the author is between time boxes, not at its tool checks.
+        resume = None if inspect else _resume_task(ws, name, started)
+        if resume and (packs.get(resume) or {}).get("status") != "VALID":
+            current = resume
+            if resume not in tasks:
+                total = None  # more tasks than packets so far
         eta_s, eta_utc = _eta(done, total, elapsed)
         cur = (current or "").split(":")[-1] or None
         step = "inspect" if inspect else "author"
         text = f"{phase} {step}: {done}/{total} {unit}"
-        checking = bool(total) and done >= total and not invalid
+        checking = bool(total) and done >= total and not invalid and not current
         if cur:
             text += f", now {cur}"
         elif checking:  # every task of the visit is valid; the node runs its deterministic tool checks or assembly
