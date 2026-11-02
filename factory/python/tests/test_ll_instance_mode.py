@@ -927,3 +927,35 @@ def test_register_scans_resolve_typed_members_through_the_declared_layout(inst_w
     hdr.write_text(rmw)
     assert swe12.shared_registers(ws) == {"CRC_IDR": ["LL_CRC_Clear_IDR", "LL_CRC_Write_IDR"]}
 
+
+# ---- review follow-up 3: no resume across instance declarations -------------------------------------------------
+@pytest.mark.parametrize("source,new", [("instance", None), (None, "instance"), ("instance", "other")])
+def test_resume_across_instance_declarations_is_refused(tmp_path, monkeypatch, source, new):
+    import subprocess
+
+    from forge_factory.brownfield.resume import ResumeRefused
+    from forge_factory.workorder import resume_from
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "ev"))
+    inst = _scope()["instance"]
+    other = {**copy.deepcopy(inst), "parameter": "crc"}
+    scope = {"instance": inst, "other": other, None: None}
+
+    def man(kind, wo):
+        m = {"work_order": wo, "operation_scope": {k: v for k, v in _scope().items() if k != "instance"}}
+        if kind:
+            m["operation_scope"]["instance"] = scope[kind]
+        return m
+
+    src = tmp_path / "state/workorders/WO-SRC/workspace"
+    (src / ".forge-run").mkdir(parents=True)
+    (src / ".forge-run/manifest.json").write_text(json.dumps(man(source, "WO-SRC")))
+    ws = tmp_path / "state/workorders/WO-NEW/workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    subprocess.run(["git", "init", "-q"], cwd=ws, check=True)
+    with pytest.raises(ResumeRefused, match="RESUME_INSTANCE_DECLARATION_MISMATCH"):
+        resume_from(ws, man(new, "WO-NEW"), "WO-SRC")
+    if source == "instance" and new is None:  # the same declaration on both sides resumes as before
+        (src / ".forge-run/manifest.json").write_text(json.dumps(man("instance", "WO-SRC")))
+        assert resume_from(ws, man("instance", "WO-NEW"), "WO-SRC")[0] == "SWE.1"

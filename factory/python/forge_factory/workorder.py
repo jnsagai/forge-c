@@ -548,6 +548,11 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     source_manifest = source_workspace(source_wo) / ".forge-run/manifest.json"
     if source_manifest.is_file() and json.loads(source_manifest.read_text()).get("delivery"):
         raise ResumeRefused("RESUME_BROWNFIELD_TO_GREENFIELD_REFUSED")
+    # instance mode: carried phases were made for one register access (register-block array or caller-supplied
+    # instance); a resume across modes, or onto a different instance declaration, would mix the two
+    src_scope = (json.loads(source_manifest.read_text()).get("operation_scope") or {}) if source_manifest.is_file() else {}
+    if src_scope.get("instance") != (manifest.get("operation_scope") or {}).get("instance"):
+        raise ResumeRefused("RESUME_INSTANCE_DECLARATION_MISMATCH")
 
     src = state_dir() / "workorders" / source_wo / "workspace"
     if not src.is_dir():
