@@ -283,6 +283,13 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         from .brownfield import delivery as BD
 
         intake = BD.intake(spec, example, wo, {r["path"]: inputs[r["path"]] for r in provided})
+        from .brownfield import interface as BI  # CAPA-112: the frozen API's argument constants, not the code
+
+        api = BI.extract(BD.stored(wo), intake["files"], spec["delivery"]["scope"]["functions"])
+        if api is not None:  # bound like any declared input (hashed into the scope binding and the resume identity)
+            data = BI.render(api)
+            inputs[BI.OUT] = data
+            listed.append({"path": BI.OUT, "role": BI.ROLE, "sha256": sha256_bytes(data), "bytes": len(data)})
     head = create_workspace(ws, inputs)
     for rec in provided:
         (ws / rec["path"]).chmod(0o444)
