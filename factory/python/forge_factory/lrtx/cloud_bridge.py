@@ -11,6 +11,11 @@ network to the factory). The bridge runs outside the namespace and answers OpenA
   schema becomes `output_config.format`; Claude Opus 5.5 always thinks, so `extra_output_tokens` is added to the
   runner's answer reserve (as the gateway does for the local thinking models);
 - backend `openai`: the owner's OpenAI API (authorized 2026-11-02) through the official SDK (the inspector);
+- backend `claude-cli` (owner 2026-11-02, "Claude API/Account mode"): the same Claude model through the owner's
+  Claude account (Claude Code `claude -p`, claude.ai login, no API key in its environment): no tools, no MCP server, no
+  settings, no session kept, an empty working directory; the schema is passed as `--json-schema`. The account mode is
+  chosen per call from a mode file (`api` | `account`) the floor's control writes; a call with tools (Fabro's native
+  agent nodes) cannot be answered without tools, so it stays on the API and the meter says so;
 - backend `codex`: the Codex CLI (`codex exec`, ephemeral, read-only sandbox, empty working directory, no tools needed:
   the packet holds every input), `--output-schema` when the schema meets the strict rules.
 
@@ -32,6 +37,18 @@ from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 
 SCHEMA = "forge-c/cloud-bridge-call/1"
+MODES = ("api", "account")
+
+
+def read_mode(path: Path | None) -> str:
+    """The Claude mode the floor control last set; anything unreadable or unknown is `api` (the authorized default)."""
+    if path is None:
+        return "api"
+    try:
+        mode = json.loads(Path(path).read_text()).get("mode")
+    except (OSError, ValueError, AttributeError):
+        return "api"
+    return mode if mode in MODES else "api"
 
 
 def read_key(path: Path, name: str = "ANTHROPIC_API_KEY") -> str:
@@ -220,6 +237,60 @@ class OpenAIBackend:
         return {"text": ch.message.content or "", "finish": finish, "tool_calls": calls, "schema_mode": mode, "usage": usage}
 
 
+class ClaudeCliBackend:
+    """Claude through the owner's Claude account: `claude -p` (print mode), structured output, nothing else. The
+    API key is removed from the CLI's environment so the account login is what answers (`--bare` would require a key).
+    The CLI's `total_cost_usd` is a list-price equivalent, not an API charge: it is metered as `list_cost_usd`."""
+
+    def __init__(self, run=subprocess.run, exe: str = "claude"):
+        self.run, self.exe = run, exe
+
+    def answer(self, body: dict, cfg: dict) -> dict:
+        if body.get("tools"):
+            raise ValueError("CLAUDE_CLI_NO_TOOLS")  # the bridge keeps tool calls on the API
+        schema = _schema(body)
+        msgs = body.get("messages") or []
+        system = "\n\n".join(_text(m.get("content")) for m in msgs if m.get("role") == "system")
+        turns = [m for m in msgs if m.get("role") != "system"]
+        if len(turns) == 1 and turns[0].get("role") == "user":
+            prompt = _text(turns[0].get("content"))
+        else:
+            prompt = "\n\n".join(f"[{m.get('role')}]\n{_text(m.get('content'))}" for m in turns)
+        mode = "json_schema" if schema is not None else "none"
+        if schema is None and (body.get("response_format") or {}).get("type") == "json_object":
+            prompt += "\n\n" + json_instruction(None)
+        with tempfile.TemporaryDirectory(prefix="forge-claude-") as td:
+            sp = Path(td) / "system.txt"
+            sp.write_text(system or "Answer the task.")
+            argv = [self.exe, "-p", "--model", cfg.get("model") or body["model"], "--output-format", "json",
+                    "--tools", "", "--strict-mcp-config", "--setting-sources", "", "--disable-slash-commands",
+                    "--no-session-persistence", "--effort", cfg.get("effort", "medium"), "--system-prompt-file", str(sp)]
+            if schema is not None:
+                argv += ["--json-schema", json.dumps(schema)]
+            env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")}
+            p = self.run(argv, input=prompt, text=True, capture_output=True, env=env, cwd=td,
+                         timeout=int(cfg.get("timeout_s", 3600)))
+        try:
+            out = json.loads(p.stdout or "{}")
+        except ValueError:
+            out = {}
+        if p.returncode != 0 or out.get("is_error") or out.get("type") != "result":
+            raise RuntimeError(f"CLAUDE_CLI_FAILED:rc{p.returncode}:{str(out.get('subtype') or out.get('api_error_status'))[:40]}")
+        so = out.get("structured_output")
+        text = json.dumps(so) if schema is not None and so is not None else str(out.get("result") or "")
+        u = out.get("usage") or {}
+        read, write = int(u.get("cache_read_input_tokens") or 0), int(u.get("cache_creation_input_tokens") or 0)
+        prompt_t = int(u.get("input_tokens") or 0) + read + write
+        done = int(u.get("output_tokens") or 0)
+        usage = {"prompt_tokens": prompt_t, "completion_tokens": done, "total_tokens": prompt_t + done,
+                 "cache_read_tokens": read, "cache_write_tokens": write,
+                 "reasoning_tokens": (u.get("output_tokens_details") or {}).get("thinking_tokens"),
+                 "list_cost_usd": out.get("total_cost_usd"), "billing": "account"}
+        finish = "length" if out.get("stop_reason") == "max_tokens" else "stop"
+        return {"text": text, "finish": finish, "tool_calls": [], "schema_mode": mode, "usage": usage,
+                "stop_reason": out.get("stop_reason")}
+
+
 class CodexBackend:
     def __init__(self, codex_home: str | None = None, run=subprocess.run):
         self.codex_home, self.run = codex_home, run
@@ -261,9 +332,25 @@ class CodexBackend:
 
 
 class Bridge:
-    def __init__(self, models: dict, backends: dict, meter: Path):
+    def __init__(self, models: dict, backends: dict, meter: Path, mode_file: Path | None = None):
         self.models, self.backends, self.meter = models, backends, Path(meter)
+        self.mode_file = Path(mode_file) if mode_file else None
         self.lock = threading.Lock()
+
+    def route(self, body: dict, cfg: dict) -> tuple[str, dict]:
+        """Backend for this call. An `anthropic` model goes to `claude-cli` while the mode file says `account`, except a
+        call with tools (kept on the API, recorded as `account_fallback`)."""
+        backend = cfg["backend"]
+        note: dict = {}
+        if backend == "anthropic" and "claude-cli" in self.backends:
+            mode = read_mode(self.mode_file)
+            note["claude_mode"] = mode
+            if mode == "account":
+                if body.get("tools"):
+                    note["account_fallback"] = "tool_calls_on_api"
+                else:
+                    backend = "claude-cli"
+        return backend, note
 
     def complete(self, body: dict) -> dict:
         name = body.get("model")
@@ -274,7 +361,9 @@ class Bridge:
         try:
             if not cfg:
                 raise KeyError(f"BRIDGE_MODEL_UNKNOWN:{name}")
-            res = self.backends[cfg["backend"]].answer(body, cfg)
+            backend, note = self.route(body, cfg)
+            rec.update({"backend": backend, **note})
+            res = self.backends[backend].answer(body, cfg)
             rec.update({"ok": True, "finish": res["finish"], "usage": res["usage"], "schema_mode": res["schema_mode"],
                         "answer_chars": len(res["text"])})
             return res
@@ -373,6 +462,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--key-file", type=Path, default=Path.home() / ".config/forge-c/anthropic-api.env")
     ap.add_argument("--openai-key-file", type=Path, default=Path.home() / ".config/forge-c/openai-api.env")
     ap.add_argument("--codex-home")
+    ap.add_argument("--mode-file", type=Path, help="JSON {mode: api|account} written by the floor control; per call")
     a = ap.parse_args(argv)
     models = json.loads(a.models)
     backends = {}
@@ -382,7 +472,9 @@ def main(argv: list[str] | None = None) -> int:
         backends["openai"] = OpenAIBackend(read_key(a.openai_key_file, "OPENAI_API_KEY"))
     if any(c["backend"] == "codex" for c in models.values()):
         backends["codex"] = CodexBackend(a.codex_home)
-    srv = serve(a.socket, Bridge(models, backends, a.meter))
+    if a.mode_file is not None and "anthropic" in backends:
+        backends["claude-cli"] = ClaudeCliBackend()
+    srv = serve(a.socket, Bridge(models, backends, a.meter, a.mode_file))
     try:
         srv.serve_forever()
     finally:

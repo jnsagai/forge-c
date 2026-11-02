@@ -189,3 +189,55 @@ def test_openai_backend_passes_the_request_through_with_reasoning_headroom():
     seen.clear()
     res = be.answer(_body(), {"backend": "openai", "model": "reject"})
     assert res["schema_mode"] == "prompt_schema_fallback" and seen[-1]["response_format"] == {"type": "json_object"}
+
+
+def _cli_run(seen, result=None, rc=0):
+    def run(argv, **kw):
+        seen.append((argv, kw))
+        out = result if result is not None else {
+            "type": "result", "subtype": "success", "is_error": False, "result": '{"code":"abc"}', "stop_reason": "end_turn",
+            "structured_output": {"code": "abc"}, "total_cost_usd": 0.0104,
+            "usage": {"input_tokens": 2, "cache_creation_input_tokens": 1111, "cache_read_input_tokens": 7, "output_tokens": 73,
+                      "output_tokens_details": {"thinking_tokens": 40}}}
+        return SimpleNamespace(returncode=rc, stdout=json.dumps(out), stderr="")
+    return run
+
+
+def test_account_mode_answers_through_the_claude_cli_without_tools_or_api_key(tmp_path, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "must-not-reach-the-cli")
+    seen = []
+    res = CB.ClaudeCliBackend(run=_cli_run(seen)).answer(_body(), {"backend": "anthropic", "effort": "medium"})
+    argv, kw = seen[0]
+    assert argv[:2] == ["claude", "-p"] and argv[argv.index("--model") + 1] == "claude-opus-5-5"
+    assert argv[argv.index("--tools") + 1] == "" and "--strict-mcp-config" in argv and "--no-session-persistence" in argv
+    assert argv[argv.index("--setting-sources") + 1] == "" and json.loads(argv[argv.index("--json-schema") + 1]) == SCHEMA
+    assert "ANTHROPIC_API_KEY" not in kw["env"] and kw["input"] == "SECRET-USER" and "SECRET" not in " ".join(argv)
+    assert res["text"] == '{"code": "abc"}' and res["usage"]["billing"] == "account" and "cost_usd" not in res["usage"]
+    assert res["usage"]["prompt_tokens"] == 1120 and res["usage"]["list_cost_usd"] == 0.0104 and res["finish"] == "stop"
+    bad = CB.ClaudeCliBackend(run=_cli_run([], {"type": "result", "is_error": True, "subtype": "error_max_turns"}, rc=1))
+    try:
+        bad.answer(_body(), {})
+        raise AssertionError("a failed CLI call must raise")
+    except RuntimeError as exc:
+        assert str(exc).startswith("CLAUDE_CLI_FAILED")
+
+
+def test_the_mode_file_routes_claude_per_call_and_tool_calls_stay_on_the_api(tmp_path):
+    mode = tmp_path / "claude-mode.json"
+    seen = []
+    api = FakeClient()
+    bridge = CB.Bridge({"claude-opus-5-5": {"backend": "anthropic"}},
+                       {"anthropic": CB.AnthropicBackend("k", client=api), "claude-cli": CB.ClaudeCliBackend(run=_cli_run(seen))},
+                       tmp_path / "m.jsonl", mode)
+    bridge.complete(_body())  # no mode file: api
+    mode.write_text(json.dumps({"mode": "account"}))
+    bridge.complete(_body())
+    tools = {**_body(), "tools": [{"type": "function", "function": {"name": "read_file", "parameters": {"type": "object"}}}]}
+    bridge.complete(tools)
+    mode.write_text("garbage")
+    bridge.complete(_body())
+    rows = [json.loads(x) for x in (tmp_path / "m.jsonl").read_text().splitlines()]
+    assert [r["backend"] for r in rows] == ["anthropic", "claude-cli", "anthropic", "anthropic"]
+    assert [r["claude_mode"] for r in rows] == ["api", "account", "account", "api"]
+    assert rows[2]["account_fallback"] == "tool_calls_on_api" and len(seen) == 1 and len(api.calls) == 3
+    assert CB.read_mode(None) == "api" and CB.read_mode(tmp_path / "missing") == "api"
