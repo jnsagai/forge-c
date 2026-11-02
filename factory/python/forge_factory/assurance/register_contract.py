@@ -94,6 +94,8 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
             continue
         if layer == "HAL" and e.get("status") not in STATUSES:
             out.append(f"CONTRACT_STATUS:{where}:{e.get('status')} (HAL_OK|HAL_TIMEOUT|HAL_ERROR)")
+        if op != "write" and requested_problem(e, None):
+            out.append(f"CONTRACT_WRITE_REQUESTED:{where}:{requested_problem(e, None)}")
         if op == "no_write" and not (e.get("register") or e.get("field")):
             continue  # no register access at all (e.g. a NULL configuration rejected before any access)
         reg, fld = e.get("register"), e.get("field")
@@ -106,6 +108,8 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
             if v is None or not 0 <= v < (1 << width):
                 out.append(f"CONTRACT_WRITE_VALUE:{where}:{e.get('value')!r} (an integer that fits {reg}.{fld}, "
                            f"{width} bits)")
+            elif requested_problem(e, width):
+                out.append(f"CONTRACT_WRITE_REQUESTED:{where}:{requested_problem(e, width)}")
         elif swr in reqs and f"{reg}.{fld}" not in reqs[swr] and not (reg in reqs[swr] and fld in reqs[swr]):
             out.append(f"CONTRACT_FIELD_NOT_IN_SWR:{where}:{reg}.{fld} is not named by {swr}")
         ready = e.get("ready")
@@ -150,6 +154,44 @@ def _value(v) -> int | None:
         return int(str(v), 0)
     except (TypeError, ValueError):
         return None
+
+
+def requested_problem(e: dict, width: int | None) -> str | None:
+    """CAPA-120 (run WO-F014-CMP-SWE2-IWDGG-20261102-08): a write may record the caller's requested input apart from the
+    field value it leaves, for a truncating write ("write only bits 11:0 of the requested value": requested 0x1234,
+    value 0x234). Absent or "" means the call passes the value itself. The requested input is a 32-bit number that
+    does not fit the field and whose low `width` bits are the value; None when the entry is consistent."""
+    r = e.get("requested")
+    if r in (None, ""):
+        return None
+    if e.get("op") != "write":
+        return f'requested must be "" for op {e.get("op")}'
+    rv, v = _value(r), _value(e.get("value"))
+    if rv is None or not 0 <= rv <= 0xFFFFFFFF:
+        return f"requested {r!r} must be a 32-bit number"
+    if width is None:
+        return None
+    low = rv & ((1 << width) - 1)
+    if rv < (1 << width):
+        return f'requested {r!r} fits the {width}-bit field: write it as the value and leave requested ""'
+    if v != low:
+        return f"value {e.get('value')!r} must be the low {width} bits of requested {r!r} (0x{low:X})"
+    return None
+
+
+def call_input(e: dict):
+    """The input a write case's call passes: the requested input when the effect records one (CAPA-120), else the
+    field value."""
+    return e["requested"] if e.get("requested") not in (None, "") else e.get("value")
+
+
+def value_text(e: dict) -> str:
+    """' value <v>' for an author's case listing (unchanged without a requested input)."""
+    if e.get("value") is None:
+        return ""
+    if e.get("requested") in (None, ""):
+        return f" value {e['value']}"
+    return f" value {e['value']} (the call passes the requested input {e['requested']}; the field keeps {e['value']})"
 
 
 def check_calls(ws: Path) -> list[str]:

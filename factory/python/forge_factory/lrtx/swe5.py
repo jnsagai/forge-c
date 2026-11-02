@@ -25,6 +25,7 @@ import json
 import re
 from pathlib import Path
 
+from ..assurance import register_contract as RC
 from ..common import sha256_bytes, utc_now
 from . import structured as S
 from . import visit as V
@@ -126,7 +127,7 @@ def _context(ws: Path) -> list[dict]:
     api = "\n".join(f"{_sig(f)} - {f['operation']} [{', '.join(f['fields'])}]" for f in iface["functions"])
     req = "\n".join(f"{k}: {v}" for k, v in reqs.items()) + "\n" + "\n".join(
         f"case {e['case']} ({e['swr']}): {e.get('register', '')}.{e.get('field', '')} op {e['op']}"
-        + (f" value {e['value']}" if e.get("value") is not None else "") for e in eff)
+        + RC.value_text(e) for e in eff)
     dyn = (Path(ws) / "workproducts/SWE.2/architecture_dynamic.puml").read_text()
     defs = _defines(ws, sorted({x for f in iface["functions"] for x in f["fields"]}))
     return [{"path": n, "text": t, "sha256": sha256_bytes(t.encode())} for n, t in

@@ -31,6 +31,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from ..assurance import register_contract as RC
 from ..common import sha256_bytes, utc_now
 from . import structured as S
 from . import visit as V
@@ -133,7 +134,7 @@ def code_packet(ws: Path, u: dict, model: str, findings=None, previous=None) -> 
     f = u["function"]
     listing = "\n".join(f"{s}: {reqs.get(s, '')}" for s in u["swrs"]) + "\n" + "\n".join(
         f"case {e['case']} ({e['swr']}): {e.get('register', '')}.{e.get('field', '')} op {e['op']}"
-        + (f" value {e['value']}" if e.get("value") is not None else "") for e in cases)
+        + RC.value_text(e) for e in cases)
     defs = _defines(ws, f["fields"])
     instr = (f"Implement software unit {u['id']}: the single function `{_sig(f)}` of the header-only "
              f"{i['header']} - {f['operation']}. Use ONLY the generated defines listed below and "

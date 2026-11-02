@@ -25,6 +25,7 @@ import json
 import re
 from pathlib import Path
 
+from ..assurance import register_contract as RC
 from ..common import sha256_bytes, utc_now
 from . import structured as S
 from . import visit as V
@@ -100,7 +101,7 @@ def _context(ws: Path, swrs: list[str]) -> list[dict]:
     eff = json.loads((Path(ws) / "workproducts/SWE.1/register_effects.json").read_text())["effects"]
     req = "\n".join(f"{s} (TCHECK {int(s[4:])}): {reqs[s]}" for s in swrs) + "\n" + "\n".join(
         f"case {e['case']} ({e['swr']}): {e.get('register', '')}.{e.get('field', '')} op {e['op']}" +
-        (f" value {e['value']}" if e.get("value") is not None else "") for e in eff if e["swr"] in swrs)
+        RC.value_text(e) for e in eff if e["swr"] in swrs)
     api = "\n".join(f"{_sig(f)} - {f['operation']}" for f in iface["functions"])
     defs = _defines(ws, sorted({x for f in iface["functions"] for x in f["fields"]}))
     return [{"path": n, "text": t, "sha256": sha256_bytes(t.encode())}

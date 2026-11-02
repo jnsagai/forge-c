@@ -75,12 +75,17 @@ CSV = "traceability/requirements_to_tests.csv"
 GAPS = "traceability/upstream_gaps.md"
 SAFETY = "safety/software_safety_requirements.md"
 STARTUP = re.compile(r"^\s*" + STARTUP_NO_CALL, re.I)
+# CAPA-120: an input a verification calls with ("call ... with 0x00001234", "LL_X_Set(0x1234U)"), not a preset or an
+# expected register word
+CALL_INPUT = re.compile(r"(?:\bwith\s+(?:the\s+)?(?:value\s+|input\s+|argument\s+)?|\w\(\s*)(0x[0-9A-Fa-f]{1,8})(?![0-9A-Fa-f])")
 
 EFFECT_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["case", "register", "field", "op", "value"],
                  "properties": {"case": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,47}$"},
                                 "register": {"type": "string"}, "field": {"type": "string"},
                                 "op": {"type": "string", "enum": ["set", "clear", "write", "no_write"]},
-                                "value": {"type": "string"}}}
+                                "value": {"type": "string"},
+                                # CAPA-120: optional (baselines and provided documents without it stay valid)
+                                "requested": {"type": "string"}}}
 REQ_SCHEMA = {"type": "object", "additionalProperties": False,
               "required": ["key", "statement", "source_page", "verification", "verified_by", "effects"],
               "properties": {"key": {"type": "string", "pattern": "^[a-z][a-z0-9_]{2,40}$"},
@@ -313,7 +318,10 @@ def effect_rule(ws: Path) -> str:
     base = ("effects: one entry per bit and per function the requirement sets or clears (op set|clear), writes a value "
             "to (op write, value \"0x...\") or only reads (op no_write with register and field); value is \"\" unless "
             "op is write. register/field are the RM names the statement itself uses (write them as REGISTER.FIELD in "
-            "the statement). case ids are unique UPPER_CASE names.")
+            "the statement). case ids are unique UPPER_CASE names. A write whose requirement passes an input that does "
+            "not fit the field and keeps only its low bits (e.g. 'write only bits 11:0 of the requested value', "
+            "verified with 0x1234) also gives requested, the input the call passes (\"0x1234\"), while value is the "
+            "field result (\"0x234\"); omit requested otherwise.")
     return base + (" " + " ".join(rule.split()) if rule else "")
 
 
@@ -479,6 +487,7 @@ def ears_hint(code: str, sysname: str) -> str:
 
 
 def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict) -> list[str]:
+    from ..assurance import register_contract as RC
     from ..assurance.register_contract import _needs_contract
     from ..inspection.ears import Requirement, check_statement
     from ..layer import register_prefix
@@ -546,8 +555,21 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
                 if v is None or not 0 <= v < (1 << width):
                     out.append(f"[{k}] effect {e['case']}: value {e['value']!r} must be a number that fits "
                                f"{reg}.{fld} ({width} bits)")
+                elif RC.requested_problem(e, width):
+                    out.append(f"[{k}] effect {e['case']}: {RC.requested_problem(e, width)}")
+                elif e.get("requested") in (None, ""):
+                    # CAPA-120: the verification calls with an input above the field that truncates to this value,
+                    # but the case records only the value - SWE.2 would then have to pass the truncated value
+                    big = [n for n in CALL_INPUT.findall(r["verification"])
+                           if int(n, 16) >= (1 << width) and int(n, 16) & ((1 << width) - 1) == v]
+                    if big:
+                        out.append(f"[{k}] effect {e['case']}: the verification calls with {big[0]}, which does not "
+                                   f"fit {reg}.{fld} ({width} bits) and leaves {e['value']}: give requested "
+                                   f"\"{big[0]}\" (the input the call passes) and keep value {e['value']}")
             elif e["value"] not in ("", None):
                 out.append(f"[{k}] effect {e['case']}: value must be \"\" for op {op}")
+            if op != "write" and RC.requested_problem(e, None):
+                out.append(f"[{k}] effect {e['case']}: {RC.requested_problem(e, None)}")
         if g is not None and not r["effects"] and not any(f"{g['register']}.{f}" in st or
                                                           (g["register"] in st and f in st) for f in g["fields"]):
             out.append(f"[{k}] names no field of this task: reset/startup and all-function rules belong to the "
@@ -801,6 +823,8 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
             item = {"case": case, "swr": r["swr"], "register": e["register"], "field": e["field"], "op": e["op"]}
             if e["op"] == "write":
                 item["value"] = e["value"]
+                if e.get("requested"):  # CAPA-120: the input of a truncating write
+                    item["requested"] = e["requested"]
             effects.append(item)
     csv, ut = ["requirement_id,test_id,test_file"], 0
     for r in rows:

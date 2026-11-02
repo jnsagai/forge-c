@@ -17,6 +17,7 @@ import json
 import re
 from pathlib import Path
 
+from ..assurance import register_contract as RC
 from ..common import sha256_bytes, utc_now
 from . import structured as S
 from . import visit as V
@@ -260,7 +261,7 @@ def interfaces_packet(ws: Path, model: str, findings=None, previous=None) -> dic
     func = {k: v for k, v in reqs.items() if k not in cl}
     listing = "\n".join(f"{k}: {v}" for k, v in func.items())
     cases = "\n".join(f"{e['case']}: {e['swr']} {e.get('register', '')}.{e.get('field', '')} op {e['op']}"
-                      + (f" value {e['value']}" if e.get("value") is not None else "") for e in effects(ws))
+                      + RC.value_text(e) for e in effects(ws))
     art = [{"path": "workproducts/SWE.1/software_requirements.md#functional", "text": listing,
             "sha256": sha256_bytes(listing.encode())},
            {"path": "workproducts/SWE.1/register_effects.json#cases", "text": cases, "sha256": sha256_bytes(cases.encode())}]
@@ -275,6 +276,9 @@ def interfaces_packet(ws: Path, model: str, findings=None, previous=None) -> dic
              "responsibility. calls: one entry per register-effect case: the function allocated to the case's "
              "requirement and its C arguments (decimal or hex integer constants with a U suffix; a write case passes "
              "exactly the case value). Every function a requirement statement names must exist with that exact name.")
+    if any(e.get("requested") not in (None, "") for e in effects(ws)):  # CAPA-120: unchanged text without one
+        instr += (" A write case that lists a requested input passes exactly that requested input, never the field "
+                  "value it truncates to.")
     if inst is not None:
         sigs = "; ".join(_sig({"name": n, **s}) for n, s in inst["signatures"].items())
         instr = instr.replace(
@@ -413,8 +417,12 @@ def validate_interfaces(ws: Path, doc: dict, idx: dict) -> list[str]:
             out.append(f"case {e['case']}: the first argument must be the instance macro {inst['macro']}")
         k = _value_index(ws, f) if f is not None else 0
         if e["op"] == "write" and f is not None and len(f["params"]) > k and len(c["args"]) > k:
-            if _int(c["args"][k]) != _int(str(e.get("value"))):
-                out.append(f"case {e['case']}: the argument must be the case value {e.get('value')}")
+            # CAPA-120: a truncating write passes the requested input (0x1234), not the field value it leaves (0x234)
+            if _int(c["args"][k]) != _int(str(RC.call_input(e))):
+                out.append(f"case {e['case']}: the argument must be the case value {e.get('value')}"
+                           if e.get("requested") in (None, "") else
+                           f"case {e['case']}: the argument must be the requested input {e['requested']} (the field "
+                           f"keeps {e.get('value')})")
     known = {e["case"] for e in effects(ws)}
     out += [f"call {k} has no register-effect case" for k in calls if k not in known]
     return out
