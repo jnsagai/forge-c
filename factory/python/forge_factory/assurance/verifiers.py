@@ -53,6 +53,21 @@ def _ok(findings: list[str]) -> str:
     return "FAIL" if [f for f in findings if not f.startswith(("LIMITATION", "NOT_APPLICABLE"))] else "PASS"
 
 
+def _instance(ws: Path) -> dict | None:
+    from ..layer import ll_instance
+
+    return ll_instance(ws)
+
+
+def _instance_scan(findings: list[str], what: str) -> dict:
+    """Instance mode: a scan of register-block array writes finds nothing in typed instance code. Its findings still
+    fail; without findings the result is NOT_APPLICABLE (stated), never a PASS of a check that saw no access."""
+    note = f"NOT_APPLICABLE:INSTANCE_MODE:{what} reads register-block array writes; the code accesses the caller's " \
+           "typed instance"
+    return {"status": "FAIL" if [f for f in findings if not f.startswith(("LIMITATION", "NOT_APPLICABLE"))]
+            else "NOT_APPLICABLE", "findings": findings + [note]}
+
+
 def v_requirements(ws: Path) -> dict:
     r = swe12.check_requirements(ws)
     return {"status": r["verdict"], "findings": r["major_findings"]}
@@ -74,6 +89,9 @@ def v_arch(ws: Path) -> dict:
         a, notes = {"major_findings": []}, ["NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"]
     b = swe12.check_architecture(ws)
     f = a["major_findings"] + b["major_findings"]
+    if _instance(ws) is not None:  # the shared read-modify-write register scan reads register-block array writes
+        notes.append("NOT_APPLICABLE:INSTANCE_MODE:shared read-modify-write register scan (register-block array "
+                     "writes)")
     return {"status": _ok(f), "findings": f + notes}
 
 
@@ -89,6 +107,11 @@ def v_register_semantics(ws: Path) -> dict:
     for text in _code(ws).values():
         f += [x for x in hardware.check_writes(text, _hdr(ws), idx, register_block(ws))
               if not x.startswith("NON_ATOMIC_RMW")]
+    if _instance(ws) is not None:
+        from ..inspection.typed_registers import check_selected
+
+        typed = check_selected(ws) or {"major_findings": ["TYPED_REGMAP:NOT_SELECTED"]}
+        return _instance_scan(f + typed["major_findings"], "register access semantics")
     return {"status": _ok(f), "findings": f}
 
 
@@ -112,6 +135,8 @@ def v_concurrency(ws: Path) -> dict:
     rcc = register_block(ws) == "ll_rcc_regs"  # feature 009: other peripherals also poll IsActive/IsActiveFlag_*
     f = swe3.invariant_findings(_code(ws), _hdr(ws), _idx(ws), stated, register_block(ws),
                                 "IsReady|IsEnabled" if rcc else "IsReady|IsEnabled|IsActive")
+    if _instance(ws) is not None:
+        return {**_instance_scan(f, "shared-register race analysis"), "mitigation_stated": stated}
     return {"status": _ok(f), "findings": f, "mitigation_stated": stated}
 
 
@@ -145,6 +170,10 @@ def v_mutation(ws: Path) -> dict:
     ut = _unit_test(ws)
     if ut is None:
         return {"status": "NOT_RUN", "findings": ["no unit test"]}
+    if _instance(ws) is not None:  # the campaign builds without the pinned device header: every mutant is stillborn
+        return {"status": "NOT_APPLICABLE", "findings": [
+            "NOT_APPLICABLE:INSTANCE_MODE:the mutation campaign builds on the register-block array, not on the typed "
+            "instance of the pinned device header"]}
     from ..layer import hal_c, ll_header, ll_tu, register_prefix
 
     layer = layer_of(ws)
@@ -174,8 +203,11 @@ def v_api_execution(ws: Path) -> dict:
     if not srcs:
         return {"status": "NOT_RUN", "findings": ["no compile unit for the code under test"]}
     fake = ws / "software/tests/unit/ll_fake"  # CAPA-038: HAL unit tests on the LL test double
+    from ..layer import instance_flags
+
     r = coverage.measure(srcs, ut, ([fake] if fake.is_dir() else []) + [ws / "software/hal", ws / "software/ll",
-                                                                        ws / "software/include"])
+                                                                        ws / "software/include"],
+                         defines=instance_flags(ws, host=True) or None)  # instance mode: the pinned device header
     if r["status"] != "MEASURED":
         return {"status": "NOT_SUPPORTED", "findings": [str(r.get("reason", ""))[:160]]}
     counts: dict[str, int] = {}
@@ -210,6 +242,8 @@ def _target_oracle_findings(ws: Path) -> list[str]:
 
     if layer_of(ws) != "LL" or not SO.present(ws):
         return []
+    if _instance(ws) is not None:  # the SafeC target images are register-block words
+        return ["LIMITATION:TARGET_ORACLE_NOT_APPLICABLE:INSTANCE_MODE"]
     hdr = Path(api_header("LL", ws)).name
     r = target_oracle.run(ws, [ws / "software/ll", ws / "software/include"], hdr)
     if r["status"] in ("UNSUPPORTED", "NOT_APPLICABLE"):
@@ -268,6 +302,8 @@ def oracle_cross_check(ws: Path, verified: set[str]) -> list[str]:
 
     if layer_of(ws) != "LL" or not SO.present(ws):
         return []
+    if _instance(ws) is not None:  # the SafeC target images are register-block words
+        return [f"LIMITATION:NO_INDEPENDENT_TARGET_OBSERVATION:{s}:INSTANCE_MODE" for s in sorted(verified)]
     r = target_oracle.run(ws, [ws / "software/ll", ws / "software/include"], Path(api_header("LL", ws)).name)
     if r["status"] in ("UNSUPPORTED", "NOT_APPLICABLE"):
         return [f"LIMITATION:TARGET_ORACLE_{r['status']}:{r.get('reason', '')}"[:200]]

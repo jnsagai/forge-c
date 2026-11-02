@@ -205,19 +205,40 @@ def c_source(cases: list[dict], include: str, extra: list[dict] | None = None, b
     return "\n".join(lines)
 
 
+INSTANCE_WORDS = "FORGE_ORACLE_WORDS"
+
+
+def instance_prelude(include: str, inst: dict, offsets: dict[str, int]) -> list[str]:
+    """Instance mode: the oracle's register words are the words of the device header's host RAM instance. Its layout
+    is asserted against the RM offsets the oracle uses (a mismatch does not compile), so a word index is a register."""
+    t, obj = inst["type_name"], inst["host_object"]
+    asserts = [f'_Static_assert(offsetof({t}, {inst["members"][r]}) == {off}U, "RM offset of {r}");'
+               for r, off in sorted(offsets.items())]
+    return ["#define FORGE_HOST_DEVICE_IMPLEMENTATION /* the RAM instance is defined once, here */",
+            f'#include "{include}"', "#include <stddef.h>", "#include <stdio.h>", "#include <string.h>",
+            f"#define {INSTANCE_WORDS} (sizeof({t}) / 4U)",
+            f'_Static_assert((sizeof({t}) % 4U) == 0U, "{t} is a whole number of register words");', *asserts,
+            f"#define regs (*(volatile uint32_t (*)[{INSTANCE_WORDS}])(void *)&{obj})",
+            "unsigned long shim_n; /* instance mode: register accesses are not counted */", "static int fails;",
+            "int main(void)", "{", f"    uint32_t before[{INSTANCE_WORDS}];"]
+
+
 def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs", count: int = 1024,
-                    time_base: str | None = None) -> str:
+                    time_base: str | None = None, instance: dict | None = None,
+                    offsets: dict[str, int] | None = None) -> str:
     """C oracle from the register contract (register_contract.cases): expected bit and status per case, all other
     bits of the register unchanged, a no_write case leaves its named register unchanged (no register named: no
-    register access at all), a bounded poll for a never-ready case."""
+    register access at all), a bounded poll for a never-ready case. `instance` (instance mode): the register words
+    are the host RAM instance of the declared device header (instance_prelude); cases must be instance_cases."""
     from .register_contract import call_text
 
-    lines = [f'#include "{include}"', f"#undef {block}", "#include <stddef.h>", "#include <stdio.h>",
-             "#include <string.h>", f"volatile uint32_t regs[{count}];", "unsigned long shim_n;",
-             f"volatile uint32_t (*shim_regs(void))[{count}] {{ shim_n++; return &regs; }}", "static int fails;",
-             *([f"static uint32_t forge_tick; uint32_t {time_base}(void) {{ forge_tick++; return forge_tick; }}"]
-               if time_base else []),  # FND-07: the HAL's time base, +1 ms per call
-             "int main(void)", "{", f"    uint32_t before[{count}];"]
+    lines = instance_prelude(include, instance, offsets or {}) if instance is not None else [
+        f'#include "{include}"', f"#undef {block}", "#include <stddef.h>", "#include <stdio.h>",
+        "#include <string.h>", f"volatile uint32_t regs[{count}];", "unsigned long shim_n;",
+        f"volatile uint32_t (*shim_regs(void))[{count}] {{ shim_n++; return &regs; }}", "static int fails;",
+        *([f"static uint32_t forge_tick; uint32_t {time_base}(void) {{ forge_tick++; return forge_tick; }}"]
+          if time_base else []),  # FND-07: the HAL's time base, +1 ms per call
+        "int main(void)", "{", f"    uint32_t before[{count}];"]
     for i, c in enumerate(cases, 1):
         t = 5 if c["never_ready"] or c.get("busy") else 10
         lines += [f"    /* {c['swr']} {c['case']}: {c['op']} {c.get('register', '')}.{c.get('field', '')} via "
@@ -257,8 +278,27 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
     return "\n".join(lines)
 
 
+def instance_cases(cases: list[dict], inst: dict) -> tuple[list[dict], list[str]]:
+    """Instance mode: the cases the typed-instance oracle derives. Register accesses are not counted on the instance,
+    so a case whose expectation is an access count (no register named, never-ready or busy polling), or a register
+    the declared layout does not map, is stated not derivable instead of passing without a check."""
+    out, notes = [], []
+    for c in cases:
+        if "word" not in c or c.get("never_ready") or c.get("busy"):
+            notes.append(f"ORACLE_NOT_DERIVABLE:{c['case']}:INSTANCE_MODE (register-access count)")
+        elif c.get("register") not in inst["members"]:
+            notes.append(f"ORACLE_NOT_DERIVABLE:{c['case']}:INSTANCE_MODE ({c.get('register')} not in the declared "
+                         "typed layout)")
+        else:
+            out.append(c)
+    return out, notes
+
+
 def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str) -> dict:
     ws = Path(ws)
+    from ..layer import instance_flags, ll_instance
+
+    inst = ll_instance(ws)
     req = (ws / "workproducts/SWE.1/software_requirements.md").read_text(errors="replace")
     arch = (ws / "workproducts/SWE.2/software_architecture.md").read_text(errors="replace")
     hdr_path = next((d / api_header for d in include_dirs if (d / api_header).is_file()), None)
@@ -275,12 +315,19 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
         from ..layer import profile
 
         pr = profile(ws)
+        offsets = None
+        if inst is not None:
+            cases, inst_notes = instance_cases(cases, inst)
+            notes = notes + inst_notes
+            offsets = {c["register"]: c["word"] * 4 for c in cases}
         src = contract_source(cases, api_header, pr["ll"]["register_block"], pr["ll"]["register_count"],
-                              pr["hal"].get("time_base"))
+                              pr["hal"].get("time_base"), inst, offsets)
         contract_digests = [hashlib.sha256((ws / p).read_bytes()).hexdigest() for p in (RC.EFFECTS, RC.CALLS)]
         from . import safec_oracle as SO
 
-        if SO.present(ws):  # F011-T034: full register images from the frozen SafeC oracle (LL work orders)
+        if inst is not None and SO.present(ws):  # the SafeC images are whole register-block words
+            notes.append("ORACLE_NOT_DERIVABLE:SAFEC_REGISTER_IMAGES:INSTANCE_MODE")
+        elif SO.present(ws):  # F011-T034: full register images from the frozen SafeC oracle (LL work orders)
             eff = {e.get("case"): e for e in json.loads((ws / RC.EFFECTS).read_text()).get("effects") or []}
             sc, sc_notes = SO.cases(ws, eff, json.loads((ws / RC.CALLS).read_text()).get("calls") or {})
             notes = notes + sc_notes
@@ -319,11 +366,14 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
 
         (t / "shim.h").write_text(shim_text(_profile(ws)["ll"]["register_block"], _profile(ws)["ll"]["register_count"]))
         (t / "oracle.c").write_text(src)
-        inc = sum((["-I", str(d)] for d in include_dirs), []) + ["-include", str(t / "shim.h")]
+        inc = sum((["-I", str(d)] for d in include_dirs), [])
+        # instance mode: no register-block shim; the pinned device header maps the instance to its RAM object
+        inc += instance_flags(ws, host=True) if inst is not None else ["-include", str(t / "shim.h")]
+        std = "-std=c11" if inst is not None else "-std=c99"
         objs = []
         for s in [*sources, t / "oracle.c"]:
             o = t / (Path(s).stem + ".o")
-            b = subprocess.run(["gcc", "-std=c99", "-O0", "-w", *inc, "-c", str(s), "-o", str(o)], capture_output=True,
+            b = subprocess.run(["gcc", std, "-O0", "-w", *inc, "-c", str(s), "-o", str(o)], capture_output=True,
                                text=True)
             if b.returncode:
                 return {"status": "BUILD_FAILED", "reason": b.stderr[-300:], "notes": notes, "provenance": prov,

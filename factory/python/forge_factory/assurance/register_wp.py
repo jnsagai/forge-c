@@ -72,6 +72,11 @@ def prove(ws: Path, include_dirs: list[Path], api_header: str) -> dict:
     ws = Path(ws)
     if layer_of(ws) != "LL" or not (ws / OBLIGATIONS_FILE).is_file():
         return {"status": "NOT_APPLICABLE", "reason": "only LL work orders with frozen SafeC formal obligations"}
+    from ..layer import ll_instance
+
+    if ll_instance(ws) is not None:
+        return {"status": "NOT_APPLICABLE", "reason": "INSTANCE_MODE: the WP harness models the register-block array, "
+                                                      "not the caller's typed instance"}
     fc = tool("frama-c")
     if fc is None:
         return {"status": "UNSUPPORTED", "reason": "Frama-C is not installed on this host"}
