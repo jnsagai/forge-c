@@ -121,6 +121,26 @@
     "description": "Qwen-authored header, immutable source-backed CRC_TypeDef compile/host fixture; no ST driver implementation is imported."
    }
   ],
+  "instance": {
+   "schema": "forge-c/ll-instance/1",
+   "parameter": "CRCx",
+   "macro": "CRC",
+   "host_object": "forge_host_crc",
+   "register_interface": {
+    "schema": "forge-c/typed-register-interface/1",
+    "device_header": "inputs/forge_crc_device.h",
+    "api_contract": "inputs/IDR-API.h",
+    "manual": "inputs/RM0486-rev4-ch26-crc.md",
+    "type_name": "CRC_TypeDef",
+    "members": [
+     {
+      "register": "CRC_IDR",
+      "member": "IDR",
+      "width_bits": 32
+     }
+    ]
+   }
+  },
   "prompt_overrides": {
    "swe1_cover": "Cover only CRC_IDR.IDR write/read through the two declared functions, valid accessible-instance caller preconditions and no autonomous startup writes. No generic safe state or invented error-handling contract.",
    "swe1_effect_example": "{\"case\":\"WRITE_IDR\",\"swr\":\"SWR-001\",\"register\":\"CRC_IDR\",\"field\":\"IDR\",\"op\":\"write\",\"value\":\"0x12345678\"}",

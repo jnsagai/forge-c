@@ -214,6 +214,12 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         dst = f"inputs/{src.name}"
         inputs[dst] = src.read_bytes()
         listed.append({"path": dst, "role": item["role"], "sha256": sha256_file(src), "bytes": src.stat().st_size})
+    if "instance" in (spec.get("operation_scope") or {}):  # instance mode: pinned typed interface + LL layer only
+        from .operation_scope import validate_instance_inputs
+
+        if layer != "LL" or spec.get("delivery_first") is not None or spec.get("delivery"):
+            raise ValueError("OPERATION_SCOPE_INSTANCE_REQUIRES_GREENFIELD_LL")
+        validate_instance_inputs(spec["operation_scope"]["instance"], listed)
     assisted = None
     if spec.get("provided_requirements"):
         src = (example / spec["provided_requirements"]).resolve()
