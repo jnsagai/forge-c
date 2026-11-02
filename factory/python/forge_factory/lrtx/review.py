@@ -54,18 +54,30 @@ SAFE_STATE_NOTE = ("This work order is ASPICE-only: the allocated safety safe st
                    "missing safe state. Failure handling and reset/startup behaviour are still judged.")
 
 
-def safe_state_outside_scope(ws: Path) -> bool:
-    """CAPA-083: the order's assessment view puts the allocated safety safe state outside the owner scope."""
+def _assessment_view(ws: Path) -> dict:
+    """The order's bound inspection assessment view ({} for an order without one or with a changed binding)."""
     from ..inspection.assessment_context import view
 
     p = Path(ws) / ".forge-run/manifest.json"
     if not p.is_file():
-        return False
+        return {}
     try:
-        v = view(json.loads(p.read_text())) or {}
+        return view(json.loads(p.read_text())) or {}
     except ValueError:
-        return False
-    return "allocated safety safe state" in (v.get("outside_owner_scope") or [])
+        return {}
+
+
+def safe_state_outside_scope(ws: Path) -> bool:
+    """CAPA-083: the order's assessment view puts the allocated safety safe state outside the owner scope."""
+    return "allocated safety safe state" in (_assessment_view(ws).get("outside_owner_scope") or [])
+
+
+def missing_constraint_not_satisfied(ws: Path) -> bool:
+    """CAPA-113: the bound view requires explicit measurable flash/RAM/stack/CPU/timing constraints and rules that a
+    missing required constraint is an open input gap that does NOT satisfy the criterion."""
+    v = _assessment_view(ws)
+    return v.get("missing_required_constraint") == "OPEN_INPUT_GAP_NOT_SATISFIED" and \
+        any("constraint" in str(e) for e in v.get("required_engineering_evidence") or [])
 
 
 def _notes(ws: Path, phase: str, item: str) -> list[str]:
@@ -166,6 +178,15 @@ GAP_RX = re.compile(r"NOT_PROVIDED|not (?:been |yet )?provided|upstream (?:cover
 # ... and only about an upstream input (lrtx9: "depends on an upstream budget that has not been provided"); a missing
 # verification criterion or test is never an upstream gap
 UPSTREAM_RX = re.compile(r"\bHSI\b|\bbudget|\bupstream\b|interface contract|safety allocation", re.I)
+# CAPA-113: a finding that a measurable resource or timing constraint (the view's required engineering evidence) is
+# missing; an objection to the status of a constraint the document states is not one, nor a finding about the HSI
+# contract or the safety allocation (a recorded interface gap or outside the owner scope): those stay refuted
+_CONSTRAINT = (r"(?:CPU|processor[- ]time|cycles?|cycle[- ]count|instruction[- ]count|timing|execution[- ]time|"
+               r"response[- ]time|latency|deadline|flash|RAM|stack)")
+CONSTRAINT_RX = re.compile(r"\b(?:no|missing|lacks?|without|nor?)\b[^.;]{0,60}?\b" + _CONSTRAINT + r"\b|\b" + _CONSTRAINT +
+                           r"\b[^.;]{0,40}?\b(?:missing|unspecified|absent|undefined|not (?:stated|specified|defined|"
+                           r"provided|given|allocated))\b", re.I)
+NOT_CONSTRAINT_RX = re.compile(r"\bHSI\b|interface contract|safety allocation", re.I)
 LATER_RX = re.compile(r"no test (?:file|procedure|case|script)|test (?:file|procedure)s? (?:is|are)? ?(?:not )?"
                       r"(?:provided|present|available)|no (?:test )?evidence .{0,80}(?:measured|verified)|not "
                       r"(?:explicitly )?measured", re.I)
@@ -193,10 +214,14 @@ def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list
     gaps_p = ws / "traceability/upstream_gaps.md"
     recorded_gap = gaps_p.is_file() and "NOT_PROVIDED" in gaps_p.read_text()
     startup = re.search(r"\*\*(SWR-\d{3})\*\*\s+(" + STARTUP_NO_CALL + r"[^\n]*)\n", text, re.I)
+    open_gap = phase == "SWE.1" and recorded_gap and missing_constraint_not_satisfied(ws)
     for f in findings:
         # lrtx7 (2026-10-21): the Claude inspector passed SWE1-01..06 of rc1 with the same recorded gaps; the Qwen
-        # inspector failed them for the gap itself, for later-phase evidence and for a startup rule the document has
-        if phase == "SWE.1" and recorded_gap and GAP_RX.search(f) and UPSTREAM_RX.search(f):
+        # inspector failed them for the gap itself, for later-phase evidence and for a startup rule the document has.
+        # CAPA-113: under a bound assessment view a recorded NOT_PROVIDED required constraint is an open input gap that
+        # does not satisfy the item, so a finding about that missing constraint is not refuted by the record
+        kept = open_gap and CONSTRAINT_RX.search(f) and not NOT_CONSTRAINT_RX.search(f)
+        if phase == "SWE.1" and recorded_gap and GAP_RX.search(f) and UPSTREAM_RX.search(f) and not kept:
             out.append(f"finding '{f[:80]}...' judges an input the owner recorded as NOT_PROVIDED as a failure: the "
                        "document records the gap in traceability/upstream_gaps.md, which is what the factory requires "
                        "for missing upstream inputs - re-judge the item on the other evidence")

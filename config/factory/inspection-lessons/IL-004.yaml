@@ -1,7 +1,7 @@
 # F011-T045: written from the learning set (F011-T029 runs 3-6: SWE1-04 claims about processor time and timing)
 id: IL-004
 version: 1
-state: PROPOSED
+state: RETRACTED
 scope:
   phase: SWE.1
   items: [SWE1-04]
@@ -17,3 +17,11 @@ evidence_refs:
   - evidence/v0.4/runs/F011-T029/run5-omniverse2/gpt-oss-120b-unseen.json
   - evidence/v0.4/runs/F011-T029/README.md
 must_still_detect: [S1-NOBUDGET]
+retraction:
+  at: "2026-11-02"
+  reason: >-
+    CAPA-113: contradicts the bound inspection assessment context (required_engineering_evidence lists explicit
+    measurable flash/RAM/stack/CPU/timing constraints; missing_required_constraint: OPEN_INPUT_GAP_NOT_SATISFIED).
+    Recording a missing CPU or timing constraint as an upstream gap does not satisfy SWE1-04; the same reading in the
+    refuter withdrew correct local findings (cloud cross-inspection 2026-11-02, class X2).
+  ref: "factory/python/forge_factory/inspection/assessment_context.py#view"
