@@ -156,18 +156,47 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     return bl, srcs
 
 
+# Inspection lessons (knowledge/inspection.py) for every phase of this inspector: VALIDATED lessons only, selected
+# deterministically by phase, item, layer and the work products in the packet, as one reference source after the frozen
+# work products, never as instructions; ids and hashes are recorded with the inspection. A promotion trial
+# (knowledge/detection_trial.py, lrtx/seeded.py --lessons) sets a lesson directory, PROPOSED retrieval or no lessons.
+LESSONS: dict = {"dir": None, "include_proposed": False, "off": False}
+LESSON_SOURCE = "reference/inspection-lessons.md"
+INSPECTOR: dict = {"sampling": None}  # a paired trial's recorded sampling (seed); production: the gateway default
+
+
+def item_lessons(ws: Path, phase: str, item_id: str, srcs: list[dict]) -> list[dict]:
+    from ..knowledge import inspection as IL
+    from ..layer import layer_of
+
+    if LESSONS["off"]:
+        return []
+    return IL.select(phase, item_id, layer_of(ws), {s["path"] for s in srcs}, Path(LESSONS["dir"] or IL.LESSON_DIR),
+                     include_proposed=bool(LESSONS["dir"] and LESSONS["include_proposed"]))
+
+
+def lesson_source(lessons: list[dict]) -> dict | None:
+    from ..knowledge import inspection as IL
+
+    text = IL.render(lessons)
+    return {"path": LESSON_SOURCE, "sha256": sha256_bytes(text.encode()), "text": text} if text else None
+
+
 def item_packet(ws: Path, phase: str, item: dict, bl: dict, srcs: list[dict], model: str, findings=None,
-                previous=None) -> dict:
+                previous=None, lessons: list[dict] | None = None) -> dict:
     instr = (f"Inspect checklist item {item['id']} of {phase} on the frozen baseline {bl['baseline_id']} (hash "
              f"{bl['baseline_hash'][:16]}). Criterion (full text): {' '.join(str(item['criterion']).split())} "
              "Judge ONLY this criterion, ONLY from the SOURCES below (the frozen work products and the work-order "
              "context). verdict PASS only when the evidence satisfies the whole criterion; otherwise FAIL with one "
              "concrete finding per problem that names the requirement, section or file it concerns. Do not judge other "
              "criteria. evidence_checked lists the source paths you used. " + " ".join(_notes(ws, phase, item["id"])))
+    ref = lesson_source(lessons or [])
+    if ref:  # reference data with provenance, after the frozen work products; without lessons the packet is unchanged
+        srcs = [*srcs, ref]
     return S.packet(phase=phase, task=f"inspect:{item['id']}", role=f"swe{phase[-1]}-inspector", instructions=instr,
                     sources=srcs, criteria=[f"{item['id']}: {' '.join(str(item['criterion']).split())}"],
                     output_schema=VERDICT_SCHEMA, model=model, findings=findings, previous=previous,
-                    output_reserve=2048, assessment_workspace=Path(ws))
+                    output_reserve=2048, assessment_workspace=Path(ws), sampling=INSPECTOR["sampling"])
 
 
 PENDING_RX = re.compile(r"pending|not (?:yet )?allocated|allocation review|no software safety requirement", re.I)
@@ -291,12 +320,16 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
     items = [c for c in st.applicable(st.checklist(phase))["checks"]
              if c.get("required") and not c.get("deterministic_check")]
     paths = {s["path"] for s in srcs}
-    verdicts, issues, contested, withdrawn = {}, [], {}, {}
+    verdicts, issues, contested, withdrawn, lessons = {}, [], {}, {}, {}
     for it in items:
         # the checkpoint key binds the verdict to the baseline it judged: a new baseline is a new task
         task = f"inspect:{bl['baseline_hash'][:16]}:{it['id']}"
-        rec = V.run_task(ws, phase, task, lambda fi, pr, it=it: item_packet(ws, phase, it, bl, srcs, model, fi, pr),
-                         lambda d, it=it: validate_verdict(d, paths, ws, phase, it["id"]), budget)
+        les = item_lessons(ws, phase, it["id"], srcs)
+        ipaths = paths | ({LESSON_SOURCE} if les else set())
+        lessons[it["id"]] = [{k: x[k] for k in ("id", "version", "sha256", "purpose")} for x in les]
+        rec = V.run_task(ws, phase, task,
+                         lambda fi, pr, it=it, les=les: item_packet(ws, phase, it, bl, srcs, model, fi, pr, les),
+                         lambda d, it=it, ipaths=ipaths: validate_verdict(d, ipaths, ws, phase, it["id"]), budget)
         d = rec["doc"]
         if rec["status"] != "VALID":
             # lrtx8 (2026-10-21): an inspector that keeps a finding the evidence refutes after its repairs. The verdict
@@ -305,13 +338,14 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
             conf = fact_conflicts(ws, phase, it["id"], d["findings"]) if isinstance(d, dict) and \
                 isinstance(d.get("findings"), list) else []
             if not (conf and set(rec["errors"]) <= set(conf) and not S.validate(d, VERDICT_SCHEMA)
-                    and not validate_verdict(d, paths)):
+                    and not validate_verdict(d, ipaths)):
                 issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
                 continue
             contested[it["id"]] = conf
         verdicts[it["id"]] = {"verdict": d["verdict"], "findings": list(d["findings"]),
                               "evidence_refs": [f"configuration/baselines/{phase}/{bl['baseline_id']}.json",
-                                                *d["evidence_checked"][:8]]}
+                                                *[e for e in d["evidence_checked"]  # lessons are no work product
+                                                  if _norm_path(e) != LESSON_SOURCE][:8]]}
         # CAPA-076 (owner option A, 2026-10-31): findings a rejected answer stated and the accepted answer no longer
         # carries are reported, not silently lost. Verdict and gate are unchanged.
         kept = set(d["findings"])
@@ -333,7 +367,9 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
     S.record(ws, f"{phase}/inspection-record.json", {"at": utc_now(), "baseline_id": bl["baseline_id"],
                                                      "result": res, "items": sorted(verdicts),
                                                      "contested_findings": contested,
-                                                     "withdrawn_in_repair": withdrawn})
+                                                     "withdrawn_in_repair": withdrawn,
+                                                     **({"inspection_lessons": lessons}
+                                                        if any(lessons.values()) else {})})
     status = "PASS" if res["status"] == "PASS" else "REWORK"
     notes = [f"LRTX_INSPECTOR_FINDING_CONTESTED:{i}: {c}" for i, cs in contested.items() for c in cs]
     notes += [f"LRTX_INSPECTOR_FINDING_WITHDRAWN_IN_REPAIR:{i}: {f}" for i, fs in withdrawn.items() for f in fs]

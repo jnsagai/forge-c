@@ -1,6 +1,7 @@
 # F011-T045: written from the learning set (F011-T029 runs 3-6: SWE1-04 claims about processor time and timing)
 id: IL-004
 version: 1
+purpose: CLARIFICATION
 state: RETRACTED
 scope:
   phase: SWE.1

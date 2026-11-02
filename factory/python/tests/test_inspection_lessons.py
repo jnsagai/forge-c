@@ -13,7 +13,7 @@ DECISION = "pd-3246c9d4c13746b3041e"  # a recorded CRE decision of this feature 
 
 
 def _lesson(i=1, **kw):
-    les = {"id": f"IL-{i:03d}", "version": 1, "state": "VALIDATED",
+    les = {"id": f"IL-{i:03d}", "version": 1, "state": "VALIDATED", "purpose": "CLARIFICATION",
            "scope": {"phase": "SWE.1", "items": ["SWE1-02"], "layers": ["LL", "HAL"],
                      "requires": ["workproducts/SWE.1/register_effects.json"]},
            "statement": "The register effects contract records the final register state of each tested case, not "
