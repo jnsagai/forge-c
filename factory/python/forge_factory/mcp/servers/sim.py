@@ -77,7 +77,6 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
                                      "software/tests/software") if (ws / d).is_dir()]
     from ...brownfield.cmsis import target_flags
     from ...delivery_first import include_flags
-
     from ...layer import instance_flags
 
     incs += target_flags(ws) + include_flags(ws)  # pinned target adapter, explicit work-order selection

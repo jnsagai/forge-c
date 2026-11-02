@@ -66,10 +66,18 @@ def header(ws: Path | None = None) -> str:
         from ..delivery_first import selected as delivery_selected
 
         cfg, _ = delivery_selected(ws)
+        from ..layer import ll_instance
+
+        inst = ll_instance(ws) if not cfg else None
         if cfg:
             text = re.sub(r"^# Register access in scenarios:.*$",
                           "# Register access follows " + cfg["contract"] + "; use the actual candidate/device "
                           "declarations, not assumed register arrays or mask macros.", text, flags=re.M)
+        elif inst is not None:  # instance mode: the members of the instance macro, no register-block array
+            text = re.sub(r"^# Register access in scenarios:.*$",
+                          f"# Register access in scenarios: {inst['macro']}-><MEMBER> & {pr['ll']['function_prefix']}"
+                          f"<REG>_<FIELD>_MSK ({inst['type_name']} of {inst['device_header']}; every LL call passes "
+                          f"{inst['macro']})", text, flags=re.M)
     if budget:
         text = text.replace("*** Settings ***", (
             "# Simulation-only performance: use the declared instrumented test, not a copied scenario.\n"

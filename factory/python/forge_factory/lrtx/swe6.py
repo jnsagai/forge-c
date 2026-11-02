@@ -120,7 +120,7 @@ def must_name(ws: Path, swrs: list[str]) -> dict[str, tuple[set[str], set[str]]]
 
 
 def scenario_packet(ws: Path, topic: str, swrs: list[str], model: str, findings=None, previous=None) -> dict:
-    from .swe5 import _p
+    from .swe5 import _p, registers_rule
 
     p = _p(ws)
     need = must_name(ws, swrs)
@@ -137,7 +137,7 @@ def scenario_packet(ws: Path, topic: str, swrs: list[str], model: str, findings=
              "'FORGE_MAILBOX_DEFINE;', then 'int main(void) { FORGE_TEST_BEGIN(); ... FORGE_TEST_END(); return 0; }'. "
              "Every requirement gets exactly ONE check TCHECK(<its number>, <condition>) in exactly one of the two "
              "programs, testing what the requirement states on LL return values and "
-             f"{p['block']}[LL_{p['pfx']}_<REG>_OFFSET / 4U] register bits as the target model makes them observable. "
+             f"{registers_rule(p)} as the target model makes them observable. "
              f"Observation rule (checked by the test tool): {naming or 'none'}; a write-only field that the model "
              "reads as 0 is still named in its check (e.g. '(reg & <FIELD>_MSK) == 0U') together with the observable "
              "effect of the write. A requirement about the state after reset checks the register values BEFORE any LL "
@@ -164,6 +164,9 @@ def validate_scenarios(ws: Path, doc: dict, swrs: list[str]) -> list[str]:
             if s not in swrs]
     known = set(re.findall(r"#define\s+(\w+)", _header(ws).read_text()))
     out += [e for prog in progs.values() if prog for e in V.offset_index_errors(prog, p["block"], p["pfx"])]
+    from .swe5 import instance_findings
+
+    out += [e for prog in progs.values() if prog for e in instance_findings(p, prog)]
     api = {f["name"] for f in interfaces(ws)["functions"]}
     seen: dict[int, str] = {}
     for key, code in progs.items():

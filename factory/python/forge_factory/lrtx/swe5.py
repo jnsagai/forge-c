@@ -38,11 +38,32 @@ TRIAGE_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["
 
 
 def _p(ws: Path) -> dict:
-    from ..layer import profile
+    from ..layer import ll_instance, profile
     from .swe3 import _ident
 
     pr = profile(ws)
-    return {**_ident(ws), "id": pr["id"], "prompt": pr.get("prompt") or {}}
+    return {**_ident(ws), "id": pr["id"], "prompt": pr.get("prompt") or {}, "instance": ll_instance(ws)}
+
+
+def registers_rule(p: dict) -> str:
+    """How a test reaches registers: the register-block array, or (instance mode) the instance macro's members."""
+    inst = p.get("instance")
+    if inst is None:
+        return f"{p['block']}[LL_{p['pfx']}_<REG>_OFFSET / 4U] register bits"
+    members = ", ".join(f"{inst['macro']}->{m} for {r}" for r, m in inst["members"].items())
+    return (f"the registers of the instance macro {inst['macro']} ({members}; {inst['macro']} is passed as the "
+            f"instance argument of every LL call and is the only way to a register - there is no register-block "
+            f"array {p['block']})")
+
+
+def instance_findings(p: dict, code: str) -> list[str]:
+    """Instance mode: a test that uses the register-block array of the legacy layout cannot build."""
+    from ..brownfield.scope import strip_comments
+
+    inst = p.get("instance")
+    if inst is None or not re.search(rf"\b{re.escape(p['block'])}\b", strip_comments(code)):
+        return []
+    return [f"{p['block']} does not exist in instance mode: access registers as {inst['macro']}-><MEMBER>"]
 
 
 def files(ws: Path) -> dict[str, str]:
@@ -96,7 +117,7 @@ def file_packet(ws: Path, kind: str, model: str, findings=None, previous=None) -
                  f"{Path(rel).name} @verifies {ifs} */', then '#include \"{p['header']}\"', '#include "
                  "\"forge_target_test.h\"', the line 'FORGE_MAILBOX_DEFINE;', then 'int main(void) { FORGE_TEST_BEGIN(); "
                  "... FORGE_TEST_END(); return 0; }' with checks 'TCHECK(<number>, <condition>);' numbered 1, 2, 3 ... "
-                 f"on LL return values and {p['block']}[LL_{p['pfx']}_<REG>_OFFSET / 4U] register bits. Expected values "
+                 f"on LL return values and {registers_rule(p)}. Expected values "
                  "follow the target model and the requirements. A poll is bounded by the caller (at most 1000 iterations). "
                  "Use only the interface functions, the generated defines and the register block.")
     else:
@@ -110,6 +131,18 @@ def file_packet(ws: Path, kind: str, model: str, findings=None, previous=None) -
                  f"from: {ifs}> SWC_LL */' (IT-001, IT-002 ...), and every CHECK id of that function starts with its "
                  "IT id (IT-001, IT-001-A ...; each id used once). main() clears the array, calls every test and "
                  "returns (failures == 0) ? 0 : 1. Expected values come from the requirements and their cases.")
+        inst = p["instance"]
+        if inst is not None:  # instance mode: the RAM instance of the pinned device header replaces the array
+            obj = inst["host_object"]
+            instr = instr.replace(
+                f"on a plain RAM register array: '#include <stdio.h>', '#include <stdint.h>', '#include \"{p['header']}\"', "
+                f"define 'volatile uint32_t {p['block']}[LL_{p['pfx']}_REG_COUNT];' and",
+                f"on the RAM instance {obj} of the pinned device header {inst['device_header']}: '#include <stdio.h>', "
+                "'#include <stdint.h>', '#include <string.h>', the line '#define FORGE_HOST_DEVICE_IMPLEMENTATION' "
+                f"directly before '#include \"{p['header']}\"' (it defines {obj} once), then define")
+            instr = instr.replace("main() clears the array,", f"main() clears the instance with (void)memset((void *)&"
+                                  f"{obj}, 0, sizeof({obj})),")
+            instr += (f" Registers are read and preset as {registers_rule(p)}; every LL call passes {inst['macro']}.")
     artifacts = _context(ws)
     if kind == "target_performance":
         from .. import simulation_performance as performance
@@ -153,6 +186,10 @@ def validate_file(ws: Path, kind: str, doc: dict) -> list[str]:
     used = set(re.findall(rf"\bLL_{p['pfx']}_\w+", code))
     out += [f"{x} is neither an interface function nor a generated define" for x in sorted(used - known - api)]
     out += V.offset_index_errors(code, p["block"], p["pfx"])
+    out += instance_findings(p, code)
+    if p["instance"] is not None and kind == "integration" and "#define FORGE_HOST_DEVICE_IMPLEMENTATION" not in code:
+        out.append(f"missing the line '#define FORGE_HOST_DEVICE_IMPLEMENTATION' before the LL header include (it "
+                   f"defines the RAM instance {p['instance']['host_object']})")
     if re.search(r"\(\s*(?:volatile\s+)?uint32_t\s*\*\s*\)", code):
         out.append("no integer-to-pointer casts: use the register block array")
     tags_if = set(re.findall(r"\bIF-\d{2}\b", " ".join(re.findall(r"@verifies([^*]*)", code))))
@@ -319,9 +356,11 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     size = [json.loads(x) for x in (ws / "evidence/tool-results.jsonl").read_text().splitlines()
             if '"op": "measure_elf"' in x or '"op": "stack_usage"' in x][-2:]
     excluded = [s for s in m["scope"] if s.lower().startswith("out of scope")]
+    store = ("a RAM register array" if p["instance"] is None else
+             f"the RAM {p['instance']['type_name']} instance {p['instance']['host_object']}")
     md = ["# Integration verification report", "", "## Plan", "", "Component and integration measures: the host "
-          f"integration program {files(ws)['integration']} drives the SWE.2 sequences through the real LL on a RAM "
-          "register array; the Renode target programs run the LL on the simulated STM32N6 (Cortex-M55) with the "
+          f"integration program {files(ws)['integration']} drives the SWE.2 sequences through the real LL on {store}"
+          "; the Renode target programs run the LL on the simulated STM32N6 (Cortex-M55) with the "
           "behavioural peripheral model.", "", "## Integration sequence", "",
           f"The sequences of workproducts/SWE.2/architecture_dynamic.puml over the interfaces {', '.join(interface_ids(ws))} "
           "of the static view.", "", "## Clock/reset interactions tested", "",
