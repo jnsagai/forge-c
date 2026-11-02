@@ -217,6 +217,21 @@ def cloud_station(now: float) -> dict | None:
             "inspector_mode": claude_mode("inspector")}
 
 
+CELL_TAGS = {"author": "Ornith 35B, thinking on", "inspector": "Qwen3.8 27B", "tool": "loads Ornith or Qwen",
+             "tool_what": "Loads the right model on the GPU before each cell (6-10 s per swap)."}
+
+
+def cell_tags() -> dict:
+    """The cell labels of this line's models. Owner 2026-11-02 ("the cells in cloud mode are showing qwen as model"):
+    FORGE_FLOOR_CELL_TAGS {author, inspector, tool, tool_what} overrides the local line's labels; unset = unchanged."""
+    try:
+        over = json.loads(os.environ.get("FORGE_FLOOR_CELL_TAGS") or "{}")
+    except ValueError:
+        over = {}
+    return {k: str(over[k]) if isinstance(over, dict) and isinstance(over.get(k), str) and over[k].strip() else v
+            for k, v in CELL_TAGS.items()}
+
+
 def _api_zero() -> dict:
     return {"calls": 0, "failed": 0, "prompt": 0, "completion": 0, "reasoning": 0, "cached": 0, "cost_usd": 0.0,
             "account_calls": 0, "list_cost_usd": 0.0}
@@ -621,8 +636,9 @@ def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dic
         if out.get("model_s"):
             speed = round(out["out_tokens"] / out["model_s"])
     short = lambda m: "Ornith 35B" if m and "ornith" in m.lower() else (m or "").split(":")[0].replace("qwen", "Qwen")  # noqa: E731
-    author_tag = f"{short(nd['model'])}, native agent" if nd and nd["cell"] == "author" and nd.get("model") else "Ornith 35B, thinking on"
-    insp_tag = f"{short(nd['model'])}, native agent" if nd and nd["cell"] == "inspector" and nd.get("model") else "Qwen3.8 27B"
+    tags = cell_tags()
+    author_tag = f"{short(nd['model'])}, native agent" if nd and nd["cell"] == "author" and nd.get("model") else tags["author"]
+    insp_tag = f"{short(nd['model'])}, native agent" if nd and nd["cell"] == "inspector" and nd.get("model") else tags["inspector"]
     per_h = None
     if a.get("done") and a.get("elapsed_s"):
         per_h = round(a["done"] / (a["elapsed_s"] / 3600), 1)
@@ -630,8 +646,8 @@ def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dic
     now = now or time.time()
     bar = lambda cell: _bar(cell, run, a, nd, at_cell, phase, now)  # noqa: E731
     cells = [
-        {"id": "tool", "bar": bar("tool"), "name": "Tool changer", "tag": "loads Ornith or Qwen", "state": state("tool"),
-         "what": "Loads the right model on the GPU before each cell (6-10 s per swap).", "counters": []},
+        {"id": "tool", "bar": bar("tool"), "name": "Tool changer", "tag": tags["tool"], "state": state("tool"),
+         "what": tags["tool_what"], "counters": []},
         {"id": "author", "bar": bar("author"), "name": "Author cell", "tag": author_tag, "state": state("author"),
          "job": job if at_cell == "author" else None, "progress": prog if step == "author" else None,
          "speed": {"tok_s": speed, "per_h": per_h, "unit": a.get("unit")} if at_cell == "author" else None,

@@ -99,3 +99,13 @@ def test_the_inspector_has_its_own_mode_switch_and_account_calls_are_not_priced(
     st = F.cloud_station(now)
     assert st["inspector_mode"]["mode"] == "account" and st["models"][0]["today"]["account_calls"] == 1
     assert st["cost_today_usd"] == 2.0  # only the API call is priced at the display rate
+
+
+def test_cell_labels_follow_the_line_and_default_to_the_local_models(monkeypatch):
+    monkeypatch.delenv("FORGE_FLOOR_CELL_TAGS", raising=False)
+    assert F.cell_tags()["inspector"] == "Qwen3.8 27B" and F.cell_tags()["author"] == "Ornith 35B, thinking on"
+    monkeypatch.setenv("FORGE_FLOOR_CELL_TAGS", json.dumps({"author": "Claude Opus 5.5", "inspector": "gpt-6.1-sol",
+                                                            "tool": "no model swap (cloud APIs)", "tool_what": ""}))
+    t = F.cell_tags()
+    assert t["author"] == "Claude Opus 5.5" and t["inspector"] == "gpt-6.1-sol" and t["tool"] == "no model swap (cloud APIs)"
+    assert t["tool_what"].startswith("Loads")  # an empty override keeps the default
