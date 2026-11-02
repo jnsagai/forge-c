@@ -1160,3 +1160,13 @@ reproducers:
     operations: [lrtx/visit rework routing and reuse]
     root_cause: "After the SWE.1 inspection (3 majors, 8 findings naming 12 tasks), one finding mentioning open points without an id was routed to all 62 author tasks and every time-boxed node execution re-sent the findings without reusing tasks that had answered them: the same first 9 tasks re-authored for 21 executions and 190 of 256 author calls."
     remedy: "Findings go to the tasks they name (task, SWR, case, open point, register/field/section), an unattributed finding keeps its former route and is recorded; an author task that answered the same findings on the same inputs earlier in the visit is reused."
+  - id: RPR-109
+    script: rpr109_swe2_design_finding_routed_to_interfaces.py
+    sha256: 63d218d56e2f90954bf4e3102d792ca01d5e29b02d48ac7962b47c90fde479ef
+    symptom_signature: "a SWE.2 finding on a design-owned section citing an SWR id never reaches the design task"
+    observed_in: "Fabro run WO-F014-CMP-SWE2-IWDG-20261102-03 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: 4227ea7382bf86b711fd63beeff0415d41b29aa1
+    error_codes: []
+    operations: [lrtx/swe2 rework routing]
+    root_cause: "Every SWE.2 inspector finding citing an SWR id went to the interfaces task only; a finding on the design-owned Safety section (IWDG_PR width called unresolved) never reached the design task, whose checkpoint was reused, so the same text was rendered again and the order stopped BLOCKED STUCK SAME_ITEM_FAILED_3X:SWE2-06."
+    remedy: "Findings go to the task owning the sections their location names (else the first section named; a visit's own failure stays with its task; contract codes to interfaces); the design packet carries field bit positions and the component-level requirement texts."
