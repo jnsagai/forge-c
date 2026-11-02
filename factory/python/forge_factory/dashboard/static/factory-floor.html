@@ -350,7 +350,7 @@ function cellCard(c) {
       ${barHtml(c.bar, c)}
     </div></div>
     <div class="cell-foot">
-      ${s ? `<div class="gauges">${gauge(s.tok_s, 200, "speed", "tok/s")}${s.per_h != null ? gauge(s.per_h, 30, "output", "per h") : ""}</div>` : ""}
+      ${s ? `<div class="gauges"${s.model ? ` title="${esc(s.model)} now: output tokens / call time of its latest calls (gateway)"` : ""}>${gauge(s.tok_s, 200, s.model ? "speed · " + modelShort(s.model) : "speed", "tok/s")}${s.per_h != null ? gauge(s.per_h, 30, "output", "per h") : ""}</div>` : ""}
       <div class="counters">${(c.counters || []).map(([k, v]) => `<span>${esc(k)} <b>${esc(typeof v === "number" && v >= 1000 ? fmt(v) : v)}</b></span>`).join("")}</div>
       ${toolDetail(c.detail)}
       ${c.why ? `<div class="why">${esc(c.why)}</div>` : ""}
@@ -392,6 +392,7 @@ function renderKpis(d) {
 }
 // owner 2026-11-02: the cloud line shows a tokens and API cost monitor per model instead of the GPU station
 const API_NAME = {anthropic: "Anthropic API", openai: "OpenAI API", codex: "Codex CLI"};
+function modelShort(m) { const x = (m || "").toLowerCase(); return x.includes("ornith") ? "Ornith" : x.startsWith("qwen") ? "Qwen" + (x.match(/qwen([0-9.]+)/) || ["", ""])[1] : x.startsWith("claude") ? "Claude" : m.split(":")[0]; }
 function apiName(m) { return m.model.startsWith("claude") ? "Claude · " + (API_NAME[m.backend] || m.backend) : m.model + " · " + (API_NAME[m.backend] || m.backend); }
 function apiTile(m) {
   const t = m.today, h = m.hour;

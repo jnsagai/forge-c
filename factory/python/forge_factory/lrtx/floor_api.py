@@ -141,6 +141,37 @@ def node_cell(node: str) -> str:
     return "router"
 
 
+def recent_speed(now: float, window_s: float = 600, calls: int = 5) -> dict | None:
+    """Owner 2026-11-02 ("the inspection cell is running with qwen and the line speed is around 130 tok/s, is that
+    correct?"): the speed of the model at work NOW, from the gateway's own per-call measurements (output tokens / call
+    latency of the latest calls of the latest model, prompt processing included). A Fabro node's cumulative average mixes
+    every model the node called (a structured node authors with one model and inspects with another). The line speed
+    KPI keeps that average (owner: "could be the average, no problem"); the cell at work shows this speed
+    ("lets just have a local gauge in the cell")."""
+    meter = state_root() / "llm-gateway/usage.jsonl"
+    try:
+        with meter.open("rb") as f:
+            f.seek(max(0, meter.stat().st_size - 65536))
+            lines = f.read().decode(errors="replace").splitlines()
+    except OSError:
+        return None
+    rows = []
+    for line in lines:
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if r.get("latency_ms") and r.get("tokens_output") is not None and r.get("model"):
+            rows.append(r)
+    if not rows or now - (_ts(rows[-1].get("ts_utc")) or 0) > window_s:
+        return None
+    model = rows[-1]["model"]
+    mine = [r for r in rows if r["model"] == model][-calls:]
+    lat = sum(float(r["latency_ms"]) for r in mine) / 1000
+    return {"model": model, "tok_s": round(sum(int(r["tokens_output"]) for r in mine) / lat) if lat else None,
+            "calls": len(mine), "basis": "gateway per-call output tokens / latency"}
+
+
 def native(stages: dict | None, now: float) -> dict:
     """Per phase: model work of the Fabro nodes (output tokens, inference seconds, model-node visits); the node at work."""
     out: dict = {"phases": {}, "node": None}
@@ -675,7 +706,10 @@ def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dic
             job = wo
     prog = {"done": a.get("done"), "total": a.get("total"), "unit": a.get("unit"), "eta": a.get("eta_utc")} if a else None
     speed = None
-    if nd and nd.get("tok_s"):
+    rs = recent_speed(now or time.time()) if run is not None and run.get("state") == "RUNNING" else None
+    if rs and rs.get("tok_s"):
+        speed = rs["tok_s"]
+    elif nd and nd.get("tok_s"):
         speed = nd["tok_s"]
     elif run is not None:
         out = run["phases"].get(phase, {})
@@ -696,7 +730,8 @@ def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dic
          "what": tags["tool_what"], "counters": []},
         {"id": "author", "bar": bar("author"), "name": "Author cell", "tag": author_tag, "state": state("author"),
          "job": job if at_cell == "author" else None, "progress": prog if step == "author" else None,
-         "speed": {"tok_s": speed, "per_h": per_h, "unit": a.get("unit")} if at_cell == "author" else None,
+         "speed": {"tok_s": speed, "per_h": per_h, "unit": a.get("unit"), "model": (rs or {}).get("model")}
+         if at_cell == "author" else None,
          "what": "Writes the work products, one task at a time.",
          "counters": [["calls", agg("calls")], ["output tokens", agg("out_tokens")], ["model hours", round(agg("model_s") / 3600, 1)]]},
         {"id": "freeze", "bar": bar("freeze"), "name": "Freeze gate", "tag": "deterministic check", "state": state("freeze"),
@@ -704,7 +739,8 @@ def _cells(phase: str, orders: list[dict], now: float | None = None) -> list[dic
          "counters": [["frozen", agg("frozen")], ["rejected", agg("rejected")]]},
         {"id": "inspector", "bar": bar("inspector"), "name": "Inspection cell", "tag": insp_tag, "state": state("inspector"),
          "job": job if at_cell == "inspector" else None, "progress": prog if step == "inspect" else None,
-         "speed": {"tok_s": speed, "per_h": None, "unit": None} if at_cell == "inspector" and nd else None,
+         "speed": {"tok_s": speed, "per_h": None, "unit": None, "model": (rs or {}).get("model")}
+         if at_cell == "inspector" and (nd or rs) else None,
          "what": "Independent review of every checklist item against the frozen baseline.",
          "counters": [["orders inspected", len(insp)]]},
         {"id": "gate", "bar": bar("gate"), "name": "Inspection gate", "tag": "deterministic check", "state": state("gate"),
