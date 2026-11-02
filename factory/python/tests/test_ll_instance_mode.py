@@ -714,3 +714,128 @@ def test_block_array_verifiers_state_not_applicable_instead_of_a_vacuous_pass(in
     for mod in (register_proof, register_wp):
         assert mod.prove(ws, [ws / "software/ll"], "stm32n6xx_ll_crc.h")["reason"].startswith("INSTANCE_MODE")
     assert verifiers._target_oracle_findings(ws) == ["LIMITATION:TARGET_ORACLE_NOT_APPLICABLE:INSTANCE_MODE"]
+
+
+# ---- stage 7: SWE.5 / SWE.6 and the simulator image ---------------------------------------------------------------
+INTEGRATION = """#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#define FORGE_HOST_DEVICE_IMPLEMENTATION
+#include "stm32n6xx_ll_crc.h"
+static int failures = 0;
+#define CHECK(id, cond) do { if (cond) { printf("%s PASS\\n", (id)); } else { printf("%s FAIL\\n", (id)); failures++; } } while (0)
+/** @test IT-001 @verifies IF-01 IF-02 SWC_LL */
+static void it_round_trip(void)
+{
+    LL_CRC_Write_IDR(CRC, 0xA5A5A5A5U);
+    CHECK("IT-001", (LL_CRC_Read_IDR(CRC) == 0xA5A5A5A5U) && (CRC->DR == 0U));
+}
+int main(void)
+{
+    (void)memset((void *)&forge_host_crc, 0, sizeof(forge_host_crc));
+    it_round_trip();
+    return (failures == 0) ? 0 : 1;
+}
+"""
+TARGET = """/** @file test_crc_target.c @verifies IF-01 IF-02 */
+#include "stm32n6xx_ll_crc.h"
+#include "forge_target_test.h"
+FORGE_MAILBOX_DEFINE;
+int main(void) { FORGE_TEST_BEGIN();
+  TCHECK(1, CRC->IDR == 0U);
+  LL_CRC_Write_IDR(CRC, 0x12345678U);
+  TCHECK(2, CRC->IDR == 0x12345678U);
+  TCHECK(3, LL_CRC_Read_IDR(CRC) == 0x12345678U);
+  LL_CRC_Write_IDR(CRC, 0xFFFFFFFFU);
+  TCHECK(4, LL_CRC_Read_IDR(CRC) == 0xFFFFFFFFU);
+  FORGE_TEST_END(); return 0; }
+"""
+
+
+def test_swe5_swe6_texts_and_checks_use_the_instance(inst_ws, legacy_ws, monkeypatch):
+    from forge_factory.lrtx import swe5, swe6
+    from forge_factory.workflow import robot_scaffold
+
+    ws = _swe3(inst_ws)
+    seen = []
+    real = swe5.S.packet
+    monkeypatch.setattr(swe5.S, "packet", lambda **k: seen.append(k["instructions"]) or real(**k))
+    swe5.file_packet(ws, "target", "m")
+    swe5.file_packet(ws, "integration", "m")
+    swe6.scenario_packet(ws, "idr", ["SWR-001"], "m")
+    target, integration, scenario = seen
+    assert "registers of the instance macro CRC (CRC->IDR for CRC_IDR" in target and "ll_crc_regs[" not in target
+    assert "'#define FORGE_HOST_DEVICE_IMPLEMENTATION' directly before" in integration
+    assert "volatile uint32_t ll_crc_regs" not in integration and "memset((void *)&forge_host_crc" in integration
+    assert "CRC->IDR for CRC_IDR" in scenario and "ll_crc_regs[" not in scenario
+    assert swe5.validate_file(ws, "integration", {"code": INTEGRATION}) == []
+    out = swe5.validate_file(ws, "integration", {"code": INTEGRATION.replace(
+        "#define FORGE_HOST_DEVICE_IMPLEMENTATION\n", "volatile uint32_t ll_crc_regs[6];\n")})
+    assert "ll_crc_regs does not exist in instance mode: access registers as CRC-><MEMBER>" in out
+    assert any("FORGE_HOST_DEVICE_IMPLEMENTATION" in f for f in out)
+    assert swe5.validate_file(ws, "target", {"code": TARGET}) == []
+    doc = {"default_code": TARGET.replace("CRC->IDR == 0U", "ll_crc_regs[1] == 0U"), "never_ready_code": "",
+           "never_ready_swrs": []}
+    assert any("does not exist in instance mode" in f for f in swe6.validate_scenarios(ws, doc, ["SWR-001"]))
+    head = robot_scaffold.header(ws)
+    assert "# Register access in scenarios: CRC-><MEMBER> & LL_CRC_<REG>_<FIELD>_MSK" in head
+    assert "ll_crc_regs[LL_CRC_<REG>_OFFSET / 4U]" in robot_scaffold.header(legacy_ws)
+
+
+def test_integration_test_runs_on_the_ram_instance(inst_ws, monkeypatch):
+    import shutil
+
+    if not shutil.which("clang"):
+        pytest.skip("clang not installed")
+    ws = _swe3(inst_ws)
+    p = ws / "software/tests/integration/test_crc_integration.c"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(INTEGRATION)
+    r = _invoke(ws, monkeypatch, "forge-tests-mcp", "run_integration", {}, role="swe5-author", phase="SWE.5")
+    assert r["status"] == "PASS" and r["metrics"]["passed"] == 1, r
+
+
+def test_target_image_builds_and_runs_on_the_simulated_instance(inst_ws, tmp_path):
+    import shutil
+
+    from forge_factory.mcp.servers import sim
+
+    if not shutil.which("arm-none-eabi-gcc"):
+        pytest.skip("arm-none-eabi-gcc not installed")
+    ws = _swe3(inst_ws)
+    t = ws / "software/tests/target"
+    t.mkdir(parents=True, exist_ok=True)
+    (t / "test_crc_target.c").write_text(TARGET)
+    ok, _log, errs = sim.build_image(ws, t / "test_crc_target.c", tmp_path / "crc.elf")
+    assert ok, errs
+    if sim.renode_bin() is None:
+        pytest.skip("Renode not installed (image built, not run)")
+    res, _out = sim.run_image(sim.renode_bin(), tmp_path / "crc.elf", "default", tmp_path, ws)
+    assert res == {"magic_ok": True, "passed": 4, "failed": 0, "done": True, "failed_ids": []}, res
+
+
+def test_performance_wrappers_take_the_instance_and_the_image_builds(inst_ws, tmp_path):
+    import shutil
+
+    from forge_factory import simulation_performance as performance
+    from forge_factory.mcp.servers import sim
+
+    if not shutil.which("arm-none-eabi-gcc"):
+        pytest.skip("arm-none-eabi-gcc not installed")
+    ws = _swe3(inst_ws)
+    budget = performance.selected(ws)
+    assert budget["test_source"] == "software/tests/target/test_performance.c"
+    out = tmp_path / "perf"
+    out.mkdir()
+    performance.prepare(ws, out)
+    decl = (out / "forge_performance_calls.h").read_text()
+    assert "void forge_measure_LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData);" in decl
+    assert "uint32_t forge_measure_LL_CRC_Read_IDR(const CRC_TypeDef *CRCx);" in decl
+    test = ws / budget["test_source"]
+    test.parent.mkdir(parents=True, exist_ok=True)
+    test.write_text('#include "stm32n6xx_ll_crc.h"\n#include "forge_target_test.h"\n#include "forge_performance_calls.h"\n'
+                    "FORGE_MAILBOX_DEFINE;\nint main(void) { FORGE_TEST_BEGIN();\n"
+                    "  forge_measure_LL_CRC_Write_IDR(CRC, 0x5AU);\n"
+                    "  TCHECK(1, forge_measure_LL_CRC_Read_IDR(CRC) == 0x5AU);\n  FORGE_TEST_END(); return 0; }\n")
+    ok, _log, errs = sim.build_image(ws, test, tmp_path / "perf.elf")
+    assert ok, errs
