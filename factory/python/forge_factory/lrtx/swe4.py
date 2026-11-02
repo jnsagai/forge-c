@@ -188,6 +188,8 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
                    "names exactly one check)")
     if re.search(r"^\s*#", code, re.M):
         out.append("no #include or #define in a test")
+    idn = _ident(ws)
+    out += V.offset_index_errors(code, idn["block"], idn["pfx"]) if idn.get("block") else []
     kinds = list(doc.get("kinds") or [])
     fn = c["unit"]["function"]
     ncalls = len(re.findall(rf"\b{re.escape(fn['name'])}\s*\(", nc.split("{", 1)[-1]))
@@ -309,7 +311,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
         return V.reply(ws, PHASE, "FAILED", [f"{u}: its requirement is allocated to no SWE.3 unit" for u in missing],
                        budget)
     routed: dict[str, list[str]] = {}
-    for f in findings:
+    for f in V.routable(findings):
         if f.startswith(UPSTREAM_ITEMS) and not re.search(r"\bUT-\d+\b", f):
             # CAPA-093 (run WO-F014-SWE4-IWDG-20261101-L1): a static-analysis/coding-rule gap of the frozen SWE.3 code
             # was routed to every test task, which cannot change that code; ~1.5 h of repair calls without effect.

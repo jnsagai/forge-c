@@ -268,6 +268,26 @@ def write_scoped(ws: Path, files: dict[str, str], node: str) -> None:
         p.write_text(text)
 
 
+NOTES = ("defect filed:", "time box used")
+
+
+def routable(findings: list[str]) -> list[str]:
+    """CAPA-102 (run WO-F014-SWE5-IWDG-20261101-L5): a visit's status notes ('defect filed: DEF-001', 'time box
+    used ...') name no file or test; routed as findings they reached every test task, and a passing target file was
+    rewritten for ~10 min per call. They are not repair findings."""
+    return [f for f in findings if not str(f).startswith(NOTES)]
+
+
+def offset_index_errors(code: str, block: str, pfx: str) -> list[str]:
+    """CAPA-103 (run WO-F014-SWE5-IWDG-20261101-L5): the integration test indexed the register block by the byte
+    offset (ll_iwdg_regs[LL_IWDG_PR_OFFSET]); it failed on correct code and the triage filed a wrong CODE defect."""
+    from ..brownfield.scope import strip_comments
+
+    return [f"{block}[{m}] indexes the register block by a byte offset: use {block}[{m} / 4U]"
+            for m in sorted(set(re.findall(rf"\b{re.escape(block)}\s*\[\s*(LL_{re.escape(pfx)}_\w+_OFFSET)\s*\]",
+                                           strip_comments(code))))]
+
+
 def rework_findings(ws: Path, phase: str, since: str) -> list[str]:
     """Findings addressed to the phase since the last visit: author-gate rejections, failed inspection items and the
     phase's defects in fix. Text only; mapping to tasks happens through the SWR ids they name."""

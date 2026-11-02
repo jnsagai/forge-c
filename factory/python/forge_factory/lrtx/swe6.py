@@ -163,6 +163,7 @@ def validate_scenarios(ws: Path, doc: dict, swrs: list[str]) -> list[str]:
     out += [f"never_ready_swrs names {s}, which is not a requirement of this task" for s in doc["never_ready_swrs"]
             if s not in swrs]
     known = set(re.findall(r"#define\s+(\w+)", _header(ws).read_text()))
+    out += [e for prog in progs.values() if prog for e in V.offset_index_errors(prog, p["block"], p["pfx"])]
     api = {f["name"] for f in interfaces(ws)["functions"]}
     seen: dict[int, str] = {}
     for key, code in progs.items():
@@ -263,7 +264,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
 
     pl = plan(ws)
     routed: dict[str, list[str]] = {}
-    for f in findings:
+    for f in V.routable(findings):
         for t in _topic_of(f, pl) or list(pl["topics"]):
             routed.setdefault(f"scenario:{t}", []).append(f)
     recs = {}
