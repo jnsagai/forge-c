@@ -504,10 +504,16 @@ def test_swe3_checks_accept_the_instance_header_and_keep_the_guideline(inst_ws):
     hdr = ws / "software/ll/stm32n6xx_ll_crc.h"
     hdr.write_text(hdr.read_text().replace("LL_CRC_IDR_IDR_POS 0U", "LL_CRC_IDR_IDR_POS 1U"))
     assert check_regmap(ws)["verdict"] == "FAIL"  # the RM-checked defines stay checked in instance mode
-    # OPEN OWNER DECISION (reported, not changed): the declared API contract names CRCx/InData; the Cube2 guideline
-    # subset GL-ARG-01 (parameters in lower case, major) still reports them.
+    # owner disposition 2026-11-02 ("Exempt declared API"): the API contract's own names CRCx/InData are recorded as
+    # dispositions, not GL-ARG-01 violations; an undeclared mixed-case parameter is still a major finding
     g = check_workspace(ws)
-    assert {v["rule"] for v in g["violations"] if v["severity"] == "major"} == {"GL-ARG-01"}, g["violations"]
+    assert not [v for v in g["violations"] if v["severity"] == "major"], g["violations"]
+    assert {d["detail"].split("parameter ")[1].split()[0] for d in g["dispositions"]} >= {"CRCx", "InData"}
+    assert all(d["disposition"] == "OWNER_ACCEPTED_DECLARED_API_CONTRACT" for d in g["dispositions"])
+    hdr.write_text(hdr.read_text().replace("LL_CRC_IDR_IDR_POS 1U", "LL_CRC_IDR_IDR_POS 0U") +
+                   "\n__STATIC_INLINE uint32_t LL_CRC_Extra(uint32_t BadName) { return BadName; }\n")
+    g = check_workspace(ws)
+    assert [v["detail"] for v in g["violations"] if v["rule"] == "GL-ARG-01"] == ["LL_CRC_Extra: parameter BadName not lower case"]
 
 
 def test_swe3_header_from_the_legacy_path_is_unchanged(legacy_ws):
