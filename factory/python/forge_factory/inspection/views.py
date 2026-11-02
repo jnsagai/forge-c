@@ -12,7 +12,7 @@ import re
 import subprocess
 from pathlib import Path
 
-from ..layer import components, layer_of
+from ..layer import components, hal_standalone, layer_of, profile
 from .implementation import allocated_functions
 
 STATIC = "workproducts/SWE.2/architecture_static.puml"
@@ -62,7 +62,8 @@ def check_views(ws: Path, render: bool = False) -> dict:
     shown = [f for f in apis if f in dy]
     if apis and not shown:
         findings.append("VIEWS:DYNAMIC_SHOWS_NO_ALLOCATED_API")
-    if layer != "LL" and "HAL_TIMEOUT" not in dy:
+    waits = not hal_standalone(ws) or bool(profile(ws)["hal"].get("time_base"))  # F015: ST CRC/GPIO/TIM HAL never wait
+    if layer != "LL" and waits and "HAL_TIMEOUT" not in dy:
         findings.append("VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH")
     syntax = "NOT_RUN"
     if plantuml_jar() is None:

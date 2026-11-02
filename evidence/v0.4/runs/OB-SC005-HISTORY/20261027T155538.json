@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py",
+    "sc005",
+    "evidence/v0.4/benchmark/st-drivers-hal-ob/record.json",
+    "--history"
+  ],
+  "duration_s": 0.069,
+  "exit_code": 1,
+  "git_dirty": true,
+  "git_head": "8d7313a33f5999c6f4743a5a216ba51278895452",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-SC005-HISTORY/20261027T155538.log",
+  "log_sha256": "f8c589b8dfb18b5d591ec4306b122b01283a3cc7912ef04d26aa5fa16088d8e3",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "FAIL",
+  "task": "OB-SC005-HISTORY",
+  "ts_utc": "2026-10-27T15:55:38.220955Z"
+}

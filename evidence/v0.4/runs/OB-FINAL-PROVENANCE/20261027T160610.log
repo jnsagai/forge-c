@@ -1,0 +1,3 @@
+{"status": "FAIL", "files_scanned": 392, "lines_scanned": 135345, "private_checkout_compared": false, "findings": [{"path": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T105033.xml", "line": 72, "kind": "CREDENTIAL:ASSIGNED_SECRET"}, {"path": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T105033.xml", "line": 72, "kind": "CREDENTIAL:GITHUB_TOKEN"}]}
+
+--- stderr ---

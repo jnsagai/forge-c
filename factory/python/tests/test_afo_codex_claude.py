@@ -46,7 +46,11 @@ def test_benchmark_envelopes_pass_the_intake_schema_and_the_authorization_scope(
                      .read_text())
     for e in envs:
         assert contracts.errors("work-order", e) == []
-        assert e["driver_class"] in rec["scope"]["driver_classes"] and e["model_profile"] in rec["scope"]["models"]
+        if e["request_id"].endswith("-HAL"):  # F015-T065: ST HAL items are their own driver classes (a separate scope)
+            assert e["driver_class"] == f"STM32N6_{e['request_id'].split('-')[1]}_HAL_ST"
+        else:
+            assert e["driver_class"] in rec["scope"]["driver_classes"]
+        assert e["model_profile"] in rec["scope"]["models"]
         m = json.loads((afo_orders.REPO_ROOT / e["input_manifest_ref"]).read_text())
         assert m["model_profile"] == "codex-claude" and (afo_orders.REPO_ROOT / m["example"] / "workorder.json").is_file()
 

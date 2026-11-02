@@ -9,7 +9,7 @@
 schema_version: '1.0'
 feature_id: 005-autonomous-factory-operations
 mode: PILOT
-authorization_ref: AUTH-AFO-PILOT-20261026
+authorization_ref: AUTH-AFO-PILOT-20261027
 integration:
   reuse_002_supervisor: true
   reuse_004_cre: true

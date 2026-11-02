@@ -22,7 +22,7 @@ from pathlib import Path
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 CALLS = "workproducts/SWE.2/api_calls.json"
 OPS = ("set", "clear", "no_write", "write")  # write (feature 009): the field holds "value" after the call
-STATUSES = ("HAL_OK", "HAL_TIMEOUT", "HAL_ERROR")
+STATUSES = ("HAL_OK", "HAL_TIMEOUT", "HAL_ERROR", "HAL_BUSY")  # HAL_BUSY: ST's classic HAL (handle locked/state)
 CASE_RX = re.compile(r"^[A-Z][A-Z0-9_]{1,47}$")
 FIELD_RX = re.compile(r"^(RCC_[A-Z0-9]+)\.([A-Z0-9_]+)$")  # RCC default; per work order: _field_rx(ws)
 SAFE_ARG = re.compile(r"^[A-Za-z0-9_&(){}.=, +\-*/\[\]]*$")
@@ -248,6 +248,12 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
         b = m["delivery"].get("build") or {}
         headers = [Path(x).name for x in delivered_paths(m) if x.endswith(".h")] or headers
         include_dirs = [*include_dirs, Path(ws) / "inputs/vendor/include"]
+        # Use the same vendor HAL include context as delivery.build_check. Standalone
+        # module headers can need types from earlier modules in the configured umbrella
+        # (e.g. SPI's DMA handles); the delivered code itself remains unchanged.
+        if any(x.startswith("software/hal/") for x in delivered_paths(m)) and \
+                (Path(ws) / "inputs/vendor/include/stm32n6xx_hal.h").is_file():
+            headers = ["stm32n6xx_hal.h", *headers]
         extra = [f"-D{d}" for d in b.get("defines") or []]
         if b.get("style") == "cmsis":
             compiler = ["arm-none-eabi-gcc", "-std=c11", "-mcpu=cortex-m55", "-mthumb"] + \

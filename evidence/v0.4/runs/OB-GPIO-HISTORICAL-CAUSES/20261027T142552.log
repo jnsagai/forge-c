@@ -1,0 +1,12 @@
+BENCH-GPIO-ST-HAL-OB onboarding-fact causes identified: 1 named gaps: 52
+BENCH-GPIO-ST-HAL-OB-R1 onboarding-fact causes identified: 0 named gaps: 709
+
+--- stderr ---
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import runpy; m=runpy.run_path("evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py"); m["check_causes"](m["collect"](), ("gpio",), history=True)
+                                                                                             ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py", line 209, in check_causes
+    assert not causes, f"SC-005 onboarding-fact causes retained: {causes}"
+           ^^^^^^^^^^
+AssertionError: SC-005 onboarding-fact causes retained: [('BENCH-GPIO-ST-HAL-OB', {'fact': 'register_index', 'cause': 'RM comma-separated advanced-configuration fields, including RET0/RET8, were omitted; native gate rejected those fields. Corrected under CAPA-073 with a baseline/candidate causal contrast.'})]

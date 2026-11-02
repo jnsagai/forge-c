@@ -101,7 +101,11 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     asserted: list[Path] = []  # runtime (not build) failures - ADR-0008 test-integrity record
     for t in tests:
         exe = bdir / t.stem
+        # F015-T065: section GC - a delivered HAL unit (ST stm32n6xx_hal_spi.c) also holds DMA/interrupt paths that call
+        # modules not delivered (HAL_DMA_*); unreferenced code is dropped instead of failing the link. Coverage keeps
+        # every function's record, so an untested function still reports 0%.
         argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
+                "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections",
                 *(COV_FLAGS if coverage else []), *incs, str(t), *srcs, "-o", str(exe)]
         b = run_argv(argv, bdir, 180, ALLOW)
         log += b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr

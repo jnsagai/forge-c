@@ -22,7 +22,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from ...common import REPO_ROOT
+from ...common import REPO_ROOT, sha256_bytes
 from ...inspection.defects import integrity, record_integrity, undeclared_test_changes
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 
@@ -38,11 +38,21 @@ class FaultIn(ToolInput):
     seed: int = Field(default=1, ge=0, le=2**31)
 
 
+class CheckModelIn(ToolInput):
+    candidate: bool = True
+
+
+def check_model(ctx: ToolContext, a: CheckModelIn) -> dict:
+    from ...onboarding.model_tool import run
+
+    return run(ctx, candidate=a.candidate)
+
+
 SIM_DIR = REPO_ROOT / "factory" / "sim" / "stm32n6"
 MAILBOX = 0x341F0000
 MAGIC = 0xF0C6E5A1
 CFLAGS = ["-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os", "-ffreestanding", "-nostdlib",
-          "-Wall", "-Wextra"]
+          "-Wall", "-Wextra", "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections"]  # F015-T065: see tests.py
 
 
 def renode_bin() -> str | None:
@@ -70,7 +80,8 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
 
     incs += target_flags(ws)  # feature 008 (ST pilot): vendor includes, defines, -mcmse (RCC_S at the secure base)
     b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(linker_script(ws, elf.parent)),
-                  str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf)], elf.parent, 180, {"arm-none-eabi-gcc"})
+                  str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf), "-lgcc"], elf.parent, 180,
+                 {"arm-none-eabi-gcc"})  # -lgcc: compiler runtime helpers (ST UART_SetConfig: 64-bit __aeabi_uldivmod)
     lines = b.stderr.decode(errors="replace").splitlines()
     # r68: a link failure only said "collect2: error: ld returned 1"; the cause is the undefined reference line
     errs = [ln.split(str(ws) + "/")[-1][:140] for ln in lines
@@ -103,12 +114,26 @@ def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None =
     from ...layer import profile
 
     pr = profile(ws)
+    source = (SIM_DIR / pr["sim"]["model"]).resolve()
+    blob = source.read_bytes()
+    platform_blob = (SIM_DIR / pr["sim"]["platform"]).read_bytes()
+    isolated = not source.is_relative_to(SIM_DIR.resolve())
+    if isolated:
+        from ...onboarding.model_sandbox import source_issues
+
+        pinned = pr.get("derived_from") or {}
+        if (pinned.get("model_sha256") != sha256_bytes(blob) or
+                pinned.get("platform_sha256") != sha256_bytes(platform_blob)):
+            return None, b"ONBOARDING_AUTHORED_MODEL_CHANGED"
+        issues = source_issues(blob.decode())
+        if issues:
+            return None, ("\n".join(issues)).encode()
     stem = Path(pr["sim"]["model"]).stem
     model = wd / f"{stem}_{scenario}.py"
     model.write_text(re.sub(r'^SCENARIO = .*$', f'SCENARIO = "{scenario}"',
-                            (SIM_DIR / pr["sim"]["model"]).read_text(), flags=re.M))
+                            blob.decode(), flags=re.M))
     repl = wd / f"platform_{scenario}.repl"
-    repl.write_text((SIM_DIR / pr["sim"]["platform"]).read_text().replace(f"{pr['register_prefix']}_MODEL_PATH",
+    repl.write_text(platform_blob.decode().replace(f"{pr['register_prefix']}_MODEL_PATH",
                                                                           str(model)))
     words = "\n".join(f"sysbus ReadDoubleWord {MAILBOX + 4 * k:#x}" for k in range(12))
     resc = wd / f"run_{elf.stem}.resc"
@@ -116,8 +141,15 @@ def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None =
                     f'cpu VectorTableOffset 0x34000000\nemulation RunFor "0.2"\n{words}\nquit\n')
     # .NET under the sandbox rlimits: no W^X double-mapping file (RLIMIT_FSIZE) and a bounded GC heap (RLIMIT_AS)
     env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000"}
-    r = run_argv([renode, "--disable-gui", "--console", "--plain", "-e", f"include @{resc}"], wd, 170,
-                 {os.path.basename(renode)}, env_extra=env, mem_mb=65536, fsize_mb=512)
+    args = ["--disable-gui", "--console", "--plain", "-e", f"include @{resc}"]
+    if isolated:
+        from ...onboarding.model_sandbox import run
+
+        r = run(Path(renode), wd, args)
+        if r.exit_code:
+            return None, r.stdout + r.stderr
+    else:
+        r = run_argv([renode, *args], wd, 170, {os.path.basename(renode)}, env_extra=env, mem_mb=65536, fsize_mb=512)
     vals = [int(x, 16) for x in re.findall(r"^(0x[0-9A-Fa-f]{8})\s*$", r.stdout.decode(errors="replace"), re.M)]
     if len(vals) < 4:
         return None, r.stdout + r.stderr
@@ -206,6 +238,8 @@ def inject_fault(ctx: ToolContext, a: FaultIn) -> dict:
 
 
 OPERATIONS = [
+    Operation("check_model", CheckModelIn, check_model,
+              "Gate the fixed onboarding model subject: RM load/reset/access checks and delivered-code smoke."),
     Operation("run_renode", SimIn, run_renode,
               "Build software/tests/target/test_*.c for Cortex-M55 and run them on the Renode STM32N6 RCC model."),
     Operation("run_hwsim", SimIn, run_hwsim, "HwSim device model (disabled: no model)."),

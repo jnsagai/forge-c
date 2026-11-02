@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.onboarding",
+    "check-model",
+    "0012e-st-cube-usart-hal-ob"
+  ],
+  "duration_s": 4.904,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "f3a6b4586180789ea9b634dcdf50a436a0b2763f",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-QUICKSTART-MODEL-CLI/20261027T165259.log",
+  "log_sha256": "00e9e7c63ffe008145a4f6b30041ac9c90ac9581446d0833eb369320b49a6863",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-QUICKSTART-MODEL-CLI",
+  "ts_utc": "2026-10-27T16:52:59.739446Z"
+}

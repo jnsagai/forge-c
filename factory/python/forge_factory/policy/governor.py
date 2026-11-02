@@ -81,7 +81,8 @@ def turn_limit(role: str, workspace: str | None = None) -> int:
     it recovers a detailed design and unit specification for every delivered unit, reading the delivered code first.
     USART1 (21 functions, budget 47) and TIM2 (22, budget 48) exhausted every SWE.3 turn (TURN_BUDGET_EXHAUSTED, then
     AGENT_OUTPUT_PROSE, rework budget exhausted); SPI (22) passed with 3 denials; CRC (10) was denied on its first turn."""
-    base = next((a.max_turns for a in load_agents(include_afo=role.startswith("afo-"))[0] if a.id == role), 20)
+    base = next((a.max_turns for a in load_agents(include_afo=role.startswith("afo-"),
+                                               include_onboarding=role.startswith("onboard-"))[0] if a.id == role), 20)
     if workspace and role in TRACE_ROLES:
         from ..layer import swtrace_enabled
 
@@ -137,7 +138,8 @@ def check_run(run_id: str, nodes: dict, workspace: Path | None = None, client=No
             return {"run_id": run_id, "status": "TOKEN_BUDGET_DISABLED", "reason": prof["token_budget"],
                     "checked_at": utc_now()}
     c = client or FabroClient(token=load_token(), timeout=10)
-    budgets = {a.id: a.max_stage_tokens for a in load_agents()[0]}
+    onboarding = any(str(n.get("role", "")).startswith("onboard-") for n in nodes.values())
+    budgets = {a.id: a.max_stage_tokens for a in load_agents(include_onboarding=onboarding)[0]}
     try:
         usage = c.usage(run_id)
     except Exception as exc:  # noqa: BLE001

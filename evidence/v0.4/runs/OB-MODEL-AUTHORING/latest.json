@@ -1,0 +1,33 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_onboarding_authoring.py",
+    "factory/python/tests/test_onboarding_model_sandbox.py",
+    "factory/python/tests/test_onboarding_model_gate.py",
+    "factory/python/tests/test_onboarding_profile.py",
+    "factory/python/tests/test_onboarding_texts.py",
+    "factory/python/tests/test_t005_t006_agents_skills.py",
+    "factory/python/tests/test_t007_policy.py",
+    "factory/python/tests/test_acp_proxy.py",
+    "factory/python/tests/test_acp_gate.py",
+    "--junitxml=/tmp/f016-model-qualified-unit.xml"
+  ],
+  "duration_s": 185.491,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "8d7313a33f5999c6f4743a5a216ba51278895452",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-MODEL-AUTHORING/20261027T155830.log",
+  "log_sha256": "3cc256a5c9fb82040aaf0e035806ed071af774b12ff0f25efb816d70da4a08e1",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-MODEL-AUTHORING",
+  "ts_utc": "2026-10-27T15:58:30.860343Z"
+}

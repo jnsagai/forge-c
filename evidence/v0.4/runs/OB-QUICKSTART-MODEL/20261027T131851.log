@@ -1,0 +1,14 @@
+{
+  "verdict": "PASS",
+  "findings": [],
+  "limits": [],
+  "stats": {
+    "registers": 12,
+    "reads": 16
+  },
+  "model": "usart_model.py",
+  "tool": "renode",
+  "version": "Renode v1.17.0"
+}
+
+--- stderr ---

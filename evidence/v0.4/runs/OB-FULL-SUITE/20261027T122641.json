@@ -1,0 +1,35 @@
+{
+  "schema": "forge-c/task-evidence/0.4",
+  "task": "OB-FULL-SUITE",
+  "status": "FAIL",
+  "exit_code": 1,
+  "ts_utc": "2026-10-27T13:12:35.626436Z",
+  "duration_s": 2317.39,
+  "git_head": "557e920daa540a47461958c1e62842ac6bb709fd",
+  "git_dirty_at_start": false,
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-557e920-full-tests.xml"
+  ],
+  "host": {
+    "python": "3.13.13",
+    "node": "master"
+  },
+  "log": "evidence/v0.4/runs/OB-FULL-SUITE/20261027T122641.log",
+  "log_sha256": "446dd23daa4e738ca29e60932155663591caf912444f544c214adde58ee270e7",
+  "junit_external": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-557e920-full-tests.xml",
+  "junit_sha256": "bcf71f01cc947492b73f6cc789fadb5a7b8c946ec31c2f5329cff2d8ed2921de",
+  "passed": 1406,
+  "skipped": 27,
+  "failed": 3,
+  "failed_cases": [
+    "factory.python.tests.test_cre_d7_e2e.test_latest_local_qwen_work_order_has_real_terminal_evidence",
+    "factory.python.tests.test_kpi_003.test_kpi_t012_observer_mcp_read_only_and_least_privilege",
+    "factory.python.tests.test_kpi_003.test_kpi_t020_pilot_reconciles_with_raw_evidence"
+  ],
+  "note": "Exact deployed runtime, clean isolated test worktree. Raw suite FAIL; independent failure-set comparison checks only the three recorded baseline failures. Full raw JUnit retained externally with hash; public summary omits passing parameterized fixture strings."
+}

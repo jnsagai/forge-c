@@ -144,6 +144,12 @@ class Store:
         rec = {"schema": "forge-c/baseline/0.4", "baseline_id": f"BL-{phase}-{n:03d}", "phase": phase,
                "author_role": author_role, "baseline_hash": bhash, "files": files, "upstream": upstream,
                "frozen_at": utc_now()}
+        try:  # feature 016 (FR-018): the onboarding package this work product was produced from
+            ob = json.loads((self.workspace / ".forge-run/manifest.json").read_text()).get("onboarding")
+        except (OSError, ValueError):
+            ob = None
+        if ob:
+            rec["onboarding_sha256"] = ob["sha256"]
         (self.base / phase).mkdir(parents=True, exist_ok=True)
         with open(self.base / phase / f"{rec['baseline_id']}.json", "x", encoding="utf-8") as f:
             f.write(pretty_json(rec))
@@ -152,12 +158,14 @@ class Store:
 
     def missing_outputs(self, phase: str) -> list[str]:
         """Presence gate used by the production author gate before a phase may be frozen (r15/r43)."""
-        from ..layer import layer_of, register_contract_enabled, swtrace_enabled
+        from ..layer import hal_standalone, layer_of, register_contract_enabled, swtrace_enabled
 
         pats = REQUIRED_OUTPUTS.get(phase, []) + (TRACE_OUTPUTS.get(phase, []) if swtrace_enabled(self.workspace) else [])
         pats += CONTRACT_OUTPUTS.get(phase, []) if register_contract_enabled(self.workspace) else []
         if phase == "SWE.3" and layer_of(self.workspace) == "LL":  # ADR-0009: an LL work order has no HAL files
             pats = [x for x in pats if not x.startswith("software/hal/")]
+        if phase == "SWE.3" and hal_standalone(self.workspace):  # F015: ST's classic HAL has no LL (CRC HAL run
+            pats = [x for x in pats if not x.startswith("software/ll/")]  # 01M5Y54GSR8VTVN2TXP787ECRM: STUCK at SWE.3)
         out = [f"MISSING_REQUIRED_OUTPUT:{pat}" for pat in pats
                if not any(f.is_file() and f.stat().st_size > 0 for f in self.workspace.glob(pat))]
         if REQUIRED_TOOL_PASS.get(phase):

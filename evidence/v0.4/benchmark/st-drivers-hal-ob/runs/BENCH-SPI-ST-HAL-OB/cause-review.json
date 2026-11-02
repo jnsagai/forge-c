@@ -1,0 +1,40 @@
+{
+  "recorded_at": "2026-10-27T13:14:23.238787Z",
+  "order_id": "afo-cbde5111bd5eeaf6",
+  "result": "BLOCKED",
+  "archive_integrity": "PASS",
+  "sc005": "FAIL_INITIAL_ATTEMPT_FACTORY_PROBE_CONTEXT",
+  "cause": "Contract-call syntax probe omitted the configured vendor HAL umbrella. GPIO/SPI/UART/TIM regression checks pass after using the same include context as delivery.build_check; invalid argument lists remain rejected. No approved package fact needs changing.",
+  "onboarding_fact_gap": false,
+  "factory_defect": "DEF-008",
+  "delivered_code_defects": [
+    "DEF-001",
+    "DEF-002",
+    "DEF-003",
+    "DEF-004",
+    "DEF-005",
+    "DEF-006",
+    "DEF-007"
+  ],
+  "code_defect_disposition": "ESCALATED_OWNER_DECISION_REQUIRED; not independently adjudicated by this implementation change",
+  "references": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "470f5539dff5b263ebbae17942b078419757c5773e8dd729c2986a3d6b8e3e3a"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/defects/DEF-008.json",
+      "sha256": "900ee428e07619d3aca5a312bf4e63ea2cd1db53b08ffe6dc690be72ba20e920"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/workproducts/SWE.2/api_calls.json",
+      "sha256": "b63d23fa8f2cfb4c1d2233df64e6c6eed60ec77076ebe336296d6cd7c1c436f1"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-cbde5111bd5eeaf6-a1/workspace/.forge-run/package.json",
+      "sha256": "23f1d6dcd5c0d865286f684105a3547c6c33dc7fd520fa9d93b458661966d3b4"
+    }
+  ],
+  "gap_count": 1495,
+  "note": "Conformance and downstream missing-artifact gaps retained in the sealed archive. Terminal binding evidence is not an SC-005 pass; a retry is required to remove the factory probe blocker."
+}

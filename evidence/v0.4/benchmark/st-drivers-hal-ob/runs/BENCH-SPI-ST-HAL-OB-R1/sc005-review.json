@@ -1,0 +1,60 @@
+{
+  "schema": "forge-c/onboarding-gap-review/0.1",
+  "recorded_at": "2026-10-27T14:38:09.142564Z",
+  "status": "REVIEWED",
+  "reviewer": "Codex implementation review, source-cited; owner adjudication pending",
+  "request_id": "BENCH-SPI-ST-HAL-OB-R1",
+  "attempt_id": "afo-d5622d4914a0ac9d-a1",
+  "archive_sha256": "858d0fc2a98880ec8c29a75c913b78c577ea500b6e2bbd20ba265639a3fe5458",
+  "gap_count": 310,
+  "gap_list_sha256": "900cd390395cf09353f73335cfac09d55e7e2a93bc57d87ed0c3a7e603624275",
+  "gap_groups": {
+    "failed_or_missing_quality_check": 9,
+    "missing_or_empty_file": 7,
+    "missing_or_empty_section": 5,
+    "run_not_completed": 1,
+    "unresolved_finding:CONFORMANCE": 275,
+    "unresolved_finding:DELIVERED_CODE": 4,
+    "unresolved_finding:SWE.4": 1,
+    "unresolved_finding:SWE.5": 1,
+    "unresolved_finding:SWE.6": 1,
+    "unresolved_finding:escalated_defect": 6
+  },
+  "onboarding_fact_causes_identified": [],
+  "assessment": "SPI R1 passed SWE.1/2/3 inspection, including the corrected contract-call compilation context. SWE.4 stopped on failed runtime unit checks and unverified USPEC coverage. Named gaps include conformance/guideline findings and escalated CODE reports, remaining verification and safety artifacts. No missing or wrong onboarding fact was identified in these blockers.",
+  "interpretation_limit": "CODE reports compare delivered behavior with generated requirements. Owner review must adjudicate requirements, preconditions, diagnostic behavior and code findings; this is not safety acceptance or a blanket assertion that every generated CODE diagnosis is correct.",
+  "source_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "ecfd0162c1032b9a4a1818216b76830a6725bd538e504776dfd0336cbca83b61"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/package.json",
+      "sha256": "1b0542e786e4505b102e990082608eb5e15e9adc4acc0b4716a96d0ed03e9ba5"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-001.json",
+      "sha256": "fe59621a848e30d86fbb6ada3b571bab27908b2e5b0d61c014383c4e775d9bb4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-002.json",
+      "sha256": "971b2c28896506051c64d194d2e20a37f419d43acbe9cda5802576895026c47f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-003.json",
+      "sha256": "92ac1ab01d0ab496a0b31fa6e60ec242fccf2a400720ef85e38827381af02b2e"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-004.json",
+      "sha256": "b49a4e39cdef677ff3a21132d4f491c11161ec3bd1f62286af9c7a4c86481ef0"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-005.json",
+      "sha256": "31d62d925574cc8041fad7e3d28d9088dba781c9edc45aa70745daa84cf5c3e4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-d5622d4914a0ac9d-a1/workspace/.forge-run/defects/DEF-006.json",
+      "sha256": "f85e93c7cf6d0822d206d397ad330a1da10f0d9e8685de4412520440a0e669c7"
+    }
+  ]
+}

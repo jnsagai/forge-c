@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/onboarding-approval/0.1",
+  "title": "Feature 016 owner approval of an onboarding package (signed with ssh-keygen -Y sign -n forge-onboarding-approval)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "approval_id",
+    "work_order",
+    "package_sha256",
+    "decision",
+    "conflict_resolutions",
+    "assumption_confirmations",
+    "accepted_gaps",
+    "decided_by",
+    "decided_on"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/onboarding-approval/0.1"
+    },
+    "approval_id": {
+      "type": "string",
+      "pattern": "^OA-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}$"
+    },
+    "work_order": {
+      "type": "string"
+    },
+    "package_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "decision": {
+      "enum": [
+        "APPROVED",
+        "REJECTED"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "conflict_resolutions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fact",
+          "chosen_value",
+          "reason"
+        ],
+        "properties": {
+          "fact": {
+            "type": "string"
+          },
+          "chosen_value": {},
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "assumption_confirmations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "value"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^ASM-[A-Z0-9-]+$"
+          },
+          "value": {}
+        }
+      }
+    },
+    "accepted_gaps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^GAP-OB-[0-9]{3}$"
+      }
+    },
+    "decided_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decided_on": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "REJECTED"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason"
+        ]
+      }
+    }
+  ]
+}

@@ -29,6 +29,38 @@ class DocIn(ToolInput):
     pass
 
 
+class OnboardingReadIn(ToolInput):
+    path: str = Field(pattern=r"^inputs/[A-Za-z0-9_./-]+$", max_length=200)
+    offset: int = Field(default=0, ge=0, le=4_000_000)
+    search: str | None = Field(default=None, min_length=1, max_length=80)
+
+
+def read_onboarding_input(ctx: ToolContext, a: OnboardingReadIn) -> dict:
+    """Read only the frozen authoring input corpus; the search is literal, not executable regex."""
+    from ...common import sha256_file
+
+    path = ctx.path(a.path, kind="file")
+    if not path.is_relative_to(ctx.workspace / "inputs"):
+        from ..sdk import ToolDenied
+
+        raise ToolDenied("ONBOARDING_INPUT_SCOPE")
+    text = path.read_text()
+    offset = a.offset
+    if a.search:
+        found = text.find(a.search, offset)
+        if found < 0:
+            return result(ctx, "PASS", "literal text not found", metrics={"found": False, "offset": offset},
+                          tool="forge-onboarding-reader", input_obj=a.model_dump())
+        offset = max(offset, found - 100)
+    excerpt = text[offset:offset + 800]
+    # Keep the response comfortably inside the existing 2048-byte tool-result budget.
+    excerpt = excerpt.encode()[:900].decode(errors="ignore")
+    return result(ctx, "PASS", "immutable onboarding input excerpt", metrics={"path": a.path, "excerpt": excerpt,
+                  "offset": offset, "next_offset": offset + len(excerpt), "total_chars": len(text),
+                  "sha256": sha256_file(path), "found": True}, tool="forge-onboarding-reader",
+                  input_obj=a.model_dump())
+
+
 BROWNFIELD_CHECKS = {"hal_guideline": ("delivered_guideline",), "register_map": ("delivered_register_definitions",),
                      "implementation": ("delivered_implementation",),
                      "swe3_all": ("delivered_guideline", "delivered_register_definitions", "delivered_implementation")}
@@ -149,6 +181,8 @@ def unsupported(name: str):
 
 
 OPERATIONS = [
+    Operation("read_onboarding_input", OnboardingReadIn, read_onboarding_input,
+              "Read an immutable inputs/ document by character offset or bounded literal search (onboarding roles only)."),
     Operation("validate_artifact", ValidateIn, validate_artifact,
               "Validate a workproduct (ears|hal_guideline|register_map|implementation|swe3_all|architecture|plantuml|"
               "markdown|json|csv)."),

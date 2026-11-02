@@ -184,11 +184,35 @@ def b2b_applicability(ws: Path, work_order_id: str) -> dict:
             "alternative_method_ref": None, "source_version": "enhanced-techniques 1.0.0", "reviewer_ref": None}
 
 
+def _onboarding_model_gate(ws: Path) -> dict | None:
+    """The `model` item of the approved onboarding package the work order was prepared from, or None."""
+    import json
+
+    from ..common import state_dir
+
+    try:
+        ob = json.loads((ws / ".forge-run/manifest.json").read_text()).get("onboarding")
+        if not ob:
+            return None
+        pkg = json.loads((state_dir() / "onboarding" / ob["key"] / "onboarding/package.json").read_text())
+    except (OSError, ValueError, KeyError):
+        return None
+    if pkg.get("sha256") != ob.get("sha256"):
+        return None
+    return next((a for a in pkg.get("authored") or [] if a["id"] == "model"), None)
+
+
 def limitations(ws: Path, sim_model_text: str) -> list[str]:
     idx = hardware.index(Path(ws) / "inputs/sections/RM0486") if (Path(ws) / "inputs/sections/RM0486").is_dir() else {}
     out = [f"Renode behavioural {_model(Path(ws))} model is not silicon, not HIL; no clock-tree timing, security "
            "filtering or interrupts", "silicon revision UNSPECIFIED"]
-    out += hardware.simulator_mismatches(sim_model_text, idx) if idx else ["SIMULATOR_MODEL_NOT_COMPARABLE"]
+    gate = _onboarding_model_gate(Path(ws))
+    if gate is not None:  # feature 016 (OB-T039): the onboarding model gate compared the model with the RM
+        out += [f"SIMULATOR_MODEL_GATE:{gate['gate']['verdict']} (RM reset values, access types, delivered-code "
+                "smoke)"] + [f"SIMULATOR_{x}" for x in gate["gate"]["findings"]] + \
+            [f"SIMULATOR_LIMIT:{x}" for x in gate["limits"]]
+    else:
+        out += hardware.simulator_mismatches(sim_model_text, idx) if idx else ["SIMULATOR_MODEL_NOT_COMPARABLE"]
     er = hardware.errata_status(ws)
     if er["status"] != "BASELINED":
         out.append("errata not baselined: errata-dependent behaviour UNKNOWN")

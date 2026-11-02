@@ -119,7 +119,10 @@ def check_architecture_model(ws: Path) -> dict:
         return {"verdict": "FAIL", "major_findings": ["ARCH:STATIC_VIEW_MISSING"], "model": {}}
     model = parse_architecture(text)
     f = []
-    expected = ["SWC_LL", "SWC_HAL"] if layer_of(ws) in ("HAL", "LL+HAL") else ["SWC_LL"]
+    from ..layer import hal_standalone
+
+    expected = ["SWC_HAL"] if hal_standalone(ws) else ["SWC_LL", "SWC_HAL"] if layer_of(ws) in ("HAL", "LL+HAL") \
+        else ["SWC_LL"]  # F015: ST's classic HAL is one component on the registers (no provided LL)
     for swc in expected:
         n = len(model["swcs"].get(swc, []))
         if n != 1:

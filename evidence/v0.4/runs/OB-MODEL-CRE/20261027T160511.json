@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.reliability.promotion",
+    "129d786c06818db1d475c8a8b123b5571f0a752d",
+    "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc",
+    "--kind",
+    "CHANGE",
+    "--repo",
+    "."
+  ],
+  "duration_s": 132.306,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "b68bdbb608d66cb6c5ebe9bc714afa928d0c8aad",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-MODEL-CRE/20261027T160511.log",
+  "log_sha256": "5e06b715c07d3ea874ba44148d9b2b2a9cdacc422fda7593a700d5ff1da08bb8",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-MODEL-CRE",
+  "ts_utc": "2026-10-27T16:05:11.498442Z"
+}

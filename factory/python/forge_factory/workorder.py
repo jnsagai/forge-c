@@ -158,6 +158,18 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
 
 def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[Path, dict]:
     spec = json.loads((example / "workorder.json").read_text())
+    onboarded = None
+    if (spec.get("delivery") or {}).get("onboarding"):  # feature 016: only from an owner-approved package (FR-016)
+        from .onboarding import admit, delivery_from_package, derive, onboarding_dir
+
+        key = Path(example).name
+        derive(example, key)  # re-derived at every launch: any changed input voids the approval (FR-017)
+        ob_pkg, ob_appr, ob_prof = admit(key, spec)
+        spec["delivery"] = delivery_from_package(spec, ob_pkg)
+        spec["peripheral"] = f"onboarded:{key}"
+        onboarded = {"key": key, "package": f"state/onboarding/{key}/onboarding/package.json",
+                     "sha256": ob_pkg["sha256"], "approval_id": ob_appr["approval_id"],
+                     "profile_sha256": sha256_bytes((onboarding_dir(key) / "onboarding/profile.json").read_bytes())}
     layer = spec.get("layer", "LL+HAL")
     ws = state_dir() / "workorders" / wo / "workspace"
     inputs: dict[str, bytes] = {}
@@ -192,7 +204,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
                        "part_number": d["target"]["part_number"], "silicon_revision": d["target"]["silicon_revision"]})
         budgets = {k: d["budgets"][k] for k in ("flash_bytes", "static_ram_bytes", "stack_bytes")} | {"status": who}
     provided = []
-    if layer == "HAL":
+    standalone = layer == "HAL" and (spec.get("delivery") or {}).get("provided_ll") is False  # F015: ST classic HAL
+    if layer == "HAL" and not standalone:
         if not provided_from:
             raise ValueError("HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>")
         data, rec = provided_ll(provided_from, spec.get("peripheral") or "rcc")
@@ -215,14 +228,16 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
                 "driver": spec["driver"], "layer": layer, "provided": provided, "target": target,
                 "trace_profile": TRACE_PROFILE,
                 "register_contract": REGISTER_CONTRACT,
-                **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
+                **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" and not standalone else {}),
+                **({"hal_standalone": True} if standalone else {}),  # F015: the delivered HAL needs no provided LL
                 "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
                 "scope": spec["scope"], "budgets": budgets, "inputs": listed,
                 "guideline": spec.get("guideline"), "system_names": spec["system_names"],
                 "outputs": {"SWE.1": "workproducts/SWE.1/software_requirements.md (EARS) + traceability/"
                                      "requirements_to_tests.csv + safety/software_safety_requirements.md",
                             "SWE.2": "workproducts/SWE.2/software_architecture.md",
-                            "SWE.3": "workproducts/SWE.3/detailed_design.md + software/hal/*.c|h + software/ll/*.h",
+                            "SWE.3": "workproducts/SWE.3/detailed_design.md + software/hal/*.c|h" +
+                                     ("" if standalone else " + software/ll/*.h"),
                             "SWE.4": "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.c",
                             "SWE.5": "workproducts/SWE.5/integration_verification_report.md + software/tests/integration/test_*.c + software/tests/target/test_*.c (Renode)",
                             "SWE.6": "workproducts/SWE.6/software_verification_report.md"},
@@ -271,8 +286,10 @@ def prepare(example: Path, wo: str, provided_from: str | None = None) -> tuple[P
         missing = [x for x in prof["rm"]["key_sections"] if x not in have]
         if missing:
             raise ValueError(f"PERIPHERAL_KEY_SECTIONS_NOT_IN_INPUTS:{prof['id']}:{','.join(missing)}")
-        manifest["peripheral"] = prof["id"]
+        manifest["peripheral"] = spec["peripheral"] if onboarded else prof["id"]  # F016: onboarded:<WO>
         manifest["peripheral_profile_sha256"] = prof["sha256"]
+    if onboarded:
+        manifest["onboarding"] = onboarded
     if intake:  # the delivered code itself stays in the store until SWE.1 is frozen (brownfield/inject.py, FR-007)
         from .brownfield import delivery as BD
 
@@ -490,6 +507,7 @@ def run(example: Path, wo: str, detach: bool = False, timeout_s: int = 6 * 3600,
                          phases=phases, layer=manifest.get("layer", "LL+HAL"),
                          trace=manifest.get("trace_profile") == TRACE_PROFILE,
                          isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
+                         hal_standalone=bool(manifest.get("hal_standalone")),
                          brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
                          peripheral=manifest.get("peripheral"),
                          delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),

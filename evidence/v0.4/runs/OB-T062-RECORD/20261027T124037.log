@@ -1,0 +1,3 @@
+PASS explicit NOT_RUN record exists with its reason and zero model calls; no local-model execution or qualification is claimed
+
+--- stderr ---

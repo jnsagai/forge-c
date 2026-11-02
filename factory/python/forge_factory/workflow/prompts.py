@@ -216,6 +216,7 @@ AUTHOR_STEPS = {
 
 CHUNK = {"lines": 40}  # set per run by the workflow builder: 40 for local models (dropped long calls), larger for cloud
 LAYER = {"layer": "LL+HAL"}  # ADR-0009: set per run by the workflow builder (LL | HAL | LL+HAL)
+STANDALONE = {"on": False}  # F015 (ST HAL): the delivered HAL accesses the registers itself - no provided LL
 TRACE = {"on": False}  # owner addendum 2026-10-17 (EASA-OR-001..011): set per run by the workflow builder
 ISOLATION = {"on": False}  # CAPA-038: HAL unit tests run on the generated LL test double (set by the builder)
 BROWNFIELD = {"mode": None, "style": None}  # feature 008: mode None | FROZEN | FIX_ALLOWED; delivery code style
@@ -378,7 +379,7 @@ ROBOT_STEPS = [
 
 def robot_test_author_prompt() -> str:
     """SWE.6 step 1 (fresh context): Robot requirement tests written and made to pass before the report author (r56)."""
-    robot = LL_ROBOT_STEPS if _layer() == "LL" else ROBOT_STEPS
+    robot = LL_ROBOT_STEPS if _layer() == "LL" or STANDALONE["on"] else ROBOT_STEPS  # F015: ST HAL tests as ST LL
     steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + robot + trace_step("vt") + [DEFECT_RULE] + \
         [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
@@ -386,7 +387,7 @@ def robot_test_author_prompt() -> str:
 
 def target_test_author_prompt() -> str:
     """SWE.5 step 1 (fresh context): Renode target tests written and made to pass before the integration author."""
-    target = LL_TARGET_STEPS if _layer() == "LL" else TARGET_STEPS
+    target = LL_TARGET_STEPS if _layer() == "LL" or STANDALONE["on"] else TARGET_STEPS
     steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + target + trace_step("tt") + [DEFECT_RULE] + \
         [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
@@ -396,7 +397,7 @@ def unit_test_author_prompt() -> str:
     """SWE.4 step 1 (fresh context): unit tests inserted into the generated harness in small edits."""
     from .scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
 
-    ut, example = (LL_UT_STEPS, LL_UT_EXAMPLE) if _layer() == "LL" else (UT_STEPS, UT_EXAMPLE)
+    ut, example = (LL_UT_STEPS, LL_UT_EXAMPLE) if _layer() == "LL" or STANDALONE["on"] else (UT_STEPS, UT_EXAMPLE)
     if ISOLATION["on"] and _layer() == "HAL":  # CAPA-038
         ut, example = [FAKE_UT_FIRST] + [x.replace("adapt names, registers and UT ids; use ONLY LL_RCC_<REG>_OFFSET / "
                                                   "_MSK defines that exist in software/ll/stm32n6xx_ll_rcc.h - never "
@@ -596,7 +597,9 @@ def trace_step(kind: str) -> list[str]:
     if not TRACE["on"]:
         return []
     x, swc = _t()
-    other = "the PROVIDED LL as SWC_LL (no allocation to it)" if _layer() == "HAL" else "no SWC_HAL"
+    other = ("no SWC_LL (the delivered HAL accesses the registers through its handle; the HAL framework and CMSIS "
+             "device headers are delivered dependencies, not components)" if STANDALONE["on"] else
+             "the PROVIDED LL as SWC_LL (no allocation to it)" if _layer() == "HAL" else "no SWC_HAL")
     rules = {
         "swe2": "OWNER TRACE RULES (gate-checked, ARCH:* issues): in workproducts/SWE.2/architecture_static.puml the LL "
                 "and the HAL are separate components, each exactly ONE element with the <<SWC>> stereotype - "
@@ -672,7 +675,7 @@ def fix3_author_prompt() -> str:
         return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
     steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
              FIX_DEFECTS.format(p="SWE.3")] + (LL_FIX3_STEPS if _layer() == "LL" else FIX3_STEPS) + \
-        ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("keep") + [REPLY]
+        ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" and not STANDALONE["on"] else []) + trace_step("keep") + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
@@ -690,7 +693,8 @@ def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
-         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("code") + \
+         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" and not STANDALONE["on"] else []) + \
+        trace_step("code") + \
         [CONTRACT_SWE3, REENTRY] + \
         [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
@@ -833,7 +837,10 @@ def author_prompt(phase: str) -> str:
     pr = PERIPHERAL["profile"]  # feature 009 (i001): the work order's key RM sections (RCC: 14.10.1/2/79/64)
     keys = pr["rm"]["key_sections"] if pr else ["14.10.1", "14.10.2", "14.10.79", "14.10.64"]
     fills = {"s1": sec(*keys)}
-    table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
+    # F015: an ST HAL's verification steps (SWE.4-6) are those proven on ST's delivered LL (the CMSIS host/target
+    # forms); its requirements and architecture (SWE.1/2) keep the HAL steps (status, failure responses, handle API)
+    table = LL_AUTHOR_STEPS if _layer() == "LL" or (STANDALONE["on"] and phase in ("SWE.4", "SWE.5", "SWE.6")) \
+        else AUTHOR_STEPS
     body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
     if BROWNFIELD["mode"] and phase == "SWE.3":  # feature 008: describe the delivered code, never write it
         body = brownfield_swe3_steps()
@@ -841,7 +848,12 @@ def author_prompt(phase: str) -> str:
         body = body[:1] + [BROWNFIELD_SWE2] + body[1:]
     if BROWNFIELD["mode"] and phase != "SWE.1":
         body = [delivered_note()] + body
-    if _layer() == "HAL" and phase == "SWE.2":  # ADR-0009: the HAL is designed on the PROVIDED, frozen LL
+    if _layer() == "HAL" and phase == "SWE.2" and STANDALONE["on"]:  # F015: ST's HAL on the registers, no LL
+        body = [x.replace("Components (LL header-only stm32n6xx_ll_rcc.h, HAL stm32n6xx_hal_rcc.c/.h)",
+                          "Components (the delivered HAL stm32n6xx_hal_rcc.c/.h and its extension, FROZEN; the HAL "
+                          "framework headers stm32n6xx_hal.h, stm32n6xx_hal_def.h, stm32n6xx_hal_conf.h and the CMSIS "
+                          "device header are delivered dependencies)") for x in body]
+    elif _layer() == "HAL" and phase == "SWE.2":  # ADR-0009: the HAL is designed on the PROVIDED, frozen LL
         body = [x.replace("Read workproducts/SWE.1/software_requirements.md and",
                           "Read workproducts/SWE.1/software_requirements.md, software/ll/stm32n6xx_ll_rcc.h (PROVIDED "
                           "LL, frozen) and")
@@ -900,10 +912,22 @@ def peripheralize(text: str) -> str:
     pr = PERIPHERAL["profile"]
     if not pr or pr["id"] == "rcc":
         return text
-    t = pr.get("prompt") or {}
+    t = dict(pr.get("prompt") or {})
+    if STANDALONE["on"]:  # F015: ST's classic HAL API texts replace the factory HAL texts of the profile
+        t.update(pr.get("prompt_st_hal") or {})
     swe1 = LL_AUTHOR_STEPS["SWE.1"][1]
     cover = swe1[swe1.index("Cover:"):swe1.index("Add three measurable")]
     frags = [
+        # F015: RCC's set/clear alias registers do not exist on other peripherals (the CMSIS note named
+        # CRC_CSR/CRC_CCR for CRC); every peripheral's host map is forge_host_<prefix>, not forge_host_rcc
+        ("; RM0486 set/clear registers are written with 1s only for the bits to change (RCC_CSR/RCC_CCR -> RCC_CR, "
+         "RCC_<bus>ENSR/ENCR -> RCC_<bus>ENR, RCC_<bus>RSTSR/RSTCR -> RCC_<bus>RSTR)", ""),
+        (CMSIS_UT_EXAMPLE, t.get("ut_example", CMSIS_UT_EXAMPLE)),  # the peripheral's example, not RCC's HSI one
+        ("forge_host_rcc", f"forge_host_{pr['register_prefix'].lower()}"),
+        ("(the RCC model applies the set/clear registers to their target, so check the target, e.g. RCC->CR & "
+         "RCC_CR_HSION; include stm32n6xx_ll_bus.h too for the bus functions)", "(e.g. RCC->CR & RCC_CR_<FIELD>)"),
+        ("(e.g. RCC->CR & RCC_CR_HSION; the RCC model applies the set/clear registers to their target; include "
+         "stm32n6xx_ll_bus.h too for the bus functions)", "(e.g. RCC->CR & RCC_CR_<FIELD>)"),
         (cover, t.get("swe1_cover", "") + " "),
         ('{\"case\":\"HSI_ENABLE\",\"swr\":\"SWR-001\",\"register\":\"RCC_CR\",\"field\":\"HSION\",\"op\":\"set\"}',
          t.get("swe1_effect_example", "")),
@@ -1007,7 +1031,11 @@ def peripheralize(text: str) -> str:
     for old, new in names:
         text = text.replace(old, new)
     text = _re.sub(r"\bRCC_", f"{pfx}_", text)
-    return _re.sub(r"\bRCC\b", pfx, text)
+    text = _re.sub(r"\bRCC\b", pfx, text)
+    if STANDALONE["on"]:  # F015 ST HAL: whole fragments of the final (peripheral-named) text, profile prompt_st_hal
+        for old, new in t.get("replace") or []:
+            text = text.replace(old, new)
+    return text
 
 
 CMSIS_UT_EXAMPLE = ("static void ut_hsi(void)\n{\n    ut_reset_regs();\n    LL_RCC_HSI_Enable();\n"

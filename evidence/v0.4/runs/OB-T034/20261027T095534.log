@@ -1,0 +1,125 @@
+EEEEEEEE.                                                                [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_generated_instructions_have_no_leftover[0010e-st-cube-gpio-hal-ob] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_generated_instructions_have_no_leftover[0011e-st-cube-spi-hal-ob] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_generated_instructions_have_no_leftover[0012e-st-cube-usart-hal-ob] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_generated_instructions_have_no_leftover[0013e-st-cube-tim-hal-ob] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_planted_leftovers_are_caught[0012e-st-cube-usart-hal-ob-call LL_USART_Enable(USART1) first-LL_USART_Enable] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_planted_leftovers_are_caught[0010e-st-cube-gpio-hal-ob-check CRC_CR.POLYSIZE-CRC_CR.POLYSIZE] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_planted_leftovers_are_caught[0012e-st-cube-usart-hal-ob-check USART_CR1.NOSUCHFIELD-USART_CR1.NOSUCHFIELD] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_planted_leftovers_are_caught[0013e-st-cube-tim-hal-ob-wait for the oscillator-oscillator] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/t'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_onboarding_texts.py::test_generated_instructions_have_no_leftover[0010e-st-cube-gpio-hal-ob]
+ERROR factory/python/tests/test_onboarding_texts.py::test_generated_instructions_have_no_leftover[0011e-st-cube-spi-hal-ob]
+ERROR factory/python/tests/test_onboarding_texts.py::test_generated_instructions_have_no_leftover[0012e-st-cube-usart-hal-ob]
+ERROR factory/python/tests/test_onboarding_texts.py::test_generated_instructions_have_no_leftover[0013e-st-cube-tim-hal-ob]
+ERROR factory/python/tests/test_onboarding_texts.py::test_planted_leftovers_are_caught[0012e-st-cube-usart-hal-ob-call LL_USART_Enable(USART1) first-LL_USART_Enable]
+ERROR factory/python/tests/test_onboarding_texts.py::test_planted_leftovers_are_caught[0010e-st-cube-gpio-hal-ob-check CRC_CR.POLYSIZE-CRC_CR.POLYSIZE]
+ERROR factory/python/tests/test_onboarding_texts.py::test_planted_leftovers_are_caught[0012e-st-cube-usart-hal-ob-check USART_CR1.NOSUCHFIELD-USART_CR1.NOSUCHFIELD]
+ERROR factory/python/tests/test_onboarding_texts.py::test_planted_leftovers_are_caught[0013e-st-cube-tim-hal-ob-wait for the oscillator-oscillator]
+
+--- stderr ---

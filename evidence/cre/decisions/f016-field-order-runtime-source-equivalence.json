@@ -1,0 +1,8 @@
+{
+  "source": "b7516220b58e9cfeba5485f8f55352482018e566",
+  "baseline": "9fa4664798183218184a6cf1a650ab1985087ea4",
+  "candidate": "557e920daa540a47461958c1e62842ac6bb709fd",
+  "decision_id": "pd-29aa710d612f9cbae9e3",
+  "non_evidence_paths_identical": true,
+  "baseline_candidate_evidence_identical": true
+}
