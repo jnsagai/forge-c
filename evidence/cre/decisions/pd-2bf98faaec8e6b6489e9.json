@@ -1,0 +1,192 @@
+{
+  "allowed_auto_deployment": false,
+  "baseline_revision": "c1b059423c177c3668cb7a155244f9d523d610b2",
+  "baseline_sha256": "09555aee18fd96f7bcd4b2e20739d6d9efad60454c1deaca2a6317311cfcf781",
+  "benchmark_sha256": "79d55d6fcffc236622afa85c4fd525b9dd11ea5a252443325f44cfd9f8a4e84c",
+  "candidate_revision": "7cbf84e7687c73de49d316db4730e9f28eb5f066",
+  "candidate_sha256": "0ddb268900700032ba82ed5773c6adad0c7fb9cc66e92f3b30e8ac1b252b283a",
+  "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "decision_id": "pd-2bf98faaec8e6b6489e9",
+  "evaluated_at": "2026-11-02T05:19:46.175055Z",
+  "evaluator_id": "cre-promotion-runner@7cbf84e7687c",
+  "evaluator_kind": "INDEPENDENT_DETERMINISTIC_RUNNER",
+  "hard_gates": [
+    {
+      "evidence_refs": [
+        "git-diff:c1b059423c17..7cbf84e7687c"
+      ],
+      "name": "protected_files",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "policy:candidate"
+      ],
+      "name": "policy_integrity",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-a26ee84696a09420cb08",
+        "reproducer-run:rr-754c1ba9356d2a7df40d"
+      ],
+      "name": "reproducer",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "reproducer-run:rr-200752aa163da97a4af9",
+        "reproducer-run:rr-6c80254c4cfeb13472ee",
+        "reproducer-run:rr-619677ff1740b371f840",
+        "reproducer-run:rr-8643ed521cfbb0e2a641",
+        "reproducer-run:rr-f46b06d740a25b0e5afb",
+        "reproducer-run:rr-620e0e98e7a0f94c6376",
+        "reproducer-run:rr-bc02932180537dce9af0",
+        "reproducer-run:rr-937ea2ef6c91e97a7034",
+        "reproducer-run:rr-e3157b0cbd13bac9575a",
+        "reproducer-run:rr-68b2dd65dea12b48b622",
+        "reproducer-run:rr-f415b2020aa6c26f06d0",
+        "reproducer-run:rr-2203a5e827bcc511692d",
+        "reproducer-run:rr-3454ca09015ae731f42d",
+        "reproducer-run:rr-2029125b066a0278daa7",
+        "reproducer-run:rr-cc59e16f75b928213be8",
+        "reproducer-run:rr-90fcdc7886a6e248ce6e",
+        "reproducer-run:rr-6ab2cc85686b9b038fd8",
+        "reproducer-run:rr-ca3d05eea1b609777170",
+        "reproducer-run:rr-45b1bc65f7825ee8338b",
+        "reproducer-run:rr-d2cd2bf824c5a3b23630",
+        "reproducer-run:rr-72af9a8d117ae733648b",
+        "reproducer-run:rr-8d644cf353009e739346",
+        "reproducer-run:rr-b3cb3bea6040e206ee76",
+        "reproducer-run:rr-a937823b0b24d1c001fe",
+        "reproducer-run:rr-c9e8c99657a69a1f99c4",
+        "reproducer-run:rr-1b87b00164bc602133d8",
+        "reproducer-run:rr-78f855448d3ac6c2666d",
+        "reproducer-run:rr-3ce2e680b160a86479a7",
+        "reproducer-run:rr-713a022c447d2904d975",
+        "reproducer-run:rr-231bae6d2be8fd7fb0ec",
+        "reproducer-run:rr-b3b41b8519cf7b3de3db",
+        "reproducer-run:rr-25e9732bf0236575a50b",
+        "reproducer-run:rr-29685e4320c330470e11",
+        "reproducer-run:rr-b108ced0196c9a0ef704",
+        "reproducer-run:rr-770dfc7bc275e67d6f76",
+        "reproducer-run:rr-5425b23a53680b762e08",
+        "reproducer-run:rr-0822bcbfdd75b60da2c1",
+        "reproducer-run:rr-83407a0783c6fbf2dbbe",
+        "reproducer-run:rr-d88caa2ac025aac2b581",
+        "reproducer-run:rr-dc5ce4aaa18608773539",
+        "reproducer-run:rr-9dac4811ea9ffcf40ead",
+        "reproducer-run:rr-151b10b4e21cac972898",
+        "reproducer-run:rr-17cfff4a58f0203ecba7",
+        "reproducer-run:rr-7b2f4be9fd77aa6486c9",
+        "reproducer-run:rr-63c1b6c063f07fd29727",
+        "reproducer-run:rr-160fa690e40c1b1f000d",
+        "reproducer-run:rr-dff8f5dd02370d240236",
+        "reproducer-run:rr-349627cee0fd3ea86c2d",
+        "reproducer-run:rr-196452607026529cfafa",
+        "reproducer-run:rr-8eb5e2772f860f6a3e77",
+        "reproducer-run:rr-8222dd9cdba80a1dbc93",
+        "reproducer-run:rr-3cd15015a93cf494a98c",
+        "reproducer-run:rr-764c4b3c44f1cc8bcbf0",
+        "reproducer-run:rr-d86363880dcd2af3e672",
+        "reproducer-run:rr-0c8247cb4bff1062d040",
+        "reproducer-run:rr-5985bc91248bce6d2ca5",
+        "reproducer-run:rr-39d307d03abd882b4e38",
+        "reproducer-run:rr-478abec2cb93998c7536",
+        "reproducer-run:rr-8df21144e29be2b5a1bf",
+        "reproducer-run:rr-b748fb385c3467ec0083",
+        "reproducer-run:rr-ac0c084e90ef4a1fd020",
+        "reproducer-run:rr-8f8896b001fcc0c99409",
+        "reproducer-run:rr-7047e550a7d624ca6b1b",
+        "reproducer-run:rr-64c0fc5c4800d9cf8dea",
+        "reproducer-run:rr-cc0129f31b8b9668f78a",
+        "reproducer-run:rr-c3ec7b4936aec6a99fc8",
+        "reproducer-run:rr-4b872dbde37acf3a11f3",
+        "reproducer-run:rr-4cb69bd6b0dffc456ee1",
+        "reproducer-run:rr-733de9d4b6f4d515c8ab",
+        "reproducer-run:rr-d8322e61063ad5ff456f",
+        "reproducer-run:rr-59457674ee7806d52c44",
+        "reproducer-run:rr-e97ef2d9949db2d2d37b",
+        "reproducer-run:rr-134616189767303ac837",
+        "reproducer-run:rr-73b4415200bab0aabca7",
+        "reproducer-run:rr-a7534af8b0a7284d3e25",
+        "reproducer-run:rr-8c50759e233576482e01",
+        "reproducer-run:rr-01c9426aa3a634e75488",
+        "reproducer-run:rr-38ac50e8ef3d027615fe",
+        "reproducer-run:rr-dfe3c0e039fcfe0fed60",
+        "reproducer-run:rr-c8d82f35cbd60413aaef",
+        "reproducer-run:rr-4a49b71cd204f397b705",
+        "reproducer-run:rr-90aa9cf61aa92e8e1c86",
+        "reproducer-run:rr-08e80abcc2eb1483457c",
+        "reproducer-run:rr-59edbf755d41d65dd84d",
+        "reproducer-run:rr-548846668c2bb3b4c546",
+        "reproducer-run:rr-b092212bc4717c63896a",
+        "reproducer-run:rr-5a125394fefaca81cd67",
+        "reproducer-run:rr-4282c65fadabaf717a43",
+        "reproducer-run:rr-34989078f6297be3a64f",
+        "reproducer-run:rr-7f35a006e505fd8b95ee",
+        "reproducer-run:rr-2b06f1537f81c18d3c16",
+        "reproducer-run:rr-fc0825ddeee4f6d46230",
+        "reproducer-run:rr-9351b4345fc5de0e6604",
+        "reproducer-run:rr-817f45631f77a31f4dbb",
+        "reproducer-run:rr-1074b92c7d2bd3a90339",
+        "reproducer-run:rr-f391a2417461146d9cd1",
+        "reproducer-run:rr-41e5bf1c9d103818c41c",
+        "reproducer-run:rr-08a96f69f01be7b9e2c2",
+        "reproducer-run:rr-ee7c41ea14ff08f1a4e6",
+        "reproducer-run:rr-d20c22e0a040a2c8f918",
+        "reproducer-run:rr-053374520dfc7d7db26d",
+        "reproducer-run:rr-29d91f4887981984cfa0",
+        "reproducer-run:rr-769826d7923898da5d3b",
+        "reproducer-run:rr-93790aca783d79e2150d",
+        "reproducer-run:rr-9d4aa7f353067488e3fc"
+      ],
+      "name": "prevention",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "candidate-tests:exit0:sha256:08d4d56a7a6832c5",
+        "baseline-tests:exit0:sha256:111671a573a59375",
+        "design:exit0"
+      ],
+      "name": "quality_process",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-62d701a95707fe22114f",
+        "benchmark-run:br-921d59aa53d174407850"
+      ],
+      "name": "golden_benchmark",
+      "reason_code": null,
+      "result": "PASS"
+    },
+    {
+      "evidence_refs": [
+        "benchmark-run:br-41a2224b61185b81fcfa",
+        "benchmark-run:br-7e93e04185b23eba9f60"
+      ],
+      "name": "holdout",
+      "reason_code": null,
+      "result": "PASS"
+    }
+  ],
+  "metrics_snapshot_ref": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "reasons": [
+    "sandbox: 15990 protected paths read-only (OS) in the candidate/baseline worktrees",
+    "efficiency (informational, n=1 run each, not a gate): golden duration 8.4s -> 8.4s; model tokens 0 -> 0",
+    "all hard gates passed; eligible for OFFLINE review only - no automatic deployment"
+  ],
+  "reproducer_evidence_refs": [
+    "reproducer-run:rr-a26ee84696a09420cb08",
+    "reproducer-run:rr-754c1ba9356d2a7df40d"
+  ],
+  "schema_version": "1.0"
+}

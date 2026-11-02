@@ -1140,3 +1140,13 @@ reproducers:
     operations: [lrtx/swe2 allocation table]
     root_cause: "The SWE.2 allocation table cut each component-level requirement at 120 characters; the inspector rejected SWE2-02/05/06 three times because the allocated requirement text was incomplete (BLOCKED STUCK SAME_ITEM_FAILED_3X)."
     remedy: "The allocation table carries the whole requirement text."
+  - id: RPR-107
+    script: rpr107_swe1_trace_to_neighbour_section.py
+    sha256: 65bf219f5e611f50ad24854ab6b23448dc4776e2433b1edccc4b9947b741ba77
+    symptom_signature: "a register task's requirement on a page shared by two RM sections traces to the neighbour section"
+    observed_in: "Fabro run WO-F014-CMP-SWE1-IWDG-20261102-02 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: c1b059423c177c3668cb7a155244f9d523d610b2
+    error_codes: []
+    operations: [lrtx/swe1 assembly trace]
+    root_cause: "The SWE.1 assembly traced the IWDG_KR requirements (RM0486 59.7.1) to 59.7.2 because both sections start on p.2989; the inspector rejected SWE1-01/SWE1-05 three times and the author cannot change the assembled trace (BLOCKED STUCK SAME_ITEM_FAILED_3X)."
+    remedy: "A register task's requirement traces to the task's own section when its page is one of that section's pages."
