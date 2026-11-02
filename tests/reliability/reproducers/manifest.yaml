@@ -1220,3 +1220,63 @@ reproducers:
     operations: [policy hook (fabro_hook ticket), mcp/sdk invoke + normalize_args, forge-evidence-mcp.report_defect, inspection/defects bent_tests]
     root_cause: "Fabro sends list arguments as JSON text; the MCP SDK JSON-decodes strings of non-str fields before the server (pre_parse_json), while the policy hook hashed the undecoded text: the one-time ticket never matched, every report_defect kind TEST declaration was refused NO_AUTHORIZATION_TICKET, the corrected test stayed TEST_CHANGED_AFTER_FAIL, two identical author rejections and BLOCKED STUCK."
     remedy: "sdk.normalize_args applies the SDK's JSON pre-parse rule (string value of a non-str field decoded unless it decodes to str/int/float) identically for hook and server, so the ticket binds the call the server executes."
+  - id: RPR-114
+    script: rpr114_swe1_cited_section_page_outside.py
+    sha256: 18ee5aff39ed6a43ad40bd4946e96d53feab2d34e780fadae1b470d09d8f2cb0
+    symptom_signature: "a SWE.1 requirement citing an RM section with a source page outside that section passes the author check"
+    observed_in: "Fabro run WO-F014-SWE1-CRCL-20261102-L12 (local line, Omniverse2, 2026-11-02); cloud cross-inspection finding CRCL-L12/INS-SWE.1-002/SWE1-01#0, SWE1-05#0"
+    baseline_revision: e7ec0083726c32a0a7822df1b5735d97599fb972
+    error_codes: []
+    operations: [lrtx/swe1 author check (validate_group)]
+    root_cause: "SWR-006 cites RM0486 26.4.3 in its text but its source_page 1175 is the first page of 26.4.6; the author gate only checked the task's own pages with two pages of slack, so the requirement froze and the page-derived trace row named RM0486-26.4.6, which the inspector failed on SWE1-01/SWE1-05 while the author never got a finding."
+    remedy: "The SWE.1 author check reports a finding when a requirement's statement cites indexed RM sections and its source_page lies in none of their page ranges (section pages plus subsection pages), before the baseline freezes."
+  - id: RPR-116
+    script: rpr116_swe3_inspector_without_architecture.py
+    sha256: 7b993b34704838c2c88db682e7b53fe679ae72a146a45cccb9debf105cbb58e6
+    symptom_signature: "the structured SWE.3 inspector does not receive the frozen SWE.2 architecture, instance inputs or baseline record"
+    observed_in: "Fabro runs WO-F014-CMP-SWE3-OBL-20261102-08 and WO-F014-CMP-SWE3-IWDG-20261102-08 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: e7ec0083726c32a0a7822df1b5735d97599fb972
+    error_codes: []
+    operations: [lrtx/review inspector evidence]
+    root_cause: "The structured SWE.3 inspector evidence was only the SWE.3 baseline files plus the SWE.1 requirements: not the frozen SWE.2 architecture/interface baseline SWE3-01/03 judge against, not the instance-mode device header/API contract the code includes, and no frozen baseline record for SWE3-06 change/trace provenance; SWE3-01/03/06 (CRC instance mode) and SWE3-01 (IWDG register-block array) failed three times on the missing evidence (BLOCKED STUCK SAME_ITEM_FAILED_3X). SWE.4 (SWE.3 units/design) and SWE.5 (SWE.2 architecture) had the same gap."
+    remedy: "The SWE.3/4/5 inspectors receive the files of the exact upstream baseline their checklist judges against (SWE.2/SWE.3/SWE.2, matched by the frozen upstream hash, a missing or changed upstream raises), the inspected and upstream baseline records, and in instance mode the pinned device header and API contract; existing source/packet size refusals apply."
+  - id: RPR-117
+    script: rpr117_swe3_unit_design_text_truncated.py
+    sha256: 9dd7a8497d6acea016716bf89f407f75252afea3e7c9693138ddf4657425d4ff
+    symptom_signature: "the factory-rendered SWE.3 unit design cuts a code statement or drops statements of the function"
+    observed_in: "Fabro run WO-F014-CMP-SWE3-IWDG-20261102-08 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: 6fa46553d88289205e4363ad22ef588d857247db
+    error_codes: []
+    operations: [inspection/unit_scaffold as-built activity]
+    root_cause: "The factory-rendered as-built SWE.3 unit design (unit_scaffold._activity) cut each code statement at 110 characters and dropped statements after the 20th; SWU-LL-01.puml ended the start-key assignment mid-identifier ('... & (uint32_t)LL_IWDG_KR_K') and the inspector failed SWE3-06 in all three rounds (diagram does not match the source)."
+    remedy: "Every statement of every function is rendered as one whole activity label; no length or statement-count cut."
+  - id: RPR-118
+    script: rpr118_swe3_as_built_design_stale_after_rework.py
+    sha256: 3ee8e3641914d65996c5f9299c8161ac5cb974e372064f7cfca89cad45ba2e68
+    symptom_signature: "the as-built SWE.3 unit design is not re-rendered from the reworked code and stays stale"
+    observed_in: "Fabro run WO-F014-CMP-SWE3-IWDG-20261102-08 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: 9cdeccc30694a376b00bfe3cc233fd3c9ff12fbf
+    error_codes: []
+    operations: [inspection/unit_scaffold as-built design]
+    root_cause: "The unit scaffold (node swe3_units, before every SWE.3 author round) wrote each as-built unit design only when it was missing, so the baselines frozen after code rework (BL-SWE.3-002/-003) carried the round-1 diagrams and the inspector failed SWE3-06 on the stale diagrams in every round."
+    remedy: "The scaffold records the hash of each design it generates (without the gate's USPEC citation) and re-renders a design that is missing or still exactly as generated from the current code; an author-changed design is kept."
+  - id: RPR-119
+    script: rpr119_swe3_as_built_if_without_branch.py
+    sha256: d504c769966dbb2dae238f702218dc14f22cde7c06f3bff98e8d4efaefb7145e
+    symptom_signature: "the as-built SWE.3 unit design draws an if statement as a plain action without a branch"
+    observed_in: "Fabro run WO-F014-CMP-SWE3-IWDG-20261102-08 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: 0944323b276e4e06c959bf19a2cfc49c8e0a3704
+    error_codes: []
+    operations: [inspection/unit_scaffold as-built design]
+    root_cause: "The as-built unit design flattened a function body into one action per line: an if statement became ':if (...) (control);' followed by the unconditional branch body (SWU-LL-07..09: result = 1U with no path keeping 0U), and the inspector failed SWE3-06 in every round."
+    remedy: "Function bodies are parsed with their control structure and rendered as PlantUML branches and loops (if/else if/else, switch/case, while, for, do-while) with conditions whole; an unparsable body is rendered statement by statement under a marked note."
+  - id: RPR-120
+    script: rpr120_truncated_write_argument_forced_to_field_value.py
+    sha256: 71cf1ba06ca9462619281fd6c1375b7895e8da0f27ee6bd750ba1ebb752099eb
+    symptom_signature: "a truncating-write case cannot pass the SWE.2 argument check with the above-field input its requirement requires"
+    observed_in: "Fabro run WO-F014-CMP-SWE2-IWDGG-20261102-08 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: 2a88c806dfd5109173bcbb2744560fa8c2f989cf
+    error_codes: []
+    operations: [lrtx/swe1 register effects (author schema, validation, assembly), assurance/register_contract check_effects, lrtx/swe2 validate_interfaces]
+    root_cause: "SWR-009 is a truncating write (requested value above 0xFFF, only bits 11:0 reach IWDG_RLR.RL; verified with 0x00001234 -> RL == 0x234). The SWE.1 register-effects contract could record only the resulting field value (RLR_RL_WRITE_TRUNCATED value 0x234; the author schema had no other property and the value must fit the field), and lrtx/swe2.py validate_interfaces required the api_calls.json argument to equal that value, so the author wrote LL_IWDG_SetReloadCounter(0x234U) and the inspector correctly rejected it as not exercising the above-0xFFF input (SWE2-06 three times: BLOCKED STUCK SAME_ITEM_FAILED_3X)."
+    remedy: "A write effect may carry an optional requested input next to the field value (SWE.1 author schema and rule; validated at SWE.1 and by check_effects as a 32-bit number above the field whose low field-width bits are the value; SWE.1 flags a write whose verification calls with such an input but records none). The SWE.2 check requires the call argument to equal the requested input when present, otherwise the value (the truncated value is refused); the SWE.2-6 case listings show the requested input. Baselines without requested are unchanged."
