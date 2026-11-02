@@ -30,15 +30,178 @@ _CITE_LEGEND = re.compile(r"legend top left\n  Unit specification \(generated fr
 TODO_TEXT = "TODO: behaviour the unit shall implement"
 
 
-def _bodies(text: str) -> dict[str, list[str]]:
-    out = {}
-    for m in re.finditer(r"^[A-Za-z_][\w\s\*]*?\b(\w+)\s*\([^;{)]*\)\s*\{(.*?)^\}", text, re.S | re.M):
-        stmts = [re.sub(r"\s+", " ", ln.strip()) for ln in m.group(2).splitlines()]
-        out[m.group(1)] = [s for s in stmts if s and s not in ("{", "}") and not s.startswith(("/*", "*", "//"))]
-    return out
+def _bodies(text: str) -> dict[str, str]:
+    """The body text of each function defined in the code (CAPA-119: parsed with its control structure)."""
+    return {m.group(1): m.group(2) for m in re.finditer(r"^[A-Za-z_][\w\s\*]*?\b(\w+)\s*\([^;{)]*\)\s*\{(.*?)^\}", text,
+                                                         re.S | re.M)}
 
 
-def _activity(unit_id: str, name: str, fns: list[str], bodies: dict[str, list[str]]) -> str:
+# CAPA-119 (run WO-F014-CMP-SWE3-IWDG-20261102-08): the as-built design drew 'if' as an ordinary action followed by the
+# unconditional branch body (SWU-LL-07..09: 'result = 1U' without the path keeping 0U), and SWE3-06 failed on it.
+# Control statements are PlantUML branches/loops with their condition text whole.
+_COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+
+
+class _Body:
+    """CAPA-119: the statements of a C function body with their control structure (if/else if/else, switch, while,
+    for, do-while); conditions and statements are kept whole, whitespace collapsed."""
+
+    def __init__(self, text: str):
+        self.s, self.i = _COMMENT.sub(" ", text), 0
+
+    def _ws(self):
+        while self.i < len(self.s) and self.s[self.i].isspace():
+            self.i += 1
+
+    def _kw(self, kw: str) -> bool:
+        self._ws()
+        if re.match(kw + r"\b", self.s[self.i:]):
+            self.i += len(kw)
+            return True
+        return False
+
+    def _expect(self, ch: str):
+        self._ws()
+        if not self.s.startswith(ch, self.i):
+            raise ValueError(f"expected {ch!r} at {self.i}")
+        self.i += 1
+
+    def _scan(self, stop: str) -> str:
+        """Text up to `stop` at bracket depth 0 (strings and character literals skipped), `stop` consumed."""
+        start, depth = self.i, 0
+        while self.i < len(self.s):
+            c = self.s[self.i]
+            if c in "\"'":
+                q, self.i = c, self.i + 1
+                while self.i < len(self.s) and self.s[self.i] != q:
+                    self.i += 2 if self.s[self.i] == "\\" else 1
+            elif c in "([{":
+                depth += 1
+            elif c in ")]}":
+                if depth == 0:
+                    if c == stop:
+                        break
+                    raise ValueError(f"unbalanced {c!r} at {self.i}")
+                depth -= 1
+            elif c == stop and depth == 0:
+                break
+            self.i += 1
+        if self.i >= len(self.s):
+            raise ValueError(f"missing {stop!r}")
+        text = " ".join(self.s[start:self.i].split())
+        self.i += 1
+        return text
+
+    def _cond(self) -> str:
+        self._expect("(")
+        return self._scan(")")
+
+    def block(self, closing: bool) -> list:
+        out = []
+        while True:
+            self._ws()
+            if self.i >= len(self.s):
+                if closing:
+                    raise ValueError("missing '}'")
+                return out
+            if self.s[self.i] == "}":
+                if not closing:
+                    raise ValueError("unbalanced '}'")
+                self.i += 1
+                return out
+            out += self.stmt()
+
+    def stmt(self) -> list:
+        self._ws()
+        if self.s.startswith("{", self.i):
+            self.i += 1
+            return self.block(True)
+        if self.s.startswith(";", self.i):
+            self.i += 1
+            return []
+        if self._kw("if"):
+            arms, other = [(self._cond(), self.stmt())], None
+            while self._kw("else"):
+                if self._kw("if"):
+                    arms.append((self._cond(), self.stmt()))
+                else:
+                    other = self.stmt()
+                    break
+            return [("if", arms, other)]
+        if self._kw("switch"):
+            expr = self._cond()
+            self._expect("{")
+            cases = []
+            while True:
+                self._ws()
+                if self.s.startswith("}", self.i):
+                    self.i += 1
+                    break
+                if self._kw("case"):
+                    cases.append([self._scan(":"), []])
+                elif self._kw("default"):
+                    self._expect(":")
+                    cases.append(["default", []])
+                elif not cases:
+                    raise ValueError("statement before the first case")
+                else:
+                    cases[-1][1] += [n for n in self.stmt() if n != ("act", "break")]
+            return [("switch", expr, cases)]
+        if self._kw("while"):
+            return [("while", self._cond(), self.stmt())]
+        if self._kw("for"):
+            return [("for", self._cond(), self.stmt())]
+        if self._kw("do"):
+            body = self.stmt()
+            if not self._kw("while"):
+                raise ValueError("do without while")
+            cond = self._cond()
+            self._expect(";")
+            return [("do", body, cond)]
+        text = self._scan(";")
+        return [("ret" if re.match(r"return\b", text) else "act", text)]
+
+
+def _label(text: str) -> str:
+    return text.replace('"', "'")
+
+
+def _emit(nodes: list, out: list, depth: int) -> None:
+    for n in nodes:
+        kind = n[0]
+        if kind in ("act", "ret"):
+            out.append(f":{_label(n[1])};")
+            if kind == "ret" and depth:
+                out.append("stop")
+        elif kind == "if":
+            for k, (cond, body) in enumerate(n[1]):
+                out.append(f"{'if' if k == 0 else 'elseif'} ({_label(cond)}) then (yes)")
+                _emit(body, out, depth + 1)
+            if n[2] is not None:
+                out.append("else (no)")
+                _emit(n[2], out, depth + 1)
+            out.append("endif")
+        elif kind == "switch":
+            out.append(f"switch ({_label(n[1])})")
+            for label, body in n[2]:
+                out.append(f"case ({_label(label)})")
+                _emit(body, out, depth + 1)
+            out.append("endswitch")
+        elif kind == "while":
+            out.append(f"while ({_label(n[1])}) is (yes)")
+            _emit(n[2], out, depth + 1)
+            out.append("endwhile (no)")
+        elif kind == "for":
+            out.append(f"while (for ({_label(n[1])})) is (next)")
+            _emit(n[2], out, depth + 1)
+            out.append("endwhile (done)")
+        elif kind == "do":
+            out.append("repeat")
+            _emit(n[1], out, depth + 1)
+            out.append(f"repeat while ({_label(n[2])}) is (yes) not (no)")
+
+
+def _activity(unit_id: str, name: str, fns: list[str], bodies: dict[str, str]) -> str:
     lines = ["@startuml", f"title {unit_id} {name} - as-built activity (generated from the code; refine as needed)",
              "note right", "  USPEC: TODO", "end note"]
     for fn in fns:
@@ -46,14 +209,13 @@ def _activity(unit_id: str, name: str, fns: list[str], bodies: dict[str, list[st
         # CAPA-117 (run WO-F014-CMP-SWE3-IWDG-20261102-08): a 110-character cut ended a label mid-identifier
         # ('... & (uint32_t)LL_IWDG_KR_K') and a 20-statement cap dropped the tail of longer functions, so the as-built
         # diagram no longer matched the code (SWE3-06). Every statement is rendered whole.
-        for s in bodies.get(fn, []):
-            s = s.replace(";", "").replace('"', "'")
-            if s.startswith(("if ", "if(", "while", "for ", "for(", "else")):
-                lines.append(f":{s} (control);")
-            elif s.startswith("return"):
-                lines.append(f":{s};")
-            else:
-                lines.append(f":{s};")
+        body = bodies.get(fn, "")
+        try:
+            _emit(_Body(body).block(False), lines, 0)
+        except ValueError as exc:  # never a partial diagram: the statements as written, marked as not parsed
+            lines.append(f"note right: control flow not parsed ({exc}); statements as written")
+            lines += [f":{_label(x.rstrip(';'))};" for x in (" ".join(ln.split()) for ln in _COMMENT.sub(" ", body).splitlines())
+                      if x and x not in ("{", "}")]
         lines += ["stop", "}"]
     lines.append("@enduml")
     return "\n".join(lines) + "\n"
@@ -91,7 +253,7 @@ def _swc(ws: Path) -> str:
 def scaffold(ws: Path) -> dict:
     ws = Path(ws)
     tags: dict[str, dict] = {}
-    bodies: dict[str, list[str]] = {}
+    bodies: dict[str, str] = {}
     for p in code_files(ws):
         text = p.read_text(errors="replace")
         bodies.update(_bodies(text))
