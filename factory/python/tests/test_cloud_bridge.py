@@ -241,3 +241,38 @@ def test_the_mode_file_routes_claude_per_call_and_tool_calls_stay_on_the_api(tmp
     assert [r["claude_mode"] for r in rows] == ["api", "account", "account", "api"]
     assert rows[2]["account_fallback"] == "tool_calls_on_api" and len(seen) == 1 and len(api.calls) == 3
     assert CB.read_mode(None) == "api" and CB.read_mode(tmp_path / "missing") == "api"
+
+
+def test_the_inspector_mode_file_routes_openai_to_the_codex_login(tmp_path, monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "must-not-reach-codex")
+    seen, api = [], []
+
+    def run(argv, **kw):
+        seen.append((argv, kw))
+        with open(argv[argv.index("-o") + 1], "w") as f:
+            f.write('{"code": "xyz"}')
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    def create(**kw):
+        api.append(kw)
+        msg = SimpleNamespace(content='{"code": "abc"}', tool_calls=None)
+        usage = SimpleNamespace(prompt_tokens=5, completion_tokens=2, total_tokens=7, prompt_tokens_details=None,
+                                completion_tokens_details=None)
+        return SimpleNamespace(choices=[SimpleNamespace(message=msg, finish_reason="stop")], usage=usage)
+
+    mode = tmp_path / "inspector-mode.json"
+    cfg = {"backend": "openai", "model": "gpt-6.1-sol", "reasoning_effort": "high"}
+    bridge = CB.Bridge({"gpt-6.1-sol": cfg},
+                       {"openai": CB.OpenAIBackend("k", client=SimpleNamespace(chat=SimpleNamespace(
+                           completions=SimpleNamespace(create=create)))), "codex": CB.CodexBackend(str(tmp_path), run=run)},
+                       tmp_path / "m.jsonl", None, mode)
+    bridge.complete(_body(model="gpt-6.1-sol"))
+    mode.write_text(json.dumps({"mode": "account"}))
+    res = bridge.complete(_body(model="gpt-6.1-sol"))
+    bridge.complete({**_body(model="gpt-6.1-sol"), "tools": [{"type": "function", "function": {"name": "f"}}]})
+    rows = [json.loads(x) for x in (tmp_path / "m.jsonl").read_text().splitlines()]
+    assert [r["backend"] for r in rows] == ["openai", "codex", "openai"] and len(api) == 2 and len(seen) == 1
+    assert rows[2]["account_fallback"] == "tool_calls_on_api" and res["usage"]["billing"] == "account"
+    argv, kw = seen[0]
+    assert "OPENAI_API_KEY" not in kw["env"] and argv[argv.index("-m") + 1] == "gpt-6.1-sol"
+    assert 'model_reasoning_effort="high"' in argv

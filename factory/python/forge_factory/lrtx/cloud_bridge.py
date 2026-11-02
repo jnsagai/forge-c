@@ -16,6 +16,8 @@ network to the factory). The bridge runs outside the namespace and answers OpenA
   settings, no session kept, an empty working directory; the schema is passed as `--json-schema`. The account mode is
   chosen per call from a mode file (`api` | `account`) the floor's control writes; a call with tools (Fabro's native
   agent nodes) cannot be answered without tools, so it stays on the API and the meter says so;
+- the inspector's account mode (owner 2026-11-02, "yes build it"): gpt-6.1-sol through the owner's ChatGPT login
+  (the `codex` backend, API key removed from its environment) while the inspector mode file says `account`;
 - backend `codex`: the Codex CLI (`codex exec`, ephemeral, read-only sandbox, empty working directory, no tools needed:
   the packet holds every input), `--output-schema` when the schema meets the strict rules.
 
@@ -310,7 +312,10 @@ class CodexBackend:
                 sch.write_text(json.dumps(schema))
                 argv += ["--output-schema", str(sch)]
                 mode = "output_schema"
-            env = {**os.environ, **({"CODEX_HOME": self.codex_home} if self.codex_home else {})}
+            if cfg.get("reasoning_effort"):
+                argv += ["-c", f"model_reasoning_effort={json.dumps(cfg['reasoning_effort'])}"]
+            env = {k: v for k, v in os.environ.items() if k != "OPENAI_API_KEY"}  # the ChatGPT login answers
+            env.update({"CODEX_HOME": self.codex_home} if self.codex_home else {})
             p = self.run(argv + ["-"], input=prompt, text=True, capture_output=True, env=env,
                          timeout=int(cfg.get("timeout_s", 1800)))
             text = out.read_text() if out.is_file() else ""
@@ -328,13 +333,16 @@ class CodexBackend:
                 usage["total_tokens"] = (usage["prompt_tokens"] or 0) + (usage["completion_tokens"] or 0)
         if p.returncode != 0 and not text:
             raise RuntimeError(f"CODEX_EXEC_FAILED:rc{p.returncode}")
+        usage["billing"] = "account"
         return {"text": text, "finish": "stop", "schema_mode": mode, "usage": usage}
 
 
 class Bridge:
-    def __init__(self, models: dict, backends: dict, meter: Path, mode_file: Path | None = None):
+    def __init__(self, models: dict, backends: dict, meter: Path, mode_file: Path | None = None,
+                 inspector_mode_file: Path | None = None):
         self.models, self.backends, self.meter = models, backends, Path(meter)
         self.mode_file = Path(mode_file) if mode_file else None
+        self.inspector_mode_file = Path(inspector_mode_file) if inspector_mode_file else None
         self.lock = threading.Lock()
 
     def route(self, body: dict, cfg: dict) -> tuple[str, dict]:
@@ -350,6 +358,14 @@ class Bridge:
                     note["account_fallback"] = "tool_calls_on_api"
                 else:
                     backend = "claude-cli"
+        if backend == "openai" and "codex" in self.backends and self.inspector_mode_file is not None:
+            mode = read_mode(self.inspector_mode_file)
+            note["inspector_mode"] = mode
+            if mode == "account":
+                if body.get("tools"):
+                    note["account_fallback"] = "tool_calls_on_api"
+                else:
+                    backend = "codex"
         return backend, note
 
     def complete(self, body: dict) -> dict:
@@ -463,6 +479,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--openai-key-file", type=Path, default=Path.home() / ".config/forge-c/openai-api.env")
     ap.add_argument("--codex-home")
     ap.add_argument("--mode-file", type=Path, help="JSON {mode: api|account} written by the floor control; per call")
+    ap.add_argument("--inspector-mode-file", type=Path, help="the same for the OpenAI inspector (account = Codex CLI)")
     a = ap.parse_args(argv)
     models = json.loads(a.models)
     backends = {}
@@ -474,7 +491,9 @@ def main(argv: list[str] | None = None) -> int:
         backends["codex"] = CodexBackend(a.codex_home)
     if a.mode_file is not None and "anthropic" in backends:
         backends["claude-cli"] = ClaudeCliBackend()
-    srv = serve(a.socket, Bridge(models, backends, a.meter, a.mode_file))
+    if a.inspector_mode_file is not None and "openai" in backends and "codex" not in backends:
+        backends["codex"] = CodexBackend(a.codex_home)
+    srv = serve(a.socket, Bridge(models, backends, a.meter, a.mode_file, a.inspector_mode_file))
     try:
         srv.serve_forever()
     finally:
