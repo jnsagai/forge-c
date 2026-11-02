@@ -276,24 +276,24 @@ class Handler(BaseHTTPRequestHandler):
         if u.path != "/claude-mode":
             self.send_error(404)
             return
-        origin = self.headers.get("Origin")
-        if self.headers.get("X-Forge-Control") != "claude-mode" or (origin and urlparse(origin).netloc != self.headers.get("Host")):
-            self.send_error(403)
-            return
+        from .floor_api import log_claude_mode_attempt, set_claude_mode
+
+        def refuse(code: int, why: str) -> None:
+            log_claude_mode_attempt(code, why, self.client_address[0], self.headers.get("Origin"), self.headers.get("Host"))
+            self.send_error(code, why)
+
+        # the custom header makes a cross-site request need a CORS preflight, which this server never grants
+        if self.headers.get("X-Forge-Control") != "claude-mode":
+            return refuse(403, "control header missing")
         n = int(self.headers.get("Content-Length") or 0)
         if not 0 < n <= 200 or "application/json" not in (self.headers.get("Content-Type") or ""):
-            self.send_error(400)
-            return
-        from .floor_api import set_claude_mode
-
+            return refuse(400, "JSON body required")
         try:
             body = set_claude_mode(str(json.loads(self.rfile.read(n)).get("mode")), self.client_address[0])
         except (ValueError, AttributeError):
-            self.send_error(400, "mode must be api or account")
-            return
+            return refuse(400, "mode must be api or account")
         except FileNotFoundError:
-            self.send_error(409, "no cloud line on this floor")
-            return
+            return refuse(409, "no cloud line on this floor")
         self._send(json.dumps(body).encode(), "application/json")
 
     def _send(self, data: bytes, ctype: str) -> None:

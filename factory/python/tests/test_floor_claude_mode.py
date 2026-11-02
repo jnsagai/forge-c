@@ -1,6 +1,6 @@
 """Owner 2026-11-02 ("Claude API/Account mode"): the floor's only control switches the cloud line's Claude calls between
-the Anthropic API and the owner's Claude account. Two values only, a control header, a same-host Origin, every switch
-logged; account calls are shown without an API charge."""
+the Anthropic API and the owner's Claude account. Two values only, a control header (a cross-site page would need a CORS
+preflight, never granted), every switch and every refusal logged; account calls are shown without an API charge."""
 import json
 import threading
 import urllib.error
@@ -39,10 +39,19 @@ def test_the_floor_switches_the_claude_mode_and_logs_it(tmp_path, monkeypatch):
         assert json.loads((tmp_path / "cloud-bridge/claude-mode.json").read_text())["mode"] == "account"
         assert _post(url, {"mode": "free"})[0] == 400
         assert _post(url, {"mode": "api"}, {"X-Forge-Control": "x"})[0] == 403
-        assert _post(url, {"mode": "api"}, {"Origin": "http://evil.example"})[0] == 403
-        assert _post(url, {"mode": "api"})[0] == 200
+        pre = urllib.request.Request(url + "/claude-mode", method="OPTIONS", headers={
+            "Origin": "http://evil.example", "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "x-forge-control, content-type"})
+        try:
+            with urllib.request.urlopen(pre, timeout=10) as r:
+                assert "Access-Control-Allow-Origin" not in r.headers
+        except urllib.error.HTTPError as exc:
+            assert "Access-Control-Allow-Origin" not in exc.headers  # no preflight is granted
+        assert _post(url, {"mode": "api"}, {"Origin": "http://100.87.10.79:8788", "Host": "127.0.0.1:1"})[0] == 200
         log = [json.loads(x) for x in (tmp_path / "cloud-bridge/claude-mode-changes.jsonl").read_text().splitlines()]
-        assert [(r["from"], r["to"]) for r in log] == [("api", "account"), ("account", "api")]
+        assert [(r["from"], r["to"]) for r in log if "to" in r] == [("api", "account"), ("account", "api")]
+        assert [(r["refused"], r["why"]) for r in log if "refused" in r] == [
+            (400, "mode must be api or account"), (403, "control header missing")]  # no cloud line: nothing to log into
         assert all(r["client"] == "127.0.0.1" for r in log)
     finally:
         srv.shutdown()

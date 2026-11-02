@@ -239,6 +239,17 @@ def claude_mode() -> dict:
     return {"mode": mode, "since": d.get("since") if isinstance(d, dict) else None}
 
 
+def log_claude_mode_attempt(code: int, why: str, client: str, origin: str | None, host: str | None) -> None:
+    """A refused switch is logged too (no body, no cookies), so a control that does nothing can be diagnosed."""
+    d = state_root() / "cloud-bridge"
+    if not d.is_dir():
+        return
+    rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "refused": code, "why": why, "client": client[:64],
+           "origin": (origin or "")[:120], "host": (host or "")[:120]}
+    with (d / "claude-mode-changes.jsonl").open("a") as log:
+        log.write(json.dumps(rec, sort_keys=True) + "\n")
+
+
 def set_claude_mode(mode: str, client: str) -> dict:
     """The floor's only write: the Claude mode, one of two values; every switch is logged (who, from, to, when)."""
     if mode not in CLAUDE_MODES:
