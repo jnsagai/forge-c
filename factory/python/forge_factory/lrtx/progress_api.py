@@ -25,6 +25,7 @@ import argparse
 import datetime as dt
 import glob
 import json
+import re
 import os
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -207,12 +208,52 @@ def collect(run: str | None = None, wo: str | None = None) -> list[dict]:
 FLOOR_PAGE = Path(__file__).resolve().parents[1] / "dashboard/static/factory-floor.html"
 
 
+def floor_lines() -> list[dict]:
+    """Owner 2026-11-02 ("why not in the very same port?"): one floor page for several production lines.
+    FORGE_FLOOR_LINES = [{"id", "label", "sub", "url"?}]: a line with `url` is another floor server (its floor.json is
+    passed through, read-only); a line without `url` is this process's own state. Unset: one line, unchanged."""
+    raw = os.environ.get("FORGE_FLOOR_LINES")
+    if not raw:
+        return []
+    lines = json.loads(raw)
+    if not isinstance(lines, list) or not all(isinstance(x, dict) and re.fullmatch(r"[a-z0-9-]{1,32}", str(x.get("id")))
+                                              for x in lines):
+        raise ValueError("FORGE_FLOOR_LINES_INVALID")
+    return lines
+
+
+def _line_floor(line: dict, query: dict) -> bytes:
+    import urllib.parse
+    import urllib.request
+
+    qs = urllib.parse.urlencode({k: v[0] for k, v in query.items() if k != "line" and v})
+    url = line["url"].rstrip("/") + "/floor.json" + ("?" + qs if qs else "")
+    with urllib.request.urlopen(url, timeout=15) as r:  # noqa: S310 - operator-configured loopback floor server
+        data = r.read()
+    json.loads(data)  # only a JSON floor is passed on
+    return data
+
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):  # noqa: N802 - http.server API
         u = urlparse(self.path)
         q = parse_qs(u.query)
         if u.path in ("/", "/floor"):  # the factory floor page (feature 007 addendum), read-only
             return self._send(FLOOR_PAGE.read_bytes(), "text/html; charset=utf-8")
+        if u.path == "/lines.json":
+            body = {"lines": [{k: x.get(k) for k in ("id", "label", "sub")} for x in floor_lines()]}
+            return self._send(json.dumps(body, ensure_ascii=False).encode(), "application/json")
+        if u.path == "/floor.json" and (q.get("line") or [None])[0]:
+            line = next((x for x in floor_lines() if x["id"] == q["line"][0]), None)
+            if line is None:
+                self.send_error(404)
+                return
+            if line.get("url"):
+                try:
+                    return self._send(_line_floor(line, q), "application/json")
+                except (OSError, ValueError):
+                    self.send_error(502, "line floor unavailable")
+                    return
         if u.path == "/floor.json":
             from .floor_api import floor
 

@@ -211,6 +211,11 @@ tr:last-child td { border-bottom: 0; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media (max-width: 560px) { .machine { grid-template-columns: 90px 1fr; } .machine svg { width: 90px; height: 70px; } h1 { font-size: 25px; } }
 </style>
+<style>
+.line-tabs { display: flex; gap: 6px; margin: 8px 0 4px; flex-wrap: wrap; }
+.line-tab { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line, #888); background: transparent; color: inherit; cursor: pointer; }
+.line-tab.on { background: var(--go, #2a7); color: #fff; border-color: transparent; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -221,6 +226,7 @@ tr:last-child td { border-bottom: 0; }
     </div>
     <div class="plant-status" id="plant-status"></div>
   </header>
+  <nav class="line-tabs" id="line-tabs" role="tablist" aria-label="Production line" hidden></nav>
   <div class="stale" id="stale" hidden></div>
   <section class="kpis" id="kpis" aria-label="Shift KPIs"></section>
   <section class="floor" aria-labelledby="floor-title">
@@ -251,6 +257,7 @@ const stack = (big) => `<span class="stack${big ? " big" : ""}" aria-hidden="tru
 const STATE_TEXT = {working: "Working", rework: "Rework", stopped: "Stopped", idle: "Idle", waiting: "Waiting", ready: "Ready", done: "Done"};
 let DATA = null, lastOk = 0, selected = null;
 let focus = new URLSearchParams(location.search).get("order") || "";
+let LINES = [], line = new URLSearchParams(location.search).get("line") || "";
 
 function arm() {
   return `<svg viewBox="0 0 112 86" aria-hidden="true">
@@ -437,7 +444,10 @@ function setFocus(v) {
 }
 async function load() {
   try {
-    const r = await fetch("floor.json" + (focus ? "?order=" + encodeURIComponent(focus) : ""), {cache: "no-store"});
+    const q = new URLSearchParams();
+    if (line) q.set("line", line);
+    if (focus) q.set("order", focus);
+    const r = await fetch("floor.json" + (q.toString() ? "?" + q : ""), {cache: "no-store"});
     if (!r.ok) throw new Error("HTTP " + r.status);
     DATA = await r.json(); lastOk = Date.now();
     $("#stale").hidden = true;
@@ -463,7 +473,34 @@ document.addEventListener("click", (e) => {
   if (b) { selected = b.dataset.hall; location.hash = selected.replace(".", "-").toLowerCase(); render(); }
 });
 window.addEventListener("hashchange", () => { const h = location.hash.slice(1).toUpperCase().replace("-", "."); if (DATA && DATA.halls.some((x) => x.id === h)) { selected = h; render(); } });
-renderLegend(); load(); setInterval(load, 5000);
+// owner 2026-11-02 ("why not in the very same port?"): one page, one tab per production line
+function renderLines() {
+  const nav = $("#line-tabs");
+  if (LINES.length < 2) { nav.hidden = true; return; }
+  nav.hidden = false;
+  nav.innerHTML = LINES.map((l) => `<button role="tab" class="line-tab${l.id === line ? " on" : ""}" aria-selected="${l.id === line}" data-line="${esc(l.id)}">${esc(l.label)}</button>`).join("");
+  const cur = LINES.find((l) => l.id === line);
+  if (cur) { document.querySelector("header.plate h1").textContent = "Forge-C Plant · " + cur.label; if (cur.sub) $("#sub").textContent = cur.sub; }
+}
+function setLine(v) {
+  line = v; focus = ""; selected = null; DATA = null;
+  const u = new URL(location.href);
+  u.searchParams.set("line", line); u.searchParams.delete("order");
+  history.replaceState(null, "", u);
+  renderLines(); load();
+}
+document.addEventListener("click", (e) => { const t = e.target.closest("[data-line]"); if (t) { e.stopPropagation(); setLine(t.dataset.line); } }, true);
+async function start() {
+  try {
+    const r = await fetch("lines.json", {cache: "no-store"});
+    if (r.ok) LINES = (await r.json()).lines || [];
+  } catch (e) { LINES = []; }
+  if (LINES.length >= 2 && !LINES.some((l) => l.id === line)) line = LINES[0].id;
+  if (LINES.length < 2) line = "";
+  renderLines();
+  renderLegend(); load(); setInterval(load, 5000);
+}
+start();
 </script>
 </body>
 </html>
