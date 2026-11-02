@@ -10,6 +10,7 @@ network to the factory). The bridge runs outside the namespace and answers OpenA
 - backend `anthropic`: the owner's Anthropic API (authorized 2026-11-02) through the official SDK; the runner's JSON
   schema becomes `output_config.format`; Claude Opus 5.5 always thinks, so `extra_output_tokens` is added to the
   runner's answer reserve (as the gateway does for the local thinking models);
+- backend `openai`: the owner's OpenAI API (authorized 2026-11-02) through the official SDK (the inspector);
 - backend `codex`: the Codex CLI (`codex exec`, ephemeral, read-only sandbox, empty working directory, no tools needed:
   the packet holds every input), `--output-schema` when the schema meets the strict rules.
 
@@ -33,11 +34,11 @@ from pathlib import Path
 SCHEMA = "forge-c/cloud-bridge-call/1"
 
 
-def read_key(path: Path) -> str:
+def read_key(path: Path, name: str = "ANTHROPIC_API_KEY") -> str:
     for line in Path(path).read_text().splitlines():
-        if line.startswith("ANTHROPIC_API_KEY="):
+        if line.startswith(name + "="):
             return line.split("=", 1)[1].strip()
-    raise ValueError("BRIDGE_KEY_MISSING")
+    raise ValueError(f"BRIDGE_KEY_MISSING:{name}")
 
 
 def _text(content) -> str:
@@ -165,6 +166,58 @@ class AnthropicBackend:
         extra = {"system": system} if system else {}
         with self.client.messages.stream(**kwargs, output_config=oc, **extra) as stream:
             return stream.get_final_message()
+
+
+class OpenAIBackend:
+    """Owner 2026-11-02 ("use also openai API"): the inspector through the OpenAI API (official SDK). The runner's
+    request is already OpenAI-shaped: messages and tools pass through; the schema is strict only when it qualifies."""
+
+    def __init__(self, key: str, client=None):
+        if client is None:
+            import openai
+
+            client = openai.OpenAI(api_key=key, max_retries=2)
+        self.client = client
+
+    def answer(self, body: dict, cfg: dict) -> dict:
+        schema = _schema(body)
+        want = int(body.get("max_tokens") or body.get("max_completion_tokens") or 4096) + int(cfg.get("extra_output_tokens", 0))
+        kw = {"model": cfg.get("model") or body["model"], "messages": body.get("messages") or [],
+              "max_completion_tokens": min(want, int(cfg.get("max_output_tokens", want)))}
+        if cfg.get("reasoning_effort"):
+            kw["reasoning_effort"] = cfg["reasoning_effort"]
+        if body.get("tools"):
+            kw["tools"] = body["tools"]
+            if body.get("tool_choice"):
+                kw["tool_choice"] = body["tool_choice"]
+        mode = "none"
+        if schema is not None:
+            kw["response_format"] = {"type": "json_schema", "json_schema": {"name": "packet_output", "strict": strict_ok(schema),
+                                                                            "schema": schema}}
+            mode = "json_schema_strict" if strict_ok(schema) else "json_schema"
+        try:
+            r = self.client.chat.completions.create(**kw)
+        except Exception as exc:  # noqa: BLE001 - a rejected schema: JSON object with the schema in the prompt
+            if schema is None or getattr(exc, "status_code", None) != 400:
+                raise
+            kw["response_format"] = {"type": "json_object"}
+            kw["messages"] = list(kw["messages"]) + [{"role": "system", "content": json_instruction(schema)}]
+            mode = "prompt_schema_fallback"
+            r = self.client.chat.completions.create(**kw)
+        ch = r.choices[0]
+        calls = [{"id": tc.id, "type": "function", "function": {"name": tc.function.name, "arguments": tc.function.arguments}}
+                 for tc in (ch.message.tool_calls or [])]
+        u = r.usage
+        cached = getattr(getattr(u, "prompt_tokens_details", None), "cached_tokens", None)
+        reasoning = getattr(getattr(u, "completion_tokens_details", None), "reasoning_tokens", None)
+        usage = {"prompt_tokens": u.prompt_tokens, "completion_tokens": u.completion_tokens, "total_tokens": u.total_tokens,
+                 "cached_prompt_tokens": cached, "reasoning_tokens": reasoning}
+        price = cfg.get("usd_per_mtok") or {}
+        if price:
+            usage["cost_usd"] = round(((u.prompt_tokens - (cached or 0)) * price.get("input", 0) + (cached or 0)
+                                       * price.get("cache_read", 0) + u.completion_tokens * price.get("output", 0)) / 1e6, 6)
+        finish = ch.finish_reason if ch.finish_reason in ("stop", "length", "tool_calls") else "stop"
+        return {"text": ch.message.content or "", "finish": finish, "tool_calls": calls, "schema_mode": mode, "usage": usage}
 
 
 class CodexBackend:
@@ -318,12 +371,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--models", required=True, help="JSON: model name -> {backend, model?, effort?, extra_output_tokens?}")
     ap.add_argument("--meter", required=True, type=Path)
     ap.add_argument("--key-file", type=Path, default=Path.home() / ".config/forge-c/anthropic-api.env")
+    ap.add_argument("--openai-key-file", type=Path, default=Path.home() / ".config/forge-c/openai-api.env")
     ap.add_argument("--codex-home")
     a = ap.parse_args(argv)
     models = json.loads(a.models)
     backends = {}
     if any(c["backend"] == "anthropic" for c in models.values()):
         backends["anthropic"] = AnthropicBackend(read_key(a.key_file))
+    if any(c["backend"] == "openai" for c in models.values()):
+        backends["openai"] = OpenAIBackend(read_key(a.openai_key_file, "OPENAI_API_KEY"))
     if any(c["backend"] == "codex" for c in models.values()):
         backends["codex"] = CodexBackend(a.codex_home)
     srv = serve(a.socket, Bridge(models, backends, a.meter))

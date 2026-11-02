@@ -163,3 +163,29 @@ def test_native_agent_tool_calls_translate_both_ways():
     assert "tool_choice" not in tc.calls[0] and res["finish"] == "tool_calls"
     assert res["tool_calls"] == [{"id": "toolu_9", "type": "function",
                                   "function": {"name": "write_file", "arguments": '{"path": "b", "text": "x"}'}}]
+
+
+def test_openai_backend_passes_the_request_through_with_reasoning_headroom():
+    seen = []
+
+    def create(**kw):
+        seen.append(kw)
+        if kw["response_format"]["type"] == "json_schema" and len(seen) == 1 and kw["model"] == "reject":
+            raise type("BadRequest", (Exception,), {"status_code": 400})("unsupported keyword")
+        msg = SimpleNamespace(content='{"code": "abc"}', tool_calls=None)
+        usage = SimpleNamespace(prompt_tokens=50, completion_tokens=20, total_tokens=70,
+                                prompt_tokens_details=SimpleNamespace(cached_tokens=10),
+                                completion_tokens_details=SimpleNamespace(reasoning_tokens=12))
+        return SimpleNamespace(choices=[SimpleNamespace(message=msg, finish_reason="stop")], usage=usage)
+
+    fake = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+    be = CB.OpenAIBackend("k", client=fake)
+    res = be.answer(_body(model="gpt-6.1-sol"), {"backend": "openai", "model": "gpt-6.1-sol", "reasoning_effort": "high",
+                                                 "extra_output_tokens": 32768})
+    kw = seen[0]
+    assert kw["max_completion_tokens"] == 33768 and kw["reasoning_effort"] == "high" and kw["messages"][0]["content"] == "SECRET-SYSTEM"
+    assert kw["response_format"]["json_schema"]["strict"] is True and res["schema_mode"] == "json_schema_strict"
+    assert res["usage"]["reasoning_tokens"] == 12 and res["usage"]["cached_prompt_tokens"] == 10 and res["text"] == '{"code": "abc"}'
+    seen.clear()
+    res = be.answer(_body(), {"backend": "openai", "model": "reject"})
+    assert res["schema_mode"] == "prompt_schema_fallback" and seen[-1]["response_format"] == {"type": "json_object"}

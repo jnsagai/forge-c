@@ -35,7 +35,7 @@ def test_serve_is_a_recorded_no_op_routed_to_a_healthy_bridge(tmp_path, monkeypa
     try:
         assert stack.bridge_healthy(sock)
         out = stack.serve(s, "gpt-6.1-sol", workspace=tmp_path / "ws")
-        assert out["result"] == "BRIDGE_ROUTED" and out["digest"] == "cloud:openai-codex:gpt-6.1-sol"
+        assert out["result"] == "BRIDGE_ROUTED" and out["digest"] == "cloud:openai:gpt-6.1-sol"
         rows = [json.loads(x) for x in (tmp_path / "ws/.forge-run/lrtx/serving/model-swaps.jsonl").read_text().splitlines()]
         assert rows[-1]["result"] == "BRIDGE_ROUTED"
         with pytest.raises(RuntimeError, match="NOT_SERVED"):

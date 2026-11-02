@@ -24,8 +24,8 @@ models:
       license: proprietary (Anthropic API, owner account)
       role_qualification: NOT_QUALIFIED; comparison line author (owner 2026-11-02)
     gpt-6.1-sol:
-      digest: cloud:openai-codex:gpt-6.1-sol
-      license: proprietary (Codex CLI, owner account)
+      digest: cloud:openai:gpt-6.1-sol
+      license: proprietary (OpenAI API, owner account)
       role_qualification: NOT_QUALIFIED; comparison line inspector (owner 2026-11-02)
 runtime:
   context_limit_tokens: 262144
@@ -53,9 +53,10 @@ runtime:
           cache_read: 0.2
           cache_write: 5
       gpt-6.1-sol:
-        backend: codex
+        backend: openai
         model: gpt-6.1-sol
-        timeout_s: 1500
+        reasoning_effort: high
+        extra_output_tokens: 32768
 structured:
   coherent_scope_groups: true
   complete_scope_sections: true
