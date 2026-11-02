@@ -1060,3 +1060,23 @@ reproducers:
     operations: [lrtx/visit.reply, lrtx/review._reply]
     root_cause: "Structured replies cut issues to 300 characters while the protected agent-output contract allows 120; long rejections also failed AGENT_OUTPUT_SCHEMA and the gate kept 120-character fragments."
     remedy: "Replies bound issues to 120 characters (contract unchanged); the full text is a side record that rework_findings restores."
+  - id: RPR-099
+    script: rpr099_swe6_test_declaration_refused.py
+    sha256: fbe7c5c82799119ced3dff48181364050a2ec92eff0f2e1b181bf1879f24c829
+    symptom_signature: "a SWE.6 test_wrong triage declaration is refused because its requirement quote is the model's reason"
+    observed_in: "Fabro run WO-F014-SWE6-OBL-20261101-L5 on Omniverse2 2026-11-01, CRC IDR greenfield SWE.6 resumed from WO-F014-SWE5-OBL-20261101-L4"
+    baseline_revision: d733b0ec6c45a9caa6f314da5d2d1c4dff7401b3
+    error_codes: []
+    operations: [lrtx/swe6._visit_tests, lrtx/swe5._visit_tests]
+    root_cause: "The SWE.6 triage TEST declaration passed the model's reason as the requirement quote and was refused (REQUIREMENT_QUOTE_REQUIRED); a rework visit rewrote the failing scenario undeclared and the 10/10 passing run was stopped STUCK."
+    remedy: "SWE.5/SWE.6 declarations quote the cited requirement's own text; a failing scenario re-authored by a rework visit is declared TEST before it runs again."
+  - id: RPR-100
+    script: rpr100_code_continue_check_reads_inspector_reply.py
+    sha256: 26e1753b35610dff97f0928a63bddb33157bf10a33d87bf17b68eba1747bd56b
+    symptom_signature: "the continuation check of the SWE.3 code step does not continue a visit that answered CONTINUE"
+    observed_in: "Fabro run WO-F014-SWE3-IWDG-20261101-L3 on Omniverse2 2026-11-01, IWDG LL greenfield SWE.3 on think profile v5"
+    baseline_revision: d733b0ec6c45a9caa6f314da5d2d1c4dff7401b3
+    error_codes: []
+    operations: [lrtx/runner continue-check]
+    root_cause: "The continuation check of the code and tests steps read inspect-reply.json, found it missing and sent an unfinished visit on to the design node and the author gate."
+    remedy: "Only the inspect step reads the inspector reply; author, code and tests read reply.json."
