@@ -212,8 +212,8 @@ ORACLE_INSTANCE = "forge_oracle_inst"
 def instance_prelude(include: str, inst: dict, offsets: dict[str, int]) -> list[str]:
     """Instance mode: the oracle passes its own instance object (ORACLE_INSTANCE, never the instance macro) and its
     register words are that object's words. Its layout is asserted against the RM offsets the oracle uses (a mismatch
-    does not compile), so a word index is a register. Every word starts from a non-zero background, and the macro's
-    host object (the same RAM object as the macro in host builds) must not change: a
+    does not compile), so a word index is a register. Every word starts from a non-zero background and every other
+    word must be unchanged, and the macro's host object (the same RAM object as the macro in host builds) must not change: a
     driver that ignores its instance argument fails."""
     t, obj = inst["type_name"], inst["host_object"]
     w = INSTANCE_WORDS
@@ -229,6 +229,9 @@ def instance_prelude(include: str, inst: dict, offsets: dict[str, int]) -> list[
             "static void forge_instance_background(void)", "{", "    unsigned i;",
             f"    for (i = 0U; i < {w}; i++) {{ regs[i] = 0xA5A50000U | i; }}",
             f"    (void)memset((void *)&{obj}, 0xC3, sizeof({obj}));", "}",
+            "static int forge_instance_others_same(const uint32_t *b, unsigned w)", "{", "    unsigned i;",
+            f"    for (i = 0U; i < {w}; i++) {{ if ((i != w) && (regs[i] != b[i])) {{ return 0; }} }}",
+            "    return 1;", "}",
             "static int forge_host_unchanged(const uint32_t *h)", "{",
             f"    return memcmp(h, (const void *)&{obj}, sizeof({obj})) == 0;", "}",
             "int main(void)", "{", f"    uint32_t before[{w}];", f"    uint32_t host_before[{w}];"]
@@ -289,7 +292,7 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
         if c["status"]:
             conds.append(f"(st == {c['status']})")
         if instance is not None:
-            conds.append("forge_host_unchanged(host_before)")
+            conds += [f"forge_instance_others_same(before, {c['word']}U)", "forge_host_unchanged(host_before)"]
         lines += [f"      int ok = {' && '.join(conds)};",
                   f'      printf("OR-{i:03d} {c["swr"]} {c["case"]} %s\\n", ok ? "PASS" : "FAIL"); fails += !ok; }}']
     lines += ["    return fails ? 1 : 0;", "}", ""]

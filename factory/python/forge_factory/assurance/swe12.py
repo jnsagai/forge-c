@@ -277,6 +277,12 @@ def shared_registers(ws: Path) -> dict[str, list[str]]:
     if not hdr.is_file():
         return {}
     text = hdr.read_text(errors="replace")
+    from ..layer import ll_instance
+
+    inst = ll_instance(ws)
+    if inst is not None:  # instance mode: typed member accesses as register words (declared layout, RM offsets)
+        text = hardware.instance_view(text, inst, hardware.index(ws / SECTIONS) if (ws / SECTIONS).is_dir() else {},
+                                      register_block(ws))
     write = hardware.write_rx(register_block(ws))  # feature 009: the work order's prefix and register block
     defs = {m.group(1): int(m.group(2), 0) for m in hardware.define_rx(register_prefix(ws)).finditer(text)}
     by_word: dict[int, set[str]] = {}

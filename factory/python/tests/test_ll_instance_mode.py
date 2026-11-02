@@ -707,12 +707,12 @@ def test_block_array_verifiers_state_not_applicable_instead_of_a_vacuous_pass(in
     ws = _contract(inst_ws)
     rel = scaffold.scaffold(ws)["file"]
     (ws / rel).write_text(swe4._with_tests(ws, [("ut_ut_001", UT_WRITE), ("ut_ut_002", UT_READ)]))
-    sem = verifiers.v_register_semantics(ws)
-    assert sem["status"] == "NOT_APPLICABLE" and sem["findings"][-1].startswith("NOT_APPLICABLE:INSTANCE_MODE"), sem
+    sem = verifiers.v_register_semantics(ws)  # review follow-up 2: typed accesses are scanned, not skipped
+    assert sem["status"] == "PASS" and not sem["findings"], sem
     conc = verifiers.v_concurrency(ws)
-    assert conc["status"] == "NOT_APPLICABLE", conc
+    assert conc["status"] == "PASS", conc
     assert verifiers.v_mutation(ws)["status"] == "NOT_APPLICABLE"
-    assert any(f.startswith("NOT_APPLICABLE:INSTANCE_MODE") for f in verifiers.v_arch(ws)["findings"])
+    assert not any("INSTANCE_MODE" in f for f in verifiers.v_arch(ws)["findings"])
     oracle = verifiers.v_oracle(ws)
     assert oracle["status"] == "PASS" and oracle["cases"] == 2, oracle
     api = verifiers.v_api_execution(ws)  # the unit tests build on the pinned device header and run both functions
@@ -893,3 +893,37 @@ def test_oracle_fails_a_driver_that_writes_the_macro_object_instead_of_its_insta
     r = oracle_gen.run(ws, [ws / "software/hal", ws / "software/ll"], [], "stm32n6xx_ll_crc.h")
     assert r["status"] == "FAIL" and ("OR-001", "SWR-001", "WRITE_IDR", "FAIL") in r["results"], r
     assert "LL_CRC_Write_IDR(&forge_oracle_inst, 0x12345678U)" in r["source"]
+
+
+# ---- review follow-up 2: typed register accesses are checked, not skipped ---------------------------------------
+def test_oracle_fails_a_write_to_another_instance_register(inst_ws):
+    import shutil
+
+    from forge_factory.assurance import oracle_gen
+
+    if not shutil.which("gcc"):
+        pytest.skip("gcc not installed")
+    ws = _contract(inst_ws)
+    hdr = ws / "software/ll/stm32n6xx_ll_crc.h"
+    hdr.write_text(hdr.read_text().replace("    CRCx->IDR = InData;", "    CRCx->IDR = InData;\n    CRCx->CR = InData;"))
+    r = oracle_gen.run(ws, [ws / "software/hal", ws / "software/ll"], [], "stm32n6xx_ll_crc.h")
+    assert r["status"] == "FAIL" and ("OR-001", "SWR-001", "WRITE_IDR", "FAIL") in r["results"], r
+
+
+def test_register_scans_resolve_typed_members_through_the_declared_layout(inst_ws):
+    from forge_factory.assurance import hardware, swe12, verifiers
+
+    ws = _contract(inst_ws)
+    view = hardware.instance_view("CRCx->IDR = v; x = CRCx->CR;", ll_instance(ws), verifiers._idx(ws), "ll_crc_regs")
+    assert view == "ll_crc_regs[1U] = v; x = ll_crc_regs[CRCx_UNDECLARED_MEMBER_CR];"
+    hdr = ws / "software/ll/stm32n6xx_ll_crc.h"
+    good = hdr.read_text()
+    hdr.write_text(good.replace("    CRCx->IDR = InData;", "    CRCx->IDR = InData;\n    CRCx->CR = InData;"))
+    sem = verifiers.v_register_semantics(ws)
+    assert sem["status"] == "FAIL" and any(f.startswith("UNRESOLVED_REGISTER_INDEX") for f in sem["findings"]), sem
+    rmw = good.replace("    CRCx->IDR = InData;", "    CRCx->IDR |= InData;").replace(
+        "#endif /* STM32N6XX_LL_CRC_H */", "static inline void LL_CRC_Clear_IDR(CRC_TypeDef *CRCx)\n{\n"
+        "    CRCx->IDR &= 0U;\n}\n\n#endif /* STM32N6XX_LL_CRC_H */")
+    hdr.write_text(rmw)
+    assert swe12.shared_registers(ws) == {"CRC_IDR": ["LL_CRC_Clear_IDR", "LL_CRC_Write_IDR"]}
+
