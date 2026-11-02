@@ -123,8 +123,20 @@ def test_unsafe_but_faster_candidate_is_rejected_and_benign_one_is_only_eligible
     bad = candidate(clone, "cand-weaken", WEAKEN)
     d = PM.evaluate(bad, "HEAD", store, pol, kind="CHANGE", repo=clone, skip_quality=True)
     gates = {g["name"]: g["result"] for g in d["hard_gates"]}
-    # removing the gate-level anti-bending scan passes the reproducers and the golden suite - the holdout catches it
-    assert d["decision"] == "REJECTED" and gates["holdout"] == "FAIL" and gates["golden_benchmark"] == "PASS"
+    # removing the gate-level anti-bending scan is REJECTED by a behavioural gate: a frozen reproducer that exercises
+    # the scan (prevention, e.g. RPR-115) or the holdout - never by file/policy checks alone, never accepted by golden
+    failed = [n for n, r in gates.items() if r == "FAIL"]
+    assert d["decision"] == "REJECTED" and failed and set(failed) <= {"prevention", "holdout"}, gates
+    assert gates.get("golden_benchmark") in ("PASS", "NOT_RUN"), gates
+    if gates["prevention"] == "PASS":
+        assert gates["holdout"] == "FAIL", gates
+    # independent of which reproducers the frozen manifest holds: the golden suite alone passes the weakening and the
+    # holdout catches it (the reason the holdout exists)
+    with WorktreePool(clone) as pool:
+        runs = {k: (BM.run_suite(k, "HEAD", pool, store, pol), BM.run_suite(k, bad, pool, store, pol))
+                for k in ("golden", "holdout")}
+    assert not BM.regressions(*runs["golden"]), runs["golden"][1]["results"]
+    assert BM.regressions(*runs["holdout"]) or any(r["status"] in ("FAIL", "ERROR") for r in runs["holdout"][1]["results"])
     assert PM.schema_errors({k: v for k, v in d.items() if k not in ("candidate_revision", "baseline_revision")}) == []
     good = candidate(clone, "cand-uuid", {"factory/python/forge_factory/reliability/taxonomy.py": (
         '    t = re.sub(r"\\b[0-9a-f]{12,64}\\b", "<hash>", t)',
