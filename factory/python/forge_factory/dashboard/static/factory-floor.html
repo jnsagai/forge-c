@@ -257,6 +257,9 @@ const stack = (big) => `<span class="stack${big ? " big" : ""}" aria-hidden="tru
 const STATE_TEXT = {working: "Working", rework: "Rework", stopped: "Stopped", idle: "Idle", waiting: "Waiting", ready: "Ready", done: "Done"};
 let DATA = null, lastOk = 0, selected = null;
 let focus = new URLSearchParams(location.search).get("order") || "";
+// owner 2026-11-02 ("when i change between lines i want that the right active run and floor be selected"): after a line
+// switch (and on a first load that names no order or hall) follow that line's running order and open its hall
+let pickActive = !focus && !location.hash;
 let LINES = [], line = new URLSearchParams(location.search).get("line") || "";
 
 function arm() {
@@ -502,6 +505,19 @@ async function load() {
     const r = await fetch("floor.json" + (q.toString() ? "?" + q : ""), {cache: "no-store"});
     if (!r.ok) throw new Error("HTTP " + r.status);
     DATA = await r.json(); lastOk = Date.now();
+    if (pickActive) {
+      pickActive = false;
+      const running = (DATA.orders || []).filter((o) => o.state === "RUNNING");
+      if (running.length && !focus) {
+        const o = running[running.length - 1];  // the latest running order of this line
+        focus = o.wo.replace("WO-F014-", "");
+        const u = new URL(location.href);
+        u.searchParams.set("order", focus); u.hash = "";
+        history.replaceState(null, "", u);
+        selected = null;
+        return load();
+      }
+    }
     $("#stale").hidden = true;
     render();
   } catch (e) {
@@ -535,9 +551,9 @@ function renderLines() {
   if (cur) { document.querySelector("header.plate h1").textContent = "Forge-C Plant · " + cur.label; if (cur.sub) $("#sub").textContent = cur.sub; }
 }
 function setLine(v) {
-  line = v; focus = ""; selected = null; DATA = null;
+  line = v; focus = ""; selected = null; DATA = null; pickActive = true;
   const u = new URL(location.href);
-  u.searchParams.set("line", line); u.searchParams.delete("order");
+  u.searchParams.set("line", line); u.searchParams.delete("order"); u.hash = "";
   history.replaceState(null, "", u);
   renderLines(); load();
 }
