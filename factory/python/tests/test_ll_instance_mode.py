@@ -624,3 +624,93 @@ def test_swe4_unit_tests_run_on_the_ram_instance(inst_ws, monkeypatch):
     hdr.write_text(hdr.read_text().replace("CRCx->IDR = InData;", "CRCx->IDR = InData & 0xFFFFU;"))
     r = _invoke(ws, monkeypatch, "forge-tests-mcp", "run_unit", {}, role="swe4-author", phase="SWE.4")
     assert r["status"] == "FAIL" and any("UT-001" in i for i in r["issues"]), r
+
+
+# ---- stage 6: independent oracle and verifiers -------------------------------------------------------------------
+UT_READ = """/** @test UT-002 @verifies USPEC-LL-02-01 */
+static void ut_ut_002(void)
+{
+    ut_reset_regs();
+    CRC->IDR = 0x87654321U;
+    CHECK("UT-002", (LL_CRC_Read_IDR(CRC) == 0x87654321U) && (CRC->IDR == 0x87654321U));
+}"""
+
+
+def _contract(ws):
+    from forge_factory.lrtx import swe2
+
+    _swe3(ws)
+    calls = json.loads(swe2.render(ws, swe2.normalize_interfaces(ws, IFACE), DESIGN)[swe2.CALLS])
+    assert calls["calls"]["WRITE_IDR"]["args"] == ["CRC", "0x12345678U"]
+    return ws
+
+
+def test_independent_oracle_runs_on_the_ram_instance(inst_ws):
+    import shutil
+
+    from forge_factory.assurance import oracle_gen
+
+    if not shutil.which("gcc"):
+        pytest.skip("gcc not installed")
+    ws = _contract(inst_ws)
+    inc = [ws / "software/hal", ws / "software/ll"]
+    r = oracle_gen.run(ws, inc, [], "stm32n6xx_ll_crc.h")
+    assert r["status"] == "PASS", r
+    assert [(x[1], x[2], x[3]) for x in r["results"]] == [("SWR-001", "WRITE_IDR", "PASS"), ("SWR-002", "READ_IDR", "PASS")]
+    assert '_Static_assert(offsetof(CRC_TypeDef, IDR) == 4U, "RM offset of CRC_IDR");' in r["source"]
+    assert "shim_regs" not in r["source"] and "ll_crc_regs" not in r["source"]
+    hdr = ws / "software/ll/stm32n6xx_ll_crc.h"  # a wrong implementation fails the oracle
+    hdr.write_text(hdr.read_text().replace("CRCx->IDR = InData;", "CRCx->IDR = InData & 0xFFFFU;"))
+    bad = oracle_gen.run(ws, inc, [], "stm32n6xx_ll_crc.h")
+    assert bad["status"] == "FAIL" and ("OR-001", "SWR-001", "WRITE_IDR", "FAIL") in bad["results"], bad
+    hdr.write_text(hdr.read_text().replace("CRCx->IDR = InData & 0xFFFFU;", "CRCx->DR = InData;"))
+    assert oracle_gen.run(ws, inc, [], "stm32n6xx_ll_crc.h")["status"] == "FAIL"
+
+
+def test_oracle_states_count_based_cases_not_derivable_in_instance_mode(inst_ws):
+    from forge_factory.assurance import oracle_gen
+
+    inst = ll_instance(inst_ws)
+    cases = [{"case": "NO_ACCESS", "op": "no_write"},
+             {"case": "POLL", "op": "set", "word": 1, "register": "CRC_IDR", "never_ready": True},
+             {"case": "OTHER", "op": "write", "word": 2, "register": "CRC_CR"},
+             {"case": "WRITE_IDR", "op": "write", "word": 1, "register": "CRC_IDR"}]
+    kept, notes = oracle_gen.instance_cases(cases, inst)
+    assert [c["case"] for c in kept] == ["WRITE_IDR"]
+    assert notes == ["ORACLE_NOT_DERIVABLE:NO_ACCESS:INSTANCE_MODE (register-access count)",
+                     "ORACLE_NOT_DERIVABLE:POLL:INSTANCE_MODE (register-access count)",
+                     "ORACLE_NOT_DERIVABLE:OTHER:INSTANCE_MODE (CRC_CR not in the declared typed layout)"]
+
+
+def test_block_array_verifiers_state_not_applicable_instead_of_a_vacuous_pass(inst_ws):
+    import shutil
+
+    from forge_factory.assurance import register_proof, register_wp, verifiers
+    from forge_factory.lrtx import swe4
+    from forge_factory.workflow import scaffold
+
+    if not shutil.which("clang"):
+        pytest.skip("clang not installed")
+    ws = _contract(inst_ws)
+    rel = scaffold.scaffold(ws)["file"]
+    (ws / rel).write_text(swe4._with_tests(ws, [("ut_ut_001", UT_WRITE), ("ut_ut_002", UT_READ)]))
+    sem = verifiers.v_register_semantics(ws)
+    assert sem["status"] == "NOT_APPLICABLE" and sem["findings"][-1].startswith("NOT_APPLICABLE:INSTANCE_MODE"), sem
+    conc = verifiers.v_concurrency(ws)
+    assert conc["status"] == "NOT_APPLICABLE", conc
+    assert verifiers.v_mutation(ws)["status"] == "NOT_APPLICABLE"
+    assert any(f.startswith("NOT_APPLICABLE:INSTANCE_MODE") for f in verifiers.v_arch(ws)["findings"])
+    oracle = verifiers.v_oracle(ws)
+    assert oracle["status"] == "PASS" and oracle["cases"] == 2, oracle
+    api = verifiers.v_api_execution(ws)  # the unit tests build on the pinned device header and run both functions
+    if api["status"] != "NOT_SUPPORTED" or "not installed" not in str(api["findings"]):
+        assert api["status"] == "PASS", api
+    hdr = ws / "software/ll/stm32n6xx_ll_crc.h"
+    hdr.write_text(hdr.read_text().replace("#define LL_CRC_IDR_IDR_POS 0U", "#define LL_CRC_IDR_IDR_POS 1U"))
+    assert verifiers.v_register_semantics(ws)["status"] == "FAIL"  # findings still fail in instance mode
+    (ws / "workproducts/SWE.1/register_oracle.json").write_text("{}")  # a SafeC contract file is present
+    (ws / register_wp.OBLIGATIONS_FILE).parent.mkdir(parents=True, exist_ok=True)
+    (ws / register_wp.OBLIGATIONS_FILE).write_text("{}")
+    for mod in (register_proof, register_wp):
+        assert mod.prove(ws, [ws / "software/ll"], "stm32n6xx_ll_crc.h")["reason"].startswith("INSTANCE_MODE")
+    assert verifiers._target_oracle_findings(ws) == ["LIMITATION:TARGET_ORACLE_NOT_APPLICABLE:INSTANCE_MODE"]
