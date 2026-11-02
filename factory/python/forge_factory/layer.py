@@ -80,6 +80,15 @@ def ll_instance(ws: Path | None = None) -> dict | None:
     return instance_of(ws)
 
 
+def instance_flags(ws: Path | None, host: bool) -> list[str]:
+    """Instance mode compiler flags: the pinned device/API headers in inputs/ are system headers (their diagnostics are
+    not the author's), and a host build maps the instance macro to the device header's RAM object (FORGE_HOST_BUILD).
+    [] without the declaration, so every other work order compiles with its unchanged flags."""
+    if ll_instance(ws) is None:
+        return []
+    return ["-isystem", str(Path(ws).resolve() / "inputs"), *(["-DFORGE_HOST_BUILD=1"] if host else [])]
+
+
 def ll_header(ws: Path | None = None) -> str:
     return f"software/ll/{profile(ws)['ll']['header']}"
 

@@ -132,7 +132,10 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     from ...delivery_first import include_flags
 
     # feature 008 (ST pilot): a CMSIS delivery compiles on the host against the generated host device directory
-    incs = (host_flags(ctx.workspace) + include_flags(ctx.workspace)
+    from ...layer import instance_flags
+
+    # instance mode: the pinned device header as a system header (the test build below defines FORGE_HOST_BUILD)
+    incs = (host_flags(ctx.workspace) + include_flags(ctx.workspace) + instance_flags(ctx.workspace, host=False)
             + [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS
                + [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()])
     if fake and modified(ctx.workspace):

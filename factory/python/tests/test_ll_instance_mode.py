@@ -156,3 +156,85 @@ def test_preparation_refuses_instance_mode_outside_a_greenfield_ll_work_order(tm
     monkeypatch.setattr(W, "json", _Spec())
     with pytest.raises(ValueError, match="OPERATION_SCOPE_INSTANCE_REQUIRES_GREENFIELD_LL"):
         W.prepare(INSTANCE, "WO-T-INSTANCE-REFUSED", purpose="ASPICE_ONLY")
+
+
+# ---- stage 2: include flags --------------------------------------------------------------------------------------------
+FIXTURE_LL = """#ifndef FIXTURE_LL_CRC_H
+#define FIXTURE_LL_CRC_H
+#include <stdint.h>
+#include "forge_crc_device.h"
+static inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)
+{
+    CRCx->IDR = InData;
+}
+static inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)
+{
+    return CRCx->IDR;
+}
+#endif
+"""
+
+
+def _write_ll(ws, text=FIXTURE_LL):
+    (ws / "software/ll").mkdir(parents=True, exist_ok=True)
+    (ws / "software/src").mkdir(parents=True, exist_ok=True)
+    (ws / "software/ll/stm32n6xx_ll_crc.h").write_text(text)
+    (ws / "software/src/stm32n6xx_ll_crc.c").write_text('#include "stm32n6xx_ll_crc.h"\n')
+
+
+def _invoke(ws, monkeypatch, server, op, args, role="swe3-author", phase="SWE.3"):
+    from forge_factory.mcp import sdk
+    from forge_factory.mcp.servers import analysis, build, tests
+
+    module = {"forge-build-mcp": build, "forge-analysis-mcp": analysis, "forge-tests-mcp": tests}[server]
+    for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_WORKSPACE": str(ws), "FORGE_ROLE": role,
+                       "FORGE_PHASE": phase}.items():
+        monkeypatch.setenv(key, value)
+    return sdk.invoke(server, next(o for o in module.OPERATIONS if o.name == op), args)
+
+
+def test_instance_flags_only_in_instance_mode(inst_ws, legacy_ws):
+    from forge_factory.layer import instance_flags
+
+    inputs = str(inst_ws.resolve() / "inputs")
+    assert instance_flags(inst_ws, host=False) == ["-isystem", inputs]
+    assert instance_flags(inst_ws, host=True) == ["-isystem", inputs, "-DFORGE_HOST_BUILD=1"]
+    assert instance_flags(legacy_ws, host=False) == [] and instance_flags(legacy_ws, host=True) == []
+
+
+def test_tool_include_lists_are_unchanged_without_the_declaration(inst_ws, legacy_ws):
+    from forge_factory.brownfield.cmsis import host_flags, target_flags
+    from forge_factory.delivery_first import include_flags
+    from forge_factory.mcp.sdk import ToolContext
+    from forge_factory.mcp.servers import analysis, build
+
+    for ws in (inst_ws, legacy_ws):
+        _write_ll(ws)
+    ctx = ToolContext("t", "t", "swe3-author", "SWE.3", legacy_ws.resolve(), "t")
+    dirs = [f"-I{legacy_ws.resolve() / d}" for d in build.INCLUDE_DIRS if (legacy_ws / d).is_dir()]
+    for prof in ("target-cm55-gcc", "host-clang"):
+        vendor = target_flags(legacy_ws) if prof.startswith("target") else host_flags(legacy_ws)
+        assert build.includes(ctx, prof) == vendor + include_flags(legacy_ws) + dirs
+    assert analysis.incs(ctx) == analysis.incs(ctx, cppcheck=True) == host_flags(legacy_ws) + dirs
+    ictx = ToolContext("t", "t", "swe3-author", "SWE.3", inst_ws.resolve(), "t")
+    inputs = str(inst_ws.resolve() / "inputs")
+    assert build.includes(ictx, "target-cm55-gcc")[:2] == ["-isystem", inputs]
+    assert analysis.incs(ictx)[:2] == ["-isystem", inputs]
+    assert analysis.incs(ictx, cppcheck=True)[:3] == ["-I", inputs, f"--suppress=*:{inputs}/*"]
+
+
+def test_instance_header_compiles_and_analyses_on_the_pinned_device_header(inst_ws, legacy_ws, monkeypatch):
+    import shutil
+
+    if not all(shutil.which(t) for t in ("arm-none-eabi-gcc", "clang", "cppcheck")):
+        pytest.skip("toolchain not installed")
+    _write_ll(inst_ws)
+    for prof in ("target-cm55-gcc", "host-clang"):
+        r = _invoke(inst_ws, monkeypatch, "forge-build-mcp", "compile", {"profile": prof})
+        assert r["status"] == "PASS", r
+    cpp = _invoke(inst_ws, monkeypatch, "forge-analysis-mcp", "cppcheck", {})
+    assert cpp["status"] in ("PASS", "FAIL") and cpp["metrics"], cpp
+    assert not [i for i in cpp["issues"] if "forge_crc_device.h" in i or "IDR-API.h" in i], cpp
+    _write_ll(legacy_ws)  # the same header without the declaration: the pinned input is not on any include path
+    r = _invoke(legacy_ws, monkeypatch, "forge-build-mcp", "compile", {"profile": "target-cm55-gcc"})
+    assert r["status"] == "FAIL", r

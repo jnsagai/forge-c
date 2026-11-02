@@ -111,7 +111,9 @@ def instance_contract(ws, manifest: dict) -> dict:
     type_name = iface["type_name"]
     device = (ws / iface["device_header"]).read_text(errors="replace")
     if not re.search(rf"\bextern\s+{type_name}\s+{inst['host_object']}\s*;", device) or not re.search(
-            rf"^\s*#\s*define\s+{inst['macro']}\b", device, re.M):
+            rf"^\s*#\s*define\s+{inst['macro']}\b", device, re.M) or not all(
+            re.search(rf"^\s*#\s*ifdef\s+{flag}\b", device, re.M)
+            for flag in ("FORGE_HOST_BUILD", "FORGE_HOST_DEVICE_IMPLEMENTATION")):
         raise ValueError("OPERATION_SCOPE_INSTANCE_DEVICE_HEADER_MISMATCH")
     protos = list(_PROTO.finditer(re.sub(r"/\*.*?\*/|//[^\n]*", "", (ws / iface["api_contract"]).read_text(
         errors="replace"), flags=re.S)))
