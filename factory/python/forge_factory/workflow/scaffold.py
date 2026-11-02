@@ -81,6 +81,21 @@ def cmsis_harness(ws: Path) -> str:
     }""", f"    (void)memset((void *)&{var}, 0, sizeof({var}));"))
 
 
+def instance_harness(ws: Path, inst: dict) -> str:
+    """Instance mode: the LL harness on the pinned device header's RAM instance object (host build: the instance macro
+    is that object); defined once here, reset by ut_reset_regs(). No register-block array."""
+    obj = inst["host_object"]
+    text = HARNESS.replace('#include "stm32n6xx_hal_rcc.h"\n\nvolatile uint32_t ll_rcc_regs[LL_RCC_REG_COUNT];\n',
+                           "#include <string.h>\n#define FORGE_HOST_DEVICE_IMPLEMENTATION /* defines " + obj + " once, "
+                           "here */\n#include \"stm32n6xx_ll_rcc.h\" /* " + inst["macro"] + " -> RAM instance " + obj +
+                           " (host build) */\n").replace("""    uint32_t i;
+    for (i = 0U; i < LL_RCC_REG_COUNT; i++)
+    {
+        ll_rcc_regs[i] = 0U;
+    }""", f"    (void)memset((void *)&{obj}, 0, sizeof({obj}));")
+    return _for_peripheral(text, ws)
+
+
 def _time_base(text: str, ws: Path) -> str:
     """SSA-IWDG FND-07: a HAL whose waits are bounded by a system time base gets a deterministic host stub (+1 ms per
     call, reset by ut_reset); identity when the profile names no time base (RCC)."""
@@ -133,6 +148,12 @@ def scaffold(ws: Path) -> dict:
         write_host_device(ws)
         p.write_text(cmsis_harness(ws), encoding="utf-8")
         return {"status": "PASS", "created": True, "file": UNIT_TEST, "host_device": True}
+    from ..layer import ll_instance
+
+    inst = ll_instance(ws)
+    if inst is not None:  # instance mode: the RAM instance of the pinned device header, no register-block array
+        p.write_text(instance_harness(ws, inst), encoding="utf-8")
+        return {"status": "PASS", "created": True, "file": UNIT_TEST, "instance": inst["host_object"]}
     if hal_unit_isolation(ws):  # CAPA-038: generated LL test double + harness that uses it
         from .ll_fake import write
 

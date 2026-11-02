@@ -528,3 +528,99 @@ def test_swe3_header_from_the_legacy_path_is_unchanged(legacy_ws):
     assert "extern volatile uint32_t ll_crc_regs[LL_CRC_REG_COUNT];" in text and "forge_crc_device" not in text
     md = (legacy_ws / swe2.ARCH).read_text()
     assert "Register block: `extern volatile uint32_t ll_crc_regs[];`" in md and "register-array access" in md
+
+
+# ---- stage 5: SWE.4 host harness ---------------------------------------------------------------------------------
+UT_WRITE = """/** @test UT-001 @verifies USPEC-LL-01-01 */
+static void ut_ut_001(void)
+{
+    uint32_t zero;
+    uint32_t ones;
+    ut_reset_regs();
+    LL_CRC_Write_IDR(CRC, 0x12345678U);
+    zero = CRC->IDR;
+    LL_CRC_Write_IDR(CRC, 0U);
+    ones = CRC->IDR;
+    LL_CRC_Write_IDR(CRC, 0xFFFFFFFFU);
+    CHECK("UT-001", (zero == 0x12345678U) && (ones == 0U) && (CRC->IDR == 0xFFFFFFFFU) && (CRC->DR == 0U));
+}"""
+
+
+def _swe3(ws):
+    """SWE.2 fixture + the generated header with the fixture units + their VALID SWE.3 code checkpoints."""
+    from forge_factory.lrtx import visit as V
+
+    _swe2(ws)
+    _code(ws)
+    for n, (uid, swr) in enumerate((("SWU-LL-01", "SWR-001"), ("SWU-LL-02", "SWR-002")), 1):
+        ck = V._ckpt(ws, "SWE.3", f"code:{uid}")
+        ck.parent.mkdir(parents=True, exist_ok=True)
+        ck.write_text(json.dumps({"status": "VALID", "doc": {"code": "", "spec_items": [
+            {"id": f"USPEC-LL-{n:02d}-01", "behaviour": "the unit's IDR behaviour", "traces": [swr]}]}}))
+    return ws
+
+
+def _case(ws, n=0):
+    from forge_factory.lrtx import swe3
+
+    u = swe3.units(ws)[n]
+    swr = u["swrs"][0]
+    return {"ut": f"UT-00{n + 1}", "swr": swr, "statement": "", "unit": u,
+            "effects": [e for e in EFFECTS["effects"] if e["swr"] == swr]}
+
+
+def test_swe4_harness_is_the_ram_instance_only_in_instance_mode(inst_ws, legacy_ws):
+    from forge_factory.workflow import scaffold
+
+    rep = scaffold.scaffold(inst_ws)
+    text = (inst_ws / rep["file"]).read_text()
+    assert rep["instance"] == "forge_host_crc" and "ll_crc_regs" not in text and "REG_COUNT" not in text
+    assert "#define FORGE_HOST_DEVICE_IMPLEMENTATION" in text and '#include "stm32n6xx_ll_crc.h"' in text
+    assert "(void)memset((void *)&forge_host_crc, 0, sizeof(forge_host_crc));" in text
+    assert scaffold.TEST_CASES_MARKER in text and scaffold.TEST_CALLS_MARKER in text
+    legacy = scaffold.scaffold(legacy_ws)
+    assert "instance" not in legacy
+    assert (legacy_ws / legacy["file"]).read_text() == scaffold._for_peripheral(scaffold.HARNESS.replace(
+        '#include "stm32n6xx_hal_rcc.h"', '#include "stm32n6xx_ll_rcc.h"'), legacy_ws)
+
+
+def test_swe4_test_task_validates_and_compiles_on_the_instance(inst_ws, monkeypatch):
+    import shutil
+
+    from forge_factory.lrtx import swe4
+    from forge_factory.workflow import scaffold
+
+    if not shutil.which("clang"):
+        pytest.skip("clang not installed")
+    ws = _swe3(inst_ws)
+    scaffold.scaffold(ws)
+    c = _case(ws)
+    seen = []
+    real = swe4.S.packet
+    monkeypatch.setattr(swe4.S, "packet", lambda **k: seen.append(k["instructions"]) or real(**k))
+    swe4.test_packet(ws, c, "m")
+    assert "through the instance macro CRC (CRC->IDR for CRC_IDR" in seen[0] and "ll_crc_regs[" not in seen[0]
+    doc = {"code": UT_WRITE, "kinds": ["positive", "boundary", "negative"]}
+    assert swe4.validate_test(ws, doc, c) == []
+    legacy = {**doc, "code": UT_WRITE.replace("CRC->DR == 0U", "ll_crc_regs[0] == 0U")}
+    out = swe4.validate_test(ws, legacy, c)
+    assert "ll_crc_regs does not exist in instance mode: preset and read registers through CRC-><MEMBER>" in out
+
+
+def test_swe4_unit_tests_run_on_the_ram_instance(inst_ws, monkeypatch):
+    import shutil
+
+    from forge_factory.lrtx import swe4
+    from forge_factory.workflow import scaffold
+
+    if not shutil.which("clang"):
+        pytest.skip("clang not installed")
+    ws = _swe3(inst_ws)
+    rel = scaffold.scaffold(ws)["file"]
+    (ws / rel).write_text(swe4._with_tests(ws, [("ut_ut_001", UT_WRITE)]))
+    r = _invoke(ws, monkeypatch, "forge-tests-mcp", "run_unit", {}, role="swe4-author", phase="SWE.4")
+    assert r["status"] == "PASS" and r["metrics"].get("passed") == 1, r
+    hdr = ws / "software/ll/stm32n6xx_ll_crc.h"  # a wrong implementation fails the same test
+    hdr.write_text(hdr.read_text().replace("CRCx->IDR = InData;", "CRCx->IDR = InData & 0xFFFFU;"))
+    r = _invoke(ws, monkeypatch, "forge-tests-mcp", "run_unit", {}, role="swe4-author", phase="SWE.4")
+    assert r["status"] == "FAIL" and any("UT-001" in i for i in r["issues"]), r
