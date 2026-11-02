@@ -45,6 +45,19 @@ def ops_for(prefix: str = "RCC") -> list[tuple]:
 
 
 REGISTER_OPERATOR_SET = "forge-mut-rio/1"  # F011-T034: operators derived from a verified SafeC register contract
+REGISTER_OP_NAMES = {"KEY_SWAP", "FIELD_BIT_SHIFT", "OMIT_WRITE", "RO_WRITE"}
+INSTANCE_OPERATOR_SET = "forge-mut-instance/1"  # instance mode: faults of the typed instance accesses
+INSTANCE_OP_NAMES = {"OMIT_INSTANCE_WRITE", "INSTANCE_READ_ZERO"}
+
+
+def instance_ops(inst: dict | None) -> list[tuple]:
+    """Instance mode: a typed register write through the instance parameter removed, and a register read through it
+    replaced by 0U. Nothing is derived from the candidate code; [] without an instance declaration."""
+    if inst is None:
+        return []
+    p = re.escape(inst["parameter"])
+    return [("OMIT_INSTANCE_WRITE", rf"\b{p}\s*->\s*\w+\s*(?:=|\|=|&=)(?!=)[^;\n]*;", "(void)0;"),
+            ("INSTANCE_READ_ZERO", rf"(=|\breturn)\s*{p}\s*->\s*\w+\s*;", r"\1 0U;")]
 
 
 def register_ops(ws: Path) -> list[tuple]:
@@ -132,9 +145,11 @@ def equivalence_reason(text: str, mut: dict, used_symbols: set[str], referenced:
 
 def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_symbols: set[str] | None = None,
                  extra_sources: list[str] | None = None, timeout_s: int = 5, cc: str = "gcc", prefix: str = "RCC",
-                 ll_unit: str = "stm32n6xx_ll_rcc.c", extra_ops: list[tuple] | None = None) -> dict:
+                 ll_unit: str = "stm32n6xx_ll_rcc.c", extra_ops: list[tuple] | None = None,
+                 extra_flags: list[str] | None = None) -> dict:
     """`prefix`/`ll_unit` (feature 009): the work order's register prefix and generated LL compile unit.
-    `extra_ops` (F011-T034): operators derived from a verified register contract (register_ops)."""
+    `extra_ops` (F011-T034): operators derived from a verified register contract (register_ops) or the typed instance
+    (instance_ops). `extra_flags` (instance mode): the pinned device header flags of every build."""
     """Mutate one file of a copied tree, rebuild every test program and run it. Never touches `sw_dir`."""
     src = (Path(sw_dir) / target_rel).read_text()
     code_hash = hashlib.sha256(src.encode()).hexdigest()
@@ -166,7 +181,8 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
             outcome, detail = "SURVIVED", None
             for tc in test_files:
                 exe = Path(td) / ("x_" + tc.stem)
-                b = subprocess.run([cc, "-std=c99", "-O0", "-w", *inc, *srcs, str(tc), "-o", str(exe)],
+                b = subprocess.run([cc, "-std=c99", "-O0", "-w", *(extra_flags or []), *inc, *srcs, str(tc), "-o",
+                                    str(exe)],
                                    capture_output=True, text=True)
                 if b.returncode:
                     outcome, detail = "INVALID", b.stderr.strip().splitlines()[-1][:120] if b.stderr.strip() else "build"
@@ -186,7 +202,9 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
     n = {k: sum(r["outcome"] == k for r in results) for k in ("KILLED", "SURVIVED", "INVALID", "EQUIVALENT")}
     rec = {"campaign_id": "MC-" + hashlib.sha256((code_hash + "".join(t.name for t in test_files)).encode()).hexdigest()[:12],
            "code_hash": code_hash,
-           "operator_set": [OPERATOR_SET_VERSION] + ([REGISTER_OPERATOR_SET] if extra_ops else [])
+           "operator_set": [OPERATOR_SET_VERSION]
+           + ([REGISTER_OPERATOR_SET] if any(o[0] in REGISTER_OP_NAMES for o in extra_ops or []) else [])
+           + ([INSTANCE_OPERATOR_SET] if any(o[0] in INSTANCE_OP_NAMES for o in extra_ops or []) else [])
            + sorted({o[0] for o in ops_for(prefix) + list(extra_ops or [])}),
            "eligible": n["KILLED"] + n["SURVIVED"], "killed": n["KILLED"], "survived": n["SURVIVED"],
            "equivalent": n["EQUIVALENT"], "invalid": n["INVALID"], "mutant_refs": [r["id"] for r in results],

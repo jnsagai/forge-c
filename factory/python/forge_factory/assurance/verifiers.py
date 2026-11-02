@@ -165,20 +165,23 @@ def v_mutation(ws: Path) -> dict:
     ut = _unit_test(ws)
     if ut is None:
         return {"status": "NOT_RUN", "findings": ["no unit test"]}
-    if _instance(ws) is not None:  # the campaign builds without the pinned device header: every mutant is stillborn
-        return {"status": "NOT_APPLICABLE", "findings": [
-            "NOT_APPLICABLE:INSTANCE_MODE:the mutation campaign builds on the register-block array, not on the typed "
-            "instance of the pinned device header"]}
-    from ..layer import hal_c, ll_header, ll_tu, register_prefix
+    from ..layer import hal_c, instance_flags, ll_header, ll_tu, register_prefix
+
+    inst = _instance(ws)
 
     layer = layer_of(ws)
     target = (ll_header(ws) if layer == "LL" else hal_c(ws)).removeprefix("software/")
     used = set(re.findall(rf"\b({_api_rx(ws)}\w+)\s*\(", "\n".join(_code(ws).values()) + ut.read_text()))
     c = mutation.run_campaign(ws / "software", target, [ut], used_symbols=used,
                               extra_sources=[] if layer == "LL" else [], prefix=register_prefix(ws),
-                              ll_unit=Path(ll_tu(ws)).name, extra_ops=mutation.register_ops(ws))
+                              ll_unit=Path(ll_tu(ws)).name,
+                              extra_ops=mutation.register_ops(ws) + mutation.instance_ops(inst),
+                              extra_flags=instance_flags(ws, host=True) or None)  # instance mode: pinned device header
     surv = [f"SURVIVOR:{m['op']}@{m['line']}:{m['original'][:50]}" for m in c["mutants"] if m["outcome"] == "SURVIVED"]
     r = c["record"]
+    if inst is not None and not r["eligible"]:  # no mutant built and ran: never a PASS of a campaign that tested nothing
+        return {"status": "NOT_SUPPORTED", "findings": [f"no eligible mutant (invalid {r['invalid']})"],
+                "campaign": {k: r[k] for k in ("campaign_id", "eligible", "killed", "survived", "equivalent", "invalid")}}
     return {"status": "FAIL" if surv else "PASS", "findings": surv,
             "campaign": {k: r[k] for k in ("campaign_id", "eligible", "killed", "survived", "equivalent", "invalid")}}
 
