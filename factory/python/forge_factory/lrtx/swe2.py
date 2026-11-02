@@ -396,6 +396,29 @@ def validate_interfaces(ws: Path, doc: dict, idx: dict) -> list[str]:
     return out
 
 
+def _status_query(ws: Path, f: dict) -> bool:
+    """Owner 2026-11-02 ("Status queries only"): a caller polls a status or flag, not a data value. A uint32_t query is a
+    status query when it reads a one-bit field or a status register (<P>_SR, <P>_ISR); a data read such as
+    LL_CRC_Read_IDR (CRC_IDR.IDR, 32 bits) needs no polling loop. Without the register index every uint32_t query
+    counts, as before."""
+    if f.get("returns") != "uint32_t":
+        return False
+    from ..assurance.hardware import index
+
+    try:
+        idx = index(Path(ws) / "inputs/sections/RM0486")
+    except OSError:
+        idx = {}
+    fields = [fld.partition(".") for fld in f.get("fields") or []]
+    if not idx or not fields:
+        return True
+    for reg, _, name in fields:
+        bit = (idx.get(reg) or {}).get("fields", {}).get(name)
+        if bit is None or bit["msb"] == bit["lsb"] or re.search(r"_I?SR$", reg):
+            return True
+    return False
+
+
 def validate_design(ws: Path, doc: dict, iface: dict) -> list[str]:
     out = []
     ra, cc = doc["register_access"].lower(), doc["concurrency_and_reentrancy"].lower()
@@ -416,7 +439,7 @@ def validate_design(ws: Path, doc: dict, iface: dict) -> list[str]:
     for s in doc["sequences"]:
         out += [f"sequence '{s['title']}': {st['function']} is not an interface function" for st in s["steps"]
                 if st["function"] not in names]
-    if any(f["returns"] == "uint32_t" for f in iface["functions"]) and not any(
+    if any(_status_query(ws, f) for f in iface["functions"]) and not any(
             st["repeat_until"].strip() for s in doc["sequences"] for st in s["steps"]):
         out.append("the dynamic view must show a caller-bounded polling loop (repeat_until on a query step)")
     return out
