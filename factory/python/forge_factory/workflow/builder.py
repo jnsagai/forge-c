@@ -539,6 +539,15 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
               f'  {rt} -> {"swe3_fix_author" if phase == "SWE.3" else a} [condition="outcome=succeeded"]',
               f'  {rt} -> upstream_swe1']
         prev = ig
+    if prompts.BROWNFIELD["mode"] and kept[-1] == "SWE.1":
+        # CAPA-104 (run WO-F014-SWE1-CRCK-20261101-L9): a brownfield graph scoped to SWE.1 dropped the delivery_inject
+        # node (it was built with SWE.2), so the SWE.1 order ended without injection.json and the SWE.2 resume was
+        # refused (RESUME_RECORD_UNREADABLE:injection.json). The injection completes SWE.1 (FR-007): it runs here too.
+        inj = "delivery_inject"
+        L += [f'  {inj} [shape=parallelogram, label="Delivered code injected after SWE.1 (deterministic)", '
+              f'script="{_q(gate_cmd("SWE.1", "verify", "delivery_inject"))}"]',
+              f'  {prev} -> {inj} [condition="outcome=succeeded"]', f"  {inj} -> finalize"]
+        prev = inj
     # ADR-0008 shared upstream chain (probe P1: outcome-only routing): earliest owner first, then the finalizer.
     # L12: the owner triages first (accept / reject_defect, no edits); a fully rejected loop returns to the phase
     # that reported it through the return chain, so nothing upstream is re-frozen (r70 cascade).
