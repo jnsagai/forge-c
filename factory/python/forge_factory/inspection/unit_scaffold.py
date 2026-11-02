@@ -10,7 +10,9 @@ existed. Runs between the SWE.3 code authors and the SWE.3 design author and wri
     with a 'USPEC: TODO' note the author replaces by the unit's spec ids (checked);
   * workproducts/SWE.3/misra_deviations.md: cppcheck MISRA-subset result, code suppressions and approved deviation
     records (none -> 'no deviations'); MISRA compliance is NOT claimed.
-Idempotent: a rerun never overwrites author-written text.
+Idempotent: a rerun never overwrites author-written text. CAPA-118: a design the scaffold generated and nobody changed
+since (recorded by hash in .forge-run/gates/as-built-designs.json) is re-rendered from the current code on every run, so
+a design never stays stale after code rework; a design an author changed is kept.
 """
 from __future__ import annotations
 
@@ -23,6 +25,8 @@ from pathlib import Path
 from .swtrace import DESIGN_DIR, UNITS_MD, code_files, developed_swcs, functions_with_docs, parse_units
 
 DEVIATIONS_MD = "workproducts/SWE.3/misra_deviations.md"
+AS_BUILT_LOG = ".forge-run/gates/as-built-designs.json"
+_CITE_LEGEND = re.compile(r"legend top left\n  Unit specification \(generated from [^\n]*\nendlegend\n")
 TODO_TEXT = "TODO: behaviour the unit shall implement"
 
 
@@ -53,6 +57,31 @@ def _activity(unit_id: str, name: str, fns: list[str], bodies: dict[str, list[st
         lines += ["stop", "}"]
     lines.append("@enduml")
     return "\n".join(lines) + "\n"
+
+
+def _generated_form(text: str) -> str:
+    """CAPA-118: a design as the scaffold wrote it, without the USPEC citation the gate adds (cite_specs)."""
+    return re.sub(r"(?m)^  USPEC: .*$", "  USPEC: TODO", _CITE_LEGEND.sub("", text))
+
+
+def _render_design(ws: Path, rel: str, text: str) -> bool:
+    """CAPA-118 (run WO-F014-CMP-SWE3-IWDG-20261102-08): the as-built design was written only when missing, so the
+    baselines frozen after code rework carried the round-1 diagrams and SWE3-06 failed on them. A missing design and
+    one still exactly as the scaffold last generated it are (re-)rendered from the current code; an author-changed
+    design is kept. Returns whether it was written."""
+    from ..common import sha256_bytes
+
+    log_p = ws / AS_BUILT_LOG
+    log = json.loads(log_p.read_text()) if log_p.is_file() else {}
+    p = ws / rel
+    if p.is_file() and log.get(rel) != sha256_bytes(_generated_form(p.read_text(errors="replace")).encode()):
+        return False
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(text)
+    log[rel] = sha256_bytes(_generated_form(text).encode())
+    log_p.parent.mkdir(parents=True, exist_ok=True)
+    log_p.write_text(json.dumps(log, indent=1, sort_keys=True) + "\n")
+    return True
 
 
 def _swc(ws: Path) -> str:
@@ -91,10 +120,8 @@ def scaffold(ws: Path) -> dict:
             tr = ", ".join(s["swrs"]) if s and s["swrs"] else "TODO"
             out.append(f"- **{sid}** {text} Traces: {tr}")
         out.append("")
-        dp = ws / (old.get("design") or f"{DESIGN_DIR}/{uid}.puml")
-        if not dp.is_file():
-            dp.parent.mkdir(parents=True, exist_ok=True)
-            dp.write_text(_activity(uid, old.get("name") or "", fns, bodies))
+        _render_design(ws, old.get("design") or f"{DESIGN_DIR}/{uid}.puml",
+                       _activity(uid, old.get("name") or "", fns, bodies))
     md_p.parent.mkdir(parents=True, exist_ok=True)
     md_p.write_text("\n".join(out))
     dev = misra_statement(ws)
