@@ -378,6 +378,45 @@ TOOLS = {"SWE.3": [("forge-build-mcp", "compile", "target build"), ("forge-build
          "SWE.6": [("forge-tests-mcp", "run_robot", "target tests (Renode)")]}
 
 
+OP_LABELS = {"compile": "build", "validate_artifact": "design and code rules", "cppcheck": "static analysis",
+             "clang_analyze": "clang analyzer", "measure_elf": "size", "stack_usage": "stack usage",
+             "validate_trace": "trace check", "run_unit": "unit tests", "llvm_coverage": "coverage",
+             "run_integration": "integration tests", "run_renode": "target tests (Renode)",
+             "run_robot": "target tests (Renode)", "run_mutation": "mutation tests"}
+
+
+def tool_detail(ws: Path, phase: str) -> list[dict]:
+    """Owner 2026-11-02 ("I would like to see how many tasks ran, like unit test, coverage etc"): every tool the phase
+    author ran, in first-run order - runs, failed runs, the last status and its one-line summary (the tool's own text,
+    e.g. "unit: 1 passed, 0 failed (HOST)", "line 97.96% branch 100.0%"). Display only."""
+    out: dict[str, dict] = {}
+    p = ws / "evidence/tool-results.jsonl"
+    for line in (p.read_text().splitlines() if p.is_file() else []):
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if r.get("phase") != phase or not str(r.get("role") or "").endswith("-author") or not r.get("op"):
+            continue
+        res = r.get("result") or {}
+        op = r["op"]
+        if op == "compile":
+            op = "compile:target" if "relocatable_elf" in (res.get("metrics") or {}) else "compile:host"
+        d = out.setdefault(op, {"op": r["op"], "tool": OP_LABELS.get(r["op"], r["op"].replace("_", " ")), "runs": 0,
+                                "failed": 0})
+        if op.startswith("compile:"):
+            d["tool"] = "target build" if op.endswith("target") else "host build"
+        d["runs"] += 1
+        d["failed"] += 0 if res.get("status") == "PASS" else 1
+        d.update(status=res.get("status"), summary=str(res.get("summary") or "")[:90], at=_ts(r.get("ts_utc")))
+    prog = tool_progress(ws, phase)
+    for d in out.values():
+        pr = prog.get(d["op"])
+        if pr and pr.get("total") is not None:
+            d["tests"] = {k: pr.get(k) for k in ("done", "total", "passed", "failed", "unit")}
+    return list(out.values())
+
+
 def tool_progress(ws: Path, phase: str) -> dict[str, dict]:
     """Owner 2026-11-01: how many tests the phase's test tools have to run and how many already ran (written by the
     tools while they run: .forge-run/tool-progress/<phase>-<op>.json). Display only."""
@@ -513,11 +552,12 @@ def order(ws: Path, now: float | None = None) -> dict:
     wp = {"have": _work_products(ws, at), "phase": at} if state == "RUNNING" else None
     tools = {ph: tool_rounds(ws, ph) for ph in TOOLS if ph in phases}
     tool_prog = {ph: tool_progress(ws, ph) for ph in TOOLS if ph in phases}
+    detail = {ph: tool_detail(ws, ph) for ph in TOOLS if ph in phases}
     newest_task = max([_ts((_load(Path(f)) or {}).get("at")) or 0
                        for f in glob.glob(str(ws / ".forge-run/lrtx" / at / "packets/*.json"))] + [0])
     return {"wo": man.get("work_order") or ws.parent.name, "part": man.get("driver"), "target": target, "at": at,
             "state": state, "note": note, "created": created, "phases": phases, "active": active, "node": node, "wp": wp,
-            "tools": tools, "progress": tool_prog, "newest_task": newest_task,
+            "tools": tools, "progress": tool_prog, "tool_detail": detail, "newest_task": newest_task,
             "resumed_from": resumed, "newest": max([p["last"] or 0 for p in phases.values()] + [created or 0])}
 
 
@@ -562,12 +602,18 @@ def _tool_cell(phase: str, run: dict | None, here: list[dict], a: dict) -> dict 
         elif pr and pr.get("running"):
             tests = {"label": lab, "done": 0, "total": None, "unit": pr.get("unit"), "running": True}
             break
-    allr = [t for o in here for r in (o.get("tools") or {}).get(phase, []) for t in r]
+    detail = ((run or {}).get("tool_detail") or {}).get(phase) or []
+    if run is not None and not detail and why is None:
+        why = f"no {phase} tool run yet in this order: the author writes the work products first" + \
+            (f" ({a['done']} of {a['total']} {a.get('unit') or 'tasks'} done)" if a.get("total") else "")
+    allr = [d for o in here for d in ((o.get("tool_detail") or {}).get(phase) or [])]
     return {"id": "tools", "name": "Tool station", "tag": "qualified tools, deterministic", "state": state,
+            "detail": detail,
             "bar": {"kind": "tools", "steps": steps, "round": len(rounds), "tests": tests} if run is not None
             else {"kind": "idle"},
             "why": why, "what": "Builds and checks the work products: " + ", ".join(labels) + ".",
-            "counters": [["tool runs", len(allr)], ["failed", sum(1 for t in allr if t["status"] not in ("PASS", None))]]}
+            "counters": [["tool runs", sum(d["runs"] for d in allr)], ["failed", sum(d["failed"] for d in allr)],
+                         ["tools", len({d["tool"] for d in allr})]]}
 
 
 def _bar(cell: str, run: dict | None, a: dict, nd: dict | None, at_cell: str | None, phase: str, now: float) -> dict:

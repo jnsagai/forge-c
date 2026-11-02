@@ -126,6 +126,8 @@ h3 { font-size: 17px; text-transform: uppercase; letter-spacing: .04em; }
 .cell-foot { padding: 6px 11px 11px; display: grid; gap: 8px; align-content: start; }
 .counters { display: flex; gap: 14px; font-size: 12px; color: var(--muted); }
 .counters b { font-family: var(--mono); color: var(--ink); font-weight: 500; }
+.tool-detail { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; display: grid; gap: 4px; }
+.tool-detail .step { font-size: 11px; }
 .what { font-size: 12px; color: var(--muted); }
 .why { font-size: 12px; color: var(--stop); }
 
@@ -333,6 +335,12 @@ function barHtml(b, c) {
   if (b.kind === "waiting") return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">${b.for ? `waiting for ${esc(b.for)}` : "ready"}</span></div></div>`;
   return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">idle</span></div></div>`;
 }
+// owner 2026-11-02: every tool this phase ran for the order - runs, last result and its own one-line summary
+function toolDetail(d) {
+  if (!d || !d.length) return "";
+  const st = (t) => t.status === "PASS" ? "passed" : t.status ? "rejected" : "";
+  return `<ul class="tool-detail">${d.map((t) => `<li><span class="step ${st(t)}">${esc(t.tool)}</span> <b>${t.runs}</b> run${t.runs === 1 ? "" : "s"}${t.failed ? `, <span class="late">${t.failed} not passed</span>` : ""}${t.tests ? ` · ${t.tests.done}/${t.tests.total} ${esc(t.tests.unit || "tests")}${t.tests.failed ? `, <span class="late">${t.tests.failed} failed</span>` : ""}` : ""}<br><span class="muted">${esc(t.status || "")}: ${esc(t.summary || "")}</span></li>`).join("")}</ul>`;
+}
 function cellCard(c) {
   const st = c.state === "ready" ? "idle" : c.state, p = c.progress, s = c.speed;
   return `<article class="cell s-${st}" tabindex="0" aria-label="${esc(c.name)}: ${STATE_TEXT[c.state] || c.state}">
@@ -344,6 +352,7 @@ function cellCard(c) {
     <div class="cell-foot">
       ${s ? `<div class="gauges">${gauge(s.tok_s, 200, "speed", "tok/s")}${s.per_h != null ? gauge(s.per_h, 30, "output", "per h") : ""}</div>` : ""}
       <div class="counters">${(c.counters || []).map(([k, v]) => `<span>${esc(k)} <b>${esc(typeof v === "number" && v >= 1000 ? fmt(v) : v)}</b></span>`).join("")}</div>
+      ${toolDetail(c.detail)}
       ${c.why ? `<div class="why">${esc(c.why)}</div>` : ""}
       <div class="what">${esc(c.what)}</div>
     </div></article>`;
