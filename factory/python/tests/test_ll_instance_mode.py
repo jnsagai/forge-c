@@ -999,3 +999,21 @@ def test_device_header_target_address_must_be_the_profile_base(inst_ws, address)
     (inst_ws / ".forge-run/manifest.json").write_text(json.dumps(man))
     with pytest.raises(ValueError, match="OPERATION_SCOPE_INSTANCE_BASE_MISMATCH"):
         ll_instance(inst_ws)
+
+
+def test_swe3_inspector_receives_the_pinned_device_header_and_api_contract(inst_ws):
+    """CAPA-116: in instance mode the SWE.3 inspector judges volatile/register access (SWE3-02) on the declared device
+    header and the API contract the code is written to, with the frozen SWE.2 architecture."""
+    from forge_factory.inspection.engine import Store
+    from forge_factory.lrtx import review
+
+    ws = _swe3(inst_ws)
+    st = Store(ws)
+    for phase in ("SWE.1", "SWE.2", "SWE.3"):
+        st.freeze(phase, f"swe{phase[-1]}-author")
+    _bl, srcs = review.evidence(ws, "SWE.3")
+    texts = {s["path"]: s["text"] for s in srcs}
+    iface = _manifest(ws)["operation_scope"]["instance"]["register_interface"]
+    for rel in (iface["device_header"], iface["api_contract"]):
+        assert texts[rel] == (ws / rel).read_text()
+    assert "workproducts/SWE.2/software_architecture.md" in texts
