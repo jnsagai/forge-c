@@ -540,6 +540,16 @@ def _page_section(ws: Path, page: int | None, fallback: str) -> str:
     return best or fallback
 
 
+def _task_section(ws: Path, page: int | None, g: dict) -> str:
+    """CAPA-107: a register task's requirement traces to the task's own section when its page is one of that section's
+    pages. Several RM0486 register sections can start on one page (IWDG_KR 59.7.1 and IWDG_PR 59.7.2 both on p.2989);
+    the page alone would trace every requirement on that page to the last of them."""
+    pages = g.get("pages") or []
+    if page is not None and pages and min(pages) <= page <= max(pages):
+        return g["section"]
+    return _page_section(ws, page, g["section"])
+
+
 def budget_requirements(ws: Path, sysname: str) -> list[dict]:
     b = _manifest(ws)["budgets"]
     src = "work-order budget (owner development target)"
@@ -617,7 +627,7 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     for g, rec in results:
         for r in rec["doc"]["requirements"]:
             rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
-                         "upstream": f"RM0486-{_page_section(ws, r['source_page'], g['section'])}"})
+                         "upstream": f"RM0486-{_task_section(ws, r['source_page'], g)}"})
     first = inv["registers"][0]["section"] if inv["registers"] else "?"
     for r in cross["doc"]["requirements"]:
         rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
