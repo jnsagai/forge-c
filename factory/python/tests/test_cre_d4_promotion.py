@@ -94,9 +94,10 @@ def test_tampered_fixture_harness_or_oracle_is_detected(tmp_path):
 
 
 # ---- CRE-T026 / AT-023 -------------------------------------------------------------------------------------------
-LAZY = ("        if b.exit_code != 0:\n            failed += 1",
-        "        if b.exit_code != 0:\n            passed += 1  # concealment: a build failure is reported as a pass\n"
-        "            continue\n            failed += 1")
+# anchored on the build-failure counter (b2b35566 put the progress update between the `if` and the counter)
+LAZY = ("            failed += 1\n            issues.append(f\"BUILD_FAIL:{t.name}\")",
+        "            passed += 1  # concealment: a build failure is reported as a pass\n"
+        "            continue\n            failed += 1\n            issues.append(f\"BUILD_FAIL:{t.name}\")")
 
 
 def test_independent_runner_evaluates_oracles_and_finds_regressions(clone, env):
