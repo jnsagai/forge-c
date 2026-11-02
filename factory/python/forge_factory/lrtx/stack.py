@@ -446,6 +446,34 @@ def llama_server_spec(r: Path, prof: dict, p: dict, env: dict, model: str | None
     return argv, penv, f"http://127.0.0.1:{p['llama']}/health", [model]
 
 
+def cloud_bridge(prof: dict) -> dict | None:
+    """Owner 2026-11-02 (comparison line): runtime.cloud_bridge {socket (under the root), models} - the gateway forwards
+    these models to the cloud bridge (lrtx/cloud_bridge.py) over a unix socket; no ollama or llama-server runs."""
+    cb = (prof.get("runtime") or {}).get("cloud_bridge")
+    return cb if isinstance(cb, dict) and cb.get("models") else None
+
+
+def bridge_socket(r: Path, prof: dict) -> Path:
+    return Path(r) / cloud_bridge(prof)["socket"]
+
+
+def bridge_healthy(sock: Path) -> bool:
+    """GET /health over the bridge socket (from the host; the socket file is on the shared filesystem)."""
+    import socket as _socket
+
+    try:
+        with _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM) as c:
+            c.settimeout(10)
+            c.connect(str(sock))
+            c.sendall(b"GET /health HTTP/1.1\r\nHost: cloud-bridge\r\nConnection: close\r\n\r\n")
+            data = b""
+            while chunk := c.recv(4096):
+                data += chunk
+        return data.startswith(b"HTTP/1.") and b" 200 " in data.split(b"\r\n", 1)[0] and b'"ok"' in data
+    except OSError:
+        return False
+
+
 def managed_serving() -> bool:
     return os.environ.get("FORGE_DURABLE_AUTONOMY") == "1" and bool(os.environ.get("FORGE_OPERATIONS_INTENT"))
 
@@ -644,7 +672,10 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         if type(retries) is not int or not 0 <= retries <= 2:
             raise ValueError("GATEWAY_DROP_RETRIES_INVALID")
         gw_env["FORGE_GATEWAY_DROP_RETRIES"] = str(retries)
-    ls = llama_server_spec(r, prof, p, env)
+    cb = cloud_bridge(prof)
+    if cb is not None:  # comparison line (owner 2026-11-02): every model of the bridge goes to its unix socket
+        gw_env["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"unix:{bridge_socket(r, prof)}" for m in cb["models"]})
+    ls = llama_server_spec(r, prof, p, env) if cb is None else None
     if ls is not None:  # the served model's chat requests go to the llama.cpp server, every other model to Ollama
         served = served_models(prof)
         gw_env["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"http://127.0.0.1:{p['llama']}" for m in served})
@@ -685,6 +716,8 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
             f"http://127.0.0.1:{p['fabro']}/health",
         ),
     }
+    if cb is not None:
+        specs.pop("ollama", None)  # no local model server in the comparison line
     for name, (argv, penv, health) in specs.items():
         if control_only and name != "fabro":
             continue
@@ -701,6 +734,8 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
             time.sleep(1)
         procs[name]["identity"] = process_identity(proc.pid)
     health = {n: _probe(holder, env, v["health"]) for n, v in procs.items()}
+    if cb is not None:
+        health["cloud_bridge"] = bridge_healthy(bridge_socket(r, prof))
     rec = {
         "schema": "forge-c/lrtx-services/1",
         "profile": prof["id"],
@@ -780,6 +815,22 @@ def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
     prof, r, p = s["profile"], s["root"], s["ports"]
     if managed_serving():
         raise RuntimeError("MODEL_SWAP_REFUSED_MANAGED_SERVING")
+    cb = cloud_bridge(prof)
+    if cb is not None:  # comparison line: both models are answered by the bridge; nothing is swapped on any GPU
+        if model not in cb["models"]:
+            raise RuntimeError(f"MODEL_SWAP_MODEL_NOT_SERVED:{model}")
+        ok = bridge_healthy(bridge_socket(r, prof))
+        out = {"schema": "forge-c/model-swap/1", "at": utc_now(), "profile": prof["id"], "to": model,
+               "digest": prof["models"]["allowed"][model]["digest"], "result": "BRIDGE_ROUTED" if ok else "FAILED",
+               **({} if ok else {"reason": "CLOUD_BRIDGE_UNREACHABLE"})}
+        for path in [r / "run/model-swaps.jsonl"] + ([Path(workspace) / ".forge-run/lrtx/serving/model-swaps.jsonl"]
+                                                     if workspace else []):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("a") as fh:
+                fh.write(json.dumps(out, sort_keys=True) + "\n")
+        if not ok:
+            raise RuntimeError("MODEL_SWAP_CLOUD_BRIDGE_UNREACHABLE")
+        return out
     if model not in served_models(prof):
         raise RuntimeError(f"MODEL_SWAP_MODEL_NOT_SERVED:{model}")
     holder = _holder(s)
@@ -1032,7 +1083,9 @@ def status(s: dict) -> dict:
         "status": "UP",
         "holder_pid": holder,
         "netns": os.readlink(f"/proc/{holder}/ns/net"),
-        "health": {n: _probe(holder, env, v["health"]) for n, v in (rec.get("processes") or {}).items()},
+        "health": {**{n: _probe(holder, env, v["health"]) for n, v in (rec.get("processes") or {}).items()},
+                   **({"cloud_bridge": bridge_healthy(bridge_socket(s["root"], s["profile"]))}
+                      if cloud_bridge(s["profile"]) else {})},
     }
 
 

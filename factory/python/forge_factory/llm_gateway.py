@@ -342,8 +342,15 @@ def create_app(
     # F014 (owner 2026-10-26: a runtime that serves parallel requests): a local profile may serve a model from its own
     # llama.cpp server with several request slots; that model's chat requests go there, every other model to Ollama
     routes = json.loads(os.environ.get("FORGE_GATEWAY_ROUTES") or "{}")
-    routed = {m: httpx.AsyncClient(base_url=u.rstrip("/"), timeout=timeout, transport=transport)
-              for m, u in routes.items()}
+    def route_client(u: str) -> httpx.AsyncClient:
+        # owner 2026-11-02 (cloud comparison line): 'unix:<path>' reaches the cloud bridge through a socket file on the
+        # shared filesystem; the profile's network namespace stays loopback-only
+        if u.startswith("unix:"):
+            return httpx.AsyncClient(base_url="http://cloud-bridge", timeout=timeout,
+                                     transport=httpx.AsyncHTTPTransport(uds=u[len("unix:"):]))
+        return httpx.AsyncClient(base_url=u.rstrip("/"), timeout=timeout, transport=transport)
+
+    routed = {m: route_client(u) for m, u in routes.items()}
     from .lrtx.request_measurement import METHOD as native_measurement_method
 
     measurement_policy = json.loads(os.environ.get("FORGE_GATEWAY_REQUEST_MEASUREMENT") or "{}")
