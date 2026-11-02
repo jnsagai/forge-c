@@ -89,6 +89,20 @@ def normalize_args(tool_name: str, args: dict) -> dict:
         if k not in model.model_fields:
             del args[k]
     for k, f in model.model_fields.items():
+        # CAPA-115 (WO-F014-SWE5-CRCL-20261102-L12/L12B, WO-F014-CMP-SWE6-CRCL-20261102-07): Fabro passes list
+        # arguments as JSON text ('["software/tests/x.c"]'); the MCP SDK JSON-decodes such a string for every
+        # non-str field before the server sees it (ArgModelBase.pre_parse_json), so the hook hashed the text and
+        # the server the list and every report_defect declaration was refused NO_AUTHORIZATION_TICKET. The same
+        # rule is applied here, identically for hook and server, so both bind the same logical call.
+        v = args.get(k)
+        if isinstance(v, str) and f.annotation is not str:
+            try:
+                parsed = json.loads(v)
+            except (ValueError, RecursionError):
+                parsed = v
+            if not isinstance(parsed, str | int | float):
+                args[k] = parsed
+    for k, f in model.model_fields.items():
         # MCP materializes builtin container factories before calling the
         # wrapper. FieldInfo.default is Undefined for these, so comparing only
         # that value makes a valid hook ticket differ from defines=[] (or an

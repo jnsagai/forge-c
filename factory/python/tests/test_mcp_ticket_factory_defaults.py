@@ -81,3 +81,32 @@ def test_native_defect_declaration_keeps_ticket_after_empty_lists_are_injected(t
     expected_ids = ["USPEC-01"] if only_evidence_refs_omitted else []
     expected_files = ["software/tests/target/test_fixture.c"] if only_evidence_refs_omitted else []
     assert seen == [("swe5-author", "SWE.5", "TEST", expected_ids, expected_files, [])]
+
+
+def test_json_text_list_arguments_keep_the_ticket_capa115(tmp_path, monkeypatch):
+    """CAPA-115: Fabro sends list arguments as JSON text; the MCP SDK decodes them before the server, so the hook's
+    ticket must bind the decoded call (L12/L12B/CMP-07: every TEST declaration was NO_AUTHORIZATION_TICKET)."""
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "events"))
+    monkeypatch.setenv("FORGE_BINDING_ID", "defect-json-text-fixture")
+    monkeypatch.delenv("FORGE_MCP_TRUST", raising=False)
+    seen = []
+
+    def handler(ctx, args):
+        seen.append((args.requirement_ids, args.test_files))
+        return sdk.result(ctx, "PASS", "Synthetic declaration, no defect recorded")
+
+    server = sdk.build_server("forge-evidence-mcp", [sdk.Operation("report_defect", evidence.DefectIn, handler, "p")])
+    tool = "mcp__forge_evidence_mcp__report_defect"
+    args = {"kind": "TEST", "summary": "Synthetic test correction declaration",
+            "requirement_ids": '["SWR-002"]', "test_files": '["software/tests/integration/t.c"]'}
+    sdk.issue_ticket("defect-json-text-fixture", tool, args, "swe5-author", "swe5_author", "SWE.5", str(tmp_path))
+    asyncio.run(server.call_tool("report_defect", args))
+    assert seen == [(["SWR-002"], ["software/tests/integration/t.c"])]
+    decoded = {**args, "requirement_ids": ["SWR-002"], "test_files": ["software/tests/integration/t.c"]}
+    assert sdk.args_digest(tool, args) == sdk.args_digest(tool, decoded)
+    # plain comma text is not JSON: it stays text on both sides; a different list never shares the ticket
+    assert sdk.normalize_args(tool, {"test_files": "a.c, b.c"}) == {"test_files": "a.c, b.c"}
+    assert sdk.args_digest(tool, args) != sdk.args_digest(tool, {**decoded, "test_files": ["other.c"]})
+    # str fields are never decoded (the SDK leaves them as sent)
+    assert sdk.normalize_args(tool, {"summary": '["x"]'}) == {"summary": '["x"]'}
