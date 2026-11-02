@@ -48,10 +48,25 @@ def validate_contract(value, manifest):
     return value
 
 
+def instance_config(ws):
+    """Instance mode (operation_scope.instance): the same typed checks on the generated LL header, configured from the
+    declaration (candidate = the LL header, includes = the LL directory and the pinned inputs). None otherwise."""
+    from ..layer import ll_header, ll_instance
+
+    inst = ll_instance(ws)
+    if inst is None:
+        return None
+    return {"candidate_files": [ll_header(ws)], "include_dirs": ["software/ll", "inputs"],
+            "compiler_profiles": {"host": "host-clang", "target": "target-cm55-gcc"},
+            "register_interface": inst["register_interface"]}
+
+
 def selected(ws):
     from ..delivery_first import selected as delivery_selected
 
     cfg, _ = delivery_selected(ws)
+    if not cfg:
+        cfg = instance_config(ws)
     return cfg.get("register_interface") if cfg else None
 
 
@@ -61,6 +76,8 @@ def check_selected(ws):
 
     try:
         cfg, manifest = delivery_selected(ws)
+        if not cfg:
+            cfg = instance_config(ws)
         if not cfg or "register_interface" not in cfg:
             return None
         return _check(Path(ws).resolve(), cfg, manifest)

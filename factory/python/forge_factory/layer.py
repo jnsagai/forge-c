@@ -69,6 +69,17 @@ def profile(ws: Path | None = None) -> dict:
     return of_ws(ws) if ws is not None else load()
 
 
+def ll_instance(ws: Path | None = None) -> dict | None:
+    """Instance mode: the validated caller-supplied instance declaration of the work order's operation scope (parameter,
+    macro, host object, typed register interface, API-contract signatures); None without the declaration. A declared
+    but invalid contract raises ValueError, never a silent fallback to the register-block array."""
+    if ws is None:
+        return None
+    from .operation_scope import instance_of
+
+    return instance_of(ws)
+
+
 def ll_header(ws: Path | None = None) -> str:
     return f"software/ll/{profile(ws)['ll']['header']}"
 
