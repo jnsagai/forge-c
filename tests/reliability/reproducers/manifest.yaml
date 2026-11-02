@@ -1180,3 +1180,13 @@ reproducers:
     operations: [lrtx/swe1 budget requirements]
     root_cause: "The factory-generated simulation-performance requirements said 'measured in the pinned Renode profile' without identifying it; the inspector failed SWE1-02/SWE1-04 because the measurement configuration was not uniquely defined and the author cannot change the generated text (BLOCKED STUCK SAME_ITEM_FAILED_3X)."
     remedy: "The requirements name the pinned Renode version, the adapter and the platform description and peripheral model with sha256 in their verification."
+  - id: RPR-111
+    script: rpr111_instance_mode_inspector_told_register_array.py
+    sha256: 0ccb8c0433bc741987e05904ef081a88b7ebd54c26823be8210e0ec2af0ae98f
+    symptom_signature: "an instance-mode SWE.2 inspector is told the extern register-block array is the required register access"
+    observed_in: "Fabro run WO-F014-CMP-SWE2-OBL-20261102-06 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: b846dc8157cb3602c14dd82c081568965e307d41
+    error_codes: []
+    operations: [lrtx/review inspector notes]
+    root_cause: "In instance mode the SWE.2 inspector notes carried the fixed ADR-0009 text (driver uses only the extern volatile uint32_t register array), so the correct caller-instance architecture failed SWE2-02/04/06 three times (BLOCKED STUCK SAME_ITEM_FAILED_3X)."
+    remedy: "An instance-mode work order's SWE.2/SWE.3 inspectors get the declared caller instance (type, parameter, device header, instance macro) as the required register access."
