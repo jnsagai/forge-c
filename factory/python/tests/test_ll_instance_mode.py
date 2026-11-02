@@ -980,3 +980,22 @@ def test_mutation_campaign_runs_in_instance_mode(inst_ws):
     weak = verifiers.v_mutation(ws)
     assert weak["status"] == "FAIL" and any("INSTANCE_READ_ZERO" in f for f in weak["findings"]), weak
     assert mutation.instance_ops(None) == []
+
+
+# ---- review follow-up 5: the device header's target address is the profile base -----------------------------------
+@pytest.mark.parametrize("address", ["0x46024C00UL", "0x56024C04UL", None])
+def test_device_header_target_address_must_be_the_profile_base(inst_ws, address):
+    man = _manifest(inst_ws)
+    dev = inst_ws / "inputs/forge_crc_device.h"
+    text = dev.read_text()
+    assert "#define CRC ((CRC_TypeDef *)0x56024C00UL)" in text  # the pinned fixture matches crc.yaml base_address
+    if address is None:  # a second target definition is ambiguous
+        text = text.replace("#endif\n#endif", "#define CRC ((CRC_TypeDef *)0x56024C00UL)\n#endif\n#endif")
+    else:
+        text = text.replace("0x56024C00UL", address)
+    dev.chmod(0o644)
+    dev.write_text(text)
+    next(i for i in man["inputs"] if i["path"] == "inputs/forge_crc_device.h")["sha256"] = sha256_file(dev)
+    (inst_ws / ".forge-run/manifest.json").write_text(json.dumps(man))
+    with pytest.raises(ValueError, match="OPERATION_SCOPE_INSTANCE_BASE_MISMATCH"):
+        ll_instance(inst_ws)

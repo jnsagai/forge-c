@@ -115,6 +115,15 @@ def instance_contract(ws, manifest: dict) -> dict:
             re.search(rf"^\s*#\s*ifdef\s+{flag}\b", device, re.M)
             for flag in ("FORGE_HOST_BUILD", "FORGE_HOST_DEVICE_IMPLEMENTATION")):
         raise ValueError("OPERATION_SCOPE_INSTANCE_DEVICE_HEADER_MISMATCH")
+    # the target definition of the instance macro is the peripheral's base address of the work order's profile (the
+    # secure alias the profile names); the host definition (&<host object>) is not an address
+    from .peripheral import load as load_profile
+
+    targets = re.findall(rf"^\s*#\s*define\s+{re.escape(inst['macro'])}\s+\(\s*\(\s*{type_name}\s*\*\s*\)\s*"
+                         r"(0x[0-9A-Fa-f]+)[uUlL]*\s*\)\s*$", device, re.M)
+    base = int(str(load_profile(manifest.get("peripheral") or "rcc")["base_address"]), 16)
+    if len(targets) != 1 or int(targets[0], 16) != base:
+        raise ValueError("OPERATION_SCOPE_INSTANCE_BASE_MISMATCH")
     protos = list(_PROTO.finditer(re.sub(r"/\*.*?\*/|//[^\n]*", "", (ws / iface["api_contract"]).read_text(
         errors="replace"), flags=re.S)))
     names = [m.group(2) for m in protos]
