@@ -86,7 +86,8 @@ def _notes(ws: Path, phase: str, item: str) -> list[str]:
         saved = prompts.PERIPHERAL["profile"]
         prompts.PERIPHERAL["profile"] = prof if prof["id"] != "rcc" else None
         try:
-            out.append(prompts.peripheralize(prompts.REGISTER_BLOCK_NOTE))
+            note = prompts.register_note(ws)
+            out.append(prompts.peripheralize(note) if note is prompts.REGISTER_BLOCK_NOTE else note)
         finally:
             prompts.PERIPHERAL["profile"] = saved
     if phase in ("SWE.4", "SWE.5", "SWE.6"):

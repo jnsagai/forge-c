@@ -68,6 +68,34 @@ REGISTER_BLOCK_NOTE = ("Register access is fixed by the SWE.2 architecture (ADR-
                        "volatile uint32_t ll_rcc_regs array, which the linker places at the RCC base on target and the "
                        "test harness defines on host. No base address, no defining unit and no integer-to-pointer "
                        "cast in the driver code is the required design, not a finding: never ask for them.")
+# CAPA-111 (run WO-F014-CMP-SWE2-OBL-20261102-06): in instance mode the note above told the SWE.2 inspector that the
+# extern register-block array is mandatory, so every correct caller-instance architecture failed SWE2-02/04/06 three
+# times. A work order that declares a caller-supplied instance gets this note instead.
+INSTANCE_REGISTER_NOTE = ("Register access is fixed by the work order's caller-supplied instance (operation_scope."
+                          "instance): every LL function takes the {type_name} *{parameter} parameter and reaches the "
+                          "registers only through its members, declared by the pinned device header {device_header}; "
+                          "the caller passes the instance macro {macro} (the peripheral base on target, a RAM object in "
+                          "host tests). No register-block array, no extern register symbol, no base address and no "
+                          "integer-to-pointer cast in the driver code is the required design, not a finding: never ask "
+                          "for them.")
+
+
+def register_note(ws=None) -> str:
+    """The register-access note of the SWE.2/SWE.3 inspectors: the declared caller instance (instance mode), else the
+    ADR-0009 register-block array."""
+    if ws is not None:
+        from ..layer import ll_instance
+
+        try:
+            inst = ll_instance(ws)
+        except ValueError:
+            inst = None
+        if inst:
+            return INSTANCE_REGISTER_NOTE.format(**{k: inst[k] for k in ("type_name", "parameter", "device_header",
+                                                                         "macro")})
+    return REGISTER_BLOCK_NOTE
+
+
 OWNER_SCOPE_NOTE = ("SWE1-01: if .forge-run/manifest.json target.hsi_contract / target.safety_allocation record an owner "
                     "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE or PENDING owner allocation review), "
                     "judge SWE1-01 against that "
