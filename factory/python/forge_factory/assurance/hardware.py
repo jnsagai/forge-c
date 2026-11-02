@@ -143,6 +143,24 @@ def write_rx(block: str = "ll_rcc_regs") -> re.Pattern:
     return re.compile(rf"{re.escape(block)}\s*\[\s*([^\]]+?)\s*\]\s*(\|=|&=|=)(?!=)\s*([^;]+);")
 
 
+def instance_view(code: str, inst: dict | None, idx: dict[str, dict], block: str) -> str:
+    """Instance mode: `<parameter>-><MEMBER>` rewritten as `<block>[<word>U]` through the declared typed members and
+    their RM offsets, so the register-write and concurrency scans of the register-block array read typed instance
+    code. A member the declaration does not map stays unresolved (UNRESOLVED_REGISTER_INDEX of those scans).
+    Identity without an instance declaration."""
+    if inst is None:
+        return code
+    reg_of = {m: r for r, m in inst["members"].items()}
+
+    def word(m: re.Match) -> str:
+        reg = reg_of.get(m.group(1))
+        if reg is None or reg not in idx:
+            return f"{block}[{inst['parameter']}_UNDECLARED_MEMBER_{m.group(1)}]"
+        return f"{block}[{idx[reg]['offset'] // 4}U]"
+
+    return re.sub(rf"\b{re.escape(inst['parameter'])}\s*->\s*([A-Za-z_]\w*)", word, code)
+
+
 def block_of(prefix: str) -> str:
     """The register-block name of a prefix by the profile convention (ll_rcc_regs, ll_iwdg_regs)."""
     return f"ll_{prefix.lower()}_regs"

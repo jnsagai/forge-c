@@ -59,13 +59,14 @@ def _instance(ws: Path) -> dict | None:
     return ll_instance(ws)
 
 
-def _instance_scan(findings: list[str], what: str) -> dict:
-    """Instance mode: a scan of register-block array writes finds nothing in typed instance code. Its findings still
-    fail; without findings the result is NOT_APPLICABLE (stated), never a PASS of a check that saw no access."""
-    note = f"NOT_APPLICABLE:INSTANCE_MODE:{what} reads register-block array writes; the code accesses the caller's " \
-           "typed instance"
-    return {"status": "FAIL" if [f for f in findings if not f.startswith(("LIMITATION", "NOT_APPLICABLE"))]
-            else "NOT_APPLICABLE", "findings": findings + [note]}
+def _views(ws: Path) -> dict[str, str]:
+    """The driver code as the register-block scans read it (instance mode: typed member accesses resolved to their
+    register words through the declared layout and the RM offsets; identity otherwise)."""
+    from ..layer import register_block
+
+    inst = _instance(ws)
+    return {k: hardware.instance_view(v, inst, _idx(ws), register_block(ws)) for k, v in _code(ws).items()} \
+        if inst is not None else _code(ws)
 
 
 def v_requirements(ws: Path) -> dict:
@@ -89,9 +90,6 @@ def v_arch(ws: Path) -> dict:
         a, notes = {"major_findings": []}, ["NOT_APPLICABLE:owner trace profile (SWC/allocation) predates this work order"]
     b = swe12.check_architecture(ws)
     f = a["major_findings"] + b["major_findings"]
-    if _instance(ws) is not None:  # the shared read-modify-write register scan reads register-block array writes
-        notes.append("NOT_APPLICABLE:INSTANCE_MODE:shared read-modify-write register scan (register-block array "
-                     "writes)")
     return {"status": _ok(f), "findings": f + notes}
 
 
@@ -104,14 +102,13 @@ def v_register_semantics(ws: Path) -> dict:
     if not _hdr(ws):  # feature 009: never a PASS from an empty (wrong-peripheral) header
         return {"status": "NOT_SUPPORTED", "findings": [f"no LL header {ll_header(ws)} in the workspace"]}
     f = hardware.check_defines(_hdr(ws), idx)
-    for text in _code(ws).values():
+    for text in _views(ws).values():
         f += [x for x in hardware.check_writes(text, _hdr(ws), idx, register_block(ws))
               if not x.startswith("NON_ATOMIC_RMW")]
-    if _instance(ws) is not None:
+    if _instance(ws) is not None:  # plus the typed layout of the declared device header against the RM
         from ..inspection.typed_registers import check_selected
 
-        typed = check_selected(ws) or {"major_findings": ["TYPED_REGMAP:NOT_SELECTED"]}
-        return _instance_scan(f + typed["major_findings"], "register access semantics")
+        f += (check_selected(ws) or {"major_findings": ["TYPED_REGMAP:NOT_SELECTED"]})["major_findings"]
     return {"status": _ok(f), "findings": f}
 
 
@@ -133,10 +130,8 @@ def v_concurrency(ws: Path) -> dict:
     from ..layer import register_block
 
     rcc = register_block(ws) == "ll_rcc_regs"  # feature 009: other peripherals also poll IsActive/IsActiveFlag_*
-    f = swe3.invariant_findings(_code(ws), _hdr(ws), _idx(ws), stated, register_block(ws),
+    f = swe3.invariant_findings(_views(ws), _hdr(ws), _idx(ws), stated, register_block(ws),
                                 "IsReady|IsEnabled" if rcc else "IsReady|IsEnabled|IsActive")
-    if _instance(ws) is not None:
-        return {**_instance_scan(f, "shared-register race analysis"), "mitigation_stated": stated}
     return {"status": _ok(f), "findings": f, "mitigation_stated": stated}
 
 
