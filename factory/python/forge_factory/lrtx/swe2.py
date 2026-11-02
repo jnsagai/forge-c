@@ -58,6 +58,9 @@ INTERFACES_SCHEMA = {"type": "object", "additionalProperties": False, "required"
 # describes the function, it cannot rename it. Functions no requirement names stay free (other_functions).
 FN_DETAIL_SCHEMA = {**FN_SCHEMA, "required": [k for k in FN_SCHEMA["required"] if k != "name"],
                     "properties": {k: v for k, v in FN_SCHEMA["properties"].items() if k != "name"}}
+# Instance mode (operation_scope.instance): the declared API contract fixes every signature, so the model answers only
+# the operation and the fields of each declared function; normalize_interfaces fills returns/params from the contract.
+FIXED_SIG = ("returns", "params")
 TEXTS = ("components", "register_access", "timing_and_error_handling", "memory_and_stack",
          "concurrency_and_reentrancy", "safety_and_dependencies")
 DESIGN_SCHEMA = {"type": "object", "additionalProperties": False, "required": [*TEXTS, "decisions", "sequences"],
@@ -106,12 +109,40 @@ def _ident(ws: Path) -> dict:
             "mm": p.get("mm_page"), "void": p["ll"].get("void_signatures", True), "prompt": p.get("prompt") or {}}
 
 
+def instance(ws: Path) -> dict | None:
+    from ..layer import ll_instance
+
+    return ll_instance(ws)
+
+
+def _param(p: dict) -> str:
+    """`uint32_t value`; a pointer type is rendered `CRC_TypeDef *CRCx` (instance mode)."""
+    return f"{p['type']}{p['name']}" if p["type"].endswith("*") else f"{p['type']} {p['name']}"
+
+
+def _access(ws: Path, inst: dict) -> str:
+    """Instance mode: how the LL reaches its registers (the caller's instance, never the register-block array)."""
+    i = _ident(ws)
+    members = ", ".join(f"{r}: {inst['parameter']}->{m}" for r, m in inst["members"].items())
+    return (f"register access only through the caller-supplied instance pointer {inst['parameter']} of type "
+            f"{inst['type_name']} * declared in the pinned device header {inst['device_header']} ({members}); the "
+            f"caller passes the instance macro {inst['macro']} (the {i['pfx']} base {i['base']} on the target, the RAM "
+            f"object {inst['host_object']} in host tests); no register-block array, no singleton, no integer-to-pointer "
+            "casts in the driver")
+
+
 def _guidance(ws: Path) -> str:
     """The LL architecture rules of the agent prompt (profile texts for a non-RCC peripheral), not new policy."""
     from ..workflow import prompts
 
     i = _ident(ws)
     api = " ".join((i["prompt"].get("ll_api") or prompts.LL_API).split())
+    inst = instance(ws)
+    if inst is not None:
+        return (f"LL functions: {api}. Header-only static inline functions in {i['header']}; no waiting, no timeouts, "
+                "no error codes at LL level (callers bound their own polling); no driver-owned state; "
+                f"{_access(ws, inst)}; a field update is a read-modify-write that preserves the other bits unless the "
+                "register is write-only (then a whole-register write).")
     return (f"LL functions: {api}. Header-only static inline functions in {i['header']}; no waiting, no timeouts, no "
             "error codes at LL level (callers bound their own polling); no driver-owned state; register access through "
             f"the extern volatile uint32_t register-block array {i['block']} placed at the base {i['base']} by the "
@@ -164,24 +195,51 @@ def named_functions(ws: Path) -> list[str]:
     return out
 
 
+def _fn_schemas(ws: Path) -> tuple[dict, dict]:
+    """(function item, named-function detail) schemas; instance mode: declared names only, no signature fields."""
+    inst = instance(ws)
+    if inst is None:
+        return FN_SCHEMA, FN_DETAIL_SCHEMA
+    props = {k: v for k, v in FN_SCHEMA["properties"].items() if k not in FIXED_SIG}
+    fn = {**FN_SCHEMA, "required": [k for k in FN_SCHEMA["required"] if k not in FIXED_SIG],
+          "properties": {**props, "name": {"type": "string", "enum": list(inst["signatures"])}}}
+    detail = {**fn, "required": [k for k in fn["required"] if k != "name"],
+              "properties": {k: v for k, v in props.items() if k != "name"}}
+    return fn, detail
+
+
 def interfaces_schema(ws: Path) -> dict:
+    fn, detail = _fn_schemas(ws)
     names = named_functions(ws) if named_mode(ws) else []
     if not names:  # measured (T032, RCC-LL rc1): requirements naming no function left no place for any function
-        return INTERFACES_SCHEMA
+        if fn is FN_SCHEMA:
+            return INTERFACES_SCHEMA
+        schema = json.loads(json.dumps(INTERFACES_SCHEMA))
+        schema["properties"]["functions"]["items"] = fn
+        return schema
     props = {k: v for k, v in INTERFACES_SCHEMA["properties"].items() if k != "functions"}
     return {"type": "object", "additionalProperties": False,
             "required": ["named_functions", "other_functions", "allocation", "calls"],
             "properties": {"named_functions": {"type": "object", "additionalProperties": False, "required": names,
-                                               "properties": {n: FN_DETAIL_SCHEMA for n in names}},
-                           "other_functions": {"type": "array", "items": FN_SCHEMA}, **props}}
+                                               "properties": {n: detail for n in names}},
+                           "other_functions": {"type": "array", "items": fn}, **props}}
 
 
 def normalize_interfaces(ws: Path, doc: dict) -> dict:
-    """The named-function answer in the feature 010 shape every check and renderer reads."""
-    if "named_functions" not in doc:
+    """The named-function answer in the feature 010 shape every check and renderer reads (instance mode: with the
+    signatures of the declared API contract; a function it does not declare gets none and is a validation finding)."""
+    inst = instance(ws)
+    if "named_functions" in doc:
+        fns = [{"name": n, **v} for n, v in doc["named_functions"].items()] + list(doc.get("other_functions") or [])
+        doc = {"functions": fns, **{k: v for k, v in doc.items() if k not in ("named_functions", "other_functions")}}
+    elif inst is None:
         return doc
-    fns = [{"name": n, **v} for n, v in doc["named_functions"].items()] + list(doc.get("other_functions") or [])
-    return {"functions": fns, **{k: v for k, v in doc.items() if k not in ("named_functions", "other_functions")}}
+    if inst is None:
+        return doc
+    sigs = inst["signatures"]
+    fns = [{**f, **json.loads(json.dumps(sigs.get(f["name"], {"returns": "void", "params": []})))}
+           for f in doc["functions"]]
+    return {**doc, "functions": fns}
 
 
 def interfaces_packet(ws: Path, model: str, findings=None, previous=None) -> dict:
@@ -193,7 +251,7 @@ def interfaces_packet(ws: Path, model: str, findings=None, previous=None) -> dic
     art = [{"path": "workproducts/SWE.1/software_requirements.md#functional", "text": listing,
             "sha256": sha256_bytes(listing.encode())},
            {"path": "workproducts/SWE.1/register_effects.json#cases", "text": cases, "sha256": sha256_bytes(cases.encode())}]
-    i = _ident(ws)
+    i, inst = _ident(ws), instance(ws)
     instr = (f"Design the interface of the {system_name(ws)} (SWE.2 architecture, LL layer). {_guidance(ws)} "
              "functions: one concrete function per operation the requirements need (never a placeholder such as "
              f"{i['fn']}<Name>_Enable), with its return type (void for commands, uint32_t 1U/0U for queries), its "
@@ -204,6 +262,16 @@ def interfaces_packet(ws: Path, model: str, findings=None, previous=None) -> dic
              "responsibility. calls: one entry per register-effect case: the function allocated to the case's "
              "requirement and its C arguments (decimal or hex integer constants with a U suffix; a write case passes "
              "exactly the case value). Every function a requirement statement names must exist with that exact name.")
+    if inst is not None:
+        sigs = "; ".join(_sig({"name": n, **s}) for n, s in inst["signatures"].items())
+        instr = instr.replace(
+            f"never a placeholder such as {i['fn']}<Name>_Enable), with its return type (void for commands, uint32_t "
+            "1U/0U for queries), its uint32_t parameters (" + ("none: LL functions take no arguments" if i["void"]
+                                                               else "only value setters take one uint32_t value") + ")",
+            f"only the functions of the API contract {inst['api_contract']}, whose signatures are fixed: {sigs}; the "
+            "answer gives no return type or parameters)")
+        instr = instr.replace("its C arguments (decimal", f"its C arguments in parameter order: first the instance "
+                              f"macro {inst['macro']}, then the value arguments (decimal")
     if named_mode(ws) and named_functions(ws):
         instr += (" The functions the frozen requirements name are fixed: describe each under named_functions, keyed by "
                   "that exact name; put any further function an operation needs under other_functions.")
@@ -217,7 +285,7 @@ def interfaces_packet(ws: Path, model: str, findings=None, previous=None) -> dic
 def design_packet(ws: Path, model: str, iface: dict, findings=None, previous=None) -> dict:
     m = _manifest(ws)
     i = _ident(ws)
-    fns = "\n".join(f"{f['returns']} {f['name']}({', '.join(p['type'] + ' ' + p['name'] for p in f['params']) or 'void'})"
+    fns = "\n".join(f"{f['returns']} {f['name']}({', '.join(_param(p) for p in f['params']) or 'void'})"
                     f": {f['operation']} [{', '.join(f['fields'])}]" for f in iface["functions"])
     b = m["budgets"]
     view = " ".join((i["prompt"].get("swe2_dynamic_view") or "an oscillator enable followed by the caller polling the "
@@ -254,8 +322,16 @@ def _int(arg: str) -> int | None:
         return None
 
 
+def _value_index(ws: Path, f: dict) -> int:
+    """Index of the value argument: the first parameter (legacy), the first non-instance parameter (instance mode)."""
+    if instance(ws) is None:
+        return 0
+    return next((k for k, p in enumerate(f["params"]) if not p["type"].endswith("*")), len(f["params"]))
+
+
 def validate_interfaces(ws: Path, doc: dict, idx: dict) -> list[str]:
     i, reqs, cl = _ident(ws), requirements(ws), component_level(ws)
+    inst = instance(ws)
     func = {k: v for k, v in reqs.items() if k not in cl}
     out, fns = [], {}
     for f in doc["functions"]:
@@ -265,7 +341,10 @@ def validate_interfaces(ws: Path, doc: dict, idx: dict) -> list[str]:
         if n in fns:
             out.append(f"function {n} is defined twice")
         fns[n] = f
-        if i["void"] and f["params"]:
+        if inst is not None and n not in inst["signatures"]:
+            out.append(f"function {n} is not declared by the API contract {inst['api_contract']} (declared: "
+                       f"{', '.join(inst['signatures'])})")
+        elif i["void"] and f["params"] and inst is None:
             out.append(f"function {n}: LL functions of this work order take no parameters")
         for fld in f["fields"]:
             reg, _, name = fld.partition(".")
@@ -280,6 +359,9 @@ def validate_interfaces(ws: Path, doc: dict, idx: dict) -> list[str]:
             out.append(f"{a['swr']} is not a functional requirement of this task (component-level or unknown)")
         out += [f"{a['swr']}: function {x} is not defined in functions" for x in a["functions"] if x not in fns]
     out += [f"{s} is not allocated" for s in func if s not in alloc]
+    if inst is not None:
+        out += [f"function {n} of the API contract {inst['api_contract']} is not defined" for n in inst["signatures"]
+                if n not in fns]
     used = {x for v in alloc.values() for x in v}
     out += [f"function {n} is not allocated to any requirement" for n in fns if n not in used]
     for s, text in func.items():
@@ -303,8 +385,11 @@ def validate_interfaces(ws: Path, doc: dict, idx: dict) -> list[str]:
                        f"{len(c['args'])}")
         if any(not SAFE_ARG.match(a) or re.search(r"[A-Za-z_]\w*\s*\(", a) or ";" in a for a in c["args"]):
             out.append(f"case {e['case']}: arguments must be plain C constants (no calls, no ';')")
-        if e["op"] == "write" and f is not None and f["params"] and c["args"]:
-            if _int(c["args"][0]) != _int(str(e.get("value"))):
+        if inst is not None and f is not None and c["args"] and c["args"][0].strip() != inst["macro"]:
+            out.append(f"case {e['case']}: the first argument must be the instance macro {inst['macro']}")
+        k = _value_index(ws, f) if f is not None else 0
+        if e["op"] == "write" and f is not None and len(f["params"]) > k and len(c["args"]) > k:
+            if _int(c["args"][k]) != _int(str(e.get("value"))):
                 out.append(f"case {e['case']}: the argument must be the case value {e.get('value')}")
     known = {e["case"] for e in effects(ws)}
     out += [f"call {k} has no register-effect case" for k in calls if k not in known]
@@ -339,7 +424,7 @@ def validate_design(ws: Path, doc: dict, iface: dict) -> list[str]:
 
 # ---- rendering ----------------------------------------------------------------------------------------------------------
 def _sig(f: dict) -> str:
-    return f"static inline {f['returns']} {f['name']}({', '.join(p['type'] + ' ' + p['name'] for p in f['params']) or 'void'})"
+    return f"static inline {f['returns']} {f['name']}({', '.join(_param(p) for p in f['params']) or 'void'})"
 
 
 def render(ws: Path, iface: dict, design: dict) -> dict[str, str]:
@@ -353,6 +438,23 @@ def render(ws: Path, iface: dict, design: dict) -> dict[str, str]:
     page = {r: next((s["page"] for n, s in secs.items() if s["title"].endswith(f"({r})")), None) for r in idx}
     bl = Store(ws).latest_baseline("SWE.1") or {}
     allswr = sorted(reqs)
+    inst = instance(ws)
+    if inst is None:
+        access = (f"Register block: `extern volatile uint32_t {i['block']}[];` placed at the {i['pfx']} base address "
+                  f"{i['base']}" + (f" (RM0486 p.{i['mm']})" if i["mm"] else "") + " by the linker; host tests define "
+                  f"the array in RAM. Every access uses {i['block']}[LL_{i['pfx']}_<REG>_OFFSET / 4U]; no "
+                  "integer-to-pointer casts.")
+        if2, table = "volatile register-array access", "the array index is offset / 4U."
+    else:
+        members = ", ".join(f"{r} -> {inst['parameter']}->{m}" for r, m in inst["members"].items())
+        access = (f"Register instance: the caller supplies `{inst['type_name']} *{inst['parameter']}`, the typed "
+                  f"register layout of the pinned device header {inst['device_header']} (offsets checked against "
+                  f"RM0486). The caller passes the instance macro {inst['macro']}: the {i['pfx']} base address "
+                  f"{i['base']}" + (f" (RM0486 p.{i['mm']})" if i["mm"] else "") + f" on the target, the RAM object "
+                  f"{inst['host_object']} in host tests. Every access uses {inst['parameter']}-><MEMBER> ({members}); "
+                  "no register-block array, no singleton, no integer-to-pointer casts in the driver.")
+        if2 = f"volatile typed register access through the caller's {inst['type_name']} instance"
+        table = f"each register is the {inst['type_name']} member at that offset."
     md = ["# Software architecture", "",
           f"Work order: {m['work_order']}. Input baseline: {bl.get('baseline_id', 'UNKNOWN')} (hash "
           f"{bl.get('baseline_hash', 'UNKNOWN')}). Authority: the frozen SWE.1 work products, the work-order manifest and "
@@ -360,14 +462,11 @@ def render(ws: Path, iface: dict, design: dict) -> dict[str, str]:
           "## Components", "", design["components"].strip(), "",
           f"Developed software component: SWC_LL, the header-only LL library {i['header']} (static inline functions). "
           f"The {i['pfx']} register block is hardware, not a software component.", "",
-          "## Register access", "", f"Register block: `extern volatile uint32_t {i['block']}[];` placed at the "
-          f"{i['pfx']} base address {i['base']}" + (f" (RM0486 p.{i['mm']})" if i["mm"] else "") +
-          f" by the linker; host tests define the array in RAM. Every access uses {i['block']}[LL_{i['pfx']}_<REG>_OFFSET "
-          "/ 4U]; no integer-to-pointer casts.", "", design["register_access"].strip(), "",
+          "## Register access", "", access, "", design["register_access"].strip(), "",
           "## Interfaces", "", "| Function signature | Operation | Register fields |", "| --- | --- | --- |"]
     md += [f"| {_sig(f)} | {f['operation']} | {', '.join(f['fields']) or '-'} |" for f in iface["functions"]]
-    md += ["", "Interface ids: IF-01 Caller -> SWC_LL (LL API above); IF-02 SWC_LL -> register block (volatile "
-           "register-array access).", "", "## Timing and error handling", "", design["timing_and_error_handling"].strip(),
+    md += ["", f"Interface ids: IF-01 Caller -> SWC_LL (LL API above); IF-02 SWC_LL -> register block ({if2}).",
+           "", "## Timing and error handling", "", design["timing_and_error_handling"].strip(),
            "", "## Memory and stack budget", "", "| Budget | Limit | Allocated to | Requirement |", "| --- | --- | --- | --- |"]
     for label, key, word in (("Flash", "flash_bytes", "flash"), ("Static RAM", "static_ram_bytes", "static ram"),
                              ("Stack per API call", "stack_bytes", "stack")):
@@ -389,8 +488,8 @@ def render(ws: Path, iface: dict, design: dict) -> dict[str, str]:
             # architecture and the inspector failed SWE2-05 three times; the full requirement is the allocation
             md.append(f"| {s} | all LL functions (component-level constraint of SWC_LL, no dedicated function) | "
                       f"{_cell(reqs[s])} |")
-    md += ["", "## Register table", "", f"{i['pfx']} base address {i['base']}. Offsets are bytes; the array index is "
-           "offset / 4U.", "", "| Name | Offset | Bit position(s) | Access | RM0486 page |", "| --- | --- | --- | --- | --- |"]
+    md += ["", "## Register table", "", f"{i['pfx']} base address {i['base']}. Offsets are bytes; {table}", "",
+           "| Name | Offset | Bit position(s) | Access | RM0486 page |", "| --- | --- | --- | --- | --- |"]
     used = []
     for f in iface["functions"]:
         used += [x for x in f["fields"] if x not in used]
@@ -408,7 +507,7 @@ def render(ws: Path, iface: dict, design: dict) -> dict[str, str]:
           f'component "{i["pfx"]}_LL\\n{i["stem"]}" <<SWC>> as SWC_LL',
           f'rectangle "{i["pfx"]} register block ({i["base"]})" as REGS', "",
           f"Caller --> SWC_LL : IF-01 LL API ({len(iface['functions'])} functions)",
-          "SWC_LL --> REGS : IF-02 volatile register-array access", "", "note right of SWC_LL",
+          f"SWC_LL --> REGS : IF-02 {if2}", "", "note right of SWC_LL",
           "Allocated: " + ", ".join(allswr), "end note", "@enduml", ""]
     dy = ["@startuml", "title " + "; ".join(s["title"] for s in design["sequences"])[:150], "actor Caller",
           f"participant {i['stem']} as LL", f'participant "{i["pfx"]} registers" as REGS']
@@ -443,6 +542,9 @@ def self_check(ws: Path) -> list[str]:
     ws = Path(ws)
     out = check_architecture(ws)["major_findings"] + check_views(ws, render=False)["major_findings"]
     out += check_architecture_model(ws)["major_findings"] + RC.check_calls(ws) + workspace_scope_findings(ws, PHASE)
+    inst = instance(ws)
+    if inst is not None:  # instance mode: the call contract compiles against the declared API contract (as the gate)
+        out += RC.check_compiles(ws, [], inst["api_contract"])
     return out
 
 

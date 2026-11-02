@@ -242,9 +242,12 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
     if not cs:
         return []
     from ..brownfield import delivered_paths, is_brownfield, manifest_of
+    from ..layer import instance_flags, ll_instance
 
     m = manifest_of(ws)
     compiler, extra, headers = ["gcc", "-std=c99"], [], [api_header]
+    if ll_instance(ws) is not None:  # instance mode: the pinned device/API headers, host mapping of the instance macro
+        compiler, extra = ["gcc", "-std=c11"], instance_flags(ws, host=True)
     if is_brownfield(m):  # feature 008: all delivered headers, vendor includes and the delivery's build settings
         b = m["delivery"].get("build") or {}
         headers = [Path(x).name for x in delivered_paths(m) if x.endswith(".h")] or headers
