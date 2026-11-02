@@ -92,6 +92,11 @@ def component_level(ws: Path) -> set[str]:
     return component_constraints(Path(ws))
 
 
+def _cell(text: str) -> str:
+    """A whole text in one markdown table cell (no truncation; pipes and line breaks cannot split the row)."""
+    return " ".join(str(text).split()).replace("|", "\\|")
+
+
 def _ident(ws: Path) -> dict:
     from ..layer import profile, register_prefix
 
@@ -379,8 +384,11 @@ def render(ws: Path, iface: dict, design: dict) -> dict[str, str]:
         if s in alloc:
             md.append(f"| {s} | {', '.join(alloc[s]['functions'])} | {alloc[s]['responsibility']} |")
         else:
+            # CAPA-106 (run WO-F014-CMP-SWE2-OBL-20261102-01): the text was cut at 120 characters, so the budgets of
+            # SWR-012/SWR-013 ("within 64 executed target instructions", "100 microseconds") vanished from the
+            # architecture and the inspector failed SWE2-05 three times; the full requirement is the allocation
             md.append(f"| {s} | all LL functions (component-level constraint of SWC_LL, no dedicated function) | "
-                      f"{reqs[s].strip()[:120]} |")
+                      f"{_cell(reqs[s])} |")
     md += ["", "## Register table", "", f"{i['pfx']} base address {i['base']}. Offsets are bytes; the array index is "
            "offset / 4U.", "", "| Name | Offset | Bit position(s) | Access | RM0486 page |", "| --- | --- | --- | --- | --- |"]
     used = []
