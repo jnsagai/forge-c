@@ -132,3 +132,40 @@ def test_the_phase_repair_bound_still_ends_a_moving_target(ws1):  # noqa: F811
     assert gate.step_route(Store(ws1), "SWE.1") == 1  # still a different finding, but the bound is reached
     route = _last_route(ws1)
     assert route["decision"] == "BLOCKED" and "development repair exhausted" in route["reason"]
+
+
+def _moving_rounds() -> list[list[str]]:
+    """Six rounds of SWE1-02 findings, each a different issue (IWDG-05 then CRCL-06 incident rounds)."""
+    return (_rounds(_incident("WO-F014-CMP-SWE1-IWDG-20261102-05", "SWE1-02"))
+            + _rounds(_incident("WO-F014-CMP-SWE1-CRCL-20261102-06", "SWE1-02")))
+
+
+def test_a_moving_target_is_capped_at_six_consecutive_failures_of_the_item(ws1):  # noqa: F811
+    _high(ws1)
+    rounds = _moving_rounds()
+    assert gate.MOVING_TARGET_LIMIT == 6 and len(rounds) == 6
+    for n, texts in enumerate(rounds[:5], 1):
+        _ins(ws1, n, {"SWE1-02": texts})
+        assert gate.step_route(Store(ws1), "SWE.1") == 0, n  # five rounds of different findings still continue
+    assert gate.moving_target_items(Store(ws1), "SWE.1") == {}
+    _ins(ws1, 6, {"SWE1-02": rounds[5]})
+    assert gate.step_route(Store(ws1), "SWE.1") == 1
+    route = _last_route(ws1)
+    assert route["decision"] == "BLOCKED" and "STUCK: ITEM_FAILED_6X_MOVING_TARGET:SWE1-02;" in route["reason"]
+    summary = route["moving_target_rounds"]["SWE1-02"]
+    assert [s["inspection_id"] for s in summary] == [f"INS-SWE.1-{n:03d}" for n in range(1, 7)]
+    assert [s["findings"] for s in summary] == [len(t) for t in rounds]
+    assert all(s["first"] == t[0][:200] for s, t in zip(summary, rounds, strict=True))
+    assert "repeated_finding" not in route
+
+
+def test_a_pass_of_the_item_restarts_the_moving_target_count(ws1):  # noqa: F811
+    _high(ws1)
+    rounds = _moving_rounds()
+    for n, texts in enumerate(rounds[:3], 1):
+        _ins(ws1, n, {"SWE1-02": texts})
+    _ins(ws1, 4, {"SWE1-03": ["SWE1-03 only: failure handling is not specified."]})
+    for n, texts in enumerate(rounds[3:], 5):
+        _ins(ws1, n, {"SWE1-02": texts})
+    _ins(ws1, 8, {"SWE1-02": rounds[0]})
+    assert gate.moving_target_items(Store(ws1), "SWE.1") == {}  # SWE1-02 failed only the last 4 in a row

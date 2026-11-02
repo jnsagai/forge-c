@@ -455,6 +455,17 @@ def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck
 
 
 SAME_ITEM_LIMIT = 3  # owner 2026-11-01 ("N can be 3")
+# Hard cap (2026-11-02, with the same-finding rule): an item failing this many consecutive inspections stops the
+# high-allowance route whatever its findings say (a moving target is progress, but loops stay bounded well below
+# max_phase_repair_passes on the paid/slow cloud line). Twice the old item-only bound; a code constant, not config.
+MOVING_TARGET_LIMIT = 2 * SAME_ITEM_LIMIT
+
+
+ITEM_STUCK = ("SAME_ITEM", "ITEM_FAILED")  # stuck codes the route reason names verbatim
+
+
+def _failed_items(rec: dict) -> set[str]:
+    return {k for k, v in (rec.get("items") or {}).items() if (v or {}).get("verdict") not in ("PASS", None)}
 
 
 def repeated_failed_findings(store: Store, phase: str, n: int = SAME_ITEM_LIMIT) -> dict[str, str]:
@@ -471,14 +482,34 @@ def repeated_failed_findings(store: Store, phase: str, n: int = SAME_ITEM_LIMIT)
     rows = [r for r in store.inspections(phase) if str(r.get("recorded_at") or "") >= since]
     if len(rows) < n:
         return {}
-    failed = [{k for k, v in (r.get("items") or {}).items() if (v or {}).get("verdict") not in ("PASS", None)}
-              for r in rows[-n:]]
+    failed = [_failed_items(r) for r in rows[-n:]]
     common = set.intersection(*failed) if all(failed) else set()
     out = {}
     for item in sorted(common):
         alive = finding_identity.persisting([finding_identity.item_findings(r, item) for r in rows[-n:]])
         if alive:
             out[item] = alive[0]
+    return out
+
+
+def moving_target_items(store: Store, phase: str, n: int = MOVING_TARGET_LIMIT) -> dict[str, list[dict]]:
+    """Item -> per-round summary, for each item that failed the last `n` inspections of the phase in this budget epoch,
+    regardless of finding identity (the hard cap behind the same-finding rule)."""
+    from . import finding_identity
+
+    since = store.budget_start()
+    rows = [r for r in store.inspections(phase) if str(r.get("recorded_at") or "") >= since]
+    if len(rows) < n:
+        return {}
+    failed = [_failed_items(r) for r in rows[-n:]]
+    common = set.intersection(*failed) if all(failed) else set()
+    out = {}
+    for item in sorted(common):
+        out[item] = []
+        for r in rows[-n:]:
+            texts = finding_identity.item_findings(r, item)
+            out[item].append({"inspection_id": r.get("inspection_id"), "findings": len(texts),
+                              "first": (texts[0] if texts else "")[:200]})
     return out
 
 
@@ -523,15 +554,19 @@ def step_route(store: Store, phase: str) -> int:
         repeated = repeated_failed_findings(store, phase) if high and not stuck else {}
         if repeated:
             stuck = (f"SAME_ITEM_FAILED_{SAME_ITEM_LIMIT}X:{','.join(repeated)}",)
+        moving = moving_target_items(store, phase) if high and not stuck else {}
+        if moving:
+            stuck = (f"ITEM_FAILED_{MOVING_TARGET_LIMIT}X_MOVING_TARGET:{','.join(moving)}",)
         refused = g["decision"] == "BLOCKED" and str(g.get("reason", "")).startswith("INSPECTOR_REFUSED_REPEATEDLY:")
         if stuck or refused:
             allowed = False  # Owner's stop-and-rethink direction: quota does not excuse a deterministic stall.
         result = {**g, "decision": "REWORK" if allowed else "BLOCKED",
                   "development_ladder": development.ladder(store.workspace, phase),
                   **({"repeated_finding": {k: v[:300] for k, v in repeated.items()}} if repeated else {}),
+                  **({"moving_target_rounds": moving} if moving else {}),
                   "reason": ("high-allowance development repair" if high else "one bounded development repair")
                   if allowed else f"STUCK: {g['reason']}; external diagnosis required" if refused else
-                  f"STUCK: {stuck[0]}; external diagnosis required" if stuck and str(stuck[0]).startswith("SAME_ITEM")
+                  f"STUCK: {stuck[0]}; external diagnosis required" if stuck and str(stuck[0]).startswith(ITEM_STUCK)
                   else "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
                   "development repair exhausted; dependent continuation requires independently valid inputs"}
         _state(store.workspace, phase, {"step": "route", "gate": result})
