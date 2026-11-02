@@ -395,6 +395,10 @@ def test_structured_swe2_interface_task_in_instance_mode(inst_ws, monkeypatch):
 
     calls = []
     monkeypatch.setattr(S, "call", _scripted({"interfaces": IFACE, "design": DESIGN}, calls))
+    from forge_factory.workflow.builder import binding_for, build
+
+    _g, nodes = build("WO-T-INSTANCE", layer="LL", trace=True, peripheral="crc")  # the gate's node binding, as SWE.2 tests
+    binding_for("WO-T-INSTANCE", str(inst_ws), nodes).dump(inst_ws / ".forge-run/binding.json")
     rep = swe2.visit(_swe1(inst_ws), "m")
     packet = calls[0]
     assert packet["task"] == "interfaces" and "IDR-API.h, whose signatures are fixed" in packet["instructions"]
@@ -403,9 +407,12 @@ def test_structured_swe2_interface_task_in_instance_mode(inst_ws, monkeypatch):
     iface = json.loads((inst_ws / ".forge-run/lrtx/SWE.2/packets/interfaces.json").read_text())
     assert iface["status"] == "VALID"
     assert [p["task"] for p in calls][:2] == ["interfaces", "design"]
-    # SEPARATE DEFECT (not changed here, reported): validate_design asks for a caller-bounded polling loop whenever a
-    # function returns uint32_t, so the value read LL_CRC_Read_IDR draws an invented polling step.
-    assert rep["status"] == "FAILED" and any("polling loop" in i for i in rep["issues"]), rep
+    # owner 2026-11-02 ("Status queries only"): the value read LL_CRC_Read_IDR (CRC_IDR.IDR, 32 bits) asks for no
+    # invented polling step
+    assert rep["status"] == "PASS" and not any("polling loop" in i for i in rep.get("issues") or []), rep
+    assert not swe2._status_query(inst_ws, {"returns": "uint32_t", "fields": ["CRC_IDR.IDR"]})
+    assert swe2._status_query(inst_ws, {"returns": "uint32_t", "fields": ["CRC_IDR.NOPE"]})  # unknown field: as before
+    assert not swe2._status_query(inst_ws, {"returns": "void", "fields": ["CRC_IDR.IDR"]})
 
 
 # ---- stage 4: register map and SWE.3 -------------------------------------------------------------------------------
