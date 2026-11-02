@@ -1,6 +1,6 @@
-"""Owner 2026-11-02 ("the inspection cell is running with qwen and the line speed is around 130 tok/s, is that
-correct?"): the line speed is the model at work now, from the gateway's per-call measurements, not a Fabro node's
-cumulative average across the models it called."""
+"""Owner 2026-11-02 ("could be the average, no problem" / "lets just have a local gauge in the cell"): the line speed
+KPI stays a Fabro node's average; the cell at work shows the speed of the model at work now, from the gateway's
+per-call measurements (output tokens / latency of its latest calls)."""
 import json
 import time
 
