@@ -238,3 +238,171 @@ def test_instance_header_compiles_and_analyses_on_the_pinned_device_header(inst_
     _write_ll(legacy_ws)  # the same header without the declaration: the pinned input is not on any include path
     r = _invoke(legacy_ws, monkeypatch, "forge-build-mcp", "compile", {"profile": "target-cm55-gcc"})
     assert r["status"] == "FAIL", r
+
+
+# ---- stage 3: SWE.2 ------------------------------------------------------------------------------------------------
+REQS = """# Software requirements
+
+## Functional
+
+- **SWR-001** When the caller requests an IDR write with a valid accessible CRC instance, the CRC LL driver shall write the supplied 32-bit value to CRC_IDR.IDR.
+- **SWR-002** When the caller requests an IDR read with a valid accessible CRC instance, the CRC LL driver shall return the current 32-bit value of CRC_IDR.IDR.
+- **SWR-003** While no LL function has been called after reset, the CRC LL driver shall not write any CRC register.
+"""
+EFFECTS = {"schema": "forge-c/register-effects/1", "effects": [
+    {"case": "WRITE_IDR", "swr": "SWR-001", "register": "CRC_IDR", "field": "IDR", "op": "write", "value": "0x12345678"},
+    {"case": "READ_IDR", "swr": "SWR-002", "register": "CRC_IDR", "field": "IDR", "op": "no_write"}]}
+IFACE = {"functions": [
+    {"name": "LL_CRC_Write_IDR", "operation": "writes the 32-bit value to CRC_IDR", "fields": ["CRC_IDR.IDR"]},
+    {"name": "LL_CRC_Read_IDR", "operation": "returns the 32-bit value of CRC_IDR", "fields": ["CRC_IDR.IDR"]}],
+    "allocation": [{"swr": "SWR-001", "functions": ["LL_CRC_Write_IDR"], "responsibility": "IDR write"},
+                   {"swr": "SWR-002", "functions": ["LL_CRC_Read_IDR"], "responsibility": "IDR read"}],
+    "calls": [{"case": "WRITE_IDR", "function": "LL_CRC_Write_IDR", "args": ["CRC", "0x12345678U"]},
+              {"case": "READ_IDR", "function": "LL_CRC_Read_IDR", "args": ["CRC"]}]}
+DESIGN = {"components": "The single developed component SWC_LL owns two stateless IDR register operations; the caller "
+                        "owns the CRC instance, its clock, power, security and access setup.",
+          "register_access": "Volatile typed accesses through the caller's CRC_TypeDef instance; CRC_IDR takes "
+                             "whole-register writes and plain reads; clocks and reset belong to the integration.",
+          "timing_and_error_handling": "No waiting and no error codes at LL level; every function is one register "
+                                       "operation and invalid instances are outside the supported domain.",
+          "memory_and_stack": "Flash at most 4096 B, static RAM 64 B budget with 0 B used (no state), stack at most "
+                              "128 B per call: only automatic temporaries.",
+          "concurrency_and_reentrancy": "The LL is reentrant (no state); callers serialise access to one instance and "
+                                        "do not share it with an ISR without their own protection.",
+          "safety_and_dependencies": "The LL provides no safety mechanism or degraded state of its own; it depends on "
+                                     "the caller for a valid accessible instance.",
+          "decisions": ["Header-only static inline LL on the caller's typed instance."],
+          "sequences": [{"title": "Write and read IDR", "steps": [
+              {"function": "LL_CRC_Write_IDR", "repeat_until": "", "note": ""},
+              {"function": "LL_CRC_Read_IDR", "repeat_until": "", "note": ""}]}]}
+
+
+def _swe1(ws):
+    (ws / "workproducts/SWE.1").mkdir(parents=True, exist_ok=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(REQS)
+    (ws / "workproducts/SWE.1/register_effects.json").write_text(json.dumps(EFFECTS))
+    return ws
+
+
+def _idx(ws):
+    from forge_factory.assurance.hardware import index
+
+    return index(ws / "inputs/sections/RM0486")
+
+
+def test_swe2_schema_takes_signatures_from_the_api_contract_only_in_instance_mode(inst_ws, legacy_ws):
+    from forge_factory.lrtx import structured as S
+    from forge_factory.lrtx import swe2
+
+    schema = swe2.interfaces_schema(_swe1(inst_ws))
+    item = schema["properties"]["functions"]["items"]
+    assert set(item["required"]) == {"name", "operation", "fields"} and "params" not in item["properties"]
+    assert item["properties"]["name"]["enum"] == ["LL_CRC_Write_IDR", "LL_CRC_Read_IDR"]
+    assert S.validate(IFACE, schema) == []
+    with_sig = copy.deepcopy(IFACE)
+    with_sig["functions"][0]["params"] = [{"name": "value", "type": "uint32_t"}]
+    assert S.validate(with_sig, schema)  # the model cannot restate (or change) a signature
+    assert swe2.interfaces_schema(_swe1(legacy_ws)) is swe2.INTERFACES_SCHEMA
+    doc = swe2.normalize_interfaces(inst_ws, IFACE)
+    assert doc["functions"][0]["params"] == [{"name": "CRCx", "type": "CRC_TypeDef *"},
+                                             {"name": "InData", "type": "uint32_t"}]
+    assert doc["functions"][1]["returns"] == "uint32_t"
+    assert swe2.normalize_interfaces(legacy_ws, IFACE) is IFACE
+    assert swe2._sig(doc["functions"][1]) == "static inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx)"
+
+
+def test_swe2_call_contract_checks_the_instance_argument_and_the_value(inst_ws):
+    from forge_factory.lrtx import swe2
+
+    ws = _swe1(inst_ws)
+    good = swe2.normalize_interfaces(ws, IFACE)
+    assert swe2.validate_interfaces(ws, good, _idx(ws)) == []
+    bad = copy.deepcopy(IFACE)
+    bad["calls"][0]["args"] = ["0x12345678U", "CRC"]
+    bad["calls"][1]["args"] = ["CRCx"]
+    out = swe2.validate_interfaces(ws, swe2.normalize_interfaces(ws, bad), _idx(ws))
+    assert "case WRITE_IDR: the first argument must be the instance macro CRC" in out
+    assert "case READ_IDR: the first argument must be the instance macro CRC" in out
+    assert "case WRITE_IDR: the argument must be the case value 0x12345678" in out
+    missing = copy.deepcopy(IFACE)
+    missing["functions"][1]["name"] = "LL_CRC_ReadData32"
+    missing["allocation"][1]["functions"] = ["LL_CRC_ReadData32"]
+    missing["calls"][1]["function"] = "LL_CRC_ReadData32"
+    out = swe2.validate_interfaces(ws, swe2.normalize_interfaces(ws, missing), _idx(ws))
+    assert any(f.startswith("function LL_CRC_ReadData32 is not declared by the API contract IDR-API.h") for f in out)
+    assert "function LL_CRC_Read_IDR of the API contract IDR-API.h is not defined" in out
+
+
+def test_swe2_renders_the_instance_architecture_and_the_call_contract_compiles(inst_ws):
+    import shutil
+
+    from forge_factory.assurance import register_contract as RC
+    from forge_factory.lrtx import swe2
+
+    ws = _swe1(inst_ws)
+    files = swe2.render(ws, swe2.normalize_interfaces(ws, IFACE), DESIGN)
+    md = files[swe2.ARCH]
+    assert "| static inline void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData) |" in md
+    assert "| static inline uint32_t LL_CRC_Read_IDR(const CRC_TypeDef *CRCx) |" in md
+    assert "ll_crc_regs" not in md and "register-array" not in md
+    assert "CRCx->IDR" in md and "forge_host_crc" in md and "| CRC_IDR | 0x04 |" in md
+    assert "Caller -> LL : LL_CRC_Write_IDR(CRCx, InData)" in files[swe2.DYNAMIC]
+    assert json.loads(files[swe2.CALLS])["calls"]["WRITE_IDR"]["args"] == ["CRC", "0x12345678U"]
+    for rel, text in files.items():
+        (ws / rel).parent.mkdir(parents=True, exist_ok=True)
+        (ws / rel).write_text(text)
+    assert RC.check_calls(ws) == []
+    if not shutil.which("gcc"):
+        pytest.skip("gcc not installed")
+    assert RC.check_compiles(ws, [], "IDR-API.h") == []
+    assert swe2.self_check(ws) == []  # the unchanged SWE.2 gates accept the instance architecture
+    calls = json.loads((ws / swe2.CALLS).read_text())
+    calls["calls"]["READ_IDR"]["args"] = ["CRC", "1U"]  # one argument too many for the declared signature
+    (ws / swe2.CALLS).write_text(json.dumps(calls))
+    assert RC.check_compiles(ws, [], "IDR-API.h")[0].startswith("CONTRACT_CALL_DOES_NOT_COMPILE")
+
+
+def test_swe2_gate_compiles_the_instance_call_contract(inst_ws, legacy_ws, monkeypatch):
+    from forge_factory.assurance import register_contract as RC
+    from forge_factory.inspection import gate
+    from forge_factory.inspection.engine import Store
+
+    seen = []
+    monkeypatch.setattr(RC, "check_calls", lambda ws: [])
+    monkeypatch.setattr(RC, "check_compiles", lambda ws, inc, hdr: seen.append((ws, hdr)) or ["CONTRACT_CALL_X"])
+    reply = json.dumps({"status": "PASS", "artifacts": [], "issues": [], "next_action": "next"})
+    for ws in (inst_ws, legacy_ws):
+        _swe1(ws)
+        gate.step_author(Store(ws), "SWE.2", reply)
+    assert seen == [(inst_ws, "IDR-API.h")]  # greenfield without the declaration: no SWE.2 compile, as before
+
+
+def _scripted(answers, calls):
+    from forge_factory.lrtx import structured as S
+
+    def call(p, **_k):
+        calls.append(p)
+        doc = answers[p["task"]]
+        doc = doc(p) if callable(doc) else doc
+        return {"doc": json.loads(json.dumps(doc)), "errors": S.validate(doc, p["output_schema"]),
+                "usage": {"prompt_tokens": 1000, "completion_tokens": 200}, "wall_ms": 1.0, "finish_reason": "stop"}
+    return call
+
+
+def test_structured_swe2_interface_task_in_instance_mode(inst_ws, monkeypatch):
+    from forge_factory.lrtx import structured as S
+    from forge_factory.lrtx import swe2
+
+    calls = []
+    monkeypatch.setattr(S, "call", _scripted({"interfaces": IFACE, "design": DESIGN}, calls))
+    rep = swe2.visit(_swe1(inst_ws), "m")
+    packet = calls[0]
+    assert packet["task"] == "interfaces" and "IDR-API.h, whose signatures are fixed" in packet["instructions"]
+    assert "first the instance macro CRC" in packet["instructions"]
+    assert "extern volatile uint32_t" not in packet["instructions"]
+    iface = json.loads((inst_ws / ".forge-run/lrtx/SWE.2/packets/interfaces.json").read_text())
+    assert iface["status"] == "VALID"
+    assert [p["task"] for p in calls][:2] == ["interfaces", "design"]
+    # SEPARATE DEFECT (not changed here, reported): validate_design asks for a caller-bounded polling loop whenever a
+    # function returns uint32_t, so the value read LL_CRC_Read_IDR draws an invented polling step.
+    assert rep["status"] == "FAILED" and any("polling loop" in i for i in rep["issues"]), rep

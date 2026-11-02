@@ -149,8 +149,12 @@ def step_author(store: Store, phase: str, text: str) -> int:
         elif phase == "SWE.2":
             generated += RC.check_calls(store.workspace)
             from ..brownfield import is_brownfield, manifest_of
+            from ..layer import ll_instance
 
-            if is_brownfield(manifest_of(store.workspace)):
+            inst = ll_instance(store.workspace) if lay == "LL" else None
+            if inst is not None:  # instance mode: the call contract compiles against the declared API contract
+                generated += RC.check_compiles(store.workspace, [], inst["api_contract"])
+            elif is_brownfield(manifest_of(store.workspace)):
                 # CAPA-089 (run WO-F014-SWE3-CRCK-20261101-01): the delivered headers exist from the SWE.1 freeze on, so
                 # the call contract SWE.2 writes is compiled where it is made, not first at SWE.3 (which may not edit it)
                 from ..layer import hal_h, ll_header
