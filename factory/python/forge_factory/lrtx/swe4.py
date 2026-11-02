@@ -102,17 +102,31 @@ def _oracle_artifacts(ws: Path, c: dict) -> list[dict]:
             {"path": "generated-defines", "text": defs, "sha256": sha256_bytes(defs.encode())}]
 
 
-def test_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> dict:
-    from .swe3 import _ident, _sig
+def _preset_rule(ws: Path, fields: list[str]) -> str:
+    """Where a test presets and reads registers: the register-block array, or (instance mode) the instance macro."""
+    from ..layer import ll_instance
+    from .swe3 import _ident
 
-    i = _ident(ws)
+    i, inst = _ident(ws), ll_instance(ws)
+    if inst is None:
+        return f"directly in {i['block']}[LL_{i['pfx']}_<REG>_OFFSET / 4U], call the function"
+    regs = dict.fromkeys(f.split(".")[0] for f in fields)
+    members = ", ".join(f"{inst['macro']}->{inst['members'][r]} for {r}" for r in regs if r in inst["members"])
+    return (f"directly through the instance macro {inst['macro']} ({members or inst['macro'] + '-><MEMBER>'}; in the "
+            f"host build {inst['macro']} is the RAM instance {inst['host_object']}), call the function with "
+            f"{inst['macro']} as its instance argument")
+
+
+def test_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> dict:
+    from .swe3 import _sig
+
     u = c["unit"]
     specs = _unit_specs(ws, u)
     name = "ut_" + re.sub(r"[^a-z0-9]+", "_", c["ut"].lower())
     instr = (f"Write ONE self-checking host unit test for {c['ut']}, which verifies {c['swr']} on "
              f"`{_sig(u['function'])}` (unit {u['id']}). The test is `static void {name}(void)`: call ut_reset_regs() "
-             f"first, preset any register value the case needs directly in {i['block']}[LL_{i['pfx']}_<REG>_OFFSET / "
-             f"4U], call the function, and check the result with EXACTLY ONE CHECK(\"{c['ut']}\", <condition>) - a test id "
+             f"first, preset any register value the case needs {_preset_rule(ws, u['function']['fields'])}, and check "
+             f"the result with EXACTLY ONE CHECK(\"{c['ut']}\", <condition>) - a test id "
              "names exactly one check, so combine every expected condition with && in that one CHECK (call the "
              "function and store results in local uint32_t variables before the CHECK when several states are "
              "checked). The expected register values and return values come ONLY from the "
@@ -190,6 +204,12 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
         out.append("no #include or #define in a test")
     idn = _ident(ws)
     out += V.offset_index_errors(code, idn["block"], idn["pfx"]) if idn.get("block") else []
+    from ..layer import ll_instance
+
+    inst = ll_instance(ws)
+    if inst is not None and re.search(rf"\b{re.escape(idn['block'])}\b", strip_comments(code)):
+        out.append(f"{idn['block']} does not exist in instance mode: preset and read registers through "
+                   f"{inst['macro']}-><MEMBER>")
     kinds = list(doc.get("kinds") or [])
     fn = c["unit"]["function"]
     ncalls = len(re.findall(rf"\b{re.escape(fn['name'])}\s*\(", nc.split("{", 1)[-1]))
@@ -266,6 +286,7 @@ def _takes_value(fn: dict) -> bool:
 
 
 def _compile_test(ws: Path, name: str, code: str) -> list[str]:
+    from ..layer import instance_flags
     from .swe3 import _header
 
     text = _with_tests(ws, [(name, code)])
@@ -273,7 +294,8 @@ def _compile_test(ws: Path, name: str, code: str) -> list[str]:
         t = Path(td) / "t.c"
         t.write_text(text)
         r = subprocess.run(["clang", "-std=c11", "-Wall", "-Wextra", "-Werror", "-fsyntax-only",
-                            f"-I{_header(ws).parent}", str(t)], capture_output=True, text=True)
+                            f"-I{_header(ws).parent}", *instance_flags(ws, host=True), str(t)], capture_output=True,
+                           text=True)
     errs = [ln.split(" error: ", 1)[1][:160] for ln in r.stderr.splitlines() if " error: " in ln]
     return [f"compile: {e}" for e in errs[:6]] or ([f"compile failed: {r.stderr[:160]}"] if r.returncode else [])
 
@@ -410,10 +432,15 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     sa = [json.loads(x) for x in (ws / "evidence/tool-results.jsonl").read_text().splitlines()
           if '"op": "cppcheck"' in x or '"op": "clang_analyze"' in x]
     kinds = {c["ut"]: _declared_kinds(ws, c["ut"]) for c in cs}
+    from ..layer import ll_instance
+
+    inst = ll_instance(ws)
+    store = ("a plain RAM register array" if inst is None else f"the RAM {inst['type_name']} instance "
+             f"{inst['host_object']} of the pinned device header {inst['device_header']}, passed as {inst['macro']}")
     md = ["# Unit verification report", "",
           "## Measures, environment, entry/exit criteria and regression", "",
-          "Host clang build of the self-checking unit tests against the header-only LL driver on a plain RAM register "
-          "array (host evidence, not target). Entry: the SWE.3 baseline is frozen. Exit: every UT PASS and the "
+          f"Host clang build of the self-checking unit tests against the header-only LL driver on {store} "
+          "(host evidence, not target). Entry: the SWE.3 baseline is frozen. Exit: every UT PASS and the "
           "coverage goal met or a deviation recorded. Regression: the full suite is re-run on every change.", "",
           "## Test cases", "", "| UT id | function | SWR ids | kind | result |", "| --- | --- | --- | --- | --- |"]
     md += [f"| {c['ut']} | {c['unit']['function']['name']} | {c['swr']} | "
@@ -427,8 +454,10 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
         none = [k for k in KINDS if k not in got]
         uc = [c for c in cs if c["unit"]["id"] == uid]
         md.append(f"- {uid}: {', '.join(got) or 'none'}" + "".join(f"; {_kind_gap(k, uc)}" for k in none))
-    md += ["", "## Mock fidelity", "", "Plain RAM register array: no write-1-to-clear, read-only or hardware side "
-           "effects; flags are preset by the test. Limitation: hardware update latency (e.g. PVU/RVU) is not modelled.",
+    md += ["", "## Mock fidelity", "", ("Plain RAM register array" if inst is None else
+                                         f"Plain RAM {inst['type_name']} instance") + ": no write-1-to-clear, read-only "
+           "or hardware side effects; flags are preset by the test. Limitation: hardware update latency (e.g. PVU/RVU) "
+           "is not modelled.",
            "", "## Static analysis", ""]
     md += [f"- {r['op']} ({r['phase']}): status {r['result']['status']}; \"{r['result']['summary']}\"; issues "
            f"{r['result']['issues']}" for r in sa[-2:]] or ["- not run"]
