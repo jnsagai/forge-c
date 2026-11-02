@@ -1120,3 +1120,13 @@ reproducers:
     operations: [workflow/builder (stop_after), brownfield/inject]
     root_cause: "The delivery_inject node was built only with SWE.2, so a brownfield graph scoped to SWE.1 dropped it; SWE.1 passed without injection.json and the SWE.2 resume was refused (RESUME_RECORD_UNREADABLE:injection.json)."
     remedy: "A brownfield graph whose last phase is SWE.1 runs delivery_inject after the SWE.1 inspection gate."
+  - id: RPR-105
+    script: rpr105_resume_drops_test_snapshots.py
+    sha256: 0d7977da57d19e8cbf87c84faaf33d850f51ef497be4822eb8a1e5fa935ab7eb
+    symptom_signature: "a greenfield resume carries the test-integrity log but not the test snapshots it references"
+    observed_in: "Offline-review packages of Fabro runs WO-F014-SWE6-OBL-20261101-L6 and WO-F014-SWE6-IWDG-20261101-L6 on Omniverse2 2026-11-01/02"
+    baseline_revision: 5745b597df09721e63b45b0b5414973e14127f07
+    error_codes: []
+    operations: [workorder.resume_from, release/finalize.stage_test_history]
+    root_cause: "A greenfield resume carried evidence/test-integrity.jsonl but not the content-addressed test snapshots it references; both resumed lineages' packages were BLOCKED (TEST_HISTORY_INTEGRITY: TEST_SNAPSHOT_MISSING_OR_UNREADABLE)."
+    remedy: "resume_from collects the hash-verified test snapshots of the source and its resume ancestors."
