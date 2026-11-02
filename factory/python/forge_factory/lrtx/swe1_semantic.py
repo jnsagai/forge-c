@@ -444,6 +444,8 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
     amap = json.loads(amap_p.read_text()) if amap_p.is_file() else None
     budget, findings = V.open_visit(ws, "SWE.1", resume, lambda: V1.rework_findings(ws, since) if since else [],
                                     max_calls or role.max_turns, time_budget_s)
+    if findings:
+        V.attach_keep_fixed(ws, "SWE.1", budget, lambda fs: V1.route_findings(fs, amap))
     try:
         return _visit(ws, model, budget, V1.route_findings(findings, amap) if findings else {})
     except V.Continue as c:

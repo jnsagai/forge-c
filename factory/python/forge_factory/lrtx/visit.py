@@ -179,7 +179,19 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
     prev = json.loads(ck.read_text()) if ck.is_file() else None
     base = build(None, None)
     # author tasks only: an inspector's repeated round keeps its existing behaviour (inspection independence)
-    mark = _rework_mark(budget, findings) if str(base.get("role", "")).endswith("-author") else None
+    author = str(base.get("role", "")).endswith("-author")
+    mark = _rework_mark(budget, findings) if author else None
+    keep = (budget.get("keep_fixed") or {}).get(task) if author else None
+    plain = build
+
+    def build(fi, pr):  # noqa: F811 - a repair packet (findings given) also carries the task's keep-fixed memory
+        if not keep or not fi:
+            return plain(fi, pr)
+        token = S.KEEP_FIXED.set(keep)
+        try:
+            return plain(fi, pr)
+        finally:
+            S.KEEP_FIXED.reset(token)
     if (mark and prev and prev.get("status") == "VALID" and prev.get("base_hash") == base["input_hash"]
             and _answered(prev.get("rework"), mark)):
         # CAPA-108 (run WO-F014-CMP-SWE1-RCC-20261102-03): every resumed node execution of a rework visit re-sent the
@@ -361,6 +373,58 @@ def rework_findings(ws: Path, phase: str, since: str) -> list[str]:
         if d.get("target_phase") == phase and d.get("status") == "IN_FIX":
             out.append(f"defect {d.get('id')} ({', '.join(d.get('requirement_ids') or [])}): {d.get('summary', '')} "
                        f"{d.get('requirement_quote', '')}".strip())
+    return out
+
+
+KEEP_FIXED_MAX = 20  # per task and repair packet: the most recent are kept, older ones are counted as omitted
+
+
+def keep_fixed_findings(ws: Path, phase: str) -> list[str]:
+    """Owner change 2026-11-02 (run WO-F014-CMP-SWE2-IWDG-20261102-03 and the other cloud-line rework loops): a whole-
+    document repair answer can reintroduce what an earlier round fixed. The findings of EARLIER inspection rounds of
+    this phase in this run that the latest inspection no longer raises (no latest finding on any item is
+    finding_identity.related: same finding, or the same defect wording on other ids), each once in its most recent
+    wording, oldest first, '<item>: <full text>'. Author-side memory only: inspector
+    packets never receive it (inspection independence)."""
+    from ..inspection.engine import Store
+    from ..inspection.finding_identity import item_findings, related, same_finding
+
+    st = Store(Path(ws))
+    rows = [r for r in st.inspections(phase) if str(r.get("recorded_at") or "") >= st.run_started()]
+    if len(rows) < 2:
+        return []
+
+    def failed(rec: dict) -> list[tuple[str, str]]:
+        if rec.get("verdict") == "PASS":
+            return []
+        return [(k, t) for k, v in sorted((rec.get("items") or {}).items()) if (v or {}).get("verdict") == "FAIL"
+                for t in item_findings(rec, k) if str(t).strip()]
+
+    raised = [t for _k, t in failed(rows[-1])]
+    rounds: list[list[tuple[str, str]]] = []  # newest round first; each round in its record order
+    for rec in reversed(rows[:-1]):
+        seen = [t for r in rounds for _i, t in r]
+        rounds.append([])
+        for item, text in failed(rec):
+            if not any(related(text, r) for r in raised) and not any(
+                    same_finding(text, k) for k in seen + [t for _i, t in rounds[-1]]):
+                rounds[-1].append((item, text))
+    return [f"{item}: {text}" for r in reversed(rounds) for item, text in r]
+
+
+def attach_keep_fixed(ws: Path, phase: str, budget: dict, route) -> dict[str, dict]:
+    """Route the keep-fixed findings with the phase's own rework routing (`route`: findings -> {task: findings}), so each
+    reaches the tasks that own it; at most KEEP_FIXED_MAX per task (most recent, the rest counted, never cut). The
+    visit's run_task gives them to a task's repair packet; recorded in <phase>/keep-fixed.json."""
+    keep = keep_fixed_findings(ws, phase)
+    routed = route(keep) if keep else {}
+    out = {t: {"findings": fs[-KEEP_FIXED_MAX:], "omitted": max(0, len(fs) - KEEP_FIXED_MAX)}
+           for t, fs in routed.items()}
+    budget["keep_fixed"] = out
+    if keep:
+        S.record(ws, f"{phase}/keep-fixed.json", {
+            "schema": "forge-c/lrtx-keep-fixed/1", "at": utc_now(), "findings": keep,
+            "tasks": {t: {"count": len(v["findings"]), "omitted_by_count": v["omitted"]} for t, v in sorted(out.items())}})
     return out
 
 

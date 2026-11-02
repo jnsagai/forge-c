@@ -1,0 +1,251 @@
+{
+ "schema": "forge-c/test-fixture/keep-fixed-rounds/1",
+ "source": "Forge-C inspection records (verdict, items[*].verdict and items[*].findings only) of the cloud comparison line, 2026-11-02",
+ "runs": [
+  {
+   "work_order": "WO-F014-CMP-SWE2-IWDG-20261102-03",
+   "phase": "SWE.2",
+   "inspections": [
+    {
+     "inspection_id": "INS-SWE.2-001",
+     "verdict": "FAIL",
+     "items": {
+      "SWE2-01": {
+       "verdict": "PASS"
+      },
+      "SWE2-02": {
+       "verdict": "FAIL",
+       "findings": [
+        "SWE2-02 — workproducts/SWE.2/software_architecture.md, Register access and Dependencies: clock setup is allocated to integration, but the required clock source, frequency and setup contract remain undefined; assigning ownership does not resolve the clock semantics.",
+        "SWE2-02 — workproducts/SWE.2/software_architecture.md, Register access and Safety mechanisms, degraded states and dependencies: reset values remain open. The architecture does not resolve the mode-dependent ONF reset behavior documented in workproducts/SWE.1/software_requirements.md, OP-4ec2a7440d35ae47; the no-write-before-first-call rule alone does not complete reset semantics.",
+        "SWE2-02 — workproducts/SWE.2/software_architecture.md, Register access, Architecture decisions and Register table: the prescaler RMW uses an unspecified 'PR mask' and declares PR width unresolved, although the register table specifies bits 3:0 and SWR-005 specifies 0x0–0xF. The PR RMW definition is internally inconsistent."
+       ]
+      },
+      "SWE2-03": {
+       "verdict": "PASS"
+      },
+      "SWE2-04": {
+       "verdict": "PASS"
+      },
+      "SWE2-05": {
+       "verdict": "FAIL",
+       "findings": [
+        "SWE2-05 — workproducts/SWE.2/software_architecture.md, 'Timing and error handling' and 'Requirement allocation table': SWR-019/SWR-020 allocate limits of 64 executed instructions and 100 microseconds per call to SWC_LL, but provide no execution-cost estimate justifying those limits under the specified 100 MIPS Renode profile. Describing calls as fixed, short and non-blocking does not establish that they fit the allocated budgets."
+       ]
+      },
+      "SWE2-06": {
+       "verdict": "FAIL",
+       "findings": [
+        "workproducts/SWE.2/software_architecture.md, Register access and Safety mechanisms sections: PR field width and mask are declared unresolved, contradicting its Register table (PR bits 3:0) and SWE.1 SWR-005 (requested values 0x0–0xF). Reconcile these statements so the prescaler masking decision is consistent with the frozen requirement."
+       ]
+      },
+      "SWE2-07": {
+       "verdict": "PASS"
+      },
+      "SWE2-08": {
+       "verdict": "PASS"
+      },
+      "SWE2-09": {
+       "verdict": "PASS"
+      }
+     }
+    },
+    {
+     "inspection_id": "INS-SWE.2-002",
+     "verdict": "FAIL",
+     "items": {
+      "SWE2-01": {
+       "verdict": "PASS"
+      },
+      "SWE2-02": {
+       "verdict": "PASS"
+      },
+      "SWE2-03": {
+       "verdict": "PASS"
+      },
+      "SWE2-04": {
+       "verdict": "PASS"
+      },
+      "SWE2-05": {
+       "verdict": "FAIL",
+       "findings": [
+        "workproducts/SWE.2/software_architecture.md, 'Timing and error handling' and SWR-012/SWR-019/SWR-020 allocation rows: the 64-instruction and 100-microsecond per-call budgets are allocated to SWC_LL, but their justification remains open. The architecture describes short, straight-line operations without estimating their cost against either limit, and incorrectly describes SWR-019/SWR-020 as outside the task's requirement list. Provide an architectural cost estimate under the specified 100 MIPS simulation conditions; later measurement alone does not supply the missing design justification."
+       ]
+      },
+      "SWE2-06": {
+       "verdict": "FAIL",
+       "findings": [
+        "Minor — workproducts/SWE.2/software_architecture.md, Requirement allocation table, SWR-012: states SWR-019/SWR-020 are outside the task requirement list, contradicting their inclusion in frozen SWE.1, the same allocation table and both traceability matrices.",
+        "Minor — workproducts/SWE.2/software_architecture.md, Safety mechanisms, degraded states and dependencies: lists the PR field width and mask as undecidable, although its Interfaces and Register table fix bits 3:0 and mask 0xFU consistently with SWE.1 SWR-005. The architecture presents this decision as both settled and unresolved."
+       ]
+      },
+      "SWE2-07": {
+       "verdict": "PASS"
+      },
+      "SWE2-08": {
+       "verdict": "PASS"
+      },
+      "SWE2-09": {
+       "verdict": "PASS"
+      }
+     }
+    },
+    {
+     "inspection_id": "INS-SWE.2-003",
+     "verdict": "FAIL",
+     "items": {
+      "SWE2-01": {
+       "verdict": "PASS"
+      },
+      "SWE2-02": {
+       "verdict": "PASS"
+      },
+      "SWE2-03": {
+       "verdict": "PASS"
+      },
+      "SWE2-04": {
+       "verdict": "PASS"
+      },
+      "SWE2-05": {
+       "verdict": "PASS"
+      },
+      "SWE2-06": {
+       "verdict": "FAIL",
+       "findings": [
+        "Minor: workproducts/SWE.2/software_architecture.md, 'Safety mechanisms, degraded states and dependencies', lists the PR field width and mask as unresolved, while its Interfaces, Requirement allocation and Register table fix bits 3:0 and mask 0xFU consistently with SWE.1 SWR-005. Reconcile this contradictory decision status."
+       ]
+      },
+      "SWE2-07": {
+       "verdict": "PASS"
+      },
+      "SWE2-08": {
+       "verdict": "PASS"
+      },
+      "SWE2-09": {
+       "verdict": "PASS"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "work_order": "WO-F014-CMP-SWE1-RCC-20261102-06",
+   "phase": "SWE.1",
+   "inspections": [
+    {
+     "inspection_id": "INS-SWE.1-001",
+     "verdict": "FAIL",
+     "items": {
+      "SWE1-01": {
+       "verdict": "PASS"
+      },
+      "SWE1-02": {
+       "verdict": "FAIL",
+       "findings": [
+        "MAJOR — workproducts/SWE.1/software_requirements.md, SWR-001–SWR-650: Register effects are specified without defining the supported access context or caller preconditions. The Open points identify unresolved security/privilege restrictions and RTC backup-domain write protection affecting SWR-341–SWR-342. Feasibility of the unconditional effects is therefore unresolved. Define the supported invocation domain; behavior outside that domain need not be added.",
+        "MAJOR — workproducts/SWE.1/software_requirements.md, SWR-653 and Open points OP-4268f22373c3cf92 and OP-2df577591f717edb: Preservation of other register bits relies on read-modify-write, but responsibility for serializing concurrent writers remains explicitly undecided. The baseline does not establish the invocation conditions under which this preservation guarantee is feasible.",
+        "MINOR — workproducts/SWE.1/software_requirements.md, SWR-004, SWR-119 and SWR-333: Verification uses LL_RCC_RCC_CR_OFFSET, LL_RCC_RCC_AHB5ENR_OFFSET and LL_RCC_RCC_APB3ENR_OFFSET, respectively, whereas the scope and SWR-655 prescribe LL_RCC_<REG>_OFFSET. OP-948a63303bc0dbee explicitly leaves the RCC_CR spelling unresolved. These inconsistent identifiers leave the verification register indices ambiguous.",
+        "MAJOR — workproducts/SWE.1/software_requirements.md, SWR-654–SWR-655 and Open points OP-849ffb06992b0388 and OP-9cb9b8049e4d3707: The requirements and RAM-array verification prescribe access to the documented register element, while the Open points retain an undecided oscillator set/clear-register alternative and explicitly state that verification would need revision. The frozen baseline leaves the access and verification contract provisional.",
+        "MINOR — workproducts/SWE.1/software_requirements.md, SWR-333–SWR-336 and OP-eb7d115f43f1360b: DFT requirements include RCC_APB3ENR, although the scope's explicit bus list omits APB3 and its cited section range includes it. The baseline records this conflicting scope interpretation as awaiting confirmation, so applicability of these requirements remains ambiguous."
+       ]
+      },
+      "SWE1-03": {
+       "verdict": "FAIL",
+       "findings": [
+        "Major — workproducts/SWE.1/software_requirements.md, Scope and Open points OP-11c35c281541b55d and OP-565441519ab46958: Supported invocation preconditions and caller responsibilities for permitted RCC access and backup-domain write access are unspecified. Protected or locked access behavior remains unresolved, leaving the boundary and failure behavior of supported LL calls undefined. Excluding security/privilege configuration and allocating HAL timeouts does not resolve this gap."
+       ]
+      },
+      "SWE1-04": {
+       "verdict": "PASS"
+      },
+      "SWE1-05": {
+       "verdict": "PASS"
+      },
+      "SWE1-06": {
+       "verdict": "PASS"
+      },
+      "SWE1-07": {
+       "verdict": "PASS"
+      },
+      "SWE1-08": {
+       "verdict": "PASS"
+      }
+     }
+    },
+    {
+     "inspection_id": "INS-SWE.1-002",
+     "verdict": "FAIL",
+     "items": {
+      "SWE1-01": {
+       "verdict": "PASS"
+      },
+      "SWE1-02": {
+       "verdict": "FAIL",
+       "findings": [
+        "SWR-006 and SWR-007 in workproducts/SWE.1/software_requirements.md require preservation of other RCC_CR bits while SWR-004 and SWR-005 mandate read-modify-write, but their invocation domain supplies no exclusion of concurrent writers. SWR-653 qualifies preservation with that exclusion. The local and cross-cutting preservation guarantees need a consistent concurrency precondition.",
+        "SWR-651 and SWR-657 in workproducts/SWE.1/software_requirements.md prohibit register writes, but their verification criteria compare only final register contents. Writes of identical values or writes subsequently restored would pass; these acceptance criteria cannot establish the required absence of writes.",
+        "SWR-660 in workproducts/SWE.1/software_requirements.md limits flash usage of a header-only, static-inline driver without defining the measurement image, API instantiation workload or attribution of inlined instructions. The stated map/size check therefore lacks a reproducible definition of driver flash usage.",
+        "SWR-333 through SWR-336 in workproducts/SWE.1/software_requirements.md cover RCC_APB3ENR, while the declared bus list omits APB3 and the cited section range includes it. OP-8209a811f32664dc explicitly leaves this conflict undecided, so the applicability of these requirements remains inconsistent within the frozen baseline."
+       ]
+      },
+      "SWE1-03": {
+       "verdict": "PASS"
+      },
+      "SWE1-04": {
+       "verdict": "PASS"
+      },
+      "SWE1-05": {
+       "verdict": "PASS"
+      },
+      "SWE1-06": {
+       "verdict": "PASS"
+      },
+      "SWE1-07": {
+       "verdict": "PASS"
+      },
+      "SWE1-08": {
+       "verdict": "PASS"
+      }
+     }
+    },
+    {
+     "inspection_id": "INS-SWE.1-003",
+     "verdict": "FAIL",
+     "items": {
+      "SWE1-01": {
+       "verdict": "PASS"
+      },
+      "SWE1-02": {
+       "verdict": "FAIL",
+       "findings": [
+        "workproducts/SWE.1/software_requirements.md: SWR-016/SWR-020, SWR-021–024 and other register-level preservation requirements lack the no-concurrent-writer precondition used by SWR-649. Their assumed read-modify-write access cannot guarantee preservation during concurrent writes. OP-b3ba4fb069a45aa7 explicitly records this unresolved inconsistency; SWR-649's conditional guarantee does not qualify the other requirements.",
+        "workproducts/SWE.1/software_requirements.md: SWR-656's 4096-byte flash limit is not reproducibly verifiable for the header-only, static-inline driver because the measurement image, API instantiation workload and attribution of inlined instructions are undefined. OP-b3301433aab9d33a explicitly leaves these measurement decisions unresolved."
+       ]
+      },
+      "SWE1-03": {
+       "verdict": "PASS"
+      },
+      "SWE1-04": {
+       "verdict": "FAIL",
+       "findings": [
+        "workproducts/SWE.1/software_requirements.md, SWR-656 and OP-b3301433aab9d33a: The 4096-byte flash limit lacks a defined measurement image, API instantiation workload and attribution rule for inlined instructions. The open point explicitly leaves these unresolved, so flash usage is not reproducibly measurable."
+       ]
+      },
+      "SWE1-05": {
+       "verdict": "PASS"
+      },
+      "SWE1-06": {
+       "verdict": "PASS"
+      },
+      "SWE1-07": {
+       "verdict": "PASS"
+      },
+      "SWE1-08": {
+       "verdict": "PASS"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}
