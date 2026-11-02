@@ -54,6 +54,25 @@ def validate_adapter(manifest, adapter):
         raise ValueError("DELIVERY_FIRST_SIMULATION_ADAPTER_UNSUPPORTED")
 
 
+RENODE_VERSION = "1.17.0"  # the pinned portable Renode under <data root>/toolchains/renode
+
+
+def measurement_profile(ws: Path) -> str:
+    """CAPA-110: the identity of the simulation that measures a work order's performance budget - pinned Renode
+    version, target adapter, and the platform description and peripheral model the run loads (factory files, sha256),
+    so a requirement on that measurement names one configuration."""
+    from ...common import sha256_file
+    from ...layer import profile
+
+    sim = profile(ws).get("sim") or {}
+    parts = [f"Renode {RENODE_VERSION} portable", f"adapter {ADAPTER_ID}"]
+    for key, label in (("platform", "platform description"), ("model", "peripheral model")):
+        name = sim.get(key)
+        if name and (SIM_DIR / name).is_file():
+            parts.append(f"{label} factory/sim/stm32n6/{name}, sha256 {sha256_file(SIM_DIR / name)[:16]}")
+    return "; ".join(parts)
+
+
 def renode_bin() -> str | None:
     env = os.environ.get("FORGE_RENODE_BIN")
     cand = [env] if env else []
@@ -61,7 +80,7 @@ def renode_bin() -> str | None:
     if os.environ.get("FORGE_STATE_DIR"):  # MCP servers get FORGE_STATE_DIR (= <data root>/state), not FORGE_DATA_ROOT
         roots.append(str(Path(os.environ["FORGE_STATE_DIR"]).parent))
     for root in filter(None, roots):
-        cand.append(str(Path(root) / "toolchains/renode/renode_1.17.0-portable/renode"))
+        cand.append(str(Path(root) / f"toolchains/renode/renode_{RENODE_VERSION}-portable/renode"))
     cand.append(shutil.which("renode") or "")
     return next((c for c in cand if c and Path(c).is_file()), None)
 
