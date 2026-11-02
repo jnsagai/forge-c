@@ -375,10 +375,24 @@ function renderKpis(d) {
   const status = k.on_floor ? "working" : "idle";
   $("#plant-status").className = "plant-status s-" + status;
   $("#plant-status").innerHTML = `${stack(true)}<span>${k.on_floor ? "Line running" : "Line idle"}</span>`;
-  $("#sub").textContent = `ASPICE QM · shift since ${d.shift_start.slice(0, 16).replace("T", " ")} UTC · one GPU station (RTX 6000 Ada) · updated ${d.updated_at.slice(11, 19)} UTC`;
+  const where = k.station && k.station.kind === "cloud_api" ? `cloud APIs (Anthropic, OpenAI) · API cost today $${(k.station.cost_today_usd || 0).toFixed(2)}` : "one GPU station (RTX 6000 Ada)";
+  $("#sub").textContent = `ASPICE QM · shift since ${d.shift_start.slice(0, 16).replace("T", " ")} UTC · ${where} · updated ${d.updated_at.slice(11, 19)} UTC`;
+}
+// owner 2026-11-02: the cloud line shows a tokens and API cost monitor per model instead of the GPU station
+const API_NAME = {anthropic: "Anthropic API", openai: "OpenAI API", codex: "Codex CLI"};
+function apiName(m) { return m.model.startsWith("claude") ? "Claude · " + (API_NAME[m.backend] || m.backend) : m.model + " · " + (API_NAME[m.backend] || m.backend); }
+function apiTile(m) {
+  const t = m.today, h = m.hour;
+  const cost = m.priced ? `<div class="v" style="font-size:26px">$${t.cost_usd.toFixed(2)}<small> today</small></div>` :
+    `<div class="v" style="font-size:20px">price not set</div>`;
+  return `<div class="kpi api-kpi"><span class="label">${esc(apiName(m))}</span>${cost}
+    <span class="n">${fmt(t.calls)} calls${t.failed ? `, <span class="late">${t.failed} failed</span>` : ""} · in ${fmt(t.prompt)}${t.cached ? ` (${fmt(t.cached)} cached)` : ""} · out ${fmt(t.completion)}${t.reasoning ? ` (${fmt(t.reasoning)} reasoning)` : ""} tokens</span>
+    <span class="n">last hour: ${fmt(h.calls)} calls · ${fmt(h.prompt + h.completion)} tokens${m.priced ? ` · $${h.cost_usd.toFixed(2)}` : ""}${m.last_s != null ? ` · last call ${m.last_s < 90 ? m.last_s + " s" : Math.round(m.last_s / 60) + " min"} ago` : ""}</span></div>`;
 }
 function stationTile(st) {
   if (!st) return "";
+  if (st.kind === "cloud_api") return (st.models || []).map(apiTile).join("") ||
+    `<div class="kpi"><span class="label">Cloud APIs</span><span class="v" style="font-size:22px">no call today</span></div>`;
   const model = st.model ? (st.model.toLowerCase().includes("ornith") ? "Ornith 35B" : st.model.split(":")[0].replace("qwen", "Qwen")) : "—";
   if (!st.available) return `<div class="kpi"><span class="label">GPU station</span><span class="v" style="font-size:22px">no reading</span><span class="n">loaded: ${esc(model)}${st.age_s != null ? ` · last sample ${Math.round(st.age_s / 60)} min ago` : ""}</span></div>`;
   return `<div class="kpi station-kpi"><span class="label">GPU station · RTX 6000 Ada</span><div class="gauges">${gauge(Math.round(st.util_pct), 100, "load", "%")}${gauge(Math.round(st.power_w), 300, "power", "W")}</div><span class="n">${st.temp_c} °C · ${(st.mem_used_mib / 1024).toFixed(1)} of ${(st.mem_total_mib / 1024).toFixed(0)} GB · loaded: ${esc(model)}</span></div>`;

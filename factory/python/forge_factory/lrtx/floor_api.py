@@ -164,8 +164,53 @@ def native(stages: dict | None, now: float) -> dict:
     return out
 
 
+def cloud_station(now: float) -> dict | None:
+    """Owner 2026-11-02 ("instead of gpu monitor i want to have a tokens and api cost monitor for both claude and
+    openai"): the cloud line's API station from the bridge's per-call meter (state/cloud-bridge/calls.jsonl; no prompt
+    or answer is in it): per model, today (UTC) and the last hour - calls, tokens, cost when the profile prices it."""
+    meter = state_root() / "cloud-bridge/calls.jsonl"
+    if not meter.is_file():
+        return None
+    day = time.strftime("%Y-%m-%d", time.gmtime(now))
+    hour_ago = now - 3600
+    models: dict[str, dict] = {}
+    for line in meter.read_text(errors="replace").splitlines():
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        t = _ts(r.get("ts")) or 0
+        if not str(r.get("ts", "")).startswith(day) or not r.get("model"):
+            continue
+        m = models.setdefault(r["model"], {"model": r["model"], "backend": r.get("backend"), "last_ts": 0,
+                                           "today": _api_zero(), "hour": _api_zero(), "priced": False})
+        u = r.get("usage") or {}
+        m["priced"] = m["priced"] or u.get("cost_usd") is not None
+        m["last_ts"] = max(m["last_ts"], t)
+        for k in (["today", "hour"] if t >= hour_ago else ["today"]):
+            a = m[k]
+            a["calls"] += 1
+            a["failed"] += 0 if r.get("ok") else 1
+            for f, key in (("prompt", "prompt_tokens"), ("completion", "completion_tokens"), ("reasoning", "reasoning_tokens"),
+                           ("cached", "cached_prompt_tokens"), ("cached", "cache_read_tokens")):
+                a[f] += int(u.get(key) or 0)
+            a["cost_usd"] = round(a["cost_usd"] + float(u.get("cost_usd") or 0), 4)
+    for m in models.values():
+        m["last_s"] = round(now - m.pop("last_ts")) if m.get("last_ts") else None
+    return {"kind": "cloud_api", "available": True, "models": sorted(models.values(), key=lambda x: x["model"]),
+            "cost_today_usd": round(sum(m["today"]["cost_usd"] for m in models.values()), 2)}
+
+
+def _api_zero() -> dict:
+    return {"calls": 0, "failed": 0, "prompt": 0, "completion": 0, "reasoning": 0, "cached": 0, "cost_usd": 0.0}
+
+
 def station(now: float) -> dict:
-    """The GPU station from the gateway's resource samples (every 10 s) and the model loaded by the last swap."""
+    """The GPU station from the gateway's resource samples (every 10 s) and the model loaded by the last swap; on the
+    cloud comparison line (a cloud-bridge meter exists) the API station instead."""
+    cloud = cloud_station(now)
+    if cloud is not None:
+        return cloud
     meter = state_root() / "llm-gateway/usage.jsonl"
     sample = None
     try:
