@@ -229,7 +229,9 @@ def test_the_mode_file_routes_claude_per_call_and_tool_calls_stay_on_the_api(tmp
     bridge = CB.Bridge({"claude-opus-5-5": {"backend": "anthropic"}},
                        {"anthropic": CB.AnthropicBackend("k", client=api), "claude-cli": CB.ClaudeCliBackend(run=_cli_run(seen))},
                        tmp_path / "m.jsonl", mode)
-    bridge.complete(_body())  # no mode file: api
+    bridge.complete(_body())  # no mode file: the owner's default, account
+    mode.write_text(json.dumps({"mode": "api"}))
+    bridge.complete(_body())
     mode.write_text(json.dumps({"mode": "account"}))
     bridge.complete(_body())
     tools = {**_body(), "tools": [{"type": "function", "function": {"name": "read_file", "parameters": {"type": "object"}}}]}
@@ -237,10 +239,10 @@ def test_the_mode_file_routes_claude_per_call_and_tool_calls_stay_on_the_api(tmp
     mode.write_text("garbage")
     bridge.complete(_body())
     rows = [json.loads(x) for x in (tmp_path / "m.jsonl").read_text().splitlines()]
-    assert [r["backend"] for r in rows] == ["anthropic", "claude-cli", "anthropic", "anthropic"]
-    assert [r["claude_mode"] for r in rows] == ["api", "account", "account", "api"]
-    assert rows[2]["account_fallback"] == "tool_calls_on_api" and len(seen) == 1 and len(api.calls) == 3
-    assert CB.read_mode(None) == "api" and CB.read_mode(tmp_path / "missing") == "api"
+    assert [r["backend"] for r in rows] == ["claude-cli", "anthropic", "claude-cli", "anthropic", "claude-cli"]
+    assert [r["claude_mode"] for r in rows] == ["account", "api", "account", "account", "account"]  # garbage: default
+    assert rows[3]["account_fallback"] == "tool_calls_on_api" and len(seen) == 3 and len(api.calls) == 2
+    assert CB.read_mode(None) == "account" and CB.read_mode(tmp_path / "missing") == "account"
 
 
 def test_the_inspector_mode_file_routes_openai_to_the_codex_login(tmp_path, monkeypatch):
@@ -266,6 +268,7 @@ def test_the_inspector_mode_file_routes_openai_to_the_codex_login(tmp_path, monk
                        {"openai": CB.OpenAIBackend("k", client=SimpleNamespace(chat=SimpleNamespace(
                            completions=SimpleNamespace(create=create)))), "codex": CB.CodexBackend(str(tmp_path), run=run)},
                        tmp_path / "m.jsonl", None, mode)
+    mode.write_text(json.dumps({"mode": "api"}))
     bridge.complete(_body(model="gpt-6.1-sol"))
     mode.write_text(json.dumps({"mode": "account"}))
     res = bridge.complete(_body(model="gpt-6.1-sol"))

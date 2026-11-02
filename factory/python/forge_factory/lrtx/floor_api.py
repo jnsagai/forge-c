@@ -269,6 +269,7 @@ def _api_zero() -> dict:
 
 
 CLAUDE_MODES = ("api", "account")
+DEFAULT_MODE = "account"  # owner 2026-11-02: account is the cloud line's default for both models
 
 
 MODE_TARGETS = {"claude": "claude-mode.json", "inspector": "inspector-mode.json"}  # author (Anthropic), inspector (OpenAI)
@@ -280,12 +281,12 @@ def claude_mode_file(target: str = "claude") -> Path:
 
 def claude_mode(target: str = "claude") -> dict:
     """Owner 2026-11-02 ("Claude API/Account mode"): which way the cloud line's Claude calls go. The bridge reads the same
-    file per call; missing or unreadable is `api` (the authorized default)."""
+    file per call; missing or unreadable is the owner's default (account)."""
     try:
         d = json.loads(claude_mode_file(target).read_text())
     except (OSError, ValueError):
-        return {"mode": "api", "since": None}
-    mode = d.get("mode") if isinstance(d, dict) and d.get("mode") in CLAUDE_MODES else "api"
+        return {"mode": DEFAULT_MODE, "since": None}
+    mode = d.get("mode") if isinstance(d, dict) and d.get("mode") in CLAUDE_MODES else DEFAULT_MODE
     return {"mode": mode, "since": d.get("since") if isinstance(d, dict) else None}
 
 

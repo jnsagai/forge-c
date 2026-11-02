@@ -33,7 +33,8 @@ def test_the_floor_switches_the_claude_mode_and_logs_it(tmp_path, monkeypatch):
     try:
         assert _post(url, {"mode": "account"})[0] == 409  # no cloud line on this floor
         (tmp_path / "cloud-bridge").mkdir()
-        assert F.claude_mode()["mode"] == "api"
+        assert F.claude_mode()["mode"] == "account"  # owner 2026-11-02: account is the default
+        assert _post(url, {"mode": "api"})[0] == 200
         code, body = _post(url, {"mode": "account"}, {"Origin": url})
         assert code == 200 and body["mode"] == "account" and body["since"]
         assert json.loads((tmp_path / "cloud-bridge/claude-mode.json").read_text())["mode"] == "account"
@@ -49,7 +50,7 @@ def test_the_floor_switches_the_claude_mode_and_logs_it(tmp_path, monkeypatch):
             assert "Access-Control-Allow-Origin" not in exc.headers  # no preflight is granted
         assert _post(url, {"mode": "api"}, {"Origin": "http://100.87.10.79:8788", "Host": "127.0.0.1:1"})[0] == 200
         log = [json.loads(x) for x in (tmp_path / "cloud-bridge/claude-mode-changes.jsonl").read_text().splitlines()]
-        assert [(r["from"], r["to"]) for r in log if "to" in r] == [("api", "account"), ("account", "api")]
+        assert [(r["from"], r["to"]) for r in log if "to" in r] == [("account", "api"), ("api", "account"), ("account", "api")]
         assert [(r["refused"], r["why"]) for r in log if "refused" in r] == [
             (400, "mode must be api or account"), (403, "control header missing")]  # no cloud line: nothing to log into
         assert all(r["client"] == "127.0.0.1" for r in log)
@@ -88,7 +89,7 @@ def test_the_inspector_has_its_own_mode_switch_and_account_calls_are_not_priced(
         assert _post(url, {"mode": "account"}, {"X-Forge-Control": "inspector-mode"})[0] == 403  # header names its target
     finally:
         srv.shutdown()
-    assert F.claude_mode("inspector")["mode"] == "account" and F.claude_mode()["mode"] == "api"
+    assert F.claude_mode("inspector")["mode"] == "account" and F.claude_mode()["mode"] == "account"  # default
     import time
     now = time.time()
     ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - 60))

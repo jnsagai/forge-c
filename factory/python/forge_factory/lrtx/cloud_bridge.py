@@ -40,17 +40,19 @@ from pathlib import Path
 
 SCHEMA = "forge-c/cloud-bridge-call/1"
 MODES = ("api", "account")
+# owner 2026-11-02: "the default for cloud run is both claude and gpt as account not API"
+DEFAULT_MODE = "account"
 
 
 def read_mode(path: Path | None) -> str:
-    """The Claude mode the floor control last set; anything unreadable or unknown is `api` (the authorized default)."""
+    """The mode the floor control last set; anything missing, unreadable or unknown is the owner's default (account)."""
     if path is None:
-        return "api"
+        return DEFAULT_MODE
     try:
         mode = json.loads(Path(path).read_text()).get("mode")
     except (OSError, ValueError, AttributeError):
-        return "api"
-    return mode if mode in MODES else "api"
+        return DEFAULT_MODE
+    return mode if mode in MODES else DEFAULT_MODE
 
 
 def read_key(path: Path, name: str = "ANTHROPIC_API_KEY") -> str:
