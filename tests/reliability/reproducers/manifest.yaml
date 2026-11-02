@@ -1150,3 +1150,13 @@ reproducers:
     operations: [lrtx/swe1 assembly trace]
     root_cause: "The SWE.1 assembly traced the IWDG_KR requirements (RM0486 59.7.1) to 59.7.2 because both sections start on p.2989; the inspector rejected SWE1-01/SWE1-05 three times and the author cannot change the assembled trace (BLOCKED STUCK SAME_ITEM_FAILED_3X)."
     remedy: "A register task's requirement traces to the task's own section when its page is one of that section's pages."
+  - id: RPR-108
+    script: rpr108_swe1_rework_reauthors_unflagged_tasks.py
+    sha256: c0c743d5412209886b1a2bb63934085013e4ee58dc2dd3793841265c41cbb20e
+    symptom_signature: "a SWE.1 rework re-authors register tasks no finding names or repeats answered tasks after each time box"
+    observed_in: "Fabro run WO-F014-CMP-SWE1-RCC-20261102-03 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: 297d033cfb193d5e633741d8a0d33ec892b97639
+    error_codes: []
+    operations: [lrtx/visit rework routing and reuse]
+    root_cause: "After the SWE.1 inspection (3 majors, 8 findings naming 12 tasks), one finding mentioning open points without an id was routed to all 62 author tasks and every time-boxed node execution re-sent the findings without reusing tasks that had answered them: the same first 9 tasks re-authored for 21 executions and 190 of 256 author calls."
+    remedy: "Findings go to the tasks they name (task, SWR, case, open point, register/field/section), an unattributed finding keeps its former route and is recorded; an author task that answered the same findings on the same inputs earlier in the visit is reused."
