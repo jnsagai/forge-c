@@ -119,6 +119,10 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
         from ..assurance.owner_obligations import source_paths
 
         files += [f for f in source_paths(ws) if f not in files]
+        from .swe1 import delivered_interface  # CAPA-112: the FROZEN API's argument constants the author was given
+
+        if (api := delivered_interface(ws)) and api not in files:
+            files.append(api)
     limit = source_char_limit(ws)
     srcs = [S.source(ws, f, max_chars=limit) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
     for f in [f for f in files if f in ENGINE_FILES and (Path(ws) / f).is_file()]:

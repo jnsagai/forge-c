@@ -18,6 +18,7 @@ import json
 import re
 from pathlib import Path
 
+from ..brownfield import interface as BI
 from ..common import canonical_json, sha256_bytes, utc_now
 from ..inspection.ears import RESET_AFTER, STARTUP_NO_CALL
 from . import structured as S
@@ -268,6 +269,13 @@ def required_scope_exclusions(ws: Path, doc: dict, g: dict) -> list[str]:
             for full in sorted(required)]
 
 
+def delivered_interface(ws: Path) -> str | None:
+    """CAPA-112 (runs WO-F014-CMP-SWE1-CRCL-20261102-05/-06): the declared delivered-interface input of a brownfield
+    work order (the scoped functions' argument/return constants and values), else None."""
+    rel = BI.declared(_manifest(ws))
+    return rel if rel and (Path(ws) / rel).is_file() else None
+
+
 def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = None, previous: dict | None = None) -> dict:
     from .c_language_context import for_workspace
 
@@ -295,6 +303,9 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
             "in not_covered", "every effect names a field of this task that its statement names",
             "a statement that sets, clears or writes a field has an effect for it"]
     srcs = [S.source(ws, g["file"])]
+    if api := delivered_interface(ws):  # CAPA-112: a FROZEN API's argument constants (brownfield)
+        instr += BI.AUTHOR_NOTE
+        srcs.append(S.source(ws, api))
     obl = owner_obligations(ws)
     if obl is not None:
         instr += obligation_rule(obl, False)
