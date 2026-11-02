@@ -131,7 +131,7 @@ def file_packet(ws: Path, kind: str, model: str, findings=None, previous=None) -
                  f"from: {ifs}> SWC_LL */' (IT-001, IT-002 ...), and every CHECK id of that function starts with its "
                  "IT id (IT-001, IT-001-A ...; each id used once). main() clears the array, calls every test and "
                  "returns (failures == 0) ? 0 : 1. Expected values come from the requirements and their cases.")
-        inst = p["instance"]
+        inst = p.get("instance")
         if inst is not None:  # instance mode: the RAM instance of the pinned device header replaces the array
             obj = inst["host_object"]
             instr = instr.replace(
@@ -187,7 +187,7 @@ def validate_file(ws: Path, kind: str, doc: dict) -> list[str]:
     out += [f"{x} is neither an interface function nor a generated define" for x in sorted(used - known - api)]
     out += V.offset_index_errors(code, p["block"], p["pfx"])
     out += instance_findings(p, code)
-    if p["instance"] is not None and kind == "integration" and "#define FORGE_HOST_DEVICE_IMPLEMENTATION" not in code:
+    if p.get("instance") is not None and kind == "integration" and "#define FORGE_HOST_DEVICE_IMPLEMENTATION" not in code:
         out.append(f"missing the line '#define FORGE_HOST_DEVICE_IMPLEMENTATION' before the LL header include (it "
                    f"defines the RAM instance {p['instance']['host_object']})")
     if re.search(r"\(\s*(?:volatile\s+)?uint32_t\s*\*\s*\)", code):
@@ -356,7 +356,7 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     size = [json.loads(x) for x in (ws / "evidence/tool-results.jsonl").read_text().splitlines()
             if '"op": "measure_elf"' in x or '"op": "stack_usage"' in x][-2:]
     excluded = [s for s in m["scope"] if s.lower().startswith("out of scope")]
-    store = ("a RAM register array" if p["instance"] is None else
+    store = ("a RAM register array" if p.get("instance") is None else
              f"the RAM {p['instance']['type_name']} instance {p['instance']['host_object']}")
     md = ["# Integration verification report", "", "## Plan", "", "Component and integration measures: the host "
           f"integration program {files(ws)['integration']} drives the SWE.2 sequences through the real LL on {store}"
