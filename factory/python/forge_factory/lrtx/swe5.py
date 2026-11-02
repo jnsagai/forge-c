@@ -152,6 +152,7 @@ def validate_file(ws: Path, kind: str, doc: dict) -> list[str]:
     ifs = set(interface_ids(ws))
     used = set(re.findall(rf"\bLL_{p['pfx']}_\w+", code))
     out += [f"{x} is neither an interface function nor a generated define" for x in sorted(used - known - api)]
+    out += V.offset_index_errors(code, p["block"], p["pfx"])
     if re.search(r"\(\s*(?:volatile\s+)?uint32_t\s*\*\s*\)", code):
         out.append("no integer-to-pointer casts: use the register block array")
     tags_if = set(re.findall(r"\bIF-\d{2}\b", " ".join(re.findall(r"@verifies([^*]*)", code))))
@@ -236,7 +237,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
     from . import tools as T
 
     routed: dict[str, list[str]] = {}
-    for f in findings:
+    for f in V.routable(findings):
         k = _kind_of(f, ws)
         for kind in [k] if k else list(files(ws)):
             routed.setdefault(f"file:{kind}", []).append(f)
