@@ -35,6 +35,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from ..assurance import register_contract as RC
 from ..common import sha256_bytes, utc_now
 from . import structured as S
 from . import visit as V
@@ -95,7 +96,7 @@ def _oracle_artifacts(ws: Path, c: dict) -> list[dict]:
     specs = _unit_specs(ws, c["unit"])
     oracle = (f"{c['swr']}: {c['statement']}\n" + "\n".join(
         f"case {e['case']}: {e.get('register', '')}.{e.get('field', '')} op {e['op']}" +
-        (f" value {e['value']}" if e.get("value") is not None else "") for e in c["effects"]) + "\n" +
+        RC.value_text(e) for e in c["effects"]) + "\n" +
               "\n".join(f"{s['id']}: {s['behaviour']} (traces {', '.join(s['traces'])})" for s in specs))
     defs = _defines(ws, c["unit"]["function"]["fields"])
     return [{"path": "oracle", "text": oracle, "sha256": sha256_bytes(oracle.encode())},

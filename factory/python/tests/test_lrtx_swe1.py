@@ -400,3 +400,52 @@ def test_aspice_only_baseline_states_no_safe_state_and_the_inspector_is_told(ws,
     assert review.SAFE_STATE_NOTE not in review._notes(ws, "SWE.1", "SWE1-02")
     monkeypatch.setattr(review, "safe_state_outside_scope", lambda _ws: False)
     assert review.SAFE_STATE_NOTE not in review._notes(ws, "SWE.1", "SWE1-03")
+
+
+def test_capa120_truncating_write_records_the_requested_input(ws, monkeypatch):
+    """CAPA-120 (run WO-F014-CMP-SWE2-IWDGG-20261102-08): SWR-009 'write only bits 11:0 of the requested value',
+    verified with 0x00001234 -> RL == 0x234. The effect could hold only 0x234, so SWE.2 had to pass 0x234U and the
+    inspector rejected it three times. The effect now records the requested input apart from the field value."""
+    from forge_factory.assurance.hardware import index
+
+    idx = index(ws / "inputs/sections/RM0486")
+    g = next(x for x in swe1.groups(swe1.inventory(ws)) if x["id"] == "IWDG_RLR")
+    trunc = _req("reload_masked", f"If the caller requests a reload value above 0xFFF, then the {SYS} shall write only "
+                 "bits 11:0 of the requested value to IWDG_RLR.RL.", 2990,
+                 [_eff("RLR_TRUNCATED", "IWDG_RLR", "RL", "write", "0x234")])
+    trunc["verification"] = ("Host unit test: preset IWDG_RLR to 0x00000FFF, call the reload-set function with "
+                             "0x00001234 (and with 0xFFFFFFFF); passes when IWDG_RLR.RL equals 0x234 (respectively "
+                             "0xFFF).")
+    doc = {"requirements": [trunc], "not_covered": [], "open_points": []}
+
+    def about(d):
+        return [f for f in swe1.validate_group(ws, d, g, SYS, idx) if "requested" in f]
+
+    hint = about(doc)
+    assert hint == ['[reload_masked] effect RLR_TRUNCATED: the verification calls with 0x00001234, which does not fit '
+                    'IWDG_RLR.RL (12 bits) and leaves 0x234: give requested "0x00001234" (the input the call passes) '
+                    'and keep value 0x234'], hint
+    trunc["effects"][0]["requested"] = "0x00001234"
+    assert about(doc) == [] and S.validate(doc, swe1.GROUP_SCHEMA) == []
+    trunc["effects"][0]["requested"] = "0x1235"
+    assert about(doc) == ["[reload_masked] effect RLR_TRUNCATED: value '0x234' must be the low 12 bits of requested "
+                          "'0x1235' (0x235)"]
+    trunc["effects"][0]["requested"] = "0x234"  # fits the field: no separate input
+    assert "fits the 12-bit field" in about(doc)[0]
+    # an in-range write (the existing answers) and a non-write keep their findings unchanged
+    assert about(ANSWERS["requirements:IWDG_RLR"]) == []
+    bad = json.loads(json.dumps(ANSWERS["requirements:IWDG_SR_2"]))
+    bad["requirements"][0]["effects"][0]["requested"] = "0x1"
+    sr2 = next(x for x in swe1.groups(swe1.inventory(ws)) if x["id"] == "IWDG_SR_2")
+    assert [f for f in swe1.validate_group(ws, bad, sr2, SYS, idx) if "requested" in f] == [
+        '[pvu] effect PVU_SET: requested must be "" for op no_write']
+
+    # assembly writes requested only on the effect that has one; the unchanged gate freezes the baseline
+    answers = json.loads(json.dumps(ANSWERS))
+    answers["requirements:IWDG_RLR"]["requirements"][0]["effects"][0]["requested"] = "0xFFFFFFFF"
+    monkeypatch.setattr(S, "call", _scripted(answers, []))
+    assert swe1.visit(ws, "m")["status"] == "PASS"
+    eff = {e["case"]: e for e in json.loads((ws / swe1.EFFECTS).read_text())["effects"]}
+    assert eff["SET_RELOAD"]["requested"] == "0xFFFFFFFF" and eff["SET_RELOAD"]["value"] == "0xFFF"
+    assert [c for c, e in eff.items() if "requested" in e] == ["SET_RELOAD"]
+    assert _gate(ws, monkeypatch) == 0
