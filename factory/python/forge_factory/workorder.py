@@ -464,6 +464,33 @@ CHECKPOINT_FILES = ("assembly.json", "inventory.json", "generated-header.h", "co
                     "generated-harness.c")
 
 
+def carry_test_snapshots(src: Path, ws: Path) -> int:
+    """CAPA-105 (packages of WO-F014-SWE6-OBL-20261101-L6 and WO-F014-SWE6-IWDG-20261101-L6): a greenfield resume
+    carried evidence/test-integrity.jsonl (in `evidence`) but not the content-addressed test snapshots it references,
+    so every package of a resumed lineage was BLOCKED (TEST_HISTORY_INTEGRITY: TEST_SNAPSHOT_MISSING_OR_UNREADABLE).
+    The snapshots are collected from the source and its resume ancestors (manifest resumed_from); a file is copied only
+    if its content hashes to its name, and existing files are never overwritten."""
+    from .brownfield.resume import source_workspace
+    from .inspection.defects import SNAPSHOTS
+
+    dst, n, seen, cur = ws / SNAPSHOTS, 0, set(), Path(src)
+    while cur is not None and cur.resolve() not in seen:
+        seen.add(cur.resolve())
+        d = cur / SNAPSHOTS
+        for f in sorted(d.iterdir()) if d.is_dir() else []:
+            if f.is_file() and not f.is_symlink() and not (dst / f.name).exists() and sha256_file(f) == f.name:
+                dst.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(f, dst / f.name)
+                n += 1
+        try:
+            parent = (json.loads((cur / ".forge-run/manifest.json").read_text()).get("resumed_from") or {})
+        except (OSError, ValueError):
+            parent = {}
+        wo = parent.get("source_work_order")
+        cur = source_workspace(wo) if wo else None
+    return n
+
+
 def carry_checkpoints(src: Path, ws: Path, phases: list[str]) -> list[str]:
     copied = []
     for ph in phases:
@@ -555,6 +582,7 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
         for rel in RESUME_EXTRA:  # baselines/inspections/verification reports/tool evidence of the stable phases
             if (src / rel).is_dir():
                 shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True)
+        carry_test_snapshots(src, ws)
         # r57: the target ELF/map are the build of the carried-over SWE.3 sources (byte-identical) and are referenced by
         # the carried tool evidence; without them the package lacks software/build/*.elf|*.map
         if "SWE.3" in stable and (src / TARGET_BUILD).is_dir():
