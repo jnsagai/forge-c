@@ -9,11 +9,12 @@ description: 'Owner 2026-11-02 (comparison line: ''run those examples again usin
   - with only the models changed: Claude Opus 5.5 authors (the owner''s Anthropic API, authorized 2026-11-02) and Codex
   gpt-6.1-sol inspects (Codex CLI). The stack''s gateway (loopback-only namespace) forwards both models to the cloud bridge
   (lrtx/cloud_bridge.py) over a unix socket; no ollama or llama-server runs. Native agent nodes (defect triage, Release
-  Manager inventory) use Claude, the author model.'
+  Manager inventory) use Claude, the author model. Runs on loop10 (owner 2026-11-02: ''the claude codex runs shall run in
+  my local pc''); host tools match Omniverse2 (Fabro 0.362.0 a192bce, Cppcheck 2.7, arm-none-eabi-gcc 10.3.1, Renode 1.17.0,
+  LLVM 19.1.7).'
 host_reference:
-  gpu: RTX 6000 Ada 48 GB
-  cpu: Core Ultra 9 285K
-  ram_gb: 125
+  host: loop10 (owner's PC)
+  note: 'owner 2026-11-02: the Claude/Codex runs run on the local PC'
 local_only: false
 provider: ollama
 models:
@@ -120,12 +121,12 @@ measurement:
   sample_s: 10
 deployment:
   root_env: FORGE_LRTX_ROOT
-  default_root: /mnt/data/forge-c/lrtx-cloud-bridge
+  default_root: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge
   ports:
-    ollama: 11465
-    gateway: 11466
-    fabro: 32393
-    llama: 11467
+    ollama: 11475
+    gateway: 11476
+    fabro: 32386
+    llama: 11477
   forbidden_ports:
   - 8765
   - 8787
@@ -138,6 +139,8 @@ deployment:
   - 32290
   - 32291
   - 32390
+  - 32393
+  - 32399
   writable_env:
   - FORGE_DATA_ROOT
   - FORGE_STATE_DIR
@@ -149,12 +152,14 @@ deployment:
   - UV_CACHE_DIR
   - PIP_CACHE_DIR
   shared_readonly:
-    toolchains: /mnt/data/forge-c/toolchains
-    standards: /mnt/data/forge-c/standards
-    inputs: /mnt/data/forge-c/inputs
+    toolchains: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains
+    standards: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/standards
+    inputs: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inputs
 existing_deployment:
   roots:
-  - /home/omniverse2/forge-c-remote/repos/forge-c
-  - /home/omniverse2/forge-c-remote/repos/safec
+  - /home/jefferson/forge-c
+  - /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state
+  - /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fabro-cloud
+  - /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fabro
 network:
   required: namespace_denied

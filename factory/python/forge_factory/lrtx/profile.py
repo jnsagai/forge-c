@@ -209,6 +209,9 @@ def network_enforcement(probe: tuple[str, int] = EXTERNAL_PROBE, timeout: float 
 def model_identity(prof: dict, model: str, ollama_url: str) -> dict:
     """LRTX-FR-018/T007: the served model's digest/quantization must equal the profile's pinned identity."""
     want = prof["models"]["allowed"][model]
+    cb = (prof.get("runtime") or {}).get("cloud_bridge")
+    if isinstance(cb, dict) and cb.get("models"):
+        return _bridge_identity(prof, model, want, cb)
     try:
         with urllib.request.urlopen(ollama_url.rstrip("/") + "/api/tags", timeout=10) as r:  # noqa: S310
             tags = json.loads(r.read())
@@ -223,6 +226,32 @@ def model_identity(prof: dict, model: str, ollama_url: str) -> dict:
     ok = got.get("digest") == want["digest"] and q == want.get("reported_quantization", want["quantization"])
     return {"model": model, "status": "MATCH" if ok else "MISMATCH", "digest": got.get("digest"), "quantization": q,
             "size": got.get("size"), "expected_digest": want["digest"], "role_qualification": want["role_qualification"]}
+
+
+def _bridge_identity(prof: dict, model: str, want: dict, cb: dict) -> dict:
+    """Owner 2026-11-02 (comparison line): a cloud model has no file digest. It MATCHes when the profile routes it to
+    the bridge and the bridge serves exactly that name (/v1/models over its socket); the recorded identity is the
+    profile's declared cloud identity, with its basis."""
+    import socket as _socket
+
+    root = os.environ.get(prof["deployment"]["root_env"]) or prof["deployment"]["default_root"]
+    sock = Path(root) / cb["socket"]
+    try:
+        with _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM) as c:
+            c.settimeout(10)
+            c.connect(str(sock))
+            c.sendall(b"GET /v1/models HTTP/1.1\r\nHost: cloud-bridge\r\nConnection: close\r\n\r\n")
+            data = b""
+            while chunk := c.recv(65536):
+                data += chunk
+        served = [m.get("id") for m in json.loads(data.split(b"\r\n\r\n", 1)[1]).get("data") or []]
+    except (OSError, ValueError, IndexError) as exc:
+        return {"model": model, "status": "UNREACHABLE", "detail": f"cloud bridge: {exc}"[:200]}
+    if model not in cb["models"] or model not in served:
+        return {"model": model, "status": "MISSING", "detail": "not served by the cloud bridge"}
+    return {"model": model, "status": "MATCH", "digest": want["digest"], "identity_basis": "cloud_bridge_served_model_name",
+            "quantization": None, "size": None, "expected_digest": want["digest"],
+            "role_qualification": want["role_qualification"]}
 
 
 def runtime_record(env: dict[str, str] | None = None) -> dict:

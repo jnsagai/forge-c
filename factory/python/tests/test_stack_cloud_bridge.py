@@ -43,3 +43,19 @@ def test_serve_is_a_recorded_no_op_routed_to_a_healthy_bridge(tmp_path, monkeypa
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+def test_a_cloud_model_identity_matches_only_when_the_bridge_serves_it(tmp_path, monkeypatch):
+    prof = lp.load(PID)
+    monkeypatch.setenv(prof["deployment"]["root_env"], str(tmp_path))
+    assert lp.model_identity(prof, "claude-opus-5-5", "")["status"] == "UNREACHABLE"
+    sock = stack.bridge_socket(tmp_path, prof)
+    srv = CB.serve(sock, CB.Bridge({"claude-opus-5-5": {"backend": "x"}}, {}, tmp_path / "m.jsonl"))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        ok = lp.model_identity(prof, "claude-opus-5-5", "")
+        assert ok["status"] == "MATCH" and ok["identity_basis"] == "cloud_bridge_served_model_name"
+        assert lp.model_identity(prof, "gpt-6.1-sol", "")["status"] == "MISSING"  # not served by this bridge
+    finally:
+        srv.shutdown()
+        srv.server_close()
