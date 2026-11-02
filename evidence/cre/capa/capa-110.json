@@ -1,0 +1,101 @@
+{
+ "CAPA-110": {
+  "history": [
+   {
+    "at": "2026-11-02T12:44:44.362826Z",
+    "capa_id": "CAPA-110",
+    "evidence": "[\"cmp-swe1-crcl-performance-profile-unidentified\"]",
+    "from_state": null,
+    "reason": "Run CMP-SWE1-CRCL-05 BLOCKED STUCK: performance requirements name no measurement configuration",
+    "seq": 826,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T12:44:44.471750Z",
+    "capa_id": "CAPA-110",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 827,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T12:44:44.629607Z",
+    "capa_id": "CAPA-110",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-110 assigned",
+    "seq": 828,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T12:44:49.681927Z",
+    "capa_id": "CAPA-110",
+    "evidence": "[\"reproducer-run:rr-4e1199fd14d7f6f98133\", \"reproducer-run:rr-0b6cdcfc4d4ccd1c0272\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 829,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T12:44:49.713424Z",
+    "capa_id": "CAPA-110",
+    "evidence": "[\"git:b846dc8157cb..d44361e247f5\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix d44361e247f5 (patch 6900 bytes)",
+    "seq": 830,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T12:48:02.780188Z",
+    "capa_id": "CAPA-110",
+    "evidence": "[\"reproducer-run:rr-eed77c97d46d86a93842\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-110 absent at d44361e247f5",
+    "seq": 831,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T12:48:02.795141Z",
+    "capa_id": "CAPA-110",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 832,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-4d4ba6a0b8d56101ac8577d7a884a2a09fe0df80",
+   "b846dc8157cb3602c14dd82c081568965e307d41",
+   "d44361e247f5960d96d9f455856c2a5420ea5614",
+   "pd-fde2aeda23646d808fa3"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<d44361e247f5"
+   ],
+   "candidate_patch_sha256": "fabe2ee8662c825361607be869ce44f418d1307cd3ed30af36424aa3b4adcd07",
+   "capa_id": "CAPA-110",
+   "created_at": "2026-11-02T12:44:44.362826Z",
+   "event_ids": [],
+   "incident_ids": [
+    "cmp-swe1-crcl-performance-profile-unidentified"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-110",
+   "reproducer_id": "RPR-110",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-4e1199fd14d7f6f98133",
+    "reproducer-run:rr-0b6cdcfc4d4ccd1c0272"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T12:48:02.795141Z"
+  }
+ }
+}

@@ -1170,3 +1170,13 @@ reproducers:
     operations: [lrtx/swe2 rework routing]
     root_cause: "Every SWE.2 inspector finding citing an SWR id went to the interfaces task only; a finding on the design-owned Safety section (IWDG_PR width called unresolved) never reached the design task, whose checkpoint was reused, so the same text was rendered again and the order stopped BLOCKED STUCK SAME_ITEM_FAILED_3X:SWE2-06."
     remedy: "Findings go to the task owning the sections their location names (else the first section named; a visit's own failure stays with its task; contract codes to interfaces); the design packet carries field bit positions and the component-level requirement texts."
+  - id: RPR-110
+    script: rpr110_swe1_performance_profile_unidentified.py
+    sha256: 2fbac1aa242b2db5e7c3d87efb9e117d01faed625483efa758775b847d5e362a
+    symptom_signature: "a simulation-performance requirement names no Renode version or platform description for its measurement"
+    observed_in: "Fabro run WO-F014-CMP-SWE1-CRCL-20261102-05 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: b846dc8157cb3602c14dd82c081568965e307d41
+    error_codes: []
+    operations: [lrtx/swe1 budget requirements]
+    root_cause: "The factory-generated simulation-performance requirements said 'measured in the pinned Renode profile' without identifying it; the inspector failed SWE1-02/SWE1-04 because the measurement configuration was not uniquely defined and the author cannot change the generated text (BLOCKED STUCK SAME_ITEM_FAILED_3X)."
+    remedy: "The requirements name the pinned Renode version, the adapter and the platform description and peripheral model with sha256 in their verification."
