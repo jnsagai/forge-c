@@ -31,6 +31,13 @@
     "stack_bytes": 128,
     "status": "development targets set by the work-order owner (2026-10-15)"
   },
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 2000,
+    "microseconds_per_call": 1000,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  },
   "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
   "inputs": [
     {
