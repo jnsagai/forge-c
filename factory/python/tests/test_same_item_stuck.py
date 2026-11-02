@@ -1,6 +1,7 @@
 """CAPA-087 (run WO-F014-SWE2-IWDG-20261101-01, Omniverse2, 2026-11-01): under the high-allowance policy the SWE.1
 inspector failed SWE1-04 five times with reworded findings; stuck detection compared exact findings and never fired.
-Owner 2026-11-01: the same item failing 3 times stops the phase (STUCK)."""
+Owner 2026-11-01: the same item failing 3 times stops the phase (STUCK). Owner change 2026-11-02: only when the same
+finding repeats (test_same_finding_stuck.py); the fixtures below repeat one finding near-verbatim ("wording <n>")."""
 from __future__ import annotations
 
 import json
@@ -26,7 +27,7 @@ def _ins(ws_, n, failed, at="9999-01-01T00:00:0{}Z"):
     (d / f"INS-SWE.1-{n:03d}.json").write_text(json.dumps(rec))
 
 
-def test_the_same_item_failing_three_times_is_found_whatever_the_wording(ws1):  # noqa: F811
+def test_the_same_item_failing_three_times_with_a_near_verbatim_finding_is_found(ws1):  # noqa: F811
     _ins(ws1, 1, ["SWE1-04"])
     _ins(ws1, 2, ["SWE1-04", "SWE1-05"])
     assert gate.repeated_failed_item(Store(ws1), "SWE.1") is None  # two failures: still repaired
