@@ -695,7 +695,7 @@ def test_oracle_states_count_based_cases_not_derivable_in_instance_mode(inst_ws)
                      "ORACLE_NOT_DERIVABLE:OTHER:INSTANCE_MODE (CRC_CR not in the declared typed layout)"]
 
 
-def test_block_array_verifiers_state_not_applicable_instead_of_a_vacuous_pass(inst_ws):
+def test_block_array_verifiers_check_typed_instance_code(inst_ws):
     import shutil
 
     from forge_factory.assurance import register_proof, register_wp, verifiers
@@ -711,7 +711,6 @@ def test_block_array_verifiers_state_not_applicable_instead_of_a_vacuous_pass(in
     assert sem["status"] == "PASS" and not sem["findings"], sem
     conc = verifiers.v_concurrency(ws)
     assert conc["status"] == "PASS", conc
-    assert verifiers.v_mutation(ws)["status"] == "NOT_APPLICABLE"
     assert not any("INSTANCE_MODE" in f for f in verifiers.v_arch(ws)["findings"])
     oracle = verifiers.v_oracle(ws)
     assert oracle["status"] == "PASS" and oracle["cases"] == 2, oracle
@@ -959,3 +958,25 @@ def test_resume_across_instance_declarations_is_refused(tmp_path, monkeypatch, s
     if source == "instance" and new is None:  # the same declaration on both sides resumes as before
         (src / ".forge-run/manifest.json").write_text(json.dumps(man("instance", "WO-SRC")))
         assert resume_from(ws, man("instance", "WO-NEW"), "WO-SRC")[0] == "SWE.1"
+
+
+# ---- review follow-up 4: the mutation campaign runs on the pinned device header ---------------------------------
+def test_mutation_campaign_runs_in_instance_mode(inst_ws):
+    import shutil
+
+    from forge_factory.assurance import mutation, verifiers
+    from forge_factory.lrtx import swe4
+    from forge_factory.workflow import scaffold
+
+    if not shutil.which("gcc"):
+        pytest.skip("gcc not installed")
+    ws = _contract(inst_ws)
+    rel = scaffold.scaffold(ws)["file"]
+    (ws / rel).write_text(swe4._with_tests(ws, [("ut_ut_001", UT_WRITE), ("ut_ut_002", UT_READ)]))
+    r = verifiers.v_mutation(ws)
+    assert r["status"] == "PASS" and r["campaign"]["eligible"] == 2 and r["campaign"]["killed"] == 2, r
+    assert r["campaign"]["invalid"] == 0, r
+    (ws / rel).write_text(swe4._with_tests(ws, [("ut_ut_001", UT_WRITE)]))  # the read is no longer tested
+    weak = verifiers.v_mutation(ws)
+    assert weak["status"] == "FAIL" and any("INSTANCE_READ_ZERO" in f for f in weak["findings"]), weak
+    assert mutation.instance_ops(None) == []
