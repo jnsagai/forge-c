@@ -1130,3 +1130,13 @@ reproducers:
     operations: [workorder.resume_from, release/finalize.stage_test_history]
     root_cause: "A greenfield resume carried evidence/test-integrity.jsonl but not the content-addressed test snapshots it references; both resumed lineages' packages were BLOCKED (TEST_HISTORY_INTEGRITY: TEST_SNAPSHOT_MISSING_OR_UNREADABLE)."
     remedy: "resume_from collects the hash-verified test snapshots of the source and its resume ancestors."
+  - id: RPR-106
+    script: rpr106_swe2_allocation_truncates_requirement.py
+    sha256: 4c443d52b9bbb36fed1998606e2cebb702c95907bd39bfdf2030f8cb9dcc4e82
+    symptom_signature: "the SWE.2 allocation table truncates a component-level requirement"
+    observed_in: "Fabro run WO-F014-CMP-SWE2-OBL-20261102-01 (cloud comparison line, loop10, 2026-11-02)"
+    baseline_revision: c1b059423c177c3668cb7a155244f9d523d610b2
+    error_codes: []
+    operations: [lrtx/swe2 allocation table]
+    root_cause: "The SWE.2 allocation table cut each component-level requirement at 120 characters; the inspector rejected SWE2-02/05/06 three times because the allocated requirement text was incomplete (BLOCKED STUCK SAME_ITEM_FAILED_3X)."
+    remedy: "The allocation table carries the whole requirement text."
