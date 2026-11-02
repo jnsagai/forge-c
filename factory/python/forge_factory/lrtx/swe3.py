@@ -475,6 +475,19 @@ def visit_design(ws: Path, model: str = "", **_k) -> dict:
         dd.append(f"- {k} (target-cm55-gcc): status {r['status']}; summary \"{r['summary']}\"; metrics "
                   f"{json.dumps(r.get('metrics') or {}, sort_keys=True)}")
     dd.append("")
+    # CAPA-121 (runs WO-F014-CMP-SWE3-OBL/IWDG-20261102-09): the design showed flash/RAM/stack but no bound for the
+    # simulation performance requirements (instructions / virtual time per call); SWE3-03 failed three times on
+    # "timing ... bounded". The factory computes the static per-call bound of the code SWE.6 measures.
+    from .. import static_timing as ST
+
+    timing = ST.bound(ws)
+    if timing is not None:
+        try:
+            swrs = ST.performance_swrs(ws, reqs)
+        except (OSError, ValueError, KeyError):
+            swrs = []
+        dd += ST.design_section(timing, swrs)
+        files[ST.EVIDENCE] = ST.render(timing)
     files["workproducts/SWE.3/detailed_design.md"] = "\n".join(dd)
     V.write_scoped(ws, files, "swe3_author")
     _pu  # noqa: B018 - parse_units is the format the gate reads (kept imported for readers)
