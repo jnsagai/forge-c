@@ -1080,3 +1080,13 @@ reproducers:
     operations: [lrtx/runner continue-check]
     root_cause: "The continuation check of the code and tests steps read inspect-reply.json, found it missing and sent an unfinished visit on to the design node and the author gate."
     remedy: "Only the inspect step reads the inspector reply; author, code and tests read reply.json."
+  - id: RPR-101
+    script: rpr101_swe4_kind_gap_without_reason.py
+    sha256: 048c38ef6076bdf9a5fb5fbe5246b356467fe247c150870d145a35fb94478172
+    symptom_signature: "the SWE.4 report lists test kinds without a test and gives no applicability for them"
+    observed_in: "Fabro run WO-F014-SWE4-IWDG-20261101-L4 on Omniverse2 2026-11-01, IWDG LL greenfield SWE.4 resumed from WO-F014-SWE3-IWDG-20261101-L4"
+    baseline_revision: af2d2b8ac74062645881c87474f5e1958875c500
+    error_codes: []
+    operations: [lrtx/swe4.visit_report]
+    root_cause: "The generated SWE.4 report listed 'none declared: error' for LL accessors without error behaviour; the inspector read it as missing error tests and failed SWE4-02; no test rework can change the report."
+    remedy: "Each test kind without a test is stated NOT COVERED, or not applicable with the deterministic reason (no cited requirement states an error behaviour and no error status is returned; no value is taken)."
