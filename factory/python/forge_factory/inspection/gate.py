@@ -457,18 +457,34 @@ def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck
 SAME_ITEM_LIMIT = 3  # owner 2026-11-01 ("N can be 3")
 
 
-def repeated_failed_item(store: Store, phase: str, n: int = SAME_ITEM_LIMIT) -> str | None:
-    """CAPA-087 (run WO-F014-SWE2-IWDG-20261101-01): the last `n` inspections of the phase in this budget epoch all
-    failed one checklist item, however the findings were worded (the inspector reworded the same SWE1-04 objection
-    five times; unchanged_failed_inspection compares exact findings). Returns the item id(s), else None."""
+def repeated_failed_findings(store: Store, phase: str, n: int = SAME_ITEM_LIMIT) -> dict[str, str]:
+    """Item -> the finding that persisted through the last `n` inspections of the phase in this budget epoch.
+
+    CAPA-087 (run WO-F014-SWE2-IWDG-20261101-01) stopped an item failing in the last `n` inspections. Owner change
+    2026-11-02 (cloud runs WO-F014-CMP-SWE1-RCC-20261102-06, -IWDG-20261102-05, -CRCL-20261102-06): an item counts as
+    stuck only when the SAME finding repeats on it in all `n` rounds (finding_identity: near-verbatim, or the same
+    cited requirements with the same defect wording); a different finding on the same item each round is progress.
+    A round without finding text keeps the item-only rule for that round (fail closed)."""
+    from . import finding_identity
+
     since = store.budget_start()
     rows = [r for r in store.inspections(phase) if str(r.get("recorded_at") or "") >= since]
     if len(rows) < n:
-        return None
+        return {}
     failed = [{k for k, v in (r.get("items") or {}).items() if (v or {}).get("verdict") not in ("PASS", None)}
               for r in rows[-n:]]
     common = set.intersection(*failed) if all(failed) else set()
-    return ",".join(sorted(common)) or None
+    out = {}
+    for item in sorted(common):
+        alive = finding_identity.persisting([finding_identity.item_findings(r, item) for r in rows[-n:]])
+        if alive:
+            out[item] = alive[0]
+    return out
+
+
+def repeated_failed_item(store: Store, phase: str, n: int = SAME_ITEM_LIMIT) -> str | None:
+    """The item id(s) whose same finding failed the last `n` inspections (repeated_failed_findings), else None."""
+    return ",".join(repeated_failed_findings(store, phase, n)) or None
 
 
 def unchanged_failed_inspection(store: Store, phase: str) -> bool:
@@ -504,13 +520,15 @@ def step_route(store: Store, phase: str) -> int:
         stuck = stuck_signature(store.workspace, phase, store.budget_start()) if high else None
         if high and unchanged_failed_inspection(store, phase):
             stuck = ("UNCHANGED_FAILED_INSPECTION",)
-        if high and not stuck and (item := repeated_failed_item(store, phase)):
-            stuck = (f"SAME_ITEM_FAILED_{SAME_ITEM_LIMIT}X:{item}",)
+        repeated = repeated_failed_findings(store, phase) if high and not stuck else {}
+        if repeated:
+            stuck = (f"SAME_ITEM_FAILED_{SAME_ITEM_LIMIT}X:{','.join(repeated)}",)
         refused = g["decision"] == "BLOCKED" and str(g.get("reason", "")).startswith("INSPECTOR_REFUSED_REPEATEDLY:")
         if stuck or refused:
             allowed = False  # Owner's stop-and-rethink direction: quota does not excuse a deterministic stall.
         result = {**g, "decision": "REWORK" if allowed else "BLOCKED",
                   "development_ladder": development.ladder(store.workspace, phase),
+                  **({"repeated_finding": {k: v[:300] for k, v in repeated.items()}} if repeated else {}),
                   "reason": ("high-allowance development repair" if high else "one bounded development repair")
                   if allowed else f"STUCK: {g['reason']}; external diagnosis required" if refused else
                   f"STUCK: {stuck[0]}; external diagnosis required" if stuck and str(stuck[0]).startswith("SAME_ITEM")

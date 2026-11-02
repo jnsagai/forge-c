@@ -1,0 +1,189 @@
+{
+ "schema": "forge-c/test-fixture/stuck-rounds/1",
+ "source": "Forge-C inspection records inspection/<PH>/INS-*.json items[<item>].findings (full text) of the cloud comparison line, 2026-11-02; the last three rounds before each SAME_ITEM_FAILED_3X stop. Expected: DIFFERENT = a different issue each round (owner 2026-11-02); SAME = one issue repeated in all three rounds.",
+ "incidents": [
+  {
+   "work_order": "WO-F014-CMP-SWE1-CRCL-20261102-06",
+   "phase": "SWE.1",
+   "item": "SWE1-02",
+   "expected": "DIFFERENT",
+   "rounds": [
+    {
+     "inspection_id": "INS-SWE.1-001",
+     "findings": [
+      "workproducts/SWE.1/software_requirements.md, SWR-009: 'requested reversal' and 'requested reversal type' lack a defined ReverseMode-to-field mapping. OP-78f01ea81e6dc430 explicitly leaves even the representative verification mapping unconfirmed, preventing objective verification of the general requirement.",
+      "workproducts/SWE.1/software_requirements.md, SWR-012–SWR-015: The input ReverseMode argument encodings remain unconfirmed against the delivered LL interface (OP-e9d7781591774496). SWR-012 additionally assumes RTYPE_IN is cleared (OP-eba41d40383c1dc3). Consistency and feasibility against the scoped ST interface therefore remain unresolved.",
+      "workproducts/SWE.1/software_requirements.md, SWR-018: Verification requires comparison with 'RM0486 reset values', but those expected values are absent from the supplied baseline, as acknowledged by OP-3e48b5a7244175a5. This acceptance condition lacks a resolved verification oracle.",
+      "workproducts/SWE.1/software_requirements.md, SWR-021: The requirement combines independently satisfiable prohibitions on dynamic memory allocation and clock, power and security configuration. These separate constraints are bundled into one requirement, so it is not atomic."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.1-002",
+     "findings": [
+      "workproducts/SWE.1/software_requirements.md, SWR-009–SWR-010 and SWR-012–SWR-015: the ReverseMode argument values corresponding to the required register effects remain undefined in the supplied baseline. Open points OP-94adba14bbe84106, OP-83917493a56145bc and OP-5c25fb834850d7e0 explicitly leave the constant mappings unconfirmed. Consequently, the acceptance checks lack unambiguous API inputs and are not objectively reproducible from the frozen sources."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.1-003",
+     "findings": [
+      "workproducts/SWE.1/software_requirements.md, SWR-005–SWR-008: The requirements and acceptance tests name polynomial sizes but specify neither numeric PolySize arguments nor LL constant identifiers. inputs/generated-obligations.json establishes only a uint32_t PolySize parameter, and register_effects.json supplies only expected field values. The required call inputs therefore remain ambiguous, preventing unambiguous reproduction of these acceptance tests from the frozen sources."
+     ]
+    }
+   ]
+  },
+  {
+   "work_order": "WO-F014-CMP-SWE1-IWDG-20261102-02",
+   "phase": "SWE.1",
+   "item": "SWE1-01",
+   "expected": "SAME",
+   "rounds": [
+    {
+     "inspection_id": "INS-SWE.1-001",
+     "findings": [
+      "MAJOR: traceability/upstream_gaps.md maps SWR-001–SWR-004 to RM0486-59.7.2 in both trace directions, but workproducts/SWE.1/software_requirements.md identifies IWDG_KR as section 59.7.1. The frozen HSI trace links are inconsistent.",
+      "MAJOR: traceability/upstream_gaps.md maps SWR-005 to RM0486-59.7.4 in both trace directions, but workproducts/SWE.1/software_requirements.md identifies IWDG_PR as section 59.7.2. The prescaler requirement has an inconsistent HSI source link.",
+      "MAJOR: traceability/upstream_gaps.md maps SWR-006 to RM0486-59.7.4 in both trace directions, but workproducts/SWE.1/software_requirements.md identifies IWDG_RLR as section 59.7.3. The reload requirement has an inconsistent HSI source link."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.1-002",
+     "findings": [
+      "Major: traceability/upstream_gaps.md links SWR-001 through SWR-004 to RM0486-59.7.2 in both trace directions, but workproducts/SWE.1/software_requirements.md identifies their IWDG_KR source as section 59.7.1, p.2989 (OP-7951b4ec4a4f0e55). Recording the discrepancy as an open point does not correct the frozen HSI trace links.",
+      "Major: traceability/upstream_gaps.md links SWR-005 to RM0486-59.7.4 in both trace directions. Its IWDG_PR source is section 59.7.2, pp.2989–2990, as documented in workproducts/SWE.1/software_requirements.md (OP-ed801671871592a8); the frozen HSI trace links remain incorrect.",
+      "Major: traceability/upstream_gaps.md links SWR-006 to RM0486-59.7.4 in both trace directions. Its IWDG_RLR source is section 59.7.3, p.2990, as documented in workproducts/SWE.1/software_requirements.md (OP-42db0b2057c63fcb); the frozen HSI trace links remain incorrect."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.1-003",
+     "findings": [
+      "MAJOR: traceability/upstream_gaps.md links SWR-001 through SWR-004 to RM0486-59.7.2 in both trace directions. workproducts/SWE.1/software_requirements.md identifies their source as RM0486 section 59.7.1, IWDG_KR, p.2989, and records this unresolved defect in OP-bead126fcebbc598. The incorrect HSI links require correction and re-baselining.",
+      "MAJOR: traceability/upstream_gaps.md links SWR-005 to RM0486-59.7.4 in both trace directions, whereas its verification source and OP-84bbeada20fe7bc8 identify RM0486 section 59.7.2, IWDG_PR, pp.2989-2990. The incorrect HSI links require correction and re-baselining.",
+      "MAJOR: traceability/upstream_gaps.md links SWR-006 to RM0486-59.7.4 in both trace directions, whereas its verification source and OP-435234b43399acfa identify RM0486 section 59.7.3, IWDG_RLR, p.2990. The incorrect HSI links require correction and re-baselining."
+     ]
+    }
+   ]
+  },
+  {
+   "work_order": "WO-F014-CMP-SWE1-IWDG-20261102-05",
+   "phase": "SWE.1",
+   "item": "SWE1-02",
+   "expected": "DIFFERENT",
+   "rounds": [
+    {
+     "inspection_id": "INS-SWE.1-001",
+     "findings": [
+      "Major — workproducts/SWE.1/software_requirements.md, SWR-005 and SWR-006: The setters promise to update the requested fields without specifying required write-access and PVU/RVU preconditions. Open points OP-161e6737de2aa62b and OP-910e8ecbdffdcf17 acknowledge that these conditions are necessary and caller responsibilities remain unallocated. Feasibility within the supported invocation domain is therefore unresolved.",
+      "Major — workproducts/SWE.1/software_requirements.md, SWR-010: Verification requires ONF = 0 and all registers at documented reset values without defining the watchdog mode. OP-cd4a5a9691d77583 states that ONF is mode-dependent and its reset value is undefined in the cited reset mask. The unconditional reset acceptance condition is inconsistent with that recorded limitation. State a supported reset configuration and mode-valid acceptance conditions."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.1-002",
+     "findings": [
+      "Major — software_requirements.md, SWR-011: Comparing register snapshots cannot establish that no register writes occurred. Writes that restore the original value remain undetected; the documented IWDG_KR read-as-zero behavior also hides key writes. The specified acceptance procedure can pass despite violation of the requirement.",
+      "Minor — software_requirements.md, SWR-006: The specified verification observes return and final register contents but does not count writes. Multiple identical writes satisfy its acceptance conditions despite violating the requirement to write once; access-trace evidence is needed.",
+      "Minor — software_requirements.md, SWR-008: The specified verification checks return values and unchanged register contents but does not count reads. Repeated IWDG_SR reads satisfy its acceptance conditions despite violating the single-read requirement; read-count evidence is needed."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.1-003",
+     "findings": [
+      "Major — software_requirements.md, SWR-011: Verification requires debugger watchpoints covering the entire IWDG register block, but OP-69138f7c6dcb0fff explicitly leaves that capability unconfirmed. No available alternative is established, so verification feasibility remains unresolved.",
+      "Major — software_requirements.md, SWR-013: Observing register-array effects and unchanged memory cannot establish that all register accesses use the prescribed array indexing; an additional read through another address would escape these checks. The specified verification does not objectively establish the access restriction.",
+      "Major — software_requirements.md, SWR-014: Comparing the final WINR, EWCR and ICR entries with their initial patterns cannot detect writes that restore those patterns. The specified verification therefore cannot establish the requirement to perform no writes."
+     ]
+    }
+   ]
+  },
+  {
+   "work_order": "WO-F014-CMP-SWE1-RCC-20261102-06",
+   "phase": "SWE.1",
+   "item": "SWE1-02",
+   "expected": "DIFFERENT",
+   "rounds": [
+    {
+     "inspection_id": "INS-SWE.1-001",
+     "findings": [
+      "MAJOR — workproducts/SWE.1/software_requirements.md, SWR-001–SWR-650: Register effects are specified without defining the supported access context or caller preconditions. The Open points identify unresolved security/privilege restrictions and RTC backup-domain write protection affecting SWR-341–SWR-342. Feasibility of the unconditional effects is therefore unresolved. Define the supported invocation domain; behavior outside that domain need not be added.",
+      "MAJOR — workproducts/SWE.1/software_requirements.md, SWR-653 and Open points OP-4268f22373c3cf92 and OP-2df577591f717edb: Preservation of other register bits relies on read-modify-write, but responsibility for serializing concurrent writers remains explicitly undecided. The baseline does not establish the invocation conditions under which this preservation guarantee is feasible.",
+      "MINOR — workproducts/SWE.1/software_requirements.md, SWR-004, SWR-119 and SWR-333: Verification uses LL_RCC_RCC_CR_OFFSET, LL_RCC_RCC_AHB5ENR_OFFSET and LL_RCC_RCC_APB3ENR_OFFSET, respectively, whereas the scope and SWR-655 prescribe LL_RCC_<REG>_OFFSET. OP-948a63303bc0dbee explicitly leaves the RCC_CR spelling unresolved. These inconsistent identifiers leave the verification register indices ambiguous.",
+      "MAJOR — workproducts/SWE.1/software_requirements.md, SWR-654–SWR-655 and Open points OP-849ffb06992b0388 and OP-9cb9b8049e4d3707: The requirements and RAM-array verification prescribe access to the documented register element, while the Open points retain an undecided oscillator set/clear-register alternative and explicitly state that verification would need revision. The frozen baseline leaves the access and verification contract provisional.",
+      "MINOR — workproducts/SWE.1/software_requirements.md, SWR-333–SWR-336 and OP-eb7d115f43f1360b: DFT requirements include RCC_APB3ENR, although the scope's explicit bus list omits APB3 and its cited section range includes it. The baseline records this conflicting scope interpretation as awaiting confirmation, so applicability of these requirements remains ambiguous."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.1-002",
+     "findings": [
+      "SWR-006 and SWR-007 in workproducts/SWE.1/software_requirements.md require preservation of other RCC_CR bits while SWR-004 and SWR-005 mandate read-modify-write, but their invocation domain supplies no exclusion of concurrent writers. SWR-653 qualifies preservation with that exclusion. The local and cross-cutting preservation guarantees need a consistent concurrency precondition.",
+      "SWR-651 and SWR-657 in workproducts/SWE.1/software_requirements.md prohibit register writes, but their verification criteria compare only final register contents. Writes of identical values or writes subsequently restored would pass; these acceptance criteria cannot establish the required absence of writes.",
+      "SWR-660 in workproducts/SWE.1/software_requirements.md limits flash usage of a header-only, static-inline driver without defining the measurement image, API instantiation workload or attribution of inlined instructions. The stated map/size check therefore lacks a reproducible definition of driver flash usage.",
+      "SWR-333 through SWR-336 in workproducts/SWE.1/software_requirements.md cover RCC_APB3ENR, while the declared bus list omits APB3 and the cited section range includes it. OP-8209a811f32664dc explicitly leaves this conflict undecided, so the applicability of these requirements remains inconsistent within the frozen baseline."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.1-003",
+     "findings": [
+      "workproducts/SWE.1/software_requirements.md: SWR-016/SWR-020, SWR-021–024 and other register-level preservation requirements lack the no-concurrent-writer precondition used by SWR-649. Their assumed read-modify-write access cannot guarantee preservation during concurrent writes. OP-b3ba4fb069a45aa7 explicitly records this unresolved inconsistency; SWR-649's conditional guarantee does not qualify the other requirements.",
+      "workproducts/SWE.1/software_requirements.md: SWR-656's 4096-byte flash limit is not reproducibly verifiable for the header-only, static-inline driver because the measurement image, API instantiation workload and attribution of inlined instructions are undefined. OP-b3301433aab9d33a explicitly leaves these measurement decisions unresolved."
+     ]
+    }
+   ]
+  },
+  {
+   "work_order": "WO-F014-CMP-SWE2-IWDG-20261102-03",
+   "phase": "SWE.2",
+   "item": "SWE2-06",
+   "expected": "SAME",
+   "rounds": [
+    {
+     "inspection_id": "INS-SWE.2-001",
+     "findings": [
+      "workproducts/SWE.2/software_architecture.md, Register access and Safety mechanisms sections: PR field width and mask are declared unresolved, contradicting its Register table (PR bits 3:0) and SWE.1 SWR-005 (requested values 0x0–0xF). Reconcile these statements so the prescaler masking decision is consistent with the frozen requirement."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.2-002",
+     "findings": [
+      "Minor — workproducts/SWE.2/software_architecture.md, Requirement allocation table, SWR-012: states SWR-019/SWR-020 are outside the task requirement list, contradicting their inclusion in frozen SWE.1, the same allocation table and both traceability matrices.",
+      "Minor — workproducts/SWE.2/software_architecture.md, Safety mechanisms, degraded states and dependencies: lists the PR field width and mask as undecidable, although its Interfaces and Register table fix bits 3:0 and mask 0xFU consistently with SWE.1 SWR-005. The architecture presents this decision as both settled and unresolved."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.2-003",
+     "findings": [
+      "Minor: workproducts/SWE.2/software_architecture.md, 'Safety mechanisms, degraded states and dependencies', lists the PR field width and mask as unresolved, while its Interfaces, Requirement allocation and Register table fix bits 3:0 and mask 0xFU consistently with SWE.1 SWR-005. Reconcile this contradictory decision status."
+     ]
+    }
+   ]
+  },
+  {
+   "work_order": "WO-F014-CMP-SWE2-OBL-20261102-06",
+   "phase": "SWE.2",
+   "item": "SWE2-02",
+   "expected": "SAME",
+   "rounds": [
+    {
+     "inspection_id": "INS-SWE.2-001",
+     "findings": [
+      "Major — SWE2-02: workproducts/SWE.2/software_architecture.md §§Components, Register access and Architecture decisions, and architecture_static.puml IF-02, prescribe caller-supplied CRC_TypeDef pointers and CRCx->IDR access while explicitly excluding register-block arrays. This contradicts the fixed ADR-0009 architecture requiring access only through extern volatile uint32_t ll_crc_regs, linker-placed on target and harness-defined on host. Register ownership and volatile-access semantics are therefore defined against the wrong access model.",
+      "Major — SWE2-02: workproducts/SWE.2/software_architecture.md §§Register access and Safety mechanisms, degraded states and dependencies incorrectly leave IDR retention across calculation-unit reset undecided. The frozen SWE.1 software_requirements.md open point OP-20b30acbc430e04b explicitly records that CRC_IDR is unaffected by CRC_CR.RESET. The architecture must distinguish this known hardware effect from the exclusion of driver-initiated calculation-unit reset.",
+      "Major — SWE2-02: workproducts/SWE.2/software_architecture.md §Register access leaves IDR contents after peripheral reset unresolved. The supplied SWE.1 evidence also identifies the reset value as unavailable; no value can be established from these sources. Although caller-owned reset handling and absence of startup accesses are defined, peripheral-reset semantics remain an open input gap, so the full criterion is not satisfied."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.2-002",
+     "findings": [
+      "Major — SWE2-02: workproducts/SWE.2/software_architecture.md, sections 'Components', 'Register access' and 'Architecture decisions', explicitly reject the binding ADR-0009 register-access model and instead select caller-supplied CRCx->IDR access, also shown in architecture_static.puml and architecture_dynamic.puml. The required model uses only extern volatile uint32_t ll_crc_regs, linker-placed on target and harness-defined on host. Recording this as an unresolved conflict does not satisfy the required register ownership and volatile-access design.",
+      "Major — SWE2-02: workproducts/SWE.2/software_architecture.md, sections 'Register access' and 'Safety mechanisms, degraded states and dependencies', leave CRC_IDR peripheral-reset semantics as an open input gap, consistent with workproducts/SWE.1/software_requirements.md OP-166d6b4568a6c8f6. Calculation-unit reset preservation and absence of startup accesses are defined, but the IDR state after peripheral reset cannot be established from the supplied evidence. The caller write-before-reliance restriction does not resolve that missing reset evidence."
+     ]
+    },
+    {
+     "inspection_id": "INS-SWE.2-003",
+     "findings": [
+      "Major — SWE2-02: workproducts/SWE.2/software_architecture.md, sections Components, Register access, Interfaces and Architecture decisions, explicitly rejects the required ADR-0009 extern volatile uint32_t ll_crc_regs access model and instead specifies caller-supplied CRCx->IDR access. architecture_static.puml and architecture_dynamic.puml repeat that incompatible model. Consequently, register access and integration ownership are not defined consistently with the fixed design; recording an escalation does not resolve the discrepancy.",
+      "Major — SWE2-02: workproducts/SWE.2/software_architecture.md, sections Register access and Safety mechanisms, degraded states and dependencies, leaves the CRC_IDR state after peripheral reset unresolved, citing workproducts/SWE.1/software_requirements.md OP-166d6b4568a6c8f6. Although calculation-unit reset behavior and absence of startup accesses are defined, peripheral-reset semantics remain an acknowledged input gap, so the full reset-semantics criterion is not satisfied."
+     ]
+    }
+   ]
+  }
+ ]
+}
