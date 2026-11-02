@@ -31,6 +31,7 @@ from ..common import pretty_json, sha256_bytes, utc_now
 CATALOGUE_VERSION = "lrtx-seeded-2"  # -2 (F011-T045): the paired SWE.1 defects of the inspection lessons
 LESSON_SET: dict = {"value": None}  # F011-T044: the inspection lesson set of this run (--lessons), in every report
 OPTIONS: dict = {"value": None}  # F011-T048/T049: the semantic inspector's sampling and coverage switch, in every report
+TRIAL: dict = {"value": None}  # a detection lesson's paired trial arm (knowledge/detection_trial.py), in every report
 
 
 def _req_md(ws: Path) -> Path:
@@ -271,6 +272,13 @@ def evaluate(holdout: Path, case: dict | None, model: str, scratch: Path, inspec
         + [f"{iid}: {str(x)[:240]}" for iid, item in sorted(((rec_ins or {}).get("items") or {}).items())
            for x in item.get("findings") or []],
     }
+    # detection-lesson promotion (d): what the refuters contested and what the inspector withdrew after them
+    lrec = ws / ".forge-run/lrtx" / phase / "inspection-record.json"
+    lrec = json.loads(lrec.read_text()) if lrec.is_file() else {}
+    rec["inspection"]["contested"] = [f"{i}: {str(x)[:240]}" for i, xs in sorted((lrec.get("contested_findings") or
+                                                                                 {}).items()) for x in xs]
+    rec["inspection"]["withdrawn"] = [f"{i}: {str(x)[:240]}" for i, xs in sorted((lrec.get("withdrawn_in_repair") or
+                                                                                 {}).items()) for x in xs]
     if rep["status"] not in ("PASS", "REWORK"):  # F011-T045 m9: why an inspection recorded nothing
         rec["inspection"]["issues"] = [str(i)[:200] for i in rep.get("issues") or []][:5]
     text = " ".join(rec["inspection"]["findings"])
@@ -425,6 +433,7 @@ def _summary(rows: list[dict], model: str) -> dict:
         "no_inspection": sum(r["detected_by"].startswith("NO_INSPECTION") for r in seeded + base),
         "inspection_lessons": LESSON_SET["value"],
         "inspector_options": OPTIONS["value"],
+        **({"trial": TRIAL["value"]} if TRIAL["value"] else {}),
         "rows": rows,
         "note": "Pilot evidence on a small frozen catalogue; not a reliability or safety qualification.",
     }
@@ -446,7 +455,7 @@ def main(argv: list[str] | None = None) -> int:
         "--lessons",
         type=Path,
         default=None,
-        help="F011-T044: inspection lesson directory for the semantic inspector (recorded in the report)",
+        help="F011-T044: inspection lesson directory for the inspector, structured or semantic (recorded in the report)",
     )
     ap.add_argument(
         "--lessons-trial",
@@ -454,6 +463,7 @@ def main(argv: list[str] | None = None) -> int:
         help="F011-T045 promotion trial: PROPOSED lessons that pass every check are retrieved too",
     )
     ap.add_argument("--seed", type=int, default=None, help="F011-T048: sampling seed of this run (recorded)")
+    ap.add_argument("--no-lessons", action="store_true", help="inspect without any inspection lesson (trial control)")
     ap.add_argument(
         "--coverage",
         choices=("on", "off"),
@@ -493,12 +503,23 @@ def main(argv: list[str] | None = None) -> int:
         RS.INSPECTOR["entries"] = None if a.entries is None else a.entries == "on"
         RS.INSPECTOR["stepwise"] = None if a.stepwise is None else a.stepwise == "on"
         OPTIONS["value"] = RS.inspector_options(a.holdout[0].resolve(), a.model)
-    if a.lessons:
+    elif a.seed is not None:  # the structured inspector's sampling seed (otherwise the gateway default)
+        from . import review as R
+
+        R.INSPECTOR["sampling"] = {"seed": a.seed}
+        OPTIONS["value"] = {"sampling": R.INSPECTOR["sampling"]}
+    if a.no_lessons:
+        from . import review as R
+
+        R.LESSONS["off"] = True
+        LESSON_SET["value"] = {"dir": None, "trial": False, "lessons": []}
+    elif a.lessons:
         from ..knowledge import inspection as IL
+        from . import review as R
         from . import review_semantic as RS
 
-        RS.LESSONS["dir"] = a.lessons.resolve()
-        RS.LESSONS["include_proposed"] = a.lessons_trial
+        RS.LESSONS["dir"] = R.LESSONS["dir"] = a.lessons.resolve()
+        RS.LESSONS["include_proposed"] = R.LESSONS["include_proposed"] = a.lessons_trial
         LESSON_SET["value"] = {
             "dir": str(a.lessons),
             "trial": a.lessons_trial,

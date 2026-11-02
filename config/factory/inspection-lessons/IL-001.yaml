@@ -1,6 +1,7 @@
 # F011-T045: written from the learning set (F011-T029 run 6, gpt-oss:120b unseen: two false rejections)
 id: IL-001
 version: 1
+purpose: CLARIFICATION
 state: PROPOSED
 scope:
   phase: SWE.1

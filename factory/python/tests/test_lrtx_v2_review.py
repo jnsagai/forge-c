@@ -207,7 +207,7 @@ def test_validated_lessons_reach_the_item_packet_as_reference_data_and_are_recor
     import yaml
     from forge_factory.knowledge import inspection as IL
 
-    les = {"id": "IL-001", "version": 1, "state": "VALIDATED",
+    les = {"id": "IL-001", "version": 1, "state": "VALIDATED", "purpose": "CLARIFICATION",
            "scope": {"phase": "SWE.1", "items": ["SWE1-03"], "layers": ["LL"],
                      "requires": ["workproducts/SWE.1/software_requirements.md"]},
            "statement": "A low-level layer work order specifies register access without waiting; timeouts, parameter "
