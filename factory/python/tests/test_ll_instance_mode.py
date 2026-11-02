@@ -852,3 +852,44 @@ def test_performance_wrappers_take_the_instance_and_the_image_builds(inst_ws, tm
                     "  TCHECK(1, forge_measure_LL_CRC_Read_IDR(CRC) == 0x5AU);\n  FORGE_TEST_END(); return 0; }\n")
     ok, _log, errs = sim.build_image(ws, test, tmp_path / "perf.elf")
     assert ok, errs
+
+
+# ---- review follow-up 1: a driver must use its instance argument --------------------------------------------------
+BYPASS_WRITE = WRITE_UNIT.replace("    CRCx->IDR = InData;", "    (void)CRCx;\n    CRC->IDR = InData;")
+HOST_WRITE = WRITE_UNIT.replace("    CRCx->IDR = InData;", "    (void)CRCx;\n    forge_host_crc.IDR = InData;")
+ALIAS_WRITE = WRITE_UNIT.replace("    CRCx->IDR = InData;", "    CRC_TypeDef *p = CRCx;\n    p->IDR = InData;")
+
+
+@pytest.mark.parametrize("unit", [BYPASS_WRITE, HOST_WRITE, ALIAS_WRITE], ids=["macro", "host_object", "alias"])
+def test_ll_body_that_ignores_its_instance_is_refused(inst_ws, unit):
+    from forge_factory.inspection.implementation import check_implementation
+    from forge_factory.lrtx import swe3
+
+    ws = _swe2(inst_ws)
+    _code(ws, units=())
+    u = swe3.units(ws)[0]
+    doc = {"code": unit, "spec_items": [{"id": "USPEC-LL-01-01", "behaviour": "writes the caller value to IDR",
+                                         "traces": ["SWR-001"]}]}
+    assert any("INSTANCE_BYPASSED:LL_CRC_Write_IDR" in f for f in swe3.validate_code(ws, doc, u))
+    hdr = ws / "software/ll/stm32n6xx_ll_crc.h"
+    hdr.unlink()
+    (ws / ".forge-run/lrtx/SWE.3/generated-header.h").unlink(missing_ok=True)
+    _code(ws, units=(unit, READ_UNIT))
+    impl = check_implementation(ws)
+    assert any(f.startswith("IMPL:INSTANCE_BYPASSED:LL_CRC_Write_IDR") for f in impl["major_findings"]), impl
+    assert not any("LL_CRC_Read_IDR" in f for f in impl["major_findings"] if "INSTANCE" in f)
+
+
+def test_oracle_fails_a_driver_that_writes_the_macro_object_instead_of_its_instance(inst_ws):
+    import shutil
+
+    from forge_factory.assurance import oracle_gen
+
+    if not shutil.which("gcc"):
+        pytest.skip("gcc not installed")
+    ws = _contract(inst_ws)
+    hdr = ws / "software/ll/stm32n6xx_ll_crc.h"
+    hdr.write_text(hdr.read_text().replace("    CRCx->IDR = InData;", "    (void)CRCx;\n    CRC->IDR = InData;"))
+    r = oracle_gen.run(ws, [ws / "software/hal", ws / "software/ll"], [], "stm32n6xx_ll_crc.h")
+    assert r["status"] == "FAIL" and ("OR-001", "SWR-001", "WRITE_IDR", "FAIL") in r["results"], r
+    assert "LL_CRC_Write_IDR(&forge_oracle_inst, 0x12345678U)" in r["source"]
