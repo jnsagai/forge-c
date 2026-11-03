@@ -290,6 +290,9 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             data = BI.render(api)
             inputs[BI.OUT] = data
             listed.append({"path": BI.OUT, "role": BI.ROLE, "sha256": sha256_bytes(data), "bytes": len(data)})
+    from .quality import resolve as resolve_quality
+
+    quality_block, quality_source = resolve_quality(spec, purpose)  # refused before the workspace is used
     head = create_workspace(ws, inputs)
     from .inspection.provided_changes import save_original
 
@@ -321,6 +324,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         "trace_profile": TRACE_PROFILE,
         "register_contract": REGISTER_CONTRACT,
         "unit_verification": UNIT_VERIFICATION,
+        "quality": quality_block, "quality_source": quality_source,  # owner rule 2026-11-03: the order's quality
         **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
         "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
         "scope": spec["scope"],

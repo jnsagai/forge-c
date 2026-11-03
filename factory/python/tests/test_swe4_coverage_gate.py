@@ -25,7 +25,8 @@ def _cov(line, branch, mcdc, status="PASS"):
                                           ("FORMAL_REVIEW", True)])
 def test_measures_follow_the_work_order_purpose(tmp_path, purpose, mcdc):
     r = CG.required(_ws(tmp_path, purpose))
-    assert r["mcdc"] is mcdc and [m for m, _k in r["measures"]][:2] == ["line", "branch"]
+    assert r["mcdc"] is mcdc and [m for m, _k, _q in r["measures"]][:2] == ["line", "branch"]
+    assert r["source"] == "defaults" and all(p == {"target": 100, "minimum": 100} for p in r["quality"].values())
 
 
 def test_unknown_purpose_is_refused_not_guessed(tmp_path):
@@ -38,14 +39,14 @@ def test_aspice_only_blocks_line_and_branch_and_reports_mcdc(tmp_path):
     ws = _ws(tmp_path, "ASPICE_ONLY")
     assert CG.evaluate(ws, _cov(100.0, 100.0, 50.0))["status"] == "PASS"  # MC/DC reported, not blocking
     ev = CG.evaluate(ws, _cov(100.0, 75.0, 100.0))
-    assert ev["status"] == "FAIL" and ev["findings"][0].startswith("COVERAGE_GATE:BRANCH_NOT_100:75.0%")
-    assert CG.evaluate(ws, _cov(96.5, 100.0, None))["findings"][0].startswith("COVERAGE_GATE:LINE_NOT_100:96.5%")
+    assert ev["status"] == "FAIL" and ev["findings"][0].startswith("COVERAGE_GATE:BRANCH_BELOW_MINIMUM:75.0%")
+    assert CG.evaluate(ws, _cov(96.5, 100.0, None))["findings"][0].startswith("COVERAGE_GATE:LINE_BELOW_MINIMUM:96.5%")
 
 
 def test_safety_purpose_also_blocks_mcdc(tmp_path):
     ws = _ws(tmp_path, "DEVELOPMENT")
     ev = CG.evaluate(ws, _cov(100.0, 100.0, 50.0))
-    assert ev["status"] == "FAIL" and ev["findings"][0].startswith("COVERAGE_GATE:MCDC_NOT_100:50.0%")
+    assert ev["status"] == "FAIL" and ev["findings"][0].startswith("COVERAGE_GATE:MCDC_BELOW_MINIMUM:50.0%")
 
 
 def test_not_applicable_stays_acceptable(tmp_path):
@@ -76,3 +77,28 @@ def test_brownfield_scope_measures_are_used(tmp_path):
     cov = {"status": "PASS", "metrics": {"line_pct": 1.2, "branch_pct": 3.0, "mcdc_pct": None, "scope_functions": 4,
                                          "scope_region_pct": 100.0, "scope_branch_pct": 100.0}}
     assert CG.evaluate(ws, cov)["status"] == "PASS"
+
+
+def _with_quality(tmp_path, purpose, block):
+    ws = _ws(tmp_path, purpose)
+    m = json.loads((ws / ".forge-run/manifest.json").read_text())
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({**m, "quality": block, "quality_source": "order"}))
+    return ws
+
+
+QB = {"structural_coverage": {"line": {"target": 100, "minimum": 90}, "branch": {"target": 100, "minimum": 90}},
+      "requirements_coverage": {"uspec_tested": {"target": 100, "minimum": 100},
+                                "swr_verified_swe6": {"target": 100, "minimum": 100}},
+      "misra": {"open_violations_max": 0, "undeviated_rules_max": 0, "deviation_owner_approval": True}}
+
+
+def test_order_minimum_passes_below_target_with_the_gap_reported_and_fails_below_it(tmp_path):
+    """Owner rule 2026-11-03: target 100, minimum 90 - 95% passes (shortfall reported), 85% fails."""
+    ws = _with_quality(tmp_path, "ASPICE_ONLY", QB)
+    ok = CG.evaluate(ws, _cov(95.0, 100.0, None))
+    assert ok["status"] == "PASS" and not ok["target_met"] and ok["findings"] == []
+    assert ok["shortfall"] == ["COVERAGE_BELOW_TARGET:LINE:95.0% (target 100%, minimum 90% met)"]
+    assert any("target NOT met" in x for x in CG.report_lines(ok))
+    bad = CG.evaluate(ws, _cov(85.0, 100.0, None))
+    assert bad["status"] == "FAIL" and bad["findings"][0].startswith("COVERAGE_GATE:LINE_BELOW_MINIMUM:85.0%")
+    assert CG.evaluate(ws, _cov(100.0, 100.0, None))["target_met"]

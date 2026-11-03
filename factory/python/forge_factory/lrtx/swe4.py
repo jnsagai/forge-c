@@ -586,16 +586,19 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
     open_gaps: list[str] = []
     if res["status"] == "PASS" and uspec_mode(ws) and gtest_mode(ws):
         # owner 2026-11-03 (D/E): coverage closure tasks for the gaps the blocking coverage gate names
-        res, more, recs, open_gaps = _closure(ws, model, budget, recs, rel)
+        res, more, recs, open_gaps, closure_defects = _closure(ws, model, budget, recs, rel)
         filed += more
+    else:
+        closure_defects = []
     S.record(ws, "SWE.4/tests-assembly.json", {"at": utc_now(), "tests": [c["ut"] for c, _n, _r in recs],
-                                               "defects": filed, "run_unit": res.get("summary"),
+                                               "defects": filed + closure_defects, "run_unit": res.get("summary"),
                                                "open_coverage_gaps": open_gaps})
     if res["status"] != "PASS":
         return V.reply(ws, PHASE, "FAILED", [f"run_unit: {i}" for i in res["issues"][:10]] +
-                       [f"defect filed: {x}" for x in filed], budget)
-    if filed or open_gaps:
-        return V.reply(ws, PHASE, "FAILED", [f"defect filed: {x}" for x in filed] + open_gaps[:20], budget)
+                       [f"defect filed: {x}" for x in filed + closure_defects], budget)
+    if filed or open_gaps:  # below the order's minimum (or a failing-test CODE defect): rework / upstream loop
+        return V.reply(ws, PHASE, "FAILED", [f"defect filed: {x}" for x in filed + closure_defects] + open_gaps[:20],
+                       budget)
     return V.reply(ws, PHASE, "PASS", [], budget, artifacts=[rel])
 
 
@@ -665,10 +668,19 @@ CLOSURE_ROUNDS = 2  # a gap still uncovered after its second closure test is a C
 def _blocking_gaps(ws: Path, cov: dict) -> list[dict]:
     from ..inspection import coverage_gate as CG
 
-    if cov.get("status") != "PASS" or CG.evaluate(ws, cov)["status"] == "PASS":
+    if cov.get("status") != "PASS":
         return []
-    kinds = {"line", "branch"} | ({"mcdc"} if CG.required(ws)["mcdc"] else set())
+    ev = CG.evaluate(ws, cov)
+    if ev["target_met"]:
+        return []
+    # owner rule 2026-11-03: closure works toward the order's TARGET for every required measure not yet at it
+    kinds = {r["key"] for r in ev["rows"] if r["status"] in ("BELOW_TARGET", "BELOW_MINIMUM")}
     return [g for g in coverage_gaps(ws, cov) if g["kind"] in kinds]
+
+
+def _cov_point(cov: dict) -> tuple:
+    m = cov.get("metrics") or {}
+    return tuple(m.get(k) or 0.0 for k in ("line_pct", "branch_pct", "mcdc_pct"))
 
 
 def coverage_gaps(ws: Path, cov: dict) -> list[dict]:
@@ -803,12 +815,22 @@ def _closure(ws: Path, model: str, budget: dict, recs: list, rel: str):
     from ..inspection import uspec_plan as P
     from . import tools as T
 
-    res, filed, tried = None, [], {}
+    res, filed, tried, hard = None, [], {}, []
+    points, stopped, prev = [], "TARGET_MET", None
     for _round in range(CLOSURE_ROUNDS + 1):
         cov = T.call(ws, "forge-tests-mcp", "llvm_coverage", {}, "swe4-author", PHASE)
+        point = _cov_point(cov)
+        points.append(point)
         gaps = _blocking_gaps(ws, cov)
         if not gaps:
+            stopped = "TARGET_MET" if cov.get("status") == "PASS" else "NOT_MEASURED"
             break
+        if prev is not None and not any(a > b for a, b in zip(point, prev, strict=True)):
+            # owner rule 2026-11-03: a closure round that adds no coverage ends closure
+            stopped = "NO_PROGRESS"
+            break
+        prev = point
+        stopped = "EXHAUSTED"
         plan = P.current(ws)
         used = [int(t["ut"][3:]) for t in plan["tasks"] + plan.get("closure", []) + plan.get("closure_unreachable", [])]
         nxt = max(used, default=0) + 1
@@ -836,8 +858,12 @@ def _closure(ws: Path, model: str, budget: dict, recs: list, rel: str):
             nxt += 1
             rec = V.run_task(ws, PHASE, f"test:{c['ut']}", lambda fi, pr, c=c: closure_packet(ws, c, model, fi, pr),
                              lambda d, c=c: validate_closure(ws, d, c), budget)
-            if rec["status"] != "VALID":
-                return res or cov, filed, recs, [f"{rec['task']}: {e}" for e in rec["errors"][:4]]
+            if rec["status"] != "VALID":  # blocked closure task: recorded, closure ends here
+                hard_note = [f"{rec['task']}: {e}" for e in rec["errors"][:4]]
+                plan.setdefault("closure_blocked", []).append({"ut": c["ut"], "gap": g, "errors": hard_note})
+                V.write_scoped(ws, P.files(plan), "swe4_test_author")
+                stopped = "BLOCKED"
+                break
             d = rec["doc"]
             if d["verdict"] == "unreachable":
                 fid = _closure_defect(ws, c, f"no requirement or USPEC of {c['unit']['id']} reaches it: {d['reason']}")
@@ -856,21 +882,47 @@ def _closure(ws: Path, model: str, budget: dict, recs: list, rel: str):
                                                                                 "kinds": d["kinds"] or ["positive"]}}))
             V.write_scoped(ws, P.files(plan), "swe4_test_author")
         V.write_scoped(ws, P.files(plan), "swe4_test_author")
-        if not new:
+        if new:
+            recs = recs + new
+            res, more, recs = _run_and_triage(ws, model, budget, recs, rel)
+            if res is None:
+                return {"status": "FAIL", "issues": more}, filed + more, recs, [], []
+            if res["status"] != "PASS" or more:  # a failing closure test: the normal triage/upstream path
+                return res, more, recs, [], filed
+        if stopped == "BLOCKED" or not new:
+            stopped = stopped if stopped == "BLOCKED" else "EXHAUSTED"
             break
-        recs = recs + new
-        res, more, recs = _run_and_triage(ws, model, budget, recs, rel)
-        if res is None:
-            return {"status": "FAIL", "issues": more}, filed, recs, []
-        filed += more
-        if res["status"] != "PASS" or more:
-            return res, filed, recs, []
-    if res is not None:
-        T.call(ws, "forge-tests-mcp", "llvm_coverage", {}, "swe4-author", PHASE)  # newest evidence for the gate
+    final = T.call(ws, "forge-tests-mcp", "llvm_coverage", {}, "swe4-author", PHASE)  # newest evidence for the gate
     from ..inspection import coverage_gate as CG
 
-    left = [] if filed else CG.findings(ws)
-    return res or {"status": "PASS", "summary": "no closure test needed", "issues": []}, filed, recs, left
+    ev = CG.evaluate(ws, final)
+    plan = P.current(ws)
+    plan["closure_status"] = {"stopped": stopped, "rounds": len(points), "coverage_by_round": [list(p) for p in points],
+                              "final": list(_cov_point(final)), "target_met": ev["target_met"],
+                              "shortfall": ev["shortfall"], "below_minimum": ev["findings"], "code_defects": filed}
+    V.write_scoped(ws, P.files(plan), "swe4_test_author")
+    # owner rule 2026-11-03: no further progress -> PASS when every measure is at or above the order's minimum; the
+    # CODE defects for unreachable code stay recorded (SWE.3 / owner), the shortfall is reported, never claimed met
+    return res or {"status": "PASS", "summary": "no closure test needed", "issues": []}, hard, recs, ev["findings"], \
+        filed
+
+
+def _missed_reasons(ws: Path, gate: dict) -> list[str]:
+    """Why a target was missed (owner rule 2026-11-03): CODE defects for unreachable code, closure tasks that could not
+    reach a decision, blocked closure tasks, and how closure ended - from the plan record, never invented."""
+    from ..inspection import uspec_plan as P
+
+    plan = P.load(ws) or {}
+    st = plan.get("closure_status") or {}
+    out = [f"{x}" for x in gate.get("shortfall") or []]
+    out += [f"{u['gap']['file']}:{u['gap']['line']} `{u['gap']['text']}` ({u['gap']['missing']}): unreachable by any "
+            f"requirement/USPEC - CODE defect {u['defect']}: {u['reason']}" for u in plan.get("closure_unreachable", [])]
+    out += [f"{b['gap']['file']}:{b['gap']['line']} `{b['gap']['text']}`: closure task {b['ut']} blocked: "
+            f"{'; '.join(b['errors'])[:200]}" for b in plan.get("closure_blocked", [])]
+    if st:
+        out.append(f"closure ended: {st['stopped']} after {st['rounds']} round(s); CODE defects "
+                   f"{', '.join(st.get('code_defects') or []) or 'none'}")
+    return out if (gate.get("shortfall") or gate.get("findings")) else []
 
 
 def _per_test_results(ws: Path) -> dict[str, str]:
@@ -952,6 +1004,10 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     gate = CG.evaluate(ws, cov) if CG.enabled(ws) else None
     if gate is not None:  # owner 2026-11-03 (C): blocking by purpose; the gate's findings replace the reported goal
         cov_lines, cov_gaps = CG.report_lines(gate), gate["findings"]
+        from .. import quality as Q
+
+        structural = {r["key"]: r["value"] for r in gate["rows"]}
+        cov_lines += [""] + Q.render(ws, Q.achieved_rows(ws, structural), _missed_reasons(ws, gate))
     md += ["", "## Coverage", "", ("Structural coverage (LLVM source-based, line/branch/MC/DC) of the driver code. " if gate
            else "Goal: 100% statement (line) coverage of the driver code, and 100% branch and MC/DC "
            "coverage where the code has branch points or decisions. ") + "Reported exactly as the tool reported it: status "

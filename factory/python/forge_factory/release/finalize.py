@@ -634,6 +634,9 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
     from ..inspection import provided_changes as PC
 
     provided = PC.stage_into(ws, stage)  # owner 2026-11-03 (revised): changes to provided code, for human inspection
+    from ..quality import stage_into as quality_into
+
+    achieved = quality_into(ws, stage)  # owner rule 2026-11-03: quality achieved vs the order's target
     all_phases_pass = all(detail["gates"][p]["decision"] == "PASS" for p in PHASES)
     advisory = advisory_register(ws)
     if advisory:  # owner decision 2026-10-26: the gap register travels in the package for the end-of-run human review
@@ -648,6 +651,8 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         "generated_at": utc_now(),
         "safety_approval": "NOT_APPLICABLE_OFFLINE_HUMAN_DECISION",
         "work_order_purpose": wo.get("purpose", "LEGACY"),
+        **({"quality_target_met": achieved["target_met"], "quality_below_minimum": achieved["below_minimum"],
+            "quality_source": achieved["source"]} if achieved is not None else {}),
         **({"provided_code_modified": provided["human_review_required"],
             "provided_code_changes": provided["changes"],
             "human_review_required": ["quality/provided-code-changes.md"] if provided["human_review_required"] else []}

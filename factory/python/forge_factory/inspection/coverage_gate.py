@@ -1,7 +1,8 @@
 """Owner decision 2026-11-03 (C): structural coverage of the scoped driver code is a BLOCKING SWE.4 gate.
 
-- every purpose: 100% line (statement) and 100% branch coverage;
-- additionally 100% MC/DC when the work-order purpose is a safety purpose;
+- owner rule 2026-11-03: the order's quality block states target and minimum per measure (forge_factory.quality);
+  without it the defaults are target = minimum = 100% line (statement) and branch, + 100% MC/DC for a safety purpose;
+- the gate FAILS only below a minimum; below the target it passes and the shortfall is reported;
 - "not applicable" stays acceptable: llvm-cov counts no branch points / decisions (percentage None).
 
 Purpose (the work-order manifest's `purpose`, set by workorder.prepare --purpose): ASPICE_ONLY and QM are the owner's
@@ -30,14 +31,18 @@ def purpose(ws: Path) -> str | None:
 
 
 def required(ws: Path) -> dict:
-    """{'purpose', 'measures': [(label, metric key)], 'mcdc': bool} for this work order."""
+    """{'purpose', 'measures': [(label, metric key, quality key)], 'mcdc': bool, 'quality': {...}, 'source'}: the
+    order's structural-coverage targets/minimums (owner rule 2026-11-03; defaults without a quality block)."""
+    from ..quality import for_workspace
+
     p = purpose(ws)
     if p not in NON_SAFETY + SAFETY:
         raise ValueError(f"COVERAGE_GATE_PURPOSE_UNKNOWN:{p}")
-    measures = [("line", "line_pct"), ("branch", "branch_pct")]
-    if p in SAFETY:
-        measures.append(("MC/DC", "mcdc_pct"))
-    return {"purpose": p, "measures": measures, "mcdc": p in SAFETY}
+    q, src = for_workspace(ws)
+    sc = q["structural_coverage"]
+    names = {"line": ("line", "line_pct"), "branch": ("branch", "branch_pct"), "mcdc": ("MC/DC", "mcdc_pct")}
+    measures = [(names[k][0], names[k][1], k) for k in ("line", "branch", "mcdc") if k in sc]
+    return {"purpose": p, "measures": measures, "mcdc": "mcdc" in sc, "quality": sc, "source": src}
 
 
 def enabled(ws: Path) -> bool:
@@ -55,12 +60,14 @@ def _scope_keys(metrics: dict) -> dict:
 
 
 def evaluate(ws: Path, cov: dict | None = None, run_ts: str | None = None) -> dict:
-    """{'status': PASS|FAIL, 'purpose', 'rows': [{measure, value, status}], 'findings': [...]}. `cov`: an llvm_coverage
-    result (default: the latest recorded one)."""
+    """{'status': PASS|FAIL, 'target_met': bool, 'purpose', 'rows': [{measure, key, value, target, minimum, status}],
+    'findings': [...], 'shortfall': [...]}. FAIL only below a MINIMUM; below the target is reported (shortfall).
+    `cov`: an llvm_coverage result (default: the latest recorded one)."""
+    from ..quality import judge
     from ..release.finalize import latest, tool_results
 
     req = required(ws)
-    findings, rows = [], []
+    findings, rows, shortfall = [], [], []
     if cov is None:
         res = tool_results(Path(ws))
         rec = latest(res, "forge-tests-mcp", "llvm_coverage")
@@ -70,22 +77,27 @@ def evaluate(ws: Path, cov: dict | None = None, run_ts: str | None = None) -> di
             findings.append("COVERAGE_GATE:STALE (the latest llvm_coverage is older than the latest run_unit)")
     if not cov or cov.get("status") != "PASS":
         findings.append(f"COVERAGE_GATE:NOT_MEASURED (llvm_coverage {cov.get('status') if cov else 'NOT_RUN'})")
-        return {"status": "FAIL", "purpose": req["purpose"], "rows": rows, "findings": findings}
+        return {"status": "FAIL", "target_met": False, "purpose": req["purpose"], "rows": rows, "findings": findings,
+                "shortfall": shortfall, "source": req["source"]}
     m = _scope_keys(cov.get("metrics") or {})
-    for label, key in req["measures"]:
-        v = m.get(key)
-        if v is None:
-            rows.append({"measure": label, "value": None, "status": "NOT_APPLICABLE"})
-        elif float(v) >= 100.0:
-            rows.append({"measure": label, "value": v, "status": "MET"})
-        else:
-            rows.append({"measure": label, "value": v, "status": "NOT_MET"})
-            findings.append(f"COVERAGE_GATE:{label.replace('/', '').upper()}_NOT_100:{v}% (purpose {req['purpose']}: "
-                            f"100% {label} coverage of the scoped driver code is blocking)")
+    for label, key, qk in req["measures"]:
+        v, pair = m.get(key), req["quality"][qk]
+        st = judge(v, pair)
+        rows.append({"measure": label, "key": qk, "value": v, "target": pair["target"], "minimum": pair["minimum"],
+                     "status": st})
+        name = label.replace("/", "").upper()
+        if st == "BELOW_MINIMUM":
+            findings.append(f"COVERAGE_GATE:{name}_BELOW_MINIMUM:{v}% (minimum {pair['minimum']}%, target "
+                            f"{pair['target']}%, purpose {req['purpose']}: blocking)")
+        elif st == "BELOW_TARGET":
+            shortfall.append(f"COVERAGE_BELOW_TARGET:{name}:{v}% (target {pair['target']}%, minimum "
+                             f"{pair['minimum']}% met)")
     if not req["mcdc"]:
-        v = m.get("mcdc_pct")
-        rows.append({"measure": "MC/DC", "value": v, "status": "REPORTED (not blocking for this purpose)"})
-    return {"status": "FAIL" if findings else "PASS", "purpose": req["purpose"], "rows": rows, "findings": findings}
+        rows.append({"measure": "MC/DC", "key": "mcdc", "value": m.get("mcdc_pct"), "target": None, "minimum": None,
+                     "status": "REPORTED (not required by this order)"})
+    met = not findings and not shortfall
+    return {"status": "FAIL" if findings else "PASS", "target_met": met, "purpose": req["purpose"], "rows": rows,
+            "findings": findings, "shortfall": shortfall, "source": req["source"]}
 
 
 def findings(ws: Path) -> list[str]:
@@ -99,13 +111,13 @@ def findings(ws: Path) -> list[str]:
 
 
 def report_lines(ev: dict) -> list[str]:
-    out = [f"Coverage gate (owner 2026-11-03, purpose {ev['purpose']}): 100% line and branch coverage of the scoped "
-           "driver code are blocking" + (", and 100% MC/DC" if any(r["measure"] == "MC/DC" and
-                                                                     not r["status"].startswith("REPORTED")
-                                                                     for r in ev["rows"]) else "") +
-           "; a measure llvm-cov does not count (no branch points or decisions) is not applicable.", ""]
+    out = [f"Coverage gate (owner 2026-11-03, purpose {ev['purpose']}, quality {ev.get('source', 'defaults')}): the "
+           "line works toward the target; the gate fails only below the order's minimum; a measure llvm-cov does not "
+           "count (no branch points or decisions) is not applicable.", ""]
     for r in ev["rows"]:
         v = "n/a" if r["value"] is None else f"{r['value']}%"
-        out.append(f"- {r['measure']}: {v} - {r['status']}")
-    out.append(f"- gate: {ev['status']}")
+        lim = "" if r["target"] is None else f" (target {r['target']}%, minimum {r['minimum']}%)"
+        out.append(f"- {r['measure']}: {v}{lim} - {r['status']}")
+    out.append(f"- gate: {ev['status']}" + ("" if ev.get("target_met") else " - target NOT met (see Quality achieved "
+                                                                           "vs target)"))
     return out

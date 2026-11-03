@@ -534,7 +534,9 @@ def visit_design(ws: Path, model: str = "", **_k) -> dict:
         return V.reply(ws, PHASE, "FAILED", late[:20], None, artifacts=sorted(files))
     if res["cppcheck"]["status"] == "FAIL":  # CAPA-097: measured again here; open findings never freeze
         open_, _just = coding_rule_findings(ws, res["cppcheck"]["issues"], us)
-        if open_ or not res["cppcheck"]["issues"]:
+        from ..quality import misra_allows  # owner rule 2026-11-03: the order's MISRA minimum
+
+        if (open_ and not misra_allows(ws, len(open_))) or not res["cppcheck"]["issues"]:
             return V.reply(ws, PHASE, "FAILED", [f"cppcheck: {x}" for x in open_[:20]] or
                            [f"cppcheck: status {res['cppcheck']['status']}"], None, artifacts=sorted(files))
     return V.reply(ws, PHASE, "PASS", [], None, artifacts=sorted(files))

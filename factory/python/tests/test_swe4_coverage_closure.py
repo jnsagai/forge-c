@@ -86,7 +86,35 @@ def test_closure_answer_validation(ws3):  # noqa: F811
                                            ("DEVELOPMENT", {"line", "branch", "mcdc"})])
 def test_blocking_gap_kinds_follow_the_purpose(ws3, purpose, kinds):  # noqa: F811
     m = json.loads((ws3 / ".forge-run/manifest.json").read_text())
+    m.pop("quality", None)  # the defaults of that purpose (no order-stated quality block)
     (ws3 / ".forge-run/manifest.json").write_text(json.dumps({**m, "purpose": purpose}))
     gaps = [{"kind": k, "function": "f"} for k in ("line", "branch", "mcdc")]
     cov = {"status": "PASS", "metrics": {"line_pct": 90.0, "branch_pct": 50.0, "mcdc_pct": 50.0, "uncovered": gaps}}
     assert {g["kind"] for g in swe4._blocking_gaps(ws3, cov)} == kinds
+
+
+def test_below_target_but_at_the_order_minimum_progresses_with_the_shortfall_reported(ws3, monkeypatch):  # noqa: F811
+    """Owner rule 2026-11-03: target 100, minimum 80 - closure works toward the target; when it cannot progress (the
+    dead decision is a CODE defect) the visit passes at the minimum and the report shows the shortfall."""
+    _seed(ws3)
+    m = json.loads((ws3 / ".forge-run/manifest.json").read_text())
+    pair = {"target": 100, "minimum": 80}
+    m["quality"] = {"structural_coverage": {"line": pair, "branch": pair, "mcdc": pair},
+                    "requirements_coverage": {"uspec_tested": {"target": 100, "minimum": 100},
+                                              "swr_verified_swe6": {"target": 100, "minimum": 100}},
+                    "misra": {"open_violations_max": 0, "undeviated_rules_max": 0, "deviation_owner_approval": True}}
+    m["quality_source"] = "order"
+    (ws3 / ".forge-run/manifest.json").write_text(json.dumps(m))
+    monkeypatch.setattr(S, "call", _scripted({**TESTS, "test:UT-010": REACH, "test:UT-011": DEAD}, []))
+    rep = swe4.visit_tests(ws3, "m")
+    assert rep["status"] == "PASS", rep
+    plan = json.loads((ws3 / uspec_plan.PLAN).read_text())
+    st = plan["closure_status"]
+    assert not st["target_met"] and st["below_minimum"] == [] and st["code_defects"]
+    assert st["shortfall"] and all(s.startswith("COVERAGE_BELOW_TARGET:") for s in st["shortfall"])
+    d = json.loads(sorted((ws3 / ".forge-run/defects").glob("DEF-*.json"))[-1].read_text())
+    assert d["kind"] == "CODE" and "prescaler > 100U" in d["summary"]  # the reason the target was missed
+    assert swe4.visit_report(ws3)["status"] == "PASS"
+    rpt = (ws3 / "workproducts/SWE.4/unit_verification_report.md").read_text()
+    assert "## Quality achieved vs target" in rpt and "BELOW_TARGET" in rpt and d["id"] in rpt
+    assert "target NOT met" in rpt

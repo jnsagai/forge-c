@@ -138,7 +138,13 @@ def step_author(store: Store, phase: str, text: str) -> int:
     if phase != "SWE.1" and swtrace_enabled(store.workspace):  # owner addendum 2026-10-17: trace relations of this phase
         from .swtrace import check_phase
 
-        generated += check_phase(store.workspace, phase)["major_findings"]
+        from ..quality import accept_requirement_findings
+
+        kept, accepted = accept_requirement_findings(store.workspace, phase, check_phase(store.workspace, phase)[
+            "major_findings"])  # owner rule 2026-11-03: requirement coverage at or above the order's minimum
+        generated += kept
+        if accepted:
+            _state(store.workspace, phase, {"step": "quality", "result": "BELOW_TARGET_ACCEPTED", "shortfall": accepted})
     from ..layer import layer_of, register_contract_enabled
 
     if register_contract_enabled(store.workspace):  # owner decision 2026-10-19 (B): the oracle's register contract
