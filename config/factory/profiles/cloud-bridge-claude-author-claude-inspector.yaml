@@ -1,0 +1,162 @@
+schema: forge-c/local-profile/1
+id: cloud-bridge-claude-author-claude-inspector
+version: 1
+work_order_purpose: ASPICE_ONLY
+status: EXPERIMENT_ONLY_NOT_QUALIFIED
+description: 'Owner 2026-11-03 ("for now the cloud run must use Claude both as author and inspector since my codex
+  credits are gone"): a copy of cloud-bridge-claude-author-codex-inspector v1 with only the inspector role model changed
+  to Claude Opus 5.5 (the owner''s Claude account through claude -p, account mode; no API). Same structured runner,
+  packets, validators, gates, time box, inspection limits and phase-by-phase resume as the codex-inspector profile.
+  Author and inspector are the same model: inspection independence is by separate sessions only, which this experiment
+  line records and does not claim as independent qualification.'
+host_reference:
+  host: loop10 (owner's PC)
+  note: 'owner 2026-11-02: the Claude/Codex runs run on the local PC'
+local_only: false
+provider: ollama
+models:
+  default: claude-opus-5-5
+  allowed:
+    claude-opus-5-5:
+      digest: cloud:anthropic:claude-opus-5-5
+      license: proprietary (Anthropic API, owner account)
+      role_qualification: NOT_QUALIFIED; comparison line author (owner 2026-11-02)
+    gpt-6.1-sol:
+      digest: cloud:openai:gpt-6.1-sol
+      license: proprietary (OpenAI API, owner account)
+      role_qualification: NOT_QUALIFIED; comparison line inspector (owner 2026-11-02)
+runtime:
+  context_limit_tokens: 262144
+  fabro_context_tokens: 262144
+  fabro_max_output_tokens: 16384
+  ollama:
+    OLLAMA_NUM_PARALLEL: '1'
+    OLLAMA_MAX_LOADED_MODELS: '1'
+    OLLAMA_FLASH_ATTENTION: '1'
+    OLLAMA_KV_CACHE_TYPE: f16
+    OLLAMA_CONTEXT_LENGTH: '262144'
+    OLLAMA_NOPRUNE: '1'
+  timeout_scale: 10
+  cloud_bridge:
+    socket: run/cloud-bridge.sock
+    models:
+      claude-opus-5-5:
+        backend: anthropic
+        effort: medium
+        extra_output_tokens: 98304
+        max_output_tokens: 128000
+        usd_per_mtok:
+          input: 4
+          output: 20
+          cache_read: 0.2
+          cache_write: 5
+      gpt-6.1-sol:
+        backend: openai
+        model: gpt-6.1-sol
+        reasoning_effort: high
+        extra_output_tokens: 32768
+structured:
+  coherent_scope_groups: true
+  complete_scope_sections: true
+  author_max_calls_by_phase:
+    SWE.1: 256
+  phases_by_layer:
+    LL:
+    - SWE.1
+    - SWE.2
+    - SWE.3
+    - SWE.4
+    - SWE.5
+    - SWE.6
+    HAL: []
+    LL+HAL: []
+  inspect_phases_by_layer:
+    LL:
+    - SWE.1
+    - SWE.2
+    - SWE.3
+    - SWE.4
+    - SWE.5
+    - SWE.6
+    HAL: []
+    LL+HAL: []
+  semantic_phases: []
+  semantic_inspect_phases: []
+  swe2_named_functions: true
+  swe2_constrained_design: true
+  inspector_sampling:
+    default: {}
+  inspector_coverage: true
+  inspector_entries: true
+  inspector_stepwise: true
+  advisory_continue: false
+  brownfield_structured_phases:
+  - SWE.1
+  - SWE.2
+  reinspect_direct: true
+  timeout_s: 21600
+  visit_time_s: 240
+  inspection_max_source_chars: 1048576
+  c_parameter_list_note: true
+  role_models:
+    author: claude-opus-5-5
+    inspector: claude-opus-5-5
+gateway:
+  drop_retries: 0
+  live_tap: true
+  request_timeout_s: 21600
+  reasoning: {}
+afo:
+  role_job_tokens:
+    afo-recovery-planner: 1048576
+    afo-factory-maintainer: 131072
+admission:
+  max_inflight: 1
+  max_queue: 8
+  max_wait_s: 21600
+measurement:
+  sample_s: 10
+deployment:
+  root_env: FORGE_LRTX_ROOT
+  default_root: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge
+  ports:
+    ollama: 11475
+    gateway: 11476
+    fabro: 32386
+    llama: 11477
+  forbidden_ports:
+  - 8765
+  - 8787
+  - 11434
+  - 11435
+  - 11436
+  - 11437
+  - 11445
+  - 11446
+  - 32290
+  - 32291
+  - 32390
+  - 32393
+  - 32399
+  writable_env:
+  - FORGE_DATA_ROOT
+  - FORGE_STATE_DIR
+  - FORGE_ARCHIVE_DIR
+  - FORGE_FABRO_CONFIG
+  - FORGE_FABRO_STORAGE
+  - FORGE_FABRO_HOME
+  - FORGE_VENV
+  - UV_CACHE_DIR
+  - PIP_CACHE_DIR
+  shared_readonly:
+    toolchains: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains
+    standards: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/standards
+    inputs: /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/inputs
+existing_deployment:
+  roots:
+  - /home/jefferson/forge-c
+  - /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state
+  - /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fabro-cloud
+  - /media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/fabro
+network:
+  required: namespace_denied
