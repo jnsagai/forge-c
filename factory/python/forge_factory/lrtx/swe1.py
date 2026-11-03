@@ -84,6 +84,10 @@ AR_NEGATIVE = (
 CORNER_RX = re.compile(r"\b(above|exceed\w*|out[- ]of[- ]range|outside (?:its|the) (?:field|range)|wider than|greater "
                        r"than|beyond|invalid|truncat\w*|confin\w*|only (?:the )?(?:low|lower)|low(?:er)? \d+ bits|mask"
                        r"\w*|ignor\w*|reject\w*|discard\w*)\b", re.I)
+# an explicitly stated valid input domain ('called with a value from 0U to 15U'): the input outside it is the caller's
+# precondition violation, stated as such - accepted by the cheap check (RPR-076/077/078/108 statements)
+RANGE_RX = re.compile(r"\bfrom\s+(?:0x)?[0-9A-Fa-f]+U?\s+(?:to|through)\s+(?:0x)?[0-9A-Fa-f]+U?\b|\bin the range\b|"
+                      r"\bbetween\s+(?:0x)?[0-9A-Fa-f]+U?\s+and\s+(?:0x)?[0-9A-Fa-f]+U?\b", re.I)
 # the written value comes from the caller (an argument), not a fixed key/constant of the requirement
 VALUE_ARG_RX = re.compile(r"\b(called with (?:a|the|any|an)\b|argument|parameter|requested|the (?:given |input )?value\b|"
                           r"value from\b)", re.I)
@@ -92,7 +96,8 @@ VALUE_ARG_RX = re.compile(r"\b(called with (?:a|the|any|an)\b|argument|parameter
 def corner_case_findings(doc: dict, g: dict) -> list[str]:
     """AR-7 check (cheap and safe): every field narrower than 32 bits that a requirement of this task WRITES a
     caller-supplied value to has a corner case for an input above its width - an effect with requested, a statement on
-    that field naming the out-of-range behaviour, or an open point stating that no invalid input exists.
+    that field naming the out-of-range behaviour, the explicitly stated valid input range of the caller value, or an
+    open point stating that no invalid input exists.
     Set/clear/query/no-write effects (single bits, flags, accessors without a value) are never affected, nor is a
     full-width field."""
     out = []
@@ -110,11 +115,14 @@ def corner_case_findings(doc: dict, g: dict) -> list[str]:
             continue
         if any(full in r["statement"] and CORNER_RX.search(r["statement"]) for r in reqs):
             continue
+        if any(RANGE_RX.search(r["statement"]) for r in valued):  # the valid input domain is stated explicitly
+            continue
         if f in opens and re.search(r"\bno (?:invalid|out[- ]of[- ]range)\b", opens, re.I):
             continue
         out.append(f"AR-7: the write of {full} ({width} bits) states no corner case: add the behaviour for an input "
-                   f"above the field width (an effect with requested and the field value, or a statement naming that "
-                   f"input), or state in open_points that no invalid input exists for {full}")
+                   f"above the field width (an effect with requested and the field value, a statement naming that "
+                   f"input, or the valid input range 'from 0U to <max>'), or state in open_points that no invalid "
+                   f"input exists for {full}")
     return out
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 REQS = "workproducts/SWE.1/software_requirements.md"

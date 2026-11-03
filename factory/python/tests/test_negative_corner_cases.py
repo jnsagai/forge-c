@@ -31,6 +31,13 @@ def test_ar7_value_write_needs_a_corner_case():
                                       G) == []
 
 
+def test_ar7_accepts_an_explicit_valid_input_range():
+    """RPR-076/077/078/108: 'called with a value from 0U to 15U ... write the value' states the valid input domain."""
+    st = "When LL_IWDG_SetPrescaler is called with a value from 0U to 15U, the IWDG LL driver shall write the value to " \
+         "IWDG_PR.PR."
+    assert swe1.corner_case_findings(_doc(st, W), G) == []
+
+
 def test_ar7_never_blocks_constants_flags_or_full_width_fields():
     key = "When LL_IWDG_Enable is called, the IWDG LL driver shall write 0x0000CCCC to IWDG_KR.KEY."
     kr = {"register": "IWDG_KR", "fields": {"KEY": {"msb": 15, "lsb": 0}}}
