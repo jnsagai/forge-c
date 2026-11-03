@@ -237,7 +237,7 @@ def test_capa121_design_carries_the_static_call_bound_of_the_simulation_budget(w
     rec = json.loads((ws2 / ST.EVIDENCE).read_text())
     assert rec["status"] == "WITHIN_BUDGET" and len(rec["functions"]) == 9
     for fn, r in rec["functions"].items():
-        assert f"| {fn} | static (straight-line) | {r['static_instructions']} | {r['virtual_ns_bound']} | WITHIN_BUDGET |" in dd
+        assert f"| {fn} | {r['static_instructions']} | {r['virtual_ns_bound']} | static (straight-line) | WITHIN_BUDGET |" in dd
     assert ST.SECTION in dd and "hardware WCET is not claimed" in dd
     assert _gate(ws2, "SWE.3", monkeypatch) == 0
     bl = Store(ws2).latest_baseline("SWE.3")
@@ -289,6 +289,6 @@ def test_owner_timing_gate_rejects_over_budget_and_renders_the_bound_on_the_nati
     assert _gate(ws2, "SWE.3", monkeypatch) == 0
     text = dd.read_text()
     assert text.startswith("# Detailed design\n\nNative SWE.3 author design") and text.count(ST.SECTION) == 1
-    assert "| LL_IWDG_Enable | static (straight-line) | 4 | 40 | WITHIN_BUDGET |" in text
+    assert "| LL_IWDG_Enable | 4 | 40 | static (straight-line) | WITHIN_BUDGET |" in text
     bl = Store(ws2).latest_baseline("SWE.3")
     assert {ST.EVIDENCE, ST.DESIGN} <= set(bl["files"])
