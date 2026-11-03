@@ -211,9 +211,40 @@ def render_ok(puml: Path) -> tuple[bool, str]:
     syn = subprocess.run(["java", "-Djava.awt.headless=true", "-jar", str(jar), "-syntax"], input=puml.read_text(
         errors="replace"), capture_output=True, text=True, timeout=120)
     detail = " ".join(syn.stdout.split())[:120]
-    first = puml.read_text(errors="replace").lstrip()[:12]
+    text = puml.read_text(errors="replace")
+    first = text.lstrip()[:12]
     hint = "" if first.startswith("@startuml") else " (the file must start with @startuml and end with @enduml)"
+    located = _syntax_location(syn.stdout, text)
+    if located:  # CAPA-139: the actionable part first - the file line, its text and the likely cause
+        return False, f"{located}{hint}; syntax: {detail}"
     return False, f"{' '.join((r.stderr or r.stdout).split())[:80]}; syntax: {detail}{hint}"
+
+
+_ACTIVITY_KEYWORD_AS_ACTION = re.compile(
+    r"^\s*:\s*(if|elseif|else|endif|while|endwhile|repeat|switch|case|endswitch|fork|end fork)\b", re.I)
+
+
+def _syntax_location(syntax_out: str, text: str) -> str:
+    """CAPA-139: PlantUML `-syntax` answers 'ERROR', the 0-based line index, then the message. Name the 1-based FILE line
+    and its text, and - for an activity diagram - the first activity keyword written as an action (`:if ... then`),
+    which swallows the following lines into one multi-line action, so PlantUML often reports a LATER line. Empty when
+    the output has no line index (the caller keeps the plain stderr text)."""
+    m = re.match(r"\s*ERROR\s+(\d+)\s+(.*)", syntax_out or "", re.S)
+    if not m:
+        return ""
+    idx, lines = int(m.group(1)), text.splitlines()
+    msg = re.sub(r"\s*\(Assumed diagram type: [^)]*\)", "", " ".join(m.group(2).split()))[:50]
+    src = lines[idx].strip()[:50] if 0 <= idx < len(lines) else ""
+    out = f"PlantUML: {msg} at line {idx + 1}: `{src}`"
+    kw = next(((n, ln.strip()) for n, ln in enumerate(lines, 1) if _ACTIVITY_KEYWORD_AS_ACTION.match(ln)), None)
+    fix = "an activity keyword written as an action: drop the leading ':' (`if (c) then (yes)`, `else (no)`, `endif`)"
+    if kw and kw[0] == idx + 1:
+        out += f" - {fix}"
+    elif kw:
+        out += f" - line {kw[0]}: `{kw[1][:50]}` is {fix}"
+    elif src.startswith(":") and not src.endswith(";"):
+        out += " - an action is `:text;`: end it with ';'"
+    return out
 
 
 def unit_reqif(unit: dict, swr_text: dict[str, str]) -> str:
@@ -366,7 +397,7 @@ def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, e
             if render:
                 ok, why = render_ok(design)
                 if not ok:
-                    f.append(f"UNIT:DESIGN_RENDER_FAILED:{u['id']}:{why[:80]}")
+                    f.append(f"UNIT:DESIGN_RENDER_FAILED:{u['id']}:{why[:200]}")  # CAPA-139: was [:80]
     refined = {r for u in units for s in u["specs"] for r in s["swrs"]}
     allocated_dev = {r for s in dev for r in model.get("allocation", {}).get(s, [])}
     comp = component_constraints(ws)
