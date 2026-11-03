@@ -20,6 +20,13 @@ Classification reuses the existing taxonomy: the 004 CRE classifier (`reliabilit
                       upstream defect (the model did not converge on deterministic findings);
   UNKNOWN          <- everything else (SECURITY, unclassified, a cancelled run) - never a guessed class.
 Proposals are RULE proposals derived from the records (status PROPOSED) and are never executed in M1.
+
+Owner rule 2026-11-03 (supersedes decision 7's fixed retry budgets): the supervisor may retry as often as it needs,
+as long as every new run makes progress, and a retry always resumes from the last good, quality-checked part. An
+issue is the chain of one fingerprint on one part (lineage) and phase: consecutive recurrences across new runs are
+its strikes (`attempts.used`); a different fingerprint or a passed phase is progress and resolves it. More than 3
+strikes stops the line: ESCALATED, needs you, reason SAME_ISSUE_EXCEEDED_3. `budgets` keeps only pacing and cost
+guards (never a stop reason) and `progress` names the last good part per lineage, which every retry resumes from.
 Summaries are built from codes by fixed templates; no model, agent or inspector prose enters the feed.
 
 Healthy cycles make zero model calls: the 002 model-port guard plus an allow-list socket guard (only the line's Fabro
@@ -53,17 +60,18 @@ PHASES = ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6")
 MODE = "OBSERVE"
 RESOLVED_KEEP_S = 7 * 86400  # decision 11: resolved issues stay 7 days in the feed; issues.jsonl keeps them all
 LOOKBACK_S = 48 * 3600
-# decision 7 (owner 2026-11-03)
+# owner rule 2026-11-03: unlimited retries while each new run progresses; the same issue more than 3 times stops the line
+STRIKE_LIMIT = 3
+STRIKE_RULE = "same issue > 3 times stops the line"
+STRIKE_REASON = "SAME_ISSUE_EXCEEDED_3"
+# pacing and cost guards (decision 7's remaining values); they pace the supervisor, they never stop the line
 BUDGETS = {
-    "convergence_retries_per_phase": 2,
-    "infra_recoveries_per_order": 3,
-    "infra_recoveries_per_hour_host": 6,
-    "infra_cooldown_s": 600,
-    "planner_calls_per_order": 4,
-    "planner_tokens_per_order": 200_000,
-    "phase_order_wall_s": 6 * 3600,
+    "guard_infra_recoveries_per_hour_host": 6,
+    "guard_infra_cooldown_s": 600,
+    "guard_planner_calls_per_order": 4,
+    "guard_planner_tokens_per_order": 200_000,
+    "guard_phase_order_wall_s": 6 * 3600,
 }
-CLASS_LIMIT = {"MODEL_CONVERGENCE": 2, "INFRA": 3, "PRODUCT": 2, "FACTORY_DEFECT": 0, "UNKNOWN": 0}
 ENDED = ("succeeded", "failed", "cancelled", "canceled", "aborted", "dead")
 WO_RX = re.compile(r"^WO-(?:F\d+-)?(?:CMP-)?SWE(\d)-([A-Z0-9]+)-(\d{8})-([A-Za-z0-9]+)$")
 CONVERGENCE_RX = re.compile(r"^\s*(STUCK\b|rework budget exhausted)", re.I)
@@ -195,6 +203,24 @@ def validator():
 
         _VALIDATOR = jsonschema.Draft202012Validator(json.loads(SCHEMA_PATH.read_text()))
     return _VALIDATOR
+
+
+def contract_keys() -> tuple[set, set, set] | None:
+    """The fields the installed contract declares (top level, attempts, escalation); None without a contract."""
+    v = validator()
+    if v is None:
+        return None
+    issue = v.schema["$defs"]["issue"]["properties"]
+    return set(v.schema["properties"]), set(issue["attempts"]["properties"]), set(issue["escalation"]["properties"])
+
+
+def fit_issue(i: dict, keys: tuple[set, set, set] | None) -> dict:
+    """Drop the fields an older installed contract does not declare yet (attempts.rule, escalation.reason): the feed
+    always validates against the contract that is deployed with it."""
+    if keys is None:
+        return i
+    return {**i, "attempts": {k: v for k, v in i["attempts"].items() if k in keys[1]},
+            "escalation": {k: v for k, v in i["escalation"].items() if k in keys[2]}}
 
 
 def feed_errors(feed: dict) -> list[str]:
@@ -516,8 +542,11 @@ def classify_order(rec: dict, life: str | None, capa_of: dict) -> dict | None:
     capa = capa_of.get(b["fingerprint"])
     if capa:
         ev.append({"kind": "capa", "ref": f"capa:{capa}"})
+    # the issue's identity across runs: the deterministic code set of the blocking rejection (the CRE bundle's dominant
+    # observation is tie-broken by an attempt-specific id, so its cfp1 can differ between runs of the same rejection)
+    fp = "sup1-" + _h("CODES", ph, route, *sorted(codes))[:40] if codes else b["fingerprint"]
     return {"class": cls, "phase": ph, "error_code": _code(b["error_code"]), "route": route or "ENDED", "codes": codes,
-            "fingerprint": b["fingerprint"], "evidence": ev, "upstream": sorted({d["target_phase"] for d in up}),
+            "fingerprint": fp, "cre_fingerprint": b["fingerprint"], "evidence": ev, "upstream": sorted({d["target_phase"] for d in up}),
             "status": {"FACTORY_DEFECT": "WAITING_EXTERNAL_CHANGE", "UNKNOWN": "ESCALATED"}.get(cls, "OPEN"),
             "capa": capa}
 
@@ -565,61 +594,72 @@ def last_passed_order(orders: list[dict], tag: str, phase: str, before: float) -
     return max(cand, key=lambda o: o["created"])["wo"] if cand else None
 
 
-def rule_proposals(issue_id: str, cls: str, phase: str, *, resume_from: str | None, used: int, limit: int,
-                   upstream: list[str], capa: str | None, kind: str, code: str = "",
-                   provided: tuple[str | None, str] | None = None) -> list[dict]:
-    retry_txt = f"retry {phase} from {resume_from}" if resume_from else f"retry {phase} from a fresh order"
+def rule_proposals(issue_id: str, cls: str, phase: str, *, resume_from: str | None, upstream: list[str],
+                   capa: str | None, kind: str, code: str = "", provided: tuple[str | None, str] | None = None,
+                   strikes: int = 1) -> list[dict]:
+    """RULE proposals (never executed in M1). Every retry names the last good, quality-checked order it resumes from
+    (`resume_from`; None only for SWE.1, which has no earlier part)."""
+    ph = phase if phase in PHASES else None
+    src = resume_from or "a fresh order (no earlier quality-checked part)"
+
+    def retry(rank: int, reasons: list[str]) -> dict:
+        return _proposal(issue_id, rank, "RETRY_PHASE_FROM_LAST_PASSED_ORDER", reasons + ["RESUME_FROM_LAST_GOOD_PART"],
+                         f"retry {phase} from {src}", phase=ph, resume_from=resume_from)
+
+    if strikes > STRIKE_LIMIT:
+        return [_proposal(issue_id, 1, "STOP_LINE_REQUEST_OWNER", [STRIKE_REASON], f"stop the line: the same issue "
+                          f"{strikes} times; resume {phase} from {src} after the owner decision", phase=ph,
+                          resume_from=resume_from)]
     if kind == "CANCELLED":
         return [_proposal(issue_id, 1, "RESUME_PHASE_FROM_LAST_PASSED_ORDER", ["FABRO_RUN_CANCELLED",
-                          "OWNER_RELEASE_REQUIRED"], f"resume {phase} from {resume_from or 'a fresh order'} when released",
-                          phase=phase if phase in PHASES else None, resume_from=resume_from)]
+                          "OWNER_RELEASE_REQUIRED", "RESUME_FROM_LAST_GOOD_PART"],
+                          f"resume {phase} from {src} when released", phase=ph, resume_from=resume_from)]
+    if kind == "WALL":
+        return [_proposal(issue_id, 1, "CHECK_ORDER_LIVENESS", ["PHASE_WALL_GUARD"], f"check the {phase} run is alive "
+                          "(pacing guard, not a stop reason)", phase=ph)]
     if kind == "LAUNCH" and provided:
-        good, raw = provided
+        good, _raw = provided
         if good:
             return [_proposal(issue_id, 1, "RELAUNCH_WITH_CORRECTED_PROVIDED_FROM", ["PROVIDED_FROM_NAME_INVALID",
-                              "CORRECTED_NAME_EXISTS"], f"relaunch {phase} with --provided-from {good}",
-                              phase=phase if phase in PHASES else None, provided_from=good)]
+                              "CORRECTED_NAME_EXISTS"], f"relaunch {phase} with --provided-from {good}", phase=ph,
+                              provided_from=good)]
         return [_proposal(issue_id, 1, "ESCALATE_TO_OWNER", ["PROVIDED_SOURCE_NOT_FOUND"],
                           "provided-from source not in the line state; owner decision needed")]
-    if kind == "LAUNCH" and code not in STACK_CODES:
-        return [_proposal(issue_id, 1, "RELAUNCH_PHASE_FROM_LAST_PASSED_ORDER", ["LAUNCH_REFUSED"],
-                          f"relaunch {phase} from {resume_from}" if resume_from else f"relaunch {phase}",
-                          phase=phase if phase in PHASES else None, resume_from=resume_from)]
     if kind == "LAUNCH":
+        relaunch = _proposal(issue_id, 2 if code in STACK_CODES else 1, "RELAUNCH_PHASE_FROM_LAST_PASSED_ORDER",
+                             ["LAUNCH_FAILED_BEFORE_RUN" if code in STACK_CODES else "LAUNCH_REFUSED",
+                              "RESUME_FROM_LAST_GOOD_PART"], f"relaunch {phase} from {src}", phase=ph,
+                             resume_from=resume_from)
+        if code not in STACK_CODES:
+            return [relaunch]
         return [_proposal(issue_id, 1, "STACK_REPAIR_RECIPE", ["LAUNCH_FAILED_BEFORE_RUN"],
-                          "stack stop, stop own orphaned stack processes, stack start, health check", recipe="stack-repair-v1"),
-                _proposal(issue_id, 2, "RELAUNCH_PHASE_FROM_LAST_PASSED_ORDER", ["LAUNCH_FAILED_BEFORE_RUN"],
-                          f"relaunch {phase} from {resume_from}" if resume_from else f"relaunch {phase}",
-                          phase=phase if phase in PHASES else None, resume_from=resume_from)]
+                          "stack stop, stop own orphaned stack processes, stack start, health check",
+                          recipe="stack-repair-v1"), relaunch]
     if cls == "FACTORY_DEFECT":
-        p = _proposal(issue_id, 1, "FOLLOW_CAPA", ["FACTORY_DEFECT_NEEDS_EXTERNAL_CHANGE"],
-                      f"wait for the CRE fix of {capa}, then {retry_txt}", capa_id=capa, phase=phase, resume_from=resume_from)
+        p = _proposal(issue_id, 1, "FOLLOW_CAPA", ["FACTORY_DEFECT_NEEDS_EXTERNAL_CHANGE", "RESUME_FROM_LAST_GOOD_PART"],
+                      f"wait for the CRE fix of {capa}, then retry {phase} from {src}", capa_id=capa, phase=ph,
+                      resume_from=resume_from)
         p["cre_decision_ref"] = _ref(f"capa:{capa}") if capa else None
         return [p]
     if cls == "INFRA":
         return [_proposal(issue_id, 1, "STACK_REPAIR_RECIPE", ["INFRASTRUCTURE"], "stack health check and repair",
-                          recipe="stack-repair-v1"),
-                _proposal(issue_id, 2, "RETRY_PHASE_FROM_LAST_PASSED_ORDER", ["INFRASTRUCTURE"], retry_txt,
-                          phase=phase if phase in PHASES else None, resume_from=resume_from)]
+                          recipe="stack-repair-v1"), retry(2, ["INFRASTRUCTURE"])]
     if cls == "PRODUCT" and upstream:
         return [_proposal(issue_id, 1, "RETURN_TO_OWNING_UPSTREAM_PHASE", ["OPEN_UPSTREAM_DEFECT"],
                           f"return to {upstream[0]} (open upstream defect)", phase=upstream[0])]
     if cls in ("MODEL_CONVERGENCE", "PRODUCT"):
-        if used < limit:
-            return [_proposal(issue_id, 1, "RETRY_PHASE_FROM_LAST_PASSED_ORDER",
-                              ["STUCK_OR_REWORK_BUDGET" if cls == "MODEL_CONVERGENCE" else "PRODUCT_REWORK",
-                               f"RETRY_BUDGET_LEFT:{limit - used}"], retry_txt, phase=phase, resume_from=resume_from),
-                    _proposal(issue_id, 2, "PROPOSE_VALIDATED_LESSON", ["LESSON_NEEDS_DETERMINISTIC_VALIDATION"],
-                              f"lesson for {phase} authors from these codes, validated before it is shared", phase=phase)]
-        return [_proposal(issue_id, 1, "RETURN_UPSTREAM_OR_LESSON", ["RETRY_BUDGET_EXHAUSTED"],
-                          f"{phase}: upstream return or validated lesson, else BLOCKED", phase=phase)]
-    return [_proposal(issue_id, 1, "ESCALATE_TO_OWNER", ["UNCLASSIFIED"], "owner decision needed")]
+        return [retry(1, ["STUCK_OR_REWORK_BUDGET" if cls == "MODEL_CONVERGENCE" else "PRODUCT_REWORK",
+                          f"SAME_ISSUE_STRIKE:{strikes}"]),
+                _proposal(issue_id, 2, "PROPOSE_VALIDATED_LESSON", ["LESSON_NEEDS_DETERMINISTIC_VALIDATION"],
+                          f"lesson for {phase} authors from these codes, validated before it is shared", phase=ph)]
+    return [retry(1, ["UNCLASSIFIED", f"SAME_ISSUE_STRIKE:{strikes}"])]
 
 
 # ------------------------------------------------------------------------------------------------- the cycle
 def _issue(line: str, *, wo, tag, phase, rid, cls, fingerprint, error_code, text, evidence, proposals, status, used,
-           limit, opened, lineage, now) -> dict:
-    iid = "SUP-" + _h(line, wo or "-", fingerprint)[:10]
+           opened, lineage, now, key: str | None = None) -> dict:
+    """`key` names the issue's chain (part|phase): the same fingerprint there is the same issue across runs."""
+    iid = "SUP-" + _h(line, key or wo or "-", fingerprint)[:10]
     for p in proposals:  # the proposal ids are bound to the issue
         p["proposal_id"] = "SUPP-" + _h(iid, p["strategy"], json.dumps(p["args"], sort_keys=True))[:12]
     level = "NEEDS_OWNER" if status == "ESCALATED" else "FLOOR"
@@ -627,9 +667,10 @@ def _issue(line: str, *, wo, tag, phase, rid, cls, fingerprint, error_code, text
             "phase": phase if phase in PHASES else "-", "fabro_run_id": _token(rid), "class": cls,
             "fingerprint": fingerprint, "error_code": _code(error_code), "summary": text,
             "evidence": [e for e in ({"kind": x["kind"], "ref": _ref(x["ref"])} for x in evidence) if e["ref"]][:24],
-            "proposals": proposals[:8], "status": status, "attempts": {"used": int(used), "limit": int(limit)},
+            "proposals": proposals[:8], "status": status,
+            "attempts": {"used": int(used), "limit": STRIKE_LIMIT, "rule": STRIKE_RULE},
             "escalation": {"level": level, "at": _utc(opened), "acknowledged": False, "acknowledged_at": None,
-                           "acknowledged_by": None, "ack_ref": None},
+                           "acknowledged_by": None, "ack_ref": None, "reason": None},
             "opened_at": _utc(opened), "updated_at": _utc(now), "resolved_at": None}
 
 
@@ -663,145 +704,186 @@ def _later(orders: list[dict], tag: str, phase: str, after: float, *, launched: 
     return None, None
 
 
+def line_progress(orders: list[dict]) -> list[dict]:
+    """The last good part per lineage (part): the furthest phase whose inspection gate PASSED, in the newest order that
+    passed it - what every retry resumes from (owner rule 2026-11-03)."""
+    best: dict[str, tuple] = {}
+    for o in orders:
+        for e in o["log"]:
+            if e.get("step") != "inspect" or _result(e) != "PASS" or e.get("phase") not in PHASES:
+                continue
+            k = (PHASES.index(e["phase"]), o["created"])
+            if o["tag"] not in best or k > best[o["tag"]][0]:
+                t = _ts(e.get("ts"))
+                best[o["tag"]] = (k, {"lineage": o["tag"], "phase": e["phase"], "wo": o["wo"],
+                                      "at": _utc(t) if t else None,
+                                      "ref": f"{o['rel']}/.forge-run/gates/gate-log.jsonl#{e['_line']}"})
+    return [best[t][1] for t in sorted(best)]
+
+
+def _resolve(iss: dict, ref: str, reason: str, now: float) -> None:
+    iss["evidence"].append({"kind": "superseded_by", "ref": _ref(ref) or "-"})
+    iss["evidence"] = [e for e in iss["evidence"] if e["ref"] != "-"][:24]
+    iss["status"], iss["resolved_at"] = "RESOLVED", _utc(now)
+    iss["escalation"].update(level="FLOOR", reason=None)
+    for p in iss["proposals"]:
+        p["status"] = "SUPERSEDED"
+        p["reason_codes"] = (p["reason_codes"] + [reason])[:8]
+
+
 class Observer:
-    """One OBSERVE pass over a line's records -> the feed's issues and budgets (pure: writes nothing)."""
+    """One OBSERVE pass over a line's records -> the feed's issues, guards and progress (pure: writes nothing)."""
 
     def __init__(self, line: str = "local", launch_dir: Path | None = None, fabro: FabroView | None = None,
                  cre_db: Path | None = None, lookback_s: float = LOOKBACK_S):
         self.line, self.launch_dir, self.fabro = line, launch_dir, fabro or FabroView()
         self.cre_db, self.lookback_s = cre_db, lookback_s
         self._cache: dict = {}
+        self.progress: list[dict] = []
+
+    def _core(self, rec: dict, life: str | None, capa_of: dict) -> dict | None:
+        key = (rec["wo"], rec["sig"], life, tuple(sorted(capa_of)))
+        if key not in self._cache:
+            self._cache = {k: v for k, v in self._cache.items() if k[0] != rec["wo"]}
+            self._cache[key] = classify_order(rec, life, capa_of)
+        return self._cache[key]
 
     def issues(self, now: float) -> tuple[list[dict], dict]:
+        from ..reliability.taxonomy import classify, fingerprint
+
         root = state_dir()
         orders = scan_orders(root, now, self.lookback_s)
         by_wo = {o["wo"]: o for o in orders}
         cre = read_cre(self.cre_db or root / "supervisor/incidents.sqlite3")
         out: list[dict] = []
         wall_used = 0.0
+        # every run of a part and phase is an event of its chain: PASS (progress) or the fingerprint it stopped on
+        chains: dict[tuple, list[tuple]] = {}
+        drafts: list[dict] = []
         for rec in orders:
             life = self.fabro.status(rec["rid"]) if rec["package"] is None else None
-            key = (rec["wo"], rec["sig"], life, tuple(sorted(cre["capa_of"])))
-            if key not in self._cache:
-                self._cache = {k: v for k, v in self._cache.items() if k[0] != rec["wo"]}
-                self._cache[key] = classify_order(rec, life, cre["capa_of"])
-            core = self._cache[key]
-            if core is None:
-                kind = (life or "").split(":")[0]
-                if rec["package"] is None and rec["phase"] not in rec["passed"] and kind not in ENDED:
-                    wall = now - rec["created"]
-                    wall_used = max(wall_used, wall)
-                    if wall > BUDGETS["phase_order_wall_s"]:
-                        out.append(_issue(self.line, wo=rec["wo"], tag=rec["tag"], phase=rec["phase"], rid=rec["rid"],
-                                          cls="UNKNOWN", fingerprint="sup1-" + _h("WALL", rec["wo"])[:40],
-                                          error_code="PHASE_WALL_BUDGET_EXCEEDED",
-                                          text=summary("WALL", phase=rec["phase"]),
-                                          evidence=[{"kind": "manifest", "ref": f"{rec['rel']}/.forge-run/manifest.json"}],
-                                          proposals=rule_proposals("x", "UNKNOWN", rec["phase"], resume_from=None, used=0,
-                                                                   limit=0, upstream=[], capa=None, kind="WALL"),
-                                          status="ESCALATED", used=0, limit=0, opened=rec["created"],
-                                          lineage=_lineage(by_wo, rec), now=now))
+            core = self._core(rec, life, cre["capa_of"])
+            ref = f"workorders/{rec['wo']}"
+            for ph in rec["passed"]:
+                chains.setdefault((rec["tag"], ph), []).append((rec["created"], "PASS", ref))
+            if core is not None:
+                chains.setdefault((rec["tag"], core["phase"]), []).append((rec["created"], core["fingerprint"], ref))
+                drafts.append({"rec": rec, "core": core, "tag": rec["tag"], "phase": core["phase"],
+                               "fp": core["fingerprint"], "created": rec["created"], "ref": ref})
                 continue
-            cls, phase = core["class"], core["phase"]
-            same = [o for o in orders if o["tag"] == rec["tag"] and o["phase"] == phase and o["source"] == rec["source"]
-                    and o["created"] < rec["created"] and phase not in o["passed"]]
-            used, limit = len(same), CLASS_LIMIT[cls]
-            status = core["status"]
-            if status == "OPEN" and used >= limit and cls != "INFRA":
-                status = "ESCALATED"
-            kind = "CANCELLED" if core["route"] == "CANCELLED" else cls
-            # the order this one resumed from (it passed the phase before), else the newest such order of the part
-            resume = rec["source"] or last_passed_order(orders, rec["tag"], phase, rec["created"])
-            text = summary("CANCELLED" if kind == "CANCELLED" else cls, phase=phase, route=core["route"],
-                           codes=core["codes"], error_code=core["error_code"], capa=core["capa"])
-            props = rule_proposals("x", cls, phase, resume_from=resume, used=used, limit=limit,
-                                   upstream=core.get("upstream", []), capa=core["capa"], kind=kind)
-            iss = _issue(self.line, wo=rec["wo"], tag=rec["tag"], phase=phase, rid=rec["rid"], cls=cls,
-                         fingerprint=core["fingerprint"], error_code=core["error_code"], text=text,
-                         evidence=core["evidence"], proposals=props, status=status, used=used, limit=limit,
-                         opened=rec["created"], lineage=_lineage(by_wo, rec), now=now)
-            self._settle(iss, orders, rec["tag"], phase, rec["created"], launched=False, now=now)
+            kind = (life or "").split(":")[0]
+            if rec["package"] is None and rec["phase"] not in rec["passed"] and kind not in ENDED:
+                wall_used = max(wall_used, now - rec["created"])
+                if now - rec["created"] > BUDGETS["guard_phase_order_wall_s"]:  # a pacing guard, not a stop reason
+                    out.append(_issue(self.line, wo=rec["wo"], tag=rec["tag"], phase=rec["phase"], rid=rec["rid"],
+                                      cls="UNKNOWN", fingerprint="sup1-" + _h("WALL", rec["wo"])[:40],
+                                      error_code="PHASE_WALL_GUARD_EXCEEDED", text=summary("WALL", phase=rec["phase"]),
+                                      evidence=[{"kind": "manifest", "ref": f"{rec['rel']}/.forge-run/manifest.json"}],
+                                      proposals=rule_proposals("x", "UNKNOWN", rec["phase"], resume_from=None,
+                                                               upstream=[], capa=None, kind="WALL"),
+                                      status="OPEN", used=1, opened=rec["created"], lineage=_lineage(by_wo, rec),
+                                      now=now))
+        for la in scan_launches(self.launch_dir, now, self.lookback_s):
+            fp = fingerprint("INFRASTRUCTURE", "line-launcher", la["code"], f"{la['phase']}/launch")
+            ref = la["refs"][0].split("#")[0]
+            chains.setdefault((la["tag"], la["phase"]), []).append((la["created"], fp, ref))
+            drafts.append({"la": la, "tag": la["tag"], "phase": la["phase"], "fp": fp, "created": la["created"], "ref": ref})
+        groups: dict[tuple, list[dict]] = {}
+        for d in drafts:  # the same issue = the same fingerprint on the same part and phase, across runs
+            groups.setdefault((d["tag"], d["phase"], d["fp"]), []).append(d)
+        for (tag, phase, fp), ds in groups.items():
+            ds.sort(key=lambda d: d["created"])
+            last = ds[-1]
+            chain = sorted(chains[(tag, phase)], key=lambda e: e[0])
+            i = max(n for n, e in enumerate(chain) if e[1] == fp and e[2] == last["ref"])
+            strikes, first = 0, last["created"]
+            for e in reversed(chain[:i + 1]):  # consecutive recurrences; a pass or another issue is progress
+                if e[1] != fp:
+                    break
+                strikes, first = strikes + 1, e[0]
+            resume = last_passed_order(orders, tag, phase, float("inf")) if phase in PHASES else None
+            iss = self._draft_issue(last, root, now, by_wo, resume=resume, strikes=strikes, opened=first)
+            earlier = [d for d in ds[:-1] if d["created"] >= first][-3:]
+            iss["evidence"] = (iss["evidence"] + [{"kind": "launch_log" if d["ref"].startswith("launch:") else "manifest",
+                                                   "ref": _ref(d["ref"] if d["ref"].startswith("launch:") else
+                                                               f"{d['ref']}/workspace/.forge-run/manifest.json")}
+                                                  for d in earlier])[:24]
+            nxt = chain[i + 1] if i + 1 < len(chain) else None
+            if nxt is not None:
+                _resolve(iss, nxt[2], "RESOLVED_BY_PROGRESS" if nxt[1] == "PASS" else "PROGRESS_NEW_ISSUE", now)
+            else:
+                st, by = _later(orders, tag, phase, last["created"], launched="la" in last)
+                if st == "RESOLVED":
+                    _resolve(iss, f"workorders/{by}", "RESOLVED_BY_LATER_ORDER", now)
+                elif st == "RECOVERING":
+                    iss["evidence"].append({"kind": "superseded_by", "ref": f"workorders/{by}"})
+                    iss["status"] = "RECOVERING"
+            if iss["status"] != "RESOLVED" and strikes > STRIKE_LIMIT:
+                iss["status"] = "ESCALATED"
+                iss["escalation"].update(level="NEEDS_OWNER", at=_utc(last["created"]), reason=STRIKE_REASON)
             out.append(iss)
-        from ..reliability.taxonomy import fingerprint
+        for inc in cre["incidents"]:
+            n = int(inc["attempts"] or 0)
+            iss = _issue(self.line, wo=None, tag="LINE", phase="-", rid=inc.get("run_id"), cls="INFRA",
+                         fingerprint="sup1-" + _h("INCIDENT", inc["fingerprint"])[:40], error_code=inc["fault_type"],
+                         text=summary("INCIDENT", error_code=_code(inc["fault_type"]), component=_code(inc["component"])),
+                         evidence=[{"kind": "incident", "ref": f"incident:{inc['incident_id']}"}],
+                         proposals=rule_proposals("x", "INFRA", "-", resume_from=None, upstream=[], capa=None,
+                                                  kind="INFRA", strikes=n)[:1],
+                         status="ESCALATED" if n > STRIKE_LIMIT else "OPEN", used=n,
+                         opened=_ts(inc["created_at"]) or now, lineage="LINE", now=now)
+            if n > STRIKE_LIMIT:
+                iss["escalation"].update(level="NEEDS_OWNER", reason=STRIKE_REASON)
+            out.append(iss)
+        for q in read_afo_queue(root / "conductor/conductor.sqlite3", now, self.lookback_s):
+            c = classify(q["reason"])
+            cls = "FACTORY_DEFECT" if q["state"] == "WAITING_EXTERNAL_CHANGE" else \
+                "INFRA" if c.failure_class in ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY") else "UNKNOWN"
+            st = {"WAITING_EXTERNAL_CHANGE": "WAITING_EXTERNAL_CHANGE", "WAITING_RECOVERY": "RECOVERING"}.get(q["state"], "OPEN")
+            out.append(_issue(self.line, wo=q["order_id"], tag="AFO", phase="-", rid=None, cls=cls,
+                              fingerprint="sup1-" + _h("AFO", q["order_id"], q["state"])[:40],
+                              error_code=_code(f"AFO_{q['state']}:{c.error_code}"),
+                              text=summary("AFO", state=q["state"], error_code=_code(c.error_code)),
+                              evidence=[{"kind": "afo_order", "ref": f"afo:{q['order_id']}"}], proposals=[],
+                              status=st, used=1, opened=float(q["created"] or now), lineage="AFO", now=now))
+        self.progress = line_progress(orders)
+        return out, self.budgets(out, now, wall_used)
 
-        launches = scan_launches(self.launch_dir, now, self.lookback_s)
-        for la in launches:
-            earlier = [x for x in launches
-                       if x["tag"] == la["tag"] and x["phase"] == la["phase"] and x["created"] < la["created"]]
-            resume = last_passed_order(orders, la["tag"], la["phase"], la["created"]) if la["phase"] in PHASES else None
+    def _draft_issue(self, d: dict, root: Path, now: float, by_wo: dict, *, resume, strikes: int, opened: float) -> dict:
+        tag, phase = d["tag"], d["phase"]
+        if "la" in d:
+            la = d["la"]
             provided = None
             if la["ref_wo"]:  # a source order named in the refusal; strip trailing punctuation, check it exists
                 good = la["ref_wo"].rstrip(":;,.")
                 ok = good != la["ref_wo"] and (root / "workorders" / good / "workspace").is_dir()
                 provided = (good if ok else None, la["ref_wo"])
-            iss = _issue(self.line, wo=la["wo"], tag=la["tag"], phase=la["phase"], rid=None, cls="INFRA",
-                         fingerprint=fingerprint("INFRASTRUCTURE", "line-launcher", la["code"], f"{la['phase']}/launch"),
-                         error_code=la["code"], text=summary("LAUNCH", phase=la["phase"], error_code=la["code"]),
-                         evidence=[{"kind": "launch_log", "ref": r} for r in la["refs"]],
-                         proposals=rule_proposals("x", "INFRA", la["phase"], resume_from=resume, used=len(earlier),
-                                                  limit=CLASS_LIMIT["INFRA"], upstream=[], capa=None, kind="LAUNCH",
-                                                  code=la["code"], provided=provided),
-                         status="OPEN", used=len(earlier), limit=CLASS_LIMIT["INFRA"], opened=la["created"],
-                         lineage=la["tag"], now=now)
-            self._settle(iss, orders, la["tag"], la["phase"], la["created"], launched=True, now=now)
-            out.append(iss)
-        for inc in cre["incidents"]:
-            iss = _issue(self.line, wo=None, tag="LINE", phase="-", rid=inc.get("run_id"), cls="INFRA",
-                         fingerprint="sup1-" + _h("INCIDENT", inc["fingerprint"])[:40], error_code=inc["fault_type"],
-                         text=summary("INCIDENT", error_code=_code(inc["fault_type"]), component=_code(inc["component"])),
-                         evidence=[{"kind": "incident", "ref": f"incident:{inc['incident_id']}"}],
-                         proposals=rule_proposals("x", "INFRA", "-", resume_from=None, used=int(inc["attempts"] or 0),
-                                                  limit=3, upstream=[], capa=None, kind="INFRA")[:1],
-                         status="OPEN", used=int(inc["attempts"] or 0), limit=CLASS_LIMIT["INFRA"],
-                         opened=_ts(inc["created_at"]) or now, lineage="LINE", now=now)
-            out.append(iss)
-        for q in read_afo_queue(root / "conductor/conductor.sqlite3", now, self.lookback_s):
-            from ..reliability.taxonomy import classify
-
-            c = classify(q["reason"])
-            cls = "FACTORY_DEFECT" if q["state"] == "WAITING_EXTERNAL_CHANGE" else \
-                "INFRA" if c.failure_class in ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY") else "UNKNOWN"
-            st = {"WAITING_EXTERNAL_CHANGE": "WAITING_EXTERNAL_CHANGE", "WAITING_RECOVERY": "RECOVERING"}.get(q["state"],
-                                                                                                          "ESCALATED")
-            code = _code(f"AFO_{q['state']}:{c.error_code}")
-            out.append(_issue(self.line, wo=q["order_id"], tag="AFO", phase="-", rid=None, cls=cls,
-                              fingerprint="sup1-" + _h("AFO", q["order_id"], q["state"])[:40], error_code=code,
-                              text=summary("AFO", state=q["state"], error_code=_code(c.error_code)),
-                              evidence=[{"kind": "afo_order", "ref": f"afo:{q['order_id']}"}], proposals=[],
-                              status=st, used=0, limit=CLASS_LIMIT[cls], opened=float(q["created"] or now),
-                              lineage="AFO", now=now))
-        budgets = self.budgets(out, now, wall_used)
-        return out, budgets
-
-    @staticmethod
-    def _settle(iss: dict, orders: list[dict], tag: str, phase: str, after: float, *, launched: bool, now: float) -> None:
-        st, by = _later(orders, tag, phase, after, launched=launched)
-        if st is None:
-            return
-        iss["evidence"].append({"kind": "superseded_by", "ref": f"workorders/{by}"})
-        if st == "RECOVERING":
-            iss["status"] = "RECOVERING"
-            return
-        iss["status"], iss["resolved_at"] = "RESOLVED", _utc(now)
-        iss["escalation"]["level"] = "FLOOR"
-        for p in iss["proposals"]:
-            p["status"] = "SUPERSEDED"
-            p["reason_codes"] = (p["reason_codes"] + ["RESOLVED_BY_LATER_ORDER"])[:8]
+            return _issue(self.line, wo=la["wo"], tag=tag, phase=phase, rid=None, cls="INFRA", fingerprint=d["fp"],
+                          error_code=la["code"], text=summary("LAUNCH", phase=phase, error_code=la["code"]),
+                          evidence=[{"kind": "launch_log", "ref": r} for r in la["refs"]],
+                          proposals=rule_proposals("x", "INFRA", phase, resume_from=resume, upstream=[], capa=None,
+                                                   kind="LAUNCH", code=la["code"], provided=provided, strikes=strikes),
+                          status="OPEN", used=strikes, opened=opened, lineage=tag, now=now, key=f"{tag}|{phase}")
+        rec, core = d["rec"], d["core"]
+        cls = core["class"]
+        kind = "CANCELLED" if core["route"] == "CANCELLED" else cls
+        text = summary("CANCELLED" if kind == "CANCELLED" else cls, phase=phase, route=core["route"], codes=core["codes"],
+                       error_code=core["error_code"], capa=core["capa"])
+        status = "OPEN" if core["status"] == "ESCALATED" else core["status"]  # unclassified is retried too (the rule)
+        return _issue(self.line, wo=rec["wo"], tag=tag, phase=phase, rid=rec["rid"], cls=cls, fingerprint=d["fp"],
+                      error_code=core["error_code"], text=text, evidence=core["evidence"],
+                      proposals=rule_proposals("x", cls, phase, resume_from=resume, upstream=core.get("upstream", []),
+                                               capa=core["capa"], kind=kind, strikes=strikes),
+                      status=status, used=strikes, opened=opened, lineage=_lineage(by_wo, rec), now=now,
+                      key=f"{tag}|{phase}")
 
     @staticmethod
     def budgets(issues: list[dict], now: float, wall_used: float) -> dict:
-        live = [i for i in issues if i["status"] != "RESOLVED"]
-        conv = [i["attempts"]["used"] for i in live if i["class"] == "MODEL_CONVERGENCE"]
-        infra = [i["attempts"]["used"] for i in live if i["class"] == "INFRA"]
-        hour = sum(1 for i in issues if i["class"] == "INFRA" and now - (_ts(i["opened_at"]) or 0) <= 3600)
-        return {"convergence_retries_per_phase": {"used": max(conv, default=0),
-                                                  "limit": BUDGETS["convergence_retries_per_phase"]},
-                "infra_recoveries_per_order": {"used": max(infra, default=0), "limit": BUDGETS["infra_recoveries_per_order"]},
-                "infra_recoveries_per_hour_host": {"used": hour, "limit": BUDGETS["infra_recoveries_per_hour_host"]},
-                "infra_cooldown_s": {"used": 0, "limit": BUDGETS["infra_cooldown_s"]},
-                "planner_calls_per_order": {"used": 0, "limit": BUDGETS["planner_calls_per_order"]},
-                "planner_tokens_per_order": {"used": 0, "limit": BUDGETS["planner_tokens_per_order"]},
-                "phase_order_wall_s": {"used": round(wall_used), "limit": BUDGETS["phase_order_wall_s"]}}
+        """Pacing and cost guards only (owner rule 2026-11-03): they pace the supervisor and never stop the line."""
+        hour = sum(1 for i in issues if i["class"] == "INFRA" and now - (_ts(i["updated_at"]) or 0) <= 3600
+                   and i["status"] != "RESOLVED")
+        used = {"guard_infra_recoveries_per_hour_host": hour, "guard_phase_order_wall_s": round(wall_used)}
+        return {k: {"used": used.get(k, 0), "limit": v} for k, v in BUDGETS.items()}
 
 
 TRACKED = ("status", "class", "error_code", "attempts", "escalation", "proposals", "resolved_at")
@@ -865,6 +947,8 @@ class LineConductor:
     def cycle(self, now: float | None = None) -> dict:
         now = now or time.time()
         issues, budgets = self.observer.issues(now)
+        keys = contract_keys()
+        issues = [fit_issue(i, keys) for i in issues]
         with feed_lock():
             prev = _load(feed_path())
             merged, events = merge(prev if isinstance(prev, dict) else None, issues, latest_acks(), now)
@@ -872,7 +956,9 @@ class LineConductor:
                     "supervisor": {"unit": self.unit, "pid": os.getpid(), "mode": MODE, "cycle": self.cycle_n,
                                    "heartbeat_age_s": round(now - self.last_epoch, 1) if self.last_epoch else None,
                                    "model_calls_healthy": model_calls()},
-                    "budgets": budgets, "issues": merged}
+                    "budgets": budgets, "issues": merged, "progress": self.observer.progress}
+            if keys is not None and "progress" not in keys[0]:
+                feed.pop("progress")
             errs = feed_errors(feed)
             if errs and errs != ["SCHEMA_UNAVAILABLE"]:
                 raise ValueError("SUPERVISOR_FEED_INVALID: " + "; ".join(errs[:3]))

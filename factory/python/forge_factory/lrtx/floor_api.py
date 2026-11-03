@@ -426,6 +426,7 @@ def supervisor_station(now: float | None = None) -> dict:
               if not (i["status"] == "RESOLVED" and now - (_ts(i.get("resolved_at")) or now) > RESOLVED_KEEP_S)]
     return {"available": True, "schema": feed["schema"], "generated_at": feed["generated_at"], "age_s": age,
             "supervisor": feed["supervisor"], "budgets": feed["budgets"], "issues": issues,
+            "progress": feed.get("progress", []),  # the last good part per lineage (owner rule 2026-11-03)
             "log": _supervisor_log(Path(p).with_name("issues.jsonl"))}
 
 

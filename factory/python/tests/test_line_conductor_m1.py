@@ -110,6 +110,57 @@ def line(tmp_path, monkeypatch):
     return {"state": state, "launch": launch, "fabro": LC.FabroView(snapshot=snap), "tmp": tmp_path}
 
 
+PHASE_ENUM = ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"]
+# Proposed contract delta for the owner rule 2026-11-03 (the oracle commit applies it to the protected schema)
+SCHEMA_DELTA = {
+    "properties.progress": {
+        "type": "array", "maxItems": 200,
+        "description": "Owner rule 2026-11-03: the last good, quality-checked part per lineage (the furthest phase whose "
+                       "inspection gate passed, in the newest order that passed it); every retry resumes from it.",
+        "items": {"type": "object", "additionalProperties": False, "required": ["lineage", "phase", "wo", "at", "ref"],
+                  "properties": {"lineage": {"$ref": "#/$defs/token"}, "phase": {"enum": PHASE_ENUM},
+                                 "wo": {"$ref": "#/$defs/token"}, "at": {"$ref": "#/$defs/nullable_utc"},
+                                 "ref": {"$ref": "#/$defs/ref"}}}},
+    "$defs.issue.properties.attempts.properties.rule": {
+        "type": "string", "maxLength": 80, "pattern": "^[A-Za-z0-9 _.:;,/()+=#@<>-]{1,80}$",
+        "description": "The stop rule the strike count is held against: 'same issue > 3 times stops the line'."},
+    "$defs.issue.properties.escalation.properties.reason": {
+        "anyOf": [{"$ref": "#/$defs/code"}, {"type": "null"}],
+        "description": "Why the issue needs the owner, e.g. SAME_ISSUE_EXCEEDED_3."},
+}
+
+
+def apply_delta(schema: dict) -> dict:
+    out = json.loads(json.dumps(schema))
+    for path, value in SCHEMA_DELTA.items():
+        node = out
+        *parents, leaf = path.split(".")
+        for k in parents:
+            node = node[k]
+        node[leaf] = value
+    return out
+
+
+@pytest.fixture
+def delta(tmp_path, monkeypatch):
+    """The conductor and the floor against the contract with the proposed delta applied."""
+    import jsonschema
+
+    schema = apply_delta(json.loads(LC.SCHEMA_PATH.read_text()))
+    jsonschema.Draft202012Validator.check_schema(schema)
+    f = tmp_path / "supervisor-issues.schema.json"
+    f.write_text(json.dumps(schema, indent=2))
+    monkeypatch.setattr(LC, "SCHEMA_PATH", f)
+    monkeypatch.setattr(LC, "_VALIDATOR", None)
+    return f
+
+
+def stuck(issues):
+    return [{"phase": "SWE.6", "step": "author", "result": "REJECTED", "status": "INCOMPLETE", "issues": issues},
+            {"phase": "SWE.6", "step": "author", "result": "REJECTED", "status": "INCOMPLETE", "issues": issues},
+            {"phase": "SWE.6", "step": "route", "gate": {"decision": "BLOCKED", "reason": "STUCK: identical rejection"}}]
+
+
 def conductor(line, **kw) -> LC.LineConductor:
     return LC.LineConductor(LC.Observer("local", line["launch"], line["fabro"], lookback_s=10 * 86400, **kw), unit="test.service")
 
@@ -124,8 +175,11 @@ def test_generated_feed_validates_against_the_contract(line):
     assert LC.feed_errors(feed) == []
     disk = json.loads(LC.feed_path().read_text())
     assert disk == feed and disk["schema"] == "forge-c/supervisor-issues/1" and disk["supervisor"]["mode"] == "OBSERVE"
-    assert set(disk["budgets"]) == set(LC.BUDGETS) and disk["budgets"]["convergence_retries_per_phase"]["limit"] == 2
-    assert disk["budgets"]["planner_tokens_per_order"]["limit"] == 200_000 and disk["budgets"]["phase_order_wall_s"]["limit"] == 21600
+    assert set(disk["budgets"]) == set(LC.BUDGETS) and all(k.startswith("guard_") for k in disk["budgets"])  # guards only
+    assert disk["budgets"]["guard_planner_tokens_per_order"]["limit"] == 200_000
+    assert disk["budgets"]["guard_phase_order_wall_s"]["limit"] == 21600
+    # the committed contract does not declare the rule's new fields yet: the feed omits them and stays valid
+    assert "progress" not in disk and all(set(i["attempts"]) == {"used", "limit"} for i in disk["issues"])
     journal = [json.loads(x) for x in LC.journal_path().read_text().splitlines()]
     assert {j["event"] for j in journal} == {"OPENED"} and len(journal) == len(feed["issues"])
 
@@ -156,7 +210,7 @@ def test_classification_of_the_2026_11_03_situation(line):
     feed = conductor(line).cycle()
     stuck = by_wo(feed, IWDG.format(n=6, l=22))
     assert (stuck["class"], stuck["status"], stuck["phase"]) == ("MODEL_CONVERGENCE", "OPEN", "SWE.6")
-    assert stuck["lineage"] == "IWDGHAL/" + IWDG.format(n=1, l=19) and stuck["attempts"] == {"used": 0, "limit": 2}
+    assert stuck["lineage"] == "IWDGHAL/" + IWDG.format(n=1, l=19) and stuck["attempts"] == {"used": 1, "limit": 3}
     first = stuck["proposals"][0]
     assert (first["source"], first["status"], first["strategy"]) == ("RULE", "PROPOSED", "RETRY_PHASE_FROM_LAST_PASSED_ORDER")
     assert first["summary"] == f"retry SWE.6 from {IWDG.format(n=5, l=22)}" and first["args"]["resume_from"] == IWDG.format(n=5, l=22)
@@ -168,7 +222,10 @@ def test_classification_of_the_2026_11_03_situation(line):
     l19, l21 = by_wo(feed, IWDG.format(n=5, l=19)), by_wo(feed, IWDG.format(n=5, l=21))
     assert (l19["class"], l19["error_code"], l19["status"]) == ("INFRA", "STACK_STOP_INCOMPLETE", "RESOLVED")
     assert (l21["class"], l21["error_code"], l21["status"]) == ("INFRA", "READINESS_FAILURE", "RESOLVED")
-    assert {"kind": "superseded_by", "ref": f"workorders/{IWDG.format(n=5, l=22)}"} in l19["evidence"]
+    # L19 -> L21 is progress (another issue), L21 -> the L22 pass resolves it
+    assert {"kind": "superseded_by", "ref": f"launch:launch-{IWDG.format(n=5, l=21)}.out"} in l19["evidence"]
+    assert {"kind": "superseded_by", "ref": f"workorders/{IWDG.format(n=5, l=22)}"} in l21["evidence"]
+    assert l19["attempts"]["used"] == 1 and l21["attempts"]["used"] == 1
     assert l19["proposals"][0]["strategy"] == "STACK_REPAIR_RECIPE" and l19["proposals"][0]["status"] == "SUPERSEDED"
     hal = by_wo(feed, "WO-F014-SWE1-CRCHAL-20261103-L24")
     assert (hal["class"], hal["error_code"], hal["status"]) == ("INFRA", "PROVIDED_LL_MISSING", "OPEN")
@@ -298,12 +355,78 @@ def test_the_owner_ack_sets_only_acknowledged_and_is_audited(line, monkeypatch):
     assert afo_cli.main(["supervisor", "ack", iid, "--by", "owner", "--note", " "]) == 1
 
 
+# --------------------------------------------------------------- owner rule 2026-11-03: strikes and progress
+X_ISSUES, Y_ISSUES = STUCK_ISSUES, ["VT:TEST_WITHOUT_TRACE:PERF"]
+
+
+def _retries(line, outcomes, start=6000, lnum=30):
+    """SWE.6 retries of the IWDG HAL part from the passed L22 SWE.5 order: 'X'/'Y' = stuck on that issue, 'P' = pass."""
+    wos = []
+    for n, o in enumerate(outcomes):
+        wo = IWDG.format(n=6, l=lnum + n)
+        mk_order(line["state"], wo, gates=passed("SWE.6") if o == "P" else stuck(X_ISSUES if o == "X" else Y_ISSUES),
+                 package=True, rid=f"01RETRY{n}", source=IWDG.format(n=5, l=22), stop_after="SWE.6", created=T0 + start + 60 * n)
+        wos.append(wo)
+    return wos
+
+
+def chain(feed):
+    return [i for i in feed["issues"] if i["phase"] == "SWE.6" and i["lineage"].startswith("IWDGHAL")]
+
+
+def test_a_new_fingerprint_or_a_pass_resets_the_strike_count(line, delta):
+    wos = _retries(line, "XYYPY")  # the fixture's L22 is X too: X X Y Y P Y
+    feed = conductor(line).cycle()
+    assert LC.feed_errors(feed) == []
+    x = next(i for i in chain(feed) if "MISSING_REQUIRED_OUTPUT" in i["summary"])
+    assert x["attempts"] == {"used": 2, "limit": 3, "rule": "same issue > 3 times stops the line"}
+    assert x["status"] == "RESOLVED" and {"kind": "superseded_by", "ref": f"workorders/{wos[1]}"} in x["evidence"]
+    assert "PROGRESS_NEW_ISSUE" in x["proposals"][0]["reason_codes"]
+    ys = [i for i in chain(feed) if "MISSING_REQUIRED_OUTPUT" not in i["summary"]]
+    assert len(ys) == 1  # one issue per fingerprint chain, its latest run named
+    y = ys[0]
+    assert y["wo"] == wos[4] and y["status"] == "OPEN" and y["attempts"]["used"] == 1  # the pass reset it
+
+
+def test_four_consecutive_recurrences_stop_the_line_three_do_not(line, delta):
+    _retries(line, "XX")  # with the fixture's L22: X X X - three strikes, keep retrying
+    feed = conductor(line).cycle()
+    (x,) = chain(feed)
+    assert (x["status"], x["attempts"]["used"], x["escalation"]["level"]) == ("OPEN", 3, "FLOOR")
+    assert x["proposals"][0]["strategy"] == "RETRY_PHASE_FROM_LAST_PASSED_ORDER"
+    wos = _retries(line, "X", start=9000, lnum=40)  # the fourth time
+    feed = conductor(line).cycle(time.time() + 30)
+    (x,) = chain(feed)
+    assert (x["status"], x["attempts"]["used"], x["wo"]) == ("ESCALATED", 4, wos[0])
+    assert x["escalation"]["level"] == "NEEDS_OWNER" and x["escalation"]["reason"] == "SAME_ISSUE_EXCEEDED_3"
+    p = x["proposals"][0]
+    assert (p["strategy"], p["reason_codes"], p["args"]["resume_from"]) == \
+        ("STOP_LINE_REQUEST_OWNER", ["SAME_ISSUE_EXCEEDED_3"], IWDG.format(n=5, l=22))
+    assert x["opened_at"] == LC._utc(T0 + 4000)  # the issue opened with its first strike
+    assert LC.feed_errors(feed) == []
+
+
+def test_retries_resume_from_the_last_good_part_and_progress_names_it(line, delta):
+    feed = conductor(line).cycle()
+    prog = {g["lineage"]: g for g in feed["progress"]}
+    assert (prog["IWDGHAL"]["phase"], prog["IWDGHAL"]["wo"]) == ("SWE.5", IWDG.format(n=5, l=22))
+    assert prog["IWDGHAL"]["ref"].endswith("gates/gate-log.jsonl#2")
+    assert (prog["RCC"]["phase"], prog["CRCL"]["phase"]) == ("SWE.1", "SWE.6")
+    for i in feed["issues"]:
+        for p in i["proposals"]:
+            if p["strategy"] in ("RETRY_PHASE_FROM_LAST_PASSED_ORDER", "RELAUNCH_PHASE_FROM_LAST_PASSED_ORDER",
+                                 "RESUME_PHASE_FROM_LAST_PASSED_ORDER") and i["phase"] != "SWE.1":
+                assert p["args"]["resume_from"] and p["args"]["resume_from"] in p["summary"], (i["wo"], p)
+    assert by_wo(feed, "WO-F014-SWE2-RCC-20261102-L16")["proposals"][0]["args"]["resume_from"] == \
+        "WO-F014-SWE1-RCC-20261102-L16"
+
+
 # ------------------------------------------------------------------------------- the Omniverse2 replay
 REPLAY = os.environ.get("FORGE_M1_REPLAY_DIR")
 
 
 @pytest.mark.skipif(not REPLAY, reason="FORGE_M1_REPLAY_DIR (read-only copy of the Omniverse2 line state) not given")
-def test_classification_replay_over_a_copy_of_the_omniverse2_line_state(tmp_path, monkeypatch):
+def test_classification_replay_over_a_copy_of_the_omniverse2_line_state(tmp_path, monkeypatch, delta):
     src = Path(REPLAY)
     stamp = {p: p.stat().st_mtime_ns for p in src.rglob("*") if p.is_file()}
 
@@ -311,7 +434,12 @@ def test_classification_replay_over_a_copy_of_the_omniverse2_line_state(tmp_path
         monkeypatch.setenv("FORGE_STATE_DIR", str(copy / "state"))
         snap = json.loads((copy / "fabro-snapshot.json").read_text())
         obs = LC.Observer("local", copy / "launch", LC.FabroView(snapshot=snap), lookback_s=3650 * 86400)
-        return {i["wo"]: i for i in LC.LineConductor(obs, unit="replay").cycle()["issues"]}
+        feed = LC.LineConductor(obs, unit="replay").cycle()
+        assert LC.feed_errors(feed) == []
+        progress[copy.name] = {g["lineage"]: (g["phase"], g["wo"]) for g in feed["progress"]}
+        return {i["wo"]: i for i in feed["issues"]}
+
+    progress: dict = {}
 
     def copy(name, drop=()):
         d = tmp_path / name
@@ -325,6 +453,7 @@ def test_classification_replay_over_a_copy_of_the_omniverse2_line_state(tmp_path
     stuck_wo, l24 = "WO-F014-SWE6-IWDGHAL-20261103-L22", "WO-F014-SWE6-IWDGHAL-20261103-L24"
     # as of the end of the L22 SWE.6 run (before the L24 retry): OPEN, model convergence, RULE retry proposal
     early = observe(copy("early", drop=[l24]))
+    assert progress["early"]["IWDGHAL"] == ("SWE.5", "WO-F014-SWE5-IWDGHAL-20261103-L22")  # last good part before L24
     s = early[stuck_wo]
     assert (s["class"], s["status"]) == ("MODEL_CONVERGENCE", "OPEN")
     assert any(p["source"] == "RULE" and p["status"] == "PROPOSED"
@@ -344,4 +473,6 @@ def test_classification_replay_over_a_copy_of_the_omniverse2_line_state(tmp_path
     assert hal["proposals"][0]["strategy"] == "RELAUNCH_WITH_CORRECTED_PROVIDED_FROM"
     assert hal["proposals"][0]["args"]["provided_from"] == "WO-F014-SWE6-CRCL-20261103-L24"
     assert {"kind": "superseded_by", "ref": "workorders/WO-F014-SWE1-CRCHAL-20261103-L25"} in hal["evidence"]
+    assert progress["now"]["IWDGHAL"] == ("SWE.6", l24)
+    assert progress["now"]["CRCL"] == ("SWE.6", "WO-F014-SWE6-CRCL-20261103-L24")
     assert {p: p.stat().st_mtime_ns for p in src.rglob("*") if p.is_file()} == stamp  # the source copy is untouched

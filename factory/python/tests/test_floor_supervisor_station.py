@@ -122,7 +122,7 @@ def test_no_new_post_route_in_progress_api(line):
 def test_the_page_ports_the_mockup_read_only():
     page = Path(P.FLOOR_PAGE).read_text()
     for s in ('id="sup-bot"', "m-patrol", "m-diagnose", "m-repair", "m-owner", "t-glass", "t-wrench", "t-flag",
-              "prefers-reduced-motion", "function supMode", "supLane", "Supervisor log",
+              "prefers-reduced-motion", "function supMode", "supStrike", "Last good part", "Same-issue strikes", "Supervisor log",
               "supervisor ack"):
         assert s in page, s
     assert "data-answer" not in page and "mode-pick" not in page  # no decision buttons (decision 10)
