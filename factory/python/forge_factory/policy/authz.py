@@ -279,7 +279,13 @@ class Authorizer:
                 denied = self._provided_write(role_id, rel)
                 if denied:  # ADR-0009 + owner 2026-11-03 (revised): provided LL only for a linked CODE defect
                     return Decision(False, denied, rel, role_id)
-                if not any(rel == p.rstrip("/") or rel.startswith(p) for p in prefixes):
+                # CAPA-138 (run WO-F014-SWE1-WWDGHAL-20261103-L32B): a directory prefix (".../") admits only paths
+                # strictly inside it. Its own path, or any existing directory, is never written as a file - an empty
+                # file "workproducts/SWE.1" blocked every later write below it ("File exists") for the whole run.
+                if any(p.endswith("/") and rel == p.rstrip("/") for p in prefixes) or (self.workspace / rel).is_dir():
+                    return Decision(False, "PATH_IS_DIRECTORY", f"{rel} is a directory: write the file inside it "
+                                    f"({rel}/<name>); write_file creates missing parent directories", role_id)
+                if not any(rel == p or rel.startswith(p) for p in prefixes):
                     return Decision(False, "WRITE_SCOPE_DENIED", rel, role_id)
                 from ..development_execution import mutation_allowed
 
