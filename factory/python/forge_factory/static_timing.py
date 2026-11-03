@@ -207,6 +207,14 @@ def _cases(ws: Path, fns: list[str]) -> tuple[dict[str, list], dict[str, list]]:
 
 _MAX_MS = re.compile(r"\bat most\s+(?:[A-Za-z_][A-Za-z0-9_]*\s*=\s*)?(\d+)\s*(?:U\s*)?(?:ms|milliseconds?)\b", re.I)
 NO_MAX = "NO_MAX_TIMEOUT: no maximum timeout argument stated in the frozen SWE.1 requirements or the work-order scope"
+NO_TIMEOUT_REQ = ("NO_TIMEOUT_REQUIREMENT: no frozen SWE.1 timeout requirement bounds the timeout path in real time (the "
+                  "per-call budget does not gate a path that ends in the timeout outcome)")
+BUDGET_SCOPE = ("The per-call budget is gated on every path that does not end in a timeout (nominal and error-return "
+                "paths whose hardware responds), measured at the maximum timeout argument. A path that ends in the "
+                "timeout outcome (HAL_TIMEOUT, the model's never_ready scenario) is not gated against the per-call budget: "
+                "its real-time duration is bounded by its timeout requirement, and its measured instructions and virtual "
+                "time are CPU cost in simulation, not wall time. No hardware WCET and no wall-time compliance of the "
+                "timeout path are claimed.")
 
 
 def max_timeout(ws: Path) -> tuple[int | None, str]:
@@ -273,7 +281,8 @@ def measure(ws: Path, kind: str, fns: list[str], budget: dict) -> tuple[dict[str
         if not nominal[f] and not timeout[f]:
             out[f] = {"status": "NOT_BOUNDED", "reason": "MEASUREMENT_NO_SWE2_CALL_CASE"}
     tmax, tsrc = None, ""
-    if any("{timeout}" in a for f in fns for c in nominal[f] + timeout[f] for a in c["args"]):
+    if any("{timeout}" in a for f in fns for c in nominal[f] + timeout[f] for a in c["args"]) or \
+            any(timeout[f] for f in fns):
         tmax, tsrc = max_timeout(ws)
         if tmax is None:
             for f in fns:
@@ -357,13 +366,30 @@ def measure(ws: Path, kind: str, fns: list[str], budget: dict) -> tuple[dict[str
         if f in failure:
             out[f] = {"status": "NOT_BOUNDED", "reason": failure[f][:200]}
             continue
-        n = max(s["instructions"] for s in samples[f])
-        ns = max(s["virtual_nanoseconds"] for s in samples[f])
+        # Coordinator 2026-11-03 (option a): the per-call budget is gated on every path that does not end in a timeout
+        # (default scenario: nominal and error returns, hardware responding); a timeout path is bounded in real time
+        # by its timeout requirement, its simulated cost is recorded but not gated against the per-call budget
+        nom = [s for s in samples[f] if s["scenario"] == "default"]
+        tim = [s for s in samples[f] if s["scenario"] == "never_ready"]
         exercised = {"nominal": paths[f]["nominal"],
                      "timeout": paths[f]["timeout"] or "not exercised: no timeout case in the SWE.2 call contract"}
-        out[f] = {"bound": "MEASURED_IN_SIMULATION", "method": "MEASURED_IN_SIMULATION", "measured_instructions": n,
-                  "measured_virtual_ns": ns, "samples": samples[f], "paths": exercised,
-                  "status": "WITHIN_BUDGET" if n <= budget["instructions_per_call"] and ns <= limit_ns else "OVER_BUDGET"}
+        n = max((s["instructions"] for s in nom), default=None)
+        ns = max((s["virtual_nanoseconds"] for s in nom), default=None)
+        over = n is not None and (n > budget["instructions_per_call"] or ns > limit_ns)
+        r = {"bound": "MEASURED_IN_SIMULATION", "method": "MEASURED_IN_SIMULATION", "measured_instructions": n,
+             "measured_virtual_ns": ns, "samples": samples[f], "paths": exercised,
+             "status": "OVER_BUDGET" if over else "WITHIN_BUDGET"}
+        if tim:
+            sid = tsrc.split(":", 1)[0] if tmax is not None and re.fullmatch(r"SWR-\d{3}", tsrc.split(":", 1)[0]) else None
+            r["timeout_path"] = {
+                "cases": paths[f]["timeout"], "measured_instructions": max(s["instructions"] for s in tim),
+                "measured_virtual_ns": max(s["virtual_nanoseconds"] for s in tim),
+                "cost": "CPU cost in simulation, not wall time (disclosed +1-per-call HAL_GetTick stub)",
+                "per_call_budget": "not gated: the path ends in the timeout outcome",
+                "real_time_bound": f"<= {tmax} ms by {sid}" if sid else None}
+            if sid is None and not over:
+                r.update(status="NOT_BOUNDED", reason=NO_TIMEOUT_REQ)
+        out[f] = r
     return out, env
 
 
@@ -439,6 +465,7 @@ def bound(ws: Path) -> dict | None:
     if unbounded:  # (c): no static bound -> the factory measures them in the pinned simulation at SWE.3
         got, env = measure(ws, kind, list(unbounded), budget)
         rec["measurement"] = env
+        rec["budget_scope"] = BUDGET_SCOPE
         for fn, r in got.items():
             rec["functions"][fn] = {**r, "static_reason": unbounded[fn]}
     states = {r["status"] for r in rec["functions"].values()}
@@ -470,7 +497,7 @@ def findings(rec: dict | None, swrs: list[str]) -> list[str]:
                        f"code of {fn}")
         elif r["status"] == "NOT_BOUNDED":
             up = ("; this is an upstream gap: report_defect kind REQUIREMENT (SWE.1) to state the maximum timeout"
-                  if r["reason"].startswith(("NO_MAX_TIMEOUT", "CONFLICTING_MAX_TIMEOUT")) else "")
+                  if r["reason"].startswith(("NO_MAX_TIMEOUT", "CONFLICTING_MAX_TIMEOUT", "NO_TIMEOUT_REQUIREMENT")) else "")
             out.append(f"STATIC_TIMING_NOT_BOUNDED: {fn}: no bound for the {lim}: {r['reason']}"
                        + (f" (no static bound: {r['static_reason']})" if r.get("static_reason") else "") + tail + up)
     return out
@@ -496,22 +523,31 @@ def design_section(rec: dict, swrs: list[str]) -> list[str]:
                 "paths listed; it is not a bound for unexercised inputs."
                 + (f" Timeout argument: {m['timeout_argument']}." if m.get("timeout_argument") else "")
                 + (f" {m['time_base']}." if m.get("time_base") else ""), ""]
+        if rec.get("budget_scope"):
+            out += [f"Budget scope: {rec['budget_scope']}", ""]
     out += [f"Overall: {rec['status']}.", ""]
     if rec.get("issues"):
         out += [f"- no bound: {', '.join(rec['issues'])}", ""]
         return out
-    out += ["| Function | Method | Bound (instructions) | Virtual time (ns) | Result | Paths |",
+    out += ["| Function | Method | Per-call bound (instructions) | Virtual time (ns) | Result | Paths |",
             "| --- | --- | --- | --- | --- | --- |"]
     for fn, r in rec["functions"].items():
+        tp = r.get("timeout_path")
+        tp_text = ("" if not tp else f"; timeout path {', '.join(tp['cases'])}: {tp['measured_instructions']} instr / "
+                   f"{tp['measured_virtual_ns']} ns = {tp['cost']}; {tp['per_call_budget']}; real time "
+                   + (tp["real_time_bound"] or "NOT BOUNDED (no timeout requirement)"))
         if r["status"] == "NOT_BOUNDED":
-            out.append(f"| {fn} | - | - | - | NOT_BOUNDED ({r['reason']}) | - |")
+            out.append(f"| {fn} | - | - | - | NOT_BOUNDED ({r['reason']}) | {tp_text.lstrip('; ') or '-'} |")
             continue
         n, ns, _how = _value(r)
         p = r.get("paths")
         paths = "every path (acyclic code)"
         if p:
             to = ", ".join(p["timeout"]) if isinstance(p["timeout"], list) else p["timeout"]
-            paths = f"nominal: {', '.join(p['nominal']) or 'none'}; timeout: {to}"
+            paths = (f"per-call budget gated on nominal: {', '.join(p['nominal']) or 'none'}" + tp_text if tp else
+                     f"nominal: {', '.join(p['nominal']) or 'none'}; timeout: {to}")
+        n = "-" if n is None else n
+        ns = "-" if ns is None else ns
         out.append(f"| {fn} | {METHOD_TEXT[r['method']]} | {n} | {ns} | {r['status']} | {paths} |")
     return out + [""]
 
