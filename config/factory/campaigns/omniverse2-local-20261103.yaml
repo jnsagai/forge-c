@@ -27,7 +27,9 @@ lineages:
     priority: 0
 
   - id: wwdg-ll
-    example: 0016c-st-cube-wwdg        # WWDG LL from ST code (FROZEN brownfield); L29 SWE.1 is live (adopted)
+    status: DONE                       # WWDG LL from ST code (FROZEN brownfield): SWE.1-6 of L29 passed on 82fabdb9
+    completed_by: WO-F014-SWE6-WWDGL-20261103-L29
+    example: 0016c-st-cube-wwdg
     tag: WWDGL
     series: 20261103-L29
     driver_class: STM32N6_WWDG_LL_ST
@@ -61,8 +63,8 @@ lineages:
     tag: CRCHAL                        # re-inspected (inspected under the old SWE2-08 wording; a HAL is always re-inspected)
     series: 20261103-L31
     driver_class: STM32N6_CRC_HAL
-    factory_revision: null             # set to run/gen12 (feat + batch 2: CAPA-128..134, CAPA-133, SWE2-08 record,
-                                       # WWDG profile, M2, M3) when it exists (owner or Claude commit)
+    factory_revision: 347e9381         # run/gen12 = PR #46 685909b3 (batch 2: CAPA-128..134, SWE2-08 record, WWDG
+                                       # profile, M2) + run-branch examples; L31 SWE.2 launched 2026-11-03 (adopted)
     profile: *profile
     run_model: *orn
     purpose: ASPICE_ONLY
@@ -77,7 +79,7 @@ lineages:
     tag: WWDGHAL
     series: 20261103-L32
     driver_class: STM32N6_WWDG_HAL
-    factory_revision: null
+    factory_revision: 347e9381         # run/gen12; L32 queued behind L31 on the local queue lock (adopted)
     profile: *profile
     run_model: *orn
     purpose: ASPICE_ONLY

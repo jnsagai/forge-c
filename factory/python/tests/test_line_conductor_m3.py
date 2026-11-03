@@ -297,14 +297,15 @@ def test_the_example_campaign_matches_todays_line_and_validates():
     by = {L.id: L for L in c.lineages}
     assert by["iwdg-hal"].status == "DONE" and by["iwdg-hal"].completed_by == "WO-F014-SWE6-IWDGHAL-20261103-L24"
     assert (by["wwdg-ll"].example, by["wwdg-ll"].factory_revision) == ("0016c-st-cube-wwdg", "82fabdb9")
-    assert by["wwdg-ll"].wo("SWE.1") == "WO-F014-SWE1-WWDGL-20261103-L29"  # the live L29 order is adopted by name
+    assert by["wwdg-ll"].wo("SWE.1") == "WO-F014-SWE1-WWDGL-20261103-L29"  # the L29 orders are adopted by name
+    assert by["wwdg-ll"].status == "DONE" and by["wwdg-ll"].completed_by == "WO-F014-SWE6-WWDGL-20261103-L29"
     # owner 2026-11-03: CAPA-133 + the SWE2-08 revisions record keep the ST CRC LL L24 verified (no L30 rerun)
     assert by["crc-ll"].status == "DONE" and by["crc-ll"].completed_by == "WO-F014-SWE6-CRCL-20261103-L24"
     h = by["crc-hal"]
     assert h.provided_from == "WO-F014-SWE6-CRCL-20261103-L24" and h.depends_on is None
-    assert h.start == {"resume_from": "WO-F014-SWE1-CRCHAL-20261103-L27", "at": "SWE.2"} and h.factory_revision is None
+    assert h.start == {"resume_from": "WO-F014-SWE1-CRCHAL-20261103-L27", "at": "SWE.2"} and h.factory_revision == "347e9381"
     assert h.wo("SWE.2") == "WO-F014-SWE2-CRCHAL-20261103-L31"
-    assert by["wwdg-hal"].depends_on["lineage"] == "wwdg-ll" and by["wwdg-hal"].factory_revision is None
+    assert by["wwdg-hal"].depends_on["lineage"] == "wwdg-ll" and by["wwdg-hal"].factory_revision == "347e9381"  # run/gen12
     assert by["rcc-ll"].status == "ON_HOLD"
     assert by["wwdg-ll"].priority > by["crc-hal"].priority > by["wwdg-hal"].priority
     if LCMP.CONTRACT.is_file():
