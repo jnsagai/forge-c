@@ -46,7 +46,17 @@ def findings(ws: Path) -> list[dict]:
     ws = Path(ws)
     m = manifest_of(ws)
     if not is_brownfield(m):
-        return []
+        from . import provided_frozen_paths
+
+        if not provided_frozen_paths(m):
+            return []
+        # CAPA-130: static-analysis findings in a HAL's provided FROZEN LL (ST code) stay owner gaps, as in the LL
+        # work order, unless an owner disposition settles them; the HAL author never repairs them
+        src = ", ".join(sorted({p.get("source_work_order") or "-" for p in m.get("provided") or []
+                                if p.get("delivered_code_mode") == "FROZEN"}))
+        return [{"id": f"DELIVERED_CODE:{x[:120]}", "severity": "major",
+                 "detail": f"provided FROZEN delivered LL (source work order {src})"} for x in static_findings(ws)
+                if disposition_of(ws, x) is None]
     from .verify import verify
 
     out = []

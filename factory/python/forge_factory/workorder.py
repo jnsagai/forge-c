@@ -159,6 +159,9 @@ def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, d
         raise ValueError(f"PROVIDED_LL_NOT_VERIFIED:{source_wo}:{','.join(failed)}")
     data = (src / LL_HEADER).read_bytes()
     pkg = src / ".forge-run/package.json"
+    from .brownfield import code_mode, manifest_of
+
+    delivered = code_mode(manifest_of(src))  # CAPA-130: a delivered LL (ST code) keeps its code mode for the HAL
     return data, {
         "path": LL_HEADER,
         "role": "provided_ll_driver",
@@ -166,6 +169,7 @@ def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, d
         "source_work_order": source_wo,
         "source_package": json.loads(pkg.read_text()).get("archive_ref") if pkg.is_file() else None,
         "rule": "read-only: the HAL work order must not change it (SWE.3 implementation check)",
+        **({"delivered_code_mode": delivered} if delivered else {}),
     }
 
 

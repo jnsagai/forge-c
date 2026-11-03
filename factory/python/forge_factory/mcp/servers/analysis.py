@@ -112,22 +112,25 @@ DELIVERED_CPPCHECK = "verification/static/delivered_cppcheck.json"
 
 def frozen_paths(ws) -> set[str]:
     """Owner 2026-11-01 ("frozen case, never repair, otherwise we repair"): delivered files of a FROZEN delivery."""
-    from ...brownfield import code_mode, delivered_paths, manifest_of
+    from ...brownfield import code_mode, delivered_paths, manifest_of, provided_frozen_paths
 
     m = manifest_of(ws)
-    return set(delivered_paths(m)) if delivered_paths(m) and code_mode(m) == "FROZEN" else set()
+    # CAPA-130: a HAL's provided FROZEN LL (ST code) is classed like the LL work order classes it
+    return (set(delivered_paths(m)) if delivered_paths(m) and code_mode(m) == "FROZEN" else set()) | set(
+        provided_frozen_paths(m))
 DIAG = re.compile(r"^(?P<file>[^:\s][^:]*):(?P<line>\d+):\d+: (?P<kind>warning|error): .*?(?:\[(?P<checker>[\w.-]+)\])?$")
 
 
 def vendor_paths(ws) -> set[str]:
     """Delivered files whose analyzer warnings are vendor findings (FROZEN or vendor-style delivery), else empty."""
-    from ...brownfield import code_mode, delivered_paths, manifest_of
+    from ...brownfield import code_mode, delivered_paths, manifest_of, provided_frozen_paths
     from ...brownfield.checks import style_of
 
     m = manifest_of(ws)
+    provided = set(provided_frozen_paths(m))  # CAPA-130: the provided FROZEN LL inlined into the HAL's units
     if not delivered_paths(m) or not (code_mode(m) == "FROZEN" or style_of(m) != "forge"):
-        return set()
-    return set(delivered_paths(m))
+        return provided
+    return set(delivered_paths(m)) | provided
 
 
 def clang_analyze(ctx: ToolContext, a: AnalyzeIn) -> dict:
