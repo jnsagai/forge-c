@@ -205,6 +205,38 @@ def _cases(ws: Path, fns: list[str]) -> tuple[dict[str, list], dict[str, list]]:
     return nominal, timeout
 
 
+_MAX_MS = re.compile(r"\bat most\s+(?:[A-Za-z_][A-Za-z0-9_]*\s*=\s*)?(\d+)\s*(?:U\s*)?(?:ms|milliseconds?)\b", re.I)
+NO_MAX = "NO_MAX_TIMEOUT: no maximum timeout argument stated in the frozen SWE.1 requirements or the work-order scope"
+
+
+def max_timeout(ws: Path) -> tuple[int | None, str]:
+    """Coordinator 2026-11-03: a measured bound covers the worst case the API permits, so the call contract's {timeout}
+    argument is the MAXIMUM the frozen inputs state: an 'at most N ms' of a frozen SWE.1 requirement about the timeout
+    (preferred), else of the work-order scope. (None, reason) when none or conflicting values are stated."""
+    from .inspection.swtrace import swr_texts
+
+    found: dict[int, str] = {}
+    for sid, text in sorted(swr_texts(ws).items()):
+        if re.search(r"timeout", text, re.I):
+            for m in _MAX_MS.finditer(text):
+                found.setdefault(int(m[1]), f"{sid}: '{m[0]}'")
+    if not found:
+        try:
+            scope = json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("scope") or []
+        except (OSError, ValueError):
+            scope = []
+        for k, item in enumerate(scope if isinstance(scope, list) else []):
+            if isinstance(item, str) and re.search(r"timeout", item, re.I):
+                for m in _MAX_MS.finditer(item):
+                    found.setdefault(int(m[1]), f"work-order scope item {k + 1}: '{m[0]}'")
+    if len(found) > 1:
+        return None, "CONFLICTING_MAX_TIMEOUT: " + "; ".join(f"{v} ({src})" for v, src in sorted(found.items()))
+    if not found:
+        return None, NO_MAX
+    (value, src), = found.items()
+    return value, src
+
+
 def measure(ws: Path, kind: str, fns: list[str], budget: dict) -> tuple[dict[str, dict], dict]:
     """MEASURED_IN_SIMULATION at SWE.3 (factory, not the author): per function the maximum executed instructions and
     virtual time over the exercised call-contract cases, or NOT_BOUNDED with the reason the measurement is impossible."""
@@ -222,7 +254,7 @@ def measure(ws: Path, kind: str, fns: list[str], budget: dict) -> tuple[dict[str
                          "factory platform and model unchanged)",
            "platform_sha256": sha256_file(sim.SIM_DIR / pr["sim"]["platform"]),
            "model_sha256": sha256_file(sim.SIM_DIR / pr["sim"]["model"]), "cflags": list(sim.CFLAGS),
-           "timeout_argument": "10U for the call contract's {timeout} placeholder (the factory oracle convention)"}
+           "timeout_argument": None}
 
     def refuse(reason: str) -> tuple[dict[str, dict], dict]:
         return {f: {"status": "NOT_BOUNDED", "reason": reason[:200]} for f in fns}, env
@@ -240,6 +272,18 @@ def measure(ws: Path, kind: str, fns: list[str], budget: dict) -> tuple[dict[str
     for f in fns:
         if not nominal[f] and not timeout[f]:
             out[f] = {"status": "NOT_BOUNDED", "reason": "MEASUREMENT_NO_SWE2_CALL_CASE"}
+    tmax, tsrc = None, ""
+    if any("{timeout}" in a for f in fns for c in nominal[f] + timeout[f] for a in c["args"]):
+        tmax, tsrc = max_timeout(ws)
+        if tmax is None:
+            for f in fns:
+                if f not in out and any("{timeout}" in a for c in nominal[f] + timeout[f] for a in c["args"]):
+                    out[f] = {"status": "NOT_BOUNDED", "reason": tsrc}
+        else:
+            env["timeout_argument"] = (f"{tmax}U = the maximum the frozen inputs allow ({tsrc}), for every measured "
+                                       "case with the {timeout} placeholder; the 10U oracle convention stays for the "
+                                       "functional tests only")
+            env["max_timeout_ticks"] = tmax
     todo = [f for f in fns if f not in out]
     prefix = "forge_measure_" if kind == "LL" else ""
     samples: dict[str, list] = {f: [] for f in todo}
@@ -250,7 +294,8 @@ def measure(ws: Path, kind: str, fns: list[str], budget: dict) -> tuple[dict[str
                         for p in sorted((ws / d).glob("*.[ch]")))
     stub = "HAL_GetTick" in srcs_text and not re.search(r"\bHAL_GetTick\s*\(\s*void\s*\)\s*\{", srcs_text)
     if stub:
-        env["time_base"] = TICK_NOTE
+        env["time_base"] = TICK_NOTE + (f"; the maximum timeout of {tmax} ms corresponds to {tmax} ticks ({tmax} "
+                                        "HAL_GetTick calls after the start tick)" if tmax is not None else "")
     with tempfile.TemporaryDirectory(prefix="forge-swe3-timing-") as td:
         wd = Path(td)
         try:
@@ -270,7 +315,7 @@ def measure(ws: Path, kind: str, fns: list[str], budget: dict) -> tuple[dict[str
             run = [f for f in todo if group[f] and f not in failure]
             if not run:
                 continue
-            body = [f"    (void){call_text({**c, 'function': prefix + c['function']}, '10U')}; /* {c['case']} */"
+            body = [f"    (void){call_text({**c, 'function': prefix + c['function']}, f'{tmax}U')}; /* {c['case']} */"
                     for f in run for c in group[f]]
             drv = wd / f"forge_swe3_timing_{scenario}.c"
             drv.write_text("\n".join(["#include <stdint.h>", '#include "forge_target_test.h"', f'#include "{api}"',
@@ -424,8 +469,10 @@ def findings(rec: dict | None, swrs: list[str]) -> list[str]:
             out.append(f"STATIC_TIMING_OVER_BUDGET: {fn}: {how} {n} instr/{ns} ns exceeds the {lim}{tail}; reduce the "
                        f"code of {fn}")
         elif r["status"] == "NOT_BOUNDED":
+            up = ("; this is an upstream gap: report_defect kind REQUIREMENT (SWE.1) to state the maximum timeout"
+                  if r["reason"].startswith(("NO_MAX_TIMEOUT", "CONFLICTING_MAX_TIMEOUT")) else "")
             out.append(f"STATIC_TIMING_NOT_BOUNDED: {fn}: no bound for the {lim}: {r['reason']}"
-                       + (f" (no static bound: {r['static_reason']})" if r.get("static_reason") else "") + tail)
+                       + (f" (no static bound: {r['static_reason']})" if r.get("static_reason") else "") + tail + up)
     return out
 
 
@@ -446,8 +493,9 @@ def design_section(rec: dict, swrs: list[str]) -> list[str]:
            "claimed.", ""]
     if m := rec.get("measurement"):
         out += [f"Measurement at SWE.3: {m['measurement_profile']}; {m['conditions']}. A measured bound covers only the "
-                "paths listed; it is not a bound for unexercised inputs." + (f" {m['time_base']}." if m.get("time_base")
-                                                                            else ""), ""]
+                "paths listed; it is not a bound for unexercised inputs."
+                + (f" Timeout argument: {m['timeout_argument']}." if m.get("timeout_argument") else "")
+                + (f" {m['time_base']}." if m.get("time_base") else ""), ""]
     out += [f"Overall: {rec['status']}.", ""]
     if rec.get("issues"):
         out += [f"- no bound: {', '.join(rec['issues'])}", ""]
