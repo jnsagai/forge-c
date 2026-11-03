@@ -145,6 +145,10 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
         raise DefectError(f"UNKNOWN_PHASE:{detected_phase}")
     target = detected_phase if kind == "TEST" else KIND_TARGET.get(kind)
     frozen = kind == "CODE" and _frozen_delivery(ws)
+    from .provided_changes import enabled as change_control
+
+    if frozen and change_control(ws):  # owner 2026-11-03 (revised): changed in SWE.3 with a diff report
+        frozen = False
     if frozen:  # feature 008 (FROZEN): nobody may change the delivered code; the defect goes to the owner
         target = None
     early_fix = kind == "CODE" and _delivered_code(ws) and detected_phase in ("SWE.1", "SWE.2", "SWE.3")

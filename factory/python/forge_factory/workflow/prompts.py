@@ -993,6 +993,8 @@ def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
              *([REGISTER_BLOCK_NOTE] if phase in ("SWE.2", "SWE.3") else []),
              *([GATE_DECLARED_CHECK.format(p=phase)] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
              *([WORK_ORDER_SCOPE_NOTE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
+             *([PROVIDED_CHANGES_NOTE] if UNIT_VERIFICATION["gtest"] and phase in ("SWE.3", "SWE.4", "SWE.5", "SWE.6")
+               else []),
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
              f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
              "Items decided by deterministic tools are recomputed automatically.",
@@ -1179,6 +1181,10 @@ def cmsisize(text: str) -> str:
 
 
 UNIT_VERIFICATION = {"gtest": False}  # owner 2026-11-03: set by the builder for work orders with unit_verification
+PROVIDED_CHANGES_NOTE = (
+    "If workproducts/SWE.3/provided_code_changes.md exists, read it: provided code (a provided LL or FROZEN delivered "
+    "code) was changed in this work order for linked CODE defects. Judge each change against its reasons (defect, "
+    "failing test, SWR/USPEC); a change without a linked reason is a finding.")
 NEGATIVE_RULES = {
     "SWE.1": ("NEGATIVE PATHS AND CORNER CASES (owner 2026-11-03): besides the positive path, every functional "
               "requirement set states the software's behaviour in its negative paths and corner cases as far as the "

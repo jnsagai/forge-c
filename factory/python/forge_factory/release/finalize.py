@@ -631,6 +631,9 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         _w(stage, "configuration/target_baseline.json", pretty_json(wo.get("target", {"status": "UNSPECIFIED"})))
     stage_tool_records(ws, stage)  # CAPA-064 (TAA-RCC FND-04): this run's tools and models, not a stale inventory
     operational_inventory(ws, stage, run_id, fabro_run_id)
+    from ..inspection import provided_changes as PC
+
+    provided = PC.stage_into(ws, stage)  # owner 2026-11-03 (revised): changes to provided code, for human inspection
     all_phases_pass = all(detail["gates"][p]["decision"] == "PASS" for p in PHASES)
     advisory = advisory_register(ws)
     if advisory:  # owner decision 2026-10-26: the gap register travels in the package for the end-of-run human review
@@ -645,6 +648,10 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         "generated_at": utc_now(),
         "safety_approval": "NOT_APPLICABLE_OFFLINE_HUMAN_DECISION",
         "work_order_purpose": wo.get("purpose", "LEGACY"),
+        **({"provided_code_modified": provided["human_review_required"],
+            "provided_code_changes": provided["changes"],
+            "human_review_required": ["quality/provided-code-changes.md"] if provided["human_review_required"] else []}
+           if provided is not None else {}),
     }
     _w(stage, "quality/final-gates.json", pretty_json(quality))
     return quality
@@ -737,6 +744,8 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
             "quality_run_status": quality["run_status"],
             "scope": NOT_SAFETY,
             "work_order_purpose": quality.get("work_order_purpose", "LEGACY"),
+            **({k: quality[k] for k in ("provided_code_modified", "provided_code_changes", "human_review_required")}
+               if "provided_code_modified" in quality else {}),
             "policy": str(POLICY_V05.relative_to(REPO_ROOT)) if selected_policy == POLICY_V05
             else "archive:evidence/" + selected_policy.relative_to(stage).as_posix(),
             "policy_sha256": sha256_file(selected_policy),

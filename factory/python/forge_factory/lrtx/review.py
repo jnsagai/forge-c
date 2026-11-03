@@ -162,6 +162,10 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
         files += [f for f in ("workproducts/SWE.1/software_requirements.md", "workproducts/SWE.1/register_effects.json")
                   if f not in files]
         files += [f for f in upstream_sources(ws, phase, bl) if f not in files]  # CAPA-116
+    from ..inspection.provided_changes import REPORT_MD
+
+    if phase in ("SWE.3", "SWE.4", "SWE.5", "SWE.6") and (Path(ws) / REPORT_MD).is_file() and REPORT_MD not in files:
+        files.append(REPORT_MD)  # owner 2026-11-03 (revised): changes to provided code are reviewable
     if phase == "SWE.1":  # owner 2026-10-31 (option 1): the declared owner obligations and the inputs they cite
         from ..assurance.owner_obligations import source_paths
 

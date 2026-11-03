@@ -173,6 +173,10 @@ def step_author(store: Store, phase: str, text: str) -> int:
         from ..static_timing import gate as timing_gate  # an over-budget or unbounded result is a rework finding
 
         generated += timing_gate(store.workspace)
+    if phase == "SWE.3":  # owner 2026-11-03 (revised): provided-code changes only with a linked defect; diff report
+        from .provided_changes import findings as provided_change_findings
+
+        generated += provided_change_findings(store.workspace)
     if phase == "SWE.4":  # owner 2026-11-03 (C): structural coverage is a blocking gate by work-order purpose
         from .coverage_gate import findings as coverage_gate_findings
 

@@ -291,8 +291,11 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             inputs[BI.OUT] = data
             listed.append({"path": BI.OUT, "role": BI.ROLE, "sha256": sha256_bytes(data), "bytes": len(data)})
     head = create_workspace(ws, inputs)
+    from .inspection.provided_changes import save_original
+
     for rec in provided:
         (ws / rec["path"]).chmod(0o444)
+        save_original(ws, rec["path"], inputs[rec["path"]])  # owner 2026-11-03: the hash-bound original for diffs
     idx = {}
     for item in listed:
         if item["path"].endswith(".md"):

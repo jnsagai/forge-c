@@ -78,8 +78,15 @@ def check_implementation(ws: Path) -> dict:
     if layer == "LL":
         return _check_ll(ws)
     findings: list[str] = []
+    from .provided_changes import enabled as change_control
+    from .provided_changes import linked_defects
+
     for rec in provided(ws):  # ADR-0009: the HAL work order must not change the PROVIDED, verified LL
         if not (ws / rec["path"]).is_file() or sha256_file(ws / rec["path"]) != rec["sha256"]:
+            # owner 2026-11-03 (revised): a change linked to a CODE defect is allowed and reported for human inspection
+            # (inspection/provided_changes); an unlinked change stays refused
+            if (ws / rec["path"]).is_file() and change_control(ws) and linked_defects(ws, rec["path"]):
+                continue
             findings.append(f"IMPL:PROVIDED_COMPONENT_CHANGED:{rec['path']}")
     from ..layer import hal_c, hal_h, ll_header, profile
 

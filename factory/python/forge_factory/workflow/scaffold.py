@@ -57,16 +57,27 @@ HARNESS_FAKE = re.sub(r"static void ut_reset_regs\(void\)\n\{.*?\n\}", lambda _m
 def unit_test(ws: Path | None = None) -> str:
     """Feature 009: the unit-test file of the work order's peripheral (RCC: the historical test_rcc.c). Owner
     2026-11-03: work orders with unit_verification write GoogleTest requirement-based tests (test_<id>.cpp); a
-    delivery-first declared target harness stays the declared C file."""
+    delivery-first declared target harness and a delivered CMSIS header-only driver stay in the C harness."""
     from ..layer import profile, uspec_gtest
 
-    cpp = ws is not None and uspec_gtest(ws) and not _declared_harness(ws)
+    cpp = ws is not None and uspec_gtest(ws) and not _declared_harness(ws) and not _cmsis(ws)
     return f"software/tests/unit/test_{profile(ws)['id']}{'.cpp' if cpp else '.c'}"
 
 
 def c_harness(ws: Path | None = None) -> str:
     """The self-checking C harness file name (older work orders' unit-test file)."""
     return unit_test(None) if ws is None else re.sub(r"\.cpp$", ".c", unit_test(ws))
+
+
+def _cmsis(ws: Path) -> bool:
+    """A delivered ST CMSIS header-only driver is not valid C++ on a 64-bit host (pointer-to-uint32_t casts of
+    register addresses are errors in C++, warnings in C): its unit tests stay in the self-checking C harness."""
+    try:
+        from ..brownfield.cmsis import is_cmsis
+
+        return is_cmsis(Path(ws))
+    except (OSError, ValueError, KeyError):
+        return False
 
 
 def _declared_harness(ws: Path) -> bool:

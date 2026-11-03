@@ -84,7 +84,13 @@ def verify(ws: Path, step: str) -> dict:
                                  rel, set((m.get("delivery") or {}).get("scope", {}).get("functions") or []))
         if outside:
             issues.append(f"DELIVERY_CHANGE_OUTSIDE_SCOPE:{rel}:{','.join(outside[:5])}")
-        ok = mode == "FIX_ALLOWED" and d["role"] == "delivered_code" and fixing and not outside
+        from ..inspection.provided_changes import enabled as change_control
+        from ..inspection.provided_changes import linked_defects
+
+        if mode == "FROZEN" and change_control(ws):  # owner 2026-11-03 (revised): explicitly linked defects only
+            fixing = [x["id"] for x in linked_defects(ws, rel)]
+        ok = (mode == "FIX_ALLOWED" or (mode == "FROZEN" and change_control(ws))) and d["role"] == "delivered_code" \
+            and fixing and not outside
         rows.append({"path": rel, "expected": exp, "actual": act, "status": "CHANGED_BY_FIX" if ok else "MISMATCH",
                      "defects": fixing})
         if not ok:

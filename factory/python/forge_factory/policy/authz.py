@@ -158,6 +158,10 @@ class Authorizer:
         if rel not in code:  # no new driver source next to the delivered code (it would escape verification)
             return "BROWNFIELD_NEW_CODE_FILE" if rel.startswith(("software/ll/", "software/hal/", "software/src/",
                                                                    "software/include/")) else None
+        from ..inspection.provided_changes import allowed as provided_change_allowed
+
+        if code_mode(m) == "FROZEN" and role_id == "swe3-author" and provided_change_allowed(self.workspace, rel):
+            return None  # owner 2026-11-03 (revised): a linked CODE defect in fix; reported in the diff report
         if code_mode(m) != "FIX_ALLOWED":
             return "DELIVERED_CODE_FROZEN"
         if role_id != "swe3-author":
@@ -167,6 +171,20 @@ class Authorizer:
         if not any(d.get("status") == "IN_FIX" and rel in _defect_files(d, code) for d in _code_defects(self.workspace)):
             return "DELIVERED_CODE_NO_DEFECT"
         return None
+
+    def _provided_write(self, role_id: str, rel: str) -> str | None:
+        """The provided (read-only) LL of a HAL work order: refused, except - work orders with unit_verification - for
+        the SWE.3 author while a CODE defect naming the file is open or in fix; the workspace copy is then made
+        writable (the hash-bound original and the source work order are never touched)."""
+        provided = {r.get("path") for r in self._manifest().get("provided") or []}
+        if rel not in provided:
+            return None
+        from ..inspection.provided_changes import allowed, unlock
+
+        if role_id == "swe3-author" and allowed(self.workspace, rel):
+            unlock(self.workspace)
+            return None
+        return "PROVIDED_COMPONENT_READ_ONLY"
 
     def _delivery_first_write(self, node_id: str, rel: str) -> str | None:
         """Only the three existing graph visits can mutate a delivery-first candidate."""
@@ -257,6 +275,9 @@ class Authorizer:
                     return Decision(False, denied, rel, role_id)
                 denied = self._delivered_write(role_id, rel)
                 if denied:  # feature 008 (FR-013/FR-014): delivered code is frozen or changes only for a CODE defect
+                    return Decision(False, denied, rel, role_id)
+                denied = self._provided_write(role_id, rel)
+                if denied:  # ADR-0009 + owner 2026-11-03 (revised): provided LL only for a linked CODE defect
                     return Decision(False, denied, rel, role_id)
                 if not any(rel == p.rstrip("/") or rel.startswith(p) for p in prefixes):
                     return Decision(False, "WRITE_SCOPE_DENIED", rel, role_id)
