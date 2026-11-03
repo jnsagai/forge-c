@@ -33,6 +33,12 @@ Healthy cycles make zero model calls: the 002 model-port guard plus an allow-lis
 API port) are installed and the blocked attempts are reported as `supervisor.model_calls_healthy`.
 
     python -m forge_factory.afo.line_conductor [--interval 30] [--once] [--launch-dir D] [--fabro-snapshot F]
+    python -m forge_factory.afo.line_conductor --mode ACT [--dry-run] ...
+
+Autonomous line M3: `--mode ACT` adds order placement (afo.line_orders) - only with a valid owner-signed PILOT grant;
+without one ACT refuses and the conductor keeps observing. `--dry-run` plans and verifies without placing anything.
+The feed's `placement` block (queued, launching, running, chained, waiting, escalated per lineage) and
+`supervisor.mode` (PILOT while acting, OBSERVE otherwise) show the floor whether the conductor acts or observes.
 """
 
 from __future__ import annotations
@@ -227,6 +233,48 @@ def fit_issue(i: dict, keys: tuple[set, set, set] | None) -> dict:
             "escalation": {k: v for k, v in i["escalation"].items() if k in keys[2]}}
 
 
+PLACEMENT_LINEAGE_KEYS = ("lineage", "tag", "example", "state", "reason", "phase", "priority", "revision", "wo",
+                          "fabro_run_id", "last_good", "strikes", "provided_from", "next")
+
+
+def fit_placement(p: dict) -> dict:
+    """The M3 placement block as the feed carries it: codes and identifiers only, bounded lists."""
+    def tok(x):
+        return _token(x)
+
+    out = {"mode": p.get("mode") or "OBSERVING", "error": p.get("error"),
+           "authorization": {k: (p.get("authorization") or {}).get(k) for k in
+                             ("authorization_id", "code", "expires_at", "policy_sha256")},
+           "campaigns": [{"campaign_id": tok(c.get("campaign_id")), "file": _ref(c.get("file") or "-"),
+                          "sha256": c.get("sha256"), "commit": c.get("commit")} for c in p.get("campaigns") or []][:20],
+           "rejected": [{"file": _ref(r.get("file") or "-"), "code": _code(r.get("code") or "-")}
+                        for r in p.get("rejected") or []][:20],
+           "gpu": {"busy": bool((p.get("gpu") or {}).get("busy")), "reason": (p.get("gpu") or {}).get("reason"),
+                   "wo": tok((p.get("gpu") or {}).get("wo"))},
+           "disk": p.get("disk") or {"free_gb": 0, "min_gb": 30, "placing": False},
+           "lineages": [], "actions": [], "quality_gaps": []}
+    a = out["authorization"]
+    a["code"] = _code(a.get("code") or "UNKNOWN")
+    a["authorization_id"] = tok(a.get("authorization_id"))
+    exp = _ts(a.get("expires_at"))
+    a["expires_at"] = _utc(exp) if exp else None
+    for v in p.get("lineages") or []:
+        x = {k: v.get(k) for k in PLACEMENT_LINEAGE_KEYS}
+        x["reason"] = _code(x["reason"]) if x.get("reason") else None
+        x["wo"], x["fabro_run_id"] = tok(x["wo"]), tok(x["fabro_run_id"])
+        out["lineages"].append(x)
+    for act in (p.get("actions") or [])[:20]:
+        out["actions"].append({"action": _code(act.get("action") or "-"), "kind": act.get("kind"),
+                               "lineage": tok(act.get("lineage")), "wo": tok(act.get("wo")),
+                               "outcome": _code(act.get("outcome") or act.get("status") or "-"),
+                               "detail": _code(act["detail"]) if act.get("detail") else None})
+    out["quality_gaps"] = [{k: g.get(k) for k in ("lineage", "wo", "phase", "metric", "achieved", "target", "minimum",
+                                                  "code")} for g in (p.get("quality_gaps") or [])][:50]
+    if out["error"] is None:
+        out.pop("error")
+    return out
+
+
 def feed_errors(feed: dict) -> list[str]:
     v = validator()
     if v is None:
@@ -351,29 +399,41 @@ def scan_orders(root: Path, now: float, lookback_s: float, include: frozenset = 
     their age: their status is re-derived every cycle)."""
     out = []
     for ws in sorted((root / "workorders").glob("*/workspace")):
-        run = ws / ".forge-run"
-        man = _load(run / "manifest.json")
-        if not isinstance(man, dict):
-            continue
-        marks = [run / "gates/gate-log.jsonl", run / "fabro_run_id", run / "package.json", run / "manifest.json"]
-        mt = [p.stat().st_mtime for p in marks if p.is_file()]
-        wo = man.get("work_order") or ws.parent.name
-        if not mt or (now - max(mt) > lookback_s and wo not in include and ws.parent.name not in include):
-            continue
-        ph, tag = parse_wo(wo)
-        target = (man.get("phase_scope") or {}).get("stop_after") or ph or "SWE.6"
-        log = _gate_log(ws)
-        passed = {e.get("phase") for e in log if e.get("step") == "inspect" and _result(e) == "PASS"}
-        rid = (run / "fabro_run_id").read_text().strip() if (run / "fabro_run_id").is_file() else None
-        busy = [*run.glob("lrtx/*/visit-state.json"), *run.glob("tool-progress/*")]
-        activity = max(mt + [q.stat().st_mtime for q in busy if q.is_file()])  # the order's last recorded activity
-        out.append({"activity": activity, "wo": wo, "ws": ws, "rel": f"workorders/{ws.parent.name}/workspace",
-                    "tag": tag or "UNKNOWN",
-                    "phase": target if target in PHASES else "SWE.6", "created": _ts(man.get("created_at")) or min(mt),
-                    "rid": rid, "package": _load(run / "package.json"), "log": log, "passed": passed,
-                    "source": (man.get("resumed_from") or {}).get("source_work_order"),
-                    "sig": (tuple(round(x, 3) for x in mt), len(log))})
+        rec = order_rec(ws, now=now, lookback_s=lookback_s, include=include)
+        if rec is not None:
+            out.append(rec)
     return out
+
+
+def order_rec(ws: Path, *, now: float | None = None, lookback_s: float | None = None,
+              include: frozenset = frozenset()) -> dict | None:
+    """The record of one work-order workspace (None without a manifest, or outside the look-back window unless
+    included); the M3 placer reads its own orders through it whatever their age."""
+    run = ws / ".forge-run"
+    man = _load(run / "manifest.json")
+    if not isinstance(man, dict):
+        return None
+    marks = [run / "gates/gate-log.jsonl", run / "fabro_run_id", run / "package.json", run / "manifest.json"]
+    mt = [p.stat().st_mtime for p in marks if p.is_file()]
+    wo = man.get("work_order") or ws.parent.name
+    if not mt or (lookback_s is not None and now is not None and now - max(mt) > lookback_s and wo not in include
+                  and ws.parent.name not in include):
+        return None
+    ph, tag = parse_wo(wo)
+    target = (man.get("phase_scope") or {}).get("stop_after") or ph or "SWE.6"
+    log = _gate_log(ws)
+    passed = {e.get("phase") for e in log if e.get("step") == "inspect" and _result(e) == "PASS"}
+    rid = (run / "fabro_run_id").read_text().strip() if (run / "fabro_run_id").is_file() else None
+    busy = [*run.glob("lrtx/*/visit-state.json"), *run.glob("tool-progress/*")]
+    activity = max(mt + [q.stat().st_mtime for q in busy if q.is_file()])  # the order's last recorded activity
+    return {"activity": activity, "wo": wo, "ws": ws, "rel": f"workorders/{ws.parent.name}/workspace",
+            "tag": tag or "UNKNOWN",
+            "phase": target if target in PHASES else "SWE.6", "created": _ts(man.get("created_at")) or min(mt),
+            "rid": rid, "package": _load(run / "package.json"), "log": log, "passed": passed,
+            "source": (man.get("resumed_from") or {}).get("source_work_order"),
+            "revision": (man.get("factory_revision") or {}).get("commit") if isinstance(man.get("factory_revision"), dict)
+            else man.get("factory_revision"),
+            "sig": (tuple(round(x, 3) for x in mt), len(log))}
 
 
 def scan_launches(launch_dir: Path | None, now: float, lookback_s: float, include: frozenset = frozenset()) -> list[dict]:
@@ -1040,11 +1100,25 @@ def merge(prev: dict | None, new: list[dict], acks: dict, now: float) -> tuple[l
 class LineConductor:
     """The OBSERVE service: one cycle = observe, merge, validate, write the feed atomically, heartbeat."""
 
-    def __init__(self, observer: Observer, unit: str | None = None):
+    def __init__(self, observer: Observer, unit: str | None = None, placer=None):
         self.observer = observer
         self.unit = _token(unit or os.environ.get("FORGE_LINE_CONDUCTOR_UNIT")) or "manual"
         self.cycle_n = 0
         self.last_epoch: float | None = None
+        self.placer = placer  # M3: ACT mode (afo.line_orders.Placer); None = OBSERVE only
+        self.mode = MODE
+
+    def place(self, now: float) -> dict | None:
+        """M3: the placement step of the cycle. A failure never stops the observing feed: it is reported as the
+        placement error and the conductor observes."""
+        if self.placer is None:
+            return None
+        try:
+            out = self.placer.cycle(now)
+        except Exception as exc:  # noqa: BLE001
+            out = {"mode": "OBSERVING", "error": _code(f"PLACEMENT_ERROR:{type(exc).__name__}"), "lineages": [],
+                   "actions": []}
+        return out
 
     def cycle(self, now: float | None = None) -> dict:
         now = now or time.time()
@@ -1052,18 +1126,22 @@ class LineConductor:
         keep = frozenset(i["wo"] for i in (before or {}).get("issues", []) if isinstance(i, dict) and i.get("wo")
                          and i.get("status") != "RESOLVED") if isinstance(before, dict) else frozenset()
         issues, budgets = self.observer.issues(now, keep)
+        placement = self.place(now)
+        self.mode = "PILOT" if placement and placement.get("mode") == "ACTING" else MODE
         keys = contract_keys()
         issues = [fit_issue(i, keys) for i in issues]
         with feed_lock():
             prev = _load(feed_path())
             merged, events = merge(prev if isinstance(prev, dict) else None, issues, latest_acks(), now)
             feed = {"schema": SCHEMA_ID, "generated_at": _utc(now),
-                    "supervisor": {"unit": self.unit, "pid": os.getpid(), "mode": MODE, "cycle": self.cycle_n,
+                    "supervisor": {"unit": self.unit, "pid": os.getpid(), "mode": self.mode, "cycle": self.cycle_n,
                                    "heartbeat_age_s": round(now - self.last_epoch, 1) if self.last_epoch else None,
                                    "model_calls_healthy": model_calls()},
                     "budgets": budgets, "issues": merged, "progress": self.observer.progress}
             if keys is not None and "progress" not in keys[0]:
                 feed.pop("progress")
+            if placement is not None and (keys is None or "placement" in keys[0]):
+                feed["placement"] = fit_placement(placement)
             errs = feed_errors(feed)
             if errs and errs != ["SCHEMA_UNAVAILABLE"]:
                 raise ValueError("SUPERVISOR_FEED_INVALID: " + "; ".join(errs[:3]))
@@ -1076,7 +1154,7 @@ class LineConductor:
 
     def write_heartbeat(self, ok: bool, detail: str) -> None:
         atomic_write(heartbeat_path(), json.dumps({"ts": _utc(time.time()), "epoch": time.time(), "pid": os.getpid(),
-                                                   "cycle": self.cycle_n, "mode": MODE, "ok": ok,
+                                                   "cycle": self.cycle_n, "mode": self.mode, "ok": ok,
                                                    "detail": detail[:200]}).encode())
 
 
@@ -1097,9 +1175,9 @@ def run(conductor: LineConductor, interval: float, max_cycles: int | None) -> in
             conductor.write_heartbeat(True, f"issues_open={open_n} model_calls={feed['supervisor']['model_calls_healthy']}"
                                       + ("" if validator() else " SCHEMA_UNAVAILABLE"))
             if not ready:
-                sd_notify(f"READY=1\nSTATUS=line conductor {MODE}")
+                sd_notify(f"READY=1\nSTATUS=line conductor {conductor.mode}")
                 ready = True
-            sd_notify(f"WATCHDOG=1\nSTATUS=cycle {conductor.cycle_n} {MODE} open={open_n}")
+            sd_notify(f"WATCHDOG=1\nSTATUS=cycle {conductor.cycle_n} {conductor.mode} open={open_n}")
         n += 1
         end = time.monotonic() + interval
         while not stop["flag"] and time.monotonic() < end and (max_cycles is None or n < max_cycles):
@@ -1173,7 +1251,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--interval", type=float, default=30.0)
     ap.add_argument("--max-cycles", type=int)
     ap.add_argument("--once", action="store_true", help="one cycle, print the feed path and the open-issue count")
-    ap.add_argument("--mode", choices=[MODE], default=MODE)
+    ap.add_argument("--mode", choices=[MODE, "ACT"], default=MODE,
+                    help="ACT (M3): place orders from the approved campaigns, only with a valid signed PILOT grant")
+    ap.add_argument("--dry-run", action="store_true", help="with --mode ACT: plan and verify, place nothing")
+    ap.add_argument("--campaigns", default=os.environ.get("FORGE_LINE_CAMPAIGNS"))
     ap.add_argument("--line", default=os.environ.get("FORGE_LINE_ID", "local"))
     ap.add_argument("--launch-dir", default=os.environ.get("FORGE_LINE_LAUNCH_DIR"))
     ap.add_argument("--fabro-snapshot", help="offline replay: a recorded {run_id: status} file instead of the live API")
@@ -1183,15 +1264,29 @@ def main(argv: list[str] | None = None) -> int:
     if not re.fullmatch(r"[a-z0-9-]{1,32}", a.line):
         raise SystemExit("--line must match [a-z0-9-]{1,32}")
     fabro = FabroView.from_env(a.fabro_snapshot)
-    install_guard({p for p in (fabro.port(),) if p})
+    placer, ports = None, {p for p in (fabro.port(),) if p}
+    if a.mode == "ACT":
+        from . import line_launcher as LL
+        from . import line_orders as LO
+
+        cfg = LL.LineConfig.from_env(launch_dir=a.launch_dir)
+        ports.add(cfg.fabro_host_port)  # the line's Fabro API, as the launcher reaches it
+        snap = json.loads(Path(a.fabro_snapshot).read_text()) if a.fabro_snapshot else None
+        placer = LO.Placer(LO.RealLine(cfg, fabro_snapshot=snap), line_id=a.line, dry_run=a.dry_run,
+                           campaigns_dir=Path(a.campaigns) if a.campaigns else None,
+                           unit=os.environ.get("FORGE_LINE_CONDUCTOR_UNIT") or "manual",
+                           cre_db=Path(a.cre_db) if a.cre_db else None)
+    install_guard(ports)
     obs = Observer(a.line, Path(a.launch_dir) if a.launch_dir else None, fabro,
                    Path(a.cre_db) if a.cre_db else None, a.lookback_h * 3600)
-    lc = LineConductor(obs)
+    lc = LineConductor(obs, placer=placer)
     if a.once:
         feed = lc.cycle()
         lc.write_heartbeat(True, "once")
         print(json.dumps({"feed": str(feed_path()), "issues": len(feed["issues"]),
                           "open": sum(1 for i in feed["issues"] if i["status"] != "RESOLVED"),
+                          "mode": feed["supervisor"]["mode"],
+                          "placement": (feed.get("placement") or {}).get("mode"),
                           "model_calls_healthy": feed["supervisor"]["model_calls_healthy"]}))
         return 0
     return run(lc, a.interval, a.max_cycles)

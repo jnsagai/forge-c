@@ -1,11 +1,16 @@
-# Forge-C Line Conductor (autonomous line M1, owner 2026-11-03): the AFO conductor extended to the production line,
-# OBSERVE mode only - it reads the line's records and writes the issues feed forge-c/supervisor-issues/1 at
-# @STATE@/supervisor/issues.json (+ issues.jsonl). It places, changes or cancels no order and makes no model call
-# (socket guard: only the line's Fabro API port is reachable). Type=notify: READY after the first completed cycle,
-# WATCHDOG=1 after each completed cycle, so a hung cycle is restarted. Template only: render the @...@ fields and
-# install as a user unit (systemctl --user); this repository never installs it.
+# Forge-C Line Conductor (autonomous line M1/M3, owner 2026-11-03): the AFO conductor extended to the production line.
+# @MODE@ = OBSERVE (M1): it reads the line's records and writes the issues feed forge-c/supervisor-issues/1 at
+# @STATE@/supervisor/issues.json (+ issues.jsonl); it places, changes or cancels no order.
+# @MODE@ = ACT (M3): it also places and continues the phase orders of the owner-approved campaign files
+# (config/factory/campaigns in @REPO@, or FORGE_LINE_CAMPAIGNS) through the line launcher - only with a valid
+# owner-signed PILOT grant bound to config/factory/line-policy.yaml; without one it keeps observing.
+# No model call either way (socket guard: only the line's Fabro API port is reachable; the launcher runs as its own
+# process). Type=notify: READY after the first completed cycle, WATCHDOG=1 after each completed cycle, so a hung
+# cycle is restarted. KillMode=process: a launch in progress (its own session) outlives a conductor restart and is
+# adopted by the next cycle, never launched twice. Template only: render the @...@ fields and install as a user unit
+# (systemctl --user); this repository never installs it.
 [Unit]
-Description=Forge-C Line Conductor (OBSERVE, model-free issues feed) for @LINE@
+Description=Forge-C Line Conductor (@MODE@, model-free) for @LINE@
 After=default.target
 StartLimitIntervalSec=600
 StartLimitBurst=10
@@ -15,8 +20,9 @@ RequiresMountsFor=@DATA@
 Type=notify
 NotifyAccess=main
 WorkingDirectory=@REPO@/factory/python
-ExecStart=@VENV@/bin/python -m forge_factory.afo.line_conductor --mode OBSERVE --interval 30 --line @LINE@
+ExecStart=@VENV@/bin/python -m forge_factory.afo.line_conductor --mode @MODE@ --interval 30 --line @LINE@
 WatchdogSec=180
+KillMode=process
 TimeoutStartSec=180
 Restart=always
 RestartSec=10
@@ -31,8 +37,10 @@ Environment=FORGE_LINE_CONDUCTOR_UNIT=forge-line-conductor-@LINE@.service
 # the line's Fabro API (read-only GET /runs/<id>) and the stack storage holding server.env (token never logged)
 Environment=FORGE_LINE_FABRO_URL=@FABRO_URL@
 Environment=FORGE_LINE_FABRO_STORAGE=@FABRO_STORAGE@
-# launch-<WO>.out / workorder-launch-<WO>.log of the line launcher
+# launch-<WO>.out / workorder-launch-<WO>.log of the line launcher; ACT: the launcher's layout derives from it
+# (stack root @LAUNCH_DIR@/lrtx = the parent of @STATE@, line repo @LAUNCH_DIR@/repo, run worktrees @LAUNCH_DIR@/runs)
 Environment=FORGE_LINE_LAUNCH_DIR=@LAUNCH_DIR@
+Environment=FORGE_LINE_ID=@LINE@
 Environment=PATH=@VENV@/bin:/usr/bin:/bin
 
 [Install]
