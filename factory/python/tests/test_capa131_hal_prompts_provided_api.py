@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
 import pytest
@@ -72,13 +73,17 @@ def test_hal_author_prompt_calls_the_provided_ll_with_its_instance(tmp_path):
 
 
 @pytest.mark.parametrize("pid,sha", [
-    ("iwdg", "fc491a42e487a367cc50d25aeb6f7d4c7d993b52331288eb4a861dab0688062d"),
-    ("crc", "6075ea29d7eb06dfa6f5df582f18620b8030786b9b7f9f1962df077760a67d2d")])
+    ("iwdg", "ced532040bbfbd51d2a0cb625063c1d3c919e5f02acffb93f1b96d8b4aea0e94"),
+    ("crc", "1f12ee623e362c3f29b241e28a34839f2e1376d7263d6b1f4d425fc171c788e5")])
 def test_greenfield_hal_graphs_are_byte_identical(pid, sha):
-    """Frozen sha256 of the HAL graphs built by the parent 90ff4f4a/b4686726 (no provided instance API)."""
+    """Frozen sha256 of the HAL graphs built by the parent 90ff4f4a/b4686726 (no provided instance API).
+
+    The node scripts carry this host's checkout, state, data root and interpreter; they are replaced by
+    placeholders first so the frozen value holds in every worktree and on every factory host."""
     dot, _ = builder.build("WO-G", chunk_lines=150, layer="HAL", trace=True, isolation=True, peripheral=pid,
                            uspec_gtest=True)
-    assert hashlib.sha256(dot.encode()).hexdigest() == sha
+    host_free = dot.replace(builder._env(), "<ENV>").replace(sys.executable, "<PY>")
+    assert hashlib.sha256(host_free.encode()).hexdigest() == sha
 
 
 ST = Path(os.path.expandvars("$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0/Inc"))
