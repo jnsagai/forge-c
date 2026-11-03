@@ -262,7 +262,7 @@ def v_integration(ws: Path) -> dict:
           for p in (ws / "software/tests" / d).glob("*.c")}
     from ..layer import register_prefix
 
-    c = T.integration_categories(tt, ops, register_prefix(ws))
+    c = T.integration_categories(tt, ops, register_prefix(ws), T.boundary_rule(ws))  # CAPA-127: per-profile boundary
     return {"status": "FAIL" if c["missing"] else "PASS",
             "findings": [f"INTEGRATION_CATEGORY_MISSING:{m}" for m in c["missing"]]}
 
