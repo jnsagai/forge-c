@@ -26,7 +26,15 @@ def test_a_value_taking_function_needs_declared_boundary_checks(ws3):
     claimed = {**single, "kinds": ["positive", "boundary"]}  # declared but not done: one call only
     assert any("further calls" in e for e in swe4.validate_test(ws3, claimed, c))
     assert swe4.validate_test(ws3, TESTS["test:UT-005"], c) == []
-    assert any("include positive" in e for e in swe4.validate_test(ws3, {**TESTS["test:UT-005"], "kinds": ["boundary"]}, c))
+    # owner 2026-11-03 (USPEC model): the kind the USPEC item asks for is mandatory; USPEC-LL-05-01 of the fixture
+    # ('... preserving other bits') is a negative behaviour, so a test declaring only boundary is refused for it
+    # (for a nominal USPEC item positive stays mandatory, as before)
+    assert c["plan"]["test_kind"] == "negative"
+    assert any("is a negative behaviour" in e for e in swe4.validate_test(ws3, {**TESTS["test:UT-005"],
+                                                                                "kinds": ["boundary"]}, c))
+    nominal = {**c, "plan": {**c["plan"], "test_kind": "positive"}}
+    assert any("include positive" in e for e in swe4.validate_test(ws3, {**TESTS["test:UT-005"], "kinds": ["boundary"]},
+                                                                    nominal))
     no_value = _case(ws3, "UT-001")  # LL_IWDG_Enable takes no value: positive alone is valid
     assert swe4.validate_test(ws3, TESTS["test:UT-001"], no_value) == []
 
@@ -36,5 +44,6 @@ def test_report_shows_the_declared_kinds(ws3, monkeypatch):
     assert swe4.visit_tests(ws3, "m")["status"] == "PASS"
     swe4.visit_report(ws3)
     rpt = (ws3 / "workproducts/SWE.4/unit_verification_report.md").read_text()
-    assert "| UT-005 | LL_IWDG_SetPrescaler | SWR-005 | positive, negative, boundary |" in rpt
+    # owner 2026-11-03: one row per USPEC item, the USPEC column added; the declared kinds are still shown per test
+    assert "| UT-005 | USPEC-LL-05-01 | LL_IWDG_SetPrescaler | SWR-005 | positive, negative, boundary |" in rpt
     assert "## Test design per unit" in rpt and ("not applicable" in rpt or "NOT COVERED" in rpt)

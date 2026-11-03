@@ -87,8 +87,12 @@ def test_swe4_kinds_must_contain_the_uspec_kind():
     c = {"uspec": "USPEC-LL-05-02", "plan": {"test_kind": "negative"},
          "unit": {"function": {"name": "LL_X_Set", "params": [{"type": "uint32_t", "name": "v"}]}}}
     body = "LL_X_Set(1U); EXPECT_EQ(r, 1U);"
-    assert swe4._kind_errors({"kinds": ["positive"]}, c, body) == [
-        "USPEC-LL-05-02 is a negative behaviour: the test checks it and kinds includes negative"]
-    assert swe4._kind_errors({"kinds": ["negative"]}, c, body) == []  # positive is not demanded for a negative item
+    assert "USPEC-LL-05-02 is a negative behaviour: the test checks it and kinds includes negative" in \
+        swe4._kind_errors({"kinds": ["positive"]}, c, body)
+    flag_fn = {**c, "unit": {"function": {"name": "LL_X_IsSet", "params": []}}}  # no value argument
+    assert swe4._kind_errors({"kinds": ["negative"]}, flag_fn, "LL_X_IsSet();") == []  # positive not demanded here
+    # CAPA-092 kept: a value-taking function's test also declares and does the boundary check (two calls)
+    assert any("declare kind boundary" in e for e in swe4._kind_errors({"kinds": ["negative"]}, c, body))
+    assert swe4._kind_errors({"kinds": ["negative", "boundary"]}, c, body + " LL_X_Set(0xFU);") == []
     b = {**c, "plan": {"test_kind": "boundary"}}
-    assert swe4._kind_errors({"kinds": ["boundary"]}, b, body)[0].startswith("kind boundary needs the field limits")
+    assert swe4._kind_errors({"kinds": ["boundary"]}, b, body)[0].startswith("kind boundary needs the field minimum")

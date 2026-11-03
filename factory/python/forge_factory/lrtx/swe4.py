@@ -278,11 +278,9 @@ def _kind_errors(doc: dict, c: dict, body: str) -> list[str]:
     if want and want != "positive":  # owner 2026-11-03: the kind follows from the USPEC item
         if want not in kinds:
             out.append(f"{c['uspec']} is a {want} behaviour: the test checks it and kinds includes {want}")
-        if want == "boundary" and ncalls < 2:
-            out.append(f"kind boundary needs the field limits checked with further calls of {fn['name']}")
-        return out
-    if "positive" not in kinds:
+    elif "positive" not in kinds:
         out.append("kinds must include positive (the case value of the oracle)")
+    # CAPA-092, kept in the USPEC model: every test of a value-taking function also checks the field limits
     if _takes_value(fn) and "boundary" not in kinds:
         out.append(f"{fn['name']} takes a value: check the field minimum and maximum too and declare kind boundary")
     if "boundary" in kinds and ncalls < 2:
