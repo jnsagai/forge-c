@@ -17,6 +17,16 @@ verification of the requirement.
 Owner 2026-11-03: the SWE.3 author gate renders the bound for every author path (structured and native, LL and HAL;
 a HAL order bounds its public functions compiled from the HAL source) and an OVER_BUDGET or NOT_BOUNDED result is a
 rework finding naming the function, the count and the budget; it is not left to the inspector.
+
+Coordinator 2026-11-03 (owner-delegated timing decision), so that a budgeted HAL order is not STUCK at SWE.3:
+(b) a function whose branches all jump forward inside it (no backward branch, loop instruction, call, table branch,
+    wait or pc write other than a return) is BOUNDED_STATIC by its instruction count up to the final return: each
+    instruction executes at most once per call;
+(c) every other function (calls, loops, time-bounded waits) is MEASURED_IN_SIMULATION at SWE.3 by the factory itself,
+    with the SWE.6 machinery: the same wrappers/functions, pinned Renode, platform and peripheral model, the budget's
+    MIPS, no injected interrupts or bus stalls, on the frozen SWE.2 call-contract cases (nominal path on the default
+    model scenario, the never-ready cases on the model's never_ready scenario = timeout path). The measured bound is the
+    maximum over the exercised paths only. Only when the measurement is impossible is the function NOT_BOUNDED.
 """
 from __future__ import annotations
 
@@ -30,7 +40,7 @@ from types import SimpleNamespace
 
 from .common import sha256_bytes, sha256_file
 
-SCHEMA = "forge-c/static-call-bound/1"
+SCHEMA = "forge-c/swe3-call-bound/2"
 EVIDENCE = "workproducts/SWE.3/static_timing_bound.json"
 PROFILE = "target-cm55-gcc"
 _COND = r"(?:eq|ne|cs|hs|cc|lo|mi|pl|vs|vc|hi|ls|ge|lt|gt|le|al)?"
@@ -47,10 +57,27 @@ def _writes_pc(mnemonic: str, operands: str) -> bool:
     return ops.startswith("pc,") or ops == "pc"
 
 
+_BRANCH = re.compile(r"^(?:b" + _COND + r"|cbn?z)(?:\.[nw])?$")
+_TARGET = re.compile(r"\b([0-9a-f]+) <")
+
+
+def _is_return(mn: str, op: str) -> bool:
+    """An unconditional return (bx lr, pop {..., pc})."""
+    return (mn in ("bx", "bx.n") and op.split(";")[0].strip() == "lr") or (mn in ("pop", "pop.w") and _writes_pc(mn, op))
+
+
+def _is_cond_return(mn: str, op: str) -> bool:
+    base = mn.split(".")[0]
+    return ((re.fullmatch(r"bx" + _COND, base) is not None and op.split(";")[0].strip() == "lr")
+            or (re.fullmatch(r"pop" + _COND, base) is not None and _writes_pc(mn, op)))
+
+
 def analyse(listing: str, symbols: list[str]) -> dict[str, dict]:
-    """Per symbol of an `objdump -d` listing: the static instruction bound of a straight-line function, or the reason
-    it has none. Data (literal pools) is not code; padding after the single final return is unreachable."""
-    blocks: dict[str, list[tuple[str, str]]] = {}
+    """Per symbol of an `objdump -d` listing: the static instruction bound of an acyclic function, or the reason it has
+    none. Straight-line code and code whose branches all jump forward inside the function execute each instruction at
+    most once, so the instructions up to the final unconditional return bound the executed ones. Data (literal pools)
+    is not code; padding after that return is unreachable."""
+    blocks: dict[str, list[tuple[int, str, str]]] = {}
     cur = None
     for line in listing.splitlines():
         label = re.fullmatch(r"[0-9a-fA-F]+ <([^>]+)>:", line.strip())
@@ -61,28 +88,46 @@ def analyse(listing: str, symbols: list[str]) -> dict[str, dict]:
             continue
         m = LINE.match(line)
         if cur is not None and m and not DATA.match(m[3]):
-            blocks[cur].append((m[3].lower(), m[4]))
+            blocks[cur].append((int(m[1], 16), m[3].lower(), m[4]))
     out = {}
     for name in symbols:
         ins = blocks.get(name)
         if not ins:
             out[name] = {"status": "NOT_BOUNDED", "reason": "SYMBOL_NOT_IN_DISASSEMBLY"}
             continue
-        ret = next((k for k, (mn, op) in enumerate(ins) if (mn.split(".")[0] == "bx" and op.split(";")[0].strip() == "lr")
-                    or (mn.startswith("pop") and _writes_pc(mn, op))), None)
-        before = ins[:ret] if ret is not None else ins
-        bad = [f"{mn} {op.split(';')[0].strip()}".strip() for mn, op in before
-               if CONTROL.match(mn) or _writes_pc(mn, op)]
-        tail = [mn for mn, _op in ins[ret + 1:]] if ret is not None else []
-        if ret is None:
+        index = {a: k for k, (a, _m, _o) in enumerate(ins)}
+        bad, targets, branches = [], [], 0
+        for addr, mn, op in ins:
+            text = f"{mn} {op.split(';')[0].strip()}".strip()
+            if _is_return(mn, op) or _is_cond_return(mn, op):
+                branches += not _is_return(mn, op)
+            elif _BRANCH.match(mn):
+                tm = _TARGET.search(op)
+                to = int(tm[1], 16) if tm else None
+                if to is None or to not in index:
+                    bad.append(f"BRANCH_OUTSIDE_FUNCTION:{text}")
+                elif to <= addr:
+                    bad.append(f"BACKWARD_BRANCH:{text}")
+                else:
+                    targets.append(index[to])
+                    branches += 1
+            elif CONTROL.match(mn) or _writes_pc(mn, op):
+                bad.append(f"CALL_LOOP_OR_WAIT:{text}")
+            if bad and len(bad) >= 4:
+                break
+        reach = max(targets, default=0)
+        end = next((k for k in range(reach, len(ins)) if _is_return(ins[k][1], ins[k][2])), None)
+        tail = [mn for _a, mn, _o in ins[end + 1:]] if end is not None else []
+        if bad:
+            reason = "NO_STATIC_BOUND:" + "; ".join(bad[:4])
+        elif end is None:
             reason = "NO_FINAL_RETURN"
-        elif bad:
-            reason = "NOT_STRAIGHT_LINE:" + "; ".join(bad[:4])
         elif any(not mn.startswith("nop") for mn in tail):
             reason = "CODE_AFTER_RETURN:" + "; ".join(tail[:4])
         else:
-            out[name] = {"status": "BOUNDED", "static_instructions": ret + 1,
-                         "listing_sha256": sha256_bytes("\n".join(f"{a} {b}".strip() for a, b in ins).encode())}
+            out[name] = {"status": "BOUNDED", "bound": "BOUNDED_STATIC", "static_instructions": end + 1,
+                         "method": "STATIC_FORWARD_BRANCHES" if branches else "STATIC_STRAIGHT_LINE",
+                         "listing_sha256": sha256_bytes("\n".join(f"{a:x} {b} {c}".strip() for a, b, c in ins).encode())}
             continue
         out[name] = {"status": "NOT_BOUNDED", "reason": reason[:200]}
     return out
@@ -116,6 +161,167 @@ def _target(ws: Path, kind: str) -> tuple[str | None, str, list[str], str]:
     return (src.read_text() if src.is_file() else None), src.name, list(dict.fromkeys(names)), ""
 
 
+TICK_STUB = ("uint32_t HAL_GetTick(void)\n{\n    static uint32_t forge_tick = 0U;\n    forge_tick++;\n"
+             "    return forge_tick;\n}\n")
+TICK_NOTE = ("HAL_GetTick is a factory stub returning a counter that advances by 1 per call (the convention of the "
+             "factory target tests); the timeout path length depends on it, not on a real system time base")
+
+
+def _plan(symbols: list[str], disassembly: str, mips: int) -> dict:
+    """Entry and caller-return hooks of the measured symbols (the SWE.6 hook format simulation_performance.report
+    reads), for the functions this SWE.3 measurement covers."""
+    starts, ends = {}, {n: set() for n in symbols}
+    for line in disassembly.splitlines():
+        label = re.fullmatch(r"([0-9a-fA-F]+) <([^>]+)>:", line)
+        if label and label[2] in symbols:
+            starts[label[2]] = int(label[1], 16)
+        call = re.match(r"^\s*([0-9a-fA-F]+):\s+((?:[0-9a-fA-F]{4}\s+)+)bl\s+[0-9a-fA-F]+ <([^>]+)>", line)
+        if call and call[3] in symbols:
+            ends[call[3]].add(int(call[1], 16) + len(re.findall(r"[0-9a-fA-F]{4}", call[2])) * 2)
+    missing = [n for n in symbols if n not in starts or not ends[n]]
+    if missing:
+        raise ValueError("MEASUREMENT_DIRECT_CALL_MISSING:" + ",".join(missing)[:120])
+    coords = [(n, "BEGIN", starts[n]) for n in symbols] + [(n, "END", a) for n in symbols for a in sorted(ends[n])]
+    commands = [f"cpu PerformanceInMips {mips}"] + [
+        f'cpu AddHook {a:#x} "print \'FORGE_PERF|{n}|{k}|\'+str(self.ExecutedInstructions)+\'|\''
+        '+str(self.GetMachine().ElapsedVirtualTime.TimeElapsed.Ticks)"' for n, k, a in coords]
+    return {"symbols": symbols, "hooks": coords, "commands": commands, "disassembly_sha256": sha256_bytes(disassembly.encode())}
+
+
+def _cases(ws: Path, fns: list[str]) -> tuple[dict[str, list], dict[str, list]]:
+    """The frozen SWE.2 call-contract cases of each function: (nominal, timeout path). A timeout case is one whose SWE.1
+    effect is never-ready or expects HAL_TIMEOUT; it runs on the model's never_ready scenario, as the factory target
+    tests do."""
+    calls = json.loads((ws / "workproducts/SWE.2/api_calls.json").read_text()).get("calls") or {}
+    eff_p = ws / "workproducts/SWE.1/register_effects.json"
+    never = {e.get("case") for e in (json.loads(eff_p.read_text()).get("effects") or [] if eff_p.is_file() else [])
+             if e.get("ready") == "never" or e.get("status") == "HAL_TIMEOUT"}  # the model's never_ready scenario
+    nominal: dict[str, list] = {f: [] for f in fns}
+    timeout: dict[str, list] = {f: [] for f in fns}
+    for case in sorted(calls):
+        c = calls[case]
+        if isinstance(c, dict) and c.get("function") in nominal and isinstance(c.get("args"), list):
+            (timeout if case in never else nominal)[c["function"]].append({"case": case, **c})
+    return nominal, timeout
+
+
+def measure(ws: Path, kind: str, fns: list[str], budget: dict) -> tuple[dict[str, dict], dict]:
+    """MEASURED_IN_SIMULATION at SWE.3 (factory, not the author): per function the maximum executed instructions and
+    virtual time over the exercised call-contract cases, or NOT_BOUNDED with the reason the measurement is impossible."""
+    from . import layer
+    from . import simulation_performance as performance
+    from .assurance.register_contract import call_text
+    from .mcp.sdk import run_argv
+    from .mcp.servers import sim
+
+    ws = Path(ws)
+    pr = layer.profile(ws)
+    env = {"simulator": f"Renode {sim.RENODE_VERSION} portable", "adapter": sim.ADAPTER_ID,
+           "measurement_profile": sim.measurement_profile(ws), "performance_mips": budget["performance_mips"],
+           "conditions": "cpu PerformanceInMips at the budget's MIPS; no injected interrupts or bus stalls (the "
+                         "factory platform and model unchanged)",
+           "platform_sha256": sha256_file(sim.SIM_DIR / pr["sim"]["platform"]),
+           "model_sha256": sha256_file(sim.SIM_DIR / pr["sim"]["model"]), "cflags": list(sim.CFLAGS),
+           "timeout_argument": "10U for the call contract's {timeout} placeholder (the factory oracle convention)"}
+
+    def refuse(reason: str) -> tuple[dict[str, dict], dict]:
+        return {f: {"status": "NOT_BOUNDED", "reason": reason[:200]} for f in fns}, env
+
+    renode = sim.renode_bin()
+    if renode is None:
+        return refuse("MEASUREMENT_UNAVAILABLE:RENODE_NOT_INSTALLED")
+    if not shutil.which("arm-none-eabi-gcc") or not shutil.which("arm-none-eabi-objdump"):
+        return refuse("MEASUREMENT_UNAVAILABLE:ARM_TOOLCHAIN_MISSING")
+    try:
+        nominal, timeout = _cases(ws, fns)
+    except (OSError, ValueError) as exc:
+        return refuse(f"MEASUREMENT_NO_CALL_CONTRACT:{type(exc).__name__}")
+    out: dict[str, dict] = {}
+    for f in fns:
+        if not nominal[f] and not timeout[f]:
+            out[f] = {"status": "NOT_BOUNDED", "reason": "MEASUREMENT_NO_SWE2_CALL_CASE"}
+    todo = [f for f in fns if f not in out]
+    prefix = "forge_measure_" if kind == "LL" else ""
+    samples: dict[str, list] = {f: [] for f in todo}
+    paths: dict[str, dict] = {f: {"nominal": [c["case"] for c in nominal[f]],
+                                  "timeout": [c["case"] for c in timeout[f]]} for f in todo}
+    failure: dict[str, str] = {}
+    srcs_text = "".join(p.read_text(errors="replace") for d in ("software/hal", "software/src", "software/ll")
+                        for p in sorted((ws / d).glob("*.[ch]")))
+    stub = "HAL_GetTick" in srcs_text and not re.search(r"\bHAL_GetTick\s*\(\s*void\s*\)\s*\{", srcs_text)
+    if stub:
+        env["time_base"] = TICK_NOTE
+    with tempfile.TemporaryDirectory(prefix="forge-swe3-timing-") as td:
+        wd = Path(td)
+        try:
+            unit = performance.prepare(ws, wd)
+        except ValueError as exc:
+            return refuse(f"MEASUREMENT_WRAPPERS_UNAVAILABLE:{exc}")
+        seen: set[str] = set()
+        srcs = [str(p) for d in ("software/hal", "software/src") for p in sorted((ws / d).glob("*.c"))
+                if not (p.name in seen or seen.add(p.name))]
+        from .brownfield.cmsis import target_flags
+        from .delivery_first import include_flags
+
+        incs = [f"-I{ws / d}" for d in ("software/hal", "software/ll", "software/include") if (ws / d).is_dir()]
+        incs += target_flags(ws) + include_flags(ws) + layer.instance_flags(ws, host=False) + [f"-I{wd}"]
+        api = Path(layer.api_header(kind, ws)).name
+        for scenario, group in (("default", nominal), ("never_ready", timeout)):
+            run = [f for f in todo if group[f] and f not in failure]
+            if not run:
+                continue
+            body = [f"    (void){call_text({**c, 'function': prefix + c['function']}, '10U')}; /* {c['case']} */"
+                    for f in run for c in group[f]]
+            drv = wd / f"forge_swe3_timing_{scenario}.c"
+            drv.write_text("\n".join(["#include <stdint.h>", '#include "forge_target_test.h"', f'#include "{api}"',
+                                      '#include "forge_performance_calls.h"', "FORGE_MAILBOX_DEFINE;",
+                                      TICK_STUB if stub else "", "int main(void)", "{", "    FORGE_TEST_BEGIN();",
+                                      *body, "    FORGE_TEST_END();", "    return 0;", "}", ""]))
+            elf = wd / f"forge_swe3_timing_{scenario}.elf"
+            b = run_argv(["arm-none-eabi-gcc", *sim.CFLAGS, *incs, f"-I{sim.SIM_DIR}", "-T",
+                          str(sim.linker_script(ws, wd)), str(sim.SIM_DIR / "startup.c"), str(drv), *srcs, str(unit),
+                          "-o", str(elf)], wd, 180, {"arm-none-eabi-gcc"})
+            if b.exit_code:
+                err = next((ln for ln in b.stderr.decode(errors="replace").splitlines() if "error" in ln), "")
+                failure.update({f: f"MEASUREMENT_BUILD_FAILED:{scenario}:{err.split(td)[-1][-140:]}" for f in run})
+                continue
+            listing = run_argv(["arm-none-eabi-objdump", "-d", str(elf)], wd, 60, {"arm-none-eabi-objdump"})
+            try:
+                plan = _plan([prefix + f for f in run], listing.stdout.decode(errors="replace"),
+                             budget["performance_mips"])
+            except ValueError as exc:
+                failure.update({f: f"{exc}:{scenario}" for f in run})
+                continue
+            env[f"{scenario}_driver_sha256"] = sha256_file(drv)
+            env[f"{scenario}_elf_sha256"] = sha256_file(elf)
+            res, _raw = sim.run_image(renode, elf, scenario, wd, ws, measurement=plan)
+            perf = (res or {}).get("performance")
+            if res is None or not res["magic_ok"] or not res["done"] or perf is None:
+                failure.update({f: f"MEASUREMENT_NO_RESULT:{scenario}" for f in run})
+                continue
+            for f in run:
+                sym = prefix + f
+                bad = [i for i in perf["issues"] if i.endswith(":" + sym) and not i.startswith("CALL_BUDGET_EXCEEDED")]
+                bad += [i for i in perf["issues"] if ":" not in i]
+                if bad or not perf["samples"].get(sym):
+                    failure[f] = f"MEASUREMENT_INCOMPLETE:{scenario}:{(bad or ['NO_COMPLETED_CALL'])[0]}"
+                else:
+                    samples[f] += [{**s, "scenario": scenario} for s in perf["samples"][sym]]
+    limit_ns = budget["microseconds_per_call"] * 1000
+    for f in todo:
+        if f in failure:
+            out[f] = {"status": "NOT_BOUNDED", "reason": failure[f][:200]}
+            continue
+        n = max(s["instructions"] for s in samples[f])
+        ns = max(s["virtual_nanoseconds"] for s in samples[f])
+        exercised = {"nominal": paths[f]["nominal"],
+                     "timeout": paths[f]["timeout"] or "not exercised: no timeout case in the SWE.2 call contract"}
+        out[f] = {"bound": "MEASURED_IN_SIMULATION", "method": "MEASURED_IN_SIMULATION", "measured_instructions": n,
+                  "measured_virtual_ns": ns, "samples": samples[f], "paths": exercised,
+                  "status": "WITHIN_BUDGET" if n <= budget["instructions_per_call"] and ns <= limit_ns else "OVER_BUDGET"}
+    return out, env
+
+
 def bound(ws: Path) -> dict | None:
     """The static per-call bound record of every scoped function (None when the work order has no such budget)."""
     from . import layer
@@ -134,14 +340,17 @@ def bound(ws: Path) -> dict | None:
         measured = [s.removeprefix("forge_measure_") for s in symbols(ws)]
     except (OSError, ValueError, KeyError) as exc:
         measured = [f"<{str(exc)[:80]}>"]
-    measured_how = ("the straight-line forge_measure_<function> wrapper SWE.6 measures" if kind == "LL" else
+    measured_how = ("the forge_measure_<function> wrapper SWE.6 measures" if kind == "LL" else
                     "each public HAL function SWE.6 measures, compiled from its source")
     rec = {"schema": SCHEMA, "layer": kind, "profile": PROFILE, "compiler": prof["cc"], "flags": list(prof["flags"]),
            "header": api, "header_sha256": sha256_file(ws / api) if (ws / api).is_file() else None,
            "budget": {k: budget[k] for k in ("instructions_per_call", "microseconds_per_call", "performance_mips")},
-           "method": f"static instruction count of {measured_how}; straight-line code only (each instruction executes "
-                     "at most once per call); virtual time = instructions x 1000 / MIPS ns (Renode instruction-time "
-                     "model); refused (NOT_BOUNDED) for any branch, call, loop or wait",
+           "method": f"per function: BOUNDED_STATIC = static instruction count of {measured_how} when its code is "
+                     "acyclic (straight-line or forward branches only; each instruction executes at most once per call; "
+                     "virtual time = instructions x 1000 / MIPS ns, Renode instruction-time model); otherwise "
+                     "MEASURED_IN_SIMULATION = maximum executed instructions and virtual time of the function over the "
+                     "frozen SWE.2 call-contract cases in the pinned Renode simulation (nominal path; timeout path where "
+                     "the model forces it); NOT_BOUNDED only when the measurement is impossible",
            "verification": "SWE.6 Renode measurement (Simulation Performance Should Meet Budget)",
            "hardware_wcet": "NOT_CLAIMED", "functions": {}}
     if kind == "HAL":
@@ -171,6 +380,7 @@ def bound(ws: Path) -> dict | None:
         rec.update(status="NOT_BOUNDED", issues=["DISASSEMBLY_FAILED"])
         return rec
     limit_ns = budget["microseconds_per_call"] * 1000
+    unbounded = {}
     for name, r in analyse(dis.stdout, [prefix + n for n in names]).items():
         fn = name.removeprefix(prefix)
         if r["status"] == "BOUNDED":
@@ -178,55 +388,83 @@ def bound(ws: Path) -> dict | None:
             ns = -(-n * 1000 // budget["performance_mips"])
             r = {**r, "virtual_ns_bound": ns,
                  "status": "WITHIN_BUDGET" if n <= budget["instructions_per_call"] and ns <= limit_ns else "OVER_BUDGET"}
+        else:
+            unbounded[fn] = r["reason"]
         rec["functions"][fn] = r
+    if unbounded:  # (c): no static bound -> the factory measures them in the pinned simulation at SWE.3
+        got, env = measure(ws, kind, list(unbounded), budget)
+        rec["measurement"] = env
+        for fn, r in got.items():
+            rec["functions"][fn] = {**r, "static_reason": unbounded[fn]}
     states = {r["status"] for r in rec["functions"].values()}
     rec["status"] = ("OVER_BUDGET" if "OVER_BUDGET" in states else "NOT_BOUNDED" if "NOT_BOUNDED" in states
                      else "WITHIN_BUDGET")
     return rec
 
 
+def _value(r: dict) -> tuple[int, int, str]:
+    if "static_instructions" in r:
+        return r["static_instructions"], r["virtual_ns_bound"], "static bound"
+    return r["measured_instructions"], r["measured_virtual_ns"], "measured"
+
+
 def findings(rec: dict | None, swrs: list[str]) -> list[str]:
-    """Owner 2026-11-03: an over-budget or unbounded static result fails the SWE.3 author gate and goes back to the code
-    rework, one precise finding per function; function, count and budget come first (compact replies keep 120 chars)."""
+    """Owner 2026-11-03: an over-budget or unbounded result fails the SWE.3 author gate and goes back to the code rework,
+    one precise finding per function; function, count and budget come first (compact replies keep 120 chars)."""
     if rec is None or rec["status"] == "WITHIN_BUDGET":
         return []
     b = rec["budget"]
     lim = f"budget {b['instructions_per_call']} instr/{b['microseconds_per_call']} us per call"
     tail = (f" at {b['performance_mips']} MIPS in the pinned Renode simulation"
             + (f" ({', '.join(swrs)})" if swrs else "") + "; SWE.6 measurement remains the verification")
-    out = [f"STATIC_TIMING_NOT_BOUNDED: no static bound for the {lim}: {i}{tail}" for i in rec.get("issues") or []]
+    out = [f"STATIC_TIMING_NOT_BOUNDED: no bound for the {lim}: {i}{tail}" for i in rec.get("issues") or []]
     for fn, r in rec["functions"].items():
         if r["status"] == "OVER_BUDGET":
-            out.append(f"STATIC_TIMING_OVER_BUDGET: {fn}: static bound {r['static_instructions']} instr/"
-                       f"{r['virtual_ns_bound']} ns exceeds the {lim}{tail}; reduce the code of {fn}")
+            n, ns, how = _value(r)
+            out.append(f"STATIC_TIMING_OVER_BUDGET: {fn}: {how} {n} instr/{ns} ns exceeds the {lim}{tail}; reduce the "
+                       f"code of {fn}")
         elif r["status"] == "NOT_BOUNDED":
-            how = (f"write {fn} without branches, calls, loops or waits" if rec.get("layer", "LL") == "LL" else
-                   "the factory computes no static bound for HAL code with branches, calls or waits")
-            out.append(f"STATIC_TIMING_NOT_BOUNDED: {fn}: no static bound for the {lim}: {r['reason']} (not "
-                       f"straight-line code){tail}; {how}")
+            out.append(f"STATIC_TIMING_NOT_BOUNDED: {fn}: no bound for the {lim}: {r['reason']}"
+                       + (f" (no static bound: {r['static_reason']})" if r.get("static_reason") else "") + tail)
     return out
+
+
+METHOD_TEXT = {"STATIC_STRAIGHT_LINE": "static (straight-line)", "STATIC_FORWARD_BRANCHES": "static (forward branches)",
+               "MEASURED_IN_SIMULATION": "measured in simulation"}
 
 
 def design_section(rec: dict, swrs: list[str]) -> list[str]:
     """The detailed-design section rendered exactly from the record."""
     b = rec["budget"]
-    out = ["## Timing bound (static analysis)", "",
+    out = [SECTION, "",
            f"Requirements {', '.join(swrs) or '(simulation performance budget)'}: at most {b['instructions_per_call']} "
            f"executed target instructions and {b['microseconds_per_call']} microseconds of virtual time per measured "
            f"call at {b['performance_mips']} MIPS. Design-level bound computed by the factory from "
            f"{rec.get('compiler_version') or rec['compiler']} at the {rec['profile']} flags "
            f"({' '.join(rec['flags'])}) on {rec['header']} (sha256 {str(rec['header_sha256'])[:16]}): {rec['method']}. "
            f"Evidence: {EVIDENCE}. Verification of the requirements: {rec['verification']}; hardware WCET is not "
-           "claimed.", "", f"Overall: {rec['status']}.", ""]
+           "claimed.", ""]
+    if m := rec.get("measurement"):
+        out += [f"Measurement at SWE.3: {m['measurement_profile']}; {m['conditions']}. A measured bound covers only the "
+                "paths listed; it is not a bound for unexercised inputs." + (f" {m['time_base']}." if m.get("time_base")
+                                                                            else ""), ""]
+    out += [f"Overall: {rec['status']}.", ""]
     if rec.get("issues"):
-        out += [f"- no static bound: {', '.join(rec['issues'])}", ""]
+        out += [f"- no bound: {', '.join(rec['issues'])}", ""]
         return out
-    out += ["| Function | Static bound (instructions) | Derived virtual time (ns) | Result |", "| --- | --- | --- | --- |"]
+    out += ["| Function | Method | Bound (instructions) | Virtual time (ns) | Result | Paths |",
+            "| --- | --- | --- | --- | --- | --- |"]
     for fn, r in rec["functions"].items():
-        if "static_instructions" in r:
-            out.append(f"| {fn} | {r['static_instructions']} | {r['virtual_ns_bound']} | {r['status']} |")
-        else:
-            out.append(f"| {fn} | - | - | NOT_BOUNDED ({r['reason']}) |")
+        if r["status"] == "NOT_BOUNDED":
+            out.append(f"| {fn} | - | - | - | NOT_BOUNDED ({r['reason']}) | - |")
+            continue
+        n, ns, _how = _value(r)
+        p = r.get("paths")
+        paths = "every path (acyclic code)"
+        if p:
+            to = ", ".join(p["timeout"]) if isinstance(p["timeout"], list) else p["timeout"]
+            paths = f"nominal: {', '.join(p['nominal']) or 'none'}; timeout: {to}"
+        out.append(f"| {fn} | {METHOD_TEXT[r['method']]} | {n} | {ns} | {r['status']} | {paths} |")
     return out + [""]
 
 
@@ -242,14 +480,14 @@ def render(rec: dict) -> str:
     return json.dumps(rec, indent=1, sort_keys=True) + "\n"
 
 
-SECTION = "## Timing bound (static analysis)"
+SECTION = "## Timing bound (static analysis and measurement)"
 DESIGN = "workproducts/SWE.3/detailed_design.md"
 
 
 def with_section(design: str, section: list[str]) -> str:
     """The design text with the factory-rendered timing section replacing an earlier one (else appended)."""
     text = "\n".join(section).rstrip("\n") + "\n"
-    m = re.search(r"^" + re.escape(SECTION) + r"[^\n]*\n.*?(?=^## |\Z)", design, re.M | re.S)
+    m = re.search(r"^## Timing bound\b[^\n]*\n.*?(?=^## |\Z)", design, re.M | re.S)
     if m:
         return design[:m.start()] + text + ("\n" if design[m.end():] else "") + design[m.end():]
     return design.rstrip("\n") + "\n\n" + text

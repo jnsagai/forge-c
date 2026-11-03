@@ -183,7 +183,8 @@ def read_access_log(path: Path) -> list[dict] | None:
     return out
 
 
-def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None = None) -> tuple[dict | None, bytes]:
+def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None = None,
+              measurement: dict | None = None) -> tuple[dict | None, bytes]:
     """Run an image on the Forge-C STM32N6 platform with the given model scenario; read the RAM mailbox. Feature 009:
     the peripheral model and platform come from the work order's profile (RCC by default)."""
     from ...layer import profile
@@ -205,7 +206,10 @@ def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None =
     budget = performance.selected(ws) if ws is not None else None
     instrumentation = None
     extra = ""
-    if budget and elf.stem in (Path(budget["test_source"]).stem, Path(budget["test_source"]).stem + "_default"):
+    if measurement is not None:  # owner 2026-11-03: the SWE.3 factory measurement supplies its own entry/return plan
+        instrumentation = measurement
+        extra = "\n".join(measurement["commands"]) + "\n"
+    elif budget and elf.stem in (Path(budget["test_source"]).stem, Path(budget["test_source"]).stem + "_default"):
         if scenario != "default":
             return None, b"SIMULATION_PERFORMANCE_PROFILE_REQUIRES_DEFAULT_SCENARIO"
         try:
@@ -235,8 +239,9 @@ def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None =
            "FORGE_ACCESS_LOG": str(access_log.resolve())}
     r = run_argv([renode, "--disable-gui", "--console", "--plain", "-e", f"include @{resc}"], wd, 170,
                  {os.path.basename(renode)}, env_extra=env, mem_mb=65536, fsize_mb=512)
-    if instrumentation and (any(instrumentation[k] != v for k, v in performance.inputs(ws).items())
-                            or instrumentation["elf_sha256"] != sha256_file(elf)):
+    if measurement is None and instrumentation and (
+            any(instrumentation[k] != v for k, v in performance.inputs(ws).items())
+            or instrumentation["elf_sha256"] != sha256_file(elf)):
         return None, r.stdout + r.stderr + b"\nSIMULATION_PERFORMANCE_EXECUTION_INPUT_CHANGED"
     vals = [int(x, 16) for x in re.findall(r"^(0x[0-9A-Fa-f]{8})\s*$", r.stdout.decode(errors="replace"), re.M)]
     if len(vals) < 4:
