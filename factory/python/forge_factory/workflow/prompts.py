@@ -1220,6 +1220,15 @@ def uspecize(text: str) -> str:
                         "'## Measures, environment, entry/exit criteria and regression' (host GoogleTest/GoogleMock "
                         "1.11.0 build with clang++,")
     text = text.replace("must appear in a CHECK of that file", "must be the @test of one TEST of that file")
+    text = text.replace(
+        " Call mcp__forge_tests_mcp__llvm_coverage. ",
+        " Call mcp__forge_tests_mcp__llvm_coverage. Coverage closure (owner 2026-11-03): each COVERAGE_GAP issue names "
+        "an uncovered decision (kind, file:line, function, missing outcome, decision text). For each, add ONE TEST "
+        "tagged '/** @test <next free UT id> @verifies <the USPEC ids of that function's unit whose behaviour takes "
+        "the missing outcome> */' that reaches it through the unit's API, with expected values ONLY from those USPEC "
+        "items and their requirements; when no USPEC item or requirement states a behaviour that reaches it (code "
+        "without a requirement behind it), call report_defect kind CODE with evidence_refs '<file>:<line>' instead - "
+        "never invent a requirement or an expectation. Then run_unit and llvm_coverage again. ")
     text = text.replace("'## Coverage' (goal: 100% statement/branch of driver code; the llvm_coverage numbers exactly as "
                         "reported; any shortfall listed as a deviation with reason)",
                         "'## Coverage' (BLOCKING gate, owner 2026-11-03: 100% line and 100% branch coverage of the "

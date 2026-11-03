@@ -369,13 +369,120 @@ def llvm_coverage(ctx: ToolContext, a: CovIn) -> dict:
     refs = [ctx.store(r.stdout, "json"), ctx.store(rep.stdout + rep.stderr), ctx.store(prof.read_bytes(), "profdata")]
     summary = f"line {metrics['line_pct']}% branch {metrics['branch_pct']}% MC/DC {metrics['mcdc_pct']}% (host)"
     scope = _scope_coverage(ctx, prof, objs, srcs)
+    gaps = coverage_gaps(ctx.workspace, prof, objs, srcs, bdir,
+                         scope_functions=set(scope.get("scope_names") or []) if scope else None)
+    if scope is not None:
+        scope.pop("scope_names", None)
+    if gaps is not None:  # owner 2026-11-03 (D): each uncovered line/branch/condition, for the closure tasks
+        # the full list is a content-addressed artifact (metrics are scalar); first in the metrics, so the result-size
+        # bound (sdk.result drops the metrics tail) never removes them
+        refs.append(ctx.store(json.dumps({"schema": "forge-c/coverage-gaps/1", "gaps": gaps}, indent=1).encode(),
+                              "json"))
+        metrics = {"uncovered_count": len(gaps), "uncovered_artifact": refs[-1], **metrics}
     if scope is not None:  # CAPA-060 (b006): a delivery's headers hold far more than the scope (ST: 28k lines, 1.2%)
         metrics.update(scope)
         summary = (f"scope ({scope['scope_functions']} delivered functions): functions {scope['scope_function_pct']}% "
                    f"regions {scope['scope_region_pct']}% branches {scope['scope_branch_pct']}% (host); whole delivered "
                    f"files line {metrics['line_pct']}%")
-    return result(ctx, "PASS", summary, refs, [], metrics, "llvm-cov", tool_version("llvm-cov"),
-                  r.exit_code, r.duration_ms + rep.duration_ms, a.model_dump(), r.stdout)
+    issues = [f"COVERAGE_GAP:{g['kind']}:{g['file']}:{g['line']}:{g['function'] or '-'}:{g['missing']}:"
+              f"{g['text'][:60]}" for g in (gaps or [])][:12]
+    return result(ctx, "PASS", summary + (f"; {len(gaps)} uncovered item(s)" if gaps else ""), refs, issues, metrics,
+                  "llvm-cov", tool_version("llvm-cov"), r.exit_code, r.duration_ms + rep.duration_ms, a.model_dump(),
+                  r.stdout)
+
+
+def coverage_gaps(ws: Path, prof: Path, objs: list[str], srcs: list[str], bdir: Path,
+                  scope_functions: set[str] | None = None) -> list[dict] | None:
+    """Owner 2026-11-03 (D): every uncovered line, branch outcome and MC/DC condition of the measured driver sources,
+    with its location, the enclosing function, the decision text and what is missing. Instances of one region in
+    several binaries/units (a header-only LL is compiled in its C unit and in the test) are merged: a branch outcome
+    or condition counts as covered when any instance covers it. None when llvm-cov output is unreadable."""
+    from ...common import sha256_bytes
+    from ...gtest_toolchain import c_name
+
+    j = run_argv(["llvm-cov", "export", f"-instr-profile={prof}", *objs, *srcs], bdir, 120, ALLOW)
+    lc = run_argv(["llvm-cov", "export", "-format=lcov", f"-instr-profile={prof}", *objs, *srcs], bdir, 120, ALLOW)
+    try:
+        data = json.loads(j.stdout)["data"][0]
+    except (ValueError, KeyError, IndexError):
+        return None
+    root = Path(ws).resolve()
+
+    def rel(f: str) -> str:
+        try:
+            return Path(f).resolve().relative_to(root).as_posix()
+        except ValueError:
+            return Path(f).name
+
+    spans: dict[str, list[tuple[int, int, str]]] = {}
+    for fn in data.get("functions", []):
+        regs, files = fn.get("regions") or [], fn.get("filenames") or []
+        if regs and files:
+            r0 = regs[0]
+            spans.setdefault(rel(files[r0[5]] if len(r0) > 5 and r0[5] < len(files) else files[0]), []).append(
+                (r0[0], r0[2], c_name(fn["name"])))
+
+    def func(f: str, line: int) -> str | None:
+        hit = [(b - a, n) for a, b, n in spans.get(f, []) if a <= line <= b]
+        return min(hit)[1] if hit else None
+
+    texts: dict[str, list[str]] = {}
+
+    def snippet(f: str, l1: int, c1: int, l2: int, c2: int) -> str:
+        if f not in texts:
+            p = root / f
+            texts[f] = p.read_text(errors="replace").splitlines() if p.is_file() else []
+        ls = texts[f][l1 - 1:l2]
+        if not ls:
+            return ""
+        if len(ls) == 1:
+            return ls[0][c1 - 1:c2 - 1].strip()
+        return " ".join([ls[0][c1 - 1:].strip(), *[x.strip() for x in ls[1:-1]], ls[-1][:c2 - 1].strip()])
+
+    gaps = []
+    branches: dict[tuple, list[int]] = {}
+    mcdc: dict[tuple, list[bool]] = {}
+    for fobj in data.get("files", []):
+        f = rel(fobj["filename"])
+        for b in fobj.get("branches", []):
+            k = (f, b[0], b[1], b[2], b[3])
+            t = branches.setdefault(k, [0, 0])
+            t[0], t[1] = t[0] + int(b[4]), t[1] + int(b[5])
+        for m in fobj.get("mcdc_records", []):
+            conds = next((x for x in m if isinstance(x, list)), [])
+            k = (f, m[0], m[1], m[2], m[3])
+            old = mcdc.setdefault(k, [False] * len(conds))
+            mcdc[k] = [a or bool(b) for a, b in zip(old, conds, strict=False)] if old else list(map(bool, conds))
+    for (f, l1, c1, l2, c2), (t, fa) in sorted(branches.items()):
+        if t and fa:
+            continue
+        missing = "never evaluated" if not (t or fa) else "true outcome never taken" if not t else \
+            "false outcome never taken"
+        gaps.append({"kind": "branch", "file": f, "line": l1, "col": c1, "function": func(f, l1),
+                     "text": snippet(f, l1, c1, l2, c2), "missing": missing})
+    for (f, l1, c1, l2, c2), conds in sorted(mcdc.items()):
+        miss = [i + 1 for i, ok in enumerate(conds) if not ok]
+        if miss:
+            gaps.append({"kind": "mcdc", "file": f, "line": l1, "col": c1, "function": func(f, l1),
+                         "text": snippet(f, l1, c1, l2, c2),
+                         "missing": f"independent effect of condition(s) {', '.join(map(str, miss))} of "
+                                    f"{len(conds)} not shown"})
+    cur = None
+    for ln in lc.stdout.decode(errors="replace").splitlines():
+        if ln.startswith("SF:"):
+            cur = rel(ln[3:])
+        elif ln.startswith("DA:") and cur is not None:
+            n, c = ln[3:].split(",")[:2]
+            if c.strip() == "0":
+                line = int(n)
+                gaps.append({"kind": "line", "file": cur, "line": line, "col": 1, "function": func(cur, line),
+                             "text": snippet(cur, line, 1, line, 10**6), "missing": "line never executed"})
+    if scope_functions is not None:
+        gaps = [g for g in gaps if g["function"] in scope_functions]
+    for g in gaps:
+        g["id"] = "GAP-" + sha256_bytes(f"{g['kind']}|{g['file']}|{g['line']}|{g['col']}|{g['missing']}".encode())[:10]
+        g["text"] = g["text"][:160]
+    return gaps
 
 
 def _scope_coverage(ctx: ToolContext, prof: Path, objs: list[str], srcs: list[str]) -> dict | None:
@@ -408,7 +515,8 @@ def _scope_coverage(ctx: ToolContext, prof: Path, objs: list[str], srcs: list[st
     return {"scope_functions": len(names), "scope_function_pct": pct(sum(f["count"] > 0 for f in best.values()), len(names)),
             "scope_region_pct": pct(sum(rg[4] > 0 for rg in regions), len(regions)),
             "scope_branch_pct": pct(sum((b[4] > 0) + (b[5] > 0) for b in branches), 2 * len(branches)),
-            "scope_not_executed": sorted(names - {n for n, f in best.items() if f["count"] > 0})}
+            "scope_not_executed": sorted(names - {n for n, f in best.items() if f["count"] > 0}),
+            "scope_names": sorted(names)}
 
 
 def gcov_coverage(ctx: ToolContext, a: CovIn) -> dict:

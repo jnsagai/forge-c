@@ -84,12 +84,14 @@ def plan_cases(ws: Path, write: bool = True) -> list[dict]:
     reqs = _requirements(ws)
     eff = json.loads((ws / "workproducts/SWE.1/register_effects.json").read_text())["effects"]
     out = []
-    for t in plan["tasks"] + plan.get("closure", []):
+    for t in plan["tasks"]:
         u = us.get(t["unit"])
         out.append({"ut": t["ut"], "uspec": t["uspec"], "behaviour": t["behaviour"], "plan": t, "swrs": t["swrs"],
                     "swr": ", ".join(t["swrs"]) or "-", "statement": " ".join(reqs.get(r, "") for r in t["swrs"]),
                     "statements": {r: reqs.get(r, "") for r in t["swrs"]},
                     "effects": [e for e in eff if e["swr"] in t["swrs"]], "unit": u})
+    for t in plan.get("closure", []):  # owner 2026-11-03 (D): closure tests of an earlier round of this visit
+        out.append({**_closure_case(ws, t["gap"], t["ut"]), "uspec": t["uspec"], "verifies": t["verifies"]})
     return out
 
 
@@ -216,7 +218,7 @@ def gtest_packet(ws: Path, c: dict, model: str, findings=None, previous=None) ->
 GTEST_MACRO = re.compile(r"^(?:EXPECT|ASSERT)_[A-Z_]+$|^SCOPED_TRACE$")
 
 
-def validate_gtest(ws: Path, doc: dict, c: dict) -> list[str]:
+def validate_gtest(ws: Path, doc: dict, c: dict, verifies: list[str] | None = None, closure: bool = False) -> list[str]:
     from ..brownfield.scope import strip_comments
     from ..inspection.uspec_plan import suite_name, ut_name
     from ..layer import ll_instance
@@ -233,8 +235,9 @@ def validate_gtest(ws: Path, doc: dict, c: dict) -> list[str]:
     if f"@test {c['ut']}" not in tags:
         out.append(f"the block above the test needs '@test {c['ut']}'")
     ver = re.findall(r"\bUSPEC-[A-Z]+-\d{2,}-\d{2,}\b", " ".join(re.findall(r"@verifies([^@*]*)", tags)))
-    if ver != [c["uspec"]]:
-        out.append(f"'@verifies' must name exactly {c['uspec']} (the specification item of {c['ut']})")
+    want = verifies or [c["uspec"]]
+    if ver != want:
+        out.append(f"'@verifies' must name exactly {' '.join(want)} (the specification item(s) of {c['ut']})")
     if re.search(r"@verifies[^@*]*\b(SWR|SWU|IF)-", tags):
         out.append("@verifies lists USPEC ids only (never SWR-, SWU- or IF- ids)")
     body = nc.split("{", 1)[-1]
@@ -249,7 +252,7 @@ def validate_gtest(ws: Path, doc: dict, c: dict) -> list[str]:
     if inst is not None and re.search(rf"\b{re.escape(idn['block'])}\b", nc):
         out.append(f"{idn['block']} does not exist in instance mode: preset and read registers through "
                    f"{inst['macro']}-><MEMBER>")
-    out += _kind_errors(doc, c, body)
+    out += _kind_errors(doc, c, body) if not closure else []
     known = set(re.findall(r"#define\s+(\w+)", _header(ws).read_text()))
     fn = c["unit"]["function"]["name"]
     used = set(re.findall(rf"\bLL_{idn['pfx']}_\w+", nc)) - {fn}
@@ -280,6 +283,8 @@ def _kind_errors(doc: dict, c: dict, body: str) -> list[str]:
 def test_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> dict:
     from .swe3 import _sig
 
+    if c.get("closure"):
+        return closure_packet(ws, c, model, findings, previous)
     if c.get("uspec") and gtest_mode(ws):
         return gtest_packet(ws, c, model, findings, previous)
     u = c["unit"]
@@ -344,6 +349,9 @@ def _with_tests(ws: Path, tests: list[tuple[str, str]]) -> str:
 def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
     from .swe3 import _header, _ident
 
+    if c.get("closure"):
+        return validate_closure(ws, doc, c) if "verdict" in doc else validate_gtest(
+            ws, doc, c, verifies=c.get("verifies"), closure=True)
     if c.get("uspec") and gtest_mode(ws):
         return validate_gtest(ws, doc, c)
     code, out = doc["code"], []
@@ -539,9 +547,6 @@ def visit_tests(ws: Path, model: str, max_calls: int | None = None, resume: bool
 
 
 def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dict:
-    from ..inspection import defects
-    from . import tools as T
-
     cs = plan_cases(ws) if uspec_mode(ws) else cases(ws)
     missing = [c["ut"] for c in cs if c["unit"] is None]
     if missing:
@@ -565,11 +570,37 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
     if bad:
         return V.reply(ws, PHASE, "FAILED", [f"{r['task']}: {e}" for r in bad for e in r["errors"][:4]], budget)
     rel = str(_harness(ws).relative_to(ws))
+    res, filed, recs = _run_and_triage(ws, model, budget, recs, rel)
+    if res is None:
+        return V.reply(ws, PHASE, "FAILED", filed, budget)
+    open_gaps: list[str] = []
+    if res["status"] == "PASS" and uspec_mode(ws) and gtest_mode(ws):
+        # owner 2026-11-03 (D/E): coverage closure tasks for the gaps the blocking coverage gate names
+        res, more, recs, open_gaps = _closure(ws, model, budget, recs, rel)
+        filed += more
+    S.record(ws, "SWE.4/tests-assembly.json", {"at": utc_now(), "tests": [c["ut"] for c, _n, _r in recs],
+                                               "defects": filed, "run_unit": res.get("summary"),
+                                               "open_coverage_gaps": open_gaps})
+    if res["status"] != "PASS":
+        return V.reply(ws, PHASE, "FAILED", [f"run_unit: {i}" for i in res["issues"][:10]] +
+                       [f"defect filed: {x}" for x in filed], budget)
+    if filed or open_gaps:
+        return V.reply(ws, PHASE, "FAILED", [f"defect filed: {x}" for x in filed] + open_gaps[:20], budget)
+    return V.reply(ws, PHASE, "PASS", [], budget, artifacts=[rel])
+
+
+def _run_and_triage(ws: Path, model: str, budget: dict, recs: list, rel: str):
+    """Assemble, run_unit, and triage each failing test (ADR-0008 L4/L13: a correct failing test files a CODE
+    defect; a wrong one is corrected and declared). Returns (run result or None when the run did not execute,
+    filed defect ids or the run issues, the current records)."""
+    from ..inspection import defects
+    from . import tools as T
+
     V.write_scoped(ws, {rel: _with_tests(ws, [(n, r["doc"]["code"]) for _c, n, r in recs])}, "swe4_test_author")
     res = T.call(ws, "forge-tests-mcp", "run_unit", {}, "swe4-author", PHASE)
     fails = _failures(res) if res["status"] != "PASS" else {}
     if res["status"] != "PASS" and not fails:
-        return V.reply(ws, PHASE, "FAILED", [f"run_unit: {i}" for i in res["issues"][:10]], budget)
+        return None, [f"run_unit: {i}" for i in res["issues"][:10]], recs
     filed = []
     for c, _name, rec in recs:
         if c["ut"] not in fails or budget["calls"] >= budget["max_calls"]:
@@ -605,12 +636,231 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
         recs = [(c, n, json.loads(V._ckpt(ws, PHASE, f"test:{c['ut']}").read_text())) for c, n, _r in recs]
         V.write_scoped(ws, {rel: _with_tests(ws, [(n, r["doc"]["code"]) for _c, n, r in recs])}, "swe4_test_author")
         res = T.call(ws, "forge-tests-mcp", "run_unit", {}, "swe4-author", PHASE)
-    S.record(ws, "SWE.4/tests-assembly.json", {"at": utc_now(), "tests": [c["ut"] for c, _n, _r in recs],
-                                               "defects": filed, "run_unit": res.get("summary")})
-    if res["status"] != "PASS":
-        return V.reply(ws, PHASE, "FAILED", [f"run_unit: {i}" for i in res["issues"][:10]] +
-                       [f"defect filed: {x}" for x in filed], budget)
-    return V.reply(ws, PHASE, "PASS", [], budget, artifacts=[rel])
+    return res, filed, recs
+
+
+# ---- owner 2026-11-03 (D/E): structural coverage closure ---------------------------------------------------------
+CLOSURE_SCHEMA = {"type": "object", "additionalProperties": False,
+                  "required": ["verdict", "reason", "code", "verifies", "kinds"],
+                  "properties": {"verdict": {"type": "string", "enum": ["test", "unreachable"]},
+                                 "reason": {"type": "string", "minLength": 20},
+                                 "code": {"type": "string"},
+                                 "verifies": {"type": "array", "maxItems": 4,
+                                              "items": {"type": "string", "pattern": "^USPEC-[A-Z]+-[0-9]{2,}-[0-9]{2,}$"}},
+                                 "kinds": {"type": "array", "maxItems": 4, "uniqueItems": True,
+                                           "items": {"type": "string", "enum": list(KINDS)}}}}
+CLOSURE_ROUNDS = 2  # a gap still uncovered after its second closure test is a CODE defect (bounded loop)
+
+
+def _blocking_gaps(ws: Path, cov: dict) -> list[dict]:
+    from ..inspection import coverage_gate as CG
+
+    if cov.get("status") != "PASS" or CG.evaluate(ws, cov)["status"] == "PASS":
+        return []
+    kinds = {"line", "branch"} | ({"mcdc"} if CG.required(ws)["mcdc"] else set())
+    return [g for g in coverage_gaps(ws, cov) if g["kind"] in kinds]
+
+
+def coverage_gaps(ws: Path, cov: dict) -> list[dict]:
+    """The uncovered items an llvm_coverage result names (its content-addressed gap artifact)."""
+    m = cov.get("metrics") or {}
+    if "uncovered" in m:  # an in-memory result
+        return list(m["uncovered"])
+    ref = m.get("uncovered_artifact")
+    if not ref:
+        return []
+    from ..inspection.swtrace import _raw
+
+    p = _raw(Path(ws), ref)
+    return json.loads(p.read_text())["gaps"] if p is not None else []
+
+
+def closure_targets(gaps: list[dict]) -> list[dict]:
+    """One closure task per uncovered decision (branch outcome / MC/DC condition); uncovered lines join the
+    decisions of their function, and a function with uncovered lines but no uncovered decision is one task."""
+    by: dict[str, list[dict]] = {}
+    for g in gaps:
+        by.setdefault(g["function"] or f"{g['file']}:?", []).append(g)
+    out = []
+    for gs in by.values():
+        lines = sorted({g["line"] for g in gs if g["kind"] == "line"})
+        dec = [g for g in gs if g["kind"] in ("branch", "mcdc")]
+        for d in dec:
+            out.append({**d, "function": d["function"], "lines": lines})
+        if not dec:
+            g0 = gs[0]
+            out.append({**g0, "kind": "line", "text": " / ".join(g["text"] for g in gs)[:160], "lines": lines,
+                        "missing": f"line(s) {', '.join(map(str, lines))} never executed"})
+    return out
+
+
+def _closure_case(ws: Path, gap: dict, ut: str) -> dict:
+    """The task of one gap: the decision, its unit (by function) and that unit's USPEC items and requirements - the
+    oracle; never the code around the decision."""
+    from ..assurance.register_contract import _requirements
+    from ..inspection import uspec_plan as P
+    from .swe3 import units
+
+    plan = P.current(ws)
+    tasks = [t for t in plan["tasks"] if gap["function"] in t["functions"]]
+    unit = next((u for u in units(ws) if tasks and u["id"] == tasks[0]["unit"]), None)
+    swrs = sorted({r for t in tasks for r in t["swrs"]})
+    reqs = _requirements(ws)
+    eff = json.loads((Path(ws) / "workproducts/SWE.1/register_effects.json").read_text())["effects"]
+    return {"ut": ut, "closure": True, "gap": gap, "unit": unit, "uspec": None, "uspecs": [t["uspec"] for t in tasks],
+            "uspec_behaviour": {t["uspec"]: t["behaviour"] for t in tasks}, "swrs": swrs, "swr": ", ".join(swrs) or "-",
+            "statement": " ".join(reqs.get(r, "") for r in swrs), "statements": {r: reqs.get(r, "") for r in swrs},
+            "effects": [e for e in eff if e["swr"] in swrs], "plan": {"constraints_verified_at_swe6": []},
+            "behaviour": f"coverage closure of {gap['file']}:{gap['line']} `{gap['text']}` ({gap['missing']})"}
+
+
+def closure_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> dict:
+    from ..inspection.uspec_plan import suite_name, ut_name
+    from .swe3 import _defines, _sig
+
+    u, g = c["unit"], c["gap"]
+    suite, name = suite_name(u["id"]), ut_name(c["ut"])
+    lines = f" (lines {', '.join(map(str, g['lines']))} of {g['function']} are not executed either)" if g.get(
+        "lines") and g["kind"] != "line" else ""
+    instr = (f"Coverage closure for unit {u['id']} (`{_sig(u['function'])}`). The requirement-based tests leave this "
+             f"part of the driver code uncovered: {g['file']}:{g['line']} in {g['function']}, decision `{g['text']}` - "
+             f"{g['missing']}{lines}. You see only the decision, never the code around it. If a behaviour stated by "
+             "the USPEC items or requirements below takes this outcome, answer verdict test with ONE GoogleTest test "
+             f"`TEST({suite}, {name})` that drives the unit's API into that behaviour and checks the result the USPEC "
+             "item and its requirements state (EXPECT_EQ/EXPECT_NE/EXPECT_TRUE/EXPECT_FALSE; expected values ONLY from "
+             f"them), preceded by '/** @test {c['ut']} @verifies <the USPEC ids of {u['id']} whose behaviour it "
+             "checks> */'; verifies lists the same USPEC ids. If NO requirement or USPEC item of the unit states a "
+             "behaviour that reaches this outcome (code without a requirement behind it), answer verdict unreachable, "
+             "code '' and verifies [] - the factory files a CODE defect against SWE.3; never invent a requirement or a "
+             f"test without an oracle. Call ut_reset_regs() first; preset registers "
+             f"{_preset_rule(ws, u['function']['fields'])}. Use only the harness, {u['function']['name']}, the "
+             "register block, the generated defines and the GoogleTest macros - no #include, #define, fixture or "
+             "other function. kinds: the kinds of check the test contains (positive/negative/boundary/error).")
+    oracle = (f"Unit {u['id']} ({u['function']['name']}) - its specification items:\n" +
+              "".join(f"{k}: {v}\n" for k, v in c["uspec_behaviour"].items()) +
+              "".join(f"{r}: {t}\n" for r, t in c["statements"].items()) +
+              "".join(f"case {e['case']} ({e['swr']}): {e.get('register', '')}.{e.get('field', '')} op {e['op']}"
+                      + RC.value_text(e) + "\n" for e in c["effects"]))
+    defs = _defines(ws, u["function"]["fields"])
+    return S.packet(phase=PHASE, task=f"test:{c['ut']}", role="swe4-author", instructions=instr, sources=[],
+                    artifacts=[{"path": "oracle", "text": oracle, "sha256": sha256_bytes(oracle.encode())},
+                               {"path": "generated-defines", "text": defs, "sha256": sha256_bytes(defs.encode())}],
+                    criteria=["the decision outcome is reached through the unit's API", "expected values from the oracle",
+                              "unreachable only when no USPEC/requirement behaviour reaches it"],
+                    output_schema=CLOSURE_SCHEMA, model=model, findings=findings, previous=previous,
+                    output_reserve=3072)
+
+
+def validate_closure(ws: Path, doc: dict, c: dict) -> list[str]:
+    if doc["verdict"] == "unreachable":
+        return [] if not doc["code"].strip() and not doc["verifies"] else [
+            "verdict unreachable takes code '' and verifies []"]
+    if not doc["verifies"]:
+        return ["verdict test needs verifies: the USPEC ids whose behaviour the test checks"]
+    bad = [v for v in doc["verifies"] if v not in c["uspecs"]]
+    if bad:
+        return [f"{v} is not a USPEC item of {c['unit']['id']} ({', '.join(c['uspecs'])})" for v in bad]
+    return validate_gtest(ws, {"code": doc["code"], "kinds": doc["kinds"] or ["positive"]},
+                          {**c, "uspec": doc["verifies"][0]}, verifies=list(doc["verifies"]), closure=True)
+
+
+def _closure_defect(ws: Path, c: dict, why: str) -> str:
+    from ..inspection import defects
+
+    g, u = c["gap"], c["unit"]
+    swrs = c["swrs"] or (u["swrs"] if u else [])
+    try:
+        return defects.report(ws, detected_phase=PHASE, reported_by="swe4-author", kind="CODE",
+                              summary=(f"COVERAGE_UNREACHABLE {g['file']}:{g['line']} in {g['function']}: `{g['text']}` "
+                                       f"({g['missing']}) - {why}")[:400],
+                              requirement_ids=list(swrs) or sorted(_known_requirements(ws))[:1],
+                              test_files=[str(_harness(ws).relative_to(ws))],
+                              evidence_refs=[f"{g['file']}:{g['line']}", f"llvm_coverage:{g['id']}"],
+                              requirement_quote=V.requirement_quote(ws, list(swrs)))["id"]
+    except defects.DefectError as exc:
+        return f"REFUSED:{exc}"
+
+
+def _known_requirements(ws: Path) -> list[str]:
+    from ..assurance.register_contract import _requirements
+
+    return list(_requirements(ws))
+
+
+def _closure(ws: Path, model: str, budget: dict, recs: list, rel: str):
+    """Bounded closure rounds: llvm_coverage -> one task per uncovered decision -> tests (or CODE defects for gaps no
+    requirement/USPEC reaches) -> run. Returns (run result, defects filed, records, open gap findings)."""
+    from ..inspection import uspec_plan as P
+    from . import tools as T
+
+    res, filed, tried = None, [], {}
+    for _round in range(CLOSURE_ROUNDS + 1):
+        cov = T.call(ws, "forge-tests-mcp", "llvm_coverage", {}, "swe4-author", PHASE)
+        gaps = _blocking_gaps(ws, cov)
+        if not gaps:
+            break
+        plan = P.current(ws)
+        used = [int(t["ut"][3:]) for t in plan["tasks"] + plan.get("closure", []) + plan.get("closure_unreachable", [])]
+        nxt = max(used, default=0) + 1
+        new = []
+        for g in closure_targets(gaps):
+            key = g["id"]
+            if tried.get(key, 0) > CLOSURE_ROUNDS:
+                continue
+            if g["function"] is None or not any(g["function"] in t["functions"] for t in plan["tasks"]):
+                filed.append(_closure_defect(ws, {"gap": g, "unit": None, "swrs": []},
+                                             "the code belongs to no unit of the frozen SWE.3 unit specification"))
+                tried[key] = CLOSURE_ROUNDS + 1
+                continue
+            if tried.get(key, 0) > CLOSURE_ROUNDS:  # already filed as a CODE defect in this visit
+                continue
+            if tried.get(key, 0) == CLOSURE_ROUNDS:
+                filed.append(_closure_defect(ws, _closure_case(ws, g, "UT-000"), f"still uncovered after "
+                                             f"{CLOSURE_ROUNDS} requirement-based closure tests"))
+                tried[key] = CLOSURE_ROUNDS + 1
+                continue
+            tried[key] = tried.get(key, 0) + 1
+            if nxt > P.MAX_UT:
+                return res or cov, filed, recs, ["SWE4_UT_ID_SPACE_EXHAUSTED"]
+            c = _closure_case(ws, g, f"UT-{nxt:03d}")
+            nxt += 1
+            rec = V.run_task(ws, PHASE, f"test:{c['ut']}", lambda fi, pr, c=c: closure_packet(ws, c, model, fi, pr),
+                             lambda d, c=c: validate_closure(ws, d, c), budget)
+            if rec["status"] != "VALID":
+                return res or cov, filed, recs, [f"{rec['task']}: {e}" for e in rec["errors"][:4]]
+            d = rec["doc"]
+            if d["verdict"] == "unreachable":
+                fid = _closure_defect(ws, c, f"no requirement or USPEC of {c['unit']['id']} reaches it: {d['reason']}")
+                filed.append(fid)
+                plan.setdefault("closure_unreachable", []).append({"ut": c["ut"], "gap": g, "defect": fid,
+                                                                   "reason": d["reason"][:300]})
+                tried[key] = CLOSURE_ROUNDS + 1
+                continue
+            plan.setdefault("closure", []).append({
+                "ut": c["ut"], "kind": "closure", "uspec": d["verifies"][0], "verifies": d["verifies"],
+                "unit": c["unit"]["id"], "functions": [c["unit"]["function"]["name"]], "behaviour":
+                f"coverage closure of {g['file']}:{g['line']} `{g['text']}` ({g['missing']})", "swrs": c["swrs"],
+                "constraints_verified_at_swe6": [], "gap": g})
+            name = P.ut_name(c["ut"])
+            new.append(({**c, "uspec": d["verifies"][0], "verifies": d["verifies"]}, name, {**rec, "doc": {"code": d["code"],
+                                                                                "kinds": d["kinds"] or ["positive"]}}))
+            V.write_scoped(ws, P.files(plan), "swe4_test_author")
+        V.write_scoped(ws, P.files(plan), "swe4_test_author")
+        if not new:
+            break
+        recs = recs + new
+        res, more, recs = _run_and_triage(ws, model, budget, recs, rel)
+        if res is None:
+            return {"status": "FAIL", "issues": more}, filed, recs, []
+        filed += more
+        if res["status"] != "PASS" or more:
+            return res, filed, recs, []
+    if res is not None:
+        T.call(ws, "forge-tests-mcp", "llvm_coverage", {}, "swe4-author", PHASE)  # newest evidence for the gate
+    from ..inspection import coverage_gate as CG
+
+    left = [] if filed else CG.findings(ws)
+    return res or {"status": "PASS", "summary": "no closure test needed", "issues": []}, filed, recs, left
 
 
 def _per_test_results(ws: Path) -> dict[str, str]:
