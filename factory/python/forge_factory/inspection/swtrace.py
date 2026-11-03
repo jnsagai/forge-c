@@ -282,6 +282,35 @@ def swr_texts(ws: Path) -> dict[str, str]:
     return out
 
 
+# CAPA-129 (WO-F014-SWE3-CRCHAL-20261103-L27): ids that look like unit/spec ids but are not of the required form
+# (`SWU-CRC_HAL`, `USPEC-HAL-CRC-001`) are named with the required form; the parser itself stays strict
+_UNIT_LIKE = re.compile(r"\bSWU-[A-Za-z0-9_-]*[A-Za-z0-9_]")
+_SPEC_LIKE = re.compile(r"\bUSPEC-[A-Za-z0-9_-]*[A-Za-z0-9_]")
+_UNIT_ID, _SPEC_ID = re.compile(r"SWU-(?:LL|HAL)-\d{2,}"), re.compile(r"USPEC-(?:LL|HAL)-\d{2,}-\d{2,}")  # SWU_RX/USPEC_RX
+
+
+def malformed_ids(ws: Path, text: str | None = None) -> list[str]:
+    """UNIT:MALFORMED_* findings for the unit-spec headings/items and the code's @unit/@spec tags whose id is not
+    SWU-<L>-nn / USPEC-<L>-<unit nn>-nn (L = LL or HAL), each with the required form; [] when every id is well formed."""
+    md = _read(ws, UNITS_MD) if text is None else text
+    units = [m.group(1) for m in re.finditer(r"^##\s+(SWU-\S+?)\s*[:\-\u2013]?(?:\s|$)", md, re.M)]
+    specs = [m.group(1) for m in re.finditer(r"^\s*[-*]\s*\*\*(USPEC-[^*]+)\*\*", md, re.M)]
+    for p in code_files(ws):
+        code = p.read_text(errors="replace")
+        for tag, rx, out in (("unit", _UNIT_LIKE, units), ("spec", _SPEC_LIKE, specs)):
+            for line in re.findall(rf"[@\\]{tag}\b([^\n]*)", code):
+                out += rx.findall(line)
+    xs = {"LL": ["LL"], "HAL": ["HAL"]}.get(layer_of(ws), ["LL", "HAL"])
+    unit_form = " or ".join(f"SWU-{x}-nn (e.g. SWU-{x}-01)" for x in xs)
+    spec_form = " or ".join(f"USPEC-{x}-<unit nn>-nn (e.g. USPEC-{x}-01-01, the first item of SWU-{x}-01)" for x in xs)
+    f = [f"UNIT:MALFORMED_UNIT_ID:{i} (a unit id must be {unit_form}, numbered in the order of the SWE.2 allocation "
+         f"table; rename it in the code @unit tags and in {UNITS_MD})"
+         for i in dict.fromkeys(units) if not _UNIT_ID.fullmatch(i)]
+    f += [f"UNIT:MALFORMED_SPEC_ID:{i} (a spec item id must be {spec_form}; rename it in the code @spec tags and in "
+          f"{UNITS_MD})" for i in dict.fromkeys(specs) if not _SPEC_ID.fullmatch(i)]
+    return f
+
+
 def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, export: bool = True) -> dict:
     text = _read(ws, UNITS_MD)
     if not text:
@@ -290,7 +319,7 @@ def check_units(ws: Path, arch_model: dict | None = None, render: bool = True, e
     model = arch_model if arch_model is not None else parse_architecture(_read(ws, ARCH))
     reqs = set(requirement_ids(ws))
     dev = developed_swcs(ws)
-    f = []
+    f = malformed_ids(ws, text)  # CAPA-129: first, so a bounded issue list always carries them
     if not units:
         f.append("UNIT:NO_UNITS")
     ids = [u["id"] for u in units]
