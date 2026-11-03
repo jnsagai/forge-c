@@ -154,21 +154,11 @@ def step_author(store: Store, phase: str, text: str) -> int:
         if phase == "SWE.1":
             generated += RC.check_effects(store.workspace, "LL" if lay == "LL" else "HAL")
         elif phase == "SWE.2":
-            generated += RC.check_calls(store.workspace)
-            from ..brownfield import is_brownfield, manifest_of
-            from ..layer import ll_instance
-
-            inst = ll_instance(store.workspace) if lay == "LL" else None
-            if inst is not None:  # instance mode: the call contract compiles against the declared API contract
-                generated += RC.check_compiles(store.workspace, [], inst["api_contract"])
-            elif is_brownfield(manifest_of(store.workspace)):
-                # CAPA-089 (run WO-F014-SWE3-CRCK-20261101-01): the delivered headers exist from the SWE.1 freeze on, so
-                # the call contract SWE.2 writes is compiled where it is made, not first at SWE.3 (which may not edit it)
-                from ..layer import hal_h, ll_header
-
-                hdr = Path(ll_header(store.workspace) if lay == "LL" else hal_h(store.workspace)).name
-                generated += RC.check_compiles(store.workspace, [store.workspace / "software/hal",
-                                                                 store.workspace / "software/ll"], hdr)
+            # instance mode: compiled against the declared API contract; CAPA-089 (run WO-F014-SWE3-CRCK-20261101-01):
+            # a brownfield delivery's headers exist from the SWE.1 freeze on, so the contract is compiled where it is
+            # made; CAPA-137 (WO-F014-SWE3-CRCHAL-20261103-L31B): any other work order (its interface header is written
+            # at SWE.3) gets the identifier check - an argument nothing declares never compiles at SWE.3
+            generated += RC.swe2_contract_findings(store.workspace, lay)
         elif phase == "SWE.3":
             from ..layer import hal_h, ll_header
 
@@ -731,12 +721,22 @@ def step_triage(store: Store, target: str) -> int:
     the owner's baseline changed); exit 1 -> return chain: every defect was rejected, nothing is re-frozen."""
     from . import defects
 
+    overruled = []
+    if target == "SWE.2":  # CAPA-137: the owner's own compile check decides before a rejection is accepted (the
+        # contract structure checks already gate every SWE.2 freeze; the compile was the check SWE.2 did not apply)
+        from ..assurance import register_contract as RC
+        from ..layer import layer_of, register_contract_enabled
+
+        if register_contract_enabled(store.workspace):
+            overruled = defects.overrule_rejections(store.workspace, target, RC.swe2_compile_findings(
+                store.workspace, layer_of(store.workspace)))
     back = defects.rejected_loop_return(store.workspace)
     bl = store.latest_baseline(target)
     intact = bl is not None and store.stale_reason(target, bl) is None
     decision = "RETURN" if back and intact else "FIX"
     _state(store.workspace, target, {"step": "triage", "result": decision, "return_to": back if decision == "RETURN"
-                                     else None, "baseline_intact": intact})
+                                     else None, "baseline_intact": intact}
+           | ({"overruled": [d["id"] for d in overruled]} if overruled else {}))
     if decision == "RETURN":
         emit("workflow", "WARN", f"{target} rejected every routed defect: returning to {back} without a cascade",
              phase=target)

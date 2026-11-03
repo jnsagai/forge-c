@@ -317,3 +317,71 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
         return []
     errs = [ln.split(" error: ", 1)[1][:120] for ln in r.stderr.splitlines() if " error: " in ln]
     return [f"CONTRACT_CALL_DOES_NOT_COMPILE:{CALLS}:{e}" for e in errs[:6]] or ["CONTRACT_CALL_DOES_NOT_COMPILE:" + CALLS]
+
+
+# ---- CAPA-137: the SWE.3 call-contract compile check, applied where SWE.2 writes the contract -------------------------
+# A greenfield HAL/LL (also a HAL on a provided ST LL, CAPA-128) gets its interface header only at SWE.3, so SWE.2 cannot
+# compile its calls. What it can decide: an argument identifier that neither the SWE.2 interface nor a header the work
+# order already has declares can never compile at SWE.3 (run WO-F014-SWE3-CRCHAL-20261103-L31B: `&crc`, no `crc`).
+_C_WORDS = frozenset("""auto break case char const continue default do double else enum extern float for goto if inline int
+long register restrict return short signed sizeof static struct switch typedef union unsigned void volatile while _Bool
+_Alignof _Alignas _Static_assert _Generic bool true false NULL size_t ptrdiff_t uintptr_t intptr_t offsetof SIZE_MAX""".split())
+_STD_INT = re.compile(r"^u?int(?:8|16|32|64|ptr|max)_t$|^U?INT(?:8|16|32|64|PTR|MAX)_(?:MAX|MIN|C)$")
+_ARG_TOK = re.compile(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|\b0[xX][0-9A-Fa-f]+[uUlL]*\b'
+                      r"|\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[uUlLfF]*\b|(?P<id>[A-Za-z_]\w*)|(?P<member>->|\.)|\S")
+_COMMENTS = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+
+
+def _declared_words(ws: Path) -> set[str]:
+    """Identifiers the work order can declare at SWE.3: every word of the SWE.2 interface work products, and of the
+    headers it already has (provided/delivered LL, vendor and host device headers; comments stripped)."""
+    ws, words = Path(ws), set()
+    for p in sorted((ws / "workproducts/SWE.2").glob("*")):
+        if p.suffix in (".md", ".puml", ".json") and p.name != Path(CALLS).name and p.is_file():
+            words |= set(re.findall(r"[A-Za-z_]\w*", p.read_text(errors="replace")))
+    for root in (ws / "software", ws / "inputs/vendor/include"):
+        for h in sorted(root.rglob("*.h")) if root.is_dir() else []:
+            words |= set(re.findall(r"[A-Za-z_]\w*", _COMMENTS.sub(" ", h.read_text(errors="replace"))))
+    return words
+
+
+def check_args_declared(ws: Path) -> list[str]:
+    """SWE.2 (CAPA-137): every identifier of a contract call argument is declared by the SWE.2 interface or a header the
+    work order has (member designators after `.`/`->`, C keywords and <stdint.h>/<stddef.h> names excepted)."""
+    cs, _notes = cases(ws)
+    if not cs:
+        return []
+    known, out = _declared_words(ws), []
+    for c in cs:
+        undeclared, prev = [], None
+        for m in _ARG_TOK.finditer(" , ".join(a.replace("{timeout}", "10U") for a in c["args"])):
+            ident = m.group("id")
+            if ident and prev != "member" and ident not in _C_WORDS and not _STD_INT.match(ident) \
+                    and ident not in known and ident not in undeclared:
+                undeclared.append(ident)
+            prev = "member" if m.group("member") else "other"
+        out += [f"CONTRACT_CALL_DOES_NOT_COMPILE:{CALLS}:'{i}' undeclared in case {c['case']} ({c['function']}) - neither "
+                "the SWE.2 interface nor a header of the work order declares it; a contract argument is a self-contained C "
+                "expression (e.g. &(uint32_t){0U} for an output pointer)" for i in undeclared]
+    return out[:6]
+
+
+def swe2_compile_findings(ws: Path, layer: str) -> list[str]:
+    """The call-contract compile part of the SWE.2 checks (inspection gate, lrtx SWE.2 self-check, upstream triage):
+    instance mode (an LL) compiles against the declared API contract; a brownfield delivery compiles against its
+    delivered headers (CAPA-089); every other work order gets the identifier check (CAPA-137)."""
+    from ..brownfield import is_brownfield, manifest_of
+    from ..layer import hal_h, ll_header, ll_instance
+
+    inst = ll_instance(ws) if layer == "LL" else None
+    if inst is not None:
+        return check_compiles(ws, [], inst["api_contract"])
+    if is_brownfield(manifest_of(ws)):
+        hdr = Path(ll_header(ws) if layer == "LL" else hal_h(ws)).name
+        return check_compiles(ws, [Path(ws) / "software/hal", Path(ws) / "software/ll"], hdr)
+    return check_args_declared(ws)
+
+
+def swe2_contract_findings(ws: Path, layer: str) -> list[str]:
+    """Every deterministic register-contract finding SWE.2 owns (the SWE.2 inspection gate's own set)."""
+    return check_calls(ws) + swe2_compile_findings(ws, layer)

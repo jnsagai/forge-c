@@ -584,6 +584,27 @@ def last_loop(ws: Path) -> dict | None:
     return json.loads(lines[-1]) if lines else None
 
 
+def overrule_rejections(ws: Path, target: str, findings: list[str]) -> list[dict]:
+    """CAPA-137 (run WO-F014-SWE3-CRCHAL-20261103-L31B): a defect of the latest loop the target author REJECTED is
+    re-opened (IN_FIX, by the triage gate) when a deterministic finding of the target phase still names a target-phase
+    file the defect cites - an opinion does not outweigh a reproducing tool finding. The author's reason stays recorded."""
+    loop = last_loop(ws)
+    if loop is None or not findings:
+        return []
+    out = []
+    for d in all_defects(ws):
+        if d["id"] not in loop["defects"] or d["status"] != "REJECTED" or d.get("target_phase") != target:
+            continue
+        cited = [r for r in d.get("evidence_refs") or [] if _in_paths(r, target)]
+        hit = [f for f in findings if any(c in f for c in cited)]
+        if hit:
+            _event(d, "IN_FIX", by="triage-gate", note="OVERRULED: the cited file still has a deterministic "
+                   f"{target} finding", findings=[h[:300] for h in hit[:3]])
+            _save(ws, d)
+            out.append(d)
+    return out
+
+
 def rejected_loop_return(ws: Path) -> str | None:
     """r70: SWE.2 rejected a wrong ARCHITECTURE defect but its author re-ran its normal steps, re-froze and cascaded
     into SWE.3. When the owner's triage rejected EVERY defect of the latest loop, the run returns to the phase that

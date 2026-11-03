@@ -600,6 +600,10 @@ def self_check(ws: Path) -> list[str]:
     inst = instance(ws)
     if inst is not None:  # instance mode: the call contract compiles against the declared API contract (as the gate)
         out += RC.check_compiles(ws, [], inst["api_contract"])
+    else:  # CAPA-137: the gate's other compile checks (a brownfield delivery's headers; else the identifier check)
+        from ..layer import layer_of
+
+        out += RC.swe2_compile_findings(ws, layer_of(ws))
     return out
 
 
