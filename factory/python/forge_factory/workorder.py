@@ -266,7 +266,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             }
         )
         budgets = {k: d["budgets"][k] for k in ("flash_bytes", "static_ram_bytes", "stack_bytes")} | {"status": who}
-    provided = []
+    provided, provided_build = [], None
     if layer == "HAL":
         if not provided_from:
             raise ValueError("HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>")
@@ -276,6 +276,15 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             data, rec = demonstration_ll(provided_from, spec.get("peripheral") or "rcc")
         else:
             data, rec = provided_ll(provided_from, spec.get("peripheral") or "rcc")
+            from .brownfield.cmsis import provided_inputs
+
+            # CAPA-128: a provided CMSIS LL (ST code) needs its work order's vendor includes, hash-bound to its manifest
+            # (a delivered HAL brings its own build inputs with its delivery)
+            vendor = None if spec.get("delivery") else provided_inputs(
+                state_dir() / "workorders" / provided_from / "workspace")
+            if vendor is not None:
+                inputs.update(vendor[0])
+                provided_build = vendor[1]
         inputs[rec["path"]] = data
         provided.append(rec)
     intake = None
@@ -299,6 +308,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     for rec in provided:
         (ws / rec["path"]).chmod(0o444)
         save_original(ws, rec["path"], inputs[rec["path"]])  # owner 2026-11-03: the hash-bound original for diffs
+    for f in (provided_build or {}).get("files") or []:  # CAPA-128: read-only vendor build inputs of the provided LL
+        (ws / f["path"]).chmod(0o444)
     idx = {}
     for item in listed:
         if item["path"].endswith(".md"):
@@ -320,6 +331,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         "driver": spec["driver"],
         "layer": layer,
         "provided": provided,
+        **({"provided_build": provided_build} if provided_build else {}),  # CAPA-128 (brownfield/cmsis.py)
         "target": target,
         "trace_profile": TRACE_PROFILE,
         "register_contract": REGISTER_CONTRACT,

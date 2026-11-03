@@ -14,6 +14,9 @@ run_unit regenerates it and fails when the file differs (an agent must not edit 
 CAPA-043 (r146/r144): a test preset 'already enabled' state by calling the internal bit helper with a magic index; the
 fake now offers ll_fake_set_state(query_fn, value), the helpers are named ll_fake_internal_* and run_unit fails a test
 that calls them.
+CAPA-128 (WO-F014-SWE3-CRCHAL-20261103-L27): a HAL on ST's FROZEN LL got no double ("no static inline LL function"):
+`__STATIC_INLINE`/`__STATIC_FORCEINLINE` functions with the CMSIS instance pointer (not recorded), uint8_t/uint16_t
+queries and SET_BIT/CLEAR_BIT/READ_BIT state bits are accepted; `static inline` headers give a byte-identical double.
 """
 from __future__ import annotations
 
@@ -26,6 +29,16 @@ FAKE_HEADER = f"{FAKE_DIR}/stm32n6xx_ll_rcc.h"  # RCC; fake_header(ws) for the w
 INTERNAL_CALL = re.compile(r"\bll_fake_(?:internal_\w+|record|query|set_bit|query_bit)\s*\(")
 LOG_CAPACITY = 4096
 _FN = re.compile(r"static\s+inline\s+(void|uint32_t)\s+(LL_\w+)\s*\(([^)]*)\)\s*\{")
+# CAPA-128 (WO-F014-SWE3-CRCHAL-20261103-L27): ST's delivered LL headers (a FROZEN brownfield LL provided to a HAL work
+# order) declare their functions with the CMSIS macros, take the peripheral instance pointer (`CRC_TypeDef *CRCx`) and
+# also return uint8_t/uint16_t; `static inline` functions keep exactly their previous double (byte-identical output)
+_FN_ST = re.compile(r"\b__STATIC_(?:FORCE)?INLINE\s+(void|u?int(?:8|16|32)_t)\s+(LL_\w+)\s*\(([^)]*)\)\s*\{")
+# ST register access macros on the instance (stm32n6xx.h): SET_BIT/CLEAR_BIT (and ATOMIC_ forms) write a state bit,
+# READ_BIT reads one; the key is (register member, mask macro)
+_ST_REG = r"\(\s*\w+\s*->\s*(\w+(?:\[\s*\w+\s*\])?)\s*,\s*(\w+)\s*\)"
+_ST_SET = re.compile(r"\b(?:ATOMIC_)?SET_BIT\s*" + _ST_REG)
+_ST_CLR = re.compile(r"\b(?:ATOMIC_)?CLEAR_BIT\s*" + _ST_REG)
+_ST_GET = re.compile(r"\bREAD_BIT\s*" + _ST_REG)
 
 
 def _patterns(block: str) -> tuple[re.Pattern, re.Pattern, re.Pattern]:
@@ -63,6 +76,12 @@ def _params(text: str) -> list[str]:
         toks = p.replace("*", " ").split()
         names.append(toks[-1])
     return names
+
+
+def _pointers(text: str) -> list[bool]:
+    """Per parameter: a pointer (the CMSIS instance `CRC_TypeDef *CRCx`), not a scalar argument (CAPA-128)."""
+    text = text.strip()
+    return [] if text in ("", "void") else ["*" in p for p in text.split(",")]
 
 
 API = """
@@ -200,36 +219,50 @@ uint32_t ll_fake_internal_query_bit(ll_fake_fn_t fn, uint32_t k)
 
 def generate(ll_header: str, block: str = "ll_rcc_regs") -> str:
     _SET, _CLR, _GET = _patterns(block)  # noqa: N806
-    fns = [(m.group(1), m.group(2), _params(m.group(3)), m.start(), m.end() - 1) for m in _FN.finditer(ll_header)]
+    fns = sorted([(m.group(1), m.group(2), _params(m.group(3)), m.start(), m.end() - 1, None)
+                  for m in _FN.finditer(ll_header)]
+                 + [(m.group(1), m.group(2), _params(m.group(3)), m.start(), m.end() - 1, _pointers(m.group(3)))
+                    for m in _FN_ST.finditer(ll_header)], key=lambda f: f[3])  # CAPA-128: ST's __STATIC_INLINE
     if not fns:
         raise ValueError("no static inline LL function in the provided header")
-    bodies = {name: ll_header[brace:_body_end(ll_header, brace)] for _, name, _, _, brace in fns}
+    bodies = {name: ll_header[brace:_body_end(ll_header, brace)] for _, name, _, _, brace, _ in fns}
+
+    def key(m: re.Match, st: bool) -> tuple[str, str]:  # an ST key names the instance member (->CR), never an offset
+        return ("->" + m.group(1), m.group(2)) if st else (m.group(1), m.group(2))
+
     written = {}  # (register offset macro, mask macro) -> state bit index: bits some LL function writes
-    for b in bodies.values():
-        for m in list(_SET.finditer(b)) + list(_CLR.finditer(b)):
-            written.setdefault((m.group(1), m.group(2)), len(written))
+    for _, name, _, _, _, ptr in fns:
+        st, b = ptr is not None, bodies[name]
+        for m in list((_ST_SET if st else _SET).finditer(b)) + list((_ST_CLR if st else _CLR).finditer(b)):
+            written.setdefault(key(m, st), len(written))
     out, pos, state = [], 0, {}
-    for ret, name, params, _start, brace in fns:
+    for ret, name, params, _start, brace, ptr in fns:
         end = _body_end(ll_header, brace)
-        b = bodies[name]
-        args = ", ".join([f"(uint32_t)({p})" for p in params[:2]] + ["0U"] * (2 - min(2, len(params))))
-        get = _GET.search(b)
-        if ret == "uint32_t" and get and (get.group(1), get.group(2)) in written:  # state query (IsEnabled ...)
-            state[name] = written[(get.group(1), get.group(2))]
-            call = f"return ll_fake_internal_query_bit(LL_FAKE_{name}, {state[name]}U);"
-        elif ret == "uint32_t":  # a flag only hardware sets (IsReady ...): scripted, default 0U
-            call = f"return ll_fake_internal_query(LL_FAKE_{name}, {args});"
+        b, st = bodies[name], ptr is not None
+        # ST: the instance pointer is the device, not a recorded argument (a pointer-to-uint32_t cast does not build
+        # in a GoogleTest C++ unit); the scalar arguments are recorded as before
+        scalars = [p for p, is_ptr in zip(params, ptr or [False] * len(params), strict=True) if not is_ptr]
+        unused = [p for p, is_ptr in zip(params, ptr or [False] * len(params), strict=True) if is_ptr] + scalars[2:]
+        args = ", ".join([f"(uint32_t)({p})" for p in scalars[:2]] + ["0U"] * (2 - min(2, len(scalars))))
+        query = ret != "void" if st else ret == "uint32_t"
+        cast = f"({ret})" if st and ret != "uint32_t" else ""
+        get = (_ST_GET if st else _GET).search(b)
+        if query and get and key(get, st) in written:  # state query (IsEnabled ...)
+            state[name] = written[key(get, st)]
+            call = f"return {cast}ll_fake_internal_query_bit(LL_FAKE_{name}, {state[name]}U);"
+        elif query:  # a flag only hardware sets (IsReady ...): scripted, default 0U
+            call = f"return {cast}ll_fake_internal_query(LL_FAKE_{name}, {args});"
         else:
-            sets = [f"ll_fake_internal_set_bit({written[(m.group(1), m.group(2))]}U, 1U); " for m in _SET.finditer(b)]
-            clrs = [f"ll_fake_internal_set_bit({written[(m.group(1), m.group(2))]}U, 0U); " for m in _CLR.finditer(b)]
+            sets = [f"ll_fake_internal_set_bit({written[key(m, st)]}U, 1U); " for m in (_ST_SET if st else _SET).finditer(b)]
+            clrs = [f"ll_fake_internal_set_bit({written[key(m, st)]}U, 0U); " for m in (_ST_CLR if st else _CLR).finditer(b)]
             call = "".join(sets + clrs) + f"ll_fake_internal_record(LL_FAKE_{name}, {args});"
-        out.append(ll_header[pos:brace] + "{\n    " + "".join(f"(void)({p}); " for p in params[2:]) + call + "\n}")
+        out.append(ll_header[pos:brace] + "{\n    " + "".join(f"(void)({p}); " for p in unused) + call + "\n}")
         pos = end
     body = "".join(out) + ll_header[pos:]
     body = _REGS.sub("/* register array not declared: HAL unit tests observe the LL API only (CAPA-038) */\n", body)
-    api = API.format(enum="\n".join(f"    LL_FAKE_{n}," for _, n, _, _, _ in fns), cap=LOG_CAPACITY,
+    api = API.format(enum="\n".join(f"    LL_FAKE_{n}," for _, n, _, _, _, _ in fns), cap=LOG_CAPACITY,
                      nbits=max(1, len(written)), state_bits="".join(f"{state[n] + 1 if n in state else 0}U, "
-                                                                     for _, n, _, _, _ in fns))
+                                                                     for _, n, _, _, _, _ in fns))
     if block != "ll_rcc_regs":  # feature 009: no RCC example in another peripheral's test double
         api = api.replace("(e.g. (LL_FAKE_LL_RCC_ADC12_IsEnabled, 1U): already enabled)",
                           "(e.g. (LL_FAKE_<state query>, 1U): already set)")

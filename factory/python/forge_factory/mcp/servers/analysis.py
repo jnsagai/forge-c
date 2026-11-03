@@ -46,7 +46,8 @@ def incs(ctx: ToolContext, cppcheck: bool = False) -> list[str]:
     if inst and cppcheck:
         inst = ["-I", inst[1], f"--suppress=*:{inst[1]}/*"]
     # feature 008 (ST pilot): a CMSIS delivery is analysed on the host device map (the core headers are Arm-only)
-    return host_flags(ctx.workspace) + inst + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS
+    # CAPA-128: cppcheck takes no -include (it would check the host mapping header as a source file)
+    return host_flags(ctx.workspace, force_include=not cppcheck) + inst + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS
                                                if (ctx.workspace / d).is_dir()]
 
 
