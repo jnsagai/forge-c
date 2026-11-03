@@ -228,11 +228,53 @@ def test_hal_order_bounds_acyclic_functions_statically_and_refuses_without_measu
     assert "(SWR-020)" in out[0]
 
 
+def _swr(ws, *lines):
+    (ws / "workproducts/SWE.1").mkdir(parents=True, exist_ok=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "# Software requirements\n\n" + "".join(f"- **SWR-{k:03d}** {s}\n" for k, s in enumerate(lines, 1)))
+
+
+def test_the_maximum_timeout_comes_from_the_frozen_requirements_then_the_scope(tmp_path):
+    ws = _hal(tmp_path / "swr")
+    _swr(ws, "When HAL_RCC_Init is called, the RCC driver shall wait for HSIRDY with timeout_ms at most "
+             "HAL_RCC_TIMEOUT_MS = 20 ms.", "The RCC driver shall use at most 100 microseconds of virtual time.")
+    assert ST.max_timeout(ws) == (20, "SWR-001: 'at most HAL_RCC_TIMEOUT_MS = 20 ms'")
+    ws = _hal(tmp_path / "scope")
+    m = json.loads((ws / ".forge-run/manifest.json").read_text())
+    m["scope"] = ["Initialise", "wait bounded in TIME by a caller timeout in milliseconds (at most 48 ms, covering 6 LSI)"]
+    (ws / ".forge-run/manifest.json").write_text(json.dumps(m))
+    assert ST.max_timeout(ws) == (48, "work-order scope item 2: 'at most 48 ms'")
+    ws = _hal(tmp_path / "two")
+    _swr(ws, "The timeout shall be at most 20 ms.", "The timeout_ms shall be at most 30 milliseconds.")
+    assert ST.max_timeout(ws)[1].startswith("CONFLICTING_MAX_TIMEOUT: 20 (SWR-001")
+    assert ST.max_timeout(_hal(tmp_path / "none")) == (None, ST.NO_MAX)
+
+
 @pytest.mark.skipif(not SIM, reason="arm-none-eabi toolchain or Renode not installed")
-def test_hal_wait_with_a_time_base_is_measured_with_a_disclosed_tick_stub(tmp_path):
-    rec = ST.bound(_hal(tmp_path, HAL_CALLS))
+def test_hal_wait_is_measured_at_the_maximum_timeout_with_a_disclosed_tick_stub(tmp_path):
+    """Coordinator 2026-11-03: the bound covers the worst case the API permits: {timeout} = the stated maximum."""
+    ws = _hal(tmp_path / "max", HAL_CALLS)
+    _swr(ws, "The RCC driver shall bound the HSIRDY wait by timeout_ms at most HAL_RCC_TIMEOUT_MS = 20 ms.")
+    rec = ST.bound(ws)
     init = rec["functions"]["HAL_RCC_Init"]
     assert init["bound"] == "MEASURED_IN_SIMULATION" and init["status"] == "WITHIN_BUDGET", init
     assert init["paths"]["nominal"] == ["INIT", "INIT_ZERO"] and init["measured_instructions"] > 0
-    assert "factory stub" in rec["measurement"]["time_base"] and rec["status"] == "WITHIN_BUDGET"
-    assert "10U" in rec["measurement"]["timeout_argument"]
+    m = rec["measurement"]
+    assert m["timeout_argument"].startswith("20U = the maximum the frozen inputs allow (SWR-001") and "10U" in \
+        m["timeout_argument"] and m["max_timeout_ticks"] == 20
+    assert "factory stub" in m["time_base"] and "20 ms corresponds to 20 ticks" in m["time_base"]
+    assert "Timeout argument: 20U" in "\n".join(ST.design_section(rec, []))
+    short = _hal(tmp_path / "short", HAL_CALLS)
+    _swr(short, "The RCC driver shall bound the HSIRDY wait by timeout_ms at most HAL_RCC_TIMEOUT_MS = 2 ms.")
+    assert ST.bound(short)["functions"]["HAL_RCC_Init"]["measured_instructions"] <= init["measured_instructions"]
+
+
+@pytest.mark.skipif(not SIM, reason="arm-none-eabi toolchain or Renode not installed")
+def test_a_timeout_argument_without_a_stated_maximum_is_not_bounded_and_routes_upstream(tmp_path):
+    rec = ST.bound(_hal(tmp_path, HAL_CALLS))
+    init = rec["functions"]["HAL_RCC_Init"]
+    assert init == {**init, "status": "NOT_BOUNDED", "reason": ST.NO_MAX} and rec["status"] == "NOT_BOUNDED"
+    assert rec["functions"]["HAL_RCC_Refresh"]["status"] == "WITHIN_BUDGET"
+    out = [f for f in ST.findings(rec, []) if "HAL_RCC_Init" in f]
+    assert len(out) == 1 and "no maximum timeout argument stated" in out[0]
+    assert out[0].endswith("report_defect kind REQUIREMENT (SWE.1) to state the maximum timeout")
