@@ -529,7 +529,8 @@ def design_section(rec: dict, swrs: list[str]) -> list[str]:
     if rec.get("issues"):
         out += [f"- no bound: {', '.join(rec['issues'])}", ""]
         return out
-    out += ["| Function | Method | Per-call bound (instructions) | Virtual time (ns) | Result | Paths |",
+    # CAPA-121 (RPR-121): the per-call bound stays the column right after the function
+    out += ["| Function | Per-call bound (instructions) | Virtual time (ns) | Method | Result | Paths |",
             "| --- | --- | --- | --- | --- | --- |"]
     for fn, r in rec["functions"].items():
         tp = r.get("timeout_path")
@@ -548,7 +549,7 @@ def design_section(rec: dict, swrs: list[str]) -> list[str]:
                      f"nominal: {', '.join(p['nominal']) or 'none'}; timeout: {to}")
         n = "-" if n is None else n
         ns = "-" if ns is None else ns
-        out.append(f"| {fn} | {METHOD_TEXT[r['method']]} | {n} | {ns} | {r['status']} | {paths} |")
+        out.append(f"| {fn} | {n} | {ns} | {METHOD_TEXT[r['method']]} | {r['status']} | {paths} |")
     return out + [""]
 
 

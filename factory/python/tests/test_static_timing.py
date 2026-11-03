@@ -110,7 +110,7 @@ def test_bound_compiles_the_measured_wrappers_and_a_loop_without_a_call_contract
     assert rec["header_sha256"] and rec["object_sha256"] and rec["hardware_wcet"] == "NOT_CLAIMED"
     text = "\n".join(ST.design_section(rec, ["SWR-016"]))
     assert "SWR-016" in text and "| LL_RCC_HSI_Wait | - | - | - | NOT_BOUNDED (MEASUREMENT_" in text
-    assert "| LL_RCC_HSI_Enable | static (straight-line) |" in text
+    assert "| LL_RCC_HSI_Enable | 4 | 40 | static (straight-line) |" in text
     assert ST.EVIDENCE in text and "SWE.6 Renode measurement" in text and "hardware WCET is not claimed" in text
 
 
@@ -127,7 +127,8 @@ def test_a_loop_is_measured_in_the_pinned_simulation_within_and_over_budget(tmp_
     assert m["simulator"].startswith("Renode 1.17.0") and m["platform_sha256"] and m["model_sha256"]
     assert "no injected interrupts or bus stalls" in m["conditions"] and m["default_elf_sha256"]
     text = "\n".join(ST.design_section(rec, []))
-    assert f"| LL_RCC_HSI_Wait | measured in simulation | {wait['measured_instructions']} |" in text
+    assert f"| LL_RCC_HSI_Wait | {wait['measured_instructions']} | {wait['measured_virtual_ns']} | measured in simulation |" \
+        in text
     assert "covers only the paths listed" in text and ST.findings(rec, []) == []
     over = ST.bound(_ws(tmp_path / "over", LOOP, budget=8, calls=WAIT_CALLS))
     out = ST.findings(over, ["SWR-016"])
@@ -172,7 +173,7 @@ def test_gate_renders_the_bound_into_a_native_design_and_fails_over_budget_with_
     assert ST.gate(ws) == []
     dd = (ws / ST.DESIGN).read_text()
     assert dd.startswith(NATIVE_DD.rstrip("\n")) and dd.count(ST.SECTION) == 1
-    assert "| LL_RCC_HSI_Enable | static (straight-line) | 4 | 40 | WITHIN_BUDGET | every path (acyclic code) |" in dd
+    assert "| LL_RCC_HSI_Enable | 4 | 40 | static (straight-line) | WITHIN_BUDGET | every path (acyclic code) |" in dd
     rec = json.loads((ws / ST.EVIDENCE).read_text())
     assert ST.gate(ws) == [] and (ws / ST.DESIGN).read_text() == dd and json.loads((ws / ST.EVIDENCE).read_text()) == rec
     old = dd.replace(ST.SECTION, "## Timing bound (static analysis)").replace("WITHIN_BUDGET |", "edited |")
