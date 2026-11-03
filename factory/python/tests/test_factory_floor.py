@@ -268,3 +268,23 @@ def test_the_tool_station_shows_the_last_round_of_tool_runs(tmp_path, monkeypatc
 def test_phases_without_tools_have_no_tool_station(plant):
     ids = [c["id"] for c in next(h for h in F.floor(now=NOW, since=NOW - 86400)["halls"] if h["id"] == "SWE.2")["cells"]]
     assert "tools" not in ids
+
+
+def test_a_native_order_is_on_the_floor_from_its_launch_before_any_gate(tmp_path, monkeypatch):
+    """Owner 2026-11-03 ("local is not in the floor monitor?"): a native-node HAL order writes no gate log and no
+    structured visit state until its first gate; its Fabro launch and tool progress make it visible at once."""
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    ws = tmp_path / "workorders" / "WO-NATIVE-HAL" / "workspace"
+    (ws / ".forge-run").mkdir(parents=True)
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({"work_order": "WO-NATIVE-HAL", "driver": "STM32N6 IWDG HAL",
+                                                            "created_at": _iso(NOW - 120),
+                                                            "phase_scope": {"stop_after": "SWE.6"}}))
+    (ws / ".forge-run/fabro_run_id").write_text("01TESTRUN\n")
+    assert "WO-NATIVE-HAL" in [o["wo"] for o in F.floor(now=NOW, since=NOW - 3600)["orders"]]
+    old = tmp_path / "workorders" / "WO-OLD-NATIVE" / "workspace"
+    (old / ".forge-run").mkdir(parents=True)
+    (old / ".forge-run/manifest.json").write_text(json.dumps({"work_order": "WO-OLD-NATIVE", "driver": "x",
+                                                             "created_at": _iso(NOW - 90000)}))
+    (old / ".forge-run/fabro_run_id").write_text("01OLD\n")
+    os.utime(old / ".forge-run/fabro_run_id", (NOW - 90000, NOW - 90000))
+    assert "WO-OLD-NATIVE" not in [o["wo"] for o in F.floor(now=NOW, since=NOW - 3600)["orders"]]

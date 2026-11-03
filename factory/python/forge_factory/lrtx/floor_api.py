@@ -785,7 +785,11 @@ def floor(now: float | None = None, since: float | None = None, focus: str | Non
     orders = []
     for w in glob.glob(str(state_root() / "workorders/*/workspace")):
         ws = Path(w)
-        marks = [ws / ".forge-run/gates/gate-log.jsonl", *map(Path, glob.glob(str(ws / ".forge-run/lrtx/*/visit-state.json")))]
+        # owner 2026-11-03 ("local is not in the floor monitor?"): a native-node order (HAL) writes no gate log and no
+        # structured visit state until its first gate, so its launch (fabro_run_id) and tool progress count as activity
+        marks = [ws / ".forge-run/gates/gate-log.jsonl", ws / ".forge-run/fabro_run_id",
+                 *map(Path, glob.glob(str(ws / ".forge-run/lrtx/*/visit-state.json"))),
+                 *map(Path, glob.glob(str(ws / ".forge-run/tool-progress/*")))]
         newest = max((os.path.getmtime(p) for p in marks if p.is_file()), default=0)
         if newest < start:
             continue
