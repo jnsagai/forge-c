@@ -298,11 +298,15 @@ def test_the_example_campaign_matches_todays_line_and_validates():
     assert by["iwdg-hal"].status == "DONE" and by["iwdg-hal"].completed_by == "WO-F014-SWE6-IWDGHAL-20261103-L24"
     assert (by["wwdg-ll"].example, by["wwdg-ll"].factory_revision) == ("0016c-st-cube-wwdg", "82fabdb9")
     assert by["wwdg-ll"].wo("SWE.1") == "WO-F014-SWE1-WWDGL-20261103-L29"  # the live L29 order is adopted by name
-    assert by["crc-ll"].wo("SWE.3", 2) == "WO-F014-SWE3-CRCL-20261103-L30B"
-    assert by["crc-hal"].depends_on == {"lineage": "crc-ll", "phase": "SWE.6", "verdict": "PASS"}
+    # owner 2026-11-03: CAPA-133 + the SWE2-08 revisions record keep the ST CRC LL L24 verified (no L30 rerun)
+    assert by["crc-ll"].status == "DONE" and by["crc-ll"].completed_by == "WO-F014-SWE6-CRCL-20261103-L24"
+    h = by["crc-hal"]
+    assert h.provided_from == "WO-F014-SWE6-CRCL-20261103-L24" and h.depends_on is None
+    assert h.start == {"resume_from": "WO-F014-SWE1-CRCHAL-20261103-L27", "at": "SWE.2"} and h.factory_revision is None
+    assert h.wo("SWE.2") == "WO-F014-SWE2-CRCHAL-20261103-L31"
     assert by["wwdg-hal"].depends_on["lineage"] == "wwdg-ll" and by["wwdg-hal"].factory_revision is None
     assert by["rcc-ll"].status == "ON_HOLD"
-    assert by["wwdg-ll"].priority > by["crc-ll"].priority > by["crc-hal"].priority
+    assert by["wwdg-ll"].priority > by["crc-hal"].priority > by["wwdg-hal"].priority
     if LCMP.CONTRACT.is_file():
         import yaml as Y
 
@@ -808,6 +812,9 @@ def test_act_dry_run_replay_over_todays_line_state(tmp_path, monkeypatch):
     assert out["mode"] == "DRY_RUN"
     st = {x["lineage"].split("/")[1]: x for x in out["lineages"]}
     assert st["iwdg-hal"]["state"] == "DONE" and st["rcc-ll"]["state"] == "ON_HOLD"
-    assert st["crc-hal"]["state"] == "WAITING" and st["wwdg-hal"]["state"] == "WAITING"
+    assert st["crc-ll"]["state"] == "DONE" and st["crc-hal"]["state"] == "WAITING"
+    assert st["crc-hal"]["reason"] == "FACTORY_REVISION_PENDING" and st["crc-hal"]["provided_from"] == "WO-F014-SWE6-CRCL-20261103-L24"
+    assert st["crc-hal"]["last_good"] == {"phase": "SWE.1", "wo": "WO-F014-SWE1-CRCHAL-20261103-L27"}
+    assert st["wwdg-hal"]["state"] == "WAITING"
     (tmp_path / "plan.json").write_text(json.dumps(out, indent=1, default=str))
     assert {p: p.stat().st_mtime_ns for p in src.rglob("*") if p.is_file()} == stamp  # the copy is untouched

@@ -1,4 +1,5 @@
 # Production campaign of the Omniverse2 local line, 2026-11-03 (autonomous line M3, owner decision 3).
+# Owner 2026-11-03: CAPA-133 + the SWE2-08 revisions record keep the ST CRC LL L24 verified (no L30 rerun).
 # The owner approves it by commit; the Line Conductor loads it only when it is committed and unmodified, binds every
 # order to its sha256 and chains inside it: SWE.n PASS -> SWE.n+1 (resume from the passed order, same revision) and
 # LL SWE.6 PASS -> HAL SWE.1 (depends_on; the HAL gets --provided-from the LL's SWE.6 order). A new lineage or
@@ -42,29 +43,32 @@ lineages:
       misra: {open_violations_max: 0, undeviated_rules_max: 0, deviation_owner_approval: true}
 
   - id: crc-ll
-    example: 0014l-st-cube-crc-swe1-gen  # CRC LL rerun under the current checklists (owner option 3), after WWDG LL
+    status: DONE                       # ST CRC LL 0014l verified by L24; stays verified under CAPA-133 + the owner's
+    completed_by: WO-F014-SWE6-CRCL-20261103-L24   # SWE2-08 revisions record (unchanged_for LL): the L30 rerun is cancelled
+    example: 0014l-st-cube-crc-swe1-gen
     tag: CRCL
-    series: 20261103-L30
+    series: 20261103-L24
     driver_class: STM32N6_CRC_LL_ST
-    factory_revision: 82fabdb9
+    factory_revision: 9a4f8755
     profile: *profile
     run_model: *orn
     purpose: ASPICE_ONLY
     phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
-    priority: 50
-    quality: *defaults
+    priority: 0
 
   - id: crc-hal
-    example: 0014m-crc-hal             # CRC HAL on the rerun CRC LL; needs the CAPA-128..132 run branch
-    tag: CRCHAL
+    example: 0014m-crc-hal             # CRC HAL on the verified ST CRC LL L24; SWE.1 of L27 holds, SWE.2 is
+    tag: CRCHAL                        # re-inspected (inspected under the old SWE2-08 wording; a HAL is always re-inspected)
     series: 20261103-L31
     driver_class: STM32N6_CRC_HAL
-    factory_revision: null             # set to the CAPA-128..132 run-branch revision (owner or Claude commit)
+    factory_revision: null             # set to run/gen12 (feat + batch 2: CAPA-128..134, CAPA-133, SWE2-08 record,
+                                       # WWDG profile, M2, M3) when it exists (owner or Claude commit)
     profile: *profile
     run_model: *orn
     purpose: ASPICE_ONLY
     phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
-    depends_on: {lineage: crc-ll, phase: SWE.6, verdict: PASS}
+    start: {resume_from: WO-F014-SWE1-CRCHAL-20261103-L27, at: SWE.2}
+    provided_from: WO-F014-SWE6-CRCL-20261103-L24
     priority: 40
     quality: *defaults
 
