@@ -142,9 +142,15 @@ def compile_(ctx: ToolContext, a: CompileIn) -> dict:
         log += b"$ " + " ".join(argv).encode() + b"\n" + r.stdout + r.stderr + b"\n"
         if r.exit_code != 0 or delivered:
             failed += r.exit_code != 0
+            found = 0
             for line in (r.stderr.decode(errors="replace")).splitlines():
-                if ": error:" in line or ": warning:" in line:
+                if ": error:" in line or ": fatal error:" in line or ": warning:" in line:  # CAPA-132: fatal too
                     issues.append(line.split(str(ctx.workspace) + "/")[-1][:120])
+                    found += 1
+            if r.exit_code != 0 and not found:  # CAPA-132: a failed unit is never an empty issue list
+                last = [x for x in r.stderr.decode(errors="replace").splitlines() if x.strip()][-1:] or ["no output"]
+                issues.append(f"COMPILE_FAILED:{src.name}:exit {r.exit_code}:"
+                              + last[0].split(str(ctx.workspace) + "/")[-1][:100])
     metrics: dict = {"units": len(srcs), "failed_units": failed}
     if not failed and a.profile == "target-cm55-gcc":
         # Relocatable driver image + link map for footprint evidence (NOT a firmware image: no startup/linker script).

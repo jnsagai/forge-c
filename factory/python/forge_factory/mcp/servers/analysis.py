@@ -150,8 +150,11 @@ def clang_analyze(ctx: ToolContext, a: AnalyzeIn) -> dict:
                       "-analyzer-output=text", "-o", "/dev/null", f], ctx.workspace, 120, ALLOW)
         ms += r.duration_ms
         log += r.stdout + r.stderr
-        for line in r.stderr.decode(errors="replace").splitlines():
-            if ": warning:" in line or ": error:" in line:
+        lines = r.stderr.decode(errors="replace").splitlines()
+        if r.exit_code != 0 and not any(": error:" in x or ": fatal error:" in x for x in lines):
+            issues.append(f"ANALYZE_FAILED:{Path(f).name}:exit {r.exit_code}")  # CAPA-132: never a silent PASS
+        for line in lines:
+            if ": warning:" in line or ": error:" in line or ": fatal error:" in line:  # CAPA-132: fatal too
                 d = DIAG.match(line)
                 rel = d.group("file").removeprefix(root) if d else ""
                 if d and d.group("kind") == "warning" and rel in vendor:

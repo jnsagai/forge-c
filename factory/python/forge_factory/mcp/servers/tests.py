@@ -225,7 +225,8 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             failed += 1
             issues.append(f"BUILD_FAIL:{t.name}")
             # the agent cannot fix what it cannot see; r76: link errors named only 'linker command failed'
-            issues += _diag(b.stderr, ctx.workspace, (": error:", "undefined reference", "multiple definition"), 12)
+            issues += _diag(b.stderr, ctx.workspace, (": error:", ": fatal error:", "undefined reference",  # CAPA-132
+                                                      "multiple definition"), 12)
             continue
         gx = bdir / f"{exe.name}.xml"
         r = run_argv([str(exe), *([f"--gtest_output=xml:{gx}"] if t.suffix == ".cpp" else [])], bdir, 60,
