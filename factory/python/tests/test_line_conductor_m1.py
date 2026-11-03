@@ -178,8 +178,13 @@ def test_generated_feed_validates_against_the_contract(line):
     assert set(disk["budgets"]) == set(LC.BUDGETS) and all(k.startswith("guard_") for k in disk["budgets"])  # guards only
     assert disk["budgets"]["guard_planner_tokens_per_order"]["limit"] == 200_000
     assert disk["budgets"]["guard_phase_order_wall_s"]["limit"] == 21600
-    # the committed contract does not declare the rule's new fields yet: the feed omits them and stays valid
-    assert "progress" not in disk and all(set(i["attempts"]) == {"used", "limit"} for i in disk["issues"])
+    # owner retry rule: with the contract delta (oracle 5ffd6533) the feed carries the last good part and the strike rule;
+    # without it the feed omits them and stays valid
+    if "progress" in json.loads(LC.SCHEMA_PATH.read_text())["properties"]:
+        assert isinstance(disk["progress"], list)
+        assert all(i["attempts"].get("rule") == "same issue > 3 times stops the line" for i in disk["issues"])
+    else:
+        assert "progress" not in disk and all(set(i["attempts"]) == {"used", "limit"} for i in disk["issues"])
     journal = [json.loads(x) for x in LC.journal_path().read_text().splitlines()]
     assert {j["event"] for j in journal} == {"OPENED"} and len(journal) == len(feed["issues"])
 
@@ -210,7 +215,7 @@ def test_classification_of_the_2026_11_03_situation(line):
     feed = conductor(line).cycle()
     stuck = by_wo(feed, IWDG.format(n=6, l=22))
     assert (stuck["class"], stuck["status"], stuck["phase"]) == ("MODEL_CONVERGENCE", "OPEN", "SWE.6")
-    assert stuck["lineage"] == "IWDGHAL/" + IWDG.format(n=1, l=19) and stuck["attempts"] == {"used": 1, "limit": 3}
+    assert stuck["lineage"] == "IWDGHAL/" + IWDG.format(n=1, l=19) and {k: v for k, v in stuck["attempts"].items() if k != "rule"} == {"used": 1, "limit": 3}
     first = stuck["proposals"][0]
     assert (first["source"], first["status"], first["strategy"]) == ("RULE", "PROPOSED", "RETRY_PHASE_FROM_LAST_PASSED_ORDER")
     assert first["summary"] == f"retry SWE.6 from {IWDG.format(n=5, l=22)}" and first["args"]["resume_from"] == IWDG.format(n=5, l=22)
