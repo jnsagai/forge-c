@@ -124,6 +124,23 @@ def api_prefix(layer: str, ws: Path | None = None) -> str:
     return p["ll"]["function_prefix"] if layer == "LL" else p["hal"]["function_prefix"]
 
 
+# CAPA-124: the profile prompt texts that state the HAL's wait behaviour (each replaces the waiting RCC text)
+HAL_WAIT_TEXTS = ("hal_wait_rule", "hal_failure_responses", "hal_dynamic_view")
+
+
+def hal_waits(ws: Path | None = None) -> bool:
+    """CAPA-124: whether the work order's HAL has a bounded wait, and so a HAL_TIMEOUT path. True with a time base
+    (`hal.time_base`, e.g. IWDG), for RCC and for every profile that leaves one of HAL_WAIT_TEXTS to the RCC default
+    (oscillator enables wait for the ready flag), and when one of those texts names HAL_TIMEOUT. False only when the
+    profile states all of them and none names HAL_TIMEOUT (CRC: no wait, RM0486 26.3.3)."""
+    p = profile(ws)
+    if p["hal"].get("time_base") or p["id"] == "rcc":
+        return True
+    t = p.get("prompt") or {}
+    texts = [t.get(k) for k in HAL_WAIT_TEXTS]
+    return any(not x or "HAL_TIMEOUT" in str(x) for x in texts)
+
+
 def components(layer: str, ws: Path | None = None) -> tuple[str, ...]:
     p = profile(ws)
     ll, hal = Path(p["ll"]["header"]).stem, Path(p["hal"]["header"]).stem
