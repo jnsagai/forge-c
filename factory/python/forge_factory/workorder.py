@@ -192,7 +192,8 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
 
 
 def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
-            *, purpose: str = "DEVELOPMENT", execution_policy: str | None = None) -> tuple[Path, dict]:
+            *, purpose: str = "DEVELOPMENT", execution_policy: str | None = None,
+            quality: dict | None = None) -> tuple[Path, dict]:
     from .release import aspice, qm
     from .release.development import binding
 
@@ -305,7 +306,11 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             listed.append({"path": BI.OUT, "role": BI.ROLE, "sha256": sha256_bytes(data), "bytes": len(data)})
     from .quality import resolve as resolve_quality
 
+    if quality is not None:  # autonomous line M3: the campaign's order quality block replaces the example's
+        spec = {**spec, "quality": quality}
     quality_block, quality_source = resolve_quality(spec, purpose)  # refused before the workspace is used
+    if quality is not None:
+        quality_source = "campaign"
     head = create_workspace(ws, inputs)
     from .inspection.provided_changes import save_original
 
@@ -824,6 +829,7 @@ def run(
     purpose: str = "DEVELOPMENT",
     evaluation_holdout: bool = False,
     stop_after: str | None = None,
+    quality: dict | None = None,
 ) -> dict:
     from .release import qm
     from .release.aspice import PURPOSE as ASPICE_PURPOSE
@@ -950,6 +956,8 @@ def run(
     purpose_args = {"purpose": purpose} if purpose != "DEVELOPMENT" else {}
     if profile and selected_profile.get("development_execution_policy"):
         purpose_args["execution_policy"] = selected_profile["development_execution_policy"]
+    if quality is not None:
+        purpose_args["quality"] = quality
     ws, manifest = (
         prepare(example, wo, provided_from, resume_limits=resume_limits, **purpose_args)
         if spec.get("delivery")
@@ -1167,11 +1175,19 @@ def main(argv: list[str] | None = None) -> int:
         "runtime roots/endpoints shared with the existing deployment",
     )
     ap.add_argument(
+        "--quality",
+        type=Path,
+        default=None,
+        help="autonomous line M3: the order's quality block (JSON, owner rule 2026-11-03) from the approved campaign; "
+        "it replaces the example's block and is validated like it (an invalid block is refused, never repaired)",
+    )
+    ap.add_argument(
         "--intake-only",
         action="store_true",
         help="feature 008: prepare the work order (brownfield: intake, fingerprints, build check) and stop",
     )
     a = ap.parse_args(argv)
+    quality = json.loads(a.quality.read_text()) if a.quality else None
     from .brownfield.delivery import DeliveryBlocked
     from .brownfield.resume import ResumeRefused
     from .lrtx.profile import ProfileRefused
@@ -1196,6 +1212,7 @@ def main(argv: list[str] | None = None) -> int:
             resume_max_wall_seconds=a.resume_max_wall_seconds,
             purpose=a.purpose,
             stop_after=a.stop_after,
+            quality=quality,
         )
     except ResumeRefused as exc:
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "validated_resume", "issues": [str(exc)]}))

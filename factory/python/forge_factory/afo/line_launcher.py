@@ -73,6 +73,7 @@ CODES = {
     "WORKTREE_ADD_FAILED": "INFRA", "FABRO_API_UNREACHABLE": "INFRA", "STACK_STOP_INCOMPLETE": "INFRA",
     "STACK_START_FAILED": "INFRA", "STACK_NOT_HEALTHY": "INFRA", "EXPOSE_FAILED": "INFRA", "SMOKE_FAIL": "INFRA",
     "WORKORDER_LAUNCH_FAILED": "WORKORDER", "LAUNCH_NO_RUN_ID": "WORKORDER", "UNEXPECTED_ERROR": "INFRA",
+    "QUALITY_FLAG_UNSUPPORTED": "ORDER",
 }
 _WO_RX = re.compile(r"^WO-[A-Za-z0-9][A-Za-z0-9-]{2,120}$")
 _EX_RX = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,120}$")
@@ -81,7 +82,8 @@ _REV_RX = re.compile(r"^[0-9a-f]{7,40}$")
 _MODEL_RX = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,200}$")
 # the work-order flags the loop10 ladders pass in their EXTRA string (all others are refused, never forwarded)
 EXTRA_FLAGS = {"--stop-after": "stop_after", "--resume-from": "resume_from", "--provided-from": "provided_from",
-               "--resume-upto": "resume_upto", "--timeout-scale": "timeout_scale"}
+               "--resume-upto": "resume_upto", "--timeout-scale": "timeout_scale",
+               "--quality": "quality_file"}  # M3: the campaign's order quality block (owner rule 2026-11-03), a JSON file
 
 
 class LaunchError(RuntimeError):
@@ -160,6 +162,7 @@ class Order:
     resume_upto: str | None = None
     timeout_scale: float | None = None
     purpose: str = "ASPICE_ONLY"
+    quality_file: str | None = None  # absolute path of the order's quality block (JSON), outside the run worktree
 
     def validate(self) -> None:
         bad = [n for n, v, rx in (("wo", self.wo, _WO_RX), ("rev", self.rev, _REV_RX), ("example", self.example, _EX_RX),
@@ -173,6 +176,8 @@ class Order:
             bad.append("purpose")
         if ".." in self.example:
             bad.append("example")
+        if self.quality_file is not None and (not os.path.isabs(self.quality_file) or not os.path.isfile(self.quality_file)):
+            bad.append("quality_file")
         if bad:
             raise LaunchError("ORDER_ARGS_INVALID", ",".join(sorted(set(bad))))
 
@@ -511,6 +516,16 @@ def sweep(root: Path, procs=None, *, uid: int | None = None, kill: bool = False,
     return rep
 
 
+def safe_sweep(cfg: LineConfig, host=None, procs=None) -> dict:
+    """The orphan sweep with kill, only under the launch lock and the stack lock and with no live run (never under a
+    running launch). Raises LaunchError GPU_LOCK_HELD / STACK_LOCK_HELD / RUN_LIVE / FABRO_API_UNREACHABLE."""
+    host = host or ShellHost(cfg)
+    procs = procs or ProcFS()
+    with gpu_lock(cfg.gpu_lock), held_stack_lock(cfg.stack_root):
+        live_runs(cfg, host, procs)
+        return sweep(cfg.stack_root, procs, uid=cfg.uid, kill=True, grace_s=cfg.sweep_grace_s)
+
+
 # ---------------------------------------------------------------------------------------------------------- git
 def _git(repo: Path, *args: str, check: bool = False) -> subprocess.CompletedProcess:
     env = {**os.environ, "GIT_TERMINAL_PROMPT": "0", "LC_ALL": "C"}
@@ -562,6 +577,12 @@ def profile_facts(reader: RevReader, profile: str) -> dict:
     # alternates first, then the primary the stack starts with: the bash launcher's Ornith -> Qwen order, which
     # leaves the stack serving its own primary model at launch
     return {"ports": dict(prof["deployment"]["ports"]), "served": served, "smoke": served[1:] + served[:1]}
+
+
+def quality_supported(reader: RevReader) -> bool:
+    """M3: the revision's work-order CLI takes the order quality block (`--quality FILE`)."""
+    src = reader.read("factory/python/forge_factory/workorder.py") or b""
+    return b'"--quality"' in src
 
 
 def worktree_clean(wt: Path) -> list[str]:
@@ -824,6 +845,11 @@ def _kind(run: dict) -> str | None:
     return st.get("kind") if isinstance(st, dict) else st
 
 
+def _reason(run: dict) -> str | None:
+    st = (run.get("lifecycle") or {}).get("status")
+    return st.get("reason") if isinstance(st, dict) else None
+
+
 def live_runs(cfg: LineConfig, host, procs=None, ports: dict | None = None) -> dict:
     """Live Forge-C runs of this stack root (the M0 rule: lifecycle running/submitted/queued/pending/paused and a
     source_directory under <root>/state/). Fails closed: an API that does not answer while a Fabro of the live stack
@@ -872,17 +898,20 @@ def wait_for_end(run_id: str, host, *, poll_s: float = 30.0, timeout_s: float | 
     sleep = sleep or host.sleep
     monotonic = monotonic or host.monotonic
     t0, unreachable, polls = monotonic(), 0, 0
-    last = None
+    last = reason = None
     while True:
         polls += 1
         try:
-            last = _kind(host.fabro_run(run_id))
+            run = host.fabro_run(run_id)
+            last, reason = _kind(run), _reason(run)
         except FabroUnavailable:
             unreachable += 1
         if last in ENDED_KINDS:
-            return {"run_id": run_id, "status": last, "ended": True, "polls": polls, "unreachable_polls": unreachable}
+            return {"run_id": run_id, "status": last, "reason": reason, "ended": True, "polls": polls,
+                    "unreachable_polls": unreachable}
         if timeout_s is not None and monotonic() - t0 >= timeout_s:
-            return {"run_id": run_id, "status": last, "ended": False, "polls": polls, "unreachable_polls": unreachable}
+            return {"run_id": run_id, "status": last, "reason": reason, "ended": False, "polls": polls,
+                    "unreachable_polls": unreachable}
         sleep(poll_s)
 
 
@@ -1049,6 +1078,8 @@ def _launch_locked(att: Attempt, cfg: LineConfig, order: Order, host, procs, say
     reader = RevReader(cfg.repo, sha)
     facts = profile_facts(reader, order.profile)
     att.step("revision", sha=sha, ports=facts["ports"], smoke=facts["smoke"])
+    if order.quality_file and not quality_supported(reader):
+        raise LaunchError("QUALITY_FLAG_UNSUPPORTED", f"the work-order CLI at {sha[:12]} has no --quality")
     done = cfg.stack_root / "state/workorders" / order.wo / "workspace/.forge-run/fabro_run_id"
     if done.is_file():
         raise LaunchError("WO_ALREADY_RUN", f"{order.wo} already has Fabro run {done.read_text().strip()[:40]}")
@@ -1291,8 +1322,8 @@ def main(argv: list[str] | None = None, *, host=None, procs=None) -> int:
     la.add_argument("extra", nargs="?", default="", help='the ladders\' EXTRA string, e.g. "--stop-after SWE.1"')
     la.add_argument("run_model", nargs="?", default=None, help="the run (native-node) model, as the bash 6th arg")
     la.add_argument("--model", default=None)
-    for flag in EXTRA_FLAGS:
-        la.add_argument(flag, default=None)
+    for flag, name in EXTRA_FLAGS.items():
+        la.add_argument(flag, dest=name, default=None)
     la.add_argument("--purpose", default="ASPICE_ONLY")
     la.add_argument("--dry-run", action="store_true")
     la.add_argument("--json", action="store_true", help="print the result JSON as the last line")
@@ -1355,9 +1386,7 @@ def main(argv: list[str] | None = None, *, host=None, procs=None) -> int:
             print(json.dumps(sweep(cfg.stack_root, procs, uid=cfg.uid, kill=False), default=str))
             return 0
         try:  # killing orphans needs the launch lock, the stack lock and no live run (never under a running launch)
-            with gpu_lock(cfg.gpu_lock), held_stack_lock(cfg.stack_root):
-                live_runs(cfg, host, procs)
-                rep = sweep(cfg.stack_root, procs, uid=cfg.uid, kill=True, grace_s=cfg.sweep_grace_s)
+            rep = safe_sweep(cfg, host, procs)
         except LaunchError as exc:
             print(json.dumps({"refused": exc.code, "detail": exc.detail}))
             return GPU_LOCK_EXIT if exc.code == "GPU_LOCK_HELD" else 3

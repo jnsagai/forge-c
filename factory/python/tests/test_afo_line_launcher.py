@@ -594,7 +594,8 @@ def test_order_verdict_reads_the_stack_state_and_wait_for_end_polls_through_outa
     assert LL.order_verdict(cfg, "WO-A", "SWE.1")["verdict"] == "PASS"
     host = FakeHost(run_status=["running", None, None, "running", "succeeded"])
     w = LL.wait_for_end("01RUN", host, poll_s=30)
-    assert w == {"run_id": "01RUN", "status": "succeeded", "ended": True, "polls": 5, "unreachable_polls": 2}
+    assert w == {"run_id": "01RUN", "status": "succeeded", "reason": None, "ended": True, "polls": 5,
+                 "unreachable_polls": 2}
     assert host.t == 120
     w = LL.wait_for_end("01RUN", FakeHost(run_status=["running"] * 10), poll_s=30, timeout_s=60)
     assert w["ended"] is False and w["status"] == "running"
