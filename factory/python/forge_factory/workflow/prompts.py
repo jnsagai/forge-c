@@ -1335,6 +1335,37 @@ def gtest_unit_test_steps(marker: str) -> list[str]:
             "Reply with the list of UT ids you wrote."]
 
 
+# CAPA-131: the instance API of a HAL's provided CMSIS LL (brownfield/cmsis.provided_api), set by the builder for a
+# HAL work order on ST's LL; None (every other work order) leaves every prompt byte-identical
+PROVIDED_API = {"api": None}
+
+
+def providedize(text: str) -> str:
+    """CAPA-131: on a provided ST (CMSIS) LL every LL function takes the instance first: the LL calls the prompt shows
+    (profile examples written for the greenfield LL, e.g. LL_CRC_FeedData32(p_data[i])) get the instance macro
+    (LL_CRC_FeedData32(CRC, p_data[i])) and the provided-LL rule names the instance and a real signature."""
+    import re as _re
+
+    api = PROVIDED_API["api"]
+    if not api or LAYER["layer"] != "HAL":
+        return text
+    inst, fns = api["instance"], set(api["functions"])
+
+    def call(m: _re.Match) -> str:
+        if m.group(1) not in fns:
+            return m.group(0)
+        return f"{m.group(1)}({inst}" + ("" if m.group(2) else ", ")
+
+    text = _re.sub(r"\b(LL_\w+)\((?=(\s*\))?)", call, text)
+    shown = [n for n in api["functions"] if f"{n}({inst}" in text]
+    ex = (shown or api["functions"])[0]
+    rule = (f" It is the delivered vendor (CMSIS) code: each of its LL functions takes the peripheral instance as its "
+            f"first argument - pass the instance macro {inst} of the device header, e.g. {api['calls'][ex]}, never a "
+            f"register address or a local copy; the exact signatures are in the provided header, e.g. "
+            f"{api['signatures'][ex]}.")
+    return _re.sub(r"(use only the LL_\w+ functions it already declares\.)", lambda m: m.group(1) + rule, text, count=1)
+
+
 def _peripheral_prompts() -> None:
     """Every prompt builder returns its text through peripheralize() (identity for RCC)."""
     import functools
@@ -1342,7 +1373,8 @@ def _peripheral_prompts() -> None:
     for name in ("author_prompt", "inspector_prompt", "ll_author_prompt", "hal_author_prompt", "fix3_author_prompt",
                  "unit_test_author_prompt", "target_test_author_prompt", "robot_test_author_prompt", "triage_prompt"):
         f = globals()[name]
-        globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(uspecize(cmsisize(_f(*a, **k)))))
+        globals()[name] = functools.wraps(f)(
+            lambda *a, _f=f, **k: providedize(peripheralize(uspecize(cmsisize(_f(*a, **k))))))
 
 
 _peripheral_prompts()

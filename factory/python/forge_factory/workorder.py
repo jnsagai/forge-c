@@ -788,6 +788,14 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
                    or out.get("c_parameter_list_note")) else None
 
 
+def _provided_api_arg(ws: Path) -> dict:
+    """CAPA-131: the provided ST LL's instance API for the HAL prompts; no argument otherwise (graph byte-identical)."""
+    from .brownfield.cmsis import provided_api
+
+    api = provided_api(ws)
+    return {"provided_api": api} if api else {}
+
+
 def run(
     example: Path,
     wo: str,
@@ -1004,6 +1012,7 @@ def run(
         structured=local_profile_structured(local, manifest, model),
         recovery_plan=recovery_plan,
         stop_after=stop_after,
+        **_provided_api_arg(ws),
     )
     if timeout_scale != 1:  # opt-in slower-model trial: node timeouts scaled, recorded in manifest and model profile
         from .workflow.builder import scale_timeouts

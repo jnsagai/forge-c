@@ -257,3 +257,32 @@ def delivered_unit(ws: Path, out_dir: Path) -> Path | None:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(lines) + "\n")
     return out
+
+
+def provided_api(ws: Path) -> dict | None:
+    """CAPA-131: the instance API of a HAL work order's provided LL, derived from the provided header: the LL functions
+    whose first parameter is the CMSIS instance pointer (`CRC_TypeDef *CRCx`), the instance macro (`CRC`) and their
+    signatures. None for every other work order (a greenfield register-array LL has no instance parameter)."""
+    import re
+    from collections import Counter
+
+    from ..layer import layer_of, ll_header
+
+    ws = Path(ws)
+    p = ws / ll_header(ws)
+    if layer_of(ws) != "HAL" or not p.is_file():
+        return None
+    code = re.sub(r"/\*.*?\*/|//[^\n]*", "", p.read_text(errors="replace"), flags=re.S)
+    sigs, calls, inst = {}, {}, Counter()
+    for m in re.finditer(r"\b(?:__STATIC_(?:FORCE)?INLINE|static\s+inline)\s+((?:const\s+)?\w+[\s*]+?)(LL_\w+)\s*"
+                         r"\(([^)]*)\)\s*\{", code):
+        t = re.match(r"\s*(?:const\s+)?([A-Za-z]\w*)_TypeDef\s*\*\s*\w+\s*$", m.group(3).split(",")[0])
+        if t:
+            inst[t.group(1)] += 1
+            sigs[m.group(2)] = f"{' '.join(m.group(1).split())} {m.group(2)}({' '.join(m.group(3).split())})"
+            calls[m.group(2)] = [re.findall(r"\w+", a)[-1] for a in m.group(3).split(",")[1:] if a.strip()]
+    if not sigs:
+        return None
+    macro = inst.most_common(1)[0][0]
+    return {"instance": macro, "functions": sorted(sigs), "signatures": sigs,
+            "calls": {n: f"{n}({', '.join([macro, *a])})" for n, a in calls.items()}}
