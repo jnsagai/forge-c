@@ -145,7 +145,11 @@ def hal_waits(ws: Path | None = None) -> bool:
     (`hal.time_base`, e.g. IWDG), for RCC and for every profile that leaves one of HAL_WAIT_TEXTS to the RCC default
     (oscillator enables wait for the ready flag), and when one of those texts names HAL_TIMEOUT. False only when the
     profile states all of them and none names HAL_TIMEOUT (CRC: no wait, RM0486 26.3.3)."""
-    p = profile(ws)
+    return hal_waits_of(profile(ws))
+
+
+def hal_waits_of(p: dict) -> bool:
+    """hal_waits() for a loaded peripheral profile (the prompt builder holds the profile, not a workspace)."""
     if p["hal"].get("time_base") or p["id"] == "rcc":
         return True
     t = p.get("prompt") or {}

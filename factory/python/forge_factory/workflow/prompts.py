@@ -1012,6 +1012,8 @@ PERIPHERAL = {"profile": None}  # set by the builder: the work order's periphera
 def peripheralize(text: str) -> str:
     """The RCC prompt with the work order's peripheral: RCC domain fragments are replaced by the profile's prompt texts,
     then RCC identifiers by the profile's names. RCC (or no profile) returns the text unchanged."""
+    from ..layer import hal_waits_of
+
     pr = PERIPHERAL["profile"]
     if not pr or pr["id"] == "rcc":
         return text
@@ -1099,6 +1101,12 @@ def peripheralize(text: str) -> str:
                 ("(group requirements by topic, several checks per file) in the same form as the target tests:",
                  f"(group requirements by topic, several checks per file; each file defines 'uint32_t {tb}(void)' as a "
                  "counter that advances 1 per call - the HAL's time base) in the same form as the target tests:")]
+    elif not hal_waits_of(pr):  # CAPA-126: a no-wait HAL (CRC) gets no timeout requirement, define or example
+        hal += [("e.g. 'at most HAL_RCC_TIMEOUT_VALUE polling iterations', ", ""),
+                (", and one measurable timing requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling "
+                 "iterations)", ""),
+                ("'#define HAL_RCC_TIMEOUT_VALUE 1000U', ", ""),
+                ("Timeouts and error handling, ", "Error handling and timing, ")]
     if "hal_api" in t:  # NULL checks of the configuration pointer need <stddef.h> (the LL includes <stdint.h> only)
         hal.append(("'#include \"stm32n6xx_ll_rcc.h\"', 'typedef enum",
                     "'#include <stddef.h>', '#include \"stm32n6xx_ll_rcc.h\"', 'typedef enum"))
