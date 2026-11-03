@@ -222,7 +222,7 @@ def test_account_mode_answers_through_the_claude_cli_without_tools_or_api_key(tm
         assert str(exc).startswith("CLAUDE_CLI_FAILED")
 
 
-def test_the_mode_file_routes_claude_per_call_and_tool_calls_stay_on_the_api(tmp_path):
+def test_the_mode_file_routes_claude_per_call_and_tool_calls_never_reach_the_api_in_account_mode(tmp_path):
     mode = tmp_path / "claude-mode.json"
     seen = []
     api = FakeClient()
@@ -235,13 +235,21 @@ def test_the_mode_file_routes_claude_per_call_and_tool_calls_stay_on_the_api(tmp
     mode.write_text(json.dumps({"mode": "account"}))
     bridge.complete(_body())
     tools = {**_body(), "tools": [{"type": "function", "function": {"name": "read_file", "parameters": {"type": "object"}}}]}
-    bridge.complete(tools)
+    tool_seen = []
+    bridge.backends["claude-cli"] = CB.ClaudeCliBackend(run=_cli_run(tool_seen, {
+        "type": "result", "is_error": False, "stop_reason": "end_turn", "usage": {},
+        "structured_output": {"action": "tool_calls", "tool_calls": [{"name": "read_file", "arguments": {}}], "content": ""}}))
+    assert bridge.complete(tools)["finish"] == "tool_calls" and len(tool_seen) == 1
+    bridge.backends["claude-cli"] = CB.ClaudeCliBackend(run=_cli_run(seen))
     mode.write_text("garbage")
     bridge.complete(_body())
     rows = [json.loads(x) for x in (tmp_path / "m.jsonl").read_text().splitlines()]
-    assert [r["backend"] for r in rows] == ["claude-cli", "anthropic", "claude-cli", "anthropic", "claude-cli"]
+    assert [r["backend"] for r in rows] == ["claude-cli", "anthropic", "claude-cli", "claude-cli", "claude-cli"]
     assert [r["claude_mode"] for r in rows] == ["account", "api", "account", "account", "account"]  # garbage: default
-    assert rows[3]["account_fallback"] == "tool_calls_on_api" and len(seen) == 3 and len(api.calls) == 2
+    assert rows[3]["tool_emulation"] == "claude-cli" and "account_fallback" not in rows[3] and len(api.calls) == 1
+    mode.write_text(json.dumps({"mode": "api"}))
+    bridge.complete(tools)  # api mode: tools pass through to the API unchanged
+    assert len(api.calls) == 2 and "tools" in api.calls[-1]
     assert CB.read_mode(None) == "account" and CB.read_mode(tmp_path / "missing") == "account"
 
 

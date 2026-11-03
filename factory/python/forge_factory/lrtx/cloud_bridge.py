@@ -14,8 +14,13 @@ network to the factory). The bridge runs outside the namespace and answers OpenA
 - backend `claude-cli` (owner 2026-11-02, "Claude API/Account mode"): the same Claude model through the owner's
   Claude account (Claude Code `claude -p`, claude.ai login, no API key in its environment): no tools, no MCP server, no
   settings, no session kept, an empty working directory; the schema is passed as `--json-schema`. The account mode is
-  chosen per call from a mode file (`api` | `account`) the floor's control writes; a call with tools (Fabro's native
-  agent nodes) cannot be answered without tools, so it stays on the API and the meter says so;
+  chosen per call from a mode file (`api` | `account`) the floor's control writes. Owner 2026-11-03 ("the account
+  claude is the default, not the API"): in account mode NOTHING reaches the Anthropic API. A call with tools (Fabro's
+  native agent nodes) is answered on the account too, by tool-call emulation: the CLI still runs with no tools; the
+  offered tools are described in its system prompt and the answer is a structured JSON envelope that names tool calls
+  (validated against the offered names and each tool's argument schema) or gives the final text; the bridge turns it
+  into OpenAI `tool_calls` (ids, finish `tool_calls`). One bounded repair retry on a malformed answer, then the
+  explicit error ACCOUNT_MODE_TOOL_CALL_FAILED - never an API fallback. The meter says `tool_emulation: claude-cli`;
 - the inspector's account mode (owner 2026-11-02, "yes build it"): gpt-6.1-sol through the owner's ChatGPT login
   (the `codex` backend, API key removed from its environment) while the inspector mode file says `account`;
 - backend `codex`: the Codex CLI (`codex exec`, ephemeral, read-only sandbox, empty working directory, no tools needed:
@@ -35,10 +40,13 @@ import subprocess
 import tempfile
 import threading
 import time
+import uuid
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 
 SCHEMA = "forge-c/cloud-bridge-call/1"
+TOOL_EMULATION = "claude-cli"
+ACCOUNT_TOOL_ERROR = "ACCOUNT_MODE_TOOL_CALL_FAILED"
 MODES = ("api", "account")
 # owner 2026-11-02: "the default for cloud run is both claude and gpt as account not API"
 DEFAULT_MODE = "account"
@@ -241,28 +249,173 @@ class OpenAIBackend:
         return {"text": ch.message.content or "", "finish": finish, "tool_calls": calls, "schema_mode": mode, "usage": usage}
 
 
+class AccountToolCallError(RuntimeError):
+    """Account mode could not answer a tool-calling request on the account. Explicit, metered, never an API fallback."""
+
+    code = ACCOUNT_TOOL_ERROR
+
+    def __init__(self, reason: str, meter: dict | None = None):
+        super().__init__(f"{ACCOUNT_TOOL_ERROR}:{reason}")
+        self.reason, self.meter = reason, meter or {}
+
+
+class _Malformed(ValueError):
+    def __init__(self, reason: str, detail: str):
+        super().__init__(reason)
+        self.reason, self.detail = reason, detail
+
+
+def offered_tools(body: dict) -> dict[str, dict]:
+    """name -> {description, parameters} of the request's function tools (the OpenAI shape)."""
+    out = {}
+    for t in body.get("tools") or []:
+        fn = (t.get("function") or {}) if isinstance(t, dict) and t.get("type", "function") == "function" else {}
+        if fn.get("name"):
+            out[fn["name"]] = {"description": fn.get("description") or "",
+                               "parameters": fn.get("parameters") or {"type": "object", "properties": {}}}
+    return out
+
+
+def tool_rule(body: dict, tools: dict) -> dict:
+    """What this answer may do under the request's `tool_choice` / `parallel_tool_calls`."""
+    tc = body.get("tool_choice")
+    rule = {"names": sorted(tools), "must_call": False,
+            "max_calls": 1 if body.get("parallel_tool_calls") is False else None}
+    if tc == "required":
+        rule["must_call"] = True
+    elif isinstance(tc, dict):
+        name = (tc.get("function") or {}).get("name")
+        if name not in tools:
+            raise AccountToolCallError(f"TOOL_CHOICE_NOT_OFFERED:{str(name)[:60]}")
+        rule.update({"names": [name], "must_call": True})
+    return rule
+
+
+def envelope_schema(rule: dict) -> dict:
+    item = {"type": "object", "additionalProperties": False, "required": ["name", "arguments"],
+            "properties": {"name": {"type": "string", "enum": rule["names"]}, "arguments": {"type": "object"}}}
+    calls = {"type": "array", "items": item}
+    if rule["max_calls"] is not None:
+        calls["maxItems"] = rule["max_calls"]
+    return {"type": "object", "additionalProperties": False, "required": ["action", "tool_calls", "content"],
+            "properties": {"action": {"type": "string",
+                                      "enum": ["tool_calls"] if rule["must_call"] else ["tool_calls", "final"]},
+                           "tool_calls": calls, "content": {"type": "string"}}}
+
+
+def emulation_instruction(tools: dict, rule: dict, final_schema: dict | None) -> str:
+    listed = [{"name": n, "description": tools[n]["description"], "arguments_schema": tools[n]["parameters"]}
+              for n in rule["names"]]
+    lines = ["TOOL CALLING. You are the model of a tool-calling agent loop. You cannot run tools yourself: the caller "
+             "runs them and sends each result back in the conversation as a [tool result ...] block.",
+             "Tools you may call (name, description, JSON schema of the arguments):", json.dumps(listed, sort_keys=True),
+             "Answer with ONLY one JSON object:",
+             '- to call tools: {"action": "tool_calls", "tool_calls": [{"name": "<tool>", "arguments": {...}}], '
+             '"content": "<optional short note, or empty>"}; the arguments must match that tool\'s schema exactly;']
+    if not rule["must_call"]:
+        lines.append('- when no further tool call is needed: {"action": "final", "tool_calls": [], '
+                     '"content": "<your final answer>"}.')
+    if rule["max_calls"] == 1:
+        lines.append("Call at most ONE tool per answer.")
+    if rule["must_call"]:
+        lines.append("You MUST call " + (f"the tool {rule['names'][0]}" if len(rule["names"]) == 1 else "a tool")
+                     + " in this answer.")
+    if final_schema is not None and not rule["must_call"]:
+        lines.append("The final content must itself be one JSON object matching this JSON schema: "
+                     + json.dumps(final_schema, sort_keys=True))
+    return "\n".join(lines)
+
+
+def transcript(turns: list[dict]) -> str:
+    """The conversation after the system prompt, as text: assistant tool calls and tool results round-trip (each
+    result names its call id and tool), so the account CLI sees the whole agent loop so far."""
+    if len(turns) == 1 and turns[0].get("role") == "user":
+        return _text(turns[0].get("content"))
+    names: dict = {}
+    parts = []
+    for m in turns:
+        role = m.get("role")
+        if role == "tool":
+            cid = m.get("tool_call_id")
+            parts.append(f"[tool result id={cid} name={names.get(cid, m.get('name') or '?')}]\n{_text(m.get('content'))}")
+            continue
+        parts.append(f"[{role}]\n{_text(m.get('content'))}")
+        for tc in (m.get("tool_calls") or []) if role == "assistant" else []:
+            fn = tc.get("function") or {}
+            names[tc.get("id")] = fn.get("name")
+            try:
+                args = json.loads(fn.get("arguments") or "{}")
+            except ValueError:
+                args = fn.get("arguments")
+            parts.append(f"[assistant tool call id={tc.get('id')}]\n"
+                         + json.dumps({"name": fn.get("name"), "arguments": args}, sort_keys=True))
+    return "\n\n".join(parts)
+
+
+def _validator(schema: dict):
+    import jsonschema
+
+    cls = jsonschema.validators.validator_for(schema, default=jsonschema.Draft202012Validator)
+    cls.check_schema(schema)
+    return cls(schema)
+
+
+def check_envelope(so, tools: dict, rule: dict, validators: dict) -> tuple[list[dict], str]:
+    """The model's envelope -> (OpenAI tool_calls with fresh ids, content). Raises _Malformed (reason code without any
+    argument value, detail for the repair prompt only)."""
+    if not isinstance(so, dict):
+        raise _Malformed("NO_STRUCTURED_ANSWER", "the answer was not one JSON object")
+    err = next(iter(_validator(envelope_schema(rule)).iter_errors(so)), None)
+    if err is not None:
+        path = "$" + "".join(f"[{p}]" if isinstance(p, int) else f".{p}" for p in err.absolute_path)
+        raise _Malformed(f"ENVELOPE_INVALID:{path}", f"{path}: {err.message[:300]}")
+    calls, content = so["tool_calls"], so["content"]
+    if so["action"] == "final":
+        if calls:
+            raise _Malformed("FINAL_WITH_TOOL_CALLS", 'action "final" must have an empty tool_calls list')
+        return [], content
+    if not calls:
+        raise _Malformed("TOOL_CALLS_EMPTY", 'action "tool_calls" needs at least one call')
+    out = []
+    for i, c in enumerate(calls):
+        name = c["name"]
+        if name not in tools or name not in rule["names"]:
+            raise _Malformed(f"TOOL_NOT_OFFERED:{name[:60]}", f"tool {name!r} is not offered; offered: {rule['names']}")
+        err = next(iter(validators[name].iter_errors(c["arguments"])), None)
+        if err is not None:
+            path = "$" + "".join(f"[{p}]" if isinstance(p, int) else f".{p}" for p in err.absolute_path)
+            raise _Malformed(f"TOOL_ARGS_INVALID:{name[:60]}:{path[:80]}",
+                             f"tool_calls[{i}] {name} arguments {path}: {err.message[:300]}")
+        out.append({"id": "call_" + uuid.uuid4().hex[:24], "type": "function",
+                    "function": {"name": name, "arguments": json.dumps(c["arguments"])}})
+    return out, content
+
+
+def _add_usage(a: dict | None, b: dict) -> dict:
+    if a is None:
+        return dict(b)
+    out = dict(a)
+    for k, v in b.items():
+        if isinstance(v, (int, float)) and not isinstance(v, bool) and isinstance(out.get(k), (int, float)):
+            out[k] = round(out[k] + v, 6) if isinstance(v, float) or isinstance(out[k], float) else out[k] + v
+        elif out.get(k) is None:
+            out[k] = v
+    return out
+
+
 class ClaudeCliBackend:
     """Claude through the owner's Claude account: `claude -p` (print mode), structured output, nothing else. The
     API key is removed from the CLI's environment so the account login is what answers (`--bare` would require a key).
-    The CLI's `total_cost_usd` is a list-price equivalent, not an API charge: it is metered as `list_cost_usd`."""
+    The CLI's `total_cost_usd` is a list-price equivalent, not an API charge: it is metered as `list_cost_usd`.
+    A request with tools is answered by tool-call emulation through the same `--json-schema` path (see the module
+    docstring); the CLI itself still has no tools."""
+
+    REPAIR_ATTEMPTS = 1
 
     def __init__(self, run=subprocess.run, exe: str = "claude"):
         self.run, self.exe = run, exe
 
-    def answer(self, body: dict, cfg: dict) -> dict:
-        if body.get("tools"):
-            raise ValueError("CLAUDE_CLI_NO_TOOLS")  # the bridge keeps tool calls on the API
-        schema = _schema(body)
-        msgs = body.get("messages") or []
-        system = "\n\n".join(_text(m.get("content")) for m in msgs if m.get("role") == "system")
-        turns = [m for m in msgs if m.get("role") != "system"]
-        if len(turns) == 1 and turns[0].get("role") == "user":
-            prompt = _text(turns[0].get("content"))
-        else:
-            prompt = "\n\n".join(f"[{m.get('role')}]\n{_text(m.get('content'))}" for m in turns)
-        mode = "json_schema" if schema is not None else "none"
-        if schema is None and (body.get("response_format") or {}).get("type") == "json_object":
-            prompt += "\n\n" + json_instruction(None)
+    def _call(self, prompt: str, system: str, schema: dict | None, body: dict, cfg: dict) -> tuple[dict, dict]:
         with tempfile.TemporaryDirectory(prefix="forge-claude-") as td:
             sp = Path(td) / "system.txt"
             sp.write_text(system or "Answer the task.")
@@ -279,9 +432,8 @@ class ClaudeCliBackend:
         except ValueError:
             out = {}
         if p.returncode != 0 or out.get("is_error") or out.get("type") != "result":
-            raise RuntimeError(f"CLAUDE_CLI_FAILED:rc{p.returncode}:{str(out.get('subtype') or out.get('api_error_status'))[:40]}")
-        so = out.get("structured_output")
-        text = json.dumps(so) if schema is not None and so is not None else str(out.get("result") or "")
+            why = str(out.get("subtype") or out.get("api_error_status"))[:40]
+            raise RuntimeError(f"CLAUDE_CLI_FAILED:rc{p.returncode}:{why}")
         u = out.get("usage") or {}
         read, write = int(u.get("cache_read_input_tokens") or 0), int(u.get("cache_creation_input_tokens") or 0)
         prompt_t = int(u.get("input_tokens") or 0) + read + write
@@ -290,9 +442,66 @@ class ClaudeCliBackend:
                  "cache_read_tokens": read, "cache_write_tokens": write,
                  "reasoning_tokens": (u.get("output_tokens_details") or {}).get("thinking_tokens"),
                  "list_cost_usd": out.get("total_cost_usd"), "billing": "account"}
+        return out, usage
+
+    def answer(self, body: dict, cfg: dict) -> dict:
+        schema = _schema(body)
+        msgs = body.get("messages") or []
+        system = "\n\n".join(_text(m.get("content")) for m in msgs if m.get("role") == "system")
+        prompt = transcript([m for m in msgs if m.get("role") != "system"])
+        if offered_tools(body) and body.get("tool_choice") != "none":
+            return self._emulate_tools(body, cfg, system, prompt, schema)
+        mode = "json_schema" if schema is not None else "none"
+        if schema is None and (body.get("response_format") or {}).get("type") == "json_object":
+            prompt += "\n\n" + json_instruction(None)
+        out, usage = self._call(prompt, system, schema, body, cfg)
+        so = out.get("structured_output")
+        text = json.dumps(so) if schema is not None and so is not None else str(out.get("result") or "")
         finish = "length" if out.get("stop_reason") == "max_tokens" else "stop"
         return {"text": text, "finish": finish, "tool_calls": [], "schema_mode": mode, "usage": usage,
                 "stop_reason": out.get("stop_reason")}
+
+    def _emulate_tools(self, body: dict, cfg: dict, system: str, prompt: str, final_schema: dict | None) -> dict:
+        """Owner 2026-11-03: tool calls on the account. The envelope schema goes through `--json-schema`; the answer is
+        checked against the offered tool names and each tool's argument schema; one repair retry, then an explicit
+        ACCOUNT_MODE_TOOL_CALL_FAILED."""
+        tools = offered_tools(body)
+        meter: dict = {"tool_emulation": TOOL_EMULATION, "tool_emulation_attempts": 0}
+        try:
+            rule = tool_rule(body, tools)
+        except AccountToolCallError as exc:
+            exc.meter = meter
+            raise
+        validators = {}
+        for name in rule["names"]:
+            try:
+                validators[name] = _validator(tools[name]["parameters"])
+            except Exception as exc:  # noqa: BLE001 - jsonschema.SchemaError and friends
+                raise AccountToolCallError(f"TOOL_SCHEMA_INVALID:{name[:60]}:{type(exc).__name__}", meter) from None
+        env = envelope_schema(rule)
+        sys_prompt = (system + "\n\n" if system else "") + emulation_instruction(tools, rule, final_schema)
+        usage, repair = None, ""
+        for attempt in range(1 + self.REPAIR_ATTEMPTS):
+            meter["tool_emulation_attempts"] = attempt + 1
+            try:
+                out, u = self._call(prompt + repair, sys_prompt, env, body, cfg)
+            except RuntimeError as exc:
+                meter["usage"] = usage
+                raise AccountToolCallError(str(exc)[:120], meter) from None
+            usage = _add_usage(usage, u)
+            try:
+                calls, content = check_envelope(out.get("structured_output"), tools, rule, validators)
+            except _Malformed as bad:
+                meter.setdefault("tool_emulation_rejected", []).append(bad.reason)
+                repair = ("\n\n[bridge]\nYour previous answer was rejected and discarded: " + bad.detail
+                          + "\nAnswer again with ONE JSON object as the system prompt describes.")
+                continue
+            meter["tool_calls"] = len(calls)
+            finish = "tool_calls" if calls else ("length" if out.get("stop_reason") == "max_tokens" else "stop")
+            return {"text": content, "finish": finish, "tool_calls": calls, "usage": usage,
+                    "schema_mode": "tool_emulation_json_schema", "stop_reason": out.get("stop_reason"), "meter": meter}
+        meter["usage"] = usage
+        raise AccountToolCallError(f"MALFORMED_AFTER_REPAIR:{meter['tool_emulation_rejected'][-1]}", meter)
 
 
 class CodexBackend:
@@ -348,18 +557,15 @@ class Bridge:
         self.lock = threading.Lock()
 
     def route(self, body: dict, cfg: dict) -> tuple[str, dict]:
-        """Backend for this call. An `anthropic` model goes to `claude-cli` while the mode file says `account`, except a
-        call with tools (kept on the API, recorded as `account_fallback`)."""
+        """Backend for this call. An `anthropic` model goes to `claude-cli` while the mode file says `account` - every
+        call, a call with tools included (tool-call emulation, owner 2026-11-03: no API fallback in account mode)."""
         backend = cfg["backend"]
         note: dict = {}
         if backend == "anthropic" and "claude-cli" in self.backends:
             mode = read_mode(self.mode_file)
             note["claude_mode"] = mode
             if mode == "account":
-                if body.get("tools"):
-                    note["account_fallback"] = "tool_calls_on_api"
-                else:
-                    backend = "claude-cli"
+                backend = "claude-cli"
         if backend == "openai" and "codex" in self.backends and self.inspector_mode_file is not None:
             mode = read_mode(self.inspector_mode_file)
             note["inspector_mode"] = mode
@@ -383,10 +589,11 @@ class Bridge:
             rec.update({"backend": backend, **note})
             res = self.backends[backend].answer(body, cfg)
             rec.update({"ok": True, "finish": res["finish"], "usage": res["usage"], "schema_mode": res["schema_mode"],
-                        "answer_chars": len(res["text"])})
+                        "answer_chars": len(res["text"]), **(res.get("meter") or {})})
             return res
         except Exception as exc:
-            rec.update({"ok": False, "error": f"{type(exc).__name__}:{str(exc)[:160]}"})
+            rec.update({"ok": False, "error": f"{type(exc).__name__}:{str(exc)[:160]}",
+                        **({"error_code": exc.code, **exc.meter} if isinstance(exc, AccountToolCallError) else {})})
             raise
         finally:
             rec["wall_ms"] = round((time.monotonic() - t0) * 1000, 1)
@@ -431,6 +638,9 @@ def handler_for(bridge: Bridge):
                 res = bridge.complete(body)
             except KeyError as exc:
                 return self._json(400, {"error": {"type": "bridge_model_unknown", "message": str(exc)[:200]}})
+            except AccountToolCallError as exc:  # explicit refusal: account mode never falls back to the API
+                return self._json(502, {"error": {"type": "account_mode_tool_call_failed", "code": exc.code,
+                                                  "message": str(exc)[:200]}})
             except Exception as exc:  # noqa: BLE001 - one failed upstream call is the runner's finding, not a crash
                 return self._json(502, {"error": {"type": "bridge_upstream_failed", "message": type(exc).__name__}})
             delta = {"role": "assistant", "content": res["text"]}
