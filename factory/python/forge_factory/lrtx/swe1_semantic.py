@@ -356,7 +356,7 @@ def crosscut_rendered(ws: Path, doc: dict, inv: dict, sysname: str) -> dict:
     for k in doc["rules"]:
         r = CROSS_RULES[k]
         reqs.append({"key": k, "source_page": page, "effects": [], "statement": r["statement"].format(sys=sysname),
-                     "verification": r["verification"], "verified_by": r["verified_by"]})
+                     "verification": r["verification"], **({"verified_by": r["verified_by"]} if "verified_by" in r else {})})
     return {"requirements": reqs, "not_covered": [], "open_points": doc["open_points"]}
 
 

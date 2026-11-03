@@ -1172,6 +1172,49 @@ def cmsisize(text: str) -> str:
     return text
 
 
+UNIT_VERIFICATION = {"gtest": False}  # owner 2026-11-03: set by the builder for work orders with unit_verification
+PLAN_MD = "workproducts/SWE.4/unit_test_plan.md"
+USPEC_FRAGMENTS = [
+    # SWE.1 keeps the verification criteria and the SWR -> SWE.6 qualification-test allocation only
+    ("one row per SWR: "
+     "test_id UT-001.. and test_file software/tests/unit/test_rcc.c for requirements a host unit test verifies; for "
+     "flash, static RAM, stack, target-only and reset/startup ('While no ... after reset') requirements test_id = the SWR "
+     "id and test_file = "
+     "software/tests/software/test_rcc_requirements.robot (verified by the SWE.6 Robot suite).",
+     "one row per SWR: test_id = the SWR id and test_file = software/tests/software/test_rcc_requirements.robot (every "
+     "requirement is qualified by the SWE.6 Robot suite). Never write UT ids: SWE.4 derives the unit tests from the "
+     "SWE.3 unit specification and assigns their UT ids."),
+    ("traceability/requirements_to_tests.csv (the UT ids per SWR).",
+     PLAN_MD + " (GENERATED from the frozen SWE.3 unit specification: one row per USPEC item with its UT id - write "
+     "exactly one test per row)."),
+    ("software/hal/stm32n6xx_hal_rcc.h and traceability/requirements_to_tests.csv. HAL unit tests",
+     "software/hal/stm32n6xx_hal_rcc.h and " + PLAN_MD + " (GENERATED: one row per USPEC item with its UT id - write "
+     "exactly one test per row). HAL unit tests"),
+    ("read_file software/tests/unit/test_rcc.c (written by the unit-test step) and traceability/requirements_to_tests.csv.",
+     "read_file software/tests/unit/test_rcc.c (written by the unit-test step) and " + PLAN_MD + "."),
+    ("'## Test cases' table | UT id | function | SWR ids |", "'## Test cases' table | UT id | USPEC | function | SWR ids |"),
+    ("read_file traceability/requirements_to_tests.csv (owned by SWE.1; you cannot edit it): every UT id it cites "
+     "for software/tests/unit/test_rcc.c must appear in a CHECK of that file - add or rename your tests to match "
+     "it (never cite or invent other ids).",
+     "read_file " + PLAN_MD + " (GENERATED from the frozen SWE.3 unit specification; you cannot edit it): every UT id "
+     "it lists must be the @test of exactly one test that @verifies that row's USPEC id - add or rename your tests to "
+     "match it (never cite or invent other ids)."),
+    ("with the UT id its CHECKs print and the unit specification items (workproducts/SWE.3/unit_"
+     "specifications.md) it verifies.",
+     "with the UT id of its row in " + PLAN_MD + " (its CHECKs print that id) and that row's USPEC id."),
+]
+
+
+def uspecize(text: str) -> str:
+    """Owner 2026-11-03 (V-model): SWE.1 allocates only SWE.6 qualification tests and SWE.4 writes one test per USPEC
+    item of the generated plan; identity for work orders without unit_verification."""
+    if not UNIT_VERIFICATION["gtest"]:
+        return text
+    for old, new in USPEC_FRAGMENTS:
+        text = text.replace(old, new)
+    return text
+
+
 def _peripheral_prompts() -> None:
     """Every prompt builder returns its text through peripheralize() (identity for RCC)."""
     import functools
@@ -1179,7 +1222,7 @@ def _peripheral_prompts() -> None:
     for name in ("author_prompt", "inspector_prompt", "ll_author_prompt", "hal_author_prompt", "fix3_author_prompt",
                  "unit_test_author_prompt", "target_test_author_prompt", "robot_test_author_prompt", "triage_prompt"):
         f = globals()[name]
-        globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(_f(*a, **k))))
+        globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(uspecize(_f(*a, **k)))))
 
 
 _peripheral_prompts()

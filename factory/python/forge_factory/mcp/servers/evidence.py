@@ -155,8 +155,20 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
     for r in reqs:
         if r not in traced:
             issues.append(f"UNTRACED:{r}")
+    from ...inspection import uspec_plan
+    from ...layer import uspec_gtest
+
+    # owner 2026-11-03 (V-model): with unit_verification the unit tests trace to the USPEC items (SWE.4 plan); UT rows a
+    # frozen older SWE.1 baseline still holds are SUPERSEDED - recorded, never checked as SWE.4 trace links
+    uspec = uspec_gtest(ctx.workspace)
+    superseded = {(r["requirement_id"], r["test_id"]) for r in uspec_plan.legacy_unit_rows(ctx.workspace)} \
+        if uspec else set()
     for row in rows:
         rid, test = row.get("requirement_id", "").strip(), (row.get("test_id") or "").strip()
+        if (rid, test) in superseded:
+            if rid and rid not in reqs:
+                issues.append(f"TRACE_UNKNOWN_REQ:{rid}")
+            continue
         if rid and rid not in reqs:
             issues.append(f"TRACE_UNKNOWN_REQ:{rid}")
         if rid and not test:
@@ -182,6 +194,8 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
     for row in rows:
         rid, test = row.get("requirement_id", "").strip(), (row.get("test_id") or "").strip()
         tfile = (row.get("test_file") or "").strip()
+        if (rid, test) in superseded:
+            continue
         names = alloc.get(rid) or []
         if not (names and test and tfile.startswith(("software/tests/unit/", "software/tests/integration/"))):
             continue
@@ -192,11 +206,47 @@ def validate_trace(ctx: ToolContext, a: TraceIn) -> dict:
         body = bodies[tfile].get(test)
         if body is not None and not any(re.search(rf"\b{re.escape(n)}\s*\(", body) for n in names):
             issues.append(f"TEST_DOES_NOT_CALL_ALLOCATED_API:{test}:{rid}:{'|'.join(names)[:80]}")
+    plan_tests = 0
+    if uspec and tests_due:
+        plan_issues, plan_tests = _plan_findings(ctx.workspace)
+        issues += plan_issues
     covered = len([r for r in reqs if r in traced])
     return result(ctx, "PASS" if not issues else "FAIL", f"{covered}/{len(reqs)} requirements traced"
                   + (f"; {planned} test links planned (test files are due at SWE.4)" if planned else ""), [], issues,
                   {"requirements": len(reqs), "traced": covered, "rows": len(rows), "planned_test_links": planned,
-                   "test_files_required": tests_due}, "forge-trace-gate", input_obj=a.model_dump())
+                   "test_files_required": tests_due, "superseded_swe1_unit_rows": len(superseded),
+                   "planned_unit_tests": plan_tests}, "forge-trace-gate", input_obj=a.model_dump())
+
+
+def _plan_findings(ws) -> tuple[list[str], int]:
+    """Owner 2026-11-03: every UT id of the SWE.4 plan is a test in the unit-test files that calls a function of its
+    USPEC's unit (the per-USPEC form of CAPA-024)."""
+    from ...inspection import uspec_plan
+
+    plan = uspec_plan.load(ws)
+    if plan is None:
+        return ["UNIT_TEST_PLAN_MISSING:" + uspec_plan.PLAN], 0
+    bodies: dict[str, str] = {}
+    for f in sorted((ws / "software/tests/unit").glob("test_*.c*")):
+        code = re.sub(r"/\*.*?\*/|//[^\n]*", "", f.read_text(errors="replace"), flags=re.S)
+        for k, v in {**_check_function_bodies(code), **_gtest_bodies(code)}.items():
+            bodies.setdefault(k, v)
+    out = []
+    tasks = plan["tasks"] + plan.get("closure", [])
+    for t in tasks:
+        body = bodies.get(t["ut"])
+        if body is None:
+            out.append(f"PLANNED_TEST_MISSING:{t['ut']}:{t['uspec']}")
+        elif t["functions"] and not any(re.search(rf"\b{re.escape(n)}\s*\(", body) for n in t["functions"]):
+            out.append(f"TEST_DOES_NOT_CALL_UNIT_API:{t['ut']}:{t['uspec']}:{'|'.join(t['functions'])[:80]}")
+    return out, len(tasks)
+
+
+def _gtest_bodies(code: str) -> dict[str, str]:
+    """UT id -> body of a GoogleTest TEST(<suite>, UT_nnn) (comment-stripped C++)."""
+    heads = list(re.finditer(r"^[ \t]*TEST(?:_F)?\s*\(\s*\w+\s*,\s*(UT_\d{3})\s*\)\s*\{", code, re.M))
+    return {h.group(1).replace("_", "-"): code[h.end():heads[i + 1].start() if i + 1 < len(heads) else len(code)]
+            for i, h in enumerate(heads)}
 
 
 def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:

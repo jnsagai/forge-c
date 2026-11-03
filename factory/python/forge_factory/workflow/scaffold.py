@@ -121,12 +121,36 @@ def _for_peripheral(text: str, ws: Path) -> str:
 
 
 def scaffold(ws: Path) -> dict:
-    from ..layer import hal_unit_isolation, layer_of
+    """The harness, and (owner 2026-11-03, work orders with unit_verification) the SWE.4 unit test plan: one UT id per
+    USPEC item of the frozen SWE.3 unit specification (inspection/uspec_plan)."""
+    out = _scaffold(Path(ws))
+    from ..layer import uspec_gtest
 
+    if uspec_gtest(ws):
+        from ..inspection import uspec_plan as P
+
+        try:
+            plan = P.current(ws)
+        except P.PlanError as exc:
+            return {**out, "status": "FAIL", "issues": [str(exc)]}
+        P.write(ws, plan)
+        out["plan"] = {"file": P.PLAN_MD, "tests": len(plan["tasks"]), "first_ut": plan["first_ut"],
+                       "swe1_trace": plan["swe1_trace"]}
+    return out
+
+
+def _scaffold(ws: Path) -> dict:
     UNIT_TEST = unit_test(ws)  # noqa: N806 - feature 009: per-peripheral file name
     p = ws / UNIT_TEST
     if p.is_file() and TEST_CASES_MARKER in p.read_text(errors="replace"):
         return {"status": "PASS", "created": False, "file": UNIT_TEST}
+    return _scaffold_c(ws, p)
+
+
+def _scaffold_c(ws: Path, p: Path) -> dict:
+    from ..layer import hal_unit_isolation, layer_of
+
+    UNIT_TEST = str(p.relative_to(ws)) if p.is_relative_to(ws) else str(p)  # noqa: N806
     p.parent.mkdir(parents=True, exist_ok=True)
     from ..delivery_first import selected as delivery_selected
 
@@ -170,8 +194,9 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Generate the SWE.4 host unit-test harness")
     ap.add_argument("--workspace", type=Path, default=Path("."))
     a = ap.parse_args(argv)
-    print(json.dumps(scaffold(a.workspace.resolve())))
-    return 0
+    out = scaffold(a.workspace.resolve())
+    print(json.dumps(out))
+    return 0 if out.get("status") == "PASS" else 1
 
 
 if __name__ == "__main__":

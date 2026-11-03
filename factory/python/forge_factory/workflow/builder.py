@@ -111,7 +111,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           delivery_style: str | None = None, structured: dict | None = None,
           recovery_plan: dict | None = None, operation_scope: dict | None = None,
           execution_policy: dict | None = None, assessment_manifest: dict | None = None,
-          stop_after: str | None = None) -> tuple[str, dict]:
+          stop_after: str | None = None, uspec_gtest: bool = False) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
@@ -125,6 +125,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     prompts.LAYER["layer"] = layer  # ADR-0009: LL | HAL | LL+HAL
     prompts.TRACE["on"] = trace  # owner addendum 2026-10-17: trace rules for work orders with the trace profile
     prompts.ISOLATION["on"] = isolation and layer == "HAL"  # CAPA-038: HAL unit tests on the generated LL test double
+    prompts.UNIT_VERIFICATION["gtest"] = uspec_gtest  # owner 2026-11-03: per-USPEC GoogleTest unit tests (SWE.4 UT ids)
     prompts.BROWNFIELD["mode"] = brownfield  # feature 008: delivered code (FROZEN | FIX_ALLOWED), None = greenfield
     prompts.BROWNFIELD["style"] = delivery_style if brownfield else None  # ST pilot: "cmsis" test prompts
     from ..operation_scope import scoped

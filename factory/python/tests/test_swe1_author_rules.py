@@ -30,8 +30,12 @@ def test_register_task_packet_carries_ar1_ar2_ar3_ar6_and_the_access_log_rule(ws
     inv = swe1.inventory(ws)
     p = swe1.group_packet(ws, swe1.groups(inv)[0], "m")
     instr = p["instructions"]
-    for rule in (swe1.AR_DOMAIN, swe1.AR_ENABLING, swe1.AR_DISCRIMINATING, swe1.AR_PAGE, swe1.PROHIBITION_RULE):
+    # owner 2026-11-03: prepared work orders carry unit_verification - the access-log pass criterion stays, the test
+    # level (verified_by) is no longer SWE.1's
+    for rule in (swe1.AR_DOMAIN, swe1.AR_ENABLING, swe1.AR_DISCRIMINATING, swe1.AR_PAGE,
+                 swe1.PROHIBITION_QUALIFICATION_RULE, swe1.QUALIFICATION_RULE):
         assert rule in instr
+    assert "verified_by" not in instr
     assert swe1.AR_PRESERVATION not in instr  # the all-function rule belongs to the cross-cutting task
     assert "never a count of register accesses" not in instr
     assert p["accounting"]["fits"] and p["accounting"]["estimated_prompt_tokens"] < 6000
@@ -40,8 +44,9 @@ def test_register_task_packet_carries_ar1_ar2_ar3_ar6_and_the_access_log_rule(ws
 def test_crosscut_packet_carries_ar3_ar5_ar6_and_the_access_log_rule(ws):  # noqa: F811
     p = swe1.crosscut_packet(ws, [{"key": "k", "statement": "The IWDG LL driver shall do x."}], "m")
     instr = p["instructions"]
-    for rule in (swe1.AR_DISCRIMINATING, swe1.AR_PRESERVATION, swe1.AR_PAGE, swe1.PROHIBITION_RULE):
+    for rule in (swe1.AR_DISCRIMINATING, swe1.AR_PRESERVATION, swe1.AR_PAGE, swe1.PROHIBITION_QUALIFICATION_RULE):
         assert rule in instr
+    assert "target_robot_test" not in instr
     assert "a write changes only the named bits" not in instr  # X10: the example no longer induces 'one field'
     assert "changes only the fields its requirement names, except the side effects the source documents" in instr
     assert p["accounting"]["fits"]

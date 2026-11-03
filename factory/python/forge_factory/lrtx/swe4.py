@@ -62,12 +62,46 @@ def _harness(ws: Path) -> Path:
     return Path(ws) / unit_test(ws)
 
 
+def uspec_mode(ws: Path) -> bool:
+    from ..layer import uspec_gtest
+
+    return uspec_gtest(ws)
+
+
+def plan_cases(ws: Path, write: bool = True) -> list[dict]:
+    """Owner 2026-11-03 (V-model): one test task per USPEC item of the frozen SWE.3 units, UT ids assigned by SWE.4
+    (inspection/uspec_plan). The oracle is the requirement side the USPEC traces to (SWR text and register-effect
+    cases) and the USPEC behaviour; component constraints are verified at SWE.6."""
+    from ..assurance.register_contract import _requirements
+    from ..inspection import uspec_plan as P
+    from .swe3 import units
+
+    ws = Path(ws)
+    plan = P.current(ws)
+    if write:
+        V.write_scoped(ws, P.files(plan), "swe4_test_author")
+    us = {u["id"]: u for u in units(ws)}
+    reqs = _requirements(ws)
+    eff = json.loads((ws / "workproducts/SWE.1/register_effects.json").read_text())["effects"]
+    out = []
+    for t in plan["tasks"] + plan.get("closure", []):
+        u = us.get(t["unit"])
+        out.append({"ut": t["ut"], "uspec": t["uspec"], "behaviour": t["behaviour"], "plan": t, "swrs": t["swrs"],
+                    "swr": ", ".join(t["swrs"]) or "-", "statement": " ".join(reqs.get(r, "") for r in t["swrs"]),
+                    "statements": {r: reqs.get(r, "") for r in t["swrs"]},
+                    "effects": [e for e in eff if e["swr"] in t["swrs"]], "unit": u})
+    return out
+
+
 def cases(ws: Path) -> list[dict]:
-    """One test task per (SWR, UT id) row of the SWE.1 trace that names the host unit-test file."""
+    """One test task per (SWR, UT id) row of the SWE.1 trace that names the host unit-test file (work orders before
+    2026-11-03); with unit_verification, one task per USPEC item (plan_cases)."""
     from ..assurance.register_contract import _requirements
     from .swe3 import units
 
     ws = Path(ws)
+    if uspec_mode(ws):
+        return plan_cases(ws, write=False)
     rel = str(_harness(ws).relative_to(ws))
     rows = list(csv.DictReader(io.StringIO((ws / "traceability/requirements_to_tests.csv").read_text())))
     reqs = _requirements(ws)
@@ -94,6 +128,20 @@ def _oracle_artifacts(ws: Path, c: dict) -> list[dict]:
     from .swe3 import _defines
 
     specs = _unit_specs(ws, c["unit"])
+    if c.get("uspec"):  # owner 2026-11-03: the USPEC item under test, its requirements and their cases
+        u = c["unit"]
+        oracle = (f"{c['uspec']} (unit {u['id']}, {u['function']['name']}) - the specification item this test "
+                  f"verifies: {c['behaviour']}\n" + "".join(f"{r}: {t}\n" for r, t in c["statements"].items()) +
+                  "".join(f"case {e['case']} ({e['swr']}): {e.get('register', '')}.{e.get('field', '')} op {e['op']}"
+                          + RC.value_text(e) + "\n" for e in c["effects"]) +
+                  ("Constraints verified at SWE.6, not by this unit test: " +
+                   ", ".join(c["plan"]["constraints_verified_at_swe6"]) + "\n"
+                   if c["plan"].get("constraints_verified_at_swe6") else "") +
+                  "Other specification items of this unit (each verified by its own test): " +
+                  ("; ".join(f"{s['id']}: {s['behaviour']}" for s in specs if s["id"] != c["uspec"]) or "none"))
+        defs = _defines(ws, u["function"]["fields"])
+        return [{"path": "oracle", "text": oracle, "sha256": sha256_bytes(oracle.encode())},
+                {"path": "generated-defines", "text": defs, "sha256": sha256_bytes(defs.encode())}]
     oracle = (f"{c['swr']}: {c['statement']}\n" + "\n".join(
         f"case {e['case']}: {e.get('register', '')}.{e.get('field', '')} op {e['op']}" +
         RC.value_text(e) for e in c["effects"]) + "\n" +
@@ -124,7 +172,9 @@ def test_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> 
     u = c["unit"]
     specs = _unit_specs(ws, u)
     name = "ut_" + re.sub(r"[^a-z0-9]+", "_", c["ut"].lower())
-    instr = (f"Write ONE self-checking host unit test for {c['ut']}, which verifies {c['swr']} on "
+    what = (f"the specification item {c['uspec']} of unit {u['id']} (requirements {c['swr']})" if c.get("uspec")
+            else c["swr"])
+    instr = (f"Write ONE self-checking host unit test for {c['ut']}, which verifies {what} on "
              f"`{_sig(u['function'])}` (unit {u['id']}). The test is `static void {name}(void)`: call ut_reset_regs() "
              f"first, preset any register value the case needs {_preset_rule(ws, u['function']['fields'])}, and check "
              f"the result with EXACTLY ONE CHECK(\"{c['ut']}\", <condition>) - a test id "
@@ -143,8 +193,11 @@ def test_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> 
              "(a state or bit that must not change or must read 0 is checked), error (ONLY if the requirement states an "
              "error behaviour - never invent one). Use only the harness (ut_reset_regs, CHECK), the function "
              "under test, the register block and the generated defines below - no #include, no #define, no other "
-             f"functions. Put exactly this block directly above the test: '/** @test {c['ut']} @verifies <the USPEC "
-             f"ids of {u['id']} this test verifies> */' (USPEC ids only: {', '.join(s['id'] for s in specs) or 'none'}).")
+             + (f"functions. Put exactly this block directly above the test: '/** @test {c['ut']} @verifies "
+                f"{c['uspec']} */' (this test verifies exactly that specification item; the other items of the unit "
+                "have their own tests)." if c.get("uspec") else
+                f"functions. Put exactly this block directly above the test: '/** @test {c['ut']} @verifies <the USPEC "
+                f"ids of {u['id']} this test verifies> */' (USPEC ids only: {', '.join(s['id'] for s in specs) or 'none'})."))
     from .swe5 import HOST_ACCESS_RULE, has_prohibition
 
     if has_prohibition(c.get("statement", "")):
@@ -191,6 +244,8 @@ def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
     if not ver:
         out.append("'@verifies' must list the USPEC ids this test verifies")
     out += [f"@verifies {v} is not a specification item of {c['unit']['id']}" for v in ver if v not in specs]
+    if c.get("uspec") and ver and ver != [c["uspec"]]:  # owner 2026-11-03: one test per USPEC item, by construction
+        out.append(f"'@verifies' must name exactly {c['uspec']} (the specification item of {c['ut']})")
     if re.search(r"@verifies[^@*]*\b(SWR|SWU|IF)-", tags):
         out.append("@verifies lists USPEC ids only (never SWR-, SWU- or IF- ids)")
     from ..brownfield.scope import strip_comments
@@ -319,6 +374,13 @@ def repair_packet(ws: Path, c: dict, code: str, failure: list[str], model: str) 
                     output_schema=REPAIR_SCHEMA, model=model, output_reserve=3072)
 
 
+def _req_ids(c: dict) -> list[str]:
+    """The requirements a task's test verifies (per-USPEC tasks: the USPEC's oracle requirements, else the unit's)."""
+    if c.get("uspec"):
+        return list(c["swrs"]) or list(c["unit"]["swrs"]) or ["SWR-000"]
+    return [c["swr"]]
+
+
 def _failures(res: dict) -> dict[str, list[str]]:
     out: dict[str, list[str]] = {}
     for i in res.get("issues") or []:
@@ -352,7 +414,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
     from ..inspection import defects
     from . import tools as T
 
-    cs = cases(ws)
+    cs = plan_cases(ws) if uspec_mode(ws) else cases(ws)
     missing = [c["ut"] for c in cs if c["unit"] is None]
     if missing:
         return V.reply(ws, PHASE, "FAILED", [f"{u}: its requirement is allocated to no SWE.3 unit" for u in missing],
@@ -392,7 +454,8 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
         if d["verdict"] == "code_defect":
             try:
                 filed.append(defects.report(ws, detected_phase=PHASE, reported_by="swe4-author", kind="CODE",
-                                            summary=f"{c['ut']} fails: {d['reason']}"[:400], requirement_ids=[c["swr"]],
+                                            summary=f"{c['ut']}{' (' + c['uspec'] + ')' if c.get('uspec') else ''} "
+                                                    f"fails: {d['reason']}"[:400], requirement_ids=_req_ids(c),
                                             test_files=[rel], evidence_refs=[f"run_unit:{res.get('summary', '')}"[:120]],
                                             requirement_quote=c["statement"][:300])["id"])
             except defects.DefectError as exc:
@@ -400,7 +463,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
         elif validate_test(ws, {"code": d["code"], "kinds": rec["doc"].get("kinds")}, c) == []:
             try:  # a test corrected after it failed is declared, never silently bent (ADR-0008 L4)
                 defects.report(ws, detected_phase=PHASE, reported_by="swe4-author", kind="TEST",
-                               summary=f"{c['ut']} corrected: {d['reason']}"[:400], requirement_ids=[c["swr"]],
+                               summary=f"{c['ut']} corrected: {d['reason']}"[:400], requirement_ids=_req_ids(c),
                                test_files=[rel], evidence_refs=[], requirement_quote=c["statement"][:300])
             except defects.DefectError as exc:
                 filed.append(f"REFUSED:{exc}")
@@ -422,6 +485,14 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
     return V.reply(ws, PHASE, "PASS", [], budget, artifacts=[rel])
 
 
+def _per_test_results(ws: Path) -> dict[str, str]:
+    """UT id -> PASS/FAIL from the content-addressed output of the latest run_unit (as Matrix 4 reads it)."""
+    from ..inspection.swtrace import check_results, latest_run
+
+    run = latest_run(ws, "run_unit")
+    return check_results(run["raw"]) if run else {}
+
+
 def visit_report(ws: Path, model: str = "", **_k) -> dict:
     """Deterministic SWE.4 report from the journaled tool results (no model call)."""
     from . import tools as T
@@ -437,6 +508,7 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     sa = [json.loads(x) for x in (ws / "evidence/tool-results.jsonl").read_text().splitlines()
           if '"op": "cppcheck"' in x or '"op": "clang_analyze"' in x]
     kinds = {c["ut"]: _declared_kinds(ws, c["ut"]) for c in cs}
+    results = _per_test_results(ws)
     from ..layer import ll_instance
 
     inst = ll_instance(ws)
@@ -447,9 +519,18 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
           f"Host clang build of the self-checking unit tests against the header-only LL driver on {store} "
           "(host evidence, not target). Entry: the SWE.3 baseline is frozen. Exit: every UT PASS and the "
           "coverage goal met or a deviation recorded. Regression: the full suite is re-run on every change.", "",
-          "## Test cases", "", "| UT id | function | SWR ids | kind | result |", "| --- | --- | --- | --- | --- |"]
-    md += [f"| {c['ut']} | {c['unit']['function']['name']} | {c['swr']} | "
-           f"{', '.join(kinds[c['ut']]) or 'not declared'} | {run['status']} (suite) |" for c in cs]
+          "## Test cases", ""]
+    if uspec_mode(ws):  # owner 2026-11-03: one test per USPEC item (UT ids assigned by SWE.4, unit_test_plan.md)
+        md += ["One requirement-based test per USPEC item of the frozen SWE.3 unit specification "
+               "(workproducts/SWE.4/unit_test_plan.md).", "",
+               "| UT id | USPEC | function | SWR ids | kind | result |", "| --- | --- | --- | --- | --- | --- |"]
+        md += [f"| {c['ut']} | {c['uspec']} | {c['unit']['function']['name']} | {c['swr']} | "
+               f"{', '.join(kinds[c['ut']]) or 'not declared'} | {results.get(c['ut'], run['status'] + ' (suite)')} |"
+               for c in cs]
+    else:
+        md += ["| UT id | function | SWR ids | kind | result |", "| --- | --- | --- | --- | --- |"]
+        md += [f"| {c['ut']} | {c['unit']['function']['name']} | {c['swr']} | "
+               f"{', '.join(kinds[c['ut']]) or 'not declared'} | {run['status']} (suite) |" for c in cs]
     md += ["", "## Test design per unit", "",
            "Kinds are declared per test by the test author and checked deterministically: positive is required, and "
            "boundary (field minimum and maximum, further calls) is required for every function that takes a value. "

@@ -667,6 +667,9 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
                               "status": "VERIFIED" if res.get(t["test"]) == "PASS" and v in specs else "UNVERIFIED"})
         ok = {r["uspec"] for r in rows4 if r["status"] == "VERIFIED"}
         f4 += [f"UT:SPEC_NOT_VERIFIED:{s}" for s in specs if s not in ok]
+        from . import uspec_plan  # owner 2026-11-03: the SWE.4 plan names one UT id per USPEC item
+
+        f4 += uspec_plan.missing_tests(ws, tests)
         if run is None:
             f4.append("UT:NO_EXECUTED_RUN")
         rep["findings"]["SWE.4"] = f4

@@ -72,7 +72,7 @@ def test_oracle_tests_pass_run_unit_and_the_unchanged_swe4_gate(ws3, monkeypatch
     assert all("ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = 0x0000CCCCU" not in json.dumps(p["_messages"]) for p in calls)
     assert swe4.visit_report(ws3)["status"] == "PASS"
     rpt = (ws3 / "workproducts/SWE.4/unit_verification_report.md").read_text()
-    assert "## Coverage" in rpt and "| UT-005 | LL_IWDG_SetPrescaler | SWR-005 |" in rpt
+    assert "## Coverage" in rpt and "| UT-005 | USPEC-LL-05-01 | LL_IWDG_SetPrescaler | SWR-005 |" in rpt
     assert _gate(ws3, "SWE.4", monkeypatch) == 0
 
 

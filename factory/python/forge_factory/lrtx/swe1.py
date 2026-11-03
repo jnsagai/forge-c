@@ -109,14 +109,43 @@ def owner_obligations(ws: Path) -> dict | None:
     return OO.declared(ws)
 
 
-def group_schema(obl: dict | None, crosscutting: bool = False) -> dict:
+# owner decision 2026-11-03 (V-model): SWE.1 keeps the verification criteria and the SWR -> SWE.6 qualification-test
+# allocation; it no longer decides the unit-test level or allocates UT ids (SWE.4 derives its tests from the SWE.3
+# USPEC items). verified_by is then neither asked for nor required (an answer that still states it stays valid).
+QUALIFICATION_RULE = (
+    "Every requirement is verified by the SWE.6 qualification test (the Robot suite on the target simulation); its "
+    "verification states that test's pass criterion. The unit-test level is not decided here: SWE.4 derives the unit "
+    "tests from the SWE.3 unit specification.")
+PROHIBITION_QUALIFICATION_RULE = (
+    "A requirement that prohibits an access (no read, no write, no access before the first call or in another window) "
+    "states a verification that passes when the target simulation's register-access log shows no such access in the "
+    "prohibited window - never by final register contents alone.")
+
+
+def uspec_mode(ws: Path | None) -> bool:
+    from ..layer import uspec_gtest
+
+    return ws is not None and uspec_gtest(ws)
+
+
+def _req_schema(ws: Path | None) -> dict:
+    if not uspec_mode(ws):
+        return REQ_SCHEMA
+    return {**REQ_SCHEMA, "required": [k for k in REQ_SCHEMA["required"] if k != "verified_by"]}
+
+
+def group_schema(obl: dict | None, crosscutting: bool = False, ws: Path | None = None) -> dict:
     """GROUP_SCHEMA, unchanged when the work order declares no owner obligations; otherwise every requirement lists
     the ids it implements, and the cross-cutting task may record obligation gaps."""
+    base = _req_schema(ws)
     if obl is None:
-        return GROUP_SCHEMA
+        if base is REQ_SCHEMA:
+            return GROUP_SCHEMA
+        return {**GROUP_SCHEMA, "properties": {**GROUP_SCHEMA["properties"],
+                                               "requirements": {"type": "array", "items": base}}}
     ids = [o["id"] for o in obl["obligations"]]
-    req = {**REQ_SCHEMA, "required": REQ_SCHEMA["required"] + ["obligations"],
-           "properties": {**REQ_SCHEMA["properties"],
+    req = {**base, "required": base["required"] + ["obligations"],
+           "properties": {**base["properties"],
                           "obligations": {"type": "array", "items": {"type": "string", "enum": ids}}}}
     out = {**GROUP_SCHEMA, "properties": {**GROUP_SCHEMA["properties"], "requirements": {"type": "array", "items": req}}}
     if crosscutting:  # only non-critical obligations may be recorded as gaps (owner 2026-10-31)
@@ -394,9 +423,11 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
              " Each statement uses EARS "
              f"(The/When/While/Where/If..then), exactly one 'shall', the subject 'the {sysname}', and ends with a period; "
              "name the field as REGISTER.FIELD. verification states the test and its pass criterion ('... passes "
-             "when ...'), checking register bits and return values on the register array. " + PROHIBITION_RULE +
-             " verified_by is host_unit_test, except startup/reset behaviour ('While no ... after reset') and access "
-             f"prohibitions, which are target_robot_test. source_page is the RM0486 page of the cited fact ({', '.join(map(str, g['pages']))}). "
+             "when ...'), checking register bits and return values on the register array. " + (
+                 PROHIBITION_QUALIFICATION_RULE + " " + QUALIFICATION_RULE if uspec_mode(ws) else PROHIBITION_RULE +
+                 " verified_by is host_unit_test, except startup/reset behaviour ('While no ... after reset') and access "
+                 "prohibitions, which are target_robot_test.") + \
+             f" source_page is the RM0486 page of the cited fact ({', '.join(map(str, g['pages']))}). "
              + effect_rule(ws) + " key is a short snake_case name of the requirement. open_points lists ambiguities of "
              "the source (or nothing). Author rules: " + REGISTER_RULES)
     crit = [f"every requirement's subject is exactly 'the {sysname}'", "every field of the task is covered or listed "
@@ -414,7 +445,7 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
     if note := for_workspace(ws):
         instr += " " + note
     return S.packet(phase="SWE.1", task=f"requirements:{g['id']}", role="swe1-author", instructions=instr,
-                    sources=srcs, criteria=crit, output_schema=group_schema(obl), model=model,
+                    sources=srcs, criteria=crit, output_schema=group_schema(obl, ws=ws), model=model,
                     findings=findings, previous=previous)
 
 
@@ -442,9 +473,11 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
              "Do NOT write flash/RAM/stack budget requirements: the factory adds them from the owner's work-order "
              "budgets. Every statement uses EARS (The/When/While/Where/If..then), exactly one 'shall', "
              f"the subject 'the {sysname}', and ends with a period. "
-             "verification states the test and its explicit pass criterion ('... passes when ...'). " + PROHIBITION_RULE +
-             " source_page is the RM0486 page supporting the requirement, from the provided sources. "
-             "Reset/startup requirements are target_robot_test. effects stay empty unless a statement sets, clears or writes a "
+             "verification states the test and its explicit pass criterion ('... passes when ...'). " + (
+                 PROHIBITION_QUALIFICATION_RULE + " " + QUALIFICATION_RULE if uspec_mode(ws) else PROHIBITION_RULE) +
+             " source_page is the RM0486 page supporting the requirement, from the provided sources. " +
+             ("" if uspec_mode(ws) else "Reset/startup requirements are target_robot_test. ") + \
+             "effects stay empty unless a statement sets, clears or writes a "
              "named field. not_covered stays empty. Author rules: " + CROSSCUT_RULES)
     art = {"path": "lrtx:functional_requirements", "text": listing, "sha256": sha256_bytes(listing.encode())}
     secs = _section_files(ws)
@@ -462,7 +495,7 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
         instr += " " + note
     return S.packet(phase="SWE.1", task="requirements:crosscutting", role="swe1-author", instructions=instr,
                     sources=srcs, artifacts=[art], criteria=crit,
-                    output_schema=group_schema(obl, crosscutting=True), model=model, findings=findings,
+                    output_schema=group_schema(obl, crosscutting=True, ws=ws), model=model, findings=findings,
                     previous=previous)
 
 
@@ -518,7 +551,9 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
             out.append(f"[{k}] {code}: {ears_hint(code, sysname)}")
         if "pass" not in r["verification"].lower():
             out.append(f"[{k}] verification has no pass criterion ('passes when ...')")
-        if STARTUP.match(st) and r["verified_by"] != "target_robot_test":
+        if uspec_mode(ws):  # owner 2026-11-03: the unit-test level is SWE.4's, not SWE.1's
+            pass
+        elif STARTUP.match(st) and r["verified_by"] != "target_robot_test":
             out.append(f"[{k}] a startup/reset invariant is verified by target_robot_test, not a host unit test")
         elif PROHIBITION.search(st) and r["verified_by"] != "target_robot_test":
             # owner 2026-11-02 (X12, "Allow access logging"): only the target simulation logs register accesses
@@ -618,8 +653,8 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         if not any(STARTUP.match(r["statement"]) for r in doc["requirements"]):
             # lrtx9: a repair dropped the startup invariant the packet asks for (SWE1-03 then failed for real)
             out.append(f"the cross-cutting task must state the reset/startup behaviour, e.g. 'While no LL function has "
-                       f"been called after reset, the {sysname} shall not write any {pfx} register.' "
-                       "(verified_by target_robot_test)")
+                       f"been called after reset, the {sysname} shall not write any {pfx} register.'"
+                       + ("" if uspec_mode(ws) else " (verified_by target_robot_test)"))
         for r in doc["requirements"]:
             regs = sorted({f[0] for f in re.findall(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z0-9_]+)", r["statement"])
                            if f[0] in idx} - {e["register"] for e in r["effects"]})
@@ -828,7 +863,9 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
             effects.append(item)
     csv, ut = ["requirement_id,test_id,test_file"], 0
     for r in rows:
-        if r["verified_by"] == "host_unit_test":
+        if uspec_mode(ws):  # owner 2026-11-03: SWR -> SWE.6 qualification test only; SWE.4 assigns the UT ids
+            csv.append(f"{r['swr']},{r['swr']},software/tests/software/test_{pid}_requirements.robot")
+        elif r["verified_by"] == "host_unit_test":
             ut += 1
             csv.append(f"{r['swr']},UT-{ut:03d},software/tests/unit/test_{pid}.c")
         else:

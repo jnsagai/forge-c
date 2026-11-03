@@ -86,8 +86,16 @@ def trace_check(ws: Path) -> tuple[bool, list[str]]:
     traced = {r.get("requirement_id", "").strip() for r in rows if (r.get("test_id") or "").strip()}
     missing = sorted(reqs - traced)
     phantom = []  # a cited test id must exist in its test file (no false traceability, r41)
+    from ..inspection import uspec_plan
+    from ..layer import uspec_gtest
+
+    # owner 2026-11-03: UT rows of an older frozen SWE.1 baseline are superseded by the SWE.4 per-USPEC plan
+    superseded = {(r["requirement_id"], r["test_id"]) for r in uspec_plan.legacy_unit_rows(ws)} if uspec_gtest(ws) \
+        else set()
     for r in rows:
         tid, tf = (r.get("test_id") or "").strip(), (r.get("test_file") or "").strip()
+        if ((r.get("requirement_id") or "").strip(), tid) in superseded:
+            continue
         f = ws / tf if tf else None
         if tid and f is not None and f.is_file() and not re.search(rf"\b{re.escape(tid)}\b", f.read_text(errors="replace")):
             phantom.append(f"TEST_ID_NOT_IN_FILE:{tid}")

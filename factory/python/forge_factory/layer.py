@@ -27,6 +27,18 @@ def layer_of(ws: Path) -> str:
 TRACE_PROFILE = "owner-2026-10-17"  # EASA-OR-001..011: SWC per layer, unit specs (ReqIF), Doxygen, six matrices
 HAL_UNIT_ISOLATION = "ll-fake-v1"  # CAPA-038: HAL unit tests run on a generated test double of the provided LL API
 REGISTER_CONTRACT = "rc-v1"  # owner decision 2026-10-19 (option B): machine-readable register contract feeds the oracle
+# owner decision 2026-11-03 (V-model): SWE.4 unit tests derive from and trace to the SWE.3 USPEC items (UT ids assigned
+# by SWE.4, GoogleTest/GoogleMock 1.11.0); SWE.1 allocates only the SWE.6 qualification tests. Older work orders keep
+# the SWE.1 UT allocation and the self-checking C harness (never reinterpreted).
+UNIT_VERIFICATION = "uspec-gtest-v1"
+
+
+def uspec_gtest(ws: Path) -> bool:
+    try:
+        return json.loads((Path(ws) / ".forge-run/manifest.json").read_text()).get("unit_verification") == \
+            UNIT_VERIFICATION
+    except (OSError, ValueError):
+        return False
 
 
 def hal_unit_isolation(ws: Path) -> bool:
