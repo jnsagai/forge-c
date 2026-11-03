@@ -1095,6 +1095,15 @@ def peripheralize(text: str) -> str:
                  "iterations)", ""),
                 ("'#define HAL_RCC_TIMEOUT_VALUE 1000U', ", ""),
                 ("Timeouts and error handling, ", "Error handling and timing, ")]
+        if LAYER["layer"] != "LL":  # CAPA-127: SWE.5/SWE.6 of the HAL - no timeout target file, scenario or path
+            hal += [
+                ("write software/tests/target/test_rcc_target.c and test_rcc_target_timeout.c yourself as described for "
+                 "the target-test step (TCHECK checks on the API return values and register bits, scenario never_ready "
+                 "for the timeout file)",
+                 "write the software/tests/target/test_*.c files of the target-test step yourself as described there "
+                 "(TCHECK checks on the API return values and register bits)"),
+                ("(timeout paths, measured sizes)", "(error paths, measured sizes)"),
+                ("(add '    scenario=never_ready' for timeout behaviour; use ", "(use ")]
     if "hal_api" in t:  # NULL checks of the configuration pointer need <stddef.h> (the LL includes <stdint.h> only)
         hal.append(("'#include \"stm32n6xx_ll_rcc.h\"', 'typedef enum",
                     "'#include <stddef.h>', '#include \"stm32n6xx_ll_rcc.h\"', 'typedef enum"))

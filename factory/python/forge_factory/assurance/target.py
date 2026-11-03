@@ -132,14 +132,95 @@ def requirement_observation(requirements: list[str], suite_text: str, scenario_t
             "basis": "executed Robot assertions on Renode (simulated target), not file names or tags"}
 
 
+RCC_BOUNDARY = r"TIMEOUT_VALUE\s*\+\s*1U?|\(\s*0U?\s*\)|\b1001U?\b|\b1000U?\b"  # RCC: timeout argument 0/1000/1001
+_LITERAL = re.compile(r"(?<![\w.])(0[xX][0-9A-Fa-f]+|\d+)[uUlL]*(?![\w.])")
+
+
+def boundary_rule(ws: Path) -> dict:
+    """CAPA-127: what counts as a boundary argument in the SWE.5 integration tests of this work order, from the
+    peripheral profile and the SWE.1 register contract. Every rule keeps the RCC pattern. A HAL with a time base
+    (hal.time_base) also accepts its timeout constant (HAL_<PFX>_...TIMEOUT...) as the maximum or + 1U; a HAL that does
+    not wait (layer.hal_waits) also accepts, as a HAL API argument (or a member assignment), a count of 0 or, for a
+    field of 2 to 31 bits that the register contract writes, the field's maximum value or the first value above it
+    (width from the RM register index of the work order). An LL work order keeps the RCC pattern only."""
+    from ..layer import hal_waits, layer_of, profile
+
+    prof, lyr = profile(ws), layer_of(ws)
+    rule: dict = {"api": prof["hal"]["function_prefix"], "timeout_const": None, "zero_count": False,
+                  "field_limits": []}
+    if lyr == "LL":
+        return rule
+    if prof["hal"].get("time_base"):
+        rule["timeout_const"] = re.escape(prof["hal"]["function_prefix"]) + r"\w*TIMEOUT\w*"
+    elif not hal_waits(ws):
+        from .register_contract import EFFECTS, _load, _rm_index
+
+        rule["zero_count"] = True
+        eff, _ = _load(ws, EFFECTS)
+        idx = _rm_index(ws) if eff else {}
+        limits = set()
+        for e in (eff or {}).get("effects") or []:
+            f = (idx.get(e.get("register")) or {}).get("fields", {}).get(e.get("field")) if e.get("op") == "write" else None
+            width = f["msb"] - f["lsb"] + 1 if f else 0
+            if 2 <= width < 32:  # a 1-bit field's limits (1, 2) are no boundary; a 32-bit field has no value above
+                limits |= {(1 << width) - 1, 1 << width}
+        rule["field_limits"] = sorted(limits)
+    return rule
+
+
+def _hal_call_args(t: str, api: str) -> list[str]:
+    """The argument text of every call of an API function (balanced parentheses, compound literals included)."""
+    out = []
+    for m in re.finditer(rf"\b{re.escape(api)}\w+\s*\(", t):
+        depth, i = 1, m.end()
+        while i < len(t) and depth:
+            depth += {"(": 1, ")": -1}.get(t[i], 0)
+            i += 1
+        out.append(t[m.end():i - 1])
+    return out
+
+
+def _top_level(args: str) -> list[str]:
+    parts, depth, cur = [], 0, ""
+    for ch in args:
+        depth += {"(": 1, "{": 1, "[": 1, ")": -1, "}": -1, "]": -1}.get(ch, 0)
+        if ch == "," and depth == 0:
+            parts.append(cur.strip())
+            cur = ""
+        else:
+            cur += ch
+    return parts + [cur.strip()]
+
+
+def boundary_present(t: str, rule: dict | None = None) -> bool:
+    """CAPA-127: the integration tests pass a boundary argument (RCC pattern, else the work order's boundary_rule)."""
+    if re.search(RCC_BOUNDARY, t):
+        return True
+    if not rule:
+        return False
+    code = re.sub(r"/\*.*?\*/|//[^\n]*|\"(?:\\.|[^\"\\])*\"", " ", t, flags=re.S)  # no comments, no strings
+    calls = _hal_call_args(code, rule["api"])
+    args = [a for x in calls for a in _top_level(x)]
+    tc = rule.get("timeout_const")
+    if tc and (re.search(rf"\b{tc}\s*\+\s*1U?\b", code) or any(re.fullmatch(tc, a) for a in args)):
+        return True
+    if rule.get("zero_count") and any(re.fullmatch(r"(?:0[xX])?0+[uUlL]*", a) for a in args):
+        return True
+    limits = set(rule.get("field_limits") or [])
+    values = [m.group(1) for x in calls for m in _LITERAL.finditer(x)]
+    values += [m.group(1) for m in re.finditer(r"\.\s*\w+\s*=\s*" + _LITERAL.pattern, code)]
+    return any(int(v, 0) in limits for v in values)
+
+
 def integration_categories(test_texts: dict[str, str], tool_ops_passed: set[str] | None = None,
-                           prefix: str = "RCC") -> dict:
+                           prefix: str = "RCC", boundary: dict | None = None) -> dict:
     """T048: integration evidence must include interface, boundary, negative/timeout and resource cases. Resource
-    usage counts only as an executed measurement (measure_elf / stack_usage PASS), never as report text."""
+    usage counts only as an executed measurement (measure_elf / stack_usage PASS), never as report text. `boundary`:
+    the work order's boundary_rule (None: the RCC pattern only)."""
     t = "\n".join(test_texts.values())
     ops = tool_ops_passed or set()
     cats = {"interface": bool(re.search(rf"\bIF-\d{{2}}\b|\b(?:HAL|LL)_{prefix}_\w+\s*\(", t)),
-            "boundary": bool(re.search(r"TIMEOUT_VALUE\s*\+\s*1U?|\(\s*0U?\s*\)|\b1001U?\b|\b1000U?\b", t)),
+            "boundary": boundary_present(t, boundary),
             "negative_timeout": bool(re.search(r"HAL_TIMEOUT|HAL_ERROR|never_ready|IsReady\(\)\s*==\s*0U", t)),
             "resource": {"measure_elf", "stack_usage"} <= ops}
     return {"categories": cats, "missing": [k for k, v in cats.items() if not v]}
