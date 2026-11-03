@@ -27,6 +27,10 @@ def decide(ws: Path, phase: str) -> tuple[bool, str]:
     stale = st.stale_reason(phase, bl)
     if stale:
         return False, f"baseline not valid: {stale}"
+    from ..inspection.completeness import reinspect_requested
+
+    if reinspect_requested(ws, phase):  # CAPA-123: the inspection was incomplete or not performed - nothing for the author
+        return True, f"{bl['baseline_id']} inspection incomplete or not performed: inspect again without authorship"
     ins = sorted((ws / "inspection" / phase).glob("INS-*.json")) if (ws / "inspection" / phase).is_dir() else []
     if any(json.loads(p.read_text()).get("baseline_id") == bl["baseline_id"] for p in ins):
         return False, "the baseline was inspected: findings go to the author"

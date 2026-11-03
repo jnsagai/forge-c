@@ -25,7 +25,7 @@ from pathlib import Path
 from ..common import pretty_json, utc_now
 from ..contracts.agent_output import parse
 from ..events.emit import emit
-from . import outage
+from . import completeness, outage
 from .engine import InspectionError, Store
 
 
@@ -257,7 +257,8 @@ def step_inspect(store: Store, phase: str, text: str) -> int:
                                         "issues": list(res.issues)[:10]})
         print(json.dumps({"infra_unavailable": outage.CODE, "phase": phase}))
         return fail_code(store.workspace, phase, "inspect")
-    g = store.gate(phase)
+    # CAPA-123: a visit that recorded no inspection never re-uses the baseline's earlier verdict as a failed cycle
+    g = completeness.not_performed(store, phase, store.gate(phase))
     _state(store.workspace, phase, {"step": "inspect", "agent_status": res.status, "agent_ok": res.ok,
                                     "gate": g})
     print(json.dumps(g))
@@ -287,7 +288,9 @@ def _epoch_lines(ws: Path, phase: str, since: str) -> list[str]:
 
 def _count(ws: Path, phase: str, step: str, since: str = "") -> int:
     # CAPA-122: a route that ended on an infrastructure outcome was no failed production cycle
-    return sum(1 for x in _epoch_lines(ws, phase, since) if f'"step": "{step}"' in x and '"infra_outcome"' not in x)
+    # CAPA-123: nor did a re-inspection of an incomplete/not performed inspection
+    return sum(1 for x in _epoch_lines(ws, phase, since) if f'"step": "{step}"' in x and '"infra_outcome"' not in x
+               and '"inspection_outcome"' not in x)
 
 
 def author_rejections(ws: Path, phase: str, since: str = "") -> int:
@@ -485,7 +488,9 @@ ITEM_STUCK = ("SAME_ITEM", "ITEM_FAILED")  # stuck codes the route reason names 
 
 
 def _failed_items(rec: dict) -> set[str]:
-    return {k for k, v in (rec.get("items") or {}).items() if (v or {}).get("verdict") not in ("PASS", None)}
+    # CAPA-123: an item the inspector did not examine is no failed product item (same-item/moving-target rules)
+    return {k for k, v in (rec.get("items") or {}).items() if (v or {}).get("verdict") not in ("PASS", None)
+            and not (v or {}).get("not_examined")}
 
 
 def repeated_failed_findings(store: Store, phase: str, n: int = SAME_ITEM_LIMIT) -> dict[str, str]:
@@ -569,6 +574,15 @@ def step_route(store: Store, phase: str) -> int:
         emit("workflow", "WARN", f"{phase} {outage.INFRA}: {outage.CODE} -> BLOCKED (retryable)", phase=phase)
         print(json.dumps(g))
         return 1
+    over = completeness.route_outcome(store.workspace, phase)
+    if over is not None:
+        # CAPA-123: the inspection was INCOMPLETE (evidence not examined) or NOT PERFORMED (the visit recorded nothing):
+        # re-inspect the same baseline (bounded by the inspect gate) - no rework cycle, no development reservation,
+        # no author finding; BLOCKED once the bound is reached
+        _state(store.workspace, phase, {"step": "route", "gate": over, "inspection_outcome": over["reason"][:120]})
+        emit("workflow", "WARN", f"{phase} {over['reason'][:120]} -> {over['decision']}", phase=phase)
+        print(json.dumps(over))
+        return 0 if over["decision"] == "REINSPECT" else 1
     from .. import development_execution as development
 
     if development.selected(store.workspace):
