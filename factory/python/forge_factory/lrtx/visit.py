@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 from ..common import pretty_json, utc_now
+from ..inspection import outage as O
 from . import structured as S
 
 # Admission facts are not malformed model answers. Retrying an identical denied
@@ -64,7 +65,7 @@ def open_visit(ws: Path, phase: str, resume: bool, findings_fn, max_calls: int, 
         # gate rejects first): its issues are carried into the next visit so that it repairs instead of repeating
         log = Path(ws) / ".forge-run/lrtx" / phase / "visits.jsonl"
         done = [json.loads(x) for x in (log.read_text().splitlines() if log.is_file() else []) if x.strip()]
-        done = [d for d in done if d.get("status") != "CONTINUE"]
+        done = [d for d in done if d.get("status") != "CONTINUE" and not d.get("infra_outcome")]  # CAPA-122
         carried = list(done[-1].get("issues") or []) if done and done[-1].get("status") == "FAILED" else []
         st = {"open": True, "started_at": utc_now(), "calls": 0, "continuations": 0,
               "findings": list(dict.fromkeys(findings_fn() + carried))}
@@ -73,6 +74,7 @@ def open_visit(ws: Path, phase: str, resume: bool, findings_fn, max_calls: int, 
     sp.parent.mkdir(parents=True, exist_ok=True)
     sp.write_text(pretty_json(st))
     budget = {"calls": st["calls"], "max_calls": max_calls, "state": str(sp),
+              "outage_waits": st.get("outage_waits", 0), "outage_waited_s": st.get("outage_waited_s", 0.0),
               "deadline": time.monotonic() + time_budget_s if time_budget_s else None,
               # CAPA-108: which visit and which of its node executions a rework answer was made in
               "visit": st["started_at"], "execution": st.get("continuations", 0)}
@@ -84,6 +86,8 @@ def _save_calls(budget: dict) -> None:
         sp = Path(budget["state"])
         st = json.loads(sp.read_text())
         st["calls"] = budget["calls"]
+        if budget.get("outage_waits"):  # CAPA-122: the outage wait stays bounded across the visit's node executions
+            st.update(outage_waits=budget["outage_waits"], outage_waited_s=round(budget.get("outage_waited_s", 0.0), 1))
         sp.write_text(pretty_json(st))
 
 
@@ -96,10 +100,11 @@ def close_visit(budget: dict | None) -> None:
 
 
 def last_finished(ws: Path, phase: str, log: str = "visits.jsonl") -> str:
-    """Time of the last visit that ended (CONTINUE records are part of an open visit)."""
+    """Time of the last visit that ended (CONTINUE records are part of an open visit). CAPA-122: a visit ended by a
+    model-call outage was no attempt; the next visit answers the findings the outage visit could not."""
     p = Path(ws) / ".forge-run/lrtx" / phase / log
     done = [json.loads(x) for x in (p.read_text().splitlines() if p.is_file() else []) if x.strip()]
-    done = [d for d in done if d.get("status") != "CONTINUE"]
+    done = [d for d in done if d.get("status") != "CONTINUE" and not d.get("infra_outcome")]
     return done[-1]["at"] if done else ""
 
 
@@ -169,6 +174,38 @@ def _answered(old: dict | None, mark: dict) -> bool:
             and isinstance(old.get("execution"), int) and old["execution"] < mark["execution"])
 
 
+def _outage_wait(budget: dict, task: str) -> bool:
+    """CAPA-122: sleep the next step of the visit's bounded outage schedule (inspection.outage.wait_steps) and return
+    True to retry; False when the schedule (or the node's time box) is used up. One progress line per step keeps
+    Fabro's inactivity watchdog quiet."""
+    steps = O.wait_steps()
+    i = budget.get("outage_waits", 0)
+    if i >= len(steps):
+        return False
+    step = steps[i]
+    if budget.get("deadline"):
+        step = min(step, budget["deadline"] - time.monotonic() - 5)
+        if step <= 0:
+            return False
+    budget["outage_waits"] = i + 1
+    budget["outage_waited_s"] = budget.get("outage_waited_s", 0.0) + step
+    _save_calls(budget)
+    print(json.dumps({"lrtx_progress": task, "outage_wait_s": round(step, 1), "wait": i + 1, "of": len(steps)}),
+          flush=True)
+    time.sleep(step)
+    return True
+
+
+def _outage_rec(task: str, prev: dict | None, base: dict, attempts: list, budget: dict, doc=None) -> dict:
+    """The task result of a visit whose model calls were refused: INVALID with the infrastructure issue, the existing
+    checkpoint (a valid answer or the answer under repair) left exactly as it was."""
+    keep = doc if doc is not None else (prev or {}).get("doc")
+    return {"task": task, "status": "INVALID", "doc": keep,
+            "errors": [O.outage_error(str(budget["outage"]), budget.get("outage_waited_s", 0.0))],
+            "base_hash": base["input_hash"], "attempts": attempts, "at": utc_now(), "reused": False,
+            "outage": str(budget["outage"])[:160]}
+
+
 def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findings: list[str] | None = None,
              max_repairs: int = 2) -> dict:
     """Build -> call -> validate -> localized repair, with checkpoint reuse. `build(findings, previous)` returns the
@@ -178,6 +215,8 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
     ck = _ckpt(ws, phase, task)
     prev = json.loads(ck.read_text()) if ck.is_file() else None
     base = build(None, None)
+    if budget.get("outage"):  # CAPA-122: the visit's model calls are refused; no further call, checkpoint untouched
+        return _outage_rec(task, prev, base, [], budget)
     # author tasks only: an inspector's repeated round keeps its existing behaviour (inspection independence)
     author = str(base.get("role", "")).endswith("-author")
     mark = _rework_mark(budget, findings) if author else None
@@ -218,6 +257,7 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
     attempts, doc, errs = [], start, list(findings or [])
     limit = max_repairs + 1
     n = -1
+    seen_outage = None
     while n + 1 < limit:
         n += 1
         if budget["calls"] >= budget["max_calls"]:
@@ -240,6 +280,23 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
 
         remaining = remaining_seconds(ws)
         r = S.call(p, schema_mode=budget["schema_mode"], **({"timeout": min(3600, remaining)} if remaining else {}))
+        code = O.call_outage(r["errors"]) if r["doc"] is None else None
+        final = code is None and seen_outage is not None and r["doc"] is None and \
+            any(e in NON_REPAIRABLE_REFUSALS for e in r["errors"])
+        if final:  # the task's admission allowance went to refused calls: the outcome is still the outage
+            code = f"{seen_outage} then {r['errors'][0]}"
+        if code is not None:
+            # CAPA-122: a refused/unreachable call is no answer and no repair attempt. Wait (bounded, visit-wide) and
+            # retry the same packet; when the wait is used up the visit ends on the infrastructure outcome.
+            budget["calls"] -= 1
+            seen_outage = seen_outage or code
+            budget.setdefault("outage_log", []).append({"task": task, "error": code[:160], "at": utc_now()})
+            if not final and _outage_wait(budget, task):
+                n -= 1
+                continue
+            budget["outage"] = code
+            _save_calls(budget)
+            return _outage_rec(task, prev, base, attempts, budget, doc)
         errs = r["errors"] or check(r["doc"])
         if not errs and start is not None and findings and r["doc"] == start:
             # lrtxq1 (2026-10-21): an unchanged answer to the findings re-froze the inspected baseline and spent two
@@ -559,6 +616,10 @@ def reply(ws: Path, phase: str, status: str, issues: list[str], budget: dict | N
                  "max_calls": (budget or {}).get("max_calls"), "issues": doc["issues"][:10],
                  "prompt_tokens": [((c.get("usage") or {}).get("prompt_tokens"), c["accounting"]["estimated_prompt_tokens"])
                                    for c in calls]}
+    if status == "FAILED" and (budget or {}).get("outage"):  # CAPA-122: the visit ended on a model-call outage
+        visit_rec.update(infra_outcome=O.CODE, outage=str(budget["outage"])[:160],
+                         outage_waited_s=round(budget.get("outage_waited_s", 0.0), 1),
+                         outage_log=(budget.get("outage_log") or [])[-10:])
     p = Path(ws) / ".forge-run/lrtx" / phase / "visits.jsonl"
     p.parent.mkdir(parents=True, exist_ok=True)
     with p.open("a") as f:

@@ -161,6 +161,9 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
             ]
         if gates[p]["decision"] != "PASS":
             findings.append({"id": f"{p}:GATE_{gates[p]['decision']}", "severity": "major", "detail": gates[p]["reason"][:160]})
+    from ..inspection.outage import package_findings as outage_findings  # CAPA-122: a phase ended by a call outage
+
+    findings += outage_findings(ws)
     findings += [{"id": i, "severity": "major", "detail": "traceability"} for i in tr_issues]
     gl = ws / "verification/static/hal_guideline_conformance.json"
     if gl.is_file():
