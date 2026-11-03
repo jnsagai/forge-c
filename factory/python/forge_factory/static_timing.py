@@ -13,6 +13,10 @@ instruction count up to and including the return is an upper bound of the execut
 refused as NOT_BOUNDED with the reason; no bound is guessed. The virtual time follows from the instruction count at the
 budget's MIPS (Renode's instruction-time model); no hardware WCET is claimed, and the SWE.6 measurement stays the
 verification of the requirement.
+
+Owner 2026-11-03: the SWE.3 author gate renders the bound for every author path (structured and native, LL and HAL;
+a HAL order bounds its public functions compiled from the HAL source) and an OVER_BUDGET or NOT_BOUNDED result is a
+rework finding naming the function, the count and the budget; it is not left to the inspector.
 """
 from __future__ import annotations
 
@@ -85,55 +89,77 @@ def analyse(listing: str, symbols: list[str]) -> dict[str, dict]:
 
 
 def applies(ws: Path) -> bool:
-    """A greenfield header-only LL work order with a simulation performance allocation."""
+    """A greenfield LL or HAL work order with a simulation performance allocation (CAPA-121; owner 2026-11-03: the
+    native SWE.3 path, HAL included, gets the same factory-rendered bound)."""
     from . import layer
     from .brownfield import is_brownfield, manifest_of
     from .simulation_performance import selected
 
     ws = Path(ws)
-    return bool(layer.layer_of(ws) == "LL" and selected(ws) and not is_brownfield(manifest_of(ws)))
+    return bool(layer.layer_of(ws) in ("LL", "HAL") and selected(ws) and not is_brownfield(manifest_of(ws)))
+
+
+def _target(ws: Path, kind: str) -> tuple[str | None, str, list[str], str]:
+    """(C text to compile, its name, function names, symbol prefix): LL = the generated measurement unit of the
+    header-only LL (the forge_measure_<function> wrappers SWE.6 measures); HAL = the HAL source itself (SWE.6 measures
+    the public HAL functions directly)."""
+    from . import layer
+
+    if kind == "LL":
+        hdr = ws / layer.ll_header(ws)
+        unit = layer.ll_measure_unit(hdr.read_text(), ws) if hdr.is_file() else None
+        return unit, "forge_ll_measure.c", list(dict.fromkeys(re.findall(r"\bforge_measure_(\w+)\(", unit or ""))), \
+            "forge_measure_"
+    src = ws / layer.hal_c(ws)
+    names = re.findall(r"^[A-Za-z_][\w \t*]*?\b(" + re.escape(layer.api_prefix("HAL", ws)) + r"\w+)\s*\([^;{]*\)\s*\{",
+                       src.read_text(), re.M) if src.is_file() else []
+    return (src.read_text() if src.is_file() else None), src.name, list(dict.fromkeys(names)), ""
 
 
 def bound(ws: Path) -> dict | None:
     """The static per-call bound record of every scoped function (None when the work order has no such budget)."""
     from . import layer
     from .mcp.servers import build as B
-    from .simulation_performance import selected
+    from .simulation_performance import selected, symbols
 
     ws = Path(ws)
     if not applies(ws):
         return None
+    kind = layer.layer_of(ws)
     budget = selected(ws)
     prof = B.PROFILES[PROFILE]
-    hdr = ws / layer.ll_header(ws)
-    unit = layer.ll_measure_unit(hdr.read_text(), ws) if hdr.is_file() else None
-    names = list(dict.fromkeys(re.findall(r"\bforge_measure_(\w+)\(", unit or "")))
-    from .simulation_performance import symbols
-
-    try:  # bound exactly the wrappers SWE.6 measures
+    api = layer.api_header(kind, ws)
+    text, cname, names, prefix = _target(ws, kind)
+    try:  # bound exactly the functions SWE.6 measures
         measured = [s.removeprefix("forge_measure_") for s in symbols(ws)]
     except (OSError, ValueError, KeyError) as exc:
         measured = [f"<{str(exc)[:80]}>"]
-    rec = {"schema": SCHEMA, "profile": PROFILE, "compiler": prof["cc"], "flags": list(prof["flags"]),
-           "header": layer.ll_header(ws), "header_sha256": sha256_file(hdr) if hdr.is_file() else None,
+    measured_how = ("the straight-line forge_measure_<function> wrapper SWE.6 measures" if kind == "LL" else
+                    "each public HAL function SWE.6 measures, compiled from its source")
+    rec = {"schema": SCHEMA, "layer": kind, "profile": PROFILE, "compiler": prof["cc"], "flags": list(prof["flags"]),
+           "header": api, "header_sha256": sha256_file(ws / api) if (ws / api).is_file() else None,
            "budget": {k: budget[k] for k in ("instructions_per_call", "microseconds_per_call", "performance_mips")},
-           "method": "static instruction count of the straight-line forge_measure_<function> wrapper SWE.6 measures; "
-                     "each instruction executes at most once per call; virtual time = instructions x 1000 / MIPS ns "
-                     "(Renode instruction-time model); refused for any branch, call, loop or wait",
+           "method": f"static instruction count of {measured_how}; straight-line code only (each instruction executes "
+                     "at most once per call); virtual time = instructions x 1000 / MIPS ns (Renode instruction-time "
+                     "model); refused (NOT_BOUNDED) for any branch, call, loop or wait",
            "verification": "SWE.6 Renode measurement (Simulation Performance Should Meet Budget)",
            "hardware_wcet": "NOT_CLAIMED", "functions": {}}
+    if kind == "HAL":
+        rec.update(source=layer.hal_c(ws), source_sha256=sha256_file(ws / layer.hal_c(ws)) if text else None)
     missing = [t for t in (prof["cc"], prof["objdump"]) if not shutil.which(t)]
-    if unit is None or missing or sorted(names) != sorted(measured):
+    if text is None or missing or sorted(names) != sorted(measured):
         rec.update(status="NOT_BOUNDED", issues=[f"TOOL_MISSING:{t}" for t in missing] or (
-            ["NO_LL_FUNCTIONS"] if unit is None else [f"MEASURED_SCOPE_MISMATCH:{','.join(sorted(measured))[:160]}"]))
+            [f"NO_{kind}_FUNCTIONS"] if text is None else
+            [f"MEASURED_SCOPE_MISMATCH:{','.join(sorted(measured))[:160]}"]))
         return rec
     from .mcp.sdk import tool_version
 
     rec["compiler_version"] = tool_version(prof["cc"])
-    rec["measurement_unit_sha256"] = sha256_bytes(unit.encode())
+    if kind == "LL":
+        rec["measurement_unit_sha256"] = sha256_bytes(text.encode())
     with tempfile.TemporaryDirectory(prefix="forge-static-timing-") as td:
-        src, obj = Path(td) / "forge_ll_measure.c", Path(td) / "forge_ll_measure.o"
-        src.write_text(unit)
+        src, obj = Path(td) / cname, Path(td) / (Path(cname).stem + ".o")
+        src.write_text(text)
         cc = subprocess.run([prof["cc"], *prof["flags"], *B.includes(SimpleNamespace(workspace=ws), PROFILE), "-c",
                              str(src), "-o", str(obj)], capture_output=True, text=True, cwd=td, timeout=120)
         if cc.returncode:
@@ -145,8 +171,8 @@ def bound(ws: Path) -> dict | None:
         rec.update(status="NOT_BOUNDED", issues=["DISASSEMBLY_FAILED"])
         return rec
     limit_ns = budget["microseconds_per_call"] * 1000
-    for name, r in analyse(dis.stdout, ["forge_measure_" + n for n in names]).items():
-        fn = name.removeprefix("forge_measure_")
+    for name, r in analyse(dis.stdout, [prefix + n for n in names]).items():
+        fn = name.removeprefix(prefix)
         if r["status"] == "BOUNDED":
             n = r["static_instructions"]
             ns = -(-n * 1000 // budget["performance_mips"])
@@ -157,6 +183,28 @@ def bound(ws: Path) -> dict | None:
     rec["status"] = ("OVER_BUDGET" if "OVER_BUDGET" in states else "NOT_BOUNDED" if "NOT_BOUNDED" in states
                      else "WITHIN_BUDGET")
     return rec
+
+
+def findings(rec: dict | None, swrs: list[str]) -> list[str]:
+    """Owner 2026-11-03: an over-budget or unbounded static result fails the SWE.3 author gate and goes back to the code
+    rework, one precise finding per function; function, count and budget come first (compact replies keep 120 chars)."""
+    if rec is None or rec["status"] == "WITHIN_BUDGET":
+        return []
+    b = rec["budget"]
+    lim = f"budget {b['instructions_per_call']} instr/{b['microseconds_per_call']} us per call"
+    tail = (f" at {b['performance_mips']} MIPS in the pinned Renode simulation"
+            + (f" ({', '.join(swrs)})" if swrs else "") + "; SWE.6 measurement remains the verification")
+    out = [f"STATIC_TIMING_NOT_BOUNDED: no static bound for the {lim}: {i}{tail}" for i in rec.get("issues") or []]
+    for fn, r in rec["functions"].items():
+        if r["status"] == "OVER_BUDGET":
+            out.append(f"STATIC_TIMING_OVER_BUDGET: {fn}: static bound {r['static_instructions']} instr/"
+                       f"{r['virtual_ns_bound']} ns exceeds the {lim}{tail}; reduce the code of {fn}")
+        elif r["status"] == "NOT_BOUNDED":
+            how = (f"write {fn} without branches, calls, loops or waits" if rec.get("layer", "LL") == "LL" else
+                   "the factory computes no static bound for HAL code with branches, calls or waits")
+            out.append(f"STATIC_TIMING_NOT_BOUNDED: {fn}: no static bound for the {lim}: {r['reason']} (not "
+                       f"straight-line code){tail}; {how}")
+    return out
 
 
 def design_section(rec: dict, swrs: list[str]) -> list[str]:
@@ -192,3 +240,48 @@ def performance_swrs(ws: Path, reqs: dict[str, str]) -> list[str]:
 
 def render(rec: dict) -> str:
     return json.dumps(rec, indent=1, sort_keys=True) + "\n"
+
+
+SECTION = "## Timing bound (static analysis)"
+DESIGN = "workproducts/SWE.3/detailed_design.md"
+
+
+def with_section(design: str, section: list[str]) -> str:
+    """The design text with the factory-rendered timing section replacing an earlier one (else appended)."""
+    text = "\n".join(section).rstrip("\n") + "\n"
+    m = re.search(r"^" + re.escape(SECTION) + r"[^\n]*\n.*?(?=^## |\Z)", design, re.M | re.S)
+    if m:
+        return design[:m.start()] + text + ("\n" if design[m.end():] else "") + design[m.end():]
+    return design.rstrip("\n") + "\n\n" + text
+
+
+def swrs_of(ws: Path, reqs: dict[str, str] | None = None) -> list[str]:
+    try:
+        if reqs is None:
+            from .inspection.swtrace import swr_texts
+
+            reqs = swr_texts(ws)
+        return performance_swrs(ws, reqs)
+    except (OSError, ValueError, KeyError):
+        return []
+
+
+def gate(ws: Path) -> list[str]:
+    """SWE.3 author gate, every author path (structured and native, LL and HAL): render the bound into the detailed
+    design and the frozen evidence file, deterministically, and return its findings (none for an order without the
+    budget). A missing detailed design is left to the presence gate."""
+    ws = Path(ws)
+    rec = bound(ws)
+    if rec is None:
+        return []
+    swrs = swrs_of(ws)
+    dd = ws / DESIGN
+    if dd.is_file():
+        new = with_section(dd.read_text(), design_section(rec, swrs))
+        if new != dd.read_text():
+            dd.write_text(new)
+    ev = ws / EVIDENCE
+    if not ev.is_file() or ev.read_text() != render(rec):
+        ev.parent.mkdir(parents=True, exist_ok=True)
+        ev.write_text(render(rec))
+    return findings(rec, swrs)

@@ -246,3 +246,49 @@ def test_capa121_design_carries_the_static_call_bound_of_the_simulation_budget(w
     assert json.loads({s["path"]: s["text"] for s in srcs}[ST.EVIDENCE]) == rec
     item = next(c for c in Store(ws2).applicable(Store(ws2).checklist("SWE.3"))["checks"] if c["id"] == "SWE3-03")
     assert review.item_packet(ws2, "SWE.3", item, got, srcs, "m")["accounting"]["fits"]
+
+
+@pytest.mark.skipif(not TOOLS, reason="gcc/arm-none-eabi-gcc/clang/cppcheck not installed")
+def test_owner_timing_gate_rejects_over_budget_and_renders_the_bound_on_the_native_path(ws2, monkeypatch):
+    """Owner 2026-11-03: an over-budget (or unbounded) static timing result fails the SWE.3 design/author gate with a
+    finding naming the function, the count and the budget, routed to that unit's code rework; the native SWE.3 path (a
+    design the author wrote) gets the same factory-rendered bound at the author gate."""
+    from forge_factory import static_timing as ST
+    from forge_factory.inspection import unit_scaffold
+    from forge_factory.inspection.engine import Store
+    from forge_factory.lrtx import visit as V
+
+    monkeypatch.setattr(S, "call", _scripted(CODE, []))
+    assert swe3.visit_code(ws2, "m")["status"] == "PASS"
+    unit_scaffold.scaffold(ws2)
+    mp = ws2 / ".forge-run/manifest.json"
+
+    def budget(n):
+        m = json.loads(mp.read_text())
+        m["simulation_performance"] = {"schema": "forge-c/simulation-performance-budget/1", "instructions_per_call": n,
+                                       "microseconds_per_call": 100, "performance_mips": 100,
+                                       "test_source": "software/tests/target/test_performance.c"}
+        mp.write_text(json.dumps(m, indent=1))
+
+    budget(3)
+    rep = swe3.visit_design(ws2)
+    assert rep["status"] == "FAILED"
+    enable = next(i for i in rep["issues"] if "LL_IWDG_Enable:" in i)
+    assert enable.startswith("STATIC_TIMING_OVER_BUDGET: LL_IWDG_Enable: static bound 4 instr/40 ns exceeds the budget "
+                             "3 instr/100 us per call")  # function, count and budget within the compact reply
+    assert V.full_issue(ws2, "SWE.3", enable).endswith("reduce the code of LL_IWDG_Enable")
+    assert _gate(ws2, "SWE.3", monkeypatch) != 0 and Store(ws2).latest_baseline("SWE.3") is None
+    found = V.rework_findings(ws2, "SWE.3", "")
+    assert any(f.startswith("STATIC_TIMING_OVER_BUDGET: LL_IWDG_Enable:") for f in found)
+    assert any("LL_IWDG_Enable:" in f for f in swe3._route(found, swe3.units(ws2))["code:SWU-LL-01"])
+    budget(64)  # native path: the author wrote the design; the author gate renders the bound and freezes it
+    dd = ws2 / ST.DESIGN
+    dd.write_text("# Detailed design\n\nNative SWE.3 author design of the IWDG LL.\n")
+    (ws2 / ST.EVIDENCE).unlink()
+    V.reply(ws2, "SWE.3", "PASS", [])  # the native author's PASS answer the gate reads
+    assert _gate(ws2, "SWE.3", monkeypatch) == 0
+    text = dd.read_text()
+    assert text.startswith("# Detailed design\n\nNative SWE.3 author design") and text.count(ST.SECTION) == 1
+    assert "| LL_IWDG_Enable | 4 | 40 | WITHIN_BUDGET |" in text
+    bl = Store(ws2).latest_baseline("SWE.3")
+    assert {ST.EVIDENCE, ST.DESIGN} <= set(bl["files"])
