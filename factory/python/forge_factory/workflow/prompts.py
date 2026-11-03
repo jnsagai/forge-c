@@ -1220,6 +1220,13 @@ def uspecize(text: str) -> str:
                         "'## Measures, environment, entry/exit criteria and regression' (host GoogleTest/GoogleMock "
                         "1.11.0 build with clang++,")
     text = text.replace("must appear in a CHECK of that file", "must be the @test of one TEST of that file")
+    text = text.replace("'## Coverage' (goal: 100% statement/branch of driver code; the llvm_coverage numbers exactly as "
+                        "reported; any shortfall listed as a deviation with reason)",
+                        "'## Coverage' (BLOCKING gate, owner 2026-11-03: 100% line and 100% branch coverage of the "
+                        "driver code, plus 100% MC/DC when the work-order purpose is a safety purpose; not applicable "
+                        "only where llvm-cov counts no branch points or decisions; the llvm_coverage numbers exactly as "
+                        "reported; a shortfall is never a deviation - write the coverage-closure tests the factory "
+                        "names, or report_defect kind CODE for a decision no requirement or USPEC can reach)")
     import re as _re
 
     return _re.sub(r"software/tests/unit/test_rcc\.c\b(?!pp)", "software/tests/unit/test_rcc.cpp", text)

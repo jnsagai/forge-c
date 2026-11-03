@@ -687,7 +687,11 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
                                     "SWE.4 cannot change that code and approves no deviation (deviation approval is the "
                                     "owner's)." if open_gaps else "no open static-analysis finding.")]
     cov_lines, cov_gaps = _coverage(cov)
-    gate = None
+    from ..inspection import coverage_gate as CG
+
+    gate = CG.evaluate(ws, cov) if CG.enabled(ws) else None
+    if gate is not None:  # owner 2026-11-03 (C): blocking by purpose; the gate's findings replace the reported goal
+        cov_lines, cov_gaps = CG.report_lines(gate), gate["findings"]
     md += ["", "## Coverage", "", ("Structural coverage (LLVM source-based, line/branch/MC/DC) of the driver code. " if gate
            else "Goal: 100% statement (line) coverage of the driver code, and 100% branch and MC/DC "
            "coverage where the code has branch points or decisions. ") + "Reported exactly as the tool reported it: status "
