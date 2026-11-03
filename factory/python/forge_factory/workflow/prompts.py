@@ -972,10 +972,14 @@ def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",
              f"glob configuration/baselines/{phase}/BL-*.json and read the newest one: note its baseline_id and files.",
              "read_file each listed workproduct (use offset/limit for long files). Never edit any file. Use the active "
-             "role policy's tool-call allowance, reserving calls to submit the complete inspection. Reuse recorded "
+             "role policy's tool-call allowance, reserving calls to submit the complete inspection: read the evidence "
+             "each item needs first, one read per file, never the same file twice. Reuse recorded "
              "analyzer/validator results: items with a deterministic_check are recomputed automatically; their reports "
-             "are in verification/static/ and inspection/<phase>/deterministic/. Call check_inspection after examining "
-             "the required evidence; retain an explicit finding for evidence you could not examine.",
+             "are in verification/static/ and inspection/<phase>/deterministic/. An empty grep or glob result is no "
+             "evidence that text is absent: read_file the file. Call check_inspection after examining the required "
+             "evidence. A FAIL states a defect you found in the evidence; never FAIL or PASS an item on evidence you "
+             "did not examine: give it ID=FAIL:NOT_EXAMINED:<file or section not examined> (the factory records an "
+             "INCOMPLETE inspection and re-inspects; it is no finding for the author).",
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
              *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),

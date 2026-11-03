@@ -455,6 +455,7 @@ def keep_fixed_findings(ws: Path, phase: str) -> list[str]:
         if rec.get("verdict") == "PASS":
             return []
         return [(k, t) for k, v in sorted((rec.get("items") or {}).items()) if (v or {}).get("verdict") == "FAIL"
+                and not (v or {}).get("not_examined")  # CAPA-123: no product finding to keep fixed
                 for t in item_findings(rec, k) if str(t).strip()]
 
     raised = [t for _k, t in failed(rows[-1])]

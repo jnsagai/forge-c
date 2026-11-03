@@ -282,6 +282,9 @@ class Store:
         checklist = self.applicable(self.checklist(phase))
         stale = self.stale_reason(phase, bl)
         det = self.deterministic_items(phase, checklist)
+        from . import completeness
+
+        unexamined = completeness.unexamined(verdicts, det)  # CAPA-123: the inspector's own limitation, no finding
         items, open_findings = {}, list(findings or [])
         for c in checklist["checks"]:
             v = det.get(c["id"]) or verdicts.get(c["id"])
@@ -291,12 +294,22 @@ class Store:
                 v = {**v, "verdict": "FAIL", "findings": list(v.get("findings", [])) + ["NO_EVIDENCE_REF"]}
             if v["verdict"] == "NOT_APPLICABLE" and c.get("required"):
                 v = {**v, "verdict": "FAIL", "findings": list(v.get("findings", [])) + ["REQUIRED_ITEM_NA"]}
+            if c["id"] in unexamined and v.get("verdict") == "FAIL":
+                items[c["id"]] = {**v, "not_examined": True}
+                continue  # never a PASS, never an author finding
             items[c["id"]] = v
             if v["verdict"] == "FAIL" and c.get("required"):
                 open_findings.append({"id": f"{c['id']}", "severity": c["severity_if_failed"],
                                       "detail": "; ".join(map(str, v.get("findings", [])))[:200]})
         major = [f for f in open_findings if f.get("severity") in ("major", "critical")]
-        verdict = "PASS" if not stale and not major else "FAIL"
+        if unexamined and not major and not stale:
+            # CAPA-123: nothing the inspector examined failed, but it did not examine everything: INCOMPLETE (no INS
+            # record, no PASS); the gate re-inspects the baseline, bounded
+            rec = completeness.record(self.workspace, phase, inspector_role, bl, checklist, items, unexamined)
+            emit("workflow", "WARN", f"{phase} {rec['inspection_id']} INCOMPLETE not examined: "
+                 f"{', '.join(sorted(unexamined))}", phase=phase, agent_id=inspector_role)
+            return {**rec, "findings": []}
+        verdict = "PASS" if not stale and not major and not unexamined else "FAIL"
         n = len(list((self.insp / phase).glob("INS-*.json"))) + 1 if (self.insp / phase).is_dir() else 1
         rec = {"schema": "forge-c/inspection/0.4", "inspection_id": f"INS-{phase}-{n:03d}", "phase": phase,
                "author_role": bl["author_role"], "inspector_role": inspector_role, "baseline_id": baseline_id,
@@ -385,8 +398,13 @@ class Store:
         else:
             stale = self.stale_reason(phase, bl)
             last = ins[-1] if ins else None
+            from .completeness import gate_outcome
+
+            incomplete = None if stale else gate_outcome(self.workspace, phase, bl, last, started)  # CAPA-123
             if stale:
                 decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), stale
+            elif incomplete:
+                decision, reason = incomplete
             elif last is None or last["baseline_hash"] != bl["baseline_hash"]:
                 decision, reason = "REINSPECT", "NO_INSPECTION_FOR_CURRENT_BASELINE"
                 refused = self.inspector_refusal(phase, bl)

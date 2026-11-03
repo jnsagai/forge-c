@@ -227,6 +227,11 @@ def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
     except InspectionError as exc:
         return result(ctx, "BLOCKED", f"inspection refused: {exc}"[:160], issues=[str(exc)[:120]],
                       tool="forge-inspection")
+    if rec["verdict"] == "INCOMPLETE":  # CAPA-123: not examined evidence is no product finding
+        return result(ctx, "FAIL", f"{rec['inspection_id']} INCOMPLETE: not examined {', '.join(sorted(rec['not_examined']))}"
+                      "; no finding for the author, the baseline is re-inspected"[:160], [rec["record_ref"]],
+                      [f"{i}:NOT_EXAMINED" for i in sorted(rec["not_examined"])][:10], {"stale": False},
+                      "forge-inspection", input_obj=a.model_dump())
     return result(ctx, "PASS" if rec["verdict"] == "PASS" else "FAIL",
                   f"{rec['inspection_id']} {rec['verdict']} ({len(rec['findings'])} findings)",
                   [f"inspection/{a.phase}/{rec['inspection_id']}.json"],
