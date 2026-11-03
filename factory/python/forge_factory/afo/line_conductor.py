@@ -73,7 +73,9 @@ BUDGETS = {
     "guard_phase_order_wall_s": 6 * 3600,
 }
 ENDED = ("succeeded", "failed", "cancelled", "canceled", "aborted", "dead")
-WO_RX = re.compile(r"^WO-(?:F\d+-)?(?:CMP-)?SWE(\d)-([A-Z0-9]+)-(\d{8})-([A-Za-z0-9]+)$")
+# SWE<n> phase orders, and PKG packaging-only orders (every phase carried over from a passed order, then packaged)
+WO_RX = re.compile(r"^WO-(?:F\d+-)?(?:CMP-)?(?:SWE(\d)|PKG)-([A-Z0-9]+)-(\d{8})-([A-Za-z0-9]+)$")
+READY = "READY_FOR_OFFLINE_REVIEW"
 CONVERGENCE_RX = re.compile(r"^\s*(STUCK\b|rework budget exhausted)", re.I)
 # deterministic markers of the line launcher (Omniverse2 launch-generic-model.sh, M0); first marker in file order wins
 LAUNCH_RULES = [(re.compile(p), code) for p, code in [
@@ -92,6 +94,8 @@ STACK_CODES = {"STACK_STOP_INCOMPLETE", "READINESS_FAILURE", "STACK_START_FAILED
 # "FileNotFoundError: PROVIDED_LL_MISSING:WO-F014-SWE6-CRCL-20261103-L24::no work order workspace"
 EXC_RX = re.compile(r"^\w+(?:Error|Exception): ([A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)(?::(\S*))?")
 REF_WO_RX = re.compile(r"(WO-[A-Za-z0-9-]+[:;,.]*)")
+# the work-order CLI's JSON refusal on the LAUNCH line, e.g. {"status": "REFUSED", "issues": ["RESUME_RECORD_UNREADABLE:..."]}
+REFUSAL_RX = re.compile(r'"issues": \["([A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)')
 _CODE_BAD = re.compile(r"[^A-Za-z0-9_.:/=-]+")
 _REF_OK = re.compile(r"^[A-Za-z0-9_.:/#@+=-]{1,300}$")
 _TOKEN_OK = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:@/+-]{0,127}$")
@@ -336,9 +340,10 @@ def _result(e: dict) -> str | None:
 
 
 def parse_wo(wo: str) -> tuple[str | None, str | None]:
-    """(phase, part tag) from a work-order name, e.g. WO-F014-SWE6-IWDGHAL-20261103-L22 -> (SWE.6, IWDGHAL)."""
+    """(phase, part tag) from a work-order name, e.g. WO-F014-SWE6-IWDGHAL-20261103-L22 -> (SWE.6, IWDGHAL);
+    a packaging order WO-F014-PKG-IWDG-20261102-01 -> (None, IWDG): it packages after the last phase."""
     m = WO_RX.match(wo or "")
-    return (f"SWE.{m.group(1)}", m.group(2)) if m else (None, None)
+    return (f"SWE.{m.group(1)}" if m.group(1) else None, m.group(2)) if m else (None, None)
 
 
 def scan_orders(root: Path, now: float, lookback_s: float) -> list[dict]:
@@ -358,7 +363,10 @@ def scan_orders(root: Path, now: float, lookback_s: float) -> list[dict]:
         log = _gate_log(ws)
         passed = {e.get("phase") for e in log if e.get("step") == "inspect" and _result(e) == "PASS"}
         rid = (run / "fabro_run_id").read_text().strip() if (run / "fabro_run_id").is_file() else None
-        out.append({"wo": wo, "ws": ws, "rel": f"workorders/{ws.parent.name}/workspace", "tag": tag or "UNKNOWN",
+        busy = [*run.glob("lrtx/*/visit-state.json"), *run.glob("tool-progress/*")]
+        activity = max(mt + [q.stat().st_mtime for q in busy if q.is_file()])  # the order's last recorded activity
+        out.append({"activity": activity, "wo": wo, "ws": ws, "rel": f"workorders/{ws.parent.name}/workspace",
+                    "tag": tag or "UNKNOWN",
                     "phase": target if target in PHASES else "SWE.6", "created": _ts(man.get("created_at")) or min(mt),
                     "rid": rid, "package": _load(run / "package.json"), "log": log, "passed": passed,
                     "source": (man.get("resumed_from") or {}).get("source_work_order"),
@@ -407,6 +415,10 @@ def scan_launches(launch_dir: Path | None, now: float, lookback_s: float) -> lis
                     r = REF_WO_RX.search(m.group(2) or "")
                     rec["ref_wo"] = r.group(1) if r else None
                     break
+            else:
+                m = REFUSAL_RX.search(lines[hit[1] - 1])
+                if m:
+                    rec["code"] = m.group(1)
         out.append(rec)
     return out
 
@@ -495,6 +507,8 @@ def classify_order(rec: dict, life: str | None, capa_of: dict) -> dict | None:
 
     if rec["phase"] in rec["passed"]:
         return None
+    if (rec["package"] or {}).get("package_status") == READY:
+        return None  # packaged for offline review: a packaging-only (PKG) order's carried phases all passed
     kind = (life or "").split(":")[0]
     if rec["package"] is None and kind not in ENDED:
         return None  # running (the wall budget is checked by the caller)
@@ -546,7 +560,8 @@ def classify_order(rec: dict, life: str | None, capa_of: dict) -> dict | None:
     # observation is tie-broken by an attempt-specific id, so its cfp1 can differ between runs of the same rejection)
     fp = "sup1-" + _h("CODES", ph, route, *sorted(codes))[:40] if codes else b["fingerprint"]
     return {"class": cls, "phase": ph, "error_code": _code(b["error_code"]), "route": route or "ENDED", "codes": codes,
-            "fingerprint": fp, "cre_fingerprint": b["fingerprint"], "evidence": ev, "upstream": sorted({d["target_phase"] for d in up}),
+            "fingerprint": fp, "cre_fingerprint": b["fingerprint"], "evidence": ev,
+            "upstream": sorted({d["target_phase"] for d in up}),
             "status": {"FACTORY_DEFECT": "WAITING_EXTERNAL_CHANGE", "UNKNOWN": "ESCALATED"}.get(cls, "OPEN"),
             "capa": capa}
 
@@ -562,6 +577,7 @@ SUMMARY = {
     "INCIDENT": "002 incident {error_code} on {component}",
     "AFO": "AFO order {state}: {error_code}",
     "WALL": "{phase} order over the 6 h phase wall budget",
+    "ABANDONED": "{phase} order without a live Fabro run and no activity for 6 h; parked",
 }
 
 
@@ -614,6 +630,10 @@ def rule_proposals(issue_id: str, cls: str, phase: str, *, resume_from: str | No
         return [_proposal(issue_id, 1, "RESUME_PHASE_FROM_LAST_PASSED_ORDER", ["FABRO_RUN_CANCELLED",
                           "OWNER_RELEASE_REQUIRED", "RESUME_FROM_LAST_GOOD_PART"],
                           f"resume {phase} from {src} when released", phase=ph, resume_from=resume_from)]
+    if kind == "ABANDONED":
+        return [_proposal(issue_id, 1, "RESUME_PHASE_FROM_LAST_PASSED_ORDER", ["ABANDONED_NO_LIVE_RUN",
+                          "RESUME_FROM_LAST_GOOD_PART"], f"resume {phase} from {src} if the part still needs it",
+                          phase=ph, resume_from=resume_from)]
     if kind == "WALL":
         return [_proposal(issue_id, 1, "CHECK_ORDER_LIVENESS", ["PHASE_WALL_GUARD"], f"check the {phase} run is alive "
                           "(pacing guard, not a stop reason)", phase=ph)]
@@ -687,6 +707,7 @@ def _lineage(orders_by_wo: dict, rec: dict) -> str:
 
 
 def _later(orders: list[dict], tag: str, phase: str, after: float, *, launched: bool) -> tuple[str | None, str | None]:
+    """The part's (tag's) newer orders across lineages decide; see _supersede for the reason codes."""
     """('RESOLVED'|'RECOVERING', the order) when a later order of the part passed this phase (or a later one), or -
     for a launch failure - simply launched; a later order still running on the phase is a recovery under way."""
     i = PHASES.index(phase) if phase in PHASES else 0
@@ -719,6 +740,13 @@ def line_progress(orders: list[dict]) -> list[dict]:
                                       "at": _utc(t) if t else None,
                                       "ref": f"{o['rel']}/.forge-run/gates/gate-log.jsonl#{e['_line']}"})
     return [best[t][1] for t in sorted(best)]
+
+
+def _supersede_reason(by: dict | None, phase: str) -> str:
+    """SUPERSEDED_BY_PART_PROGRESS: the same part passed this phase or a later one in a newer order, in any lineage;
+    RELAUNCHED: a launch failure whose phase was launched again (and still runs)."""
+    i = PHASES.index(phase) if phase in PHASES else 0
+    return "SUPERSEDED_BY_PART_PROGRESS" if by and any(p in by["passed"] for p in PHASES[i:]) else "RELAUNCHED"
 
 
 def _resolve(iss: dict, ref: str, reason: str, now: float) -> None:
@@ -760,6 +788,8 @@ class Observer:
         # every run of a part and phase is an event of its chain: PASS (progress) or the fingerprint it stopped on
         chains: dict[tuple, list[tuple]] = {}
         drafts: list[dict] = []
+        launches = scan_launches(self.launch_dir, now, self.lookback_s)
+        refused = {la["wo"] for la in launches}  # prepared workspaces whose launch failed: the launch issue covers them
         for rec in orders:
             life = self.fabro.status(rec["rid"]) if rec["package"] is None else None
             core = self._core(rec, life, cre["capa_of"])
@@ -772,9 +802,30 @@ class Observer:
                                "fp": core["fingerprint"], "created": rec["created"], "ref": ref})
                 continue
             kind = (life or "").split(":")[0]
+            guard = BUDGETS["guard_phase_order_wall_s"]
+            if rec["rid"] is None and rec["wo"] in refused:
+                continue
             if rec["package"] is None and rec["phase"] not in rec["passed"] and kind not in ENDED:
+                live = life is not None  # Fabro reports the run and it has not ended
+                if not live and now - rec["activity"] > guard:  # dead: no live run and no activity in the window
+                    iss = _issue(self.line, wo=rec["wo"], tag=rec["tag"], phase=rec["phase"], rid=rec["rid"],
+                                 cls="UNKNOWN", fingerprint="sup1-" + _h("ABANDONED", rec["wo"])[:40],
+                                 error_code="ABANDONED_NO_LIVE_RUN", text=summary("ABANDONED", phase=rec["phase"]),
+                                 evidence=[{"kind": "manifest", "ref": f"{rec['rel']}/.forge-run/manifest.json"}]
+                                 + ([{"kind": "fabro_run", "ref": f"fabro:runs/{rec['rid']}"}] if rec["rid"] else []),
+                                 proposals=rule_proposals("x", "UNKNOWN", rec["phase"], upstream=[], capa=None,
+                                                          kind="ABANDONED",
+                                                          resume_from=last_passed_order(orders, rec["tag"], rec["phase"],
+                                                                                        float("inf"))),
+                                 status="PARKED", used=1, opened=rec["created"], lineage=_lineage(by_wo, rec), now=now)
+                    iss["escalation"]["reason"] = "ABANDONED_NO_LIVE_RUN"
+                    st, by = _later(orders, rec["tag"], rec["phase"], rec["created"], launched=False)
+                    if st == "RESOLVED":
+                        _resolve(iss, f"workorders/{by}", _supersede_reason(by_wo.get(by), rec["phase"]), now)
+                    out.append(iss)
+                    continue
                 wall_used = max(wall_used, now - rec["created"])
-                if now - rec["created"] > BUDGETS["guard_phase_order_wall_s"]:  # a pacing guard, not a stop reason
+                if now - rec["created"] > guard:  # live or recently active: a pacing guard, not a stop reason
                     out.append(_issue(self.line, wo=rec["wo"], tag=rec["tag"], phase=rec["phase"], rid=rec["rid"],
                                       cls="UNKNOWN", fingerprint="sup1-" + _h("WALL", rec["wo"])[:40],
                                       error_code="PHASE_WALL_GUARD_EXCEEDED", text=summary("WALL", phase=rec["phase"]),
@@ -783,7 +834,7 @@ class Observer:
                                                                upstream=[], capa=None, kind="WALL"),
                                       status="OPEN", used=1, opened=rec["created"], lineage=_lineage(by_wo, rec),
                                       now=now))
-        for la in scan_launches(self.launch_dir, now, self.lookback_s):
+        for la in launches:
             fp = fingerprint("INFRASTRUCTURE", "line-launcher", la["code"], f"{la['phase']}/launch")
             ref = la["refs"][0].split("#")[0]
             chains.setdefault((la["tag"], la["phase"]), []).append((la["created"], fp, ref))
@@ -810,11 +861,11 @@ class Observer:
                                                   for d in earlier])[:24]
             nxt = chain[i + 1] if i + 1 < len(chain) else None
             if nxt is not None:
-                _resolve(iss, nxt[2], "RESOLVED_BY_PROGRESS" if nxt[1] == "PASS" else "PROGRESS_NEW_ISSUE", now)
+                _resolve(iss, nxt[2], "SUPERSEDED_BY_PART_PROGRESS" if nxt[1] == "PASS" else "PROGRESS_NEW_ISSUE", now)
             else:
                 st, by = _later(orders, tag, phase, last["created"], launched="la" in last)
                 if st == "RESOLVED":
-                    _resolve(iss, f"workorders/{by}", "RESOLVED_BY_LATER_ORDER", now)
+                    _resolve(iss, f"workorders/{by}", _supersede_reason(by_wo.get(by), phase), now)
                 elif st == "RECOVERING":
                     iss["evidence"].append({"kind": "superseded_by", "ref": f"workorders/{by}"})
                     iss["status"] = "RECOVERING"

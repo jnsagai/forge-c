@@ -426,6 +426,108 @@ def test_retries_resume_from_the_last_good_part_and_progress_names_it(line, delt
         "WO-F014-SWE1-RCC-20261102-L16"
 
 
+# ------------------------------------------------- first live feed (2026-11-03): stale noise is not left OPEN
+def _age(ws: Path, seconds: float) -> None:
+    t = time.time() - seconds
+    for f in ws.rglob("*"):
+        os.utime(f, (t, t))
+
+
+def blocked_at(phase, reason="rework budget exhausted (3 failed cycles)"):
+    return [{"phase": phase, "step": "author", "result": "REJECTED", "status": "INCOMPLETE", "issues": ["BUILD_FAIL: error: x"]},
+            {"phase": phase, "step": "route", "gate": {"decision": "BLOCKED", "reason": reason}}]
+
+
+def test_an_issue_is_superseded_when_the_part_passes_its_phase_or_a_later_one_in_any_newer_order(line):
+    mk_order(line["state"], "WO-F014-SWE3-IWDGG-20261102-L12", gates=blocked_at("SWE.3"), package=True, rid="01G12",
+             stop_after="SWE.3", created=T0)
+    mk_order(line["state"], "WO-F014-SWE3-CRCK-20261102-L12", gates=blocked_at("SWE.3"), package=True, rid="01K12",
+             stop_after="SWE.3", created=T0)
+    # another lineage of the same part, resumed past SWE.3 (its gate log has SWE.6 only)
+    mk_order(line["state"], "WO-F014-SWE6-IWDGG-20261102-L13", gates=passed("SWE.6"), package=True, rid="01G13",
+             source="WO-F014-SWE5-IWDGG-20261102-L13", stop_after="SWE.6", created=T0 + 600)
+    feed = conductor(line).cycle()
+    g = by_wo(feed, "WO-F014-SWE3-IWDGG-20261102-L12")
+    assert g["status"] == "RESOLVED" and {"kind": "superseded_by", "ref": "workorders/WO-F014-SWE6-IWDGG-20261102-L13"} in g["evidence"]
+    assert all("SUPERSEDED_BY_PART_PROGRESS" in p["reason_codes"] and p["status"] == "SUPERSEDED" for p in g["proposals"])
+    assert by_wo(feed, "WO-F014-SWE3-CRCK-20261102-L12")["status"] == "OPEN"  # another part's progress is not this part's
+
+
+def test_the_wall_guard_is_for_live_or_recent_orders_and_a_dead_order_is_parked_or_superseded(tmp_path, monkeypatch):
+    state = tmp_path / "state"
+    monkeypatch.setenv("FORGE_STATE_DIR", str(state))
+    day, h7 = 86400, 7 * 3600
+    _age(mk_order(state, "WO-F014-SWE3-IWDGG-20261101-L1", stop_after="SWE.3", created=time.time() - 2 * day), 2 * day)
+    _age(mk_order(state, "WO-F014-SWE2-CRCK-20261101-L9", stop_after="SWE.2", created=time.time() - 2 * day), 2 * day)
+    _age(mk_order(state, "WO-F014-SWE6-CRCK-20261102-L11", gates=passed("SWE.6"), package=True, rid="01K11",
+                  source="WO-F014-SWE5-CRCK-20261102-L11", stop_after="SWE.6", created=time.time() - day), day)
+    _age(mk_order(state, "WO-F014-SWE4-OBL-20261103-L5", rid="01LIVE", stop_after="SWE.4", created=time.time() - h7), h7)
+    recent = mk_order(state, "WO-F014-SWE4-RCC-20261103-L7", stop_after="SWE.4", created=time.time() - h7)
+    _age(recent, h7)
+    (recent / ".forge-run/tool-progress").mkdir()
+    (recent / ".forge-run/tool-progress/swe4.json").write_text("{}")  # activity now
+    mk_order(state, "WO-F014-SWE1-OBL-20261103-L6", stop_after="SWE.1", created=time.time() - 3600)  # young: nothing
+    fabro = LC.FabroView(snapshot={"01LIVE": "running"})
+    feed = LC.LineConductor(LC.Observer("local", None, fabro, lookback_s=10 * day), unit="t").cycle()
+    dead = by_wo(feed, "WO-F014-SWE3-IWDGG-20261101-L1")
+    assert (dead["status"], dead["error_code"], dead["escalation"]["reason"]) == \
+        ("PARKED", "ABANDONED_NO_LIVE_RUN", "ABANDONED_NO_LIVE_RUN")
+    assert dead["proposals"][0]["strategy"] == "RESUME_PHASE_FROM_LAST_PASSED_ORDER"
+    sup = by_wo(feed, "WO-F014-SWE2-CRCK-20261101-L9")
+    assert sup["status"] == "RESOLVED" and "SUPERSEDED_BY_PART_PROGRESS" in sup["proposals"][0]["reason_codes"]
+    for wo in ("WO-F014-SWE4-OBL-20261103-L5", "WO-F014-SWE4-RCC-20261103-L7"):  # live run, recent activity
+        i = by_wo(feed, wo)
+        assert (i["status"], i["error_code"]) == ("OPEN", "PHASE_WALL_GUARD_EXCEEDED"), wo
+    assert not [i for i in feed["issues"] if i["wo"] == "WO-F014-SWE1-OBL-20261103-L6"]
+    assert LC.feed_errors(feed) == []
+
+
+def test_a_packaging_order_ready_for_review_raises_nothing(line):
+    assert LC.parse_wo("WO-F014-PKG-IWDG-20261102-01") == (None, "IWDG")
+    ws = mk_order(line["state"], "WO-F014-PKG-IWDG-20261102-01", rid="01PKG", source="WO-F014-SWE6-IWDG-20261101-L6",
+                  stop_after=None, created=T0)
+    (ws / ".forge-run/package.json").write_text(json.dumps({"package_status": "READY_FOR_OFFLINE_REVIEW", "gaps": []}))
+    feed = conductor(line).cycle()
+    assert not [i for i in feed["issues"] if i["wo"] == "WO-F014-PKG-IWDG-20261102-01"]
+
+
+REPLAY_TODAY = os.environ.get("FORGE_M1_REPLAY_TODAY_DIR")
+
+
+@pytest.mark.skipif(not REPLAY_TODAY, reason="FORGE_M1_REPLAY_TODAY_DIR (read-only copy of today's line state) not given")
+def test_replay_today_the_first_live_feeds_stale_noise_is_not_open(monkeypatch):
+    src = Path(REPLAY_TODAY)
+
+    def files():  # SQLite's -shm/-wal are reader bookkeeping of the read-only WAL open, not the records
+        return {p: p.stat().st_mtime_ns for p in src.rglob("*") if p.is_file() and not p.name.endswith(("-shm", "-wal"))}
+
+    stamp = files()
+    monkeypatch.setenv("FORGE_STATE_DIR", str(src / "state"))
+    at = LC._ts((src / "snapshot-at.txt").read_text().strip())
+    obs = LC.Observer("local", src / "launch", LC.FabroView(snapshot=json.loads((src / "fabro-snapshot.json").read_text())),
+                      lookback_s=72 * 3600)
+    issues, _ = obs.issues(at)  # pure: the copy is only read
+    got = {i["wo"]: i for i in issues}
+    # the three were prepared workspaces whose launch was refused: one launch issue per part and phase, IWDGG SWE.3
+    # twice the same refusal (L1 then L12, two strikes), both later passed by the part in other lineages
+    g = got["WO-F014-SWE3-IWDGG-20261102-L12"]
+    assert (g["class"], g["status"], g["attempts"]["used"]) == ("INFRA", "RESOLVED", 2)
+    assert {"kind": "launch_log", "ref": "launch:launch-WO-F014-SWE3-IWDGG-20261101-L1.out"} in g["evidence"]
+    k = got["WO-F014-SWE2-CRCK-20261101-L9"]
+    assert (k["class"], k["status"], k["error_code"]) == ("INFRA", "RESOLVED", "RESUME_RECORD_UNREADABLE")
+    for i in (g, k):
+        assert all("SUPERSEDED_BY_PART_PROGRESS" in p["reason_codes"] for p in i["proposals"]), i["wo"]
+    assert not [i for i in issues if i["wo"] in ("WO-F014-SWE3-IWDGG-20261102-L12", "WO-F014-SWE3-IWDGG-20261101-L1",
+                                                  "WO-F014-SWE2-CRCK-20261101-L9") and i["error_code"] == "PHASE_WALL_GUARD_EXCEEDED"]
+    assert "WO-F014-PKG-IWDG-20261102-01" not in got
+    assert got["WO-F014-SWE2-RCC-20261102-L16"]["status"] == "PARKED"
+    live = json.loads((src / "live/issues.json").read_text())
+    stale = {i["wo"] for i in live["issues"] if i["status"] == "OPEN"}
+    assert stale >= {"WO-F014-SWE3-IWDGG-20261102-L12", "WO-F014-PKG-IWDG-20261102-01"}  # what the live feed had
+    assert not [w for w in stale if got.get(w, {}).get("status") == "OPEN"]
+    assert files() == stamp
+
+
 # ------------------------------------------------------------------------------- the Omniverse2 replay
 REPLAY = os.environ.get("FORGE_M1_REPLAY_DIR")
 
