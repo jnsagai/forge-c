@@ -119,9 +119,38 @@ def check_implementation(ws: Path) -> dict:
     findings += _reg_block_defined(ws)
     called = set(re.findall(r"\b(" + re.escape(prof["ll"]["function_prefix"]) + r"\w+)\s*\(", code.get(HAL_C, "")))
     findings += [f"IMPL:LL_CALL_UNDEFINED:{f}" for f in sorted(called - set(ll_defs))]
+    findings += hal_bypass_findings(ws, {rel: code[rel] for rel in (HAL_H, HAL_C) if rel in code},
+                                    prof["ll"]["function_prefix"])
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"allocated": len(wanted), "hal_defined": len([f for f in wanted if f in hal_defs]),
                       "ll_functions": len(ll_defs), "ll_calls": len(called)}}
+
+
+# CAPA-134: register access that bypasses a provided CMSIS LL (ST code): the instance dereferenced, the CMSIS register
+# macros (stm32n6xx.h) or the LL's register macros, the host RAM struct, an own register array, the instance base address
+_ST_REG_MACROS = r"(?:READ_REG|WRITE_REG|SET_BIT|CLEAR_BIT|READ_BIT|CLEAR_REG|MODIFY_REG|ATOMIC_\w+)"
+
+
+def hal_bypass_findings(ws: Path, code: dict[str, str], ll_prefix: str) -> list[str]:
+    """HAL work order on a provided CMSIS LL (brownfield/cmsis.provided_api): the HAL source and header (comments and
+    literals stripped) reach the registers only through the provided LL functions. [] for every other work order
+    (a greenfield HAL that bypasses the LL already fails to build on the generated LL test double)."""
+    from ..brownfield.cmsis import provided_api
+
+    api = provided_api(ws)
+    if api is None:
+        return []
+    inst = re.escape(api["instance"])
+    pfx = re.escape(ll_prefix)
+    rx = re.compile(rf"\b{inst}\s*->|\b{_ST_REG_MACROS}\s*\(|\b{pfx}(?:WriteReg|ReadReg)\s*\(|\bforge_host_\w+"
+                    rf"|\bvolatile\s+uint(?:8|16|32)_t\s+\w+\s*\[|\b{inst}(?:_NS|_S)?_BASE\w*\b")
+    out = []
+    for rel, src in code.items():
+        for m in rx.finditer(src):
+            out.append(f"IMPL:HAL_BYPASSES_LL:{rel}:{src.count(chr(10), 0, m.start()) + 1}:{' '.join(m.group(0).split())} "
+                       f"(the HAL reaches the registers only through the provided {ll_prefix} functions, called with "
+                       f"{api['instance']}; no register macro, member access, register array or base address)")
+    return out[:10]
 
 
 def _reg_block_defined(ws: Path) -> list[str]:
