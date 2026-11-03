@@ -42,19 +42,21 @@ TESTS = {
                       '((ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] & '
                       'LL_IWDG_PR_PR_MSK) == 5U) && ((ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] & '
                       '~LL_IWDG_PR_PR_MSK) == 0xFFFFFFF0U));', ("positive", "negative", "boundary")),
-    "test:UT-006": _t("UT-006", "USPEC-LL-06-01", '    uint32_t lo;\n    LL_IWDG_SetReloadCounter(0U);\n'
+    "test:UT-006": _t("UT-006", "USPEC-LL-06-01", '    uint32_t lo;\n    ll_iwdg_regs[LL_IWDG_RLR_OFFSET / 4U] = 0xFFFFF000U;\n'
+                      '    LL_IWDG_SetReloadCounter(0U);\n'
                       '    lo = ll_iwdg_regs[LL_IWDG_RLR_OFFSET / 4U];\n    LL_IWDG_SetReloadCounter(0xFFFU);\n'
-                      '    CHECK("UT-006", ((lo & LL_IWDG_RLR_RL_MSK) == 0U) && ('
-                      'll_iwdg_regs[LL_IWDG_RLR_OFFSET / 4U] & LL_IWDG_RLR_RL_MSK) == 0xFFFU);', ("positive", "boundary")),
+                      '    CHECK("UT-006", ((lo & LL_IWDG_RLR_RL_MSK) == 0U) && ((lo & ~LL_IWDG_RLR_RL_MSK) == 0xFFFFF000U)'
+                      ' && (ll_iwdg_regs[LL_IWDG_RLR_OFFSET / 4U] & LL_IWDG_RLR_RL_MSK) == 0xFFFU);',
+                      ("positive", "boundary", "negative")),
     "test:UT-007": _t("UT-007", "USPEC-LL-07-01", '    uint32_t clear = LL_IWDG_IsActive();\n    uint32_t set;\n    '
                       'll_iwdg_regs[LL_IWDG_SR_OFFSET / 4U] = LL_IWDG_SR_ONF_MSK;\n    set = LL_IWDG_IsActive();\n    '
-                      'CHECK("UT-007", (clear == 0U) && (set == 1U));'),
+                      'CHECK("UT-007", (clear == 0U) && (set == 1U));', ("positive", "negative")),
     "test:UT-008": _t("UT-008", "USPEC-LL-08-01", '    uint32_t clear = LL_IWDG_IsActiveFlag_PVU();\n    uint32_t set;\n    '
                       'll_iwdg_regs[LL_IWDG_SR_OFFSET / 4U] = LL_IWDG_SR_PVU_MSK;\n    set = LL_IWDG_IsActiveFlag_PVU();\n    '
-                      'CHECK("UT-008", (clear == 0U) && (set == 1U));'),
+                      'CHECK("UT-008", (clear == 0U) && (set == 1U));', ("positive", "negative")),
     "test:UT-009": _t("UT-009", "USPEC-LL-09-01", '    uint32_t clear = LL_IWDG_IsActiveFlag_RVU();\n    uint32_t set;\n    '
                       'll_iwdg_regs[LL_IWDG_SR_OFFSET / 4U] = LL_IWDG_SR_RVU_MSK;\n    set = LL_IWDG_IsActiveFlag_RVU();\n    '
-                      'CHECK("UT-009", (clear == 0U) && (set == 1U));')}
+                      'CHECK("UT-009", (clear == 0U) && (set == 1U));', ("positive", "negative"))}
 
 
 @pytest.fixture()

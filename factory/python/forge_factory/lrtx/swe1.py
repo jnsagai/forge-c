@@ -69,6 +69,53 @@ PROHIBITION = re.compile(r"\bshall\s+(?:not|never)\s+(?:read|write|access)\b|"
                          r"\bshall\s+(?:perform|make|issue)\s+no\s+(?:\w+\s+)?(?:reads?|writes?|access(?:es)?)\b", re.I)
 REGISTER_RULES = " ".join((AR_DOMAIN, AR_ENABLING, AR_DISCRIMINATING, AR_PAGE))
 CROSSCUT_RULES = " ".join((AR_DISCRIMINATING, AR_PRESERVATION, AR_PAGE))
+# owner 2026-11-03 ("consider not only positive paths but negative ones as well, to cover the behavior of the sw in
+# corner cases"), work orders with unit_verification
+AR_NEGATIVE = (
+    "AR-7 negative paths and corner cases: besides the positive path, each functional requirement set states the "
+    "software's behaviour in its negative paths and corner cases, as far as the inputs support them: an argument "
+    "outside its field width or valid range (state whether the driver keeps only the field bits - an effect with "
+    "requested and value - or rejects it), a NULL or invalid instance where the API takes one, a repeated or idempotent "
+    "call, a call in the wrong state or order, timeout and not-ready paths of a waiting function, and the register bits "
+    "that must stay unchanged. Ground each in the provided sources (RM, datasheet, guideline, owner obligations) or "
+    "state it explicitly as the driver's defined behaviour ('as the driver's defined behaviour, ...'); never invent a "
+    "hardware fact. A write of a field narrower than 32 bits names its out-of-range input behaviour (an effect with "
+    "requested, or a statement on an input above the field width), or open_points states why no invalid input exists.")
+CORNER_RX = re.compile(r"\b(above|exceed\w*|out[- ]of[- ]range|outside (?:its|the) (?:field|range)|wider than|greater "
+                       r"than|beyond|invalid|truncat\w*|confin\w*|only (?:the )?(?:low|lower)|low(?:er)? \d+ bits|mask"
+                       r"\w*|ignor\w*|reject\w*|discard\w*)\b", re.I)
+# the written value comes from the caller (an argument), not a fixed key/constant of the requirement
+VALUE_ARG_RX = re.compile(r"\b(called with (?:a|the|any|an)\b|argument|parameter|requested|the (?:given |input )?value\b|"
+                          r"value from\b)", re.I)
+
+
+def corner_case_findings(doc: dict, g: dict) -> list[str]:
+    """AR-7 check (cheap and safe): every field narrower than 32 bits that a requirement of this task WRITES a
+    caller-supplied value to has a corner case for an input above its width - an effect with requested, a statement on
+    that field naming the out-of-range behaviour, or an open point stating that no invalid input exists.
+    Set/clear/query/no-write effects (single bits, flags, accessors without a value) are never affected, nor is a
+    full-width field."""
+    out = []
+    reqs = doc.get("requirements") or []
+    opens = " ".join(doc.get("open_points") or [])
+    for f, v in (g.get("fields") or {}).items():
+        width = int(v["msb"]) - int(v["lsb"]) + 1
+        effects = [e for r in reqs for e in r["effects"] if e["field"] == f]
+        valued = [r for r in reqs if VALUE_ARG_RX.search(r["statement"])
+                  and any(e["field"] == f and e["op"] == "write" for e in r["effects"])]
+        if width >= 32 or not valued:  # a fixed key/constant write or no write: nothing out of range to state
+            continue
+        full = f"{g['register']}.{f}"
+        if any(e.get("requested") for e in effects):
+            continue
+        if any(full in r["statement"] and CORNER_RX.search(r["statement"]) for r in reqs):
+            continue
+        if f in opens and re.search(r"\bno (?:invalid|out[- ]of[- ]range)\b", opens, re.I):
+            continue
+        out.append(f"AR-7: the write of {full} ({width} bits) states no corner case: add the behaviour for an input "
+                   f"above the field width (an effect with requested and the field value, or a statement naming that "
+                   f"input), or state in open_points that no invalid input exists for {full}")
+    return out
 EFFECTS = "workproducts/SWE.1/register_effects.json"
 REQS = "workproducts/SWE.1/software_requirements.md"
 CSV = "traceability/requirements_to_tests.csv"
@@ -429,7 +476,7 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
                  "prohibitions, which are target_robot_test.") + \
              f" source_page is the RM0486 page of the cited fact ({', '.join(map(str, g['pages']))}). "
              + effect_rule(ws) + " key is a short snake_case name of the requirement. open_points lists ambiguities of "
-             "the source (or nothing). Author rules: " + REGISTER_RULES)
+             "the source (or nothing). Author rules: " + REGISTER_RULES + (" " + AR_NEGATIVE if uspec_mode(ws) else ""))
     crit = [f"every requirement's subject is exactly 'the {sysname}'", "every field of the task is covered or listed "
             "in not_covered", "every effect names a field of this task that its statement names",
             "a statement that sets, clears or writes a field has an effect for it"]
@@ -478,7 +525,8 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
              " source_page is the RM0486 page supporting the requirement, from the provided sources. " +
              ("" if uspec_mode(ws) else "Reset/startup requirements are target_robot_test. ") + \
              "effects stay empty unless a statement sets, clears or writes a "
-             "named field. not_covered stays empty. Author rules: " + CROSSCUT_RULES)
+             "named field. not_covered stays empty. Author rules: " + CROSSCUT_RULES +
+             (" " + AR_NEGATIVE if uspec_mode(ws) else ""))
     art = {"path": "lrtx:functional_requirements", "text": listing, "sha256": sha256_bytes(listing.encode())}
     secs = _section_files(ws)
     from ..layer import profile
@@ -671,6 +719,8 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
                            f"requirement [{r['key']}] from the cross-cutting task" + (
                                f" (owner obligation(s) {', '.join(effect_ids)} have register effects: the register "
                                "task implements them)" if effect_ids else ""))
+    if g is not None and uspec_mode(ws):  # owner 2026-11-03: AR-7 negative paths and corner cases
+        out += corner_case_findings(doc, g)
     return out
 
 

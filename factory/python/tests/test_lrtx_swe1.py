@@ -40,12 +40,12 @@ ANSWERS = {
         _req("lock", f"When LL_IWDG_DisableWriteAccess is called, the {SYS} shall write 0x00000000 to IWDG_KR.KEY.",
              2989, [_eff("LOCK", "IWDG_KR", "KEY", "write", "0x0")])], "not_covered": [], "open_points": []},
     "requirements:IWDG_PR": {"requirements": [
-        _req("prescaler", f"When LL_IWDG_SetPrescaler is called with a value from 0U to 15U, the {SYS} shall write the "
-             "value to IWDG_PR.PR.", 2990, [_eff("SET_PRESCALER", "IWDG_PR", "PR", "write", "0x5")])],
+        _req("prescaler", f"When LL_IWDG_SetPrescaler is called with a value, the {SYS} shall write the low 4 bits of "
+             "the value to IWDG_PR.PR, so that a value above 15U is confined to the field.", 2990, [_eff("SET_PRESCALER", "IWDG_PR", "PR", "write", "0x5")])],
         "not_covered": [], "open_points": []},
     "requirements:IWDG_RLR": {"requirements": [
-        _req("reload", f"When LL_IWDG_SetReloadCounter is called with a value from 0U to 4095U, the {SYS} shall write "
-             "the value to IWDG_RLR.RL.", 2990, [_eff("SET_RELOAD", "IWDG_RLR", "RL", "write", "0xFFF")])],
+        _req("reload", f"When LL_IWDG_SetReloadCounter is called with a value, the {SYS} shall write the low 12 bits "
+             "of the value to IWDG_RLR.RL, so that a value above 4095U is confined to the field.", 2990, [_eff("SET_RELOAD", "IWDG_RLR", "RL", "write", "0xFFF")])],
         "not_covered": [], "open_points": []},
     "requirements:IWDG_SR_1": {"requirements": [
         _req("onf_set", f"When LL_IWDG_IsActive is called with IWDG_SR.ONF set, the {SYS} shall return 1U.", 2991,

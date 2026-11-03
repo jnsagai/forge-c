@@ -200,6 +200,9 @@ def gtest_packet(ws: Path, c: dict, model: str, findings=None, previous=None) ->
              " Declare in kinds the kinds of check the test really contains: positive (the case value gives the "
              "required effect), boundary (field minimum/maximum checked), negative (a state or bit that must not change "
              "or must read 0 is checked), error (ONLY if the requirement states an error behaviour - never invent one). "
+             + (f"This specification item is a {c['plan']['test_kind']} behaviour: the test checks exactly that "
+                f"behaviour and kinds includes {c['plan']['test_kind']}. "
+                if (c.get("plan") or {}).get("test_kind", "positive") != "positive" else "") +
              "Use only the harness (ut_reset_regs), the function under test, the register block, the generated defines "
              "below and the GoogleTest EXPECT_/ASSERT_ macros - no #include, no #define, no fixture (TEST_F), no other "
              f"functions. Put exactly this block directly above the test: '/** @test {c['ut']} @verifies {c['uspec']} */' "
@@ -271,6 +274,13 @@ def _kind_errors(doc: dict, c: dict, body: str) -> list[str]:
     fn = c["unit"]["function"]
     ncalls = len(re.findall(rf"\b{re.escape(fn['name'])}\s*\(", body))
     out = []
+    want = (c.get("plan") or {}).get("test_kind")
+    if want and want != "positive":  # owner 2026-11-03: the kind follows from the USPEC item
+        if want not in kinds:
+            out.append(f"{c['uspec']} is a {want} behaviour: the test checks it and kinds includes {want}")
+        if want == "boundary" and ncalls < 2:
+            out.append(f"kind boundary needs the field limits checked with further calls of {fn['name']}")
+        return out
     if "positive" not in kinds:
         out.append("kinds must include positive (the case value of the oracle)")
     if _takes_value(fn) and "boundary" not in kinds:

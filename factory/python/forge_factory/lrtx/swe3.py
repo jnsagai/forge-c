@@ -58,6 +58,40 @@ FORBIDDEN = [(re.compile(r"\(\s*(?:volatile\s+)?(?:uint32_t|unsigned|int|void)\s
              (re.compile(r"\bstatic\s+(?!inline\b)\w"), "static storage (the LL keeps no state)")]
 
 
+# owner 2026-11-03: USPEC items cover negative and corner-case behaviour too; each item gets its own SWE.4 test
+USPEC_NEGATIVE_RULE = (
+    "Besides the nominal behaviour, give the unit's negative and corner-case behaviour its own spec items where the "
+    "requirements and cases above state it: an argument above the field width (the requested input confined to the "
+    "field), the bits outside the field left unchanged, the flag-clear result (0U) of a query, a NULL or invalid "
+    "instance, a repeated call. Never invent a behaviour the requirements do not state. A function that takes a value "
+    "or returns a flag has at least one such item.")
+
+
+def _uspec(ws: Path) -> bool:
+    from ..layer import uspec_gtest
+
+    return uspec_gtest(ws)
+
+
+def _corner_relevant(ws: Path, f: dict) -> bool:
+    """A unit that must state a negative/corner item: it writes a caller value into a field narrower than 32 bits, or
+    it is a flag query (returns uint32_t for single-bit fields). A full-width register write/read, an instance-only or
+    (void) function is never forced."""
+    i = _ident(ws)
+    text = _header(ws).read_text(errors="replace")
+    widths = []
+    for fld in f.get("fields") or []:
+        reg, _, name = fld.partition(".")
+        m = re.search(rf"#define\s+LL_{i['pfx']}_{re.escape(reg.split('_', 1)[-1])}_{re.escape(name)}_MSK\s+"
+                      r"\(?(0x[0-9A-Fa-f]+)", text)
+        if m:
+            widths.append(bin(int(m.group(1), 16)).count("1"))
+    value = any("*" not in p["type"] for p in f.get("params") or [])
+    if value and any(w < 32 for w in widths):
+        return True
+    return str(f.get("returns")) == "uint32_t" and bool(widths) and all(w == 1 for w in widths)
+
+
 def _ident(ws: Path) -> dict:
     from .swe2 import _ident as i2
 
@@ -150,7 +184,8 @@ def code_packet(ws: Path, u: dict, model: str, findings=None, previous=None) -> 
              f"Doxygen block: '/**', ' * @brief <one line>', ' * @unit {u['id']}', ' * @spec <spec ids>', ' */'. "
              f"spec_items: the unit's specification items USPEC-LL-{u['n']:02d}-01, -02 ... (one per distinct "
              "behaviour), each with the behaviour the unit shall implement and the requirement ids it refines (traces, "
-             f"only from: {', '.join(u['swrs']) or 'none'}). The @spec line lists exactly these ids.")
+             f"only from: {', '.join(u['swrs']) or 'none'}). The @spec line lists exactly these ids." +
+             (" " + USPEC_NEGATIVE_RULE if _uspec(ws) else ""))
     art = [{"path": "requirements+cases", "text": listing, "sha256": sha256_bytes(listing.encode())},
            {"path": f"{i['header']}#generated-defines", "text": defs, "sha256": sha256_bytes(defs.encode())}]
     return S.packet(phase=PHASE, task=f"code:{u['id']}", role="swe3-author", instructions=instr, sources=[],
@@ -241,6 +276,13 @@ def validate_code(ws: Path, doc: dict, u: dict) -> list[str]:
     traced = {t for s in doc["spec_items"] for t in s["traces"]}
     out += [f"spec traces {t}, which is not allocated to {f['name']}" for t in sorted(traced - set(u["swrs"]))]
     out += [f"{t} (allocated to {f['name']}) is traced by no spec item" for t in u["swrs"] if t not in traced]
+    if _uspec(ws) and _corner_relevant(ws, f):
+        from ..inspection.uspec_plan import uspec_kind
+
+        if all(uspec_kind(s["behaviour"]) == "positive" for s in doc["spec_items"]):
+            out.append(f"{f['name']} takes a value or returns a flag: add a spec item for its negative or corner-case "
+                       "behaviour (e.g. bits outside the field unchanged, an input above the field width, the result "
+                       "0U when the flag is clear)")
     if not out:
         out += _compile_alone(ws, code, f["name"])
     return out

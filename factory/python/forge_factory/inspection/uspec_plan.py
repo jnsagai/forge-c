@@ -35,6 +35,26 @@ class PlanError(ValueError):
     pass
 
 
+# owner 2026-11-03: the SWE.4 test kind follows from the USPEC item (nominal, negative, corner/boundary, error)
+ERROR_RX = re.compile(r"\b(HAL_ERROR|HAL_TIMEOUT|HAL_BUSY|error status|returns? (?:an )?error|time-?outs?|timed out|"
+                      r"rejects?|rejected|fails?)\b", re.I)
+BOUNDARY_RX = re.compile(r"\b(range|width|maximum|minimum|above|exceed\w*|confin\w*|truncat\w*|out[- ]of[- ]range|"
+                         r"overflow\w*|wider|beyond|upper|lower|limit|low(?:er)? \d+ bits|field bits|(?:\d+)-bit)\b", re.I)
+NEGATIVE_RX = re.compile(r"\b(unchanged|preserv\w*|leav\w* .{0,40}unchanged|not (?:change|modif|writ|read|set|clear)\w*|"
+                         r"never (?:chang|modif|writ|set|clear)\w*|no other|other bits|only the named|returns? 0U?|"
+                         r"0U when|else 0U|"
+                         r"clear(?:ed)? flag|idempot\w*|repeated|wrong (?:state|order)|NULL|invalid|ignor\w*|"
+                         r"does not|is not|must not|shall not)\b", re.I)
+
+
+def uspec_kind(text: str) -> str:
+    """The test kind a USPEC item asks for: error > boundary > negative > positive (first match wins)."""
+    for kind, rx in (("error", ERROR_RX), ("boundary", BOUNDARY_RX), ("negative", NEGATIVE_RX)):
+        if rx.search(text or ""):
+            return kind
+    return "positive"
+
+
 def legacy_unit_rows(ws: Path) -> list[dict]:
     """SWE.1 UT allocation rows of an older frozen SWE.1 baseline (none for SWE.1 baselines made after 2026-11-03)."""
     p = Path(ws) / TRACE
@@ -84,7 +104,8 @@ def build(ws: Path) -> dict:
                 raise PlanError(f"SWE4_UT_ID_SPACE_EXHAUSTED (first {first}, {sum(len(x['specs']) for x in units)} "
                                 "USPEC items)")
             oracle = [r for r in s["swrs"] if r not in constraints]
-            tasks.append({"ut": f"UT-{n:03d}", "kind": "requirement", "uspec": s["id"], "unit": u["id"],
+            tasks.append({"ut": f"UT-{n:03d}", "kind": "requirement", "test_kind": uspec_kind(s["text"]),
+                          "uspec": s["id"], "unit": u["id"],
                           "functions": u["functions"], "behaviour": s["text"], "swrs": oracle,
                           "constraints_verified_at_swe6": sorted(r for r in s["swrs"] if r in constraints),
                           "unknown_swrs": sorted(r for r in oracle if r not in texts)})
@@ -122,10 +143,11 @@ def render_md(plan: dict) -> str:
                  f" - {len(plan['superseded_swe1_unit_rows'])} SWE.1 UT row(s) of the frozen SWE.1 baseline are "
                  f"superseded (not SWE.4 trace links); SWE.4 UT ids start at UT-{plan['first_ut']:03d}."
                  if plan["superseded_swe1_unit_rows"] else "."), "",
-             "| UT id | kind | USPEC | unit | function | oracle SWR ids | verified at SWE.6 |",
-             "| --- | --- | --- | --- | --- | --- | --- |"]
+             "| UT id | kind | test kind | USPEC | unit | function | oracle SWR ids | verified at SWE.6 |",
+             "| --- | --- | --- | --- | --- | --- | --- | --- |"]
     for t in plan["tasks"] + plan.get("closure", []):
-        lines.append(f"| {t['ut']} | {t['kind']} | {t['uspec']} | {t['unit']} | {', '.join(t['functions']) or '-'} | "
+        lines.append(f"| {t['ut']} | {t['kind']} | {t.get('test_kind', '-')} | {t['uspec']} | {t['unit']} | "
+                     f"{', '.join(t['functions']) or '-'} | "
                      f"{', '.join(t['swrs']) or '-'} | {', '.join(t.get('constraints_verified_at_swe6') or []) or '-'} |")
     return "\n".join(lines) + "\n"
 

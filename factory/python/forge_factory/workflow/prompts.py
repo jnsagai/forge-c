@@ -963,6 +963,8 @@ def author_prompt(phase: str) -> str:
         body = body[:-1] + trace_step(tr) + body[-1:]
     if contract_step(phase):  # owner decision 2026-10-19 (B), also before the final step
         body = body[:-1] + contract_step(phase) + body[-1:]
+    if UNIT_VERIFICATION["gtest"] and phase in NEGATIVE_RULES:  # owner 2026-11-03: negative paths and corner cases
+        body = body[:-1] + [NEGATIVE_RULES[phase]] + body[-1:]
     steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + ([scope_note] if scope_note else []) + manifest + [FIX.format(p=phase)] + extra + body \
         + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
@@ -1177,6 +1179,21 @@ def cmsisize(text: str) -> str:
 
 
 UNIT_VERIFICATION = {"gtest": False}  # owner 2026-11-03: set by the builder for work orders with unit_verification
+NEGATIVE_RULES = {
+    "SWE.1": ("NEGATIVE PATHS AND CORNER CASES (owner 2026-11-03): besides the positive path, every functional "
+              "requirement set states the software's behaviour in its negative paths and corner cases as far as the "
+              "inputs support them - an argument outside its field width or valid range (kept to the field bits or "
+              "rejected), a NULL or invalid instance or pointer where the API takes one, a repeated or idempotent call, "
+              "a call in the wrong state or order, timeout and not-ready paths of a waiting function, and the register "
+              "bits that must stay unchanged. Ground each in the provided RM/datasheet/guideline/owner obligations or "
+              "state it as the driver's defined behaviour ('as the driver's defined behaviour, ...'); never invent a "
+              "hardware fact."),
+    "SWE.3": ("NEGATIVE AND CORNER-CASE USPEC ITEMS (owner 2026-11-03): besides the nominal behaviour, give each unit "
+              "its negative and corner-case behaviours as their own '- **USPEC-...**' items where the requirements "
+              "state them (invalid or out-of-range argument, NULL or invalid instance, timeout and not-ready paths, a "
+              "repeated call, register bits left unchanged, the flag-clear result). Each USPEC item gets its own "
+              "requirement-based SWE.4 test. Never invent a behaviour the requirements do not state."),
+}
 PLAN_MD = "workproducts/SWE.4/unit_test_plan.md"
 USPEC_FRAGMENTS = [
     # SWE.1 keeps the verification criteria and the SWR -> SWE.6 qualification-test allocation only
