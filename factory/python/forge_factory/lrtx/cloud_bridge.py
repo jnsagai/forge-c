@@ -13,16 +13,19 @@ network to the factory). The bridge runs outside the namespace and answers OpenA
 - backend `openai`: the owner's OpenAI API (authorized 2026-11-02) through the official SDK (the inspector);
 - backend `claude-cli` (owner 2026-11-02, "Claude API/Account mode"): the same Claude model through the owner's
   Claude account (Claude Code `claude -p`, claude.ai login, no API key in its environment): no tools, no MCP server, no
-  settings, no session kept, an empty working directory; the schema is passed as `--json-schema`. The account mode is
-  chosen per call from a mode file (`api` | `account`) the floor's control writes. Owner 2026-11-03 ("the account
+  settings, no session kept, an empty working directory; the schema is passed as `--json-schema`. The mode is
+  chosen per call from a mode file (`api` | `account`) the floor's control writes; no mode file, an unreadable one or
+  an unknown value is `account` (the API is used only when the file says `api`). Owner 2026-11-03 ("the account
   claude is the default, not the API"): in account mode NOTHING reaches the Anthropic API. A call with tools (Fabro's
   native agent nodes) is answered on the account too, by tool-call emulation: the CLI still runs with no tools; the
   offered tools are described in its system prompt and the answer is a structured JSON envelope that names tool calls
   (validated against the offered names and each tool's argument schema) or gives the final text; the bridge turns it
   into OpenAI `tool_calls` (ids, finish `tool_calls`). One bounded repair retry on a malformed answer, then the
   explicit error ACCOUNT_MODE_TOOL_CALL_FAILED - never an API fallback. The meter says `tool_emulation: claude-cli`;
-- the inspector's account mode (owner 2026-11-02, "yes build it"): gpt-6.1-sol through the owner's ChatGPT login
-  (the `codex` backend, API key removed from its environment) while the inspector mode file says `account`;
+- the inspector's account mode (owner 2026-11-02, "yes build it"; the default, "both claude and gpt as account not
+  API"): gpt-6.1-sol through the owner's ChatGPT login (the `codex` backend, API key removed from its environment)
+  unless the inspector mode file says `api`; a call with tools gets the same tool-call emulation (`codex-cli`), never
+  the OpenAI API;
 - backend `codex`: the Codex CLI (`codex exec`, ephemeral, read-only sandbox, empty working directory, no tools needed:
   the packet holds every input), `--output-schema` when the schema meets the strict rules.
 
@@ -61,6 +64,14 @@ def read_mode(path: Path | None) -> str:
     except (OSError, ValueError, AttributeError):
         return DEFAULT_MODE
     return mode if mode in MODES else DEFAULT_MODE
+
+
+def _api_key(path: Path, name: str) -> str | None:
+    """An API key for the `api` mode only; a missing file is no API backend (account mode needs none)."""
+    try:
+        return read_key(path, name)
+    except (OSError, ValueError):
+        return None
 
 
 def read_key(path: Path, name: str = "ANTHROPIC_API_KEY") -> str:
@@ -403,6 +414,61 @@ def _add_usage(a: dict | None, b: dict) -> dict:
     return out
 
 
+def emulate_tools(call, body: dict, system: str, prompt: str, final_schema: dict | None, emulator: str,
+                  repair_attempts: int = 1) -> dict:
+    """Tool-call emulation on an account CLI that runs without tools (owner 2026-11-03: account mode never falls back
+    to an API). `call(prompt, system, envelope_schema) -> (structured answer or None, usage, stop_reason)`. The answer is
+    checked against the offered tool names and each tool's argument schema; `repair_attempts` bounded retries, then an
+    explicit ACCOUNT_MODE_TOOL_CALL_FAILED."""
+    tools = offered_tools(body)
+    meter: dict = {"tool_emulation": emulator, "tool_emulation_attempts": 0}
+    try:
+        rule = tool_rule(body, tools)
+    except AccountToolCallError as exc:
+        exc.meter = meter
+        raise
+    validators = {}
+    for name in rule["names"]:
+        try:
+            validators[name] = _validator(tools[name]["parameters"])
+        except Exception as exc:  # noqa: BLE001 - jsonschema.SchemaError and friends
+            raise AccountToolCallError(f"TOOL_SCHEMA_INVALID:{name[:60]}:{type(exc).__name__}", meter) from None
+    env = envelope_schema(rule)
+    sys_prompt = (system + "\n\n" if system else "") + emulation_instruction(tools, rule, final_schema)
+    usage, repair = None, ""
+    for attempt in range(1 + repair_attempts):
+        meter["tool_emulation_attempts"] = attempt + 1
+        try:
+            so, u, stop = call(prompt + repair, sys_prompt, env)
+        except RuntimeError as exc:
+            meter["usage"] = usage
+            raise AccountToolCallError(str(exc)[:120], meter) from None
+        usage = _add_usage(usage, u)
+        try:
+            calls, content = check_envelope(so, tools, rule, validators)
+        except _Malformed as bad:
+            meter.setdefault("tool_emulation_rejected", []).append(bad.reason)
+            repair = ("\n\n[bridge]\nYour previous answer was rejected and discarded: " + bad.detail
+                      + "\nAnswer again with ONE JSON object as the system prompt describes.")
+            continue
+        meter["tool_calls"] = len(calls)
+        finish = "tool_calls" if calls else ("length" if stop == "max_tokens" else "stop")
+        return {"text": content, "finish": finish, "tool_calls": calls, "usage": usage,
+                "schema_mode": "tool_emulation_json_schema", "stop_reason": stop, "meter": meter}
+    meter["usage"] = usage
+    raise AccountToolCallError(f"MALFORMED_AFTER_REPAIR:{meter['tool_emulation_rejected'][-1]}", meter)
+
+
+def json_answer(text: str):
+    """A prompt-schema answer (Codex without --output-schema): one JSON object, a ```json fence tolerated."""
+    t = (text or "").strip()
+    m = re.fullmatch(r"```(?:json)?\s*(.*?)\s*```", t, re.S)
+    try:
+        return json.loads(m.group(1) if m else t)
+    except ValueError:
+        return None
+
+
 class ClaudeCliBackend:
     """Claude through the owner's Claude account: `claude -p` (print mode), structured output, nothing else. The
     API key is removed from the CLI's environment so the account login is what answers (`--bare` would require a key).
@@ -462,56 +528,42 @@ class ClaudeCliBackend:
                 "stop_reason": out.get("stop_reason")}
 
     def _emulate_tools(self, body: dict, cfg: dict, system: str, prompt: str, final_schema: dict | None) -> dict:
-        """Owner 2026-11-03: tool calls on the account. The envelope schema goes through `--json-schema`; the answer is
-        checked against the offered tool names and each tool's argument schema; one repair retry, then an explicit
-        ACCOUNT_MODE_TOOL_CALL_FAILED."""
-        tools = offered_tools(body)
-        meter: dict = {"tool_emulation": TOOL_EMULATION, "tool_emulation_attempts": 0}
-        try:
-            rule = tool_rule(body, tools)
-        except AccountToolCallError as exc:
-            exc.meter = meter
-            raise
-        validators = {}
-        for name in rule["names"]:
-            try:
-                validators[name] = _validator(tools[name]["parameters"])
-            except Exception as exc:  # noqa: BLE001 - jsonschema.SchemaError and friends
-                raise AccountToolCallError(f"TOOL_SCHEMA_INVALID:{name[:60]}:{type(exc).__name__}", meter) from None
-        env = envelope_schema(rule)
-        sys_prompt = (system + "\n\n" if system else "") + emulation_instruction(tools, rule, final_schema)
-        usage, repair = None, ""
-        for attempt in range(1 + self.REPAIR_ATTEMPTS):
-            meter["tool_emulation_attempts"] = attempt + 1
-            try:
-                out, u = self._call(prompt + repair, sys_prompt, env, body, cfg)
-            except RuntimeError as exc:
-                meter["usage"] = usage
-                raise AccountToolCallError(str(exc)[:120], meter) from None
-            usage = _add_usage(usage, u)
-            try:
-                calls, content = check_envelope(out.get("structured_output"), tools, rule, validators)
-            except _Malformed as bad:
-                meter.setdefault("tool_emulation_rejected", []).append(bad.reason)
-                repair = ("\n\n[bridge]\nYour previous answer was rejected and discarded: " + bad.detail
-                          + "\nAnswer again with ONE JSON object as the system prompt describes.")
-                continue
-            meter["tool_calls"] = len(calls)
-            finish = "tool_calls" if calls else ("length" if out.get("stop_reason") == "max_tokens" else "stop")
-            return {"text": content, "finish": finish, "tool_calls": calls, "usage": usage,
-                    "schema_mode": "tool_emulation_json_schema", "stop_reason": out.get("stop_reason"), "meter": meter}
-        meter["usage"] = usage
-        raise AccountToolCallError(f"MALFORMED_AFTER_REPAIR:{meter['tool_emulation_rejected'][-1]}", meter)
+        """Owner 2026-11-03: tool calls on the account; the envelope schema goes through `--json-schema`."""
+        def call(text: str, sys_prompt: str, env: dict):
+            out, usage = self._call(text, sys_prompt, env, body, cfg)
+            return out.get("structured_output"), usage, out.get("stop_reason")
+        return emulate_tools(call, body, system, prompt, final_schema, "claude-cli", self.REPAIR_ATTEMPTS)
 
 
 class CodexBackend:
+    """gpt-6.1-sol through the owner's ChatGPT login (`codex exec`). A request with tools is answered by the same
+    tool-call emulation as the Claude account (owner 2026-11-03: account mode never falls back to the OpenAI API)."""
+
+    REPAIR_ATTEMPTS = 1
+
     def __init__(self, codex_home: str | None = None, run=subprocess.run):
         self.codex_home, self.run = codex_home, run
 
     def answer(self, body: dict, cfg: dict) -> dict:
         schema = _schema(body)
+        if offered_tools(body) and body.get("tool_choice") != "none":
+            return self._emulate_tools(body, cfg, schema)
         parts = [f"[{m.get('role')}]\n{_text(m.get('content'))}" for m in body.get("messages") or []]
         prompt = "\n\n".join(parts) + "\n\n" + json_instruction(schema)
+        text, usage, mode = self._exec(prompt, schema, cfg)
+        return {"text": text, "finish": "stop", "schema_mode": mode, "usage": usage}
+
+    def _emulate_tools(self, body: dict, cfg: dict, final_schema: dict | None) -> dict:
+        msgs = body.get("messages") or []
+        system = "\n\n".join(_text(m.get("content")) for m in msgs if m.get("role") == "system")
+        convo = transcript([m for m in msgs if m.get("role") != "system"])
+
+        def call(text: str, sys_prompt: str, env: dict):
+            answer, usage, _mode = self._exec(f"[system]\n{sys_prompt}\n\n{text}\n\n{json_instruction(env)}", env, cfg)
+            return json_answer(answer), usage, None
+        return emulate_tools(call, body, system, convo, final_schema, "codex-cli", self.REPAIR_ATTEMPTS)
+
+    def _exec(self, prompt: str, schema: dict | None, cfg: dict) -> tuple[str, dict, str]:
         with tempfile.TemporaryDirectory(prefix="forge-codex-") as td:
             out, sch = Path(td) / "last-message.txt", Path(td) / "schema.json"
             argv = ["codex", "exec", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only", "--color", "never",
@@ -545,7 +597,7 @@ class CodexBackend:
         if p.returncode != 0 and not text:
             raise RuntimeError(f"CODEX_EXEC_FAILED:rc{p.returncode}")
         usage["billing"] = "account"
-        return {"text": text, "finish": "stop", "schema_mode": mode, "usage": usage}
+        return text, usage, mode
 
 
 class Bridge:
@@ -557,23 +609,21 @@ class Bridge:
         self.lock = threading.Lock()
 
     def route(self, body: dict, cfg: dict) -> tuple[str, dict]:
-        """Backend for this call. An `anthropic` model goes to `claude-cli` while the mode file says `account` - every
-        call, a call with tools included (tool-call emulation, owner 2026-11-03: no API fallback in account mode)."""
+        """Backend for this call. Owners 2026-11-02 ("the default for cloud run is both claude and gpt as account not
+        API") and 2026-11-03 ("the account claude is the default, not the API"): an `anthropic` model goes to
+        `claude-cli` and an `openai` model to `codex` unless its mode file says `api`; no mode file, an unreadable one
+        or an unknown value is account. Every account call stays on the account, a call with tools included (tool-call
+        emulation); an API is used only when a mode file says `api`."""
         backend = cfg["backend"]
         note: dict = {}
-        if backend == "anthropic" and "claude-cli" in self.backends:
-            mode = read_mode(self.mode_file)
-            note["claude_mode"] = mode
-            if mode == "account":
+        if backend == "anthropic":
+            note["claude_mode"] = read_mode(self.mode_file)
+            if note["claude_mode"] == "account":
                 backend = "claude-cli"
-        if backend == "openai" and "codex" in self.backends and self.inspector_mode_file is not None:
-            mode = read_mode(self.inspector_mode_file)
-            note["inspector_mode"] = mode
-            if mode == "account":
-                if body.get("tools"):
-                    note["account_fallback"] = "tool_calls_on_api"
-                else:
-                    backend = "codex"
+        elif backend == "openai":
+            note["inspector_mode"] = read_mode(self.inspector_mode_file)
+            if note["inspector_mode"] == "account":
+                backend = "codex"
         return backend, note
 
     def complete(self, body: dict) -> dict:
@@ -587,6 +637,8 @@ class Bridge:
                 raise KeyError(f"BRIDGE_MODEL_UNKNOWN:{name}")
             backend, note = self.route(body, cfg)
             rec.update({"backend": backend, **note})
+            if backend not in self.backends:  # e.g. api mode without a readable key file: refused, never rerouted
+                raise RuntimeError(f"BRIDGE_BACKEND_UNAVAILABLE:{backend}")
             res = self.backends[backend].answer(body, cfg)
             rec.update({"ok": True, "finish": res["finish"], "usage": res["usage"], "schema_mode": res["schema_mode"],
                         "answer_chars": len(res["text"]), **(res.get("meter") or {})})
@@ -690,27 +742,36 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--key-file", type=Path, default=Path.home() / ".config/forge-c/anthropic-api.env")
     ap.add_argument("--openai-key-file", type=Path, default=Path.home() / ".config/forge-c/openai-api.env")
     ap.add_argument("--codex-home")
-    ap.add_argument("--mode-file", type=Path, help="JSON {mode: api|account} written by the floor control; per call")
+    ap.add_argument("--mode-file", type=Path, help="JSON {mode: api|account} written by the floor control, read per call; "
+                    "without it (or unreadable) Claude is on the account")
     ap.add_argument("--inspector-mode-file", type=Path, help="the same for the OpenAI inspector (account = Codex CLI)")
     a = ap.parse_args(argv)
     models = json.loads(a.models)
-    backends = {}
-    if any(c["backend"] == "anthropic" for c in models.values()):
-        backends["anthropic"] = AnthropicBackend(read_key(a.key_file))
-    if any(c["backend"] == "openai" for c in models.values()):
-        backends["openai"] = OpenAIBackend(read_key(a.openai_key_file, "OPENAI_API_KEY"))
-    if any(c["backend"] == "codex" for c in models.values()):
-        backends["codex"] = CodexBackend(a.codex_home)
-    if a.mode_file is not None and "anthropic" in backends:
-        backends["claude-cli"] = ClaudeCliBackend()
-    if a.inspector_mode_file is not None and "openai" in backends and "codex" not in backends:
-        backends["codex"] = CodexBackend(a.codex_home)
+    backends = make_backends(models, a.key_file, a.openai_key_file, a.codex_home)
     srv = serve(a.socket, Bridge(models, backends, a.meter, a.mode_file, a.inspector_mode_file))
     try:
         srv.serve_forever()
     finally:
         srv.server_close()
     return 0
+
+
+def make_backends(models: dict, key_file: Path, openai_key_file: Path, codex_home: str | None) -> dict:
+    """The account backends always exist (the default); an API backend only when its key file is readable."""
+    kinds = {c["backend"] for c in models.values()}
+    backends: dict = {}
+    if "anthropic" in kinds:
+        backends["claude-cli"] = ClaudeCliBackend()  # the default (account); the API only when the mode file says api
+        api = _api_key(key_file, "ANTHROPIC_API_KEY")
+        if api:
+            backends["anthropic"] = AnthropicBackend(api)
+    if "openai" in kinds:
+        api = _api_key(openai_key_file, "OPENAI_API_KEY")
+        if api:
+            backends["openai"] = OpenAIBackend(api)
+    if kinds & {"openai", "codex"}:
+        backends["codex"] = CodexBackend(codex_home)
+    return backends
 
 
 if __name__ == "__main__":

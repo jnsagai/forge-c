@@ -221,3 +221,68 @@ print(json.dumps({{"type": "result", "is_error": False, "stop_reason": "end_turn
     assert res["tool_calls"][0]["function"] == {"name": "read_file", "arguments": '{"path": "c"}'}
     assert seen["key"] is False and seen["cwd_files"] == ["system.txt"] and "[tool result id=call_1" in seen["stdin"]
     assert seen["argv"][0] == "-p" and os.path.basename(str(exe)) == "claude"
+
+
+def _codex(seen, *answers):
+    """A fake `codex exec`: records the prompt and argv, writes the answers in order as its last message."""
+    queue = list(answers)
+
+    def run(argv, **kw):
+        seen.append({"argv": argv, "input": kw["input"], "env": kw["env"]})
+        with open(argv[argv.index("-o") + 1], "w") as f:
+            f.write(queue.pop(0) if len(queue) > 1 else queue[0])
+        ev = {"type": "turn.completed", "usage": {"input_tokens": 50, "output_tokens": 5}}
+        return type("P", (), {"returncode": 0, "stdout": json.dumps(ev) + "\n", "stderr": ""})()
+    return run
+
+
+def test_the_inspector_account_emulates_tool_calls_through_the_codex_login(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "must-not-reach-codex")
+    seen = []
+    fenced = "```json\n" + json.dumps(CALL_WRITE) + "\n```"
+    res = CB.CodexBackend(run=_codex(seen, "not json", fenced)).answer(_body(model="gpt-6.1-sol"), {"model": "gpt-6.1-sol"})
+    assert len(seen) == 2 and "OPENAI_API_KEY" not in seen[0]["env"] and "--output-schema" not in seen[0]["argv"]
+    p = seen[0]["input"]
+    assert p.startswith("[system]\nSECRET-SYSTEM\n\nTOOL CALLING.") and "[tool result id=call_1 name=read_file]" in p
+    assert '"enum": ["read_file", "write_file"]' in p  # the envelope schema is in the prompt (not strict: prompt schema)
+    assert "[bridge]\nYour previous answer was rejected" in seen[1]["input"]
+    assert res["finish"] == "tool_calls" and res["tool_calls"][0]["function"]["name"] == "write_file"
+    assert res["meter"] == {"tool_emulation": "codex-cli", "tool_emulation_attempts": 2, "tool_calls": 1,
+                            "tool_emulation_rejected": ["NO_STRUCTURED_ANSWER"]}
+    assert res["usage"]["prompt_tokens"] == 100 and res["usage"]["billing"] == "account"
+    # a request without tools is unchanged: the same prompt and argv as before the emulation existed
+    seen.clear()
+    plain = {"model": "gpt-6.1-sol", "messages": [{"role": "user", "content": "u"}]}
+    CB.CodexBackend(run=_codex(seen, '{"a": 1}')).answer(plain, {})
+    assert seen[0]["input"] == "[user]\nu\n\n" + CB.json_instruction(None)
+
+
+def test_without_mode_files_both_models_are_on_the_account_and_never_on_an_api(tmp_path):
+    cfg = {"claude-opus-5-5": {"backend": "anthropic"}, "gpt-6.1-sol": {"backend": "openai", "model": "gpt-6.1-sol"}}
+    cseen, xseen = [], []
+    bridge = CB.Bridge(cfg, {"anthropic": NoApi(), "openai": NoApi(),
+                             "claude-cli": CB.ClaudeCliBackend(run=_cli(cseen, _out(CALL_WRITE))),
+                             "codex": CB.CodexBackend(run=_codex(xseen, json.dumps(CALL_WRITE)))}, tmp_path / "m.jsonl")
+    for model in cfg:
+        bridge.complete(_body(model=model))
+        bridge.complete({"model": model, "messages": [{"role": "user", "content": "u"}]})
+    rows = [json.loads(x) for x in (tmp_path / "m.jsonl").read_text().splitlines()]
+    assert [r["backend"] for r in rows] == ["claude-cli", "claude-cli", "codex", "codex"] and all(r["ok"] for r in rows)
+    assert [r.get("tool_emulation") for r in rows] == ["claude-cli", None, "codex-cli", None]
+    assert rows[0]["claude_mode"] == "account" and rows[2]["inspector_mode"] == "account"
+    # the API only when a mode file says api; an API backend that is not configured is refused, not rerouted
+    (tmp_path / "c.json").write_text('{"mode": "api"}')
+    bare = CB.Bridge(cfg, {"claude-cli": CB.ClaudeCliBackend(run=_cli([], _out(CALL_WRITE)))}, tmp_path / "b.jsonl",
+                     tmp_path / "c.json")
+    with pytest.raises(RuntimeError, match="BRIDGE_BACKEND_UNAVAILABLE:anthropic"):
+        bare.complete(_body())
+
+
+def test_the_bridge_starts_on_the_account_without_key_files(tmp_path):
+    models = {"claude-opus-5-5": {"backend": "anthropic"}, "gpt-6.1-sol": {"backend": "openai"}}
+    be = CB.make_backends(models, tmp_path / "none.env", tmp_path / "none2.env", None)
+    assert set(be) == {"claude-cli", "codex"}
+    (tmp_path / "a.env").write_text("ANTHROPIC_API_KEY=sk-test-not-real\n")
+    (tmp_path / "o.env").write_text("OPENAI_API_KEY=sk-test-not-real\n")
+    be = CB.make_backends(models, tmp_path / "a.env", tmp_path / "o.env", str(tmp_path))
+    assert set(be) == {"claude-cli", "anthropic", "codex", "openai"} and be["codex"].codex_home == str(tmp_path)

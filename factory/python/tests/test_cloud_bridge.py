@@ -6,6 +6,7 @@ import threading
 from types import SimpleNamespace
 
 import httpx
+import pytest
 from forge_factory.lrtx import cloud_bridge as CB
 
 SCHEMA = {"type": "object", "additionalProperties": False, "required": ["code"],
@@ -91,8 +92,9 @@ def test_codex_uses_output_schema_only_for_strict_schemas(tmp_path):
 
 def test_the_bridge_answers_over_its_socket_and_meters_without_prompts(tmp_path):
     meter = tmp_path / "meter.jsonl"
+    (tmp_path / "mode.json").write_text('{"mode": "api"}')  # the API only when a mode file says so
     bridge = CB.Bridge({"claude-opus-5-5": {"backend": "anthropic"}}, {"anthropic": CB.AnthropicBackend("k", client=FakeClient())},
-                       meter)
+                       meter, tmp_path / "mode.json")
     sock = tmp_path / "bridge.sock"
     srv = CB.serve(sock, bridge)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -117,8 +119,9 @@ def test_the_gateway_routes_a_model_to_a_unix_socket(tmp_path, monkeypatch):
     from forge_factory import llm_gateway
 
     meter = tmp_path / "meter.jsonl"
+    (tmp_path / "mode.json").write_text('{"mode": "api"}')  # the API only when a mode file says so
     bridge = CB.Bridge({"claude-opus-5-5": {"backend": "anthropic"}}, {"anthropic": CB.AnthropicBackend("k", client=FakeClient())},
-                       meter)
+                       meter, tmp_path / "mode.json")
     sock = tmp_path / "bridge.sock"
     srv = CB.serve(sock, bridge)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -280,10 +283,12 @@ def test_the_inspector_mode_file_routes_openai_to_the_codex_login(tmp_path, monk
     bridge.complete(_body(model="gpt-6.1-sol"))
     mode.write_text(json.dumps({"mode": "account"}))
     res = bridge.complete(_body(model="gpt-6.1-sol"))
-    bridge.complete({**_body(model="gpt-6.1-sol"), "tools": [{"type": "function", "function": {"name": "f"}}]})
+    with pytest.raises(CB.AccountToolCallError):  # tools on the account: emulated ('{"code"...}' is no envelope)
+        bridge.complete({**_body(model="gpt-6.1-sol"), "tools": [{"type": "function", "function": {"name": "f"}}]})
     rows = [json.loads(x) for x in (tmp_path / "m.jsonl").read_text().splitlines()]
-    assert [r["backend"] for r in rows] == ["openai", "codex", "openai"] and len(api) == 2 and len(seen) == 1
-    assert rows[2]["account_fallback"] == "tool_calls_on_api" and res["usage"]["billing"] == "account"
+    assert [r["backend"] for r in rows] == ["openai", "codex", "codex"] and len(api) == 1 and len(seen) == 3
+    assert rows[2]["tool_emulation"] == "codex-cli" and rows[2]["error_code"] == "ACCOUNT_MODE_TOOL_CALL_FAILED"
+    assert "account_fallback" not in rows[2] and res["usage"]["billing"] == "account"
     argv, kw = seen[0]
     assert "OPENAI_API_KEY" not in kw["env"] and argv[argv.index("-m") + 1] == "gpt-6.1-sol"
     assert 'model_reasoning_effort="high"' in argv
