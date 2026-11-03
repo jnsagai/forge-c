@@ -481,16 +481,15 @@ def visit_design(ws: Path, model: str = "", **_k) -> dict:
     from .. import static_timing as ST
 
     timing = ST.bound(ws)
+    swrs = ST.swrs_of(ws, reqs) if timing is not None else []
     if timing is not None:
-        try:
-            swrs = ST.performance_swrs(ws, reqs)
-        except (OSError, ValueError, KeyError):
-            swrs = []
         dd += ST.design_section(timing, swrs)
         files[ST.EVIDENCE] = ST.render(timing)
     files["workproducts/SWE.3/detailed_design.md"] = "\n".join(dd)
     V.write_scoped(ws, files, "swe3_author")
     _pu  # noqa: B018 - parse_units is the format the gate reads (kept imported for readers)
+    if late := ST.findings(timing, swrs):  # owner 2026-11-03: over budget or unbounded fails, back to the code
+        return V.reply(ws, PHASE, "FAILED", late[:20], None, artifacts=sorted(files))
     if res["cppcheck"]["status"] == "FAIL":  # CAPA-097: measured again here; open findings never freeze
         open_, _just = coding_rule_findings(ws, res["cppcheck"]["issues"], us)
         if open_ or not res["cppcheck"]["issues"]:

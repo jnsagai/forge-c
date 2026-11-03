@@ -168,6 +168,10 @@ def step_author(store: Store, phase: str, text: str) -> int:
             hdr = Path(ll_header(store.workspace) if lay == "LL" else hal_h(store.workspace)).name  # feature 009
             generated += [f + UPSTREAM_CALLS_HINT for f in RC.check_compiles(
                 store.workspace, [store.workspace / "software/hal", store.workspace / "software/ll"], hdr)]
+    if phase == "SWE.3":  # CAPA-121 + owner 2026-11-03: every SWE.3 path gets the factory-rendered static timing bound;
+        from ..static_timing import gate as timing_gate  # an over-budget or unbounded result is a rework finding
+
+        generated += timing_gate(store.workspace)
     from ..assurance.scope import workspace_scope_findings  # CAPA-044: stated safety level = owner scope
 
     generated += workspace_scope_findings(store.workspace, phase)

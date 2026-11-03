@@ -84,4 +84,66 @@ def test_over_budget_is_reported_and_orders_without_the_budget_are_unchanged(tmp
     rec = ST.bound(_ws(tmp_path / "a", big))
     assert rec["functions"]["LL_RCC_HSI_Set"]["status"] == "OVER_BUDGET" and rec["status"] == "OVER_BUDGET"
     assert ST.bound(_ws(tmp_path / "b", budget=False)) is None
-    assert ST.bound(_ws(tmp_path / "c", layer="HAL")) is None
+    assert ST.bound(_ws(tmp_path / "c", budget=False, layer="HAL")) is None
+
+
+NATIVE_DD = "# Detailed design\n\nWritten by the native SWE.3 author.\n\n## Resource usage\n\n- measured\n"
+
+
+@pytest.mark.skipif(not ARM, reason="arm-none-eabi toolchain not installed")
+def test_gate_renders_the_bound_into_a_native_design_and_fails_over_budget_with_a_precise_finding(tmp_path):
+    """Owner 2026-11-03: the author gate renders the section on any SWE.3 path; over budget is a rework finding."""
+    ws = _ws(tmp_path / "ok")
+    (ws / ST.DESIGN).parent.mkdir(parents=True)
+    (ws / ST.DESIGN).write_text(NATIVE_DD)
+    assert ST.gate(ws) == []
+    dd = (ws / ST.DESIGN).read_text()
+    assert dd.startswith(NATIVE_DD.rstrip("\n")) and dd.count(ST.SECTION) == 1
+    assert "| LL_RCC_HSI_Enable | 4 | 40 | WITHIN_BUDGET |" in dd
+    rec = json.loads((ws / ST.EVIDENCE).read_text())
+    assert ST.gate(ws) == [] and (ws / ST.DESIGN).read_text() == dd and json.loads((ws / ST.EVIDENCE).read_text()) == rec
+    (ws / ST.DESIGN).write_text(dd.replace("WITHIN_BUDGET |", "edited |") + "\n## Later section\n\ntext\n")
+    ST.gate(ws)
+    again = (ws / ST.DESIGN).read_text()
+    assert again.count(ST.SECTION) == 1 and "edited |" not in again and again.endswith("## Later section\n\ntext\n")
+    big = ("static inline void LL_RCC_HSI_Set(uint32_t v)\n{\n    ll_rcc_regs[2U] = v;\n    ll_rcc_regs[3U] = v + 1U;\n"
+           "    ll_rcc_regs[4U] = v + 2U;\n}\n")
+    ws = _ws(tmp_path / "big", big)
+    out = ST.gate(ws)
+    assert len(out) == 1 and out[0].startswith("STATIC_TIMING_OVER_BUDGET: LL_RCC_HSI_Set: static bound ")
+    assert "exceeds the budget 4 instr/100 us per call at 100 MIPS" in out[0] and len(out[0].split(" exceeds")[0]) < 80
+    assert not (ws / ST.DESIGN).exists() and (ws / ST.EVIDENCE).is_file()  # presence of the design: the presence gate
+    loop = ST.gate(_ws(tmp_path / "loop", LOOP))
+    assert loop[0].startswith("STATIC_TIMING_NOT_BOUNDED: LL_RCC_HSI_Wait: no static bound for the budget 4 instr/")
+    assert "NOT_STRAIGHT_LINE" in loop[0] and "write LL_RCC_HSI_Wait without branches" in loop[0]
+    assert ST.gate(_ws(tmp_path / "none", budget=False)) == []
+    assert not (tmp_path / "none" / ST.EVIDENCE).exists()
+
+
+HAL_H = ("#ifndef STM32N6XX_HAL_RCC_H\n#define STM32N6XX_HAL_RCC_H\n#include <stdint.h>\n"
+         "uint32_t HAL_RCC_Refresh(void);\nuint32_t HAL_RCC_Init(uint32_t timeout);\n#endif\n")
+HAL_C = ('#include "stm32n6xx_hal_rcc.h"\nextern volatile uint32_t ll_rcc_regs[1024U];\n'
+         "uint32_t HAL_RCC_Refresh(void)\n{\n    ll_rcc_regs[0U] = 0xAAAAU;\n    return 0U;\n}\n"
+         "uint32_t HAL_RCC_Init(uint32_t timeout)\n{\n    uint32_t st = 0U;\n    if (timeout == 0U)\n    {\n"
+         "        st = 1U;\n    }\n    else\n    {\n        while ((ll_rcc_regs[1U] & 1U) != 0U)\n        {\n"
+         "            if (--timeout == 0U) { st = 3U; break; }\n        }\n    }\n    return st;\n}\n")
+
+
+@pytest.mark.skipif(not ARM, reason="arm-none-eabi toolchain not installed")
+def test_hal_order_bounds_straight_line_functions_and_refuses_branching_ones(tmp_path):
+    """Native HAL path: public HAL functions compiled from the HAL source; branching code is NOT_BOUNDED with the reason,
+    never a guessed bound, and the finding does not ask the author for impossible branch-free HAL code."""
+    ws = _ws(tmp_path, budget=True, layer="HAL")
+    (ws / "software/hal").mkdir(parents=True)
+    (ws / "software/hal/stm32n6xx_hal_rcc.h").write_text(HAL_H)
+    (ws / "software/hal/stm32n6xx_hal_rcc.c").write_text(HAL_C)
+    rec = ST.bound(ws)
+    fs = rec["functions"]
+    assert rec["layer"] == "HAL" and rec["source"] == "software/hal/stm32n6xx_hal_rcc.c" and rec["source_sha256"]
+    assert fs["HAL_RCC_Refresh"]["static_instructions"] >= 2  # straight-line: bounded (budget 4 in this fixture)
+    assert fs["HAL_RCC_Init"]["status"] == "NOT_BOUNDED" and fs["HAL_RCC_Init"]["reason"].startswith("NOT_STRAIGHT_LINE")
+    assert "static_instructions" not in fs["HAL_RCC_Init"] and rec["status"] in ("NOT_BOUNDED", "OVER_BUDGET")
+    out = [f for f in ST.findings(rec, ["SWR-020"]) if "HAL_RCC_Init" in f]
+    assert len(out) == 1 and out[0].startswith("STATIC_TIMING_NOT_BOUNDED: HAL_RCC_Init: no static bound for the budget")
+    assert "NOT_STRAIGHT_LINE" in out[0] and "(SWR-020)" in out[0] and "no static bound for HAL code" in out[0]
+    assert "without branches" not in out[0]
