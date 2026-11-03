@@ -197,17 +197,18 @@ HAL_H = ("#ifndef STM32N6XX_HAL_RCC_H\n#define STM32N6XX_HAL_RCC_H\n#include <st
          "uint32_t HAL_RCC_Refresh(void);\nuint32_t HAL_RCC_Init(uint32_t timeout);\n#endif\n")
 HAL_C = ('#include "stm32n6xx_hal_rcc.h"\nextern volatile uint32_t ll_rcc_regs[1024U];\n'
          "uint32_t HAL_RCC_Refresh(void)\n{\n    ll_rcc_regs[0U] = 0xAAAAU;\n    return 0U;\n}\n"
-         "uint32_t HAL_RCC_Init(uint32_t timeout)\n{\n    uint32_t st = 0U;\n    const uint32_t start = HAL_GetTick();\n"
-         "    if (timeout == 0U)\n    {\n        st = 1U;\n    }\n    else\n    {\n"
-         "        while ((ll_rcc_regs[1U] & 1U) != 0U)\n        {\n"
+         "uint32_t HAL_RCC_Init(uint32_t timeout)\n{\n    uint32_t st = 0U;\n    if (timeout == 0U)\n    {\n"
+         "        st = 1U;\n    }\n    else\n    {\n        const uint32_t start = HAL_GetTick();\n"
+         "        ll_rcc_regs[0U] = 8U;  /* HSION; the model mirrors it to RCC_SR.HSIRDY unless never_ready */\n"
+         "        while ((ll_rcc_regs[1U] & 8U) == 0U)\n        {\n"
          "            if ((HAL_GetTick() - start) >= timeout) { st = 3U; break; }\n        }\n    }\n    return st;\n}\n")
 HAL_CALLS = {"INIT": {"function": "HAL_RCC_Init", "args": ["{timeout}"]},
              "INIT_ZERO": {"function": "HAL_RCC_Init", "args": ["0U"]},
              "REFRESH": {"function": "HAL_RCC_Refresh", "args": []}}
 
 
-def _hal(tmp_path, calls=None):
-    ws = _ws(tmp_path, budget=2000, layer="HAL", calls=calls)
+def _hal(tmp_path, calls=None, budget=2000):
+    ws = _ws(tmp_path, budget=budget, layer="HAL", calls=calls)
     (ws / "software/hal").mkdir(parents=True)
     (ws / "software/hal/stm32n6xx_hal_rcc.h").write_text(HAL_H)
     (ws / "software/hal/stm32n6xx_hal_rcc.c").write_text(HAL_C)
@@ -278,3 +279,59 @@ def test_a_timeout_argument_without_a_stated_maximum_is_not_bounded_and_routes_u
     out = [f for f in ST.findings(rec, []) if "HAL_RCC_Init" in f]
     assert len(out) == 1 and "no maximum timeout argument stated" in out[0]
     assert out[0].endswith("report_defect kind REQUIREMENT (SWE.1) to state the maximum timeout")
+
+
+TIMEOUT_CALLS = {**HAL_CALLS, "INIT_TIMEOUT": {"function": "HAL_RCC_Init", "args": ["{timeout}"]}}
+TIMEOUT_SWR = "If HSIRDY is not set within timeout_ms, HAL_RCC_Init shall return HAL_TIMEOUT, timeout_ms at most 20 ms."
+
+
+def _timeout_ws(path, budget, swr=True):
+    ws = _hal(path, TIMEOUT_CALLS, budget=budget)
+    (ws / "workproducts/SWE.1").mkdir(parents=True, exist_ok=True)
+    (ws / "workproducts/SWE.1/register_effects.json").write_text(json.dumps(
+        {"effects": [{"case": "INIT_TIMEOUT", "swr": "SWR-001", "status": "HAL_TIMEOUT"}]}))
+    if swr:
+        _swr(ws, TIMEOUT_SWR)
+    else:  # the maximum is only in the work-order scope: no requirement bounds the timeout path
+        m = json.loads((ws / ".forge-run/manifest.json").read_text())
+        m["scope"] = ["the HSI wait is bounded by a caller timeout (at most 20 ms)"]
+        (ws / ".forge-run/manifest.json").write_text(json.dumps(m))
+    return ws
+
+
+@pytest.mark.skipif(not SIM, reason="arm-none-eabi toolchain or Renode not installed")
+def test_a_timeout_path_over_the_per_call_budget_passes_when_a_timeout_requirement_bounds_it(tmp_path):
+    """Coordinator 2026-11-03 (option a): the per-call budget gates the non-timeout paths; a timeout path is bounded in
+    real time by its timeout requirement and its simulated CPU cost is recorded, not gated."""
+    ws = _timeout_ws(tmp_path, budget=60)
+    (ws / ST.DESIGN).parent.mkdir(parents=True, exist_ok=True)
+    (ws / ST.DESIGN).write_text("# Detailed design\n")
+    rec = ST.bound(ws)
+    init = rec["functions"]["HAL_RCC_Init"]
+    tp = init["timeout_path"]
+    assert init["status"] == "WITHIN_BUDGET" and init["measured_instructions"] <= 60, init
+    assert tp["cases"] == ["INIT_TIMEOUT"] and tp["measured_instructions"] > 60  # over the per-call budget, not gated
+    assert tp["real_time_bound"] == "<= 20 ms by SWR-001" and tp["cost"].startswith("CPU cost in simulation, not wall")
+    assert tp["per_call_budget"].startswith("not gated") and all(s["scenario"] in ("default", "never_ready")
+                                                               for s in init["samples"])
+    assert rec["status"] == "WITHIN_BUDGET" and ST.gate(ws) == []
+    dd = (ws / ST.DESIGN).read_text()
+    assert "Budget scope: The per-call budget is gated on every path that does not end in a timeout" in dd
+    assert "real time <= 20 ms by SWR-001" in dd and "No hardware WCET and no wall-time compliance" in dd
+    assert json.loads((ws / ST.EVIDENCE).read_text())["budget_scope"] == ST.BUDGET_SCOPE
+
+
+@pytest.mark.skipif(not SIM, reason="arm-none-eabi toolchain or Renode not installed")
+def test_a_timeout_path_no_requirement_bounds_is_not_bounded_and_a_non_timeout_overrun_still_fails(tmp_path):
+    rec = ST.bound(_timeout_ws(tmp_path / "noreq", budget=60, swr=False))
+    init = rec["functions"]["HAL_RCC_Init"]
+    assert init["status"] == "NOT_BOUNDED" and init["reason"] == ST.NO_TIMEOUT_REQ
+    assert init["timeout_path"]["real_time_bound"] is None
+    out = [f for f in ST.findings(rec, []) if "HAL_RCC_Init" in f]
+    assert len(out) == 1 and "NO_TIMEOUT_REQUIREMENT" in out[0]
+    assert out[0].endswith("report_defect kind REQUIREMENT (SWE.1) to state the maximum timeout")
+    tight = ST.bound(_timeout_ws(tmp_path / "tight", budget=5))
+    init = tight["functions"]["HAL_RCC_Init"]
+    assert init["status"] == "OVER_BUDGET" and init["timeout_path"]["real_time_bound"] == "<= 20 ms by SWR-001"
+    over = [f for f in ST.findings(tight, []) if "HAL_RCC_Init" in f]
+    assert over[0].startswith(f"STATIC_TIMING_OVER_BUDGET: HAL_RCC_Init: measured {init['measured_instructions']} instr/")
