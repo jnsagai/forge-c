@@ -44,7 +44,7 @@
             "PILOT",
             "ACTIVE"
           ],
-          "description": "M1 writes OBSERVE only: no order is placed or changed."
+          "description": "OBSERVE: no order is placed or changed. PILOT: the Line Conductor acts (M3) under a valid owner-signed PILOT grant."
         },
         "cycle": {
           "type": "integer",
@@ -135,6 +135,588 @@
           "ref": {
             "$ref": "#/$defs/ref"
           }
+        }
+      }
+    },
+    "placement": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Autonomous line M3 (owner 2026-11-03): the Line Conductor's order placement. ACTING only with a valid owner-signed PILOT grant (supervisor.mode PILOT); OBSERVING when ACT refused (the authorization code says why); DRY_RUN plans without placing. Codes and identifiers only.",
+      "required": [
+        "mode",
+        "authorization",
+        "campaigns",
+        "rejected",
+        "gpu",
+        "disk",
+        "lineages",
+        "actions",
+        "quality_gaps"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "ACTING",
+            "OBSERVING",
+            "DRY_RUN"
+          ]
+        },
+        "error": {
+          "$ref": "#/$defs/code"
+        },
+        "authorization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authorization_id",
+            "code",
+            "expires_at",
+            "policy_sha256"
+          ],
+          "properties": {
+            "authorization_id": {
+              "$ref": "#/$defs/nullable_token"
+            },
+            "code": {
+              "$ref": "#/$defs/code"
+            },
+            "expires_at": {
+              "$ref": "#/$defs/nullable_utc"
+            },
+            "policy_sha256": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "campaigns": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "campaign_id",
+              "file",
+              "sha256",
+              "commit"
+            ],
+            "properties": {
+              "campaign_id": {
+                "$ref": "#/$defs/token"
+              },
+              "file": {
+                "$ref": "#/$defs/ref"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "commit": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{40}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "rejected": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "file",
+              "code"
+            ],
+            "properties": {
+              "file": {
+                "$ref": "#/$defs/ref"
+              },
+              "code": {
+                "$ref": "#/$defs/code"
+              }
+            }
+          }
+        },
+        "gpu": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "busy",
+            "reason",
+            "wo"
+          ],
+          "properties": {
+            "busy": {
+              "type": "boolean"
+            },
+            "reason": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/code"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wo": {
+              "$ref": "#/$defs/nullable_token"
+            }
+          },
+          "description": "One GPU run at a time on the line."
+        },
+        "disk": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "free_gb",
+            "min_gb",
+            "placing"
+          ],
+          "properties": {
+            "free_gb": {
+              "type": "number",
+              "minimum": 0
+            },
+            "min_gb": {
+              "type": "number",
+              "minimum": 0
+            },
+            "placing": {
+              "type": "boolean"
+            }
+          },
+          "description": "Decision 12: no order is placed below min_gb free."
+        },
+        "lineages": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "lineage",
+              "tag",
+              "example",
+              "state",
+              "reason",
+              "phase",
+              "priority",
+              "revision",
+              "wo",
+              "fabro_run_id",
+              "last_good",
+              "strikes",
+              "provided_from",
+              "next"
+            ],
+            "properties": {
+              "lineage": {
+                "$ref": "#/$defs/token"
+              },
+              "tag": {
+                "$ref": "#/$defs/token"
+              },
+              "example": {
+                "$ref": "#/$defs/token"
+              },
+              "state": {
+                "enum": [
+                  "QUEUED",
+                  "CHAINED",
+                  "LAUNCHING",
+                  "RUNNING",
+                  "WAITING",
+                  "ESCALATED",
+                  "PARKED",
+                  "ON_HOLD",
+                  "DONE"
+                ]
+              },
+              "reason": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/code"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "phase": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "SWE.1",
+                      "SWE.2",
+                      "SWE.3",
+                      "SWE.4",
+                      "SWE.5",
+                      "SWE.6"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "priority": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "revision": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{7,40}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "wo": {
+                "$ref": "#/$defs/nullable_token"
+              },
+              "fabro_run_id": {
+                "$ref": "#/$defs/nullable_token"
+              },
+              "last_good": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "phase",
+                      "wo"
+                    ],
+                    "properties": {
+                      "phase": {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "SWE.1",
+                              "SWE.2",
+                              "SWE.3",
+                              "SWE.4",
+                              "SWE.5",
+                              "SWE.6"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "wo": {
+                        "$ref": "#/$defs/token"
+                      }
+                    }
+                  }
+                ],
+                "description": "Owner rule 2026-11-03: the lineage's last good, quality-checked part; every retry resumes from it."
+              },
+              "strikes": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "count",
+                  "limit",
+                  "fingerprint",
+                  "class",
+                  "code"
+                ],
+                "properties": {
+                  "count": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "fingerprint": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^(cfp1|sup1)-[0-9a-f]{16,64}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "class": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/code"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "code": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/code"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "description": "Consecutive recurrences of the same fingerprint on the current phase; more than limit stops the lineage."
+              },
+              "provided_from": {
+                "$ref": "#/$defs/nullable_token"
+              },
+              "next": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "action",
+                      "kind",
+                      "wo",
+                      "phase",
+                      "revision",
+                      "resume_from",
+                      "provided_from",
+                      "resume_upto",
+                      "stop_after",
+                      "not_before",
+                      "sweep",
+                      "quality"
+                    ],
+                    "properties": {
+                      "action": {
+                        "enum": [
+                          "PLACE",
+                          "RELAUNCH",
+                          "LAUNCH"
+                        ]
+                      },
+                      "kind": {
+                        "enum": [
+                          "START",
+                          "CHAIN",
+                          "RETRY",
+                          "RETRY_INFRA",
+                          "UPSTREAM",
+                          "RELAUNCH",
+                          "RELAUNCH_INFRA"
+                        ]
+                      },
+                      "wo": {
+                        "$ref": "#/$defs/token"
+                      },
+                      "phase": {
+                        "enum": [
+                          "SWE.1",
+                          "SWE.2",
+                          "SWE.3",
+                          "SWE.4",
+                          "SWE.5",
+                          "SWE.6"
+                        ]
+                      },
+                      "revision": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{7,40}$"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "resume_from": {
+                        "$ref": "#/$defs/nullable_token"
+                      },
+                      "provided_from": {
+                        "$ref": "#/$defs/nullable_token"
+                      },
+                      "resume_upto": {
+                        "anyOf": [
+                          {
+                            "enum": [
+                              "SWE.1",
+                              "SWE.2",
+                              "SWE.3",
+                              "SWE.4",
+                              "SWE.5",
+                              "SWE.6"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "stop_after": {
+                        "enum": [
+                          "SWE.1",
+                          "SWE.2",
+                          "SWE.3",
+                          "SWE.4",
+                          "SWE.5",
+                          "SWE.6"
+                        ]
+                      },
+                      "not_before": {
+                        "$ref": "#/$defs/nullable_utc"
+                      },
+                      "sweep": {
+                        "type": "boolean"
+                      },
+                      "quality": {
+                        "type": "boolean",
+                        "description": "The order carries the campaign's quality block."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "actions": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "action",
+              "kind",
+              "lineage",
+              "wo",
+              "outcome",
+              "detail"
+            ],
+            "properties": {
+              "action": {
+                "$ref": "#/$defs/code"
+              },
+              "kind": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "START",
+                      "CHAIN",
+                      "RETRY",
+                      "RETRY_INFRA",
+                      "UPSTREAM",
+                      "RELAUNCH",
+                      "RELAUNCH_INFRA",
+                      "ADOPTED"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "lineage": {
+                "$ref": "#/$defs/nullable_token"
+              },
+              "wo": {
+                "$ref": "#/$defs/nullable_token"
+              },
+              "outcome": {
+                "$ref": "#/$defs/code"
+              },
+              "detail": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/code"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "quality_gaps": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "lineage",
+              "wo",
+              "phase",
+              "metric",
+              "achieved",
+              "target",
+              "minimum",
+              "code"
+            ],
+            "properties": {
+              "lineage": {
+                "$ref": "#/$defs/token"
+              },
+              "wo": {
+                "$ref": "#/$defs/token"
+              },
+              "phase": {
+                "enum": [
+                  "SWE.1",
+                  "SWE.2",
+                  "SWE.3",
+                  "SWE.4",
+                  "SWE.5",
+                  "SWE.6"
+                ]
+              },
+              "metric": {
+                "$ref": "#/$defs/code"
+              },
+              "achieved": {
+                "type": "number"
+              },
+              "target": {
+                "type": "number"
+              },
+              "minimum": {
+                "type": "number"
+              },
+              "code": {
+                "$ref": "#/$defs/code"
+              }
+            }
+          },
+          "description": "Decision 15: a passed phase below the order's target (at or above its minimum) - the gap is reported, never hidden."
         }
       }
     }
