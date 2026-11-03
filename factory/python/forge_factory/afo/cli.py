@@ -6,6 +6,7 @@
   python -m forge_factory.afo.cli backup <dest.sqlite3>
   python -m forge_factory.afo.cli external-change <order_id> --revision <sha> --approval-ref <ref> --reason "..."
   python -m forge_factory.afo.cli maintainer-process|maintainer-publish <proposal_id>     # AFO M5 broker steps
+  python -m forge_factory.afo.cli supervisor ack <issue_id> --by owner --note "..."      # Line Conductor issue ack
 
 Operator controls are authenticated by the OS: only the account that owns the Conductor state directory may run
 them (agents run under policy-scoped MCP roles and never get this CLI), and every control is recorded with actor and
@@ -51,6 +52,11 @@ def operator_ok() -> bool:
 
 
 def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if argv[:1] == ["supervisor"]:  # autonomous line M1, decision 10: the owner ack of a Line Conductor issue
+        from .line_conductor import cli as supervisor_cli
+
+        return supervisor_cli(argv[1:])  # before Store(): the ack never creates or touches the AFO queue
     ap = argparse.ArgumentParser(prog="forge_factory.afo.cli")
     ap.add_argument(
         "cmd",

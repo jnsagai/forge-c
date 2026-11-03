@@ -1,0 +1,39 @@
+# Forge-C Line Conductor (autonomous line M1, owner 2026-11-03): the AFO conductor extended to the production line,
+# OBSERVE mode only - it reads the line's records and writes the issues feed forge-c/supervisor-issues/1 at
+# @STATE@/supervisor/issues.json (+ issues.jsonl). It places, changes or cancels no order and makes no model call
+# (socket guard: only the line's Fabro API port is reachable). Type=notify: READY after the first completed cycle,
+# WATCHDOG=1 after each completed cycle, so a hung cycle is restarted. Template only: render the @...@ fields and
+# install as a user unit (systemctl --user); this repository never installs it.
+[Unit]
+Description=Forge-C Line Conductor (OBSERVE, model-free issues feed) for @LINE@
+After=default.target
+StartLimitIntervalSec=600
+StartLimitBurst=10
+RequiresMountsFor=@DATA@
+
+[Service]
+Type=notify
+NotifyAccess=main
+WorkingDirectory=@REPO@/factory/python
+ExecStart=@VENV@/bin/python -m forge_factory.afo.line_conductor --mode OBSERVE --interval 30 --line @LINE@
+WatchdogSec=180
+TimeoutStartSec=180
+Restart=always
+RestartSec=10
+NoNewPrivileges=yes
+UMask=0077
+Nice=10
+Environment=PYTHONPATH=@REPO@/factory/python
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@STATE@
+Environment=FORGE_LINE_CONDUCTOR_UNIT=forge-line-conductor-@LINE@.service
+# the line's Fabro API (read-only GET /runs/<id>) and the stack storage holding server.env (token never logged)
+Environment=FORGE_LINE_FABRO_URL=@FABRO_URL@
+Environment=FORGE_LINE_FABRO_STORAGE=@FABRO_STORAGE@
+# launch-<WO>.out / workorder-launch-<WO>.log of the line launcher
+Environment=FORGE_LINE_LAUNCH_DIR=@LAUNCH_DIR@
+Environment=PATH=@VENV@/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=default.target
