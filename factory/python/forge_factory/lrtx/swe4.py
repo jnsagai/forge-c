@@ -166,9 +166,122 @@ def _preset_rule(ws: Path, fields: list[str]) -> str:
             f"{inst['macro']} as its instance argument")
 
 
+def gtest_mode(ws: Path) -> bool:
+    """Owner 2026-11-03: the requirement-based unit tests are GoogleTest TESTs (the harness is test_<id>.cpp)."""
+    return _harness(ws).suffix == ".cpp"
+
+
+ORACLE_RULES = (
+    "The expected register values and return values come ONLY from the specification item, the requirements and their "
+    "cases below (the oracle), never from guessing an implementation: a write case checks the field equals the case "
+    "value (mask with the _MSK define), set/clear cases check the bit, query cases check the return value for the flag "
+    "set AND clear, and a field update also checks that bits outside the field are preserved (preset them to 1 first). "
+    "Design the test beyond the single case value: when the function takes a value argument, also check the boundaries "
+    "of the field - the minimum (0) and the maximum (every field bit set, the _MSK value shifted down) - each with its "
+    "own call after ut_reset_regs() or a fresh preset; check that what must NOT change does not change (bits outside "
+    "the field, the other register words, a flag that is clear reads 0).")
+
+
+def gtest_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> dict:
+    """One GoogleTest TEST(<unit>, UT_nnn) per USPEC item (owner 2026-11-03)."""
+    from ..inspection.uspec_plan import suite_name, ut_name
+    from .swe3 import _sig
+
+    u = c["unit"]
+    suite, name = suite_name(u["id"]), ut_name(c["ut"])
+    instr = (f"Write ONE GoogleTest test for {c['ut']}, which verifies the specification item {c['uspec']} of unit "
+             f"{u['id']} (requirements {c['swr']}) on `{_sig(u['function'])}`. The test is exactly "
+             f"`TEST({suite}, {name})` with its body: call ut_reset_regs() first, preset any register value the case "
+             f"needs {_preset_rule(ws, u['function']['fields'])}, and check every expected result with EXPECT_EQ, "
+             "EXPECT_NE, EXPECT_TRUE or EXPECT_FALSE (unsigned constants with the U suffix; call the function and keep "
+             "results in local uint32_t variables when several states are checked). " + ORACLE_RULES +
+             " Declare in kinds the kinds of check the test really contains: positive (the case value gives the "
+             "required effect), boundary (field minimum/maximum checked), negative (a state or bit that must not change "
+             "or must read 0 is checked), error (ONLY if the requirement states an error behaviour - never invent one). "
+             "Use only the harness (ut_reset_regs), the function under test, the register block, the generated defines "
+             "below and the GoogleTest EXPECT_/ASSERT_ macros - no #include, no #define, no fixture (TEST_F), no other "
+             f"functions. Put exactly this block directly above the test: '/** @test {c['ut']} @verifies {c['uspec']} */' "
+             "(this test verifies exactly that specification item; the other items of the unit have their own tests).")
+    from .swe5 import HOST_ACCESS_RULE, has_prohibition
+
+    if has_prohibition(c.get("statement", "")):
+        instr += " " + HOST_ACCESS_RULE
+    return S.packet(phase=PHASE, task=f"test:{c['ut']}", role="swe4-author", instructions=instr, sources=[],
+                    artifacts=_oracle_artifacts(ws, c), criteria=[
+                        "expected values come from the oracle", "compiles in the GoogleTest harness",
+                        f"exactly one TEST({suite}, {name})", "kinds declares only the kinds of check the code contains"],
+                    output_schema=TEST_SCHEMA, model=model, findings=findings, previous=previous, output_reserve=3072)
+
+
+GTEST_MACRO = re.compile(r"^(?:EXPECT|ASSERT)_[A-Z_]+$|^SCOPED_TRACE$")
+
+
+def validate_gtest(ws: Path, doc: dict, c: dict) -> list[str]:
+    from ..brownfield.scope import strip_comments
+    from ..inspection.uspec_plan import suite_name, ut_name
+    from ..layer import ll_instance
+    from .swe3 import _header, _ident
+
+    code, out = doc["code"], []
+    suite, name = suite_name(c["unit"]["id"]), ut_name(c["ut"])
+    nc = strip_comments(code)
+    heads = re.findall(r"\bTEST(?:_F)?\s*\(\s*(\w+)\s*,\s*(\w+)\s*\)", nc)
+    if heads != [(suite, name)] or not re.search(rf"\bTEST\s*\(\s*{suite}\s*,\s*{name}\s*\)\s*\{{", nc):
+        out.append(f"the code must be exactly one `TEST({suite}, {name}) {{ ... }}` (found {heads})")
+    m = re.search(r"/\*\*.*?\*/", code, re.S)
+    tags = m.group(0) if m else ""
+    if f"@test {c['ut']}" not in tags:
+        out.append(f"the block above the test needs '@test {c['ut']}'")
+    ver = re.findall(r"\bUSPEC-[A-Z]+-\d{2,}-\d{2,}\b", " ".join(re.findall(r"@verifies([^@*]*)", tags)))
+    if ver != [c["uspec"]]:
+        out.append(f"'@verifies' must name exactly {c['uspec']} (the specification item of {c['ut']})")
+    if re.search(r"@verifies[^@*]*\b(SWR|SWU|IF)-", tags):
+        out.append("@verifies lists USPEC ids only (never SWR-, SWU- or IF- ids)")
+    body = nc.split("{", 1)[-1]
+    macros = set(re.findall(r"\b((?:EXPECT|ASSERT)_[A-Z_]+)\s*\(", body))
+    if not macros:
+        out.append("the test checks nothing: use EXPECT_EQ/EXPECT_TRUE/... on the expected results")
+    if re.search(r"^\s*#", code, re.M):
+        out.append("no #include or #define in a test")
+    idn = _ident(ws)
+    out += V.offset_index_errors(code, idn["block"], idn["pfx"]) if idn.get("block") else []
+    inst = ll_instance(ws)
+    if inst is not None and re.search(rf"\b{re.escape(idn['block'])}\b", nc):
+        out.append(f"{idn['block']} does not exist in instance mode: preset and read registers through "
+                   f"{inst['macro']}-><MEMBER>")
+    out += _kind_errors(doc, c, body)
+    known = set(re.findall(r"#define\s+(\w+)", _header(ws).read_text()))
+    fn = c["unit"]["function"]["name"]
+    used = set(re.findall(rf"\bLL_{idn['pfx']}_\w+", nc)) - {fn}
+    out += [f"{x} is not a generated define" for x in sorted(used - known)]
+    calls = {x for x in re.findall(r"\b([A-Za-z_]\w*)\s*\(", body) if not GTEST_MACRO.match(x)} - \
+        {"if", "sizeof", "ut_reset_regs", "return", fn}
+    out += [f"call to {x}: a test calls only ut_reset_regs, the GoogleTest EXPECT_/ASSERT_ macros and {fn}"
+            for x in sorted(calls)]
+    if not out:
+        out += _compile_test(ws, name, code)
+    return out
+
+
+def _kind_errors(doc: dict, c: dict, body: str) -> list[str]:
+    kinds = list(doc.get("kinds") or [])
+    fn = c["unit"]["function"]
+    ncalls = len(re.findall(rf"\b{re.escape(fn['name'])}\s*\(", body))
+    out = []
+    if "positive" not in kinds:
+        out.append("kinds must include positive (the case value of the oracle)")
+    if _takes_value(fn) and "boundary" not in kinds:
+        out.append(f"{fn['name']} takes a value: check the field minimum and maximum too and declare kind boundary")
+    if "boundary" in kinds and ncalls < 2:
+        out.append(f"kind boundary needs the field minimum/maximum checked with further calls of {fn['name']}")
+    return out
+
+
 def test_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> dict:
     from .swe3 import _sig
 
+    if c.get("uspec") and gtest_mode(ws):
+        return gtest_packet(ws, c, model, findings, previous)
     u = c["unit"]
     specs = _unit_specs(ws, u)
     name = "ut_" + re.sub(r"[^a-z0-9]+", "_", c["ut"].lower())
@@ -211,7 +324,7 @@ def test_packet(ws: Path, c: dict, model: str, findings=None, previous=None) -> 
 
 
 def _pristine(ws: Path) -> str:
-    p = Path(ws) / ".forge-run/lrtx/SWE.4/generated-harness.c"
+    p = Path(ws) / f".forge-run/lrtx/SWE.4/generated-harness{_harness(ws).suffix}"
     if not p.is_file():
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(_harness(ws).read_text())
@@ -231,6 +344,8 @@ def _with_tests(ws: Path, tests: list[tuple[str, str]]) -> str:
 def validate_test(ws: Path, doc: dict, c: dict) -> list[str]:
     from .swe3 import _header, _ident
 
+    if c.get("uspec") and gtest_mode(ws):
+        return validate_gtest(ws, doc, c)
     code, out = doc["code"], []
     name = "ut_" + re.sub(r"[^a-z0-9]+", "_", c["ut"].lower())
     if not re.search(rf"\bstatic\s+void\s+{re.escape(name)}\s*\(\s*void\s*\)\s*\{{", code):
@@ -351,17 +466,30 @@ def _compile_test(ws: Path, name: str, code: str) -> list[str]:
 
     text = _with_tests(ws, [(name, code)])
     with tempfile.TemporaryDirectory() as td:
-        t = Path(td) / "t.c"
-        t.write_text(text)
-        r = subprocess.run(["clang", "-std=c11", "-Wall", "-Wextra", "-Werror", "-fsyntax-only",
-                            f"-I{_header(ws).parent}", *instance_flags(ws, host=True), str(t)], capture_output=True,
-                           text=True)
+        if gtest_mode(ws):  # the GoogleTest harness: C++17 against the pinned gtest headers
+            from ..gtest_toolchain import GtestToolchainError, load
+
+            try:
+                gt = load()
+            except GtestToolchainError as exc:
+                return [f"compile: {exc}"]
+            t = Path(td) / "t.cpp"
+            t.write_text(text)
+            argv = ["clang++", "-std=c++17", "-Wall", "-Wextra", "-Werror", "-fsyntax-only", *gt["cxx_flags"],
+                    f"-I{_header(ws).parent}", "-isystem", gt["include"], *instance_flags(ws, host=True), str(t)]
+        else:
+            t = Path(td) / "t.c"
+            t.write_text(text)
+            argv = ["clang", "-std=c11", "-Wall", "-Wextra", "-Werror", "-fsyntax-only",
+                    f"-I{_header(ws).parent}", *instance_flags(ws, host=True), str(t)]
+        r = subprocess.run(argv, capture_output=True, text=True)
     errs = [ln.split(" error: ", 1)[1][:160] for ln in r.stderr.splitlines() if " error: " in ln]
     return [f"compile: {e}" for e in errs[:6]] or ([f"compile failed: {r.stderr[:160]}"] if r.returncode else [])
 
 
 def repair_packet(ws: Path, c: dict, code: str, failure: list[str], model: str) -> dict:
-    instr = (f"The test of {c['ut']} below FAILED when run against the implementation of "
+    form = ("Keep the exact TEST(...) name and the @test/@verifies block. " if c.get("uspec") and gtest_mode(ws) else "")
+    instr = (form + f"The test of {c['ut']} below FAILED when run against the implementation of "
              f"{c['unit']['function']['name']}. Failed checks: {'; '.join(failure)[:600]}. Decide from the requirement "
              "and its cases (the oracle) ONLY: if the test asserts something the requirement does not state, or asserts "
              "it wrongly, answer verdict test_wrong with the corrected test in code and the reason; if the test asserts "
@@ -514,10 +642,14 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     inst = ll_instance(ws)
     store = ("a plain RAM register array" if inst is None else f"the RAM {inst['type_name']} instance "
              f"{inst['host_object']} of the pinned device header {inst['device_header']}, passed as {inst['macro']}")
+    from ..gtest_toolchain import VERSION as GTEST
+
+    how = (f"Host build of the requirement-based GoogleTest/GoogleMock {GTEST} unit tests (clang++ 19, one TEST per "
+           "USPEC item) against the header-only LL driver" if gtest_mode(ws) else
+           "Host clang build of the self-checking unit tests against the header-only LL driver")
     md = ["# Unit verification report", "",
           "## Measures, environment, entry/exit criteria and regression", "",
-          f"Host clang build of the self-checking unit tests against the header-only LL driver on {store} "
-          "(host evidence, not target). Entry: the SWE.3 baseline is frozen. Exit: every UT PASS and the "
+          f"{how} on {store} (host evidence, not target). Entry: the SWE.3 baseline is frozen. Exit: every UT PASS and the "
           "coverage goal met or a deviation recorded. Regression: the full suite is re-run on every change.", "",
           "## Test cases", ""]
     if uspec_mode(ws):  # owner 2026-11-03: one test per USPEC item (UT ids assigned by SWE.4, unit_test_plan.md)
@@ -555,15 +687,17 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
                                     "SWE.4 cannot change that code and approves no deviation (deviation approval is the "
                                     "owner's)." if open_gaps else "no open static-analysis finding.")]
     cov_lines, cov_gaps = _coverage(cov)
-    md += ["", "## Coverage", "", "Goal: 100% statement (line) coverage of the driver code, and 100% branch and MC/DC "
-           "coverage where the code has branch points or decisions. Reported exactly as the tool reported it: status "
+    gate = None
+    md += ["", "## Coverage", "", ("Structural coverage (LLVM source-based, line/branch/MC/DC) of the driver code. " if gate
+           else "Goal: 100% statement (line) coverage of the driver code, and 100% branch and MC/DC "
+           "coverage where the code has branch points or decisions. ") + "Reported exactly as the tool reported it: status "
            f"{cov['status']}; \"{cov['summary']}\"; metrics {json.dumps(cov.get('metrics') or {}, sort_keys=True)}.", "",
            *cov_lines, "", "## Results", "", f"run_unit: status {run['status']}; \"{run['summary']}\". validate_trace: status "
            f"{tr['status']}; \"{tr.get('summary', '')}\".", "", "## Findings", ""]
     findings = [*run.get("issues", [])[:10], *tr.get("issues", [])[:10], *cov_gaps]
     md += [f"- {f}" for f in findings] or ["none"]
     V.write_scoped(ws, {"workproducts/SWE.4/unit_verification_report.md": "\n".join(md) + "\n"}, "swe4_author")
-    status = "PASS" if run["status"] == "PASS" else "FAILED"
+    status = "PASS" if run["status"] == "PASS" and not (gate and gate["status"] != "PASS") else "FAILED"
     return V.reply(ws, PHASE, status, [] if status == "PASS" else findings, None,
                    artifacts=["workproducts/SWE.4/unit_verification_report.md"])
 

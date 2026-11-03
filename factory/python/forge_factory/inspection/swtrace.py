@@ -649,7 +649,9 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
     if k >= 2:
         run = latest_run(ws, "run_unit")
         res = check_results(run["raw"]) if run else {}
-        tests = tagged_tests(sorted(ws.glob("software/tests/unit/*.c")), ws)
+        # owner 2026-11-03: GoogleTest requirement-based tests (.cpp) carry the same @test/@verifies blocks
+        tests = tagged_tests(sorted(ws.glob("software/tests/unit/*.c")) + sorted(ws.glob("software/tests/unit/*.cpp")),
+                             ws)
         rows4, f4 = [], []
         for t in tests:
             if not t["verifies"]:

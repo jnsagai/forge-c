@@ -4,6 +4,7 @@ ADR-0008 rule that a failing correct test becomes a CODE defect instead of a ben
 from __future__ import annotations
 
 import json
+import re
 
 import pytest
 from forge_factory.inspection import unit_scaffold
@@ -18,9 +19,11 @@ pytestmark = [pytestmark, pytest.mark.skipif(not TOOLS, reason="build tools not 
 
 
 def _t(ut, spec, body, kinds=("positive",)):
-    name = "ut_" + ut.lower().replace("-", "_")
-    return {"code": f"/** @test {ut} @verifies {spec} */\nstatic void {name}(void)\n{{\n    ut_reset_regs();\n{body}\n}}",
-            "kinds": list(kinds)}
+    """Owner 2026-11-03: the structured SWE.4 answer is one GoogleTest TEST(<unit>, UT_nnn) per USPEC item."""
+    suite = "SWU_LL_" + spec.split("-")[2]
+    body = re.sub(r'CHECK\("UT-\d+",\s*', "EXPECT_TRUE(", body)
+    return {"code": f"/** @test {ut} @verifies {spec} */\nTEST({suite}, {ut.replace('-', '_')})\n{{\n"
+                    f"    ut_reset_regs();\n{body}\n}}", "kinds": list(kinds)}
 
 
 TESTS = {
@@ -87,4 +90,4 @@ def test_a_correct_failing_test_files_a_code_defect_not_a_bent_test(ws3, monkeyp
     assert rep["status"] == "FAILED" and any("defect filed: DEF-" in i for i in rep["issues"])
     d = json.loads(sorted((ws3 / ".forge-run/defects").glob("DEF-*.json"))[-1].read_text())
     assert d["kind"] == "CODE" and d["target_phase"] == "SWE.3" and d["requirement_ids"] == ["SWR-002"]
-    assert "0x0000AAAAU" in (ws3 / "software/tests/unit/test_iwdg.c").read_text()  # the test was not bent
+    assert "0x0000AAAAU" in (ws3 / "software/tests/unit/test_iwdg.cpp").read_text()  # the test was not bent

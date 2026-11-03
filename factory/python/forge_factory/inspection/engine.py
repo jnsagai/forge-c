@@ -40,7 +40,7 @@ REQUIRED_OUTPUTS = {
     "SWE.2": ["workproducts/SWE.2/software_architecture.md", "workproducts/SWE.2/architecture_static.puml",
               "workproducts/SWE.2/architecture_dynamic.puml"],
     "SWE.3": ["workproducts/SWE.3/detailed_design.md", "software/hal/*.c", "software/hal/*.h", "software/ll/*.h"],
-    "SWE.4": ["workproducts/SWE.4/unit_verification_report.md", "software/tests/unit/test_*.c"],
+    "SWE.4": ["workproducts/SWE.4/unit_verification_report.md", "software/tests/unit/test_*.c*"],  # .c or GoogleTest .cpp
     "SWE.5": ["workproducts/SWE.5/integration_verification_report.md", "software/tests/integration/test_*.c"],
     "SWE.6": ["workproducts/SWE.6/software_verification_report.md", "software/tests/software/*.robot"],
 }

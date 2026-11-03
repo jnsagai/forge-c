@@ -5,6 +5,10 @@ Each `software/tests/<level>/test_*.c` is linked with the driver sources into it
 timeout, and counted PASS (exit 0) / FAIL. Coverage uses LLVM 19 `-fcoverage-mcdc`; raw .profraw and
 merged .profdata are preserved by artifact ref. Host results are explicitly NOT target evidence.
 Unity/CMock are not vendored on this host: tests are self-checking C programs (documented gap).
+Owner decision 2026-11-03: requirement-based unit tests are GoogleTest TESTs (`software/tests/unit/test_*.cpp`, pinned
+GoogleTest/GoogleMock 1.11.0, forge_factory.gtest_toolchain) against the C driver: the driver C sources stay compiled by
+clang as C with the same coverage flags and are linked with the C++ test; each TEST(<unit>, UT_nnn) result of the
+gtest XML is reported as a 'UT-nnn PASS|FAIL' line, the result form Matrix 4 and the report read.
 """
 from __future__ import annotations
 
@@ -18,7 +22,9 @@ from ...inspection.defects import integrity, record_integrity, undeclared_test_c
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 from .build import INCLUDE_DIRS, SOURCE_DIRS
 
-ALLOW = {"clang", "gcc", "llvm-profdata", "llvm-cov", "gcovr"}
+ALLOW = {"clang", "clang++", "gcc", "llvm-profdata", "llvm-cov", "gcovr"}
+GTEST_TEST = re.compile(r"^[ \t]*TEST(?:_F)?\s*\(\s*(\w+)\s*,\s*(\w+)\s*\)", re.M)
+GTEST_EXE_SUFFIX = ".gtest"
 COV_FLAGS = ["-fprofile-instr-generate", "-fcoverage-mapping", "-fcoverage-mcdc"]
 
 
@@ -85,6 +91,39 @@ def write_progress(ws: Path, phase: str | None, op: str, unit: str, total: int |
         pass
 
 
+def gtest_ids(paths: list[Path]) -> dict[str, int]:
+    """UT id (or suite.name) -> number of TESTs declaring it across the GoogleTest files (comments ignored)."""
+    seen: dict[str, int] = {}
+    for p in paths:
+        code = re.sub(r"/\*.*?\*/|//[^\n]*", "", p.read_text(errors="replace"), flags=re.S)
+        for suite, name in GTEST_TEST.findall(code):
+            k = _gtest_id(suite, name)
+            seen[k] = seen.get(k, 0) + 1
+    return seen
+
+
+def _gtest_id(suite: str, name: str) -> str:
+    return name.replace("_", "-") if re.fullmatch(r"UT_\d{3}", name) else f"{suite}.{name}"
+
+
+def gtest_results(xml: Path) -> list[dict]:
+    """[{id, status PASS|FAIL|SKIPPED, message}] of a --gtest_output=xml report (written by the local test run)."""
+    import xml.etree.ElementTree as ET  # noqa: N817
+
+    out = []
+    try:
+        root = ET.parse(xml).getroot()  # noqa: S314 - written by the sandboxed local test executable
+    except (ET.ParseError, OSError):
+        return out
+    for tc in root.iter("testcase"):
+        fail = tc.find("failure")
+        skipped = tc.find("skipped") is not None or tc.get("result") == "skipped" or tc.get("status") == "notrun"
+        msg = " ".join((fail.get("message") or fail.text or "").split()) if fail is not None else ""
+        out.append({"id": _gtest_id(tc.get("classname") or "", tc.get("name") or ""),
+                    "status": "FAIL" if fail is not None else "SKIPPED" if skipped else "PASS", "message": msg})
+    return out
+
+
 def check_ids(paths: list[Path]) -> dict[str, int]:
     """Count complete static assertion identities across the selected test files.
 
@@ -120,6 +159,8 @@ def _host_check_exprs(test: Path, out: bytes, limit: int = 8) -> list[str]:
 def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     tdir = ctx.workspace / "software" / "tests" / level
     tests = sorted(tdir.glob("test_*.c")) if tdir.is_dir() else []
+    if level == "unit" and tdir.is_dir():  # owner 2026-11-03: GoogleTest requirement-based unit tests
+        tests = sorted(tests + sorted(tdir.glob("test_*.cpp")))
     if not tests:
         return result(ctx, "BLOCKED", f"no {level} tests", issues=[f"NO_TESTS:software/tests/{level}"], tool="clang")
     srcs = [str(p) for d in SOURCE_DIRS for p in sorted((ctx.workspace / d).glob("*.c"))
@@ -154,15 +195,30 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     log, passed, failed, issues, ms = b"", 0, 0, [], 0.0
     asserted: list[Path] = []  # runtime (not build) failures - ADR-0008 test-integrity record
     pop = "run_unit" if level == "unit" else "run_integration"
-    per_file = {t: len(check_ids([t])) or 1 for t in tests}  # tests = check ids (one executable may hold many)
+    per_file = {t: (len(gtest_ids([t])) if t.suffix == ".cpp" else len(check_ids([t]))) or 1
+                for t in tests}  # tests = check ids / gtest TESTs (one executable may hold many)
+    gt = None
+    if any(t.suffix == ".cpp" for t in tests):
+        from ...gtest_toolchain import GtestToolchainError, load
+
+        try:
+            gt = load()
+        except GtestToolchainError as exc:
+            return result(ctx, "BLOCKED", "pinned GoogleTest toolchain unavailable", issues=[str(exc)[:200]],
+                          tool="clang++")
     n_done = n_pass = n_fail = 0
     write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), 0)
     for t in tests:
         exe = bdir / t.stem
-        argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
-                *(COV_FLAGS if coverage else []), *incs, str(t), *srcs, "-o", str(exe)]
-        b = run_argv(argv, bdir, 180, ALLOW)
-        log += b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr
+        if t.suffix == ".cpp":
+            exe = bdir / (t.stem + GTEST_EXE_SUFFIX)
+            b, blog = _build_gtest(ctx, t, exe, bdir, incs, srcs, coverage, fake, gt)
+        else:
+            argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
+                    *(COV_FLAGS if coverage else []), *incs, str(t), *srcs, "-o", str(exe)]
+            b = run_argv(argv, bdir, 180, ALLOW)
+            blog = b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr
+        log += blog
         if b.exit_code != 0:
             n_done, n_fail = n_done + per_file[t], n_fail + per_file[t]
             write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), n_done, n_pass, n_fail)
@@ -171,10 +227,20 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             # the agent cannot fix what it cannot see; r76: link errors named only 'linker command failed'
             issues += _diag(b.stderr, ctx.workspace, (": error:", "undefined reference", "multiple definition"), 12)
             continue
-        r = run_argv([str(exe)], bdir, 60, ALLOW | {exe.name},
-                     env_extra={"LLVM_PROFILE_FILE": str(bdir / f"{t.stem}.profraw")} if coverage else None)
+        gx = bdir / f"{exe.name}.xml"
+        r = run_argv([str(exe), *([f"--gtest_output=xml:{gx}"] if t.suffix == ".cpp" else [])], bdir, 60,
+                     ALLOW | {exe.name},
+                     env_extra={"LLVM_PROFILE_FILE": str(bdir / f"{exe.name}.profraw")} if coverage else None)
         ms += r.duration_ms
         log += f"$ {exe.name} -> exit {r.exit_code}\n".encode() + r.stdout + r.stderr  # full raw output kept by ref
+        gres = gtest_results(gx) if t.suffix == ".cpp" else []
+        if t.suffix == ".cpp":  # one 'UT-nnn PASS|FAIL' line per TEST (the result form Matrix 4 and reports read)
+            log += b"# gtest results\n" + "".join(f"{g['id']} {'PASS' if g['status'] == 'PASS' else 'FAIL'}\n"
+                                                    for g in gres).encode()
+            if r.exit_code == 0 and (not gres or any(g["status"] != "PASS" for g in gres)):
+                import dataclasses
+
+                r = dataclasses.replace(r, exit_code=1)  # a skipped or missing TEST never passes
         n_done += per_file[t]
         n_pass, n_fail = (n_pass + per_file[t], n_fail) if r.exit_code == 0 else (n_pass, n_fail + per_file[t])
         write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), n_done, n_pass, n_fail)
@@ -184,11 +250,17 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             failed += 1
             asserted.append(t)
             issues.append(f"TEST_FAIL:{t.name}:exit{r.exit_code}" + (":TIMEOUT" if r.timed_out else ""))
+            if t.suffix == ".cpp":
+                issues += [f"GTEST_FAIL:{t.name}#{g['id']}:" + (g["message"] or g["status"])[:200]
+                           for g in gres if g["status"] != "PASS"][:12] or ["GTEST_NO_RESULTS (no TEST ran)"]
+                continue
             exprs = _host_check_exprs(t, r.stdout)
             issues += exprs or _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
     # CAPA-022 (r86): UT-015/016 were used by two test functions; an id must name exactly one check (trace and
     # report cite ids), so duplicates fail the run deterministically instead of being found by the inspector
-    seen = check_ids(tests)
+    seen = check_ids([t for t in tests if t.suffix == ".c"])
+    for k, v in gtest_ids([t for t in tests if t.suffix == ".cpp"]).items():
+        seen[k] = seen.get(k, 0) + v
     dups = sorted(k for k, v in seen.items() if v > 1)
     if dups:
         failed += 1
@@ -209,6 +281,44 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
                   "clang+self-checking tests", tool_version("clang"), 0 if failed == 0 else 1, ms, None, log)
 
 
+def _build_gtest(ctx: ToolContext, t: Path, exe: Path, bdir: Path, incs: list[str], srcs: list[str], coverage: bool,
+                 fake: bool, gt: dict):
+    """The driver C sources compiled as C (same flags as the C harness), the GoogleTest file as C++17, linked with the
+    pinned gtest/gmock. With the generated LL test double (CAPA-038) its state is defined once in a generated C unit."""
+    cov = COV_FLAGS if coverage else []
+    log, objs = b"", []
+    c_units = list(srcs)
+    if fake:
+        from ...workflow.ll_fake import fake_header
+
+        impl = bdir / "forge_ll_fake_impl.c"
+        impl.write_text("/* GENERATED by forge-tests-mcp: defines the LL test double state once (CAPA-038). */\n"
+                        f"#define LL_FAKE_IMPLEMENTATION\n#include \"{Path(fake_header(ctx.workspace)).name}\"\n")
+        c_units.append(str(impl))
+    for i, src in enumerate(c_units):
+        o = bdir / f"{t.stem}.c{i}.o"
+        argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
+                *cov, *incs, "-c", src, "-o", str(o)]
+        b = run_argv(argv, bdir, 180, ALLOW)
+        log += b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr
+        if b.exit_code != 0:
+            return b, log
+        objs.append(str(o))
+    o = bdir / f"{t.stem}.cpp.o"
+    argv = ["clang++", "-std=c++17", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
+            *gt["cxx_flags"], *cov, *incs, "-isystem", gt["include"], "-c", str(t), "-o", str(o)]
+    b = run_argv(argv, bdir, 240, ALLOW, mem_mb=4096)
+    log += b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr
+    if b.exit_code != 0:
+        return b, log
+    main = str(Path(gt["gtest"]).with_name("libgtest_main.a"))
+    argv = ["clang++", *gt["cxx_flags"], *cov, str(o), *objs, gt["gmock"], gt["gtest"], main, "-lpthread",
+            "-o", str(exe)]
+    b = run_argv(argv, bdir, 180, ALLOW, mem_mb=4096)
+    log += b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr
+    return b, log
+
+
 def run_unit(ctx: ToolContext, a: RunIn) -> dict:
     return _run_level(ctx, "unit", a.coverage)
 
@@ -225,7 +335,8 @@ def run_integration(ctx: ToolContext, a: RunIn) -> dict:
 def llvm_coverage(ctx: ToolContext, a: CovIn) -> dict:
     bdir = ctx.workspace / "build" / f"tests-{a.level}"
     raws = sorted(bdir.glob("*.profraw")) if bdir.is_dir() else []
-    exes = [p for p in sorted(bdir.glob("test_*")) if p.is_file() and p.suffix == ""] if bdir.is_dir() else []
+    exes = [p for p in sorted(bdir.glob("test_*")) if p.is_file() and p.suffix in ("", GTEST_EXE_SUFFIX)] \
+        if bdir.is_dir() else []
     if not raws or not exes:
         return result(ctx, "BLOCKED", "no coverage data; run tests with coverage", issues=["NO_PROFRAW"],
                       tool="llvm-cov")
@@ -282,8 +393,10 @@ def _scope_coverage(ctx: ToolContext, prof: Path, objs: list[str], srcs: list[st
     except (ValueError, KeyError, IndexError):
         return None
     best: dict[str, dict] = {}
+    from ...gtest_toolchain import c_name
+
     for f in fns:  # one entry per test binary/TU: keep the most executed instance of each scope function
-        n = f["name"].split(":")[-1]
+        n = c_name(f["name"])  # a static inline function of a GoogleTest (C++) unit is mangled
         if n in names and (n not in best or f["count"] > best[n]["count"]):
             best[n] = f
     regions = [rg for f in best.values() for rg in f.get("regions", []) if len(rg) > 7 and rg[7] == 0]
@@ -459,7 +572,8 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
 
 
 OPERATIONS = [
-    Operation("run_unit", RunIn, run_unit, "Build+run software/tests/unit/test_*.c on host (coverage optional)."),
+    Operation("run_unit", RunIn, run_unit, "Build+run software/tests/unit/test_*.c (self-checking C) and "
+              "test_*.cpp (GoogleTest) on host (coverage optional)."),
     Operation("run_integration", RunIn, run_integration, "Build+run integration (or software-level) host tests."),
     Operation("run_robot", RobotIn, run_robot,
               "SWE.6: run Robot Framework requirement tests (software/tests/software/*.robot) on the Renode model."),

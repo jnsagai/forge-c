@@ -544,8 +544,9 @@ def test_swe3_header_from_the_legacy_path_is_unchanged(legacy_ws):
 
 
 # ---- stage 5: SWE.4 host harness ---------------------------------------------------------------------------------
+# owner 2026-11-03: prepared work orders write GoogleTest requirement-based tests (one TEST per USPEC item)
 UT_WRITE = """/** @test UT-001 @verifies USPEC-LL-01-01 */
-static void ut_ut_001(void)
+TEST(SWU_LL_01, UT_001)
 {
     uint32_t zero;
     uint32_t ones;
@@ -555,7 +556,10 @@ static void ut_ut_001(void)
     LL_CRC_Write_IDR(CRC, 0U);
     ones = CRC->IDR;
     LL_CRC_Write_IDR(CRC, 0xFFFFFFFFU);
-    CHECK("UT-001", (zero == 0x12345678U) && (ones == 0U) && (CRC->IDR == 0xFFFFFFFFU) && (CRC->DR == 0U));
+    EXPECT_EQ(zero, 0x12345678U);
+    EXPECT_EQ(ones, 0U);
+    EXPECT_EQ(CRC->IDR, 0xFFFFFFFFU);
+    EXPECT_EQ(CRC->DR, 0U);
 }"""
 
 
@@ -578,7 +582,9 @@ def _case(ws, n=0):
 
     u = swe3.units(ws)[n]
     swr = u["swrs"][0]
-    return {"ut": f"UT-00{n + 1}", "swr": swr, "statement": "", "unit": u,
+    uspec = f"USPEC-LL-{n + 1:02d}-01"
+    return {"ut": f"UT-00{n + 1}", "swr": swr, "swrs": [swr], "statement": "", "statements": {swr: ""}, "unit": u,
+            "uspec": uspec, "behaviour": "the unit's IDR behaviour", "plan": {"constraints_verified_at_swe6": []},
             "effects": [e for e in EFFECTS["effects"] if e["swr"] == swr]}
 
 
@@ -590,11 +596,12 @@ def test_swe4_harness_is_the_ram_instance_only_in_instance_mode(inst_ws, legacy_
     assert rep["instance"] == "forge_host_crc" and "ll_crc_regs" not in text and "REG_COUNT" not in text
     assert "#define FORGE_HOST_DEVICE_IMPLEMENTATION" in text and '#include "stm32n6xx_ll_crc.h"' in text
     assert "(void)memset((void *)&forge_host_crc, 0, sizeof(forge_host_crc));" in text
-    assert scaffold.TEST_CASES_MARKER in text and scaffold.TEST_CALLS_MARKER in text
+    assert scaffold.TEST_CASES_MARKER in text and rep["file"].endswith(".cpp") and "#include <gtest/gtest.h>" in text
     legacy = scaffold.scaffold(legacy_ws)
     assert "instance" not in legacy
-    assert (legacy_ws / legacy["file"]).read_text() == scaffold._for_peripheral(scaffold.HARNESS.replace(
-        '#include "stm32n6xx_hal_rcc.h"', '#include "stm32n6xx_ll_rcc.h"'), legacy_ws)
+    assert (legacy_ws / legacy["file"]).read_text() == scaffold.to_gtest(scaffold._for_peripheral(
+        scaffold.HARNESS.replace('#include "stm32n6xx_hal_rcc.h"', '#include "stm32n6xx_ll_rcc.h"'), legacy_ws),
+        legacy_ws)
 
 
 def test_swe4_test_task_validates_and_compiles_on_the_instance(inst_ws, monkeypatch):
@@ -615,7 +622,7 @@ def test_swe4_test_task_validates_and_compiles_on_the_instance(inst_ws, monkeypa
     assert "through the instance macro CRC (CRC->IDR for CRC_IDR" in seen[0] and "ll_crc_regs[" not in seen[0]
     doc = {"code": UT_WRITE, "kinds": ["positive", "boundary", "negative"]}
     assert swe4.validate_test(ws, doc, c) == []
-    legacy = {**doc, "code": UT_WRITE.replace("CRC->DR == 0U", "ll_crc_regs[0] == 0U")}
+    legacy = {**doc, "code": UT_WRITE.replace("EXPECT_EQ(CRC->DR, 0U);", "EXPECT_EQ(ll_crc_regs[0], 0U);")}
     out = swe4.validate_test(ws, legacy, c)
     assert "ll_crc_regs does not exist in instance mode: preset and read registers through CRC-><MEMBER>" in out
 
@@ -630,7 +637,7 @@ def test_swe4_unit_tests_run_on_the_ram_instance(inst_ws, monkeypatch):
         pytest.skip("clang not installed")
     ws = _swe3(inst_ws)
     rel = scaffold.scaffold(ws)["file"]
-    (ws / rel).write_text(swe4._with_tests(ws, [("ut_ut_001", UT_WRITE)]))
+    (ws / rel).write_text(swe4._with_tests(ws, [("UT_001", UT_WRITE)]))
     r = _invoke(ws, monkeypatch, "forge-tests-mcp", "run_unit", {}, role="swe4-author", phase="SWE.4")
     assert r["status"] == "PASS" and r["metrics"].get("passed") == 1, r
     hdr = ws / "software/ll/stm32n6xx_ll_crc.h"  # a wrong implementation fails the same test
@@ -641,11 +648,12 @@ def test_swe4_unit_tests_run_on_the_ram_instance(inst_ws, monkeypatch):
 
 # ---- stage 6: independent oracle and verifiers -------------------------------------------------------------------
 UT_READ = """/** @test UT-002 @verifies USPEC-LL-02-01 */
-static void ut_ut_002(void)
+TEST(SWU_LL_02, UT_002)
 {
     ut_reset_regs();
     CRC->IDR = 0x87654321U;
-    CHECK("UT-002", (LL_CRC_Read_IDR(CRC) == 0x87654321U) && (CRC->IDR == 0x87654321U));
+    EXPECT_EQ(LL_CRC_Read_IDR(CRC), 0x87654321U);
+    EXPECT_EQ(CRC->IDR, 0x87654321U);
 }"""
 
 
@@ -706,7 +714,7 @@ def test_block_array_verifiers_check_typed_instance_code(inst_ws):
         pytest.skip("clang not installed")
     ws = _contract(inst_ws)
     rel = scaffold.scaffold(ws)["file"]
-    (ws / rel).write_text(swe4._with_tests(ws, [("ut_ut_001", UT_WRITE), ("ut_ut_002", UT_READ)]))
+    (ws / rel).write_text(swe4._with_tests(ws, [("UT_001", UT_WRITE), ("UT_002", UT_READ)]))
     sem = verifiers.v_register_semantics(ws)  # review follow-up 2: typed accesses are scanned, not skipped
     assert sem["status"] == "PASS" and not sem["findings"], sem
     conc = verifiers.v_concurrency(ws)
@@ -972,11 +980,11 @@ def test_mutation_campaign_runs_in_instance_mode(inst_ws):
         pytest.skip("gcc not installed")
     ws = _contract(inst_ws)
     rel = scaffold.scaffold(ws)["file"]
-    (ws / rel).write_text(swe4._with_tests(ws, [("ut_ut_001", UT_WRITE), ("ut_ut_002", UT_READ)]))
+    (ws / rel).write_text(swe4._with_tests(ws, [("UT_001", UT_WRITE), ("UT_002", UT_READ)]))
     r = verifiers.v_mutation(ws)
     assert r["status"] == "PASS" and r["campaign"]["eligible"] == 2 and r["campaign"]["killed"] == 2, r
     assert r["campaign"]["invalid"] == 0, r
-    (ws / rel).write_text(swe4._with_tests(ws, [("ut_ut_001", UT_WRITE)]))  # the read is no longer tested
+    (ws / rel).write_text(swe4._with_tests(ws, [("UT_001", UT_WRITE)]))  # the read is no longer tested
     weak = verifiers.v_mutation(ws)
     assert weak["status"] == "FAIL" and any("INSTANCE_READ_ZERO" in f for f in weak["findings"]), weak
     assert mutation.instance_ops(None) == []

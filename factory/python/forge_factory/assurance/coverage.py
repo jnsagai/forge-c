@@ -35,8 +35,17 @@ def measure(sources: list[Path], test: Path, includes: list[Path], *, mcdc: bool
         t = Path(td)
         flags = ["-fprofile-instr-generate", "-fcoverage-mapping"] + (["-fcoverage-mcdc"] if mcdc else [])
         inc = sum((["-I", str(i)] for i in includes), [])
-        b = subprocess.run([clang, "-std=c99", "-O0", *flags, *(defines or []), *inc, *map(str, sources), str(test),
-                            "-o", str(t / "ut")], capture_output=True, text=True)
+        if test.suffix == ".cpp":  # owner 2026-11-03: GoogleTest tests against the C driver (pinned toolchain)
+            from ..gtest_toolchain import GtestToolchainError, build
+
+            try:
+                b = build(clang, ["-std=c99", "-O0"], [str(s) for s in sources], str(test), str(t / "ut"),
+                          flags=[*flags, *(defines or [])], includes=inc, workdir=td)
+            except GtestToolchainError as exc:
+                return {"status": "NOT_SUPPORTED", "reason": str(exc), "records": []}
+        else:
+            b = subprocess.run([clang, "-std=c99", "-O0", *flags, *(defines or []), *inc, *map(str, sources),
+                                str(test), "-o", str(t / "ut")], capture_output=True, text=True)
         if b.returncode:
             if mcdc and "mcdc" in b.stderr.lower():
                 return measure(sources, test, includes, mcdc=False, defines=defines) | {"mcdc_build_error": b.stderr[-200:]}

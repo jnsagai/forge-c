@@ -160,6 +160,15 @@ def vacuous_test(ws: Path) -> str:
 
     p = ws / unit_test(ws)
     t = p.read_text()
+    if p.suffix == ".cpp":  # owner 2026-11-03: every check of the first GoogleTest TEST becomes always true
+        h = re.search(r"\bTEST\s*\(\s*\w+\s*,\s*(UT_\d{3})\s*\)\s*\{", t)
+        if not h:
+            raise ValueError("NO_MUTATION_SITE:vacuous_test")
+        end = re.search(r"\n\}", t[h.end():])
+        stop = h.end() + (end.start() if end else len(t) - h.end())
+        body = re.sub(r"\b(?:EXPECT|ASSERT)_[A-Z_]+\s*\((?:[^;]|\n)*?\)\s*;", "EXPECT_TRUE(1U == 1U);", t[h.end():stop])
+        p.write_text(t[: h.end()] + body + t[stop:])
+        return h.group(1).replace("_", "-")
     m = re.search(r'CHECK\("(UT-\d+)",\s*(.+?)\);', t, re.S)
     if not m:
         raise ValueError("NO_MUTATION_SITE:vacuous_test")

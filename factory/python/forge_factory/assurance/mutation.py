@@ -181,9 +181,15 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
             outcome, detail = "SURVIVED", None
             for tc in test_files:
                 exe = Path(td) / ("x_" + tc.stem)
-                b = subprocess.run([cc, "-std=c99", "-O0", "-w", *(extra_flags or []), *inc, *srcs, str(tc), "-o",
-                                    str(exe)],
-                                   capture_output=True, text=True)
+                if tc.suffix == ".cpp":  # owner 2026-11-03: GoogleTest test program against the mutated C driver
+                    from ..gtest_toolchain import build
+
+                    b = build(cc, ["-std=c99", "-O0", "-w"], srcs, str(tc), str(exe), flags=list(extra_flags or []),
+                              includes=inc, workdir=td)
+                else:
+                    b = subprocess.run([cc, "-std=c99", "-O0", "-w", *(extra_flags or []), *inc, *srcs, str(tc), "-o",
+                                        str(exe)],
+                                       capture_output=True, text=True)
                 if b.returncode:
                     outcome, detail = "INVALID", b.stderr.strip().splitlines()[-1][:120] if b.stderr.strip() else "build"
                     break

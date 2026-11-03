@@ -433,6 +433,10 @@ def unit_test_author_prompt() -> str:
     """SWE.4 step 1 (fresh context): unit tests inserted into the generated harness in small edits."""
     from .scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
 
+    if UNIT_VERIFICATION["gtest"]:  # owner 2026-11-03: one GoogleTest TEST per USPEC item of the SWE.4 plan
+        steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
+            gtest_unit_test_steps(TEST_CASES_MARKER) + trace_step("ut") + [DEFECT_RULE, REPLY]
+        return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
     ut, example = (LL_UT_STEPS, LL_UT_EXAMPLE) if _layer() == "LL" else (UT_STEPS, UT_EXAMPLE)
     if ISOLATION["on"] and _layer() == "HAL":  # CAPA-038
         ut, example = [FAKE_UT_FIRST] + [x.replace("adapt names, registers and UT ids; use ONLY LL_RCC_<REG>_OFFSET / "
@@ -1201,18 +1205,78 @@ USPEC_FRAGMENTS = [
      "match it (never cite or invent other ids)."),
     ("with the UT id its CHECKs print and the unit specification items (workproducts/SWE.3/unit_"
      "specifications.md) it verifies.",
-     "with the UT id of its row in " + PLAN_MD + " (its CHECKs print that id) and that row's USPEC id."),
+     "with the UT id of its row in " + PLAN_MD + " and that row's USPEC id."),
 ]
 
 
 def uspecize(text: str) -> str:
-    """Owner 2026-11-03 (V-model): SWE.1 allocates only SWE.6 qualification tests and SWE.4 writes one test per USPEC
-    item of the generated plan; identity for work orders without unit_verification."""
+    """Owner 2026-11-03 (V-model): SWE.1 allocates only SWE.6 qualification tests and SWE.4 writes one GoogleTest test
+    per USPEC item of the generated plan (test_<id>.cpp); identity for work orders without unit_verification."""
     if not UNIT_VERIFICATION["gtest"]:
         return text
     for old, new in USPEC_FRAGMENTS:
         text = text.replace(old, new)
-    return text
+    text = text.replace("'## Measures, environment, entry/exit criteria and regression' (host clang build,",
+                        "'## Measures, environment, entry/exit criteria and regression' (host GoogleTest/GoogleMock "
+                        "1.11.0 build with clang++,")
+    text = text.replace("must appear in a CHECK of that file", "must be the @test of one TEST of that file")
+    import re as _re
+
+    return _re.sub(r"software/tests/unit/test_rcc\.c\b(?!pp)", "software/tests/unit/test_rcc.cpp", text)
+
+
+GTEST_LL_EXAMPLE = ("/** @test UT-001 @verifies USPEC-LL-01-01 */\nTEST(SWU_LL_01, UT_001)\n{\n    ut_reset_regs();\n"
+                    "    ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] = LL_RCC_CR_HSEON_MSK;\n    LL_RCC_HSI_Enable();\n"
+                    "    EXPECT_NE(ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSION_MSK, 0U);\n"
+                    "    EXPECT_NE(ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSEON_MSK, 0U);  /* preserved */\n}")
+GTEST_HAL_EXAMPLE = ("/** @test UT-001 @verifies USPEC-HAL-01-01 */\nTEST(SWU_HAL_01, UT_001)\n{\n    ut_reset_regs();\n"
+                     "    ll_rcc_regs[LL_RCC_SR_OFFSET / 4U] = LL_RCC_SR_HSIRDY_MSK;\n"
+                     "    EXPECT_EQ(HAL_RCC_HSI_Enable(), HAL_OK);\n"
+                     "    EXPECT_NE(ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSION_MSK, 0U);\n}")
+GTEST_FAKE_EXAMPLE = ("/** @test UT-001 @verifies USPEC-HAL-02-01 */\nTEST(SWU_HAL_02, UT_001)\n{\n    ut_reset();\n"
+                      "    ll_fake_return_from(LL_FAKE_LL_RCC_HSE_IsReady, 3U, 1U);  /* ready from the 3rd poll on */\n"
+                      "    EXPECT_EQ(HAL_RCC_HSE_Enable(10U), HAL_OK);\n"
+                      "    EXPECT_EQ(ll_fake_calls(LL_FAKE_LL_RCC_HSE_Enable), 1U);\n"
+                      "    EXPECT_LT(ll_fake_index_of(LL_FAKE_LL_RCC_HSE_Enable, 1U), "
+                      "ll_fake_index_of(LL_FAKE_LL_RCC_HSE_IsReady, 1U));\n}")
+GTEST_MOCK_RULE = (
+    "The HAL time base is a GoogleMock seam: without a mock each call of the tick advances 1 ms; a test whose expected "
+    "result depends on elapsed time scripts it, e.g. 'UtTimeBaseMock tb; EXPECT_CALL(tb.mock, Tick())"
+    ".WillOnce(::testing::Return(0U)).WillRepeatedly(::testing::Return(11U));' before the call (timeout path).")
+
+
+def gtest_unit_test_steps(marker: str) -> list[str]:
+    """Owner 2026-11-03: the native SWE.4 unit-test author writes one GoogleTest TEST per row of the plan."""
+    fake = ISOLATION["on"] and _layer() == "HAL"
+    code = ("software/ll/stm32n6xx_ll_rcc.h (the LL_RCC_ functions to test)" if _layer() == "LL" else
+            "software/hal/stm32n6xx_hal_rcc.h (the HAL_RCC_ functions to test)")
+    example = GTEST_LL_EXAMPLE if _layer() == "LL" else GTEST_FAKE_EXAMPLE if fake else GTEST_HAL_EXAMPLE
+    pr = PERIPHERAL["profile"]
+    mock = _layer() != "LL" and fake and bool(((pr or {}).get("hal") or {}).get("time_base") or not pr)
+    first = (FAKE_UT_FIRST.replace("software/tests/unit/test_rcc.c (GENERATED harness: CHECK(id, cond), ut_reset(), "
+                                   "markers; never change it)",
+                                   "software/tests/unit/test_rcc.cpp (GENERATED GoogleTest harness: ut_reset(), the time "
+                                   "base seam, the marker; never change it)")
+             .replace(" Name every check of a test with that test's id: 'UT-007' or 'UT-007-<suffix>' inside the "
+                      "function tagged @test UT-007.", "") if fake else
+             "read_file software/tests/unit/test_rcc.cpp (GENERATED GoogleTest harness: the host register store, "
+             f"ut_reset_regs(), the marker; never change it), {code} and {PLAN_MD} (GENERATED from the frozen SWE.3 "
+             "unit specification: one row per USPEC item with its UT id, unit, function and requirement ids).")
+    return [first,
+            "read_file workproducts/SWE.3/unit_specifications.md (the behaviour of each USPEC item) and "
+            "workproducts/SWE.1/software_requirements.md (the expected values of the requirements a USPEC traces). The "
+            "expected values come ONLY from them, never from the implementation.",
+            f"For EACH row of {PLAN_MD} make ONE edit_file call on software/tests/unit/test_rcc.cpp with old_string "
+            f"exactly '{marker}' and new_string = the block '/** @test <UT id> @verifies <USPEC id of the row> */', ONE "
+            "complete TEST(<unit id with _>, <UT id with _>) with its body (e.g. TEST(SWU_LL_01, UT_001) for UT-001 of "
+            "SWU-LL-01), a blank line, then the marker again. Check results with EXPECT_EQ, EXPECT_NE, EXPECT_TRUE, "
+            "EXPECT_FALSE (unsigned constants with U). Never add #include, #define, prototypes or fixtures (TEST_F). "
+            "Follow this example exactly (adapt names, registers and ids; use ONLY defines that exist in the driver "
+            f"headers): ```{example}``` " + (GTEST_MOCK_RULE if mock else ""),
+            "Every UT id of the plan is exactly one TEST; never add a test without a plan row and never reuse an id. "
+            "Call mcp__forge_tests_mcp__run_unit once and report its summary (GTEST_FAIL lines name the failed TEST "
+            "and its expected and actual values).",
+            "Reply with the list of UT ids you wrote."]
 
 
 def _peripheral_prompts() -> None:
@@ -1222,7 +1286,7 @@ def _peripheral_prompts() -> None:
     for name in ("author_prompt", "inspector_prompt", "ll_author_prompt", "hal_author_prompt", "fix3_author_prompt",
                  "unit_test_author_prompt", "target_test_author_prompt", "robot_test_author_prompt", "triage_prompt"):
         f = globals()[name]
-        globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(uspecize(_f(*a, **k)))))
+        globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(uspecize(cmsisize(_f(*a, **k)))))
 
 
 _peripheral_prompts()

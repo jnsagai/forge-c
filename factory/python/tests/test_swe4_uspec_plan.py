@@ -31,8 +31,7 @@ def _renumber(answers: dict, shift: int) -> dict:
         n = int(k.split("-")[-1]) + shift
         new = f"UT-{n:03d}"
         old = k.split(":", 1)[1]
-        code = v["code"].replace(old, new).replace("ut_" + old.lower().replace("-", "_"),
-                                                   "ut_" + new.lower().replace("-", "_"))
+        code = v["code"].replace(old, new).replace(old.replace("-", "_"), new.replace("-", "_"))
         out[f"test:{new}"] = {**v, "code": code}
     return out
 
@@ -65,8 +64,8 @@ def test_legacy_swe1_unit_rows_are_superseded_and_never_reinterpreted(ws3, monke
     monkeypatch.setattr(S, "call", _scripted(_renumber(TESTS, 3), calls))
     rep = swe4.visit_tests(ws3, "m")
     assert rep["status"] == "PASS", rep
-    text = (ws3 / "software/tests/unit/test_iwdg.c").read_text()
-    assert "@test UT-004" in text and '"UT-001"' not in text  # no SWE.4 test reuses a SWE.1 UT id
+    text = (ws3 / "software/tests/unit/test_iwdg.cpp").read_text()
+    assert "@test UT-004" in text and "UT_001" not in text and "UT-001" not in text  # no SWE.1 UT id is reused
     from forge_factory.lrtx import tools as T
 
     tr = T.call(ws3, "forge-evidence-mcp", "validate_trace", {}, "swe4-author", "SWE.4")

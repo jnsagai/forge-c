@@ -209,8 +209,10 @@ def v_api_execution(ws: Path) -> dict:
     if r["status"] != "MEASURED":
         return {"status": "NOT_SUPPORTED", "findings": [str(r.get("reason", ""))[:160]]}
     counts: dict[str, int] = {}
+    from ..gtest_toolchain import c_name
+
     for name, n in r["function_counts"].items():  # static (inline) functions are exported as "<file>:<name>"
-        key = name.split(":")[-1]
+        key = c_name(name)  # (mangled in a GoogleTest C++ unit)
         counts[key] = max(counts.get(key, 0), n)
     defined = sorted(set(re.findall(rf"^[\w\s\*]*?\b({_api_rx(ws)}\w+)\s*\([^;{{)]*\)\s*\{{",
                                     "\n".join(_code(ws).values()), re.M)))
