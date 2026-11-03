@@ -479,6 +479,8 @@ class Records:
         elif a.launches and (not a.queue or a.queue["state"] in ("ADMITTED", "PAUSED") or
                              a.launches[-1]["at"] >= (_ts((a.spec or {}).get("placed_at")) or 0)):
             a.status = "LAUNCH_FAILED"
+        elif a.queue and a.queue["state"] in ("BLOCKED", "READY_FOR_OFFLINE_REVIEW", "REJECTED_INTAKE"):
+            a.status = "CLOSED"  # closed without a run (superseded by a campaign change): history, never launched
         elif a.spec and a.spec.get("kind") != "ADOPTED":
             a.status = "QUEUED"  # placed (spec written, maybe queued and admitted) and never launched
         elif a.rec is not None:  # a prepared workspace without a run and without a launch record
@@ -640,7 +642,7 @@ class Planner:
             phases = phases[phases.index(at):]
         for ph in phases:
             atts = self.recs.phase_attempts(L, ph)
-            cands = [a for a in atts if prev is None or (a.created or 0) >= (prev.created or 0)]
+            cands = [a for a in atts if a.status != "CLOSED" and (prev is None or (a.created or 0) >= (prev.created or 0))]
             P.phase = ph
             if not cands:
                 P.current = None
@@ -668,12 +670,13 @@ class Planner:
     def _order(self, P: Plan, phase: str, kind: str, *, resume_from, resume_upto=None, wo=None) -> dict | None:
         L = self.plans[P.lineage.key].lineage
         n = max([a.n for a in self.recs.phase_attempts(L, phase)] + [0]) + 1
+        ok, via = self._quality_ok(L)
         return {"schema": ORDER_SCHEMA, "wo": wo or L.wo(phase, n), "phase": phase, "kind": kind,
                 "lineage": L.key, "lineage_sha": L.sha256, "campaign_id": L.campaign_id, "example": L.example,
                 "driver_class": L.driver_class, "revision": L.factory_revision, "profile": L.profile,
                 "run_model": L.run_model, "purpose": L.purpose, "resume_from": resume_from,
                 "provided_from": P.provided_from, "resume_upto": resume_upto, "stop_after": phase,
-                "quality": L.quality}
+                "quality": L.quality, "quality_via": (via or None) if ok else None}
 
     def decide(self, P: Plan, campaign: LCMP.Campaign) -> None:
         L = P.lineage
@@ -727,6 +730,7 @@ class Planner:
         if a.status == "LAUNCH_FAILED":
             last = a.launches[-1]
             if a.spec and a.lineage_sha != L.sha256:  # the owner changed the lineage (e.g. a newer revision): new name
+                P.superseded = a.wo  # the never-launched order is closed in the queue
                 self._place(P, self._order(P, ph, "RETRY", resume_from=base.get("resume_from"),
                                            resume_upto=base.get("resume_upto")), "PLACE")
                 return
@@ -780,7 +784,7 @@ class Planner:
         if not ok:
             P.state, P.reason = "WAITING", why
             return
-        order["quality_via"] = why or None  # FLAG: --quality FILE; REVISION: the revision gives exactly that quality
+        # order["quality_via"]: FLAG = --quality FILE; REVISION = the revision gives exactly that quality
         P.order, P.action, P.kind = order, action, order["kind"]
         if order.get("resume_from") is None and order["phase"] != L.phases[0] and not L.start:
             P.state, P.reason, P.action, P.order = "ESCALATED", "NO_LAST_GOOD_PART", None, None

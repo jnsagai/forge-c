@@ -429,9 +429,10 @@ def test_one_gpu_run_at_a_time_and_priority_picks_the_next_lineage(env):
 
 # ------------------------------------------------------------------------------------------- restart / adoption
 def test_a_restart_mid_run_adopts_the_run_and_never_double_launches(env):
-    write_campaign(env, [lineage("wwdg-ll", "WWDGL", "20261103-L29")])
+    write_campaign(env, [lineage("wwdg-ll", "WWDGL", "20261103-L29", quality=QUALITY)])
     grant(env)
     line = env["line"]
+    line.spec_q["ex-wwdg-ll"] = QUALITY  # the revision gives exactly the campaign's quality (no flag)
     # a live run launched outside the conductor (the loop10 ladder's L29 SWE.1)
     ws = line.workspace("WO-F014-SWE1-WWDGL-20261103-L29")
     (ws / ".forge-run/gates").mkdir(parents=True)
@@ -472,6 +473,20 @@ def test_a_restart_mid_run_adopts_the_run_and_never_double_launches(env):
         placer(env).cycle()
         env["clock"].tick()
     assert [x["wo"] for x in line.launched].count("WO-F014-SWE3-WWDGL-20261103-L29") == 1
+    assert not [x for x in line.launched if x["wo"].endswith("L29B")]  # the admitted order itself, not a new name
+    # a campaign change under a never-launched order: the old order is closed in the queue, a new name is placed
+    line.fail_launch["WO-F014-SWE4-WWDGL-20261103-L29"] = ["GPU_LOCK_HELD"]
+    line.finish("WO-F014-SWE3-WWDGL-20261103-L29")
+    placer(env).cycle()  # SWE.4 placed; the launch is refused GPU_LOCK_HELD (the line was busy)
+    write_campaign(env, [lineage("wwdg-ll", "WWDGL", "20261103-L29", quality=QUALITY, factory_revision="5f19d046")])
+    line.revs["5f19d046"] = REV2
+    env["clock"].tick()
+    placer(env).cycle()
+    assert line.launched[-1]["wo"] == "WO-F014-SWE4-WWDGL-20261103-L29B" and line.launched[-1]["rev"] == "5f19d046"
+    assert queue_rows()["WO-F014-SWE4-WWDGL-20261103-L29"]["state"] == "BLOCKED"
+    env["clock"].tick()
+    placer(env).cycle()
+    assert [x["wo"] for x in line.launched].count("WO-F014-SWE4-WWDGL-20261103-L29") == 1
 
 
 # -------------------------------------------------------------------------------------------- owner retry rule
