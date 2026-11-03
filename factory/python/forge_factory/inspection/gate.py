@@ -25,6 +25,7 @@ from pathlib import Path
 from ..common import pretty_json, utc_now
 from ..contracts.agent_output import parse
 from ..events.emit import emit
+from . import outage
 from .engine import InspectionError, Store
 
 
@@ -173,7 +174,8 @@ def step_author(store: Store, phase: str, text: str) -> int:
     generated += workspace_scope_findings(store.workspace, phase)
     missing = store.missing_outputs(phase) if os.environ.get("FORGE_GATE_PRESENCE", "1") == "1" else []
     missing += generated
-    missing += _structured_task_issues(store, res)
+    task_issues = _structured_task_issues(store, res)
+    missing += task_issues
     from . import defects  # ADR-0008: a fixed upstream defect is verified with the SAME, unchanged tests
 
     missing += defects.verify_on_freeze(store.workspace, phase)
@@ -187,6 +189,15 @@ def step_author(store: Store, phase: str, text: str) -> int:
             _state(store.workspace, phase, {"step": "test_declaration", "result": "REFUSED", "error": str(exc)[:200]})
         missing += [f"{i} (restore the test and report_defect the upstream fault, or declare the correction with "
                     "report_defect kind TEST)" for i in defects.bent_tests(store.workspace, phase)]
+    if task_issues and outage.any_outage(task_issues):
+        # CAPA-122 (run WO-F014-CMP-SWE1-CRCL-20261102-10): the visit's model calls were refused after its bounded
+        # wait-and-retry. No author attempt happened: an infrastructure outcome, never a REJECTED attempt (rework
+        # budget, STUCK and progress rules count REJECTED records only). The route ends the phase retryably.
+        _state(store.workspace, phase, {"step": "author", "result": outage.INFRA, "status": outage.CODE,
+                                        "issues": missing[:20]})
+        print(json.dumps({"infra_unavailable": outage.CODE, "issues": [i for i in task_issues
+                                                                        if outage.is_outage_issue(i)][:5]}))
+        return fail_code(store.workspace, phase, "author")
     if missing:  # deterministic presence gate: nothing is frozen while required outputs/tool passes are missing
         _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "status": "INCOMPLETE",
                                         "issues": missing[:20]})
@@ -239,6 +250,13 @@ def step_author(store: Store, phase: str, text: str) -> int:
 
 def step_inspect(store: Store, phase: str, text: str) -> int:
     res = parse(text)
+    if res.ok and res.status == "FAILED" and outage.any_outage(res.issues):
+        # CAPA-122: the structured inspector's model calls were refused (bounded wait used up): nothing was judged or
+        # recorded; an infrastructure outcome for the route, never a re-use of an earlier verdict
+        _state(store.workspace, phase, {"step": "inspect", "result": outage.INFRA, "status": outage.CODE,
+                                        "issues": list(res.issues)[:10]})
+        print(json.dumps({"infra_unavailable": outage.CODE, "phase": phase}))
+        return fail_code(store.workspace, phase, "inspect")
     g = store.gate(phase)
     _state(store.workspace, phase, {"step": "inspect", "agent_status": res.status, "agent_ok": res.ok,
                                     "gate": g})
@@ -268,7 +286,8 @@ def _epoch_lines(ws: Path, phase: str, since: str) -> list[str]:
 
 
 def _count(ws: Path, phase: str, step: str, since: str = "") -> int:
-    return sum(1 for x in _epoch_lines(ws, phase, since) if f'"step": "{step}"' in x)
+    # CAPA-122: a route that ended on an infrastructure outcome was no failed production cycle
+    return sum(1 for x in _epoch_lines(ws, phase, since) if f'"step": "{step}"' in x and '"infra_outcome"' not in x)
 
 
 def author_rejections(ws: Path, phase: str, since: str = "") -> int:
@@ -287,7 +306,8 @@ def stuck_signature(ws: Path, phase: str, since: str = "") -> tuple | None:
     """CAPA-014: the last two author attempts of this epoch were rejected with the identical deterministic codes.
     Over all recorded runs (r10-r82) this never recovered on the next cycle (0 of 14), so the remaining cycle is
     not spent: the phase stops early (the L11 safety net still runs) and the failure goes to the CAPA process."""
-    rows = [x for x in _epoch_lines(ws, phase, since) if '"step": "author"' in x]
+    rows = [x for x in _epoch_lines(ws, phase, since) if '"step": "author"' in x
+            and f'"result": "{outage.INFRA}"' not in x]  # CAPA-122: an outage visit is no author attempt
     if len(rows) < 2 or '"REJECTED"' not in rows[-1] or '"REJECTED"' not in rows[-2]:
         return None
     a, b = _rejection_signature(rows[-2]), _rejection_signature(rows[-1])
@@ -539,6 +559,16 @@ def unchanged_failed_inspection(store: Store, phase: str) -> bool:
 
 def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
+    infra = outage.pending(store.workspace, phase, store.budget_start())
+    if infra is not None:
+        # CAPA-122: the last author/inspector visit ended on a model-call outage after its bounded wait-and-retry.
+        # Explicit retryable infrastructure outcome: no rework cycle, no development reservation, no STUCK/same-item
+        # rule, no auto-filed defect and no advisory gap record.
+        g = outage.route_decision(g, infra)
+        _state(store.workspace, phase, {"step": "route", "gate": g})
+        emit("workflow", "WARN", f"{phase} {outage.INFRA}: {outage.CODE} -> BLOCKED (retryable)", phase=phase)
+        print(json.dumps(g))
+        return 1
     from .. import development_execution as development
 
     if development.selected(store.workspace):
