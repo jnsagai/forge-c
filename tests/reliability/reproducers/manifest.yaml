@@ -1410,3 +1410,23 @@ reproducers:
     operations: [inspection/implementation check_implementation (HAL layer)]
     root_cause: "For a greenfield LL the generated test double drops the register array, so a HAL that bypasses the LL does not build in its unit test (CAPA-038). With ST's LL (CAPA-128) the double keeps the device header (CRC_TypeDef, the CRC macro, WRITE_REG), so direct register access builds; inspection/implementation.py check_implementation (HAL branch, line 121) checks only that the LL functions the HAL calls exist and has no rule against direct register access."
     remedy: "implementation.hal_bypass_findings: for a HAL on a provided CMSIS LL (brownfield/cmsis.provided_api) the HAL source and header (comments and literals stripped) are refused with IMPL:HAL_BYPASSES_LL:<file>:<line>:<token> for the instance dereferenced, the CMSIS register macros, the LL WriteReg/ReadReg macros, the host RAM struct, an own volatile register array and the instance base address. HALs calling only the provided LL and every greenfield HAL are unchanged."
+  - id: RPR-135
+    script: rpr135_contract_calls_without_provided_ll_build.py
+    sha256: 2f07111a50826132c2de6a607af4bb2b8c2aa9d27f92a0c8ccdaab7ee1b355f7
+    symptom_signature: "the SWE.2 call contract of a HAL on an ST (CMSIS) LL cannot compile: no provided LL build inputs in check_compiles"
+    observed_in: "Fabro run WO-F014-SWE3-CRCHAL-20261103-L31 (local line, Omniverse2, run/gen12 347e9381, 2026-11-03): SWE.3 route BLOCKED 'STUCK: identical deterministic rejection twice (CONTRACT_CALL_DOES_NOT_COMPILE:workproducts/SWE.2/api_calls.json:stm32n6xx.h: No such file or directory'"
+    baseline_revision: 685909b3cd135eea6afc5a4fdbaf716c88417e02
+    error_codes: [CONTRACT_CALL_DOES_NOT_COMPILE]
+    operations: [assurance/register_contract check_compiles (inspection/gate SWE.2 + SWE.3, lrtx/swe2)]
+    root_cause: "assurance/register_contract.py check_compiles (line 288) chose its compiler flags for instance mode (instance_flags) and brownfield deliveries (vendor includes, defines) only; a HAL work order with a CAPA-128 provided_build is neither, so it compiled with plain gcc -std=c99 and the HAL/LL include dirs. The provided ST LL header includes stm32n6xx.h, which lives in the host device directory the HAL's build and tests get from brownfield/cmsis.host_flags - the contract could never compile, whatever the author wrote."
+    remedy: "check_compiles: when brownfield/cmsis.provided_build(ws) is set (and the work order is not in instance mode), compile with gcc -std=c11 and cmsis.host_flags(ws) - the host device directory with the host CMSIS stub, the forced host mapping of the instance and the provided LL's defines - as the HAL's host build and tests do. Greenfield, instance-mode and brownfield compiles are unchanged."
+  - id: RPR-136
+    script: rpr136_ears_condition_with_commas_nonconformant.py
+    sha256: df98ac1bb7509351fb3a4684d7ec27c4d4750a21d0d59ccfbadb147937bdc1f0
+    symptom_signature: "an EARS condition containing commas is NONCONFORMANT although it ends with ', [then] the <system> shall'"
+    observed_in: "Fabro run WO-F014-SWE1-WWDGHAL-20261103-L32 (local line, Omniverse2, 2026-11-03): SWE.1 BLOCKED 'rework budget exhausted (3 failed cycles)'; the deterministic EARS check (forge-docs-mcp validate_artifact, check ears) kept SWR-010 (an If-condition listing the invalid arguments) and SWR-011 (a When-condition over activation, configuration or refresh) EARS_PATTERN_NONCONFORMANT across ~70 author tool calls"
+    baseline_revision: 82e3291c903624fd5e8f9016462a26a51c126d77
+    error_codes: [EARS_PATTERN_NONCONFORMANT]
+    operations: [inspection/ears match + check_statement (forge-docs-mcp validate_artifact ears, SWE.1 author gate, lrtx/swe1 self_check)]
+    root_cause: "inspection/ears.py PATTERNS matched every EARS condition as (?P<pre>[^,]+): the condition had to end at its FIRST comma, so a condition containing a comma - a list of invalid arguments, several operations - could never match, and the finding EARS_PATTERN_NONCONFORMANT carried no hint of why. EARS allows commas in the condition; it ends at the comma before '[then] the <system> shall'."
+    remedy: "The condition is matched non-greedily (.+?) up to the comma followed by '[then] the <system> shall' in COMPLEX/UNWANTED/EVENT/STATE/OPTIONAL, so every statement the first-comma form matched keeps the identical split; a statement starting with If/When/While/Where that still has no split gets ':expected ...' after the unchanged EARS_PATTERN_NONCONFORMANT token."

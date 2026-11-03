@@ -1,0 +1,101 @@
+{
+ "CAPA-135": {
+  "history": [
+   {
+    "at": "2026-11-03T19:01:40.185274Z",
+    "capa_id": "CAPA-135",
+    "evidence": "[\"crchal-l31-swe3-contract-calls\"]",
+    "from_state": null,
+    "reason": "Local CRC HAL L31 SWE.3: call contract compile lacked the provided ST LL build inputs (stm32n6xx.h)",
+    "seq": 994,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T19:01:40.234021Z",
+    "capa_id": "CAPA-135",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 995,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T19:01:40.375277Z",
+    "capa_id": "CAPA-135",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-135 assigned",
+    "seq": 996,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T19:01:45.623417Z",
+    "capa_id": "CAPA-135",
+    "evidence": "[\"reproducer-run:rr-2d084f8e1d944d40b8f9\", \"reproducer-run:rr-4111b5dcf2387c300472\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 997,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T19:01:45.647498Z",
+    "capa_id": "CAPA-135",
+    "evidence": "[\"git:685909b3cd13..fec940bbcbcf\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix fec940bbcbcf (patch 5082 bytes)",
+    "seq": 998,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T19:06:25.194097Z",
+    "capa_id": "CAPA-135",
+    "evidence": "[\"reproducer-run:rr-35e06502cc4df92edd38\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-135 absent at fec940bbcbcf",
+    "seq": 999,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T19:06:25.211160Z",
+    "capa_id": "CAPA-135",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1000,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-2728c86674041b249c62012e8e9c81a52bd60086",
+   "685909b3cd135eea6afc5a4fdbaf716c88417e02",
+   "fec940bbcbcffdeb59265fde179b70b5621831eb",
+   "pd-e43e08c5758ffbd6fab9"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<fec940bbcbcf"
+   ],
+   "candidate_patch_sha256": "21c6dbe337ee21eb2b355f6779b219b88dddfa12517859a4c49b40015d919ccc",
+   "capa_id": "CAPA-135",
+   "created_at": "2026-11-03T19:01:40.185274Z",
+   "event_ids": [],
+   "incident_ids": [
+    "crchal-l31-swe3-contract-calls"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-135",
+   "reproducer_id": "RPR-135",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-2d084f8e1d944d40b8f9",
+    "reproducer-run:rr-4111b5dcf2387c300472"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T19:06:25.211160Z"
+  }
+ }
+}
