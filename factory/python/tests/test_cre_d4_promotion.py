@@ -221,7 +221,13 @@ def test_concealed_negative_result_is_caught_by_the_runner(clone, env):
     lazy = candidate(clone, "adv-conceal", {"factory/python/forge_factory/mcp/servers/tests.py": LAZY})
     d = PM.evaluate(lazy, "HEAD", store, pol, kind="CHANGE", repo=clone, skip_quality=True)
     gates = {g["name"]: (g["result"], g["reason_code"]) for g in d["hard_gates"]}
-    assert d["decision"] == "REJECTED" and gates["golden_benchmark"] == ("FAIL", "REGRESSION")
+    assert d["decision"] == "REJECTED"
+    # Since RPR-132 (CAPA-132) a frozen reproducer drives run_unit's BUILD_FAIL path, so the prevention gate can
+    # reject the concealment before the golden benchmark runs; either independent runner catching it is the
+    # property. The benchmark-only path stays covered by test_independent_runner_evaluates_oracles_and_finds_regressions.
+    assert gates["golden_benchmark"] == ("FAIL", "REGRESSION") or (
+        gates["prevention"] == ("FAIL", "RESOLVED_FAILURE_REAPPEARED")
+        and any("RPR-132:" in r for r in d["reasons"])), (gates, d["reasons"])
 
 
 # ---- CRE-T043 (convergence): candidate code runs in an OS-hardened worktree ------------------------------------
