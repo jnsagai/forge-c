@@ -286,10 +286,17 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
     from ..brownfield import delivered_paths, is_brownfield, manifest_of
     from ..layer import instance_flags, ll_instance
 
+    from ..brownfield import cmsis
+
     m = manifest_of(ws)
     compiler, extra, headers = ["gcc", "-std=c99"], [], [api_header]
     if ll_instance(ws) is not None:  # instance mode: the pinned device/API headers, host mapping of the instance macro
         compiler, extra = ["gcc", "-std=c11"], instance_flags(ws, host=True)
+    elif cmsis.provided_build(ws) is not None:
+        # CAPA-135 (run WO-F014-SWE3-CRCHAL-20261103-L31): a HAL on a provided ST (CMSIS) LL compiles its call contract
+        # with the provided LL's build inputs, as its host build and tests do (CAPA-128): host device directory with
+        # the host CMSIS stub, forced host mapping of the instance, defines - the LL header includes stm32n6xx.h
+        compiler, extra = ["gcc", "-std=c11"], cmsis.host_flags(ws)
     if is_brownfield(m):  # feature 008: all delivered headers, vendor includes and the delivery's build settings
         b = m["delivery"].get("build") or {}
         headers = [Path(x).name for x in delivered_paths(m) if x.endswith(".h")] or headers
