@@ -1430,3 +1430,22 @@ reproducers:
     operations: [inspection/ears match + check_statement (forge-docs-mcp validate_artifact ears, SWE.1 author gate, lrtx/swe1 self_check)]
     root_cause: "inspection/ears.py PATTERNS matched every EARS condition as (?P<pre>[^,]+): the condition had to end at its FIRST comma, so a condition containing a comma - a list of invalid arguments, several operations - could never match, and the finding EARS_PATTERN_NONCONFORMANT carried no hint of why. EARS allows commas in the condition; it ends at the comma before '[then] the <system> shall'."
     remedy: "The condition is matched non-greedily (.+?) up to the comma followed by '[then] the <system> shall' in COMPLEX/UNWANTED/EVENT/STATE/OPTIONAL, so every statement the first-comma form matched keeps the identical split; a statement starting with If/When/While/Where that still has no split gets ':expected ...' after the unchanged EARS_PATTERN_NONCONFORMANT token."
+  - id: RPR-137
+    script: rpr137_swe2_contract_not_compiled_and_triage_overruled.py
+    sha256: 55bb68ccc5909fe3432951ae7a352d46a6e080823cd8b554318dc43292a12e41
+    symptom_signature: "an SWE.2 call contract with an undeclared argument passes SWE.2 and the SWE.2 triage returns its rejected defect"
+    observed_in: "Fabro run WO-F014-SWE3-CRCHAL-20261103-L31B (local line, Omniverse2, run/gen13 f02766d9, 2026-11-03): SWE.3 BLOCKED 'STUCK: identical deterministic rejection twice (CONTRACT_CALL_DOES_NOT_COMPILE:workproducts/SWE.2/api_calls.json:crc undeclared)'; the SWE.2 contract passed '&crc' as the result pointer of HAL_CRC_Calculate/Accumulate (also MEASUREMENT_BUILD_FAILED in the SWE.3 static timing build); DEF-001 (ARCHITECTURE -> SWE.2) was REJECTED by the SWE.2 author and the triage returned to SWE.3"
+    baseline_revision: 94d9b6017cc72a42f3ee625eb6231fe553af619c
+    error_codes: [CONTRACT_CALL_DOES_NOT_COMPILE]
+    operations: [inspection/gate SWE.2 register-contract findings, lrtx/swe2 self_check, inspection/gate step_triage]
+    root_cause: "The SWE.2 checks compiled the call contract only in instance mode (an LL) or for a brownfield delivery (CAPA-089); a greenfield HAL - also one on a provided ST LL (CAPA-128) - gets its interface header only at SWE.3, so SWE.2 checked nothing and froze a contract that can never compile. step_triage accepted the SWE.2 author's rejection of the SWE.3 defect because the SWE.2 baseline was intact, without re-running the SWE.2 check on the file the defect cites."
+    remedy: "register_contract.swe2_compile_findings (inspection gate SWE.2, lrtx swe2 self_check, triage) keeps the instance and brownfield compiles and otherwise applies check_args_declared: every identifier of a contract argument must be declared by the SWE.2 interface work products or a header the work order already has (designators, C keywords and stdint/stddef names excepted). step_triage(SWE.2) re-opens (IN_FIX, by triage-gate) a REJECTED defect of the latest loop when that compile check still names a SWE.2 file the defect cites; the author's reason stays recorded."
+  - id: RPR-138
+    script: rpr138_write_scope_directory_written_as_file.py
+    sha256: d3738fcd966a8d2cf7392fd21f254b8f52d0e9df904f070899c47041573982e0
+    symptom_signature: "the write scope admits a role's directory prefix path itself, so the output directory is written as a file"
+    observed_in: "Fabro run WO-F014-SWE1-WWDGHAL-20261103-L32B (local line, Omniverse2, gen13 f02766d9, run 01M6HGSX8NHGSFCVXJ2EHYXPW0, 2026-11-03): the SWE.1 author wrote workproducts/SWE.1 and traceability as empty regular files; every later write below them failed and SWE.1 was STUCK on MISSING_REQUIRED_OUTPUT"
+    baseline_revision: 082500ce9abfb3f47a775a5f9c0eedaf5d01462a
+    error_codes: [WRITE_SCOPE_DENIED, MISSING_REQUIRED_OUTPUT]
+    operations: [policy/authz Authorizer.decide (write_file/edit_file/apply_patch), Fabro native write_file]
+    root_cause: "factory/python/forge_factory/policy/authz.py Authorizer.decide admitted `rel == p.rstrip(\"/\") or rel.startswith(p)`, so a role's directory prefix (workproducts/SWE.1/, traceability/) admitted the directory path itself; Fabro write_file then created an empty regular file with the directory's name, blocking every write below it."

@@ -1,0 +1,101 @@
+{
+ "CAPA-137": {
+  "history": [
+   {
+    "at": "2026-11-03T20:28:33.657782Z",
+    "capa_id": "CAPA-137",
+    "evidence": "[\"crchal-l31b-swe3-contract-arg-triage\"]",
+    "from_state": null,
+    "reason": "Local CRC HAL L31B SWE.3: SWE.2 call contract with an undeclared argument passed SWE.2; SWE.2 author rejected the upstream defect and triage returned",
+    "seq": 1008,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T20:28:33.686461Z",
+    "capa_id": "CAPA-137",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1009,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T20:28:33.825735Z",
+    "capa_id": "CAPA-137",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-137 assigned",
+    "seq": 1010,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T20:28:38.796777Z",
+    "capa_id": "CAPA-137",
+    "evidence": "[\"reproducer-run:rr-f33b2bbc00742e581e68\", \"reproducer-run:rr-4819be123fdc1cf2b046\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1011,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T20:28:38.833193Z",
+    "capa_id": "CAPA-137",
+    "evidence": "[\"git:94d9b6017cc7..5f4a6ba8912c\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 5f4a6ba8912c (patch 18492 bytes)",
+    "seq": 1012,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T21:03:04.203550Z",
+    "capa_id": "CAPA-137",
+    "evidence": "[\"reproducer-run:rr-1c18062f21fd09a8e3b9\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-137 absent at 5f4a6ba8912c",
+    "seq": 1013,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T21:03:04.221619Z",
+    "capa_id": "CAPA-137",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1014,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-d35999aeaa1c0a307f052fa8b4d38f0542390ba5",
+   "94d9b6017cc72a42f3ee625eb6231fe553af619c",
+   "5f4a6ba8912c16db9f353f16ec028955c5f6908c",
+   "pd-90b30eb5d3879a3a457b"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<5f4a6ba8912c"
+   ],
+   "candidate_patch_sha256": "789c37b9894f25f1dbe3c265544680c4764613e78416dfc2dfceb2a124d815d3",
+   "capa_id": "CAPA-137",
+   "created_at": "2026-11-03T20:28:33.657782Z",
+   "event_ids": [],
+   "incident_ids": [
+    "crchal-l31b-swe3-contract-arg-triage"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-137",
+   "reproducer_id": "RPR-137",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-f33b2bbc00742e581e68",
+    "reproducer-run:rr-4819be123fdc1cf2b046"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T21:03:04.221619Z"
+  }
+ }
+}
