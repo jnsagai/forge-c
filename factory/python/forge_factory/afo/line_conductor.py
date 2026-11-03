@@ -346,7 +346,9 @@ def parse_wo(wo: str) -> tuple[str | None, str | None]:
     return (f"SWE.{m.group(1)}" if m.group(1) else None, m.group(2)) if m else (None, None)
 
 
-def scan_orders(root: Path, now: float, lookback_s: float) -> list[dict]:
+def scan_orders(root: Path, now: float, lookback_s: float, include: frozenset = frozenset()) -> list[dict]:
+    """Orders touched within the look-back window, plus `include` (the orders of persisted open issues, whatever
+    their age: their status is re-derived every cycle)."""
     out = []
     for ws in sorted((root / "workorders").glob("*/workspace")):
         run = ws / ".forge-run"
@@ -355,9 +357,9 @@ def scan_orders(root: Path, now: float, lookback_s: float) -> list[dict]:
             continue
         marks = [run / "gates/gate-log.jsonl", run / "fabro_run_id", run / "package.json", run / "manifest.json"]
         mt = [p.stat().st_mtime for p in marks if p.is_file()]
-        if not mt or now - max(mt) > lookback_s:
-            continue
         wo = man.get("work_order") or ws.parent.name
+        if not mt or (now - max(mt) > lookback_s and wo not in include and ws.parent.name not in include):
+            continue
         ph, tag = parse_wo(wo)
         target = (man.get("phase_scope") or {}).get("stop_after") or ph or "SWE.6"
         log = _gate_log(ws)
@@ -374,7 +376,7 @@ def scan_orders(root: Path, now: float, lookback_s: float) -> list[dict]:
     return out
 
 
-def scan_launches(launch_dir: Path | None, now: float, lookback_s: float) -> list[dict]:
+def scan_launches(launch_dir: Path | None, now: float, lookback_s: float, include: frozenset = frozenset()) -> list[dict]:
     """Failed launches: a launch record with a failure marker and no 'LAUNCH <wo> rc 0' line with a Fabro run id."""
     out = []
     if launch_dir is None or not launch_dir.is_dir():
@@ -382,7 +384,7 @@ def scan_launches(launch_dir: Path | None, now: float, lookback_s: float) -> lis
     for p in sorted(launch_dir.glob("launch-WO-*.out")):
         try:
             st = p.stat()
-            if now - st.st_mtime > lookback_s:
+            if now - st.st_mtime > lookback_s and p.name.removeprefix("launch-").removesuffix(".out") not in include:
                 continue
             lines = p.read_text(errors="replace").splitlines()
         except OSError:
@@ -478,11 +480,29 @@ def read_afo_queue(db: Path, now: float, lookback_s: float) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------------------------- classification
+FACTORY_RULE_CHECKS = {"VIEWS"}  # deterministic factory-rule checks of a work product's form (inspection/views.py)
+_CODE_TOKEN = re.compile(r"^[A-Z][A-Z0-9_]*$")
+_DETAIL_TOKEN = re.compile(r"^[A-Za-z0-9_.-]{1,60}$")
+
+
+def gate_code(issue: str) -> str:
+    """A deterministic gate issue as its code: the leading code token plus the next token (a path reduced to its file
+    name), e.g. 'VIEWS:SYNTAX:workproducts/SWE.2/x.puml:line 7:...' -> 'VIEWS:SYNTAX',
+    'MISSING_REQUIRED_OUTPUT:workproducts/SWE.6/report.md' -> 'MISSING_REQUIRED_OUTPUT:report.md'. Text that does not
+    start with a code token goes through the CRE classifier. (The classifier is not used for code tokens: its transient
+    rule matches TIMEOUT inside e.g. VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH.)"""
+    from ..reliability.taxonomy import classify
+
+    parts = str(issue).split(":")
+    if not _CODE_TOKEN.match(parts[0]):
+        return _code(classify(str(issue)).error_code)
+    detail = parts[1].strip().rsplit("/", 1)[-1] if len(parts) > 1 else ""
+    return _code(f"{parts[0]}:{detail}" if _DETAIL_TOKEN.match(detail) else parts[0])
+
+
 def _codes(rec: dict, phase: str) -> tuple[list[str], int | None, str]:
     """The deterministic issue codes of the last author rejection before the phase's BLOCKED route, the BLOCKED
     line, and the route code (STUCK / REWORK_BUDGET_EXHAUSTED / BLOCKED)."""
-    from ..reliability.taxonomy import classify
-
     blocked = [e for e in rec["log"] if e.get("phase") == phase and e.get("step") == "route" and _result(e) == "BLOCKED"]
     if not blocked:
         return [], None, ""
@@ -494,7 +514,7 @@ def _codes(rec: dict, phase: str) -> tuple[list[str], int | None, str]:
            and _result(e) in ("REJECTED", "FREEZE_FAILED")]
     codes: list[str] = []
     for i in ((rej[-1].get("issues") or []) if rej and rej[-1].get("status") == "INCOMPLETE" else []):
-        c = _code(classify(str(i)).error_code)
+        c = gate_code(i)
         if c not in codes:
             codes.append(c)
     return codes[:5], b["_line"], route
@@ -554,15 +574,26 @@ def classify_order(rec: dict, life: str | None, capa_of: dict) -> dict | None:
            else "PRODUCT" if c == "SPECIFICATION_GAP" or (c == "PRODUCT_QUALITY" and (up or not CONVERGENCE_RX.match(reason)))
            else "MODEL_CONVERGENCE" if c == "PRODUCT_QUALITY" else "UNKNOWN")
     capa = capa_of.get(b["fingerprint"])
+    error_code = _code(b["error_code"])
+    suspected = False
+    if codes and cls not in ("FACTORY_DEFECT",):  # the blocking rejection came from the deterministic author gate
+        if route == "STUCK" and all(c.split(":")[0] in FACTORY_RULE_CHECKS for c in codes):
+            cls, suspected = "FACTORY_DEFECT", True  # the same factory-rule rejection twice: the rule is suspect
+        elif cls == "INFRA":  # never INFRA; a security denial (UNKNOWN) keeps its class
+            cls = "PRODUCT" if up else "MODEL_CONVERGENCE"
+        if cls != b["failure_class"]:
+            error_code = codes[0]
     if capa:
         ev.append({"kind": "capa", "ref": f"capa:{capa}"})
     # the issue's identity across runs: the deterministic code set of the blocking rejection (the CRE bundle's dominant
     # observation is tie-broken by an attempt-specific id, so its cfp1 can differ between runs of the same rejection)
     fp = "sup1-" + _h("CODES", ph, route, *sorted(codes))[:40] if codes else b["fingerprint"]
-    return {"class": cls, "phase": ph, "error_code": _code(b["error_code"]), "route": route or "ENDED", "codes": codes,
+    return {"class": cls, "phase": ph, "error_code": error_code, "route": route or "ENDED", "codes": codes,
+            "suspected": suspected,
             "fingerprint": fp, "cre_fingerprint": b["fingerprint"], "evidence": ev,
             "upstream": sorted({d["target_phase"] for d in up}),
             "status": {"FACTORY_DEFECT": "WAITING_EXTERNAL_CHANGE", "UNKNOWN": "ESCALATED"}.get(cls, "OPEN"),
+            # (the CRE class INFRA is kept only when no deterministic gate rejection explains the stop)
             "capa": capa}
 
 
@@ -571,6 +602,7 @@ SUMMARY = {
     "PRODUCT": "{phase} {route}: product finding; codes {codes}",
     "INFRA": "{phase} {route}: infrastructure; code {error_code}",
     "FACTORY_DEFECT": "{phase} {route}: factory defect under CAPA {capa}; code {error_code}",
+    "FACTORY_SUSPECTED": "{phase} {route}: factory defect suspected (deterministic factory-rule rejection); codes {codes}",
     "UNKNOWN": "{phase} {route}: unclassified; code {error_code}",
     "CANCELLED": "{phase} Fabro run cancelled (failed:cancelled); parked until released",
     "LAUNCH": "{phase} launch failed before a Fabro run: {error_code}",
@@ -655,6 +687,11 @@ def rule_proposals(issue_id: str, cls: str, phase: str, *, resume_from: str | No
         return [_proposal(issue_id, 1, "STACK_REPAIR_RECIPE", ["LAUNCH_FAILED_BEFORE_RUN"],
                           "stack stop, stop own orphaned stack processes, stack start, health check",
                           recipe="stack-repair-v1"), relaunch]
+    if cls == "FACTORY_DEFECT" and not capa:
+        return [_proposal(issue_id, 1, "OPEN_CAPA_FACTORY_DEFECT_SUSPECTED", ["DETERMINISTIC_FACTORY_RULE_REJECTION",
+                          "STUCK_IDENTICAL_REJECTION", "RESUME_FROM_LAST_GOOD_PART"],
+                          f"factory defect suspected: open CAPA; resume {phase} from {src} once fixed", phase=ph,
+                          resume_from=resume_from)]
     if cls == "FACTORY_DEFECT":
         p = _proposal(issue_id, 1, "FOLLOW_CAPA", ["FACTORY_DEFECT_NEEDS_EXTERNAL_CHANGE", "RESUME_FROM_LAST_GOOD_PART"],
                       f"wait for the CRE fix of {capa}, then retry {phase} from {src}", capa_id=capa, phase=ph,
@@ -776,11 +813,12 @@ class Observer:
             self._cache[key] = classify_order(rec, life, capa_of)
         return self._cache[key]
 
-    def issues(self, now: float) -> tuple[list[dict], dict]:
+    def issues(self, now: float, keep: frozenset = frozenset()) -> tuple[list[dict], dict]:
+        """`keep`: work orders of persisted open issues; their records are read even outside the look-back window."""
         from ..reliability.taxonomy import classify, fingerprint
 
         root = state_dir()
-        orders = scan_orders(root, now, self.lookback_s)
+        orders = scan_orders(root, now, self.lookback_s, keep)
         by_wo = {o["wo"]: o for o in orders}
         cre = read_cre(self.cre_db or root / "supervisor/incidents.sqlite3")
         out: list[dict] = []
@@ -788,7 +826,7 @@ class Observer:
         # every run of a part and phase is an event of its chain: PASS (progress) or the fingerprint it stopped on
         chains: dict[tuple, list[tuple]] = {}
         drafts: list[dict] = []
-        launches = scan_launches(self.launch_dir, now, self.lookback_s)
+        launches = scan_launches(self.launch_dir, now, self.lookback_s, keep)
         refused = {la["wo"] for la in launches}  # prepared workspaces whose launch failed: the launch issue covers them
         for rec in orders:
             life = self.fabro.status(rec["rid"]) if rec["package"] is None else None
@@ -918,7 +956,8 @@ class Observer:
         rec, core = d["rec"], d["core"]
         cls = core["class"]
         kind = "CANCELLED" if core["route"] == "CANCELLED" else cls
-        text = summary("CANCELLED" if kind == "CANCELLED" else cls, phase=phase, route=core["route"], codes=core["codes"],
+        text = summary("CANCELLED" if kind == "CANCELLED" else "FACTORY_SUSPECTED" if core.get("suspected") and
+                       not core["capa"] else cls, phase=phase, route=core["route"], codes=core["codes"],
                        error_code=core["error_code"], capa=core["capa"])
         status = "OPEN" if core["status"] == "ESCALATED" else core["status"]  # unclassified is retried too (the rule)
         return _issue(self.line, wo=rec["wo"], tag=tag, phase=phase, rid=rec["rid"], cls=cls, fingerprint=d["fp"],
@@ -954,9 +993,10 @@ def latest_acks() -> dict[str, dict]:
 
 
 def merge(prev: dict | None, new: list[dict], acks: dict, now: float) -> tuple[list[dict], list[tuple[str, dict]]]:
-    """Carry identity over cycles: opened_at and acknowledgements persist, updated_at moves only on a tracked change;
-    issues no longer derived are kept as they were (their records left the look-back window); resolved issues older
-    than 7 days leave the feed. Returns the issues and the journal events."""
+    """Carry identity over cycles: opened_at and acknowledgements persist, updated_at moves only on a tracked change.
+    Persisted state is history and identity only, never a status source: the status of every issue comes from this
+    cycle's derivation, and a persisted open issue the current rules no longer raise is RESOLVED
+    (NOT_RAISED_BY_CURRENT_RULES) and journaled. Resolved issues older than 7 days leave the feed."""
     old = {i["issue_id"]: i for i in (prev or {}).get("issues", []) if isinstance(i, dict) and i.get("issue_id")}
     events, out, seen = [], [], set()
     for i in new:
@@ -978,8 +1018,19 @@ def merge(prev: dict | None, new: list[dict], acks: dict, now: float) -> tuple[l
         seen.add(i["issue_id"])
         out.append(i)
     for iid, o in old.items():
-        if iid not in seen:
-            out.append(o)
+        if iid in seen:
+            continue
+        if o.get("status") != "RESOLVED":
+            o = json.loads(json.dumps(o))
+            o["status"], o["resolved_at"], o["updated_at"] = "RESOLVED", _utc(now), _utc(now)
+            o["escalation"]["level"] = "FLOOR"
+            if "reason" in o["escalation"]:
+                o["escalation"]["reason"] = None
+            for p in o.get("proposals", []):
+                p["status"] = "SUPERSEDED"
+                p["reason_codes"] = (p.get("reason_codes", []) + ["NOT_RAISED_BY_CURRENT_RULES"])[:8]
+            events.append(("RESOLVED", o))
+        out.append(o)
     out = [i for i in out if not (i["status"] == "RESOLVED" and now - (_ts(i.get("resolved_at")) or now) > RESOLVED_KEEP_S)]
     out.sort(key=lambda i: i["opened_at"], reverse=True)
     out.sort(key=lambda i: i["status"] == "RESOLVED")  # open first, newest first
@@ -997,7 +1048,10 @@ class LineConductor:
 
     def cycle(self, now: float | None = None) -> dict:
         now = now or time.time()
-        issues, budgets = self.observer.issues(now)
+        before = _load(feed_path())
+        keep = frozenset(i["wo"] for i in (before or {}).get("issues", []) if isinstance(i, dict) and i.get("wo")
+                         and i.get("status") != "RESOLVED") if isinstance(before, dict) else frozenset()
+        issues, budgets = self.observer.issues(now, keep)
         keys = contract_keys()
         issues = [fit_issue(i, keys) for i in issues]
         with feed_lock():

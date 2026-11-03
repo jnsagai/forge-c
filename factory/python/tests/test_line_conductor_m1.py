@@ -491,6 +491,103 @@ def test_a_packaging_order_ready_for_review_raises_nothing(line):
     assert not [i for i in feed["issues"] if i["wo"] == "WO-F014-PKG-IWDG-20261102-01"]
 
 
+# ------------------------------- live feed after bde48a92: re-derived open issues, factory-rule rejections
+def test_a_persisted_open_issue_is_rederived_and_resolved_when_the_current_rules_do_not_raise_it(line):
+    lc = conductor(line)
+    feed = lc.cycle()
+    # an issue an earlier rule set opened on an order the current rules do not raise (its phase passed)
+    ghost = json.loads(json.dumps(by_wo(feed, IWDG.format(n=6, l=22))))
+    ghost.update(issue_id="SUP-0123456789", wo=IWDG.format(n=5, l=22), phase="SWE.5", status="OPEN",
+                 error_code="PHASE_WALL_GUARD_EXCEEDED", resolved_at=None)
+    LC.atomic_write(LC.feed_path(), json.dumps({**feed, "issues": feed["issues"] + [ghost]}).encode())
+    # and the stuck order leaves the look-back window: its persisted open issue is still re-derived from its records
+    _age(line["state"] / "workorders" / IWDG.format(n=6, l=22) / "workspace", 3 * 86400)
+    lc2 = LC.LineConductor(LC.Observer("local", line["launch"], line["fabro"], lookback_s=86400), unit="t")
+    after = lc2.cycle(time.time() + 30)
+    g = next(i for i in after["issues"] if i["issue_id"] == "SUP-0123456789")
+    assert g["status"] == "RESOLVED" and all("NOT_RAISED_BY_CURRENT_RULES" in p["reason_codes"] for p in g["proposals"])
+    assert by_wo(after, IWDG.format(n=6, l=22))["status"] == "OPEN"  # re-derived although outside the window
+    ev = [json.loads(x) for x in LC.journal_path().read_text().splitlines()]
+    assert [e["event"] for e in ev if e["issue"]["issue_id"] == "SUP-0123456789"] == ["RESOLVED"]
+    assert LC.feed_errors(after) == []
+
+
+def test_a_deterministic_factory_rule_rejection_is_a_factory_defect_never_infra(line):
+    assert LC.gate_code("VIEWS:SYNTAX:workproducts/SWE.2/architecture_dynamic.puml:line 7:Syntax Error?") == "VIEWS:SYNTAX"
+    assert LC.gate_code("MISSING_REQUIRED_OUTPUT:workproducts/SWE.6/software_verification_report.md") == \
+        "MISSING_REQUIRED_OUTPUT:software_verification_report.md"
+    assert LC.gate_code("VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH") == "VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH"
+    hal = "WO-F014-SWE{n}-CRCHAL-20261103-L26"
+    mk_order(line["state"], hal.format(n=1), gates=passed("SWE.1"), package=True, rid="01H1", created=T0)
+    views = [{"phase": "SWE.2", "step": "author", "result": "REJECTED", "status": "INCOMPLETE",
+              "issues": ["MISSING_REQUIRED_OUTPUT:workproducts/SWE.2/api_calls.json", "VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH"]},
+             {"phase": "SWE.2", "step": "author", "result": "REJECTED", "status": "INCOMPLETE",
+              "issues": ["VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH"]},
+             {"phase": "SWE.2", "step": "author", "result": "REJECTED", "status": "INCOMPLETE",
+              "issues": ["VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH"]},
+             {"phase": "SWE.2", "step": "route", "gate": {"decision": "BLOCKED", "reason": "STUCK: identical deterministic "
+                                                          "rejection twice (VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH); stopped early"}},
+             {"phase": "SWE.1", "step": "upstream", "result": "NONE", "defects": []},
+             {"phase": "SWE.2", "step": "upstream", "result": "NONE", "defects": []}]
+    mk_order(line["state"], hal.format(n=2), gates=views, package=True, rid="01H2", source=hal.format(n=1),
+             stop_after="SWE.2", created=T0 + 600)
+    # an author-quality finding whose code the CRE transient rule also matches (TIMEOUT) is convergence, not INFRA
+    mk_order(line["state"], "WO-F014-SWE6-CRCK-20261103-L30", gates=stuck(["VT:TIMEOUT_SCENARIO_UNOBSERVED:SWR-007"]),
+             package=True, rid="01K30", stop_after="SWE.6", created=T0 + 700)
+    feed = conductor(line).cycle()
+    i = by_wo(feed, hal.format(n=2))
+    assert (i["class"], i["status"], i["error_code"]) == ("FACTORY_DEFECT", "WAITING_EXTERNAL_CHANGE",
+                                                          "VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH")
+    p = i["proposals"][0]
+    assert p["strategy"] == "OPEN_CAPA_FACTORY_DEFECT_SUSPECTED" and p["source"] == "RULE" and p["status"] == "PROPOSED"
+    assert p["summary"] == f"factory defect suspected: open CAPA; resume SWE.2 from {hal.format(n=1)} once fixed"
+    assert "TRANSIENT" not in i["summary"] and "VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH" in i["summary"]
+    c = by_wo(feed, "WO-F014-SWE6-CRCK-20261103-L30")
+    assert (c["class"], c["error_code"]) == ("MODEL_CONVERGENCE", "VT:TIMEOUT_SCENARIO_UNOBSERVED")
+    assert not [x for x in feed["issues"] if x["class"] == "INFRA" and x["fabro_run_id"] in ("01H2", "01K30")]
+
+
+REPLAY_LIVE = os.environ.get("FORGE_M1_REPLAY_LIVE_DIR")
+
+
+@pytest.mark.skipif(not REPLAY_LIVE, reason="FORGE_M1_REPLAY_LIVE_DIR (read-only copy of the live line + supervisor state) not given")
+def test_replay_live_state_with_its_persisted_feed(tmp_path, monkeypatch):
+    src = Path(REPLAY_LIVE)
+
+    def files():
+        return {p: p.stat().st_mtime_ns for p in src.rglob("*") if p.is_file() and not p.name.endswith(("-shm", "-wal"))}
+
+    stamp = files()
+    work = tmp_path / "state"
+    work.mkdir()
+    (work / "workorders").symlink_to(src / "state/workorders")  # the orders are only read
+    shutil.copytree(src / "state/supervisor", work / "supervisor")  # the persisted feed, journal and CRE db, as live
+    for f in (work / "supervisor").iterdir():
+        f.chmod(0o600)
+    monkeypatch.setenv("FORGE_STATE_DIR", str(work))
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "events"))
+    prev = json.loads((work / "supervisor/issues.json").read_text())
+    stale = {i["issue_id"]: i["wo"] for i in prev["issues"] if i["status"] == "OPEN"}
+    at = LC._ts((src / "snapshot-at.txt").read_text().strip())
+    obs = LC.Observer("local", src / "launch", LC.FabroView(snapshot=json.loads((src / "fabro-snapshot.json").read_text())))
+    feed = LC.LineConductor(obs, unit="replay").cycle(at)
+    assert LC.feed_errors(feed) == []
+    now = {i["issue_id"]: i for i in feed["issues"]}
+    hal = next(i for i in feed["issues"] if i["wo"] == "WO-F014-SWE2-CRCHAL-20261103-L26" and i["status"] != "RESOLVED")
+    stale.pop(hal["issue_id"], None)
+    assert len(stale) >= 5  # the 4 stale noise issues and the misclassified CRCHAL one, as the earlier code left them
+    for iid, wo in stale.items():  # every issue the earlier code left OPEN is re-derived under the current rules
+        assert now[iid]["status"] == "RESOLVED", (iid, wo)
+    journal = [json.loads(x) for x in (work / "supervisor/issues.jsonl").read_text().splitlines()]
+    assert set(stale) <= {e["issue"]["issue_id"] for e in journal[-80:] if e["event"] == "RESOLVED"}
+    assert (hal["class"], hal["status"]) == ("FACTORY_DEFECT", "WAITING_EXTERNAL_CHANGE")
+    assert hal["proposals"][0]["summary"] == \
+        "factory defect suspected: open CAPA; resume SWE.2 from WO-F014-SWE1-CRCHAL-20261103-L26 once fixed"
+    assert not [i for i in feed["issues"] if i["status"] == "OPEN"]
+    assert [i["wo"] for i in feed["issues"] if i["status"] == "PARKED"] == ["WO-F014-SWE2-RCC-20261102-L16"]
+    assert files() == stamp
+
+
 REPLAY_TODAY = os.environ.get("FORGE_M1_REPLAY_TODAY_DIR")
 
 
