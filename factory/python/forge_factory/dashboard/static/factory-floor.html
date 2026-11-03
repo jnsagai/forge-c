@@ -696,6 +696,19 @@ function supStrike(i) {  // owner rule 2026-11-03: n of 3 same-issue strikes; th
   const [cc, ct] = SUP_CLS[i.class] || SUP_CLS.UNKNOWN;
   return `<div class="lane"><b>${esc((i.wo || i.lineage || "").replace("WO-F014-", ""))}</b><div class="bar"><i style="width:${Math.min(100, Math.round(used / lim * 100))}%;background:${over ? "var(--stop)" : used === lim ? "var(--warn)" : "var(--steel)"}"></i></div><span>${esc(used)} of ${esc(lim)} strikes · ${esc(ct)}${over ? " · line stops" : ""}</span></div>`;
 }
+const SUP_PL = {QUEUED: "Queued", CHAINED: "Chained", LAUNCHING: "Launching", RUNNING: "Running", WAITING: "Waiting",
+  ESCALATED: "Needs you", PARKED: "Parked", ON_HOLD: "On hold", DONE: "Done"};
+function supPlacement(PL) {  // autonomous line M3: the placement block of the feed (read-only)
+  if (!PL) return `<div><div class="label">Orders (placement)</div><div class="note">This feed reports no placement: the conductor only observes.</div></div>`;
+  const rows = (PL.lineages || []).map((l) => {
+    const n = l.next, lg = l.last_good;
+    const what = l.state === "RUNNING" || l.state === "LAUNCHING" ? esc((l.wo || "").replace("WO-F014-", "")) :
+      n ? `${esc(n.action.toLowerCase())} ${esc((n.wo || "").replace("WO-F014-", ""))}${n.resume_from ? " from " + esc(n.resume_from.replace("WO-F014-", "")) : ""}${n.provided_from ? " on " + esc(n.provided_from.replace("WO-F014-", "")) : ""}` : esc(l.reason || "");
+    return `<div class="lane"><b>${esc(l.lineage.split("/").pop())}</b><span class="mono">${esc(SUP_PL[l.state] || l.state)} · ${esc(l.phase || "-")}</span><span>${what}${lg && lg.wo ? " · last good " + esc(lg.wo.replace("WO-F014-", "")) : ""}${l.strikes && l.strikes.count ? " · " + Number(l.strikes.count) + " of " + Number(l.strikes.limit) + " strikes" : ""}</span></div>`;
+  }).join("");
+  const gaps = (PL.quality_gaps || []).map((g) => `${esc(g.metric)} ${Number(g.achieved)}% (target ${Number(g.target)}%, min ${Number(g.minimum)}%) ${esc((g.wo || "").replace("WO-F014-", ""))}`).join(" · ");
+  return `<div><div class="label" style="margin-bottom:6px">Orders (placement · ${PL.mode === "ACTING" ? "acting" : PL.mode === "DRY_RUN" ? "dry run" : "observing"} · GPU ${PL.gpu && PL.gpu.busy ? "busy" : "free"} · disk ${Number((PL.disk || {}).free_gb)} GB free, min ${Number((PL.disk || {}).min_gb)})</div><div class="lanes">${rows || `<div class="lane"><span>no approved campaign</span></div>`}</div>${gaps ? `<div class="note" style="margin-top:6px">Quality below target, at or above the order minimum (accepted, reported): ${gaps}</div>` : ""}</div>`;
+}
 function renderSupervisor(d) {
   const S = d.supervisor || {available: false, reason: "NOT_REPORTED"};
   if (!S.available) {
@@ -709,8 +722,10 @@ function renderSupervisor(d) {
   }
   const sv = S.supervisor, issues = S.issues || [], live = issues.filter((i) => i.status !== "RESOLVED");
   const mode = supMode(S);
-  supPose(mode, mode === "patrol" ? `No open issue. Cycle ${Number(sv.cycle)}, ${Number(sv.model_calls_healthy)} model calls; it places no order in OBSERVE.` : null);
-  $("#sup-sub").textContent = `Line Conductor · ${sv.mode} · cycle ${Number(sv.cycle)} · feed ${supTime(S.generated_at)} UTC (${Number(S.age_s)} s ago)`;
+  const PL = S.placement || null, acting = !!(PL && PL.mode === "ACTING");
+  const doingWord = acting ? "Acting" : (PL && PL.mode === "DRY_RUN" ? "Planning (dry run)" : "Observing");
+  supPose(mode, mode === "patrol" ? (acting ? `No open issue. Cycle ${Number(sv.cycle)}, ${Number(sv.model_calls_healthy)} model calls; it places the campaign's orders under the owner's PILOT grant.` : `No open issue. Cycle ${Number(sv.cycle)}, ${Number(sv.model_calls_healthy)} model calls; it places no order while observing.`) : null);
+  $("#sup-sub").textContent = `Line Conductor · ${doingWord} (${sv.mode}) · cycle ${Number(sv.cycle)} · feed ${supTime(S.generated_at)} UTC (${Number(S.age_s)} s ago)`;
   const owner = live.filter(supNeedsYou).length, stopping = live.filter((i) => i.status === "ESCALATED").length;
   const B = S.budgets || {};
   $("#sup-board").innerHTML = `<div class="kpis">
@@ -725,9 +740,10 @@ function renderSupervisor(d) {
     <div><div class="label" style="margin-bottom:6px">Last good part (quality-checked; every retry resumes here)</div><div class="lanes">
       ${(S.progress || []).length ? S.progress.map((g) => `<div class="lane"><b>${esc(g.lineage)}</b><span class="mono">${esc(g.phase)} · ${esc((g.wo || "").replace("WO-F014-", ""))}</span><span>passed ${esc(supDay(g.at))} UTC</span></div>`).join("") : `<div class="lane"><span>${S.progress ? "no phase passed yet" : "not reported by this feed"}</span></div>`}
     </div><div class="note" style="margin-top:6px">Guards (pacing and cost, never a stop reason): planner ${esc((B.guard_planner_calls_per_order || {}).used ?? 0)} of ${esc((B.guard_planner_calls_per_order || {}).limit ?? 4)} calls and ${fmt((B.guard_planner_tokens_per_order || {}).used ?? 0)} of ${fmt((B.guard_planner_tokens_per_order || {}).limit ?? 200000)} tokens per order · infra recoveries ${esc((B.guard_infra_recoveries_per_hour_host || {}).used ?? 0)} of ${esc((B.guard_infra_recoveries_per_hour_host || {}).limit ?? 6)} per hour, ${Math.round(((B.guard_infra_cooldown_s || {}).limit || 600) / 60)} min cooldown · longest running phase order ${Math.round(((B.guard_phase_order_wall_s || {}).used || 0) / 60)} min (check at ${Math.round(((B.guard_phase_order_wall_s || {}).limit || 21600) / 3600)} h)</div></div>
+    ${supPlacement(PL)}
     <div class="rules">
       <div><b>Healthy patrol makes no model calls.</b> It reads gate logs, launch records, CRE incidents and CAPAs, the AFO queue and Fabro's run status.</div>
-      <div><b>OBSERVE: proposals only.</b> Rule proposals are derived from the records; none is executed, no order is placed or changed.</div>
+      ${acting ? `<div><b>Acting under the owner's PILOT grant.</b> It places the approved campaign's phase orders one GPU run at a time and chains each passed phase; it never merges, promotes or weakens a gate.</div>` : `<div><b>Observing: proposals only.</b> ${PL ? "ACT is refused (" + esc(PL.authorization.code) + "): " : ""}no order is placed or changed.</div>`}
       <div><b>Retries until the line progresses.</b> Each retry resumes from the last good, quality-checked part; the same issue more than 3 times stops the line.</div>
       <div><b>Never weakens a gate, a requirement or a baseline.</b> Anything that would needs you.</div>
     </div>`;
