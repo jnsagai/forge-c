@@ -1,0 +1,485 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/supervisor-issues/1",
+  "title": "Line Conductor issues feed",
+  "description": "Owner decision 6 (2026-11-03): the Line Conductor's issue feed at $FORGE_STATE_DIR/supervisor/issues.json (atomic replace) with the append-only issues.jsonl beside it. Producer: forge_factory.afo.line_conductor (deterministic, model-free). Consumers: the read-only factory floor station and the owner acknowledgement CLI. Every string is built from recorded codes and identifiers; no model reasoning, prompt, completion or free agent text is ever carried. Resolved issues stay in the feed for 7 days; issues.jsonl keeps them all.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "generated_at",
+    "supervisor",
+    "budgets",
+    "issues"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/supervisor-issues/1"
+    },
+    "generated_at": {
+      "$ref": "#/$defs/utc"
+    },
+    "supervisor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unit",
+        "pid",
+        "mode",
+        "cycle",
+        "heartbeat_age_s",
+        "model_calls_healthy"
+      ],
+      "properties": {
+        "unit": {
+          "$ref": "#/$defs/token"
+        },
+        "pid": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mode": {
+          "enum": [
+            "OBSERVE",
+            "PILOT",
+            "ACTIVE"
+          ],
+          "description": "M1 writes OBSERVE only: no order is placed or changed."
+        },
+        "cycle": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "heartbeat_age_s": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Seconds since the previous completed cycle; null on the first cycle."
+        },
+        "model_calls_healthy": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Measured connection attempts to a non-allowed endpoint during healthy cycles (blocked by the socket guard). Must stay 0."
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "description": "Owner decision 7 budgets, by name.",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]{0,63}$"
+      },
+      "maxProperties": 32,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "used",
+          "limit"
+        ],
+        "properties": {
+          "used": {
+            "type": "number",
+            "minimum": 0
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "$ref": "#/$defs/issue"
+      }
+    },
+    "progress": {
+      "type": "array",
+      "maxItems": 200,
+      "description": "Owner rule 2026-11-03: the last good, quality-checked part per lineage (the furthest phase whose inspection gate passed, in the newest order that passed it); every retry resumes from it.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lineage",
+          "phase",
+          "wo",
+          "at",
+          "ref"
+        ],
+        "properties": {
+          "lineage": {
+            "$ref": "#/$defs/token"
+          },
+          "phase": {
+            "enum": [
+              "SWE.1",
+              "SWE.2",
+              "SWE.3",
+              "SWE.4",
+              "SWE.5",
+              "SWE.6"
+            ]
+          },
+          "wo": {
+            "$ref": "#/$defs/token"
+          },
+          "at": {
+            "$ref": "#/$defs/nullable_utc"
+          },
+          "ref": {
+            "$ref": "#/$defs/ref"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "utc": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+    },
+    "token": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:@/+-]{0,127}$"
+    },
+    "ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:/#@+=-]{1,300}$",
+      "description": "A path (relative to the line state or launch directory) or an identifier; never content."
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:/=-]{1,160}$"
+    },
+    "nullable_utc": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/utc"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullable_token": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/token"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issue_id",
+        "line",
+        "lineage",
+        "wo",
+        "phase",
+        "fabro_run_id",
+        "class",
+        "fingerprint",
+        "error_code",
+        "summary",
+        "evidence",
+        "proposals",
+        "status",
+        "attempts",
+        "escalation",
+        "opened_at",
+        "updated_at"
+      ],
+      "properties": {
+        "issue_id": {
+          "type": "string",
+          "pattern": "^SUP-[0-9a-f]{10}$"
+        },
+        "line": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,32}$"
+        },
+        "lineage": {
+          "$ref": "#/$defs/token",
+          "description": "Part tag, plus '/<root work order>' when the resume chain is recorded."
+        },
+        "wo": {
+          "$ref": "#/$defs/nullable_token"
+        },
+        "phase": {
+          "enum": [
+            "SWE.1",
+            "SWE.2",
+            "SWE.3",
+            "SWE.4",
+            "SWE.5",
+            "SWE.6",
+            "-"
+          ]
+        },
+        "fabro_run_id": {
+          "$ref": "#/$defs/nullable_token"
+        },
+        "class": {
+          "enum": [
+            "INFRA",
+            "FACTORY_DEFECT",
+            "PRODUCT",
+            "MODEL_CONVERGENCE",
+            "UNKNOWN"
+          ]
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^(cfp1|sup1)-[0-9a-f]{16,64}$"
+        },
+        "error_code": {
+          "$ref": "#/$defs/code"
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9 _.:;,/()+=#@<>-]{1,240}$",
+          "description": "Built from recorded codes by fixed templates and redacted; no model or agent prose."
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "ref"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "gate_log",
+                  "package",
+                  "manifest",
+                  "fabro_run",
+                  "launch_log",
+                  "cre_observation",
+                  "inspection_record",
+                  "defect_register",
+                  "capa",
+                  "afo_order",
+                  "incident",
+                  "superseded_by"
+                ]
+              },
+              "ref": {
+                "$ref": "#/$defs/ref"
+              }
+            }
+          }
+        },
+        "proposals": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "proposal_id",
+              "source",
+              "strategy",
+              "status",
+              "reason_codes",
+              "cre_decision_ref"
+            ],
+            "properties": {
+              "proposal_id": {
+                "type": "string",
+                "pattern": "^SUPP-[0-9a-f]{12}$"
+              },
+              "source": {
+                "enum": [
+                  "RULE",
+                  "LOCAL_PLANNER",
+                  "MAINTAINER"
+                ]
+              },
+              "strategy": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+              },
+              "status": {
+                "enum": [
+                  "PROPOSED",
+                  "SUPERSEDED",
+                  "ACCEPTED",
+                  "EXECUTING",
+                  "EXECUTED",
+                  "REJECTED"
+                ],
+                "description": "M1 (OBSERVE) writes PROPOSED or SUPERSEDED only and never executes a proposal."
+              },
+              "rank": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8
+              },
+              "args": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "phase": {
+                    "enum": [
+                      "SWE.1",
+                      "SWE.2",
+                      "SWE.3",
+                      "SWE.4",
+                      "SWE.5",
+                      "SWE.6"
+                    ]
+                  },
+                  "resume_from": {
+                    "$ref": "#/$defs/nullable_token"
+                  },
+                  "provided_from": {
+                    "$ref": "#/$defs/nullable_token"
+                  },
+                  "recipe": {
+                    "$ref": "#/$defs/code"
+                  },
+                  "capa_id": {
+                    "$ref": "#/$defs/code"
+                  }
+                }
+              },
+              "summary": {
+                "type": "string",
+                "maxLength": 200,
+                "pattern": "^[A-Za-z0-9 _.:;,/()+=#@<>-]{1,200}$"
+              },
+              "reason_codes": {
+                "type": "array",
+                "maxItems": 8,
+                "items": {
+                  "$ref": "#/$defs/code"
+                }
+              },
+              "cre_decision_ref": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/ref"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "status": {
+          "enum": [
+            "OPEN",
+            "RECOVERING",
+            "WAITING_EXTERNAL_CHANGE",
+            "PARKED",
+            "ESCALATED",
+            "RESOLVED"
+          ]
+        },
+        "attempts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "used",
+            "limit"
+          ],
+          "properties": {
+            "used": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "rule": {
+              "type": "string",
+              "maxLength": 80,
+              "pattern": "^[A-Za-z0-9 _.:;,/()+=#@<>-]{1,80}$",
+              "description": "The stop rule the strike count is held against: 'same issue > 3 times stops the line'."
+            }
+          }
+        },
+        "escalation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "level",
+            "at",
+            "acknowledged"
+          ],
+          "properties": {
+            "level": {
+              "enum": [
+                "FLOOR",
+                "NEEDS_OWNER",
+                "LINE_STOPPED"
+              ],
+              "description": "Decision 5: every issue is on the floor and in the local log; NEEDS_OWNER/LINE_STOPPED are the 'needs you' cases."
+            },
+            "at": {
+              "$ref": "#/$defs/nullable_utc"
+            },
+            "acknowledged": {
+              "type": "boolean",
+              "description": "Set only by the audited owner CLI (decision 10)."
+            },
+            "acknowledged_at": {
+              "$ref": "#/$defs/nullable_utc"
+            },
+            "acknowledged_by": {
+              "$ref": "#/$defs/nullable_token"
+            },
+            "ack_ref": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ref"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reason": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/code"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Why the issue needs the owner, e.g. SAME_ISSUE_EXCEEDED_3."
+            }
+          }
+        },
+        "opened_at": {
+          "$ref": "#/$defs/utc"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/utc"
+        },
+        "resolved_at": {
+          "$ref": "#/$defs/nullable_utc"
+        }
+      }
+    }
+  }
+}
