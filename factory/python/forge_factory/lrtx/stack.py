@@ -14,6 +14,7 @@ that the PID still runs the recorded command.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import json
 import math
@@ -26,6 +27,7 @@ import sys
 import tempfile
 import time
 import urllib.request
+from contextlib import contextmanager
 from pathlib import Path
 
 from ..common import REPO_ROOT, pretty_json, utc_now
@@ -33,6 +35,54 @@ from . import pidfd
 from . import profile as lp
 
 SYSTEM_PATH = "/usr/local/bin:/usr/bin:/bin"
+LOCK_FD_ENV = "FORGE_STACK_LOCK_FD"
+
+
+class StackLockHeld(RuntimeError):
+    """Autonomous line M2: another start/stop of this stack root is in progress (a raced start is refused)."""
+
+
+def lock_path(root: Path) -> Path:
+    return Path(root) / "run/stack.lock"
+
+
+def _inherited_lock_fd(path: Path) -> int | None:
+    """The descriptor a caller that already holds this root's stack lock passed down (FORGE_STACK_LOCK_FD), when it
+    really is an open file description of that lock file; else None."""
+    raw = os.environ.get(LOCK_FD_ENV, "")
+    if not raw.isdigit():
+        return None
+    try:
+        held, want = os.fstat(int(raw)), os.stat(path)
+    except OSError:
+        return None
+    return int(raw) if (held.st_dev, held.st_ino) == (want.st_dev, want.st_ino) else None
+
+
+@contextmanager
+def stack_lock(root: Path):
+    """Autonomous line M2 (owner 2026-11-03): one lifecycle action (start/stop) per stack root at a time. flock -n on
+    <root>/run/stack.lock; a second start/stop is refused with STACK_LOCK_HELD, never queued. The line launcher holds
+    the lock across stop -> sweep -> start -> smoke -> launch and passes its descriptor in FORGE_STACK_LOCK_FD to the
+    start/stop it runs: flock on that same open file description succeeds, so only foreign callers are refused. The
+    daemons never inherit the descriptor (subprocess closes it), so the lock ends with the action. A root without
+    its run/ folder (never initialised, or moved aside by the rollback drill) is not created here: start refuses it
+    ("run `init` first") and stop has nothing to stop."""
+    path = lock_path(root)
+    if not path.parent.is_dir():
+        yield None
+        return
+    inherited = _inherited_lock_fd(path)
+    fd = inherited if inherited is not None else os.open(path, os.O_RDWR | os.O_CREAT | os.O_CLOEXEC, 0o600)
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise StackLockHeld(f"STACK_LOCK_HELD:{path}") from None
+        yield path
+    finally:
+        if inherited is None:  # closing our own description releases the lock; an inherited one stays the caller's
+            os.close(fd)
 
 
 def gateway_reasoning(prof: dict) -> str:
@@ -340,6 +390,11 @@ def _pinned_process_ended(expected, current):
 
 
 def start(s: dict, *, recovery=False) -> dict:
+    with stack_lock(s["root"]):
+        return _locked_start(s, recovery=recovery)
+
+
+def _locked_start(s: dict, *, recovery=False) -> dict:
     from ..afo.operations import Intent, configured, fenced_call
 
     if configured():
@@ -929,6 +984,11 @@ def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
 
 
 def stop(s: dict) -> dict:
+    with stack_lock(s["root"]):
+        return _locked_stop(s)
+
+
+def _locked_stop(s: dict) -> dict:
     if managed_serving():
         from ..afo import operations
         from ..afo.durable import Refused
@@ -1143,7 +1203,11 @@ def main(argv: list[str] | None = None) -> int:
     if a.cmd == "expose-api":
         out = expose_api(s, a.host_port)
     else:
-        out = {"init": init, "start": start, "stop": stop, "status": status}[a.cmd](s)
+        try:
+            out = {"init": init, "start": start, "stop": stop, "status": status}[a.cmd](s)
+        except StackLockHeld as exc:  # M2: a raced start/stop is refused, typed, before any process action
+            print(json.dumps({"refused": "STACK_LOCK_HELD", "cmd": a.cmd, "lock": str(exc).split(":", 1)[-1]}))
+            return 3
     print(json.dumps(out, default=str))
     return 0
 
