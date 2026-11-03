@@ -279,6 +279,8 @@ class Store:
             raise InspectionError(f"UNKNOWN_BASELINE:{baseline_id}")
         if bl["author_role"] == inspector_role:
             raise InspectionError("AUTHOR_EQUALS_INSPECTOR")
+        from .item_binding import binding as item_binding
+
         checklist = self.applicable(self.checklist(phase))
         stale = self.stale_reason(phase, bl)
         det = self.deterministic_items(phase, checklist)
@@ -314,7 +316,8 @@ class Store:
         rec = {"schema": "forge-c/inspection/0.4", "inspection_id": f"INS-{phase}-{n:03d}", "phase": phase,
                "author_role": bl["author_role"], "inspector_role": inspector_role, "baseline_id": baseline_id,
                "baseline_hash": bl["baseline_hash"], "checklist_version": checklist["version"],
-               "checklist_sha256": checklist["sha256"], "stale_reason": stale, "items": items,
+               "checklist_sha256": checklist["sha256"], "item_binding": item_binding(self.workspace, checklist),
+               "stale_reason": stale, "items": items,
                "findings": open_findings, "verdict": verdict, "recorded_at": utc_now()}
         (self.insp / phase).mkdir(parents=True, exist_ok=True)
         with open(self.insp / phase / f"{rec['inspection_id']}.json", "x", encoding="utf-8") as f:
@@ -356,12 +359,11 @@ class Store:
         return checklist(manifest, load_checklist(phase, brownfield=is_brownfield(manifest)))
 
     def applicable(self, checklist: dict) -> dict:
-        """Owner addendum checks (`applies_when: owner_trace_profile`) apply only to work orders that opted in."""
-        from ..layer import swtrace_enabled
+        """Owner addendum checks (`applies_when: owner_trace_profile`) apply only to work orders that opted in; an item
+        with an `applies_to` selector only to the work orders it selects (item_binding.applies)."""
+        from .item_binding import applies  # CAPA-133: also an optional `applies_to` layer/purpose selector
 
-        on = swtrace_enabled(self.workspace)
-        return {**checklist, "checks": [c for c in checklist["checks"]
-                                        if c.get("applies_when") != "owner_trace_profile" or on]}
+        return {**checklist, "checks": [c for c in checklist["checks"] if applies(c, self.workspace)]}
 
     REFUSAL_LIMIT = 3
 
@@ -398,6 +400,7 @@ class Store:
         else:
             stale = self.stale_reason(phase, bl)
             last = ins[-1] if ins else None
+            from . import item_binding
             from .completeness import gate_outcome
 
             incomplete = None if stale else gate_outcome(self.workspace, phase, bl, last, started)  # CAPA-123
@@ -410,7 +413,8 @@ class Store:
                 refused = self.inspector_refusal(phase, bl)
                 if refused:
                     decision, reason = "BLOCKED", f"INSPECTOR_REFUSED_REPEATEDLY:{refused}"
-            elif "assessment_context" in checklist and last.get("checklist_sha256") != checklist["sha256"]:
+            elif "assessment_context" in checklist and not item_binding.unchanged(self.workspace, last, checklist):
+                # CAPA-133: bound to the items that apply to this order, not to the whole checklist file
                 decision, reason = "REINSPECT", "INSPECTION_ASSESSMENT_CONTEXT_CHANGED"
             elif last["verdict"] == "PASS":
                 decision, reason = "PASS", last["inspection_id"]
