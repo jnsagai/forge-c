@@ -356,6 +356,79 @@ def station(now: float) -> dict:
             "temp_c": g.get("temp_c"), "mem_used_mib": g.get("mem_used_mib"), "mem_total_mib": g.get("mem_total_mib")}
 
 
+SUPERVISOR_STALE_S = 180  # the Line Conductor writes its feed every 30 s
+_LOG_FIELD = {"at": r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", "event": r"[A-Z_]{1,32}", "issue_id": r"SUP-[0-9a-f]{10}",
+              "status": r"[A-Z_]{1,32}", "class": r"[A-Z_]{1,32}", "error_code": r"[A-Za-z0-9_.:/=-]{1,160}",
+              "wo": r"[A-Za-z0-9][A-Za-z0-9_.:@/+-]{0,127}", "phase": r"SWE\.[1-6]|-"}
+
+
+def _supervisor_log(journal: Path, limit: int = 40) -> list[dict]:
+    """The supervisor log from the tail of issues.jsonl: codes and identifiers only, each field shape-checked."""
+    import re
+
+    try:
+        size = journal.stat().st_size
+        with journal.open("rb") as f:
+            f.seek(max(0, size - 65536))
+            lines = f.read().decode(errors="replace").splitlines()
+    except OSError:
+        return []
+    if size > 65536:
+        lines = lines[1:]  # the first line of a tail read may be partial
+    out = []
+    for line in lines:
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        i = r.get("issue") if isinstance(r, dict) else None
+        if not isinstance(i, dict):
+            continue
+        rec = {"at": r.get("at"), "event": r.get("event"), **{k: i.get(k) for k in ("issue_id", "status", "class",
+                                                                                   "error_code", "wo", "phase")}}
+        rec = {k: v if isinstance(v, str) and re.fullmatch(_LOG_FIELD[k], v) else None for k, v in rec.items()}
+        if rec["at"] and rec["issue_id"] and rec["event"]:
+            out.append(rec)
+    return out[-limit:][::-1]
+
+
+def supervisor_station(now: float | None = None) -> dict:
+    """Autonomous line M1: the supervisor station from the Line Conductor's issues feed (FORGE_FLOOR_SUPERVISOR_FEED,
+    contract forge-c/supervisor-issues/1). Read-only and model-free. A line without the variable has no supervisor
+    (owner decision 11: the cloud line while on hold); a missing, stale or malformed feed gives available=false and
+    never hides the floor."""
+    now = now or time.time()
+    p = os.environ.get("FORGE_FLOOR_SUPERVISOR_FEED")
+    if not p:
+        return {"available": False, "reason": "NO_SUPERVISOR_ON_THIS_LINE"}
+    try:
+        feed = json.loads(Path(p).read_bytes())
+    except FileNotFoundError:
+        return {"available": False, "reason": "FEED_MISSING"}
+    except (OSError, ValueError):
+        return {"available": False, "reason": "FEED_MALFORMED"}
+    from ..afo.line_conductor import RESOLVED_KEEP_S, feed_errors
+
+    errs = feed_errors(feed) if isinstance(feed, dict) else ["<root>: not an object"]
+    if errs == ["SCHEMA_UNAVAILABLE"]:
+        return {"available": False, "reason": "SCHEMA_UNAVAILABLE"}
+    if errs:
+        return {"available": False, "reason": "FEED_MALFORMED", "errors": len(errs)}
+    gen = _ts(feed["generated_at"]) or 0
+    age = round(now - gen)
+    try:
+        stale_s = float(os.environ.get("FORGE_FLOOR_SUPERVISOR_STALE_S") or SUPERVISOR_STALE_S)
+    except ValueError:
+        stale_s = SUPERVISOR_STALE_S
+    if age > stale_s:
+        return {"available": False, "reason": "FEED_STALE", "age_s": age, "generated_at": feed["generated_at"]}
+    issues = [i for i in feed["issues"]
+              if not (i["status"] == "RESOLVED" and now - (_ts(i.get("resolved_at")) or now) > RESOLVED_KEEP_S)]
+    return {"available": True, "schema": feed["schema"], "generated_at": feed["generated_at"], "age_s": age,
+            "supervisor": feed["supervisor"], "budgets": feed["budgets"], "issues": issues,
+            "log": _supervisor_log(Path(p).with_name("issues.jsonl"))}
+
+
 HISTORY_S = 7 * 86400
 _HISTORY: dict = {"at": 0.0, "typical": {}, "refs": {}}
 
@@ -841,7 +914,12 @@ def floor(now: float | None = None, since: float | None = None, focus: str | Non
     halls.append({"id": "SHIP", "name": HALL_NAMES["SHIP"], "state": ship, "entered": 0, "passed": 0, "inspected": 0,
                   "first_pass": 0, "reworks": 0, "stopped": 0, "cycle_min": None, "running": [], "cells": [],
                   "note": "Offline review candidates only; nothing is released."})
+    try:
+        sup = supervisor_station(now)
+    except Exception as exc:  # noqa: BLE001 - the supervisor station never hides the floor
+        sup = {"available": False, "reason": f"STATION_ERROR:{type(exc).__name__}"}
     return {"schema": "forge-c/factory-floor/1", "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
+            "supervisor": sup,
             "shift_start": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(start)),
             "kpis": {"on_floor": sum(1 for o in orders if o["state"] == "RUNNING"), "completed": len(done),
                      "orders": len(orders), "fpy_swe1": [h1["first_pass"], h1["inspected"]],

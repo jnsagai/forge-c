@@ -14,7 +14,8 @@ state and the gate log - so the runner itself is unchanged and a run already in 
 "SWE.1 author: 47/61 register groups + cross-cutting, now RCC_APB4LRSTR_2, 86 calls, ETA 10:28 UTC".
 
     python -m forge_factory.lrtx.progress_api --port 32398          # serve GET /progress[?run=<fabro id>|?wo=<id>],
-                                                                     # the factory floor page / and /floor.json[?since=]
+                                                                     # the factory floor page / and /floor.json[?since=],
+                                                                     # the supervisor station /supervisor.json
     python -m forge_factory.lrtx.progress_api --once [--wo ID]       # print the JSON once
 
 It never writes, never calls a model, and binds loopback only.
@@ -256,12 +257,12 @@ def floor_lines() -> list[dict]:
     return lines
 
 
-def _line_floor(line: dict, query: dict) -> bytes:
+def _line_floor(line: dict, query: dict, path: str = "/floor.json") -> bytes:
     import urllib.parse
     import urllib.request
 
     qs = urllib.parse.urlencode({k: v[0] for k, v in query.items() if k != "line" and v})
-    url = line["url"].rstrip("/") + "/floor.json" + ("?" + qs if qs else "")
+    url = line["url"].rstrip("/") + path + ("?" + qs if qs else "")
     with urllib.request.urlopen(url, timeout=15) as r:  # noqa: S310 - operator-configured loopback floor server
         data = r.read()
     json.loads(data)  # only a JSON floor is passed on
@@ -277,14 +278,14 @@ class Handler(BaseHTTPRequestHandler):
         if u.path == "/lines.json":
             body = {"lines": [{k: x.get(k) for k in ("id", "label", "sub")} for x in floor_lines()]}
             return self._send(json.dumps(body, ensure_ascii=False).encode(), "application/json")
-        if u.path == "/floor.json" and (q.get("line") or [None])[0]:
+        if u.path in ("/floor.json", "/supervisor.json") and (q.get("line") or [None])[0]:
             line = next((x for x in floor_lines() if x["id"] == q["line"][0]), None)
             if line is None:
                 self.send_error(404)
                 return
             if line.get("url"):
                 try:
-                    return self._send(_line_floor(line, q), "application/json")
+                    return self._send(_line_floor(line, q, u.path), "application/json")
                 except (OSError, ValueError):
                     self.send_error(502, "line floor unavailable")
                     return
@@ -293,6 +294,10 @@ class Handler(BaseHTTPRequestHandler):
 
             since = (q.get("since") or [None])[0]
             body = floor(since=_ts(since) if since else None, focus=(q.get("order") or [None])[0])
+        elif u.path == "/supervisor.json":  # autonomous line M1: the supervisor station alone (read-only, GET only)
+            from .floor_api import supervisor_station
+
+            body = supervisor_station()
         elif u.path == "/progress":
             body = {"schema": "forge-c/lrtx-progress/1",
                     "work_orders": collect((q.get("run") or [None])[0], (q.get("wo") or [None])[0])}

@@ -16,7 +16,7 @@ body { margin: 0; }
   --floor: #e6e9eb; --panel: #f7f8f9; --panel-2: #eef1f3; --ink: #27323b; --muted: #66737e; --line: #c7cfd5;
   --safety: #e0a100; --safety-ink: #1d1a12;
   --go: #23955a; --warn: #d48500; --stop: #c63a30; --idle: #9aa4ad; --lamp-off: #c9cfd4;
-  --steel: #7c8a96; --steel-dark: #4d5a65; --belt: #545f69;
+  --steel: #7c8a96; --steel-dark: #4d5a65; --belt: #545f69; --visor: #2f6fb0; --visor-glow: #6fb6ff;
   --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
   --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
@@ -25,12 +25,12 @@ body { margin: 0; }
   --floor: #12171c; --panel: #1b2229; --panel-2: #222b33; --ink: #dce4ea; --muted: #8f9ba5; --line: #2e3943;
   --safety: #f2b705; --safety-ink: #15130b;
   --go: #3fc37b; --warn: #f0a62c; --stop: #f05a4e; --idle: #5d6974; --lamp-off: #333e48;
-  --steel: #8b99a5; --steel-dark: #5b6874; --belt: #3a444e; color-scheme: dark } }
+  --steel: #8b99a5; --steel-dark: #5b6874; --belt: #3a444e; --visor: #3d86d1; --visor-glow: #8cc8ff; color-scheme: dark } }
 :root[data-theme="dark"] {
   --floor: #12171c; --panel: #1b2229; --panel-2: #222b33; --ink: #dce4ea; --muted: #8f9ba5; --line: #2e3943;
   --safety: #f2b705; --safety-ink: #15130b;
   --go: #3fc37b; --warn: #f0a62c; --stop: #f05a4e; --idle: #5d6974; --lamp-off: #333e48;
-  --steel: #8b99a5; --steel-dark: #5b6874; --belt: #3a444e; color-scheme: dark }
+  --steel: #8b99a5; --steel-dark: #5b6874; --belt: #3a444e; --visor: #3d86d1; --visor-glow: #8cc8ff; color-scheme: dark }
 
 * { box-sizing: border-box; }
 body { background: var(--floor); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.45;
@@ -218,6 +218,113 @@ tr:last-child td { border-bottom: 0; }
 .line-tab { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line, #888); background: transparent; color: inherit; cursor: pointer; }
 .line-tab.on { background: var(--go, #2a7); color: #fff; border-color: transparent; }
 </style>
+<style>
+/* Supervisor station (autonomous line M1, owner-approved mockup 2026-11-03): the humanoid Line Conductor at its desk,
+   its board (KPIs, budget lanes), the issue board and the supervisor log. Read-only; scoped under .sup. */
+.sup { display: grid; gap: 14px; }
+.sup .station { display: grid; grid-template-columns: minmax(250px, 330px) 1fr; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+@media (max-width: 760px) { .sup .station { grid-template-columns: 1fr; } }
+.sup .bay { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; display: grid; justify-items: center; padding: 10px 10px 12px; gap: 6px; overflow: hidden; }
+.sup .bay svg.sup-bot { width: 100%; max-width: 280px; height: auto; display: block; }
+.sup .bay .caption { font-family: var(--display); font-size: 19px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.sup .bay .doing { font-size: 12px; color: var(--muted); text-align: center; max-width: 34ch; min-height: 3em; }
+.sup .board { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.sup .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.sup .kpi { background: var(--panel-2); padding: 10px 12px; }
+.sup .kpi .v { font-size: 30px; }
+.sup .lanes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media (max-width: 560px) { .sup .lanes { grid-template-columns: repeat(2, 1fr); } }
+.sup .lane { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; display: grid; gap: 4px; background: var(--panel); }
+.sup .lane b { font-family: var(--display); font-size: 15px; text-transform: uppercase; letter-spacing: .04em; }
+.sup .lane .bar { height: 6px; border-radius: 3px; background: var(--lamp-off); overflow: hidden; }
+.sup .lane .bar i { display: block; height: 100%; background: var(--steel); }
+.sup .lane span { font-size: 12px; color: var(--muted); }
+.sup .rules { font-size: 12px; color: var(--muted); display: grid; gap: 3px; }
+.sup .rules b { color: var(--ink); font-weight: 600; }
+.sup .issues-wrap { display: grid; grid-template-columns: minmax(280px, 400px) 1fr; gap: 14px; align-items: start; }
+@media (max-width: 860px) { .sup .issues-wrap { grid-template-columns: 1fr; } }
+.sup .issue-list { display: grid; gap: 8px; }
+.sup .issue { appearance: none; text-align: left; font: inherit; color: inherit; cursor: pointer; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 9px 11px 9px 14px; display: grid; gap: 4px; position: relative; }
+.sup .issue::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 6px 0 0 6px; background: var(--idle); }
+.sup .issue.sev-stop::before { background: var(--stop); } .sup .issue.sev-warn::before { background: var(--warn); } .sup .issue.sev-ok::before { background: var(--go); }
+.sup .issue[aria-pressed="true"] { border-color: var(--safety); box-shadow: inset 0 0 0 1px var(--safety); }
+.sup .issue:focus-visible { outline: 3px solid var(--safety); outline-offset: 2px; }
+.sup .issue .top { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.sup .issue .id { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.sup .issue .t { font-weight: 600; font-size: 13px; overflow-wrap: anywhere; }
+.sup .issue .meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 11px; color: var(--muted); }
+.sup .chip { font-family: var(--display); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; font-size: 12px; padding: 0 6px; border-radius: 3px; border: 1px solid currentColor; white-space: nowrap; }
+.sup .c-infra { color: var(--visor); } .sup .c-factory { color: var(--warn); } .sup .c-product { color: var(--stop); } .sup .c-model { color: var(--steel-dark); } .sup .c-unknown { color: var(--muted); }
+.sup .st { font-family: var(--display); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; font-size: 12px; padding: 0 6px; border-radius: 3px; white-space: nowrap; }
+.sup .st-open { background: color-mix(in srgb, var(--visor) 18%, transparent); color: var(--ink); }
+.sup .st-waiting { background: color-mix(in srgb, var(--safety) 30%, transparent); color: var(--ink); }
+.sup .st-recovering { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--ink); }
+.sup .st-parked { background: var(--lamp-off); color: var(--ink); }
+.sup .st-owner { background: var(--stop); color: #fff; }
+.sup .st-resolved { background: color-mix(in srgb, var(--go) 22%, transparent); color: var(--ink); }
+.sup .detail { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 12px; min-width: 0; }
+.sup .detail .d-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between; }
+.sup .detail h3 { overflow-wrap: anywhere; }
+.sup .dfacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px 14px; font-size: 13px; }
+.sup .dfacts b { display: block; font-family: var(--mono); font-weight: 500; font-size: 13px; overflow-wrap: anywhere; }
+.sup .evidence { font-family: var(--mono); font-size: 12px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; overflow-x: auto; white-space: pre; }
+.sup .sols { display: grid; gap: 8px; }
+.sup .sol { border: 1px solid var(--line); border-radius: 6px; padding: 9px 11px; display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; align-items: start; background: var(--panel-2); }
+.sup .sol.first { border-color: var(--go); }
+.sup .sol .rank { font-family: var(--display); font-weight: 700; font-size: 20px; line-height: 1; color: var(--muted); }
+.sup .sol.first .rank { color: var(--go); }
+.sup .sol .s-what { font-size: 13px; min-width: 0; overflow-wrap: anywhere; }
+.sup .sol .s-what b { font-weight: 600; }
+.sup .sol .s-how { font-size: 12px; color: var(--muted); grid-column: 2 / 4; overflow-wrap: anywhere; }
+.sup .sol .s-state { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; color: var(--muted); }
+.sup .owner-box { border: 2px solid var(--stop); border-radius: 6px; padding: 9px 11px; display: grid; gap: 6px; }
+.sup .owner-box.acked { border-color: var(--go); }
+.sup .owner-box .q { font-weight: 600; }
+.sup .owner-box code { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+.sup .log { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
+.sup .log table { min-width: 640px; }
+.sup .off { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+/* the humanoid supervisor */
+.sup-bot .visor { fill: var(--visor); }
+.sup-bot .eye { fill: var(--visor-glow); }
+.sup-bot .shell { fill: var(--steel); } .sup-bot .joint { fill: var(--steel-dark); } .sup-bot .plate-c { fill: var(--panel); stroke: var(--steel-dark); stroke-width: 1.5; }
+.sup-bot .chest { fill: var(--lamp-off); }
+.sup-bot .eyes { transform-origin: 140px 62px; }
+.sup-bot .b-head { transform-origin: 140px 92px; transition: transform .8s ease; }
+.sup-bot .arm-l { transform-origin: 104px 112px; transition: transform .8s ease; }
+.sup-bot .arm-r { transform-origin: 176px 112px; transition: transform .8s ease; }
+.sup-bot .fore-r { transform-origin: 188px 158px; transition: transform .8s ease; }
+.sup-bot .tool { opacity: 0; transition: opacity .4s; }
+.sup-bot .b-spark { opacity: 0; }
+.sup-bot.m-patrol .eyes { animation: sup-scan 4s ease-in-out infinite; }
+.sup-bot.m-patrol .chest { fill: var(--go); animation: pulse 2s ease-in-out infinite; }
+.sup-bot.m-patrol .arm-l { transform: rotate(4deg); } .sup-bot.m-patrol .arm-r { transform: rotate(-4deg); }
+.sup-bot.m-patrol .torso { animation: sup-breathe 3.2s ease-in-out infinite; transform-origin: 140px 190px; }
+.sup-bot.m-diagnose .b-head { transform: rotate(10deg) translateY(2px); }
+.sup-bot.m-diagnose .chest { fill: var(--visor-glow); animation: pulse 1.1s ease-in-out infinite; }
+.sup-bot.m-diagnose .arm-r { transform: rotate(-58deg); } .sup-bot.m-diagnose .fore-r { transform: rotate(-40deg); }
+.sup-bot.m-diagnose .t-glass { opacity: 1; }
+.sup-bot.m-diagnose .eyes { animation: sup-blinkeye 3s steps(1) infinite; }
+.sup-bot.m-repair .b-head { transform: rotate(6deg); }
+.sup-bot.m-repair .chest { fill: var(--warn); animation: pulse .8s ease-in-out infinite; }
+.sup-bot.m-repair .arm-r { animation: sup-wrench 1.1s ease-in-out infinite alternate; } .sup-bot.m-repair .fore-r { transform: rotate(-70deg); }
+.sup-bot.m-repair .arm-l { transform: rotate(-30deg); }
+.sup-bot.m-repair .t-wrench { opacity: 1; }
+.sup-bot.m-repair .b-spark { animation: spark .55s ease-in-out infinite alternate; }
+.sup-bot.m-owner .b-head { transform: rotate(-6deg); }
+.sup-bot.m-owner .chest { fill: var(--stop); animation: blink 1s steps(2, start) infinite; }
+.sup-bot.m-owner .arm-r { transform: rotate(-150deg); } .sup-bot.m-owner .fore-r { animation: sup-wave .7s ease-in-out infinite alternate; }
+.sup-bot.m-owner .t-flag { opacity: 1; }
+.sup-bot.m-off { opacity: .55; } .sup-bot.m-off .visor { fill: var(--steel-dark); } .sup-bot.m-off .eye { fill: var(--lamp-off); }
+.sup-bot.m-off .arm-l { transform: rotate(6deg); } .sup-bot.m-off .arm-r { transform: rotate(-6deg); } .sup-bot.m-off .b-head { transform: rotate(4deg) translateY(3px); }
+@keyframes sup-scan { 0%, 100% { transform: translateX(-7px); } 50% { transform: translateX(7px); } }
+@keyframes sup-blinkeye { 0%, 92% { transform: scaleY(1); } 94% { transform: scaleY(.1); } }
+@keyframes sup-breathe { 50% { transform: translateY(-1.5px); } }
+@keyframes sup-wrench { from { transform: rotate(-50deg); } to { transform: rotate(-78deg); } }
+@keyframes sup-wave { from { transform: rotate(-20deg); } to { transform: rotate(18deg); } }
+@media (prefers-reduced-motion: reduce) { .sup-bot *, .sup-bot { animation: none !important; transition: none !important; } }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -240,6 +347,66 @@ tr:last-child td { border-bottom: 0; }
     <div class="lineup"><div class="halls" id="halls"></div></div>
   </section>
   <section class="hall-detail" id="hall-detail" aria-live="polite"></section>
+  <section class="sup" id="sup" aria-labelledby="sup-title">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 id="sup-title">Supervisor station</h2>
+      <span class="note" id="sup-sub">Line Conductor · OBSERVE</span>
+    </div>
+    <div class="station">
+      <div class="bay">
+        <svg class="sup-bot m-off" id="sup-bot" viewBox="0 0 280 300" role="img" aria-labelledby="sup-bot-title">
+          <title id="sup-bot-title">Supervisor robot</title>
+          <rect x="20" y="276" width="240" height="10" rx="3" fill="var(--belt)"/>
+          <rect x="196" y="214" width="70" height="62" rx="4" fill="var(--steel-dark)"/>
+          <rect x="204" y="222" width="54" height="30" rx="2" fill="var(--panel)"/>
+          <rect x="208" y="227" width="26" height="4" rx="1" fill="var(--go)"/><rect x="208" y="235" width="40" height="4" rx="1" fill="var(--lamp-off)"/><rect x="208" y="243" width="18" height="4" rx="1" fill="var(--warn)"/>
+          <rect class="shell" x="118" y="214" width="17" height="56" rx="7"/><rect class="shell" x="145" y="214" width="17" height="56" rx="7"/>
+          <rect class="joint" x="112" y="264" width="28" height="12" rx="5"/><rect class="joint" x="140" y="264" width="28" height="12" rx="5"/>
+          <g class="torso">
+            <g class="arm-l">
+              <rect class="shell" x="92" y="108" width="16" height="50" rx="8"/>
+              <circle class="joint" cx="100" cy="112" r="9"/>
+              <rect class="shell" x="90" y="150" width="15" height="40" rx="7"/>
+              <rect x="74" y="168" width="26" height="34" rx="2" fill="var(--panel)" stroke="var(--steel-dark)" stroke-width="2"/>
+              <rect x="79" y="175" width="16" height="2.5" fill="var(--muted)"/><rect x="79" y="181" width="12" height="2.5" fill="var(--muted)"/><rect x="79" y="187" width="15" height="2.5" fill="var(--muted)"/>
+            </g>
+            <rect class="shell" x="106" y="100" width="68" height="94" rx="16"/>
+            <rect class="plate-c" x="118" y="114" width="44" height="40" rx="6"/>
+            <circle class="chest" cx="140" cy="134" r="9"/>
+            <rect class="joint" x="114" y="186" width="52" height="30" rx="10"/>
+            <g class="arm-r">
+              <circle class="joint" cx="180" cy="112" r="9"/>
+              <rect class="shell" x="172" y="108" width="16" height="52" rx="8"/>
+              <g class="fore-r">
+                <rect class="shell" x="174" y="152" width="15" height="40" rx="7"/>
+                <circle class="joint" cx="181.5" cy="194" r="7"/>
+                <g class="tool t-glass"><circle cx="181" cy="214" r="11" fill="none" stroke="var(--visor)" stroke-width="4"/><circle cx="181" cy="214" r="7" fill="var(--visor-glow)" opacity=".35"/><rect x="179" y="198" width="4" height="7" fill="var(--steel-dark)"/></g>
+                <g class="tool t-wrench"><rect x="178.5" y="196" width="6" height="26" rx="2" fill="var(--steel-dark)"/><path d="M174 222 h16 v6 h-5 v-3 h-6 v3 h-5 z" fill="var(--steel-dark)"/>
+                  <g class="b-spark"><circle cx="190" cy="232" r="2.6" fill="var(--safety)"/><circle cx="196" cy="226" r="1.6" fill="var(--safety)"/><circle cx="185" cy="236" r="1.4" fill="var(--safety)"/></g></g>
+                <g class="tool t-flag"><rect x="180" y="190" width="3" height="34" fill="var(--steel-dark)"/><path d="M183 192 h20 l-5 6 l5 6 h-20 z" fill="var(--stop)"/></g>
+              </g>
+            </g>
+            <g class="b-head">
+              <rect class="joint" x="132" y="86" width="16" height="16" rx="4"/>
+              <rect class="shell" x="108" y="34" width="64" height="56" rx="20"/>
+              <rect x="130" y="22" width="20" height="14" rx="5" fill="var(--steel-dark)"/>
+              <circle cx="140" cy="18" r="5" fill="var(--safety)"/>
+              <rect class="visor" x="116" y="50" width="48" height="24" rx="11"/>
+              <g class="eyes"><rect class="eye" x="126" y="57" width="9" height="10" rx="4"/><rect class="eye" x="145" y="57" width="9" height="10" rx="4"/></g>
+            </g>
+          </g>
+        </svg>
+        <div class="caption" id="sup-caption">—</div>
+        <div class="doing" id="sup-doing"></div>
+      </div>
+      <div class="board" id="sup-board"></div>
+    </div>
+    <div class="issues-wrap" id="sup-issues"></div>
+    <div style="display:grid;gap:8px">
+      <h3>Supervisor log</h3>
+      <div class="log"><table><thead><tr><th>Time (UTC)</th><th>Issue</th><th>Event</th><th>Result</th></tr></thead><tbody id="sup-log"></tbody></table></div>
+    </div>
+  </section>
   <section aria-labelledby="legend-title" style="display:grid;gap:8px">
     <h3 id="legend-title">Cell states</h3>
     <div class="legend" id="legend"></div>
@@ -482,6 +649,125 @@ function renderLegend() {
     ["stopped", "Stopped", "arm drops, red blinks, hazard band"], ["idle", "Idle", "arm parked, lights off"]];
   $("#legend").innerHTML = items.map(([s, t, x]) => `<div class="mini s-${s}">${stack()}${arm()}<div><b>${t}</b><span class="muted">${x}</span></div></div>`).join("");
 }
+// Supervisor station (autonomous line M1): read-only view of the Line Conductor's feed forge-c/supervisor-issues/1.
+// Acknowledgement is CLI-only on the host (owner decision 10); this page has no control for it.
+const SUP_MODES = {
+  patrol: ["Patrolling", "No open issue. Observing the line's records every cycle; healthy patrol makes no model calls."],
+  diagnose: ["Diagnosing", "Open issues classified from the recorded evidence; rule proposals are listed, none is executed (OBSERVE)."],
+  repair: ["Recovery under way", "A later order is working on an open issue's phase."],
+  owner: ["Needs you", "An issue needs an owner decision. Acknowledge it on the host with the factory CLI."],
+  off: ["Offline", ""],
+};
+const SUP_OFF = {
+  NO_SUPERVISOR_ON_THIS_LINE: "No supervisor on this line.",
+  FEED_MISSING: "The Line Conductor has not written its issues feed yet.",
+  FEED_STALE: "The supervisor feed is not updating: the Line Conductor is stopped or stuck.",
+  FEED_MALFORMED: "The supervisor feed does not match forge-c/supervisor-issues/1 and is not shown.",
+  SCHEMA_UNAVAILABLE: "The supervisor-issues contract is not installed with this floor, so the feed is not shown.",
+  NOT_REPORTED: "This line's floor does not report a supervisor station.",
+};
+const SUP_CLS = {INFRA: ["infra", "Infra"], FACTORY_DEFECT: ["factory", "Factory defect"], PRODUCT: ["product", "Product"],
+  MODEL_CONVERGENCE: ["model", "Model convergence"], UNKNOWN: ["unknown", "Unknown"]};
+const SUP_ST = {OPEN: ["open", "Open"], RECOVERING: ["recovering", "Recovering"], WAITING_EXTERNAL_CHANGE: ["waiting", "Waiting for a fix"],
+  PARKED: ["parked", "Parked"], ESCALATED: ["owner", "Needs you"], RESOLVED: ["resolved", "Resolved"]};
+const SUP_SEV = {OPEN: "warn", RECOVERING: "warn", WAITING_EXTERNAL_CHANGE: "warn", PARKED: "idle", ESCALATED: "stop", RESOLVED: "ok"};
+let supSel = null;
+const supNeedsYou = (i) => i.status !== "RESOLVED" && i.escalation && i.escalation.level !== "FLOOR" && !i.escalation.acknowledged;
+function supMode(S) {  // feed status -> robot pose, as the mockup's modeFor()
+  const live = S.issues.filter((i) => i.status !== "RESOLVED");
+  if (live.some(supNeedsYou)) return "owner";
+  if (live.some((i) => i.status === "RECOVERING")) return "repair";
+  if (live.some((i) => ["OPEN", "WAITING_EXTERNAL_CHANGE", "ESCALATED"].includes(i.status))) return "diagnose";
+  return "patrol";
+}
+function supPose(m, doing) {
+  $("#sup-bot").setAttribute("class", "sup-bot m-" + m);
+  $("#sup-caption").textContent = SUP_MODES[m][0];
+  $("#sup-doing").textContent = doing != null ? doing : SUP_MODES[m][1];
+}
+const supTime = (s) => s ? String(s).slice(11, 16) : "—";
+const supDay = (s) => s ? String(s).slice(5, 10) + " " + String(s).slice(11, 16) : "—";
+function supStatus(i) {
+  if (i.status === "ESCALATED" && i.escalation && i.escalation.acknowledged) return ["resolved", "Acknowledged"];
+  return SUP_ST[i.status] || ["parked", String(i.status)];
+}
+function supLane(name, b, note) {
+  const used = b ? Number(b.used) || 0 : null, lim = b ? Number(b.limit) || 0 : null;
+  const w = b && lim ? Math.min(100, Math.round(used / lim * 100)) : 0;
+  return `<div class="lane"><b>${esc(name)}</b><div class="bar"><i style="width:${w}%"></i></div><span>${b ? `${esc(used)} of ${esc(lim)} ` : ""}${esc(note)}</span></div>`;
+}
+function renderSupervisor(d) {
+  const S = d.supervisor || {available: false, reason: "NOT_REPORTED"};
+  if (!S.available) {
+    supPose("off", "");
+    const why = SUP_OFF[S.reason] || "The supervisor station is unavailable.";
+    const age = S.age_s != null ? ` Last feed ${Math.round(Number(S.age_s) / 60)} min ago.` : "";
+    $("#sup-sub").textContent = S.reason === "NO_SUPERVISOR_ON_THIS_LINE" ? "no supervisor on this line" : "supervisor offline";
+    $("#sup-board").innerHTML = `<div class="off"><b>${esc(why)}</b><div class="note">${esc(age)} The rest of the floor is unaffected.</div></div>`;
+    $("#sup-issues").innerHTML = ""; $("#sup-log").innerHTML = "";
+    return;
+  }
+  const sv = S.supervisor, issues = S.issues || [], live = issues.filter((i) => i.status !== "RESOLVED");
+  const mode = supMode(S);
+  supPose(mode, mode === "patrol" ? `No open issue. Cycle ${Number(sv.cycle)}, ${Number(sv.model_calls_healthy)} model calls; it places no order in OBSERVE.` : null);
+  $("#sup-sub").textContent = `Line Conductor · ${sv.mode} · cycle ${Number(sv.cycle)} · feed ${supTime(S.generated_at)} UTC (${Number(S.age_s)} s ago)`;
+  const owner = live.filter(supNeedsYou).length, stopping = live.filter((i) => i.status === "ESCALATED").length;
+  const B = S.budgets || {};
+  const conv = issues.filter((i) => i.class === "MODEL_CONVERGENCE" && i.status !== "RESOLVED").length;
+  $("#sup-board").innerHTML = `<div class="kpis">
+      <div class="kpi"><span class="label">Open issues</span><span class="v">${live.length}</span><span class="n">${stopping ? esc(stopping + " escalated") : "none escalated"}</span></div>
+      <div class="kpi"><span class="label">Resolved</span><span class="v">${issues.length - live.length}</span><span class="n">by later orders, last 7 days</span></div>
+      <div class="kpi"><span class="label">Waiting on you</span><span class="v" style="color:${owner ? "var(--stop)" : "inherit"}">${owner}</span><span class="n">${owner ? "acknowledge on the host (CLI)" : "nothing to decide"}</span></div>
+      <div class="kpi"><span class="label">Model calls</span><span class="v">${Number(sv.model_calls_healthy)}</span><span class="n">healthy patrol, measured by the socket guard</span></div>
+    </div>
+    <div><div class="label" style="margin-bottom:6px">Self-healing budget (owner decision 7)</div><div class="lanes">
+      ${supLane("Infra", B.infra_recoveries_per_hour_host, "per hour on this host · 3 per order · 10 min cooldown")}
+      ${supLane("Factory defect", null, "no automatic action: CRE reproducer, CAPA, gate")}
+      ${supLane("Product", null, "upstream return or validated lesson, else blocked")}
+      ${supLane("Model convergence", B.convergence_retries_per_phase, `retries per phase · ${conv} open`)}
+    </div><div class="note" style="margin-top:6px">Planner ${esc((B.planner_calls_per_order || {}).used ?? 0)} of ${esc((B.planner_calls_per_order || {}).limit ?? 4)} calls and ${fmt((B.planner_tokens_per_order || {}).used ?? 0)} of ${fmt((B.planner_tokens_per_order || {}).limit ?? 200000)} tokens per order · longest running phase order ${Math.round(((B.phase_order_wall_s || {}).used || 0) / 60)} min of ${Math.round(((B.phase_order_wall_s || {}).limit || 21600) / 3600)} h</div></div>
+    <div class="rules">
+      <div><b>Healthy patrol makes no model calls.</b> It reads gate logs, launch records, CRE incidents and CAPAs, the AFO queue and Fabro's run status.</div>
+      <div><b>OBSERVE: proposals only.</b> Rule proposals are derived from the records; none is executed, no order is placed or changed.</div>
+      <div><b>Never weakens a gate, a requirement or a baseline.</b> Anything that would needs you.</div>
+    </div>`;
+  if (!issues.length) {
+    $("#sup-issues").innerHTML = `<p class="note">No issue in the feed. The line's recorded orders reached their target phases or are still running.</p>`;
+  } else {
+    if (!supSel || !issues.some((i) => i.issue_id === supSel)) supSel = (live[0] || issues[0]).issue_id;
+    const list = issues.map((i) => {
+      const [cc, ct] = SUP_CLS[i.class] || SUP_CLS.UNKNOWN, [sc, st] = supStatus(i);
+      return `<button type="button" class="issue sev-${SUP_SEV[i.status] || "idle"}" data-sup-issue="${esc(i.issue_id)}" aria-pressed="${i.issue_id === supSel}">
+        <div class="top"><span class="id">${esc(i.issue_id)}</span><span class="t">${esc(i.summary)}</span></div>
+        <div class="meta"><span class="chip c-${cc}">${esc(ct)}</span><span class="st st-${sc}">${esc(st)}</span><span>${esc(i.phase)}</span><span class="mono">${esc((i.wo || i.lineage || "").replace("WO-F014-", ""))}</span><span>since ${esc(supDay(i.opened_at))}</span></div></button>`;
+    }).join("");
+    const i = issues.find((x) => x.issue_id === supSel);
+    const [cc, ct] = SUP_CLS[i.class] || SUP_CLS.UNKNOWN, [sc, st] = supStatus(i);
+    const ev = (i.evidence || []).map((e) => `${e.kind.padEnd(17)} ${e.ref}`).join("\n");
+    const sols = (i.proposals || []).slice().sort((a, b) => (a.rank || 9) - (b.rank || 9)).map((p, n) => `<div class="sol${n === 0 && p.status === "PROPOSED" ? " first" : ""}">
+        <span class="rank">${Number(p.rank || n + 1)}</span><div class="s-what"><b>${esc(p.summary || p.strategy)}</b></div><span class="s-state">${esc(p.status.toLowerCase())}</span>
+        <div class="s-how">${esc(p.source.toLowerCase())} · ${esc(p.strategy)}${(p.reason_codes || []).length ? " · " + esc(p.reason_codes.join(", ")) : ""}${p.cre_decision_ref ? " · " + esc(p.cre_decision_ref) : ""}</div></div>`).join("") ||
+      `<p class="note">No proposal for this issue.</p>`;
+    const e = i.escalation || {};
+    const box = i.status !== "RESOLVED" && e.level && e.level !== "FLOOR" ? (e.acknowledged ?
+      `<div class="owner-box acked"><span class="label">Needs you · acknowledged</span><div class="q">Acknowledged by ${esc(e.acknowledged_by)} at ${esc(supDay(e.acknowledged_at))} UTC</div><div class="note">audit ${esc(e.ack_ref || "")}</div></div>` :
+      `<div class="owner-box"><span class="label">Needs you · ${esc(e.level.replace("_", " ").toLowerCase())} since ${esc(supDay(e.at))} UTC</span><div class="q">The supervisor stops here and waits for you.</div><div class="note">Acknowledge on the host (the floor is read-only):</div><code>python -m forge_factory.afo.cli supervisor ack ${esc(i.issue_id)} --by owner --note "..."</code></div>`) : "";
+    $("#sup-issues").innerHTML = `<div class="issue-list">${list}</div><article class="detail" aria-live="polite">
+      <div class="d-head"><div><span class="label">${esc(i.issue_id)} · ${esc(ct)}</span><h3>${esc(i.summary)}</h3></div><span class="st st-${sc}">${esc(st)}</span></div>
+      <div class="dfacts"><div><span class="label">Order</span><b>${esc(i.wo || "—")}</b></div><div><span class="label">Phase</span><b>${esc(i.phase)}</b></div>
+        <div><span class="label">Lineage</span><b>${esc(i.lineage)}</b></div><div><span class="label">Fabro run</span><b>${esc(i.fabro_run_id || "—")}</b></div>
+        <div><span class="label">Error code</span><b>${esc(i.error_code)}</b></div><div><span class="label">Attempts</span><b>${Number(i.attempts.used)} of ${Number(i.attempts.limit)}</b></div>
+        <div><span class="label">Opened</span><b>${esc(supDay(i.opened_at))} UTC</b></div><div><span class="label">${i.resolved_at ? "Resolved" : "Updated"}</span><b>${esc(supDay(i.resolved_at || i.updated_at))} UTC</b></div></div>
+      <div><div class="label" style="margin-bottom:4px">Evidence (recorded)</div><div class="evidence">${esc(ev) || "—"}</div></div>
+      <div><div class="label" style="margin-bottom:6px">Proposed fixes (ranked)</div><div class="sols">${sols}</div></div>${box}</article>`;
+  }
+  $("#sup-log").innerHTML = (S.log || []).map((r) => `<tr><td class="mono">${esc(supDay(r.at))}</td><td class="mono">${esc(r.issue_id)}</td><td>${esc((r.event || "").toLowerCase())}${r.wo ? " · " + esc(r.wo.replace("WO-F014-", "")) : ""}</td><td>${esc([r.class, r.status, r.error_code].filter(Boolean).join(" · "))}</td></tr>`).join("") ||
+    `<tr><td colspan="4" class="muted">No supervisor event yet.</td></tr>`;
+}
+document.addEventListener("click", (e) => {
+  const s = e.target.closest("[data-sup-issue]");
+  if (s) { supSel = s.dataset.supIssue; if (DATA) renderSupervisor(DATA); }
+});
 function render() {
   if (!DATA) return;
   if (!selected) {
@@ -489,6 +775,7 @@ function render() {
     selected = DATA.halls.some((x) => x.id === h) ? h : (DATA.halls.find((x) => x.running.length) || DATA.halls[0]).id;
   }
   renderPicker(DATA); renderKpis(DATA); renderHalls(DATA); renderHall(DATA); renderOrders(DATA);
+  try { renderSupervisor(DATA); } catch (err) { $("#sup-board").textContent = "The supervisor station could not be drawn (" + err.message + ")."; }
 }
 function renderPicker(d) {
   const sel = $("#focus"), short = (w) => w.replace("WO-F014-", "");
