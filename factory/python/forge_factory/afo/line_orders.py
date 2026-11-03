@@ -583,7 +583,7 @@ class Plan:
             nxt = {k: self.order.get(k) for k in ("wo", "phase", "kind", "revision", "resume_from", "provided_from",
                                                   "resume_upto", "stop_after")}
             nxt.update(action=self.action, not_before=_utc(self.not_before) if self.not_before else None,
-                       sweep=self.sweep, quality=bool(self.order.get("quality")))
+                       sweep=self.sweep, quality=bool(self.order.get("quality")))  # carried by flag or revision
         cur = self.current
         return {"lineage": f"{L.campaign_id}/{L.id}", "tag": L.tag, "example": L.example, "state": self.state,
                 "reason": self.reason or None, "phase": self.phase, "priority": L.priority,
@@ -780,6 +780,7 @@ class Planner:
         if not ok:
             P.state, P.reason = "WAITING", why
             return
+        order["quality_via"] = why or None  # FLAG: --quality FILE; REVISION: the revision gives exactly that quality
         P.order, P.action, P.kind = order, action, order["kind"]
         if order.get("resume_from") is None and order["phase"] != L.phases[0] and not L.start:
             P.state, P.reason, P.action, P.order = "ESCALATED", "NO_LAST_GOOD_PART", None, None
@@ -799,14 +800,16 @@ class Planner:
         if not readable:
             return False, "EXAMPLE_NOT_AT_REVISION"
         effective = spec_q if spec_q is not None else defaults(L.purpose)
-        if effective == L.quality or self.line.quality_supported(full):
-            return True, ""
+        if effective == L.quality:
+            return True, "REVISION"
+        if self.line.quality_supported(full):
+            return True, "FLAG"
         return False, "QUALITY_NOT_DELIVERABLE_AT_REVISION"
 
 
 ORDER_KEYS = ("schema", "wo", "phase", "kind", "lineage", "lineage_sha", "campaign_id", "example", "driver_class",
               "revision", "profile", "run_model", "purpose", "resume_from", "provided_from", "resume_upto", "stop_after",
-              "quality")
+              "quality", "quality_via")
 
 
 def _digest(spec: dict) -> str:
@@ -961,9 +964,11 @@ class Placer:
                 "3 days are cleaned.").items() if k in ("status", "deduplicated")}})
         if acting or self.dry_run:
             actions += self._cleanup(policy, grant, now, execute=acting)
-        chosen = self._choose(plans, now) if placing_ok and not gpu["busy"] else None
-        if chosen is not None:
-            actions.append(self._execute(chosen, policy, grant, campaigns, now, execute=acting))
+        for chosen in self._ready(plans, now) if placing_ok and not gpu["busy"] else []:
+            res = self._execute(chosen, policy, grant, campaigns, now, execute=acting)
+            actions.append(res)
+            if res["outcome"] not in ("REFUSED", "WOULD_REFUSE", "PACED"):
+                break  # one launch step per cycle; a lineage the grant refuses never blocks the next one
         from .line_conductor import append_jsonl
 
         for a in actions:  # the local log (decision 5); a repeated identical non-executing outcome is logged once
@@ -1009,11 +1014,10 @@ class Placer:
             return {"busy": True, "reason": "RUN_LIVE_NOT_IN_CAMPAIGN", "wo": None}
         return {"busy": False, "reason": None, "wo": None}
 
-    def _choose(self, plans: list[Plan], now: float) -> Plan | None:
+    def _ready(self, plans: list[Plan], now: float) -> list[Plan]:
+        """Plans with a launch step due now, highest priority first (campaign order breaks ties)."""
         ready = [P for P in plans if P.action in LAUNCH_ACTIONS and P.not_before <= now]
-        if not ready:
-            return None
-        return max(ready, key=lambda P: (P.lineage.priority, -P.lineage.position))
+        return sorted(ready, key=lambda P: (-P.lineage.priority, P.lineage.position))
 
     def _pacing_ok(self, P: Plan, policy: LinePolicy, now: float) -> bool:
         if P.kind not in ("RETRY_INFRA", "RELAUNCH_INFRA"):
@@ -1044,14 +1048,14 @@ class Placer:
         act = {"action": P.action, "kind": o["kind"], "lineage": P.lineage.key, "wo": o["wo"], "phase": o["phase"],
                "revision": o["revision"], "resume_from": o["resume_from"], "provided_from": o["provided_from"],
                "resume_upto": o["resume_upto"]}
+        argv = self._argv(o)
+        act["argv"] = argv  # the exact launcher command, also shown when the grant refuses it
         if not self._pacing_ok(P, policy, now):
             return {**act, "outcome": "PACED", "detail": "infra recoveries per hour at the guard (pacing only)"}
         denied = [(a, r, d) for a, r in self._requests(P) if not (d := grant.permit(a, r)).allow]
         if denied:
             a, r, d = denied[0]
             return {**act, "outcome": "WOULD_REFUSE" if not execute else "REFUSED", "detail": f"{d.code}:{a}:{r}"[:200]}
-        argv = self._argv(o)
-        act["argv"] = argv
         if not execute:
             return {**act, "outcome": "PLANNED", "sweep": P.sweep}
         if P.sweep:
@@ -1078,7 +1082,7 @@ class Placer:
                     "campaign_file": camp.rel, "authorization_id": grant.authorization_id}
         if o["kind"] in ("RETRY_INFRA", "RELAUNCH_INFRA"):
             spec["infra_recoveries"] = (spec.get("infra_recoveries") or []) + [now]
-        if o.get("quality"):
+        if o.get("quality") and o.get("quality_via") == "FLAG":
             qf = supervisor_dir() / "line-orders" / f"{o['wo']}.quality.json"
             _atomic(qf, o["quality"])
             spec["quality_file"] = str(qf)
@@ -1143,7 +1147,7 @@ class Placer:
                         ("--resume-upto", "resume_upto")):
             if o.get(k):
                 a += [flag, o[k]]
-        if o.get("quality"):
+        if o.get("quality") and o.get("quality_via") == "FLAG":
             a += ["--quality", str(supervisor_dir() / "line-orders" / f"{o['wo']}.quality.json")]
         return a + ["--json"]
 

@@ -605,10 +605,22 @@ def test_the_quality_minimum_is_passed_through_into_the_order(env):
     # the example's own block equal to the campaign's needs no flag
     env["line"].quality_ok.clear()
     env["line"].spec_q["ex-crc-ll"] = QUALITY
-    write_campaign(env, [lineage("crc-ll", "CRCL", "20261103-L30", quality=QUALITY),
-                         lineage("x-ll", "XL", "20261103-L40", quality=QUALITY, example="ex-crc-ll")])
-    out = placer(env).cycle()
-    assert lin(out, "x-ll")["reason"] in ("START", "CHAIN") or lin(out, "x-ll")["state"] in ("QUEUED", "CHAINED")
+    env["line"].launched.clear()
+    env["line"].finish(rec["wo"])
+    env["clock"].tick()
+    write_campaign(env, [lineage("x-ll", "XL", "20261103-L40", quality=QUALITY, example="ex-crc-ll", priority=90)],
+                   name="d.yaml", cid="CMP-TEST-2")
+    placer(env).cycle()  # x-ll (priority 90) is outside the grant's driver classes: refused; crc-ll goes on
+    assert [x["wo"] for x in env["line"].launched] == ["WO-F014-SWE2-CRCL-20261103-L30"]
+    env["line"].launched.clear()
+    write_campaign(env, [lineage("x-ll", "XL", "20261103-L40", quality=QUALITY, example="ex-crc-ll", priority=90,
+                                 driver_class="STM32N6_CRCL")], name="d.yaml", cid="CMP-TEST-2")
+    env["line"].finish("WO-F014-SWE2-CRCL-20261103-L30")
+    placer(env).cycle()
+    x = env["line"].launched[0]
+    assert x["wo"] == "WO-F014-SWE1-XL-20261103-L40" and "--quality" not in x  # the revision gives exactly that quality
+    spec = json.loads((LO.supervisor_dir() / "line-orders" / f"{x['wo']}.json").read_text())
+    assert spec["quality"] == QUALITY and spec["quality_via"] == "REVISION"
 
 
 def test_a_gap_below_target_but_at_the_minimum_is_accepted_and_reported(env):
