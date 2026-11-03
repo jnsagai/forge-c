@@ -29,7 +29,7 @@ def test_no_wait_hal_prompts_have_no_timeout_bound(lyr):
     assert "Error handling and timing" in s2 and "Timeouts and error handling" not in s2
 
 
-@pytest.mark.parametrize("pid", sorted(p.stem for p in DIR.glob("*.yaml") if p.stem != "crc") + [None])
+@pytest.mark.parametrize("pid", sorted(p.stem for p in DIR.glob("*.yaml") if p.stem not in ("crc", "wwdg")) + [None])
 @pytest.mark.parametrize("lyr", ["HAL", "LL+HAL", "LL"])
 def test_waiting_hal_prompts_unchanged(monkeypatch, pid, lyr):
     dot = _dot(pid, lyr)

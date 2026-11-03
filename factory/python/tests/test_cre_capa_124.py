@@ -39,9 +39,9 @@ def test_hal_waits_from_the_profile(monkeypatch):
         prof = load(p.stem)
         monkeypatch.setattr(layer, "profile", lambda ws=None, _p=prof: _p)
         waits[p.stem] = layer.hal_waits()
-    assert waits["crc"] is False
+    assert waits["crc"] is False and waits["wwdg"] is False  # wwdg: no-wait HAL texts (RM0486 ch.60, CHANGE)
     assert waits["iwdg"] is True and waits["rcc"] is True
-    assert all(v is True for k, v in waits.items() if k != "crc"), waits  # no own HAL texts: RCC default waits
+    assert all(v is True for k, v in waits.items() if k not in ("crc", "wwdg")), waits  # no own HAL texts: RCC default waits
 
 
 def test_hal_waits_rules(monkeypatch):
