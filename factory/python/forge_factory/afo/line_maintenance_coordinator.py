@@ -14,6 +14,7 @@ import signal
 import subprocess
 import sys
 import time
+from contextlib import nullcontext
 
 from ..common import REPO_ROOT, sha256_file, state_dir
 from . import line_maintenance as binding, line_recovery, local_agent as L, maintainer as M
@@ -209,8 +210,15 @@ def review(store, job, eff, *, fence, client, evaluator=None):
         return (evaluator or promotion.evaluate)(*args, **kwargs)
 
     def expired(*_):
+        if managed_owner:
+            from .line_verifier_guard import terminate
+
+            terminate(managed_owner)
         raise TimeoutError('LINE_MAINTENANCE_REVIEW_DEADLINE')
 
+    from .line_verifier_guard import owned_group, watch_intent
+
+    managed_owner = owned_group(VerificationJobs(store), job['job_id'])
     deadline = _review_deadline(store, job)
     previous = signal.signal(signal.SIGALRM, expired)
     try:
@@ -219,9 +227,10 @@ def review(store, job, eff, *, fence, client, evaluator=None):
             raise TimeoutError('LINE_MAINTENANCE_REVIEW_DEADLINE')
         # Fractional remaining walls cannot receive an extra second through alarm(1).
         signal.setitimer(signal.ITIMER_REAL, remaining)
-        record = M.process(store, case['proposal_id'], CREStore(), cre_policy(),
-                           fingerprints=[case['incident']['fingerprint']],
-                           tests_ref='local-agent:' + job['job_id'], evaluator=guarded_evaluator)
+        with watch_intent(managed_owner, job) if managed_owner else nullcontext():
+            record = M.process(store, case['proposal_id'], CREStore(), cre_policy(),
+                               fingerprints=[case['incident']['fingerprint']],
+                               tests_ref='local-agent:' + job['job_id'], evaluator=guarded_evaluator)
     finally:
         signal.setitimer(signal.ITIMER_REAL, 0)
         signal.signal(signal.SIGALRM, previous)
@@ -248,6 +257,11 @@ def main(argv=None):
     queue.claim(args.job, args.epoch, dedicated_group=True)
     job = _saved(store, args.job)
     try:
+        from .line_verifier_guard import owned_group, require_backend
+
+        if not owned_group(queue, args.job):
+            raise Refused('LINE_MAINTENANCE_MANAGED_GROUP_UNCONFIRMED')
+        require_backend()
         with queue.keepalive(args.job, args.epoch), FabroClient(
                 base_url=L.endpoint_for(job), token=load_token(job.get('fabro_storage')), timeout=5) as client:
             result = review(store, job, load(), fence=lambda: queue.current(args.job, args.epoch), client=client)
