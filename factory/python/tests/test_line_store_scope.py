@@ -15,7 +15,12 @@ def test_fixed_scope_preserves_legacy_and_routes_line_children_to_existing_store
     monkeypatch.delenv("FORGE_AFO_QUEUE_SCOPE", raising=False)
     assert default_path() == tmp_path / "conductor/conductor.sqlite3"
     monkeypatch.setenv("FORGE_AFO_QUEUE_SCOPE", "line-local")
-    assert Store().path == tmp_path / "supervisor/line-queue.sqlite3"
+    canonical = tmp_path / "supervisor/line-queue.sqlite3"
+    with pytest.raises(QueueError, match="AUTHORITATIVE_DATABASE_UNAVAILABLE"):
+        Store()
+    assert not canonical.parent.exists()
+    Store(canonical)  # Explicit M3 bootstrap; scoped role consumers only open an existing authority.
+    assert Store().path == canonical
     for scope in ["cloud", "../../foreign", str(tmp_path / "other.db")]:
         monkeypatch.setenv("FORGE_AFO_QUEUE_SCOPE", scope)
         with pytest.raises(QueueError, match="SCOPE_INVALID"):
