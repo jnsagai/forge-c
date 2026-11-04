@@ -16,6 +16,9 @@ def test_native_tool_envelope_overrides_inherited_status_only_instructions(tmp_p
         seen.append(argv)
         overrides = [argv[i + 1] for i, arg in enumerate(argv[:-1]) if arg == "-c"]
         scoped = next((s for s in overrides if s.startswith("developer_instructions=")), "")
+        assert "caller's separate workspace under its own permissions" in scoped
+        assert "Preserve all caller role, path and quality restrictions" in scoped
+        assert argv[argv.index("--sandbox") + 1] == "read-only"
         answer = {"action": "tool_calls", "tool_calls": [{"name": "echo", "arguments": {"text": "hello"}}],
                   "content": ""} if "stateless model backend" in scoped else {
                       "status": "BLOCKED", "artifacts": [], "issues": ["no MCP tools"], "next_action": "halt"}

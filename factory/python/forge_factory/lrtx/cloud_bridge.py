@@ -545,7 +545,12 @@ class CodexBackend:
     REPLY_INSTRUCTIONS = (
         "You are a stateless model backend. Follow the supplied system instructions and JSON schema exactly. "
         "Do not execute tools yourself. The caller executes requested tool calls. "
-        "Return only the requested JSON response."
+        "Return only the requested JSON response. "
+        "The read-only Codex sandbox belongs only to this stateless transport. The offered tools belong to the "
+        "caller and execute in the caller's separate workspace under its own permissions. You may return JSON "
+        "calls for offered, authorized write operations; you never execute them here. Do not infer caller "
+        "permissions or tool availability from this transport sandbox. Use the offered tool definitions and "
+        "caller tool results as authority. Preserve all caller role, path and quality restrictions."
     )
 
     def __init__(self, codex_home: str | None = None, run=subprocess.run):
