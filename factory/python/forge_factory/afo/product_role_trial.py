@@ -33,7 +33,8 @@ def authorized(ref, job, eff):
     from .queue import Store
 
     trial = resolve(ref)
-    order = Store().order(job["order_id"])
+    store = Store(state_dir() / "supervisor/line-queue.sqlite3") if job.get("line_origin") else Store()
+    order = store.order(job["order_id"])
     if (
         not order
         or trial.get("qualification_only") is not True

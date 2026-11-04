@@ -361,11 +361,19 @@ def create_app(
     def cl(body: dict | None) -> httpx.AsyncClient:
         return routed.get((body or {}).get("model"), client)
 
+    line_identity = {}
+    if os.environ.get("FORGE_AFO_QUEUE_SCOPE"):
+        from .afo.queue import default_path
+        from .workorder import factory_revision
+
+        default_path()  # reject an unknown scope at startup; no database is opened
+        line_identity = {"afo_queue_scope": "line-local", "factory_revision": factory_revision()}
+
     @app.get("/health")
     async def health() -> dict:
         if adm is not None:
-            return {"status": "ok", "upstream": upstream, "admission": adm.snapshot()}
-        return {"status": "ok", "upstream": upstream}
+            return {"status": "ok", "upstream": upstream, "admission": adm.snapshot(), **line_identity}
+        return {"status": "ok", "upstream": upstream, **line_identity}
 
     def refused(model: str | None) -> JSONResponse | None:
         s = suspended(upstream)

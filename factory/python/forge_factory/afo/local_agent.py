@@ -32,6 +32,7 @@ NATIVE_CONTEXT = (
     "FORGE_AFO_ALLOWED_SIGNERS",
     "FORGE_OPERATIONS_INTENT",
     "FORGE_EVENTS_DIR",
+    "FORGE_AFO_QUEUE_SCOPE",
 )
 SCHEMA = """CREATE TABLE IF NOT EXISTS afo_local_agent_jobs (
  job_id TEXT PRIMARY KEY, order_id TEXT NOT NULL, attempt_id TEXT NOT NULL, role TEXT NOT NULL,
@@ -243,11 +244,16 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         job["model_digest"] = model_identity["digest"]
         job["precision"] = model_identity["quantization"]
         job["native_context"] = {key: os.environ[key] for key in NATIVE_CONTEXT if os.environ.get(key)}
+        if line_context is not None:
+            job["native_context"]["FORGE_AFO_QUEUE_SCOPE"] = "line-local"
         job["factory_revision"] = factory_revision()
         from .product_role_trial import bind as bind_trial
 
         launch_path = REPO_ROOT / order["input_manifest_ref"]
-        if launch_path.is_file():
+        if line_context is not None:
+            # M3 intake is a hash-bound campaign YAML, not the generic AFO JSON launch manifest.
+            bind_trial(man.get("product_role_trial"), job, eff)
+        elif launch_path.is_file():
             if sha256_file(launch_path) != order["manifest_sha256"]:
                 raise QueueError("LAUNCH_MANIFEST_HASH_CHANGED")
             bind_trial(json.loads(launch_path.read_text()).get("product_role_trial"), job, eff)

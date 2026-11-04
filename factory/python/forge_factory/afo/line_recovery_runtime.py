@@ -116,15 +116,24 @@ def launch(job, *, cfg=None, host=None, procs=None, authorization=None):
             if (rc or revision.get("dirty") is not False
                     or revision.get("commit") != job["factory_revision"].get("commit")):
                 raise R.BindingRefused("LINE_RECOVERY_RUNTIME_REVISION_MISMATCH")
+            from ..lrtx.profile import load
+
+            profile = load(job["profile"])
+            rc, output = host.stack(["exec", "--", "curl", "-s", "-m", "5",
+                                     f"http://127.0.0.1:{profile['deployment']['ports']['gateway']}/health"],
+                                    env=env, cwd=cwd, log=logs / "gateway-scope.log")
+            gateway = LL._last_json(output) or {}
+            gateway_revision = gateway.get("factory_revision") or {}
+            if (rc or gateway.get("afo_queue_scope") != "line-local"
+                    or gateway_revision.get("dirty") is not False
+                    or gateway_revision.get("commit") != job["factory_revision"].get("commit")):
+                raise R.BindingRefused("LINE_RECOVERY_GATEWAY_SCOPE_OR_REVISION_MISMATCH")
             if not permitted(job):
                 raise R.BindingRefused("LINE_RECOVERY_NOT_AUTHORIZED")
             rc, _ = host.stack(["exec", "--", "python", "-m", "forge_factory.lrtx.stack", "serve", "--model", job["model"]],
                                env=env, cwd=cwd, log=logs / "serve.log")
             if rc:
                 raise R.BindingRefused("LINE_RECOVERY_MODEL_SERVE_FAILED")
-            from ..lrtx.profile import load
-
-            profile = load(job["profile"])
             port = profile["deployment"]["ports"]["llama"]
             rc, output = host.stack(["exec", "--", "curl", "-s", "-m", "5",
                                      f"http://127.0.0.1:{port}/v1/models"],

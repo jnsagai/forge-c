@@ -17,7 +17,7 @@ def fixture(tmp_path, monkeypatch):
     job = {"job_id": "afo-agent-" + "a" * 24, "order_id": "order", "nonce": "nonce", "profile": "fixture",
            "model": "local-model", "factory_revision": {"commit": "a" * 40}}
     from forge_factory.lrtx import profile
-    monkeypatch.setattr(profile, "load", lambda _: {"deployment": {"ports": {"llama": 11457}}})
+    monkeypatch.setattr(profile, "load", lambda _: {"deployment": {"ports": {"llama": 11457, "gateway": 11456}}})
     monkeypatch.setattr(LL, "live_runs", lambda *a: {})
     monkeypatch.setattr(LL, "_guard", lambda *a: None)
 
@@ -27,6 +27,7 @@ def fixture(tmp_path, monkeypatch):
             self.revision = {"commit": "a" * 40, "dirty": False}
             self.models = [{"id": "local-model", "metadata": "provider metadata is permitted"}]
             self.native_rc = 0
+            self.gateway = {"afo_queue_scope": "line-local", "factory_revision": {"commit": "a" * 40, "dirty": False}}
             self.environments = []
             self.native = {"job_id": job["job_id"], "nonce": "nonce", "run_id": "RUN-1"}
         def stack(self, args, **kwargs):
@@ -37,6 +38,8 @@ def fixture(tmp_path, monkeypatch):
             if "factory_revision;print" in "".join(args):
                 return 0, json.dumps(self.revision)
             if "curl" in args:
+                if args[-1].endswith("/health"):
+                    return 0, json.dumps(self.gateway)
                 return 0, json.dumps({"data": self.models})
             if "native-job" in args:
                 return self.native_rc, json.dumps(self.native)
@@ -90,6 +93,15 @@ def test_different_or_dirty_runtime_refuses_before_model_serve(fixture):
     for revision in [{"commit": "b" * 40, "dirty": False}, {"commit": "a" * 40, "dirty": True}]:
         host.revision = revision
         with pytest.raises(LaunchNotStarted, match="RUNTIME_REVISION_MISMATCH"):
+            launch(fixture)
+    assert not any("serve" in x or "native-job" in x for x in host.calls)
+
+
+def test_wrong_gateway_store_or_revision_refuses_before_model_serve(fixture):
+    _, _, host = fixture
+    for gateway in [{}, {"afo_queue_scope": "line-local", "factory_revision": {"commit": "b" * 40, "dirty": False}}]:
+        host.gateway = gateway
+        with pytest.raises(LaunchNotStarted, match="GATEWAY_SCOPE_OR_REVISION_MISMATCH"):
             launch(fixture)
     assert not any("serve" in x or "native-job" in x for x in host.calls)
 

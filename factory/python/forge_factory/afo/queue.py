@@ -130,6 +130,13 @@ class QueueError(ValueError):
 
 
 def default_path() -> Path:
+    import os
+
+    scope = os.environ.get("FORGE_AFO_QUEUE_SCOPE")
+    if scope == "line-local":
+        return state_dir() / "supervisor/line-queue.sqlite3"
+    if scope:
+        raise QueueError("AFO_QUEUE_SCOPE_INVALID")
     return state_dir() / "conductor/conductor.sqlite3"
 
 
