@@ -448,6 +448,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             from .brownfield.cmsis import GTEST_LINKAGE_FIELD, GTEST_LINKAGE
 
             manifest[GTEST_LINKAGE_FIELD] = GTEST_LINKAGE
+            manifest["outputs"]["SWE.4"] = (
+                "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.cpp")
     from .inspection import assessment_context
 
     if aspice_scope or qm_scope:

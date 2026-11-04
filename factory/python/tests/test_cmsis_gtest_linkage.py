@@ -26,6 +26,7 @@ def test_fresh_vendor_intake_builds_and_executes_google_tests_without_changing_d
     manifest = json.loads((ws / ".forge-run/manifest.json").read_text())
     assert manifest[cmsis.GTEST_LINKAGE_FIELD] == cmsis.GTEST_LINKAGE
     assert manifest["unit_verification"] == UNIT_VERIFICATION
+    assert "test_*.cpp" in manifest["outputs"]["SWE.4"]
     before = {p: (ws / p).read_bytes() for p in (x["path"] for x in manifest["delivered"])}
     out = SC._scaffold(ws)
     assert out["framework"] == "googletest-1.11.0" and out["host_device"]
