@@ -56,6 +56,8 @@ def main():
                          'max_completion_tokens': body.get('max_completion_tokens'),
                          'temperature': body.get('temperature'), 'top_p': body.get('top_p'),
                          'seed': body.get('seed'),
+                         'tools_present': isinstance(body.get('tools'), list) and bool(body['tools']),
+                         'tool_count': len(body['tools']) if isinstance(body.get('tools'), list) else 0,
                          'response_format_type': (body.get('response_format') or {}).get('type')})
             data = {'id': 'transport-fixture', 'object': 'chat.completion', 'created': int(time.time()),
                     'model': body.get('model'),
