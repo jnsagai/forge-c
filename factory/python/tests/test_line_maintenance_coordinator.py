@@ -14,6 +14,22 @@ from test_line_maintenance_dispatch import prepare_job
 
 
 @pytest.fixture
+def line_terminal(monkeypatch, request, tmp_path):
+    # The shared runtime guard reads this fixed queue. Select it before the
+    # imported terminal/order fixtures construct and populate their Store.
+    monkeypatch.setenv('FORGE_AFO_QUEUE_SCOPE', 'line-local')
+    monkeypatch.setenv('FORGE_STATE_DIR', str(tmp_path / 'state'))
+    # Fixture bootstrap is explicit; production implicit readers must refuse a
+    # missing authoritative queue rather than silently constructing one.
+    Store(tmp_path / 'state/supervisor/line-queue.sqlite3')
+    value = request.getfixturevalue('terminal')
+    from forge_factory.common import state_dir
+
+    assert value[0][0].path == state_dir() / 'supervisor/line-queue.sqlite3'
+    return value
+
+
+@pytest.fixture
 def scoped(tmp_path, monkeypatch):
     state = tmp_path / 'state'
     monkeypatch.setenv('FORGE_STATE_DIR', str(state))
@@ -159,16 +175,18 @@ def test_review_rechecks_fence_and_keeps_existing_independent_pipeline(scoped, m
 
 
 @pytest.mark.parametrize('change', ['policy', 'intent', 'deadline', 'source', 'case', 'signed_intent', 'signed_mission'])
-def test_independent_review_refuses_revoked_or_changed_authority(terminal, monkeypatch, tmp_path, change):
+def test_independent_review_refuses_revoked_or_changed_authority(line_terminal, monkeypatch, tmp_path, change):
     from forge_factory.afo.operations import Intent
     from forge_factory import workorder
 
+    terminal = line_terminal
     args, eff, _, _, _ = terminal
     store = args[0]
     private = tmp_path / 'private-intent'
     private.mkdir(mode=0o700)
     intent = Intent(private / 'operations.json')
     control = intent.set('RUNNING', actor='qualification-fixture', reason='unit-only authority fixture', initialize=True)
+    monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(intent.path))
     monkeypatch.setenv('FORGE_DURABLE_AUTONOMY', '1')
     case = prepare(terminal)
     job = prepare_job(terminal, case)
@@ -197,16 +215,22 @@ def test_independent_review_refuses_revoked_or_changed_authority(terminal, monke
                                              (job['mission_id'],)).fetchone()[0])
         control = {'operations_intent': str(intent.path), 'profile': job['profile'],
                    'profile_sha256': job['profile_sha256'], 'authorization_ref': registered['authorization_ref'],
+                   'source_revision': job['factory_revision']['commit'], 'policy_sha256': job['policy_sha256'],
                    'mission': {k: registered[k] for k in ('mission_id', 'lineage', 'limits')}}
         # Signature/expiry checks have their own real parser controls; exercise the exact job/control binding here.
         monkeypatch.setattr(line_recovery_control, 'configuration', lambda *a, **k: control)
         job['line_role_authority_ref'] = {'path': str(tmp_path / 'signed-fixture.json'), 'sha256': 'a' * 64}
         C.L.save(store, job)
+        assert line_recovery_control.require_job_binding(job, control, store=store)
         C._authorized(store, job, eff)
         if change == 'signed_intent':
             control['operations_intent'] = str(tmp_path / 'other-owned-intent.json')
+            expected = 'LINE_ROLE_OPERATIONS_CONTEXT_MISMATCH'
         else:
             control['mission']['lineage'] = 'different-finite-lineage'
+            expected = 'LINE_ROLE_SIGNED_MISSION_LIMITS_MISMATCH'
+        with pytest.raises(Refused, match=expected):
+            line_recovery_control.require_job_binding(job, control, store=store)
     with pytest.raises(Refused):
         C._authorized(store, job, eff)
 
@@ -235,12 +259,14 @@ def test_complete_failure_evidence_is_paged_as_untrusted_data_and_tamper_is_refu
         server.read_case(ctx, server.NoIn())
 
 
-def test_maintainer_admission_pins_explicit_role_inputs_without_inventing_competence(terminal, monkeypatch, tmp_path):
+def test_maintainer_admission_pins_explicit_role_inputs_without_inventing_competence(line_terminal, monkeypatch, tmp_path):
     from forge_factory.afo import authz, line_recovery_control
     from forge_factory.afo.durable import immutable_json
     from forge_factory.lrtx.profile import load
     from forge_factory import workorder
+    from forge_factory.afo.operations import Intent
 
+    terminal = line_terminal
     args, eff, _, _, _ = terminal
     store, oid, aid, workspace, origin = args
     case = prepare(terminal)
@@ -249,10 +275,15 @@ def test_maintainer_admission_pins_explicit_role_inputs_without_inventing_compet
     eff.policy['authorization_ref'] = 'fixture-maintenance-control'
     revision = terminal[3]['source_revision']
     monkeypatch.setattr(workorder, 'factory_revision', lambda: {'commit': revision, 'dirty': False})
+    private = tmp_path / 'private-intent'
+    private.mkdir(mode=0o700)
+    intent = Intent(private / 'operations.json')
+    intent_record = intent.set('RUNNING', actor='qualification-fixture', reason='unit-only admission fixture', initialize=True)
+    monkeypatch.setenv('FORGE_OPERATIONS_INTENT', str(intent.path))
     value = {'schema': line_recovery_control.SCHEMA, 'source_revision': revision,
              'policy_sha256': eff.sha256, 'authorization_ref': eff.get('authorization_ref'),
              'profile': profile['id'], 'profile_sha256': profile['_sha256'],
-             'operations_intent': str(tmp_path / 'private-intent.json'),
+             'operations_intent': str(intent.path),
              'mission': {'mission_id': 'line-maintenance-fixture', 'lineage': 'line-maintenance-fixture',
                          'limits': mission['limits']}, 'role_capabilities': {}, 'product_role_trial': None}
     path = tmp_path / (digest(value) + '.json')
@@ -267,6 +298,10 @@ def test_maintainer_admission_pins_explicit_role_inputs_without_inventing_compet
     job = C.L.prepare(store, store.order(oid), aid, C.ROLE, C.M.case_dir(case['proposal_id']) / 'case.json',
                       workspace, eff, line_origin=origin, line_role_authority_ref=ref)
     assert job['line_role_authority_ref'] == ref and job['role_capabilities'] == {}
+    assert job['native_context']['FORGE_OPERATIONS_INTENT'] == str(intent.path)
+    assert job['native_context']['FORGE_AFO_QUEUE_SCOPE'] == 'line-local'
+    assert job['operations_epoch'] == intent_record['epoch']
+    assert line_recovery_control.require_job_binding(job, value, store=store)
     assert not job.get('product_role_trial')  # signed controller inputs alone grant no competence
     monkeypatch.setattr(C.line_recovery, 'valid_job', lambda *a: True)  # source binding has separate controls
     allowed.allow, allowed.code = False, 'AUTH_REVOKED'
