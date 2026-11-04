@@ -690,7 +690,9 @@ def trace_step(kind: str) -> list[str]:
         rules[kind] += (
             " HOST RESULT PROTOCOL: every executed host check prints its id followed immediately by PASS or FAIL "
             "on its own line, for example 'IT-001-NOMINAL PASS' or 'IT-001-INVALID FAIL'. Inside the function tagged "
-            "@test IT-001 use IT-001 or unique IT-001-<suffix> ids; IT-101 does not verify IT-001. A CHECK(id, "
+            "@test IT-001 use IT-001 or unique IT-001-<suffix> ids; IT-101 does not verify IT-001. Host C uses "
+            "<stdio.h>; forge_target_test.h and TCHECK belong to the Renode target tests, not this host program. "
+            "A CHECK(id, "
             "condition) helper evaluates condition once into ok, emits printf(\"%s %s\\n\", id, ok ? \"PASS\" : "
             "\"FAIL\"); and counts a failure when ok is false; main returns nonzero for any failure. Do not put "
             "CHECK, descriptions or an arrow before the id or between the id and its result. Keep descriptions on "

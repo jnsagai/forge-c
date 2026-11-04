@@ -25,6 +25,7 @@ def test_native_hal_publishes_output_and_existing_test_identity_contract(periphe
     assert "IT-101 does not verify IT-001" in prompt
     assert "evaluates condition once" in prompt and "main returns nonzero for any failure" in prompt
     assert "Preserve every functional predicate and assertion" in prompt
+    assert "forge_target_test.h and TCHECK belong to the Renode target tests" in prompt
     assert f"software/tests/unit/test_{peripheral}.cpp" in prompt
 
 
