@@ -153,10 +153,10 @@ def test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_l
     script.write_text("""
 import argparse,json
 from http.server import BaseHTTPRequestHandler,HTTPServer
-ap=argparse.ArgumentParser();ap.add_argument('--alias');ap.add_argument('--port',type=int);a=ap.parse_args()
+ap=argparse.ArgumentParser();ap.add_argument('--alias');ap.add_argument('--port',type=int);ap.add_argument('--bad',action='store_true');a=ap.parse_args()
 class Handler(BaseHTTPRequestHandler):
  def do_GET(self):
-  body=json.dumps({'data':[{'id':a.alias}]} if self.path=='/v1/models' else {'admission':{'inflight':0,'waiting':0}}).encode()
+  body=json.dumps({'data':[{'id':'wrong-alias' if a.bad else a.alias}]} if self.path=='/v1/models' else {'admission':{'inflight':0,'waiting':0}}).encode()
   self.send_response(200);self.end_headers();self.wfile.write(body)
  def log_message(self,*args):pass
 HTTPServer.allow_reuse_address=True
@@ -172,16 +172,22 @@ HTTPServer(('127.0.0.1',a.port),Handler).serve_forever()
     (p.s["root"] / "logs").mkdir()
     monkeypatch.setattr(ST, "envmap", lambda s: dict(os.environ) | {"FORGE_VENV": str(Path(sys.executable).parent.parent)})
     monkeypatch.setattr(ST, "_vram_free_mib", lambda: 100000)
+    bad_models = set()
     monkeypatch.setattr(ST, "llama_server_spec", lambda r, prof, ports, env, model=None:
-                        ([sys.executable, str(script), "--alias", model or first, "--port", str(port)], dict(os.environ),
+                        ([sys.executable, str(script), "--alias", model or first, "--port", str(port)]
+                         + (["--bad"] if model in bad_models else []), dict(os.environ),
                          f"http://127.0.0.1:{port}/health", [model or first]))
     processes = []
     original_spawn = ST._in_ns
+    expire_new_worker = [False]
 
     def actual_spawn(*args, **kwargs):
         assert kwargs.get("serving"), "managed worker must enter private provider PID namespace"
         child = original_spawn(*args, **kwargs)
         processes.append(child)
+        if expire_new_worker[0]:
+            deadline = P.registered(p.store, P.job_id(p.aid))["deadline_epoch"]
+            monkeypatch.setattr(A.time, "time", lambda: deadline + 1)
         return child
 
     monkeypatch.setattr(ST, "_in_ns", actual_spawn)
@@ -236,6 +242,25 @@ print(json.dumps({'mapped_owner_verified':True,'current_uid':os.getuid(),'captur
                 assert ST.serve(p.s, second)["result"] == "SWAPPED"
                 assert provider.identity(record["worker"]["pid"]) is None
                 assert ST.serve(p.s, second)["result"] == "ALREADY_SERVED"
+                failed = "gpt-oss:120b"
+                profile["runtime"]["llama_server_alternates"][failed] = {"vram_required_mib": 0}
+                bad_models.add(failed)
+                profile["runtime"]["llama_server_swap"] = {"health_timeout_s": 0.2}
+                with pytest.raises(RuntimeError, match="MODEL_SWAP_NOT_SERVED"):
+                    ST.serve(p.s, failed)
+                processes[-1].wait(timeout=5)  # actual worker killed; its waiter exits naturally
+                assert provider.quiet(instance) is None  # gateway/container are still owned and live
+                real_clock = A.time.time
+                expire_new_worker[0] = True
+                try:
+                    with pytest.raises(Refused, match="EFFECT_AUTHORITY_EXPIRED_OR_CHANGED"):
+                        ST.serve(p.s, first)
+                    processes[-1].wait(timeout=5)  # cleanup remains allowed under original startup nonce
+                finally:
+                    expire_new_worker[0] = False
+                    monkeypatch.setattr(A.time, "time", real_clock)
+                profile["runtime"]["llama_server_swap"] = {"health_timeout_s": 5}
+                assert ST.serve(p.s, second)["result"] == "SWAPPED"
                 # Expire a real claimed job during the model-stop/VRAM wait;
                 # the exact worker may already be retired, but no replacement can start.
                 before_spawn_count = len(processes)
@@ -348,6 +373,15 @@ def test_first_graph_serve_uses_existing_authoritative_nonce_adoption_before_det
         with A.fenced(p.s, "serve", model=model, workspace=ws) as guard:
             guard()  # fresh permission can be checked with the ledger write fence held
             assert Executions(p.store).store.path == p.store.path  # same durable store
+        with pytest.raises(Refused, match="TEST_UNPROVEN_STARTUP"):
+            with A.fenced(p.s, "serve", model=model, workspace=ws) as guard:
+                guard.record_cleanup_unknown(None)
+                raise Refused("TEST_UNPROVEN_STARTUP")
+        with p.store.tx() as c:
+            assert c.execute("SELECT COUNT(*) FROM afo_execution_evidence WHERE job_id=? "
+                             "AND kind LIKE 'LINE_STARTUP_CLEANUP_UNKNOWN:%'", (job["job_id"],)).fetchone()[0] == 1
+        terminal = SimpleNamespace(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}})
+        assert ex.reconcile(job["job_id"], terminal)["resource_lease"] == "HELD"
     assert MissionLedger(p.store).snapshot("fixture-mission") == before
 
 
@@ -379,3 +413,88 @@ print(json.dumps({'inside_port':_observation_host(cfg,s).cfg.fabro_host_port,'ho
                                 text=True, check=True)
         assert json.loads(report.stdout)["inside_port"] == p.s["ports"]["fabro"]
         assert provider.quiet(instance) is None
+
+
+def test_initial_start_expiry_tears_down_only_its_receipted_new_process_and_keeps_lease(claimed, monkeypatch):
+    p = claimed
+    children = []
+    real_clock = A.time.time
+    before = p.intent.path.read_bytes()
+    foreign = subprocess.Popen([sys.executable, "-c", "import time;time.sleep(60)"])
+
+    def backend(settings, **kwargs):
+        child = subprocess.Popen([sys.executable, "-c", "import time;time.sleep(60)"])
+        children.append(child)
+        binding = ST._EFFECT_GUARD.get().startup_binding
+        ST._save_services(settings["root"], {"startup_binding": binding, "processes": {
+            "fixture": {"pid": child.pid, "argv": [sys.executable, "import time"],
+                        "identity": ST.process_identity(child.pid)}}})
+        deadline = P.registered(p.store, P.job_id(p.aid))["deadline_epoch"]
+        monkeypatch.setattr(A.time, "time", lambda: deadline + 1)
+        ST._guard_effect()
+        pytest.fail("expired startup passed its physical effect fence")
+
+    monkeypatch.setattr(ST, "_start", backend)
+    try:
+        with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
+            with pytest.raises(Refused, match="EFFECT_AUTHORITY_EXPIRED_OR_CHANGED"):
+                ST._locked_start(p.s)
+        assert children[0].wait(timeout=5) != 0
+        assert foreign.poll() is None
+        assert p.intent.path.read_bytes() == before
+        assert Executions(p.store).get(P.job_id(p.aid))["resource_lease"] == "HELD"
+        assert ST._EFFECT_GUARD.get() is None
+    finally:
+        monkeypatch.setattr(A.time, "time", real_clock)
+        for child in [*children, foreign]:
+            if child.poll() is None:
+                child.terminate()
+            child.wait(timeout=5)
+
+
+def test_native_terminal_retains_unknown_startup_capacity_until_exact_provider_quiet(claimed, tmp_path):
+    from forge_factory.lrtx import provider_process as provider
+    from test_da014_provider_process import provider as private_namespace
+
+    p = claimed
+    job = P.registered(p.store, P.job_id(p.aid))
+    ex = Executions(p.store)
+    before = MissionLedger(p.store).snapshot("fixture-mission")
+    with private_namespace(tmp_path, "unknown-startup") as raw, private_namespace(tmp_path, "foreign-provider") as foreign:
+        instance = provider.capture(p.s["root"], profile=p.s["profile"]["id"],
+                                    profile_sha256=p.s["profile"]["_sha256"], parent_pid=raw["parent_pid"])
+        with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
+            with A.fenced(p.s, "start") as guard:
+                guard.record_cleanup_unknown(instance)
+        ex.adopt(job["job_id"], ["OWN-NATIVE"])
+        terminal = SimpleNamespace(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}})
+        current = ex.reconcile(job["job_id"], terminal)
+        assert current["resource_lease"] == "HELD" and current["execution_liveness"] == "UNKNOWN"
+        assert provider.quiet(instance) is None and provider.quiet(foreign) is None
+        assert provider.stop(instance, fenced_effect=lambda effect: effect())
+        assert ex.reconcile(job["job_id"], terminal)["resource_lease"] == "RELEASED"
+        assert provider.quiet(foreign) is None
+        with p.store.tx() as c:
+            receipt = c.execute("SELECT record FROM afo_execution_evidence WHERE job_id=? "
+                                "AND kind LIKE 'LINE_STARTUP_CLEANUP_QUIESCENT:%'", (job["job_id"],)).fetchall()
+        assert len(receipt) == 1
+        assert json.loads(receipt[0][0])["kernel_quiescence"]["kind"] == "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED"
+    after = MissionLedger(p.store).snapshot("fixture-mission")
+    assert after["attempts"] == before["attempts"] and after["charged_tokens"] == before["charged_tokens"]
+
+
+@pytest.mark.parametrize("binding", [[], {"job_id": "foreign-job"}])
+def test_malformed_or_foreign_startup_hold_never_releases_on_native_terminal(claimed, binding):
+    from forge_factory.afo.durable import canonical, digest
+
+    p = claimed
+    job = P.registered(p.store, P.job_id(p.aid))
+    value = {"schema": "forge-c/line-startup-cleanup-unknown/1", "binding": binding, "provider_instance": None,
+             "provider_instance_sha256": digest(None)}
+    with p.store.tx() as c:
+        c.execute("INSERT INTO afo_execution_evidence VALUES (?,?,?,?)", (job["job_id"],
+                  "LINE_STARTUP_CLEANUP_UNKNOWN:" + digest(value), canonical(value).decode(), digest(value)))
+    ex = Executions(p.store)
+    ex.adopt(job["job_id"], ["OWN-NATIVE"])
+    terminal = SimpleNamespace(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}})
+    assert ex.reconcile(job["job_id"], terminal)["resource_lease"] == "HELD"

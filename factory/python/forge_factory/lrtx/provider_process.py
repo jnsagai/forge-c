@@ -246,7 +246,7 @@ def require_live_instance(instance: dict) -> None:
         raise Refused("PROVIDER_LIVE_INSTANCE_UNCONFIRMED")
 
 
-def capture_worker(instance: dict, parent_pid: int, argv: list[str], *, timeout=3) -> dict:
+def capture_worker(instance: dict, parent_pid: int, argv: list[str], *, timeout=3, startup_binding=None) -> dict:
     """Find the exact executable under an nsenter waiter, never treat that waiter as its private-PID child."""
     from ..afo.durable import immutable_json
 
@@ -285,7 +285,8 @@ def capture_worker(instance: dict, parent_pid: int, argv: list[str], *, timeout=
                       "pid": pid, "identity": {k: v for k, v in actual.items() if k != "state"},
                       "parent_pid": parent_pid, "parent": {k: v for k, v in parent.items() if k != "state"},
                       "argv_sha256": hashlib.sha256(expected).hexdigest(),
-                      "observer_user_namespace": os.readlink("/proc/self/ns/user")}
+                      "observer_user_namespace": os.readlink("/proc/self/ns/user"),
+                      **({"startup_binding": startup_binding} if startup_binding is not None else {})}
             immutable_json(Path(instance["root"]) / "run/provider-workers" / (digest(record) + ".json"), record)
             return record
         if time.monotonic() >= deadline:
@@ -293,20 +294,24 @@ def capture_worker(instance: dict, parent_pid: int, argv: list[str], *, timeout=
         time.sleep(0.02)
 
 
-def signal_worker(instance: dict, worker: dict, argv: list[str], sig: int, *, fenced_effect) -> None:
-    """Signal only the still-identical captured private namespace worker through a pidfd."""
-    import hashlib
-
+def _bound_worker(instance, worker, argv):
     from ..afo.durable import strict_json
 
     validate(instance)
-    if (not isinstance(worker, dict) or worker.get("instance_sha256") != digest(instance)
+    if (not isinstance(worker, dict) or worker.get("schema") != "forge-c/managed-provider-worker/1"
+            or worker.get("instance_sha256") != digest(instance)
             or worker.get("observer_user_namespace") != os.readlink("/proc/self/ns/user")
             or worker.get("argv_sha256") != hashlib.sha256(b"\0".join(os.fsencode(a) for a in argv) + b"\0").hexdigest()):
         raise Refused("PROVIDER_WORKER_BINDING_CHANGED")
     proof = Path(instance["root"]) / "run/provider-workers" / (digest(worker) + ".json")
-    if proof.is_symlink() or strict_json(proof.read_bytes(), 16384) != worker:
+    if (proof.is_symlink() or proof.stat().st_uid != os.getuid()
+            or strict_json(proof.read_bytes(), 16384) != worker):
         raise Refused("PROVIDER_WORKER_EVIDENCE_CHANGED")
+
+
+def signal_worker(instance: dict, worker: dict, argv: list[str], sig: int, *, fenced_effect) -> None:
+    """Signal only the still-identical captured private namespace worker through a pidfd."""
+    _bound_worker(instance, worker, argv)
     pid = worker["pid"]
     descriptor = pidfd.open_pid(pid)
     try:
@@ -321,3 +326,24 @@ def signal_worker(instance: dict, worker: dict, argv: list[str], sig: int, *, fe
         fenced_effect(effect)
     finally:
         os.close(descriptor)
+
+
+def retire_startup_worker(instance, worker, argv, *, binding, parent_pid):
+    """Monotonic teardown of this call's failed startup, never a new start or lease-release proof."""
+    _bound_worker(instance, worker, argv)
+    if (not isinstance(binding, dict) or not binding or not worker or worker.get("startup_binding") != binding
+            or worker.get("parent_pid") != parent_pid):
+        raise Refused("LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN")
+    actual = identity(worker["pid"])
+    if actual and actual.get("state") != "Z" and actual.get("start_ticks") == worker["identity"]["start_ticks"]:
+        signal_worker(instance, worker, argv, signal.SIGKILL, fenced_effect=lambda effect: effect())
+    until = time.monotonic() + 3
+    while True:
+        actual = identity(worker["pid"])
+        if (actual is None or actual.get("state") == "Z"
+                or actual.get("boot_id") != worker["identity"]["boot_id"]
+                or actual.get("start_ticks") != worker["identity"]["start_ticks"]):
+            return {"kind": "OWN_FAILED_STARTUP_WORKER_ENDED", "worker_sha256": digest(worker)}
+        if time.monotonic() >= until:
+            raise Refused("LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN")
+        time.sleep(0.02)

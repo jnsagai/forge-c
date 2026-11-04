@@ -209,7 +209,8 @@ def test_lost_receipt_restart_preserves_nonce_and_never_blindly_relaunches(produ
 
 @pytest.mark.parametrize(
     "outcome,submitted,expected",
-    [("SMOKE_FAIL", False, "item_blocked"), ("WORKORDER_LAUNCH_FAILED", True, "launch_outcome_unknown")],
+    [("SMOKE_FAIL", False, "item_blocked"), ("WORKORDER_LAUNCH_FAILED", True, "launch_outcome_unknown"),
+     ("STACK_STARTUP_CLEANUP_UNKNOWN", False, "launch_outcome_unknown")],
 )
 def test_pre_native_proof_and_possible_native_effect_have_distinct_release_rules(product, outcome, submitted, expected):
     p = product
@@ -222,7 +223,7 @@ def test_pre_native_proof_and_possible_native_effect_have_distinct_release_rules
     result = P.dispatch(p.store, p.cmd, p.worker, p.spec, p.eff, p.client, launch=transport)
     assert result["actions"][0]["action"] == expected
     live = Executions(p.store).get(P.job_id(p.aid))
-    assert live["resource_lease"] == ("HELD" if submitted else "RELEASED")
+    assert live["resource_lease"] == ("HELD" if submitted or outcome == "STACK_STARTUP_CLEANUP_UNKNOWN" else "RELEASED")
 
 
 def test_initial_mission_cannot_retroactively_import_a_native_execution(product):

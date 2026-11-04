@@ -11,7 +11,7 @@ import time
 from contextlib import contextmanager
 from pathlib import Path
 
-from .durable import Refused
+from .durable import Refused, canonical, digest
 
 FILE = "FORGE_LINE_STACK_PAYLOAD"
 SHA = "FORGE_LINE_STACK_PAYLOAD_SHA256"
@@ -113,6 +113,22 @@ def _bound(s):
                 or not time.time() < job["deadline_epoch"] or not authorized(row, current_policy, job["model"])):
             raise Refused("LINE_STACK_EFFECT_AUTHORITY_EXPIRED_OR_CHANGED")
 
+    effect_guard.startup_binding = {k: job[k] for k in ("job_id", "nonce", "mission_id", "operations_epoch")}
+    effect_guard.startup_binding["lease_epoch"] = execution["lease_epoch"]
+
+    def failure_record(instance):
+        return {"schema": "forge-c/line-startup-cleanup-unknown/1", "binding": effect_guard.startup_binding,
+                "root": str(root), "profile": job["profile"], "profile_sha256": job["profile_sha256"],
+                "provider_instance": instance, "provider_instance_sha256": digest(instance)}
+
+    def record_failure(instance):
+        value = failure_record(instance)
+        with store.tx() as c:
+            c.execute("INSERT OR IGNORE INTO afo_execution_evidence VALUES (?,?,?,?)", (job["job_id"],
+                      "LINE_STARTUP_CLEANUP_UNKNOWN:" + digest(value), canonical(value).decode(), digest(value)))
+
+    effect_guard.failure_record = failure_record
+    effect_guard.record_cleanup_unknown = record_failure
     return cfg, store, job, execution, intent, effect_guard
 
 
@@ -263,7 +279,20 @@ def fenced(s, action, *, model=None, workspace=None):
                         or c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone()):
                     raise Refused("LINE_STACK_EXECUTION_CHANGED_BEFORE_SERVE")
                 effect_guard()
-                yield effect_guard
+                def record_failure(instance):
+                    value = effect_guard.failure_record(instance)
+                    c.execute("INSERT OR IGNORE INTO afo_execution_evidence VALUES (?,?,?,?)", (job["job_id"],
+                              "LINE_STARTUP_CLEANUP_UNKNOWN:" + digest(value), canonical(value).decode(), digest(value)))
+
+                effect_guard.record_cleanup_unknown = record_failure
+                failure = None
+                try:
+                    yield effect_guard
+                except Exception as exc:
+                    failure = exc
+                # Commit a failed-startup hold before propagating its native node failure.
+            if failure is not None:
+                raise failure
         else:
             _prelaunch(cfg, store, job, execution, s)
             if model is not None and model not in s["profile"]["models"]["allowed"]:
@@ -286,10 +315,53 @@ def stop(s):
 
 
 def start(s, *, recovery=False):
+    from ..lrtx import provider_process as provider
     from ..lrtx import stack
 
     with fenced(s, "start") as guard, stack.line_effect_guard(guard):
-        return stack._start(s, recovery=recovery)
+        path = s["root"] / "run/services.json"
+        prior = json.loads(path.read_text()) if path.is_file() else {}
+        if prior.get("serving_instance") and not provider.quiet(stack.serving_instance(s)):
+            raise Refused("LINE_STACK_START_REQUIRES_STOPPED_PROFILE")
+        if any(stack._alive(p["pid"], "ollama" if name == "ollama" else p["argv"][1])
+               for name, p in (prior.get("processes") or {}).items()):
+            raise Refused("LINE_STACK_START_REQUIRES_STOPPED_PROFILE")
+        try:
+            return stack._start(s, recovery=recovery)
+        except Exception:
+            instance = None
+            # Failed startup teardown is monotonic under its original nonce.
+            # It never renews start authority or releases unknown native capacity.
+            try:
+                record = json.loads(path.read_text())
+                if record.get("startup_binding") != guard.startup_binding:
+                    raise Refused("LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN")
+                instance = record.get("serving_instance")
+                if instance:
+                    instance = stack.serving_instance(s)
+                    if not provider.stop(instance, fenced_effect=lambda effect: effect()):
+                        raise Refused("LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN")
+                with stack.line_effect_guard(None):
+                    stack._stop(s, managed=True)
+                until = time.monotonic() + 3
+                while True:
+                    remaining = []
+                    for process in (record.get("processes") or {}).values():
+                        actual = provider.identity(process["pid"])
+                        expected = process.get("identity") or {}
+                        if (actual and actual.get("state") != "Z"
+                                and actual.get("boot_id") == expected.get("boot_id")
+                                and actual.get("start_ticks") == expected.get("start_ticks")):
+                            remaining.append(process["pid"])
+                    if not remaining:
+                        break
+                    if time.monotonic() >= until:
+                        raise Refused("LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN")
+                    time.sleep(0.02)
+            except Exception as cleanup:
+                guard.record_cleanup_unknown(instance)
+                raise Refused("LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN") from cleanup
+            raise
 
 
 def serve(s, model, workspace=None):

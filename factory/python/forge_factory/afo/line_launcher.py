@@ -75,6 +75,7 @@ CODES = {
     "EXPOSE_FAILED": "INFRA", "SMOKE_FAIL": "INFRA",
     "WORKORDER_LAUNCH_FAILED": "WORKORDER", "LAUNCH_NO_RUN_ID": "WORKORDER", "UNEXPECTED_ERROR": "INFRA",
     "QUALITY_FLAG_UNSUPPORTED": "ORDER", "DURABLE_EXECUTION_BUSY": "REFUSED",
+    "STACK_STARTUP_CLEANUP_UNKNOWN": "REFUSED",
 }
 _WO_RX = re.compile(r"^WO-[A-Za-z0-9][A-Za-z0-9-]{2,120}$")
 _EX_RX = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,120}$")
@@ -1187,6 +1188,8 @@ def _launch_locked(att: Attempt, cfg: LineConfig, order: Order, host, procs, say
             raise LaunchError("STACK_LOCK_HELD", "stack start refused by the stack lock")
         att.step("stack_start", "OK" if rc == 0 else "STACK_START_FAILED", rc=rc, out=out.strip()[-300:])
         if rc != 0:
+            if order.durable_file is not None and "LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN" in out:
+                raise LaunchError("STACK_STARTUP_CLEANUP_UNKNOWN", "owned startup quiescence unproven; retain durable lease")
             raise LaunchError("STACK_START_FAILED", f"rc {rc}: {out.strip()[-200:]}")
         say(f"step stack_start ok ({order.profile})")
         health = _healthy_wait(att, cfg, host, env, cwd)
@@ -1207,6 +1210,8 @@ def _launch_locked(att: Attempt, cfg: LineConfig, order: Order, host, procs, say
                                   'cd factory/python && exec python -m forge_factory.lrtx.stack serve --model "$1"',
                                   "serve", m], env=env, cwd=cwd, log=att.logdir / "smoke-serve.log")
             if rc != 0:
+                if order.durable_file is not None and "LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN" in out:
+                    raise LaunchError("STACK_STARTUP_CLEANUP_UNKNOWN", "owned startup quiescence unproven; retain durable lease")
                 att.step("smoke_serve", "SMOKE_FAIL", model=m, rc=rc, out=out.strip()[-300:])
                 raise LaunchError("SMOKE_FAIL", f"serve {m} exited {rc}")
             host.sleep(3)

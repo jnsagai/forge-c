@@ -819,6 +819,14 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         else:
             proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r)
         procs[name] = {"pid": proc.pid, "argv": argv, "health": health}
+        startup_binding = getattr(_EFFECT_GUARD.get(), "startup_binding", None)
+        if startup_binding is not None:
+            procs[name]["identity"] = process_identity(proc.pid)
+            procs[name]["owner_view"] = provider.owner_view(proc.pid)
+            _save_services(r, {**rec, "processes": procs, "startup_binding": startup_binding,
+                               "holder_pid": holder, "holder_identity": process_identity(holder),
+                               "profile": prof["id"], "profile_sha256": prof["_sha256"], "root": str(r),
+                               "netns": os.readlink(f"/proc/{holder}/ns/net"), "ports": p})
         deadline = time.monotonic() + (5 if recovery else 60)
         while time.monotonic() < deadline and not _probe(holder, env, health):
             guard()
@@ -1034,24 +1042,41 @@ def _serve_model(s: dict, model: str, workspace: Path | None = None, *, serving=
                                     cwd=r, start_new_session=True)
     else:
         proc = _in_ns(holder, argv, penv, log, r, **({"serving": serving} if serving else {}))
-    deadline = time.monotonic() + float(swap_cfg.get("health_timeout_s", 600))
-    ok = False
-    while time.monotonic() < deadline and proc.poll() is None:
-        guard()
-        if _serves(p["llama"], model, holder, env, inside):
-            ok = True
-            break
-        time.sleep(1)
-    if not ok:
-        if proc.poll() is None:
-            proc.kill()
-        record("FAILED", reason="NOT_HEALTHY_OR_WRONG_MODEL", exit=proc.poll())
-        raise RuntimeError("MODEL_SWAP_NOT_SERVED")
     worker = None
-    if serving is not None:
-        from . import provider_process as provider
+    binding = getattr(_EFFECT_GUARD.get(), "startup_binding", None)
+    try:
+        if serving is not None:
+            from . import provider_process as provider
 
-        worker = provider.capture_worker(serving, proc.pid, argv)
+            worker = provider.capture_worker(serving, proc.pid, argv, startup_binding=binding)
+        deadline = time.monotonic() + float(swap_cfg.get("health_timeout_s", 600))
+        ok = False
+        while time.monotonic() < deadline and proc.poll() is None:
+            guard()
+            if _serves(p["llama"], model, holder, env, inside):
+                ok = True
+                break
+            time.sleep(1)
+        if not ok:
+            raise RuntimeError("MODEL_SWAP_NOT_SERVED")
+    except Exception:
+        if serving is not None:
+            from ..afo.durable import Refused
+
+            try:
+                cleanup = provider.retire_startup_worker(serving, worker, argv, binding=binding, parent_pid=proc.pid)
+            except Exception as exc:
+                reporter = getattr(_EFFECT_GUARD.get(), "record_cleanup_unknown", None)
+                if reporter is not None:
+                    reporter(serving)
+                record("FAILED", reason="STARTUP_CLEANUP_UNKNOWN")
+                raise Refused("LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN") from exc
+            record("FAILED", reason="NOT_HEALTHY_OR_AUTHORITY_CHANGED", cleanup=cleanup)
+        else:
+            if proc.poll() is None:
+                proc.kill()  # unchanged legacy cleanup; managed workers use their exact captured PID instead
+            record("FAILED", reason="NOT_HEALTHY_OR_WRONG_MODEL", exit=proc.poll())
+        raise
     procs["llama_server"] = {"pid": proc.pid, "argv": argv, "health": health, "identity": process_identity(proc.pid),
                              "model": model, **({"worker": worker} if worker else {})}
     rec["health"] = {**(rec.get("health") or {}), "llama_server": True}
