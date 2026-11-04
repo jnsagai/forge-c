@@ -21,6 +21,8 @@ def write(ws, rel, value):
 
 @pytest.fixture
 def ws(tmp_path):
+    # Separate fresh CONTROL origin: explicit zero preserves reserved reset bits
+    # when writing. The original ST complement expression has its own negative.
     vendor = write(tmp_path, "inputs/vendor/include/stm32n6xx.h", """#include <stdint.h>
 typedef struct { volatile uint32_t CR, CFR, SR; } WWDG_TypeDef;
 #define WWDG ((WWDG_TypeDef *)0x50002C00U)
@@ -28,7 +30,7 @@ typedef struct { volatile uint32_t CR, CFR, SR; } WWDG_TypeDef;
 #define WWDG_SR_EWIF 1U
 """)
     ll = write(tmp_path, "software/ll/stm32n6xx_ll_wwdg.h", """#include "stm32n6xx.h"
-static inline void LL_WWDG_ClearFlag_EWKUP(WWDG_TypeDef *x) { x->SR = ~WWDG_SR_EWIF; }
+static inline void LL_WWDG_ClearFlag_EWKUP(WWDG_TypeDef *x) { x->SR = 0U; }
 """)
     write(tmp_path, "software/hal/stm32n6xx_hal_wwdg.h", """#include "stm32n6xx_ll_wwdg.h"
 typedef enum { HAL_OK, HAL_ERROR } hal_status_t;
@@ -137,10 +139,63 @@ def test_actual_target_observes_flag_then_clear_through_original_LL(ws):
     observed = O.verify(ws, result)[0]["observed"]
     assert observed["sr_before"] == 1 and observed["sr_after"] == 0
     assert observed["actual_hal_status_matches_HAL_OK"] is True
-    assert observed["call_writes"] == [{"offset": 8, "value": 0xfffffffe}]
+    assert observed["call_writes"] == [{"offset": 8, "value": 0}]
+    assert observed["sr_reserved_write_values_valid"] is True
     assert O.trace(ws)[1] == {"UT-021": "PASS"}
     assert all((ws / path).read_bytes() == raw for path, raw in before.items())
     assert not (ws / "software/tests/target").exists()
+
+
+@actual
+def test_original_complement_write_does_not_receive_reserved_write_credit(ws):
+    """Fresh CONTROL origin uses the actual original ST expression; no provided-code waiver/repin after execution."""
+    path = ws / "software/ll/stm32n6xx_ll_wwdg.h"
+    path.write_text(path.read_text().replace("x->SR = 0U", "x->SR = ~WWDG_SR_EWIF"))
+    manifest = json.loads((ws / ".forge-run/manifest.json").read_text())
+    manifest["provided"][0]["sha256"] = sha256_file(path)
+    write(ws, ".forge-run/manifest.json", manifest)  # fixture origin binding BEFORE any execution
+    context = ctx(ws)
+    fragment = O.run(context)
+    assert fragment["status"] == "FAIL", fragment
+    observed = O.verify(ws, record(ws, fragment, context))[0]["observed"]
+    assert observed["sr_before"] == 1 and observed["sr_after"] == 0
+    assert observed["actual_hal_status_matches_HAL_OK"] is True
+    assert observed["call_writes"] == [{"offset": 8, "value": 0xfffffffe}]
+    assert observed["sr_reserved_write_values_valid"] is False
+    assert O.trace(ws)[1] == {"UT-021": "FAIL"}
+
+
+@pytest.mark.parametrize("writes", [[(8, 0xfffffffe)], [(8, 0), (8, 2)], [(8, 0), (4, 0)], [],
+                                   [(8, -0x100000000)], [(8, 0x100000000)]])
+def test_every_write_must_preserve_reserved_bits_and_touch_only_SR(writes):
+    mailbox = {"magic_ok": True, "done": True, "passed": 3, "failed": 0, "failed_ids": []}
+    access = [{"phase": 1, "access": "R", "offset": 8, "value": 1}] + [
+        {"phase": 2, "access": "W", "offset": offset, "value": value} for offset, value in writes] + [
+        {"phase": 3, "access": "R", "offset": 8, "value": 0}]
+    test = O._observed(mailbox, access)
+    assert test["status"] == "FAIL" and test["observed"]["sr_reserved_write_values_valid"] is False
+
+
+@actual
+def test_historical_proof_schema_requires_reverification(ws):
+    context = ctx(ws)
+    fragment = O.run(context)
+    assert fragment["status"] == "PASS", fragment
+    result = record(ws, fragment, context)
+    proof = json.loads(T._artifact(ws, result["artifact_refs"], result["metrics"][O.METRIC], "json"))
+    proof["schema"] = "forge-c/swe4-target-observation-proof/1"
+    proof_ref = context.store(canonical_json(proof), "json")
+    result["artifact_refs"].append(proof_ref)
+    result["metrics"][O.METRIC] = proof_ref
+    with pytest.raises(O.ObservationError, match="PROOF_VERSION_UNSUPPORTED"):
+        O.verify(ws, result)
+    proof["schema"] = O.PROOF
+    proof["tests"][0]["observed"]["sr_reserved_write_values_valid"] = False
+    proof_ref = context.store(canonical_json(proof), "json")
+    result["artifact_refs"].append(proof_ref)
+    result["metrics"][O.METRIC] = proof_ref
+    with pytest.raises(O.ObservationError, match="RESULT_CHANGED"):
+        O.verify(ws, result)  # the reserved-write verdict is recomputed from sealed raw access observations
 
 
 @actual

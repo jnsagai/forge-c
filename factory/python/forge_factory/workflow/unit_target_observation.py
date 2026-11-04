@@ -22,7 +22,7 @@ from . import unit_target_timing as trusted
 
 DECLARATION = "software/tests/unit/target_observations.json"
 SCHEMA = "forge-c/swe4-wwdg-target-observation/1"
-PROOF = "forge-c/swe4-target-observation-proof/1"
+PROOF = "forge-c/swe4-target-observation-proof/2"
 METRIC = "unit_target_observation_report"
 FUNCTION = "HAL_WWDG_ClearEarlyWakeupFlag"
 CASE = {"schema": SCHEMA, "ut": "UT-021", "uspec": "USPEC-HAL-04-03", "function": FUNCTION,
@@ -146,11 +146,16 @@ def _observed(mailbox, access):
     pre = [a["value"] for a in access if a["phase"] == 1 and a["access"] == "R" and a["offset"] == 8]
     post = [a["value"] for a in access if a["phase"] == 3 and a["access"] == "R" and a["offset"] == 8]
     writes = [a for a in access if a["phase"] == 2 and a["access"] == "W"]
+    reserved_mask = 0xfffffffe  # RM0486 WWDG_SR[31:1]: preserve reset values WHEN WRITING.
+    reserved_valid = bool(writes) and all(
+        a["offset"] == 8 and type(a["value"]) is int and 0 <= a["value"] <= 0xffffffff
+        and a["value"] & reserved_mask == 0 for a in writes)
     observed = {"sr_before": pre[-1] if pre else None, "sr_after": post[-1] if post else None,
                 "actual_hal_status_matches_HAL_OK": 902 not in mailbox["failed_ids"],
-                "call_writes": [{"offset": a["offset"], "value": a["value"]} for a in writes]}
+                "call_writes": [{"offset": a["offset"], "value": a["value"]} for a in writes],
+                "sr_reserved_write_mask": reserved_mask, "sr_reserved_write_values_valid": reserved_valid}
     ok = (mailbox["failed"] == 0 and pre == [1] and post == [0]
-          and bool(writes) and all(a["offset"] == 8 for a in writes))
+          and reserved_valid)
     return {"id": CASE["ut"], "uspec": CASE["uspec"], "function": FUNCTION,
             "status": "PASS" if ok else "FAIL", "observed": observed,
             "scope": "EXPLICIT_EXISTING_RENODE_MODEL_CASE_NOT_SILICON", "silicon_verified": False}
@@ -234,7 +239,9 @@ def verify(ws, result):
         raise ObservationError("TARGET_OBSERVATION_DECLARATION_MISSING")
     refs = result.get("artifact_refs", [])
     proof = json.loads(trusted._artifact(ws, refs, result.get("metrics", {}).get(METRIC), "json"))
-    if (proof.get("schema") != PROOF or proof.get("identity") != _identity(ws)
+    if proof.get("schema") != PROOF:
+        raise ObservationError("TARGET_OBSERVATION_PROOF_VERSION_UNSUPPORTED")
+    if (proof.get("identity") != _identity(ws)
             or proof.get("invocation_id") != result.get("provenance", {}).get("invocation_id")):
         raise ObservationError("TARGET_OBSERVATION_PROOF_BINDING_CHANGED")
     binary = json.loads(trusted._artifact(ws, refs, proof["elf_artifact_ref"], "json"))
