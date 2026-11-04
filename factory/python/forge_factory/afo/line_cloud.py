@@ -23,27 +23,27 @@ def context_arguments(spec):
     context = spec.get("rework_context")
     if context is None:
         return []
-    if (not isinstance(context, dict) or set(context) != {
-            "source_work_order", "phase", "inspection_sha256", "gate_log_sha256"}
-            or context.get("phase") != spec.get("stop_after")
-            or not spec.get("resume_from")
-            or not isinstance(context["source_work_order"], str)
-            or not re.fullmatch(r"WO-[A-Za-z0-9_-]{1,180}", context["source_work_order"])
-            or context["source_work_order"] == spec.get("wo")
-            or not isinstance(context["gate_log_sha256"], str)
-            or not re.fullmatch(r"[0-9a-f]{64}", context["gate_log_sha256"])
-            or not isinstance(context["inspection_sha256"], str)
-            or not (context["inspection_sha256"] == "ABSENT"
-                    or re.fullmatch(r"[0-9a-f]{64}", context["inspection_sha256"]))):
-        raise ValueError("CLOUD_REWORK_BINDING_INVALID")
-    return ["--rework-from", context["source_work_order"],
+    from ..rework_context import request
+
+    try:
+        context = request(context, spec.get("stop_after"), spec.get("resume_from"))
+        if context["source_work_order"] == spec.get("wo"):
+            raise ValueError("self source")
+    except ValueError as exc:
+        raise ValueError("CLOUD_REWORK_BINDING_INVALID") from exc
+    args = ["--rework-from", context["source_work_order"],
             "--rework-inspection-sha256", context["inspection_sha256"],
             "--rework-gates-sha256", context["gate_log_sha256"]]
+    if "source_phase" in context:
+        args += ["--rework-source-phase", context["source_phase"],
+                 "--rework-upstream-sha256", context["upstream_sha256"]]
+    return args
 
 
 def failed_context(line, plan):
     previous = plan.current
-    if (previous is None or previous.phase != plan.order["phase"] or not previous.rid
+    upstream = plan.order.get("kind") == "UPSTREAM"
+    if (previous is None or (not upstream and previous.phase != plan.order["phase"]) or not previous.rid
             or not line.ended_run(previous.wo, previous.rid)):
         raise ValueError("CLOUD_REWORK_SOURCE_NOT_KNOWN_TERMINAL")
     ws = line.workspace(previous.wo)
@@ -61,6 +61,13 @@ def failed_context(line, plan):
     inspections = sorted((ws / "inspection" / previous.phase).glob("INS*"))
     context = {"source_work_order": previous.wo, "phase": previous.phase, "gate_log_sha256": gates,
                "inspection_sha256": pin(inspections[-1]) if inspections else "ABSENT"}
+    if upstream:
+        from ..common import canonical_json, sha256_bytes
+        from ..rework_context import upstream_snapshot
+
+        routing = upstream_snapshot(ws, plan.order["phase"], previous.phase)
+        context.update(phase=plan.order["phase"], source_phase=previous.phase,
+                       upstream_sha256=sha256_bytes(canonical_json(routing)))
     context_arguments({**plan.order, "rework_context": context})
     return context
 
@@ -212,7 +219,11 @@ def launch(path, *, line=None, run=subprocess.run):
         import yaml
         validate_profile(yaml.safe_load(reader.read(f"config/factory/profiles/{PROFILE}.yaml") or b"{}"))
         rework_args = context_arguments(spec)
-        if rework_args and b"--rework-from" not in (reader.read("factory/python/forge_factory/workorder.py") or b""):
+        consumer = reader.read("factory/python/forge_factory/workorder.py") or b""
+        required = ["--rework-from"]
+        if (spec.get("rework_context") or {}).get("source_phase"):
+            required += ["--rework-source-phase", "--rework-upstream-sha256"]
+        if rework_args and any(flag.encode() not in consumer for flag in required):
             raise ValueError("CLOUD_REWORK_NOT_SUPPORTED_AT_REVISION")
         inputs = LL.plan_inputs(reader, order.example, cfg, wt)
         LL.provision_inputs(inputs, wt, cfg.inputs_cache)
@@ -356,7 +367,7 @@ class CloudPlacer(LO.Placer):
         if plan.sweep:
             return {"action": plan.action, "wo": plan.order["wo"], "outcome": "REFUSED",
                     "detail": "CLOUD_INFRA_RECOVERY_REQUIRES_OWNED_RECIPE"}
-        if plan.order["kind"] == "RETRY":
+        if plan.order["kind"] in ("RETRY", "UPSTREAM"):
             try:
                 previous_spec = getattr(plan.current, "spec", None) or {}
                 retained = plan.order.get("rework_context")

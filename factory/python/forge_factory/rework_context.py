@@ -34,8 +34,9 @@ def require(ok: bool, code: str) -> None:
 def request(value: dict | None, phase: str | None, resume: str | None) -> dict | None:
     if value is None:
         return None
-    require(isinstance(value, dict) and set(value) == {
-        "source_work_order", "phase", "inspection_sha256", "gate_log_sha256"}, "REQUEST_INVALID")
+    fields = {"source_work_order", "phase", "inspection_sha256", "gate_log_sha256"}
+    require(isinstance(value, dict) and set(value) in (fields, fields | {"source_phase", "upstream_sha256"}),
+            "REQUEST_INVALID")
     require(phase in PHASES and value["phase"] == phase and bool(resume), "PHASE_AND_RESUME_REQUIRED")
     require(isinstance(value["source_work_order"], str) and bool(WO.fullmatch(value["source_work_order"])),
             "SOURCE_ID_INVALID")
@@ -44,6 +45,12 @@ def request(value: dict | None, phase: str | None, resume: str | None) -> dict |
     inspection = value["inspection_sha256"]
     require(isinstance(inspection, str) and (inspection == "ABSENT" or bool(SHA.fullmatch(inspection))),
             "INSPECTION_HASH_INVALID")
+    if "source_phase" in value:
+        require(value["source_phase"] in PHASES and PHASES.index(phase) < PHASES.index(value["source_phase"]),
+                "UPSTREAM_PHASE_INVALID")
+        require(resume == value["source_work_order"], "UPSTREAM_RESUME_SOURCE_MISMATCH")
+        require(isinstance(value["upstream_sha256"], str) and bool(SHA.fullmatch(value["upstream_sha256"])),
+                "UPSTREAM_HASH_INVALID")
     return dict(value)
 
 
@@ -122,6 +129,85 @@ def inspection_data(doc: dict, phase: str, filename: str) -> dict:
     return result
 
 
+def upstream_snapshot(source: Path, phase: str, source_phase: str) -> dict:
+    """Bound normal defect routes and failed reviews, as data only; never import defect state or acceptance."""
+    from .inspection.defects import KIND_TARGET, OPEN_STATES
+
+    require(phase in PHASES and source_phase in PHASES and PHASES.index(phase) < PHASES.index(source_phase),
+            "UPSTREAM_PHASE_INVALID")
+    routes = []
+    paths = sorted((source / ".forge-run/defects").glob("DEF-*.json"))
+    require(len(paths) <= MAX_ITEMS, "UPSTREAM_DEFECTS_EXCESSIVE")
+    for path in paths:
+        data = read_file(source, str(path.relative_to(source)))
+        doc = json.loads(data)
+        require(isinstance(doc, dict), "UPSTREAM_DEFECT_INVALID")
+        if doc.get("target_phase") != phase or doc.get("status") not in OPEN_STATES:
+            continue
+        detected = doc.get("detected_phase")
+        ident = doc.get("id")
+        require(isinstance(ident, str) and bool(re.fullmatch(r"DEF-\d{3}", ident)) and path.name == ident + ".json"
+                and doc.get("schema") == "forge-c/defect/0.5"
+                and KIND_TARGET.get(doc.get("kind")) == phase and detected in PHASES
+                and PHASES.index(phase) < PHASES.index(detected) <= PHASES.index(source_phase),
+                "UPSTREAM_DEFECT_ROUTE_INVALID")
+        require(doc.get("reported_by") in (f"swe{detected[-1]}-author", f"swe{detected[-1]}-inspector", "route-gate"),
+                "UPSTREAM_DEFECT_REPORTER_INVALID")
+        # Preserve complete bounded normal records, including requirement quotes and status history.
+        require(len(pretty_json(doc).encode()) <= MAX_CONTEXT, "UPSTREAM_DEFECT_TOO_LARGE")
+        require(isinstance(doc.get("history"), list) and bool(doc["history"])
+                and isinstance(doc["history"][-1], dict)
+                and doc["history"][-1].get("status") == doc["status"], "UPSTREAM_DEFECT_HISTORY_INVALID")
+        for key in ("summary", "requirement_quote"):
+            text(doc.get(key))
+        require(bool(strings(doc.get("requirement_ids"))), "UPSTREAM_REQUIREMENTS_MISSING")
+        strings(doc.get("evidence_refs"))
+        routes.append({"path": str(path.relative_to(source)), "sha256": sha256_bytes(data), "record": doc})
+    require(bool(routes), "UPSTREAM_OPEN_DEFECT_MISSING")
+    reviews = {}
+    gates = read_file(source, ".forge-run/gates/gate-log.jsonl")
+    for reviewed in PHASES[PHASES.index(phase):PHASES.index(source_phase) + 1]:
+        inspections = sorted((source / "inspection" / reviewed).glob("INS*"))
+        if not inspections:
+            continue
+        latest = inspections[-1]
+        data = read_file(source, str(latest.relative_to(source)))
+        doc = json.loads(data)
+        if isinstance(doc, dict) and doc.get("verdict") == "FAIL":
+            reviews[reviewed] = {"sha256": sha256_bytes(data),
+                                 "inspection": inspection_data(doc, reviewed, latest.name),
+                                 "gate_records": phase_records(gates, reviewed)}
+    result = {"target_phase": phase, "source_phase": source_phase, "defects": routes, "failed_reviews": reviews}
+    require(len(pretty_json(result).encode()) <= MAX_CONTEXT, "CONTEXT_TOO_LARGE")
+    return result
+
+
+def _failed_records(source: Path, gates: bytes, source_phase: str, routing: dict | None) -> tuple[str, list[dict]]:
+    if routing is None:
+        return source_phase, phase_records(gates, source_phase)
+    # Prefer the CURRENT independent failed review to an older rejection at the order's stop phase.
+    # An internal loop can end at that earlier detecting phase without ever returning to the stop phase.
+    detected = {d["record"]["detected_phase"] for d in routing["defects"]}
+    store = Store(source)
+    reviewed_route = False
+    for phase in reversed(PHASES[:PHASES.index(source_phase) + 1]):
+        review = routing["failed_reviews"].get(phase)
+        if phase not in detected or review is None:
+            continue
+        reviewed_route = True
+        inspection = review["inspection"]
+        baseline = store.latest_baseline(phase)
+        gate = store.gate(phase)
+        if (baseline and baseline.get("baseline_hash") == inspection.get("baseline_hash") == store.current_hash(phase)
+                and baseline.get("baseline_id") == inspection.get("baseline_id")
+                and gate.get("decision") in ("REWORK", "BLOCKED")
+                and gate.get("reason") == inspection["inspection_id"]):
+            return phase, phase_records(gates, phase)
+    if reviewed_route:
+        raise ReworkRefused("REWORK_CONTEXT_CURRENT_FAILED_DETECTING_PHASE_MISSING")
+    return source_phase, phase_records(gates, source_phase)
+
+
 def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
     """Validate and snapshot before writing the new immutable input or rendering a graph."""
     value = request(value, phase, (manifest.get("resumed_from") or {}).get("source_work_order"))
@@ -134,7 +220,9 @@ def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
     old = json.loads(old_bytes)
     require(old.get("work_order") == value["source_work_order"] and old.get("work_order") != manifest.get("work_order"),
             "SOURCE_IDENTITY_MISMATCH")
-    require((old.get("phase_scope") or {}).get("stop_after", phase) == phase, "SOURCE_PHASE_MISMATCH")
+    source_phase = value.get("source_phase", phase)
+    default_phase = phase if source_phase == phase else None
+    require((old.get("phase_scope") or {}).get("stop_after", default_phase) == source_phase, "SOURCE_PHASE_MISMATCH")
     for key in ("driver", "layer", "peripheral", "purpose", "target", "scope", "operation_scope", "simulation_performance"):
         require(old.get(key) == manifest.get(key), "PRODUCT_SCOPE_MISMATCH:" + key)
     rid = read_file(source, ".forge-run/fabro_run_id", 256).decode().strip()
@@ -157,7 +245,13 @@ def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
                 and src.current_hash(prior) == before["baseline_hash"]
                 and dst.current_hash(prior) == after["baseline_hash"], "UPSTREAM_CONTENT_MISMATCH:" + prior)
         upstream[prior] = before["baseline_hash"]
-    require(src.gate(phase).get("decision") != "PASS", "SOURCE_PHASE_ALREADY_PASSED")
+    routing = None
+    if source_phase != phase:
+        require(dst.gate(phase).get("decision") != "PASS", "UPSTREAM_TARGET_ALREADY_PASSED")
+        routing = upstream_snapshot(source, phase, source_phase)
+        require(sha256_bytes(canonical_json(routing)) == value["upstream_sha256"], "UPSTREAM_HASH_MISMATCH")
+    else:
+        require(src.gate(phase).get("decision") != "PASS", "SOURCE_PHASE_ALREADY_PASSED")
     provided = {r["path"]: r["sha256"] for r in old.get("provided", [])}
     require(provided == {r["path"]: r["sha256"] for r in manifest.get("provided", [])}, "PROVIDED_IDENTITY_MISMATCH")
     for rel, sha in provided.items():
@@ -165,8 +259,8 @@ def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
                 "PROVIDED_CONTENT_MISMATCH")
     gate_bytes = read_file(source, ".forge-run/gates/gate-log.jsonl")
     require(sha256_bytes(gate_bytes) == value["gate_log_sha256"], "GATE_HASH_MISMATCH")
-    records = phase_records(gate_bytes, phase)
-    paths = sorted((source / "inspection" / phase).glob("INS*"))
+    failed_phase, records = _failed_records(source, gate_bytes, source_phase, routing)
+    paths = sorted((source / "inspection" / source_phase).glob("INS*"))
     inspection = None
     if value["inspection_sha256"] == "ABSENT":
         require(not paths, "INSPECTION_NOT_ABSENT")
@@ -175,7 +269,7 @@ def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
         path = paths[-1]
         data = read_file(source, str(path.relative_to(source)))
         require(sha256_bytes(data) == value["inspection_sha256"], "INSPECTION_HASH_MISMATCH")
-        inspection = inspection_data(json.loads(data), phase, path.name)
+        inspection = inspection_data(json.loads(data), source_phase, path.name)
     # Full file hashes of current failed-phase units are provenance, not a requirement that fresh outputs match.
     units = {}
     for base in ("software/hal", "software/ll", "software/src", "software/include"):
@@ -191,6 +285,9 @@ def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
            "gate_records": records, "carried_upstream_baselines": upstream, "provided_headers": provided,
            "failed_phase_current_unit_sources": units,
            "acceptance": "NEW_NATIVE_GATES_AND_INDEPENDENT_INSPECTION_REQUIRED"}
+    if routing is not None:
+        doc.update(schema="forge-c/rework-context/2", source_phase=source_phase, failed_phase=failed_phase,
+                   upstream_sha256=value["upstream_sha256"], upstream_routing=routing)
     rendered = pretty_json(doc)
     require(len(rendered.encode()) <= MAX_CONTEXT and len(rendered.splitlines()) <= MAX_CONTEXT_LINES,
             "CONTEXT_TOO_LARGE")

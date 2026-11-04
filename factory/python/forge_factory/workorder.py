@@ -445,7 +445,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             "store": str(BD.store_dir(wo)),
         }
         if cmsis_gtest and (spec["delivery"].get("build") or {}).get("style") == "cmsis":
-            from .brownfield.cmsis import GTEST_LINKAGE_FIELD, GTEST_LINKAGE
+            from .brownfield.cmsis import GTEST_LINKAGE, GTEST_LINKAGE_FIELD
 
             manifest[GTEST_LINKAGE_FIELD] = GTEST_LINKAGE
             manifest["outputs"]["SWE.4"] = (
@@ -1234,6 +1234,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--rework-from", help="failed work order whose bound findings are untrusted retry input")
     ap.add_argument("--rework-inspection-sha256", help="full latest failed inspection SHA-256, or explicit ABSENT")
     ap.add_argument("--rework-gates-sha256", help="full source gate-log SHA-256; requires --resume-from and --stop-after")
+    ap.add_argument("--rework-source-phase", choices=("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"),
+                    help="terminal detecting order phase for a bound upstream rework")
+    ap.add_argument("--rework-upstream-sha256",
+                    help="full canonical upstream defect/review snapshot hash; requires --rework-source-phase")
     ap.add_argument("--target-proof-carry-promotion", type=Path,
                     help="explicit bounded JSON reference to an exact eligible creator-to-consumer CRE registry row; not a decision document")
     a = ap.parse_args(argv)
@@ -1253,12 +1257,15 @@ def main(argv: list[str] | None = None) -> int:
 
             carry_promotion = promotion_reference(a.target_proof_carry_promotion)
         rework = None
-        if any(x is not None for x in (a.rework_from, a.rework_inspection_sha256, a.rework_gates_sha256)):
+        if any(x is not None for x in (a.rework_from, a.rework_inspection_sha256, a.rework_gates_sha256,
+                                        a.rework_source_phase, a.rework_upstream_sha256)):
             from .rework_context import request
 
-            rework = request({"source_work_order": a.rework_from, "phase": a.stop_after,
-                              "inspection_sha256": a.rework_inspection_sha256,
-                              "gate_log_sha256": a.rework_gates_sha256}, a.stop_after, a.resume_from)
+            value = {"source_work_order": a.rework_from, "phase": a.stop_after,
+                     "inspection_sha256": a.rework_inspection_sha256, "gate_log_sha256": a.rework_gates_sha256}
+            if a.rework_source_phase is not None or a.rework_upstream_sha256 is not None:
+                value.update(source_phase=a.rework_source_phase, upstream_sha256=a.rework_upstream_sha256)
+            rework = request(value, a.stop_after, a.resume_from)
         durable = {}
         if a.durable_launch is not None or a.durable_launch_sha256 is not None:
             from .afo.line_recovery_product import native_parameters
