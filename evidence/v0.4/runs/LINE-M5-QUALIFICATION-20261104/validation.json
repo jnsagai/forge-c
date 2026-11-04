@@ -1,0 +1,19 @@
+{
+  "candidate": "10a67d3a3fd19d76617cf8380a709b09b2e16ce9",
+  "change_decision": "pd-2872c316ad3e79bf121f",
+  "unit_regression": "7 passed in1.57s",
+  "static_design": "14 testsPASS",
+  "scope": "Actual model-free OBSERVE LineConductor in unique private transient systemd units on laptop andOmniverse2; no productionservice/fabro/model/GPU faultinjection",
+  "remaining": [
+    "Independent automatic LineConductor watchdog integration",
+    "Model/stack operational recovery drills",
+    "Local planner andmaintainer integration",
+    "Lessons integration",
+    "Real24h/72hsoak"
+  ],
+  "reports": {
+    "laptop-report.json": "3e7107ded888ef4a34065c454c19ac249a58860d317b0b53e7d8923a1e619add",
+    "omniverse-report.json": "f2f119992c007bbb3ba83d215641528c4bf7bf865e7dfa3c7a3aed33a177feb8"
+  },
+  "earlier_failed_drill_reports_retained": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-line-m5-laptop-20261104/line-report.json"
+}

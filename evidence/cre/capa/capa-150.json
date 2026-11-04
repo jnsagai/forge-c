@@ -1,0 +1,101 @@
+{
+ "CAPA-150": {
+  "history": [
+   {
+    "at": "2026-11-04T10:11:55.103345Z",
+    "capa_id": "CAPA-150",
+    "evidence": "[\"INC-NATIVE-MODEL-20261104\"]",
+    "from_state": null,
+    "reason": "Native HAL inspector graph ignores the configured inspector model",
+    "seq": 1102,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T10:11:55.129290Z",
+    "capa_id": "CAPA-150",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1103,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T10:11:55.283314Z",
+    "capa_id": "CAPA-150",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-150 assigned",
+    "seq": 1104,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T10:11:59.271252Z",
+    "capa_id": "CAPA-150",
+    "evidence": "[\"reproducer-run:rr-bd1d8fa57de1d11f2374\", \"reproducer-run:rr-1814170e9c06bc3008b8\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1105,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T10:11:59.290916Z",
+    "capa_id": "CAPA-150",
+    "evidence": "[\"git:95c63748f6aa..da0e73d4100b\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix da0e73d4100b (patch 6606 bytes)",
+    "seq": 1106,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T10:22:45.464709Z",
+    "capa_id": "CAPA-150",
+    "evidence": "[\"reproducer-run:rr-a21dac554b544ca2bdea\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-150 absent at da0e73d4100b",
+    "seq": 1107,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T10:22:45.480369Z",
+    "capa_id": "CAPA-150",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1108,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-c509b602e3f4c20517cccd16d78ce3cf3e20b384",
+   "95c63748f6aaa024de8d762ad6eb2e7fc60548bb",
+   "da0e73d4100bbb0180eeb830040fb00abfe9c4e3",
+   "pd-e99487822369867b4c1c"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<da0e73d4100b"
+   ],
+   "candidate_patch_sha256": "d87162dbc13ed0e883637bdbf820cf822e2388435158de2cf4a0f6addf26cf36",
+   "capa_id": "CAPA-150",
+   "created_at": "2026-11-04T10:11:55.103345Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-NATIVE-MODEL-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-150",
+   "reproducer_id": "RPR-150",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-bd1d8fa57de1d11f2374",
+    "reproducer-run:rr-1814170e9c06bc3008b8"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Role metadata binds native inspector request and serving model while preserving legacy graphs",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T10:22:45.480369Z"
+  }
+ }
+}

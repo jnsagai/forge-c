@@ -1,0 +1,42 @@
+{
+  "scope": "ACTUAL_M3_READONLY_CONTEXT_NO_JOB_OR_MODEL_DISPATCH",
+  "candidate": "3d0cf8bfe1b7b536410742a0507b8ca08b6acd50",
+  "context": {
+    "schema": "forge-c/line-recovery-context/1",
+    "status": "BOUND_CONTEXT_ONLY_NO_DISPATCH",
+    "dispatch_authorized": false,
+    "role_qualification": "NOT_EVALUATED",
+    "order_id": "afo-b10f4de79535987a",
+    "attempt_id": "afo-b10f4de79535987a-a1",
+    "work_order": "WO-F014-SWE2-CRCHAL-20261104-L34B",
+    "source_workspace": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders/WO-F014-SWE2-CRCHAL-20261104-L34B/workspace",
+    "source_revision": "6cc0abca4e65240e02cdf29630815c32ec030ae2",
+    "order_digest": "07ff5b6d38a8600bcb3c54cebd525ee22d5df6561a8009ce666a97390f6850bb",
+    "campaign_sha256": "fc9efb79f7cd722dcded6f5ce9ee153c7bea75f3d941c4ba4d99646d6dc76b38",
+    "campaign_commit": "964daadef72ce8671b56fec748bb9961eff9cb0b",
+    "lineage_sha256": "5b66b3b8e47bdb677b49f859a863220f800100196da3fe9877a80c3a312a52d6",
+    "profile_sha256": "830da0ee607c66e462f9eabc3c5037fe64c88b5ebf35c05b99d978b7d505536f",
+    "profile": "local-rtx-v2-omniverse2-ornith-think-author-q38-inspector",
+    "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0",
+    "authorization": {
+      "authorization_id": "AUTH-AFO-PILOT-20261103-LINE",
+      "code": "AUTH_OK",
+      "expires_at": "2026-11-17T17:42:17Z",
+      "policy_sha256": "826ce250bd5f11b20863d02cf40ac6ed4c049509b61c9e3799a129c2110d1a1e"
+    }
+  },
+  "negative_controls": [
+    {
+      "name": "foreign_workspace",
+      "status": "PASS",
+      "code": "SOURCE_WORKSPACE_MISMATCH"
+    },
+    {
+      "name": "expired_future_clock",
+      "status": "PASS",
+      "code": "LINE_AUTH_REFUSED:AUTH_NOT_CURRENT"
+    }
+  ],
+  "models_called": 0,
+  "status": "PASS"
+}

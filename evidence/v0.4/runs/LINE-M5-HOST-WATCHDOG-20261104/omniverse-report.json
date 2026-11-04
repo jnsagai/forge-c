@@ -1,0 +1,32 @@
+{
+  "scope": "ISOLATED_HOST_CODE_QUALIFICATION_NO_PRODUCTION_FAULT_OR_AUTHORITY",
+  "status": "PASS",
+  "source_revision": "71cfc2b3c2d51d68d669094e9046a362d54bc02d",
+  "archive_sha256": "6bde11e62af18dcf494d4c3a2b149def7972c5001af9467e91d34d4239e6e33d",
+  "host_interpreter": "/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/bin/python3.13",
+  "cases": [
+    {
+      "fixture_mode": "RUNNING",
+      "status": "PASS",
+      "observed": "WAITING_FOR_AUTHORITATIVE_VOLUME",
+      "exit_code": 1
+    },
+    {
+      "fixture_mode": "STOPPED",
+      "status": "PASS",
+      "observed": "WAITING_FOR_AUTHENTICATED_OPERATIONS_INTENT",
+      "exit_code": 1
+    },
+    {
+      "fixture_mode": "UNKNOWN",
+      "status": "PASS",
+      "observed": "WAITING_FOR_AUTHENTICATED_OPERATIONS_INTENT",
+      "exit_code": 1
+    }
+  ],
+  "production_pid_before": "3939078",
+  "production_pid_after": "3939078",
+  "production_units_changed": false,
+  "models_called": 0,
+  "automatic_external_recovery": "NOT_AUTHORIZED_NOT_QUALIFIED"
+}
