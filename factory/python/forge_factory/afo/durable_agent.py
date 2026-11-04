@@ -31,7 +31,7 @@ def poll(store, order, job, eff, client, launch_fn):
 
     ex = Executions(store)
     rec = ex.get(job["job_id"]) or ex.reserve(job["job_id"], job["mission_id"], job["nonce"])
-    valid = job["policy_sha256"] == eff.sha256 and L.enabled(job["role"], eff) and L.authorized(order, eff, job["model"])
+    valid = job["policy_sha256"] == eff.sha256 and L.enabled(job["role"], eff) and L.authorized(order, eff, job["model"], job=job)
     if not valid or time.time() >= job["deadline_epoch"]:
         if rec["authorization_state"] == "VALID":
             rec = ex.revoke(job["job_id"], "REVOKED" if not valid else "EXPIRED")
@@ -164,7 +164,7 @@ def poll(store, order, job, eff, client, launch_fn):
                 packet=packet,
                 bundle=case["bundle"],
                 eff=eff,
-                authorize=lambda: valid and L.authorized(store.order(job["order_id"]), eff, job["model"]),
+                authorize=lambda: valid and L.authorized(store.order(job["order_id"]), eff, job["model"], job=job),
                 auth_models=[job["model"], *alternatives],
             )
             if receipt["admissibility_state"] == "ACCEPTED":
@@ -502,7 +502,7 @@ def generate(store, job, eff):
 
     if socket.gethostname().split(".")[0] not in ("omniverse", "omniverse2"):
         raise Refused("QWEN_QUALIFICATION_REMOTE_ONLY")
-    if not enabled(job["role"], eff) or not authorized(store.order(job["order_id"]), eff, job["model"]):
+    if not enabled(job["role"], eff) or not authorized(store.order(job["order_id"]), eff, job["model"], job=job):
         raise Refused("GENERATION_NOT_AUTHORIZED")
     from .protocol_faults import apply_primary
 

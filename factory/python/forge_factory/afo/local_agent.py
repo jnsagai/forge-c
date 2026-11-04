@@ -64,13 +64,19 @@ def request_for(order: dict) -> dict:
     return {"order_id": env["request_id"], "driver_class": env["driver_class"], "model": env["model_profile"]}
 
 
-def authorized(order: dict, eff, model: str | None = None) -> bool:
+def authorized(order: dict, eff, model: str | None = None, *, job=None) -> bool:
     from . import authority
 
     request = request_for(order)
     if model is not None:
         request["model"] = model
-    return authority.decide("recover_workorder", request, afo=eff).allow
+    if not authority.decide("recover_workorder", request, afo=eff).allow:
+        return False
+    if job and "line_origin" in job:
+        from .line_recovery import valid_job
+
+        return valid_job(job)
+    return True
 
 
 def local_order(ws) -> bool:
@@ -88,7 +94,8 @@ def enabled(role: str, eff) -> bool:
     return role in ROLES and eff.mode in ("PILOT", "ACTIVE") and bool(eff.get(flag))
 
 
-def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path, eff, *, qualification_manifest=None) -> dict:
+def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path, eff, *, qualification_manifest=None,
+            line_origin=None) -> dict:
     """Reserve the role call and its worst-case capacity BEFORE dispatch (including crashed launches)."""
     from ..registry.agents import load_agents
     from ..workorder import factory_revision
@@ -103,7 +110,19 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     man = json.loads((ws / ".forge-run/manifest.json").read_text())
     from ..development_execution import selected as development_execution
 
-    if development_execution(ws) and role in ("afo-recovery-planner", "afo-factory-maintainer"):
+    line_context = None
+    if line_origin is not None:
+        from .line_recovery import context
+
+        line_context = context(store, order["order_id"], attempt_id, ws, line_origin)
+        source = json.loads(case.read_text())
+        if not source.get("packet_ref") or not source.get("mission_id"):
+            raise QueueError("LINE_RECOVERY_DURABLE_PROTOCOL_REQUIRED", role)
+        bundle = source.get("bundle") or source.get("incident") or {}
+        if (bundle.get("order_id") != order["order_id"] or bundle.get("attempt_id") != attempt_id
+                or Path(source.get("workspace", "")).resolve() != ws.resolve()):
+            raise QueueError("LINE_RECOVERY_CASE_BINDING_MISMATCH", role)
+    if development_execution(ws) and role in ("afo-recovery-planner", "afo-factory-maintainer") and line_context is None:
         raise QueueError("DEFERRED_BY_DEVELOPMENT_POLICY", role)
     profile = (man.get("local_profile") or {}).get("id")
     model = json.loads((ws / ".forge-run/model-profile.json").read_text()).get("default")
@@ -137,7 +156,10 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
                 prior["profile"] != profile or prior["model"] != model
                 or prior["case_sha256"] != sha256_file(case)
                 or prior.get("profile_sha256", selected["_sha256"]) != selected["_sha256"]
-                or prior.get("profile_initial_reservation") != profile_reservation):
+                or prior.get("profile_initial_reservation") != profile_reservation
+                or prior.get("line_context_sha256") != (
+                    hashlib.sha256(json.dumps(line_context, sort_keys=True, separators=(",", ":"),
+                                              ensure_ascii=False).encode()).hexdigest() if line_context else None)):
             raise QueueError("LOCAL_AGENT_JOB_REBOUND", prior["job_id"])
     now = time.time()
     deadline = min(
@@ -169,6 +191,11 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     }
     if profile_reservation is not None:
         job["profile_initial_reservation"] = profile_reservation
+    if line_context is not None:
+        from ..common import canonical_json, sha256_bytes
+
+        job["line_origin"] = dict(line_origin)
+        job["line_context_sha256"] = sha256_bytes(canonical_json(line_context))
     doc = json.loads(case.read_text())
     if doc.get("retained_rework"):
         # A refinement cannot restart the original recovery wall allowance.
@@ -365,6 +392,12 @@ def _launch(job: dict, invoke) -> str:
     from ..workflow.builder import _env, _q
     from ..workorder import factory_revision
 
+    if job.get("line_origin"):
+        from .line_recovery import valid_job
+
+        if not valid_job(job):
+            raise RuntimeError("LINE_RECOVERY_AUTHORITY_OR_PROVENANCE_CHANGED")
+
     revision = factory_revision()
     if (
         revision.get("dirty")
@@ -544,7 +577,7 @@ def _poll(store, order: dict, job: dict, eff, *, client=None, launch_fn=None) ->
         return durable_poll(store, order, job, eff, client, launch_fn)
     if job["state"] in ("FAILED", "UNKNOWN", "TIMED_OUT", "REVOKED"):
         return job
-    if eff.sha256 != job["policy_sha256"] or not enabled(job["role"], eff) or not authorized(order, eff, job["model"]):
+    if eff.sha256 != job["policy_sha256"] or not enabled(job["role"], eff) or not authorized(order, eff, job["model"], job=job):
         job["state"] = "REVOKED"
     elif time.time() >= job["deadline_epoch"]:
         job["state"] = "TIMED_OUT"
@@ -678,7 +711,7 @@ def supervise(store, eff) -> list[dict]:
                 eff.sha256 == job["policy_sha256"]
                 and enabled(job["role"], eff)
                 and time.time() < job["deadline_epoch"]
-                and authorized(order, eff, job["model"])
+                and authorized(order, eff, job["model"], job=job)
             ):
                 continue
             out.append(poll(store, order, job, eff))
@@ -689,11 +722,12 @@ def supervise(store, eff) -> list[dict]:
     return out
 
 
-def make_planner(store, eff):
+def make_planner(store, eff, *, line_origin=None):
     def invoke(case: Path) -> str:
         doc = json.loads(case.read_text())
         order = store.order(doc["bundle"]["order_id"])
-        job = prepare(store, order, doc["bundle"]["attempt_id"], "afo-recovery-planner", case, Path(doc["workspace"]), eff)
+        job = prepare(store, order, doc["bundle"]["attempt_id"], "afo-recovery-planner", case, Path(doc["workspace"]), eff,
+                      line_origin=line_origin)
         job = poll(store, order, job, eff)
         if job["state"] in ("PREPARED", "LAUNCHING", "RUNNING"):
             raise planner.Pending(job["job_id"])
