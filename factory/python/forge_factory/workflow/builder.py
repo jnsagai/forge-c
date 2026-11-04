@@ -171,7 +171,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
                 pattern = rf'(  {re.escape(node)} \[.*?prompt=")((?:\\.|[^"\\])*)"'
                 dot = re.sub(pattern, lambda m: m.group(1) + m.group(2) + extra + '"', dot, flags=re.S)
     if structured:
-        dot = structured_authors(dot, structured)
+        dot = structured_authors(dot, structured, nodes)
     from ..development_execution import DEMO, DEMO_REPAIR
 
     if execution_policy and execution_policy.get("name") in (DEMO, DEMO_REPAIR):
@@ -282,7 +282,7 @@ def continuation(dot: str, node: str, gate_node: str, step: str, phase: str, str
         f"  {more} -> {chk}"]) + "\n", 1)
 
 
-def structured_authors(dot: str, structured: dict) -> str:
+def structured_authors(dot: str, structured: dict, nodes: dict | None = None) -> str:
     """Feature 010 (explicit local profile only; ADR-0014): replace agent nodes of the listed phases with the profile's
     structured-task runner (a command node with the same id, edges, role binding and visit limit):
       phases          the author node (`lrtx.runner author`)
@@ -367,26 +367,38 @@ def structured_authors(dot: str, structured: dict) -> str:
                 f'max_visits={MAX_VISITS}, script="{_q(gate_cmd(phase, "advisory"))}"]',
                 f'  {adv} -> {nxt.group(1)} [condition="outcome=succeeded"]', f"  {adv} -> upstream_swe1"]) + "\n", 1)
     if structured.get("author_model") or structured.get("inspector_model"):
-        dot = serve_swaps(dot, structured)
+        dot = serve_swaps(dot, structured, nodes)
     return dot
 
 
-def serve_swaps(dot: str, structured: dict) -> str:
+def serve_swaps(dot: str, structured: dict, nodes: dict | None = None) -> str:
     """Owner 2026-10-31 ("go ahead with the swap"): before every node that calls a model, a deterministic node makes the
     stack's llama-server serve that node's model (`lrtx.stack serve`, a no-op when it already does). Structured author
-    nodes use the author model, inspector nodes the inspector model, native agent nodes the run model. A failed
+    nodes use the author model, inspector nodes the inspector model (including native inspectors), other native nodes
+    the run model. A failed
     swap goes to the finalizer: the run ends closed, never on another model."""
     import os
     import re
     import shlex
 
-    from ..acp import native_agent_nodes, statements
+    from ..acp import _split_attrs, native_agent_nodes, statements
 
     root = os.environ.get("FORGE_LRTX_ROOT")
     if not root:
         raise ValueError("MODEL_SWAP_REQUIRES_LRTX_ROOT")
     am = structured.get("author_model") or structured["model"]
     im = structured.get("inspector_model") or structured["model"]
+    native_inspectors = {name for name in native_agent_nodes(dot)
+                         if structured.get("inspector_model") and
+                         (nodes or {}).get(name, {}).get("role", "").endswith("-inspector")}
+    edits = []
+    for start, end, indent, name, attrs in statements(dot):
+        if name in native_inspectors:
+            kept = ", ".join(a for a in _split_attrs(attrs) if not a.startswith(MODEL_ATTR + "="))
+            edits.append((start, end, f'{indent}{name} [{MODEL_ATTR}="{_q(im)}", {kept}]'))
+            nodes[name]["model"] = im
+    for start, end, text in reversed(edits):
+        dot = dot[:start] + text + dot[end:]
     models: dict[str, str] = {}
     for _st, _en, _i, name, attrs in statements(dot):
         if "forge_factory.lrtx.runner inspect " in attrs:
@@ -394,7 +406,7 @@ def serve_swaps(dot: str, structured: dict) -> str:
         elif re.search(r"forge_factory\.lrtx\.runner (?:author|code|tests) ", attrs):
             models[name] = am
     for name in native_agent_nodes(dot):
-        models.setdefault(name, structured["model"])
+        models.setdefault(name, im if name in native_inspectors else structured["model"])
     if not dot.endswith("}\n"):
         raise ValueError("MODEL_SWAP_GRAPH_END_MISSING")
     added = []
