@@ -1,0 +1,21 @@
+{
+  "candidate": "5450e87396efe85c989d0ea084af0e6a804c33a4",
+  "focused": "74 passed in 8.21s",
+  "test_log_sha256": "5ba970b34c872c34c9332d9081277884573de74f8d2255920ccb430dfb1d0eb2",
+  "account_model_smoke": [
+    {
+      "model": "gpt-6.1-terra",
+      "status": "PASS",
+      "billing": "account",
+      "tokens": 11487
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "status": "PASS",
+      "billing": "account",
+      "tokens": 11553
+    }
+  ],
+  "scope": "M3 host guard handoff and owner-requested Terra author / Sol inspector cloud profile; engineering runner unchanged",
+  "broad_regression_ref": "evidence/v0.4/runs/CODEX-LINE-CUTOVER-20261104/regression.json"
+}
