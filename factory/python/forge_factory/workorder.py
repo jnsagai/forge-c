@@ -193,9 +193,12 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
 
 def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
             *, purpose: str = "DEVELOPMENT", execution_policy: str | None = None,
-            quality: dict | None = None) -> tuple[Path, dict]:
+            quality: dict | None = None, cmsis_gtest: bool = True) -> tuple[Path, dict]:
     from .release import aspice, qm
     from .release.development import binding
+
+    if type(cmsis_gtest) is not bool:
+        raise ValueError("CMSIS_HOST_TEST_LINKAGE_SELECTION_INVALID")
 
     aspice_scope = aspice.binding() if purpose == aspice.PURPOSE else None
     qm_scope = qm.binding() if purpose == qm.PURPOSE else None
@@ -441,6 +444,10 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             "build_check": intake["build_check"]["status"],
             "store": str(BD.store_dir(wo)),
         }
+        if cmsis_gtest and (spec["delivery"].get("build") or {}).get("style") == "cmsis":
+            from .brownfield.cmsis import GTEST_LINKAGE_FIELD, GTEST_LINKAGE
+
+            manifest[GTEST_LINKAGE_FIELD] = GTEST_LINKAGE
     from .inspection import assessment_context
 
     if aspice_scope or qm_scope:
@@ -954,6 +961,12 @@ def run(
         source_scope = json.loads((source_workspace(resume) / ".forge-run/manifest.json").read_text())
         evaluation_holdout = evaluation_holdout or bool(source_scope.get("evaluation_holdout"))
     purpose_args = {"purpose": purpose} if purpose != "DEVELOPMENT" else {}
+    if resume and ((source_scope.get("delivery") or {}).get("build") or {}).get("style") == "cmsis":
+        from .brownfield.cmsis import gtest_linkage
+
+        # A resume inherits its source's ABI. Fresh intake alone acquires the new
+        # binding, so a passed legacy C baseline is never reinterpreted as C++.
+        purpose_args["cmsis_gtest"] = gtest_linkage(source_scope)
     if profile and selected_profile.get("development_execution_policy"):
         purpose_args["execution_policy"] = selected_profile["development_execution_policy"]
     if quality is not None:

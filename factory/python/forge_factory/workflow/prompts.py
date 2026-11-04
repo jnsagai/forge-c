@@ -1330,6 +1330,21 @@ def gtest_unit_test_steps(marker: str) -> list[str]:
     example = GTEST_LL_EXAMPLE if _layer() == "LL" else GTEST_FAKE_EXAMPLE if fake else GTEST_HAL_EXAMPLE
     pr = PERIPHERAL["profile"]
     mock = _layer() != "LL" and fake and bool(((pr or {}).get("hal") or {}).get("time_base") or not pr)
+    example_rule = ("Follow this example exactly (adapt names, registers and ids; use ONLY defines that exist in the driver "
+                    f"headers): ```{example}``` " + (GTEST_MOCK_RULE if mock else ""))
+    from ..brownfield.cmsis import gtest_linkage
+
+    if (_layer() == "LL" and BROWNFIELD.get("style") == "cmsis"
+            and gtest_linkage(ASSESSMENT.get("manifest") or {})):
+        example_rule = (
+            "CMSIS C-ABI HOST TESTS: the generated harness includes the delivered headers with C linkage and shares "
+            "the generated forge_host_rcc RAM object with C code. Begin each TEST with ut_reset_regs(); call only the "
+            "function allocated to this plan row, using its exact delivered prototype (including a peripheral instance "
+            "argument when that prototype requires it). Assert the specified return value or actual vendor register "
+            "field with EXPECT_EQ/EXPECT_NE and the vendor masks. Use the register fields exposed by the harness; "
+            "there is no ll_rcc_regs array and no generated *_OFFSET register interface. Every TEST must contain an "
+            "executed assertion whose expected value comes from its USPEC and requirement. Keep the generated C-ABI "
+            "shim, vendor headers and harness unchanged.")
     first = (FAKE_UT_FIRST.replace("software/tests/unit/test_rcc.c (GENERATED harness: CHECK(id, cond), ut_reset(), "
                                    "markers; never change it)",
                                    "software/tests/unit/test_rcc.cpp (GENERATED GoogleTest harness: ut_reset(), the time "
@@ -1348,8 +1363,7 @@ def gtest_unit_test_steps(marker: str) -> list[str]:
             "complete TEST(<unit id with _>, <UT id with _>) with its body (e.g. TEST(SWU_LL_01, UT_001) for UT-001 of "
             "SWU-LL-01), a blank line, then the marker again. Check results with EXPECT_EQ, EXPECT_NE, EXPECT_TRUE, "
             "EXPECT_FALSE (unsigned constants with U). Never add #include, #define, prototypes or fixtures (TEST_F). "
-            "Follow this example exactly (adapt names, registers and ids; use ONLY defines that exist in the driver "
-            f"headers): ```{example}``` " + (GTEST_MOCK_RULE if mock else ""),
+            + example_rule,
             "Every UT id of the plan is exactly one TEST; never add a test without a plan row and never reuse an id. "
             "Call mcp__forge_tests_mcp__run_unit once and report its summary (GTEST_FAIL lines name the failed TEST "
             "and its expected and actual values).",

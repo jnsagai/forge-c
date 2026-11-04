@@ -57,10 +57,13 @@ HARNESS_FAKE = re.sub(r"static void ut_reset_regs\(void\)\n\{.*?\n\}", lambda _m
 def unit_test(ws: Path | None = None) -> str:
     """Feature 009: the unit-test file of the work order's peripheral (RCC: the historical test_rcc.c). Owner
     2026-11-03: work orders with unit_verification write GoogleTest requirement-based tests (test_<id>.cpp); a
-    delivery-first declared target harness and a delivered CMSIS header-only driver stay in the C harness."""
+    delivery-first declared target harness and legacy delivered CMSIS orders stay in the C harness."""
     from ..layer import profile, uspec_gtest
+    from ..brownfield.cmsis import gtest_linkage
+    from ..brownfield import manifest_of
 
-    cpp = ws is not None and uspec_gtest(ws) and not _declared_harness(ws) and not _cmsis(ws)
+    cpp = (ws is not None and uspec_gtest(ws) and not _declared_harness(ws)
+           and (not _cmsis(ws) or gtest_linkage(manifest_of(ws))))
     return f"software/tests/unit/test_{profile(ws)['id']}{'.cpp' if cpp else '.c'}"
 
 

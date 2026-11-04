@@ -301,6 +301,11 @@ def _build_gtest(ctx: ToolContext, t: Path, exe: Path, bdir: Path, incs: list[st
     # linked: the test unit includes the header itself, and the unit's unused static inline copies made llvm-cov count
     # a header line as missed (L6 IWDG: 48/49 lines with every region covered) - like the mutation campaign skips it
     c_units = [x for x in srcs if not _generated_ll_unit(Path(x))]
+    from ...brownfield.cmsis_gtest import generate as cmsis_gtest
+
+    abi = cmsis_gtest(ctx.workspace, bdir)
+    if abi:
+        c_units.append(str(abi[1]))
     if fake:
         from ...workflow.ll_fake import fake_header
 
@@ -319,7 +324,8 @@ def _build_gtest(ctx: ToolContext, t: Path, exe: Path, bdir: Path, incs: list[st
         objs.append(str(o))
     o = bdir / f"{t.stem}.cpp.o"
     argv = ["clang++", "-std=c++17", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
-            *gt["cxx_flags"], *cov, *incs, "-isystem", gt["include"], "-c", str(t), "-o", str(o)]
+            *gt["cxx_flags"], *cov, *(["-I", str(abi[0])] if abi else []), *incs,
+            "-isystem", gt["include"], "-c", str(t), "-o", str(o)]
     b = run_argv(argv, bdir, 240, ALLOW, mem_mb=4096)
     log += b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr
     if b.exit_code != 0:
