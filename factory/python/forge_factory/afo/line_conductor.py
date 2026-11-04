@@ -621,7 +621,7 @@ def _current_upstream_review(rec: dict) -> tuple[str, list[dict], str] | None:
     """Read-only proof of a current independent failure and its normal owning-phase route."""
     from ..inspection import defects
     from ..inspection.engine import Store
-    from ..rework_context import MAX_ITEMS, inspection_data, phase_records, read_file
+    from ..rework_context import MAX_ITEMS, inspection_data, phase_records, read_file, strings, text
 
     try:
         target, ws = rec["phase"], rec["ws"]
@@ -646,6 +646,12 @@ def _current_upstream_review(rec: dict) -> tuple[str, list[dict], str] | None:
                     or not isinstance(doc.get("history"), list) or not doc["history"]
                     or doc["history"][-1].get("status") != doc["status"]):
                 return None
+            requirements = strings(doc.get("requirement_ids"))
+            if not requirements or any(not value.strip() for value in requirements):
+                return None
+            text(doc.get("summary"))
+            text(doc.get("requirement_quote"))
+            strings(doc.get("evidence_refs"))
             registered.append(doc)
         store = Store(ws)
         for phase in reversed(PHASES[:PHASES.index(target) + 1]):
@@ -763,7 +769,8 @@ def classify_order(rec: dict, life: str | None, capa_of: dict, *, completed_run=
     # the issue's identity across runs: the deterministic code set of the blocking rejection (the CRE bundle's dominant
     # observation is tie-broken by an attempt-specific id, so its cfp1 can differ between runs of the same rejection)
     if completed_upstream:
-        fp = "sup1-" + _h("COMPLETED_UPSTREAM", ph, *sorted(d["kind"] + ":" + d["target_phase"] for d in up))[:40]
+        causes = sorted(d["kind"] + ":" + d["target_phase"] + ":" + ",".join(sorted(set(d["requirement_ids"]))) for d in up)
+        fp = "sup1-" + _h("COMPLETED_UPSTREAM", ph, *causes)[:40]
     else:
         fp = "sup1-" + _h("CODES", ph, route, *sorted(codes))[:40] if codes else b["fingerprint"]
     return {"class": cls, "phase": ph, "error_code": error_code, "route": route or "ENDED", "codes": codes,
