@@ -554,7 +554,7 @@ function renderKpis(d) {
   const status = k.on_floor ? "working" : "idle";
   $("#plant-status").className = "plant-status s-" + status;
   $("#plant-status").innerHTML = `${stack(true)}<span>${k.on_floor ? "Line running" : "Line idle"}</span>`;
-  const where = k.station && k.station.kind === "cloud_api" ? `cloud APIs (Anthropic, OpenAI) · API cost today $${(k.station.cost_today_usd || 0).toFixed(2)}` : "one GPU station (RTX 6000 Ada)";
+  const where = k.station && k.station.kind === "cloud_api" ? `${Object.keys(k.station.account_models || {}).length ? "cloud models · ChatGPT account" : "cloud APIs (Anthropic, OpenAI)"} · API cost today $${(k.station.cost_today_usd || 0).toFixed(2)}` : "one GPU station (RTX 6000 Ada)";
   $("#sub").textContent = `ASPICE QM · shift since ${d.shift_start.slice(0, 16).replace("T", " ")} UTC · ${where} · updated ${d.updated_at.slice(11, 19)} UTC`;
 }
 // owner 2026-11-02: the cloud line shows a tokens and API cost monitor per model instead of the GPU station
@@ -568,7 +568,7 @@ function apiTile(m) {
     `<div class="v" style="font-size:20px">price not set</div>`;
   return `<div class="kpi api-kpi"><span class="label">${esc(apiName(m))}</span>${cost}
     <span class="n">${fmt(t.calls)} calls${t.failed ? `, <span class="late">${t.failed} failed</span>` : ""} · in ${fmt(t.prompt)}${t.cached ? ` (${fmt(t.cached)} cached)` : ""} · out ${fmt(t.completion)}${t.reasoning ? ` (${fmt(t.reasoning)} reasoning)` : ""} tokens</span>
-    ${t.account_calls ? `<span class="n">${fmt(t.account_calls)} of them via the Claude account (not billed; list-price equivalent $${t.list_cost_usd.toFixed(2)})</span>` : ""}
+    ${t.account_calls ? `<span class="n">${fmt(t.account_calls)} via the ${m.backend === "codex" ? "ChatGPT" : "Claude"} account (no API charge${t.list_cost_usd ? `; list-price equivalent $${t.list_cost_usd.toFixed(2)}` : ""})</span>` : ""}
     <span class="n">last hour: ${fmt(h.calls)} calls · ${fmt(h.prompt + h.completion)} tokens${m.priced ? ` · $${h.cost_usd.toFixed(2)}` : ""}${m.last_s != null ? ` · last call ${m.last_s < 90 ? m.last_s + " s" : Math.round(m.last_s / 60) + " min"} ago` : ""}</span></div>`;
 }
 // owner 2026-11-02 ("Claude API/Account mode"): the floor's only control - where the cloud line's Claude calls go
@@ -577,6 +577,7 @@ const MODE_ROWS = [
   {target: "claude", key: "claude_mode", label: "Claude (author)", acct: "the owner's Claude account", api: "Anthropic API"},
   {target: "inspector", key: "inspector_mode", label: "gpt-6.1-sol (inspector)", acct: "the owner's ChatGPT login (Codex CLI)", api: "OpenAI API"}];
 function modeTile(st) {
+  if (Object.keys(st.account_models || {}).length) return `<div class="kpi"><span class="label">Model access · ChatGPT account</span>${Object.entries(st.account_models).map(([role, model]) => `<span class="n">${esc(model)} (${esc(role)}) · account</span>`).join("")}<span class="n">All calls use the configured account backend.</span></div>`;
   const rows = MODE_ROWS.filter((r) => st[r.key]);
   if (!rows.length) return "";
   const armed = modeArm && modeArm.until > Date.now() ? modeArm : null;

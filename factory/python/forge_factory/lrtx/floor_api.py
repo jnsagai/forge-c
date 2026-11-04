@@ -243,7 +243,14 @@ def cloud_station(now: float) -> dict | None:
                 a["list_cost_usd"] = round(a["list_cost_usd"] + float(u.get("list_cost_usd") or 0), 4)
     for m in models.values():
         m["last_s"] = round(now - m.pop("last_ts")) if m.get("last_ts") else None
+    try:
+        account_models = json.loads(os.environ.get("FORGE_FLOOR_ACCOUNT_MODELS") or "{}")
+    except ValueError:
+        account_models = {}
+    account_models = {k: v for k, v in account_models.items() if k in ("author", "inspector") and isinstance(v, str)} \
+        if isinstance(account_models, dict) else {}
     return {"kind": "cloud_api", "available": True, "models": sorted(models.values(), key=lambda x: x["model"]),
+            "account_models": account_models,
             "cost_today_usd": round(sum(m["today"]["cost_usd"] for m in models.values()), 2), "claude_mode": claude_mode(),
             "inspector_mode": claude_mode("inspector")}
 

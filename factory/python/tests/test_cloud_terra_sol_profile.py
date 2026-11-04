@@ -10,6 +10,25 @@ from forge_factory.lrtx import cloud_bridge as CB, profile as P
 PROFILE = "cloud-bridge-terra-author-sol-inspector"
 
 
+def test_floor_reports_the_account_roles_without_charging_account_usage(tmp_path, monkeypatch):
+    import time
+    from forge_factory.lrtx.floor_api import cloud_station
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path))
+    roles = P.role_models(P.load(PROFILE))
+    monkeypatch.setenv("FORGE_FLOOR_ACCOUNT_MODELS", json.dumps(roles))
+    meter = tmp_path / "cloud-bridge/calls.jsonl"
+    meter.parent.mkdir()
+    meter.write_text(json.dumps({"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                                "model": roles["author"], "backend": "codex", "ok": True,
+                                "usage": {"billing": "account", "prompt_tokens": 10}}) + "\n")
+    station = cloud_station(time.time())
+    assert station["account_models"] == roles and station["cost_today_usd"] == 0
+    assert station["models"][0]["today"]["account_calls"] == 1
+    monkeypatch.setenv("FORGE_FLOOR_ACCOUNT_MODELS", '[]')
+    assert cloud_station(time.time())["account_models"] == {}
+
+
 def test_model_switch_preserves_the_comparison_runner_and_host_isolation():
     old = P.load("cloud-bridge-claude-author-codex-inspector")
     new = P.load(PROFILE)
