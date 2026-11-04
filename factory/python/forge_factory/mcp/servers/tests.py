@@ -172,7 +172,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
                       metrics={"verification_executed": False})
     srcs = [str(p) for d in SOURCE_DIRS for p in sorted((ctx.workspace / d).glob("*.c"))
             if (ctx.workspace / d).is_dir()]
-    from ...workflow.ll_fake import FAKE_DIR, fake_header, internal_calls, modified
+    from ...workflow.ll_fake import FAKE_DIR, fake_header, internal_calls, modified, reviewed_change
     from ...workflow.scaffold import unit_test
 
     fake = level == "unit" and (ctx.workspace / FAKE_DIR).is_dir()  # CAPA-038: the LL test double wins the include
@@ -186,14 +186,15 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     incs = (host_flags(ctx.workspace) + include_flags(ctx.workspace) + instance_flags(ctx.workspace, host=False)
             + [f"-I{ctx.workspace / d}" for d in ([FAKE_DIR] if fake else []) + INCLUDE_DIRS
                + [f"software/tests/{level}"] if (ctx.workspace / d).is_dir()])
-    if fake and modified(ctx.workspace):
-        return result(ctx, "FAIL", "generated LL test double was modified", issues=[
-            f"GENERATED_TEST_DOUBLE_MODIFIED:{fake_header(ctx.workspace)} (generated from the provided LL header; "
-            f"restore it - write the test cases in {unit_test(ctx.workspace)} only)"], tool="clang")
     from ...workflow import ll_call_arguments
     from ...workflow.provided_ll_unit import selected as real_ll_selected
 
     try:
+        if fake and modified(ctx.workspace):
+            return result(ctx, "FAIL", "generated LL test double was modified", issues=[
+                f"GENERATED_TEST_DOUBLE_MODIFIED:{fake_header(ctx.workspace)} (generated from the provided LL header; "
+                f"restore it - write the test cases in {unit_test(ctx.workspace)} only)"], tool="clang")
+        effective_change = fake and reviewed_change(ctx.workspace) is not None
         real_ll_tests, argument_history_tests = set(), set()
         for t in tests if level == "unit" else []:
             if ll_call_arguments.selected(ctx.workspace, t):
@@ -203,6 +204,8 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     except ValueError as exc:
         return result(ctx, "FAIL", "invalid provided LL unit backend", issues=[str(exc)], tool="clang",
                       metrics={"verification_executed": False})
+    effective_fake_tests = {t for t in tests if effective_change and t not in real_ll_tests
+                            and t not in argument_history_tests}
     internal = [f"LL_FAKE_INTERNAL_CALL:{t.name}:{n} (internal to the generated LL bodies; preset state with "
                 "ll_fake_set_state(query_fn, value), script flags with ll_fake_return_from)"
                 for t in tests if fake and t not in real_ll_tests for n in internal_calls(t.read_text(errors="replace"))]
@@ -239,18 +242,24 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     for t in tests:
         exe = bdir / t.stem
         real_ll = t in real_ll_tests
-        if real_ll_tests or argument_history_tests:
+        if real_ll_tests or argument_history_tests or effective_fake_tests:
             backend = ("provided-ll-ram-v1" if real_ll else
-                       "ll-call-arguments-v1" if t in argument_history_tests else "default")
+                       "ll-call-arguments-v1" if t in argument_history_tests else
+                       "reviewed-ll-fake-v1" if t in effective_fake_tests else "default")
             log += f"# unit_backend {t.name} {backend}\n".encode()
         test_incs = [i for i in incs if i != f"-I{ctx.workspace / FAKE_DIR}"] if real_ll else incs
+        if t in effective_fake_tests:
+            from ...workflow.ll_effective_fake import generate
+
+            private = generate(ctx.workspace, bdir / (t.stem + ".ll-effective-fake"))
+            test_incs = [f"-I{private}", *test_incs]
         if t.suffix == ".cpp":
             exe = bdir / (t.stem + GTEST_EXE_SUFFIX)
             b, blog = _build_gtest(ctx, t, exe, bdir, test_incs, srcs, coverage, fake and not real_ll, gt,
                                    real_ll=real_ll, argument_history=t in argument_history_tests)
         else:
             argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
-                    *(COV_FLAGS if coverage else []), *incs, str(t), *srcs, "-o", str(exe)]
+                    *(COV_FLAGS if coverage else []), *test_incs, str(t), *srcs, "-o", str(exe)]
             b = run_argv(argv, bdir, 180, ALLOW)
             blog = b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr
         log += blog
@@ -333,8 +342,9 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
                    "and order, use a unique suffix, do not combine checks" for d in dups[:10]]
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed,
         **({"backends": {t.name: "provided-ll-ram-v1" if t in real_ll_tests else
-                        "ll-call-arguments-v1" if t in argument_history_tests else "default" for t in tests}}
-           if real_ll_tests or argument_history_tests else {})}))
+                        "ll-call-arguments-v1" if t in argument_history_tests else
+                        "reviewed-ll-fake-v1" if t in effective_fake_tests else "default" for t in tests}}
+           if real_ll_tests or argument_history_tests or effective_fake_tests else {})}))
     write_progress(ctx.workspace, ctx.phase, pop, "tests", total, n_done, n_pass, n_fail, running=False)
     op = "run_unit" if level == "unit" else "run_integration"
     record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",
@@ -343,11 +353,13 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     issues = undeclared + issues
     argument_refs = [ctx.store(path.read_bytes(), "json") for t in sorted(argument_history_tests)
                      if (path := bdir / (t.stem + ".ll-call-arguments") / "binding.json").is_file()]
+    effective_refs = [ctx.store(path.read_bytes(), "json") for t in sorted(effective_fake_tests)
+                      if (path := bdir / (t.stem + ".ll-effective-fake") / "binding.json").is_file()]
     return result(ctx, "PASS" if failed == 0 and not undeclared else "FAIL",
                   f"{level}: {passed} passed, {failed} failed (HOST)"
                   + "".join(target_summaries)
                   + ("; undeclared test change - declare it" if undeclared else ""),
-                  [ctx.store(log), *target_refs, *argument_refs], issues,
+                  [ctx.store(log), *target_refs, *argument_refs, *effective_refs], issues,
                   {"passed": passed, "failed": failed, "executables": len(tests),
                                              "environment": "host", "target_evidence": False, **target_metrics},
                   "clang+self-checking tests", tool_version("clang"), 0 if failed == 0 else 1, ms, None, log)

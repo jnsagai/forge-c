@@ -370,9 +370,41 @@ def write(ws: Path) -> bool:
 
 
 def modified(ws: Path) -> bool:
-    """True when the fake differs from what the provided LL header generates (it was edited)."""
+    """Check the protected original fake, even after a normally reviewed provided-LL correction."""
     from ..layer import ll_header, register_block
 
     p, src = Path(ws) / fake_header(ws), Path(ws) / ll_header(ws)
-    return p.is_file() and src.is_file() and p.read_text(errors="replace") != generate(
-        src.read_text(errors="replace"), register_block(ws))
+    if not p.is_file() or not src.is_file():
+        return False
+    text = src.read_text(errors="replace")
+    identity = reviewed_change(ws)
+    if identity is not None:
+        from ..brownfield import manifest_of
+        from .provided_input_identity import _original, safe_path
+
+        safe_path(ws, fake_header(ws))
+        item = next(row for row in manifest_of(ws)["provided"] if row["path"] == identity["path"])
+        text = _original(ws, item).decode(errors="replace")
+    return p.read_text(errors="replace") != generate(text, register_block(ws))
+
+
+def reviewed_change(ws: Path) -> dict | None:
+    """No caller bypass: changed provided bytes require the full independent approval chain."""
+    from ..brownfield import manifest_of
+    from ..common import sha256_file
+    from ..layer import ll_header
+
+    rel = ll_header(ws)
+    source = Path(ws) / rel
+    provided = manifest_of(ws).get("provided", [])
+    if not isinstance(provided, list) or any(not isinstance(row, dict) for row in provided):
+        raise ValueError("PROVIDED_EFFECTIVE_FAKE_INPUT_INVALID")
+    rows = [row for row in provided if row.get("path") == rel]
+    if not rows or not source.is_file() or len(rows) == 1 and sha256_file(source) == rows[0].get("sha256"):
+        return None
+    from .provided_input_identity import effective_identity
+
+    identity = effective_identity(ws, rel)
+    if identity["approval"] is None:
+        raise ValueError("PROVIDED_EFFECTIVE_FAKE_APPROVAL_MISSING")
+    return identity

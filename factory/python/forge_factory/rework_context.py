@@ -208,6 +208,62 @@ def _failed_records(source: Path, gates: bytes, source_phase: str, routing: dict
     return source_phase, phase_records(gates, source_phase)
 
 
+def _provided_bindings(source: Path, destination: Path, old: dict, provided: dict, phase: str) -> list[dict]:
+    """Destination bytes stay original or independently approved; failed source edits are reference data only."""
+    bindings = []
+    for rel, original_sha in provided.items():
+        source_sha = sha256_bytes(read_file(source, rel))
+        destination_sha = sha256_bytes(read_file(destination, rel))
+        if source_sha == original_sha == destination_sha:
+            continue  # preserve the original strict path and its unchanged context bytes
+        from .inspection import provided_changes as PC
+        from .workflow import provided_input_identity as I
+        if PHASES.index(phase) >= PHASES.index("SWE.4"):
+            require(source_sha == destination_sha, "PROVIDED_CONTENT_MISMATCH")
+
+        require(PC.enabled(source) and PC.enabled(destination), "PROVIDED_CONTENT_MISMATCH")
+        destination_identity = I.effective_identity(destination, rel)
+        require(destination_identity["original_sha256"] == original_sha
+                and destination_identity["effective_sha256"] == destination_sha, "PROVIDED_CONTENT_MISMATCH")
+        source_state = "ORIGINAL_SOURCE"
+        reference = None
+        if source_sha != original_sha:
+            require(PC.enabled(source), "PROVIDED_SOURCE_CORRECTION_NOT_ENABLED")
+            items = [row for row in old.get("provided", []) if row.get("path") == rel]
+            require(len(items) == 1, "PROVIDED_SOURCE_NOT_UNIQUE")
+            require(sha256_bytes(I._original(source, items[0])) == original_sha, "PROVIDED_ORIGINAL_MISMATCH")
+            try:
+                source_identity = I.effective_identity(source, rel)
+            except ValueError:
+                # A failed SWE.3 correction is legitimate in-progress authorship, not a passed input to inherit.
+                # Require its original binding and normal linked CODE/hunk report before carrying even its data.
+                current_report = PC.report(source)
+                rows = [row for row in current_report.get("files", []) if row.get("path") == rel]
+                require(len(rows) == 1 and rows[0].get("status") == "CHANGED_LINKED"
+                        and rows[0].get("original_sha256") == original_sha
+                        and rows[0].get("final_sha256") == source_sha
+                        and bool(rows[0].get("hunks")) and all(h.get("reasons") for h in rows[0]["hunks"]),
+                        "PROVIDED_FAILED_SOURCE_UNLINKED")
+                require(destination_sha == original_sha, "UNAPPROVED_SOURCE_CANNOT_REBIND_APPROVED_INPUT")
+                ids = {reason.get("defect") for h in rows[0]["hunks"] for reason in h["reasons"]}
+                require(ids and all(isinstance(ident, str) and re.fullmatch(r"DEF-\d{3,8}", ident) for ident in ids),
+                        "PROVIDED_FAILED_SOURCE_UNLINKED")
+                records = {ident: sha256_bytes(read_file(source, ".forge-run/defects/" + ident + ".json"))
+                           for ident in sorted(ids)}
+                source_state = "IN_PROGRESS_REFERENCE_ONLY_NOT_CARRIED_OR_APPROVED"
+                reference = {**rows[0], "code_defect_sha256": records}
+            else:
+                if destination_sha != original_sha:
+                    require(source_identity == destination_identity, "PROVIDED_APPROVAL_IDENTITY_MISMATCH")
+                    source_state = "SAME_INDEPENDENTLY_REVIEWED_CORRECTION"
+                else:
+                    source_state = "REVIEWED_SOURCE_REFERENCE_ONLY_NOT_CARRIED"
+        bindings.append({"path": rel, "original_sha256": original_sha, "source_current_sha256": source_sha,
+                         "source_state": source_state, "source_change_reference": reference,
+                         "destination_identity": destination_identity, "inherited_verdict": False})
+    return bindings
+
+
 def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
     """Validate and snapshot before writing the new immutable input or rendering a graph."""
     value = request(value, phase, (manifest.get("resumed_from") or {}).get("source_work_order"))
@@ -254,9 +310,7 @@ def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
         require(src.gate(phase).get("decision") != "PASS", "SOURCE_PHASE_ALREADY_PASSED")
     provided = {r["path"]: r["sha256"] for r in old.get("provided", [])}
     require(provided == {r["path"]: r["sha256"] for r in manifest.get("provided", [])}, "PROVIDED_IDENTITY_MISMATCH")
-    for rel, sha in provided.items():
-        require(sha256_bytes(read_file(source, rel)) == sha == sha256_bytes(read_file(ws, rel)),
-                "PROVIDED_CONTENT_MISMATCH")
+    provided_bindings = _provided_bindings(source, ws, old, provided, phase)
     gate_bytes = read_file(source, ".forge-run/gates/gate-log.jsonl")
     require(sha256_bytes(gate_bytes) == value["gate_log_sha256"], "GATE_HASH_MISMATCH")
     failed_phase, records = _failed_records(source, gate_bytes, source_phase, routing)
@@ -288,6 +342,8 @@ def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
     if routing is not None:
         doc.update(schema="forge-c/rework-context/2", source_phase=source_phase, failed_phase=failed_phase,
                    upstream_sha256=value["upstream_sha256"], upstream_routing=routing)
+    if provided_bindings:
+        doc.update(schema="forge-c/rework-context/2", provided_input_states=provided_bindings)
     rendered = pretty_json(doc)
     require(len(rendered.encode()) <= MAX_CONTEXT and len(rendered.splitlines()) <= MAX_CONTEXT_LINES,
             "CONTEXT_TOO_LARGE")

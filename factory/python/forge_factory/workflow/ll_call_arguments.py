@@ -7,6 +7,7 @@ from pathlib import Path
 from ..common import sha256_file
 from ..layer import ll_header, register_block
 from . import ll_fake, provided_ll_unit
+from .provided_input_identity import effective_identity
 
 MARKER = "// FORGE_UNIT_BACKEND: ll-call-arguments-v1"
 
@@ -39,5 +40,6 @@ def generate(ws: Path, output: Path) -> Path:
         "original_fake_sha256": sha256_file(ws / ll_fake.fake_header(ws)),
         "generated_sha256": sha256_file(target), "generator_sha256": sha256_file(Path(ll_fake.__file__)),
         "scope": "RECORDED_SCALAR_CALL_ARGUMENTS_ONLY", "target_or_register_effect_claim": False,
+        "provided_effective_identity": [effective_identity(ws, p.relative_to(ws).as_posix()) for p in headers],
         "capacity": ll_fake.LOG_CAPACITY, "scalars_per_call_max": 2}, indent=2) + "\n")
     return output
