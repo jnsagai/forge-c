@@ -112,7 +112,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           recovery_plan: dict | None = None, operation_scope: dict | None = None,
           execution_policy: dict | None = None, assessment_manifest: dict | None = None,
           stop_after: str | None = None, uspec_gtest: bool = False,
-          provided_api: dict | None = None) -> tuple[str, dict]:
+          provided_api: dict | None = None, provided_code_handoff: bool = False) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
@@ -141,7 +141,8 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
         raise ValueError("QM_ASSESSMENT_MANIFEST_REQUIRED")
     if stop_after is not None and assessment_manifest and assessment_manifest.get("delivery_first"):
         raise ValueError("STOP_AFTER_DELIVERY_FIRST_UNSUPPORTED")  # delivery-first prepends SWE.3 code authoring
-    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest, stop_after)
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest, stop_after,
+                        provided_code_handoff and layer == "HAL" and uspec_gtest and not brownfield)
     if structured and stop_after is not None:  # rewire only the phases the scoped graph contains
         kept = PHASES[:PHASES.index(stop_after) + 1]
         structured = {**structured, **{k: [p for p in structured.get(k) or [] if p in kept]
@@ -425,7 +426,7 @@ def serve_swaps(dot: str, structured: dict, nodes: dict | None = None) -> str:
 
 def _build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
            sections: dict[str, str] | None = None, assessment_manifest: dict | None = None,
-           stop_after: str | None = None) -> tuple[str, dict]:
+           stop_after: str | None = None, provided_code_handoff: bool = False) -> tuple[str, dict]:
     from . import prompts
 
     prompts.SECTIONS.clear()
@@ -529,6 +530,12 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                   f'script="{_q(robot_scaffold_cmd())}"]',
                   f'  {ta} [label="SWE.6 Robot test author (Renode)", max_visits={ONCE}, timeout="1500s", '
                   f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {ta}", f"  {ta} -> {a}"]
+        if phase == "SWE.3" and provided_code_handoff:
+            claim = "swe3_provided_code_claim"
+            L += [f'  {claim} [shape=parallelogram, label="Claim pending provided LL CODE (deterministic)", '
+                  f'script="{_q(gate_cmd(phase, "verify", "provided_code_claim"))}"]',
+                  f'  {claim} -> {entry} [condition="outcome=succeeded"]', f"  {claim} -> finalize"]
+            entry = claim
         if prev != "start" and prompts.BROWNFIELD["mode"] and phase == "SWE.2":
             # feature 008 (FR-007): the delivered code enters only after SWE.1 is frozen and inspected
             inj = "delivery_inject"

@@ -1020,6 +1020,20 @@ def author_prompt(phase: str) -> str:
     timing_note = native_swe3_timing_note() if phase == "SWE.3" else ""
     if timing_note:
         scope_note += (" " if scope_note else "") + timing_note
+    if (phase in ("SWE.1", "SWE.2", "SWE.3") and _layer() == "HAL" and UNIT_VERIFICATION["gtest"]
+            and PROVIDED_API["api"] and not BROWNFIELD["mode"]):
+        scope_note += (" " if scope_note else "") + (
+            "PROVIDED LL CODE OWNERSHIP: the versioned provided-input correction policy permits a linked, "
+            "workspace-only correction of the supplied software/ll header in SWE.3. If its implementation "
+            "contradicts a declared SWR, report kind CODE with that exact requirement quote and the supplied "
+            "header file:line as evidence. In SWE.1/SWE.2 keep the header unchanged: this pending CODE is "
+            "deferred to its normal SWE.3 owner, not a forward upstream loop. Complete and independently "
+            "review your own requirements/architecture honestly; a pending CODE finding does not excuse "
+            "incorrect architecture or imply any phase PASS. Normal SWE.3 entry claims the pending record "
+            "IN_FIX; preserve its original snapshot and public LL API, and produce the linked diff, reasons "
+            "and required human-review record. Do not edit vendor inputs or bypass the provided LL through "
+            "LL_WriteReg/LL_ReadReg or raw register access. Later real tests and independent inspection must "
+            "verify the correction; INPUT remains appropriate for genuinely missing or wrong approved inputs.")
     if scope_note and phase == "SWE.1":
         body = [x.replace("then 12-26 requirements", "then enough atomic requirements to cover the full scope")
                 .replace("then 8-15 requirements", "then enough atomic requirements to cover the full scope")

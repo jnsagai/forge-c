@@ -757,6 +757,15 @@ def step_return(store: Store, phase: str) -> int:
 
 
 def step_verify(store: Store, phase: str, check: str) -> int:
+    if check == "provided_code_claim":
+        from .provided_early_code import claim
+
+        if phase != "SWE.3":
+            raise ValueError("EARLY_PROVIDED_CODE_OWNER_INVALID")
+        ids = claim(store.workspace)
+        _state(store.workspace, phase, {"step": "verify", "check": check, "claimed": ids})
+        print(json.dumps({"claimed": ids, "owner": phase, "inherited_verdict": False}))
+        return 0
     if check in ("delivery_inject", "delivery_check", "delivery"):  # feature 008 brownfield nodes
         from ..brownfield import gates as BG
 
