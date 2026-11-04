@@ -72,6 +72,12 @@ def bubblewrap_argv(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str]
     roots.add(Path(sys.prefix))
     roots.add(Path(sys.base_prefix))
     dr = data_root()
+    # Pinned vendor dependencies are required by independent reproductions and
+    # compilation. Expose this subtree only; state and owner credentials stay
+    # outside the namespace. Runtime roots may link to shared input storage.
+    inputs = dr / "inputs"
+    if inputs.is_dir():
+        roots.update((inputs, inputs.resolve()))
     for parent in (dr, dr.parent if dr.name.startswith("lrtx-") else dr):
         for name in ("venv", "toolchains", "engines"):
             p = parent / name
