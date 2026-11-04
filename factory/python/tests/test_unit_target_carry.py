@@ -341,3 +341,11 @@ def test_actual_crc_timing_carries_with_normal_passed_phase_contract(tmp_path, m
         seam.setattr(T, "trace", lambda p: C.trace(p, adapter))
         report = swtrace.build_all(dst, render=False, doxygen=False, upto="SWE.5", write=set(), export=False)
     assert report["findings"]["SWE.4"] == [], report
+    for rel in (swtrace.REQS, "workproducts/SWE.2/software_architecture.md", swtrace.ARCH,
+                "inspection/SWE.1/INS-SWE.1-001.json"):
+        path = dst / rel
+        original = path.read_bytes()
+        path.write_bytes(original + b"\nCHANGED\n")
+        assert C.trace(dst, T)[1] == {}, rel
+        path.write_bytes(original)
+        assert C.trace(dst, T)[1] == {"UT-001": "PASS", "UT-002": "PASS", "UT-003": "PASS"}

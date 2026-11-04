@@ -106,8 +106,16 @@ def _attest(ws):
     _require(not store.missing_outputs("SWE.4"), "PARENT_PHASE4_REQUIRED_OUTPUT_MISSING")
     return {"work_order": _manifest(ws)["work_order"], "phases_sha256": _sha(phases),
             "tool_record_sha256": _sha(_record(ws)),
-            "phase4_baseline_hash": phases["SWE.4"]["baseline"]["baseline_hash"],
-            "phase3_baseline_hash": phases["SWE.3"]["baseline"]["baseline_hash"]}
+            "phase_baseline_hashes": {phase: value["baseline"]["baseline_hash"] for phase, value in phases.items()}}
+
+
+def _phase_inputs(ws, attestation):
+    """All inherited contracts remain passed/current, including SWE.1/2 outside producer-local seals."""
+    store = Store(Path(ws))
+    expected = attestation.get("phase_baseline_hashes", {})
+    _require(set(expected) == set(PHASES[:4])
+             and all(store.current_hash(phase) == expected[phase] and store.gate(phase)["decision"] == "PASS"
+                     for phase in PHASES[:4]), "CURRENT_PHASE_INPUTS_CHANGED")
 
 
 def _semantic(man):
@@ -262,9 +270,7 @@ def _validated(ws, adapter):
     _require(migration == entry.get("migration"), "MIGRATION_ROW_CHANGED")
     record = _record(ws)
     _require(_sha(record) == entry["tool_record_sha256"], "LATEST_UNIT_RECORD_CHANGED")
-    _require(Store(Path(ws)).current_hash("SWE.4") == entry["creator_attestation"]["phase4_baseline_hash"]
-             and Store(Path(ws)).current_hash("SWE.3") == entry["creator_attestation"]["phase3_baseline_hash"],
-             "CURRENT_PHASE_INPUTS_CHANGED")
+    _phase_inputs(ws, entry["creator_attestation"])
     return entry, creator_bytes, record
 
 
@@ -314,9 +320,7 @@ def bind_resume(src, ws, stable, promotion=None):
         promotion_ref = promotion or old_entry.get("promotion_ref")
         migration = _compatible(original, current, ws, promotion_ref)
         _require(_sha(_record(ws)) == _sha(record), "COPIED_UNIT_RECORD_CHANGED")
-        _require(Store(ws).current_hash("SWE.4") == creator_attestation["phase4_baseline_hash"]
-                 and Store(ws).current_hash("SWE.3") == creator_attestation["phase3_baseline_hash"],
-                 "COPIED_PHASE_INPUTS_CHANGED")
+        _phase_inputs(ws, creator_attestation)
         manifest_sha = hashlib.sha256(creator_bytes).hexdigest()
         rel = ".forge-run/resume/target-proof-origins/" + manifest_sha + ".json"
         path = ws / rel
