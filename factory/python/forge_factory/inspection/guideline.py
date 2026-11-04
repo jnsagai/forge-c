@@ -254,6 +254,11 @@ class Checker:
                 self.check_enums(p, raw, layer)
                 if layer == "hal" and p.suffix == ".h":
                     self.check_hal_header_macros(p, raw)
+        provided, frozen = provided_frozen(self.ws), []
+        if provided:  # CAPA-141: SWE3-07 covers *generated* HAL/LL code; the provided FROZEN LL (ST code) is not the
+            # HAL author's to change - its violations are delivered-code observations (package), not HAL findings
+            frozen = [x for x in self.violations if x["file"] in provided]
+            self.violations = [x for x in self.violations if x["file"] not in provided]
         major = [x for x in self.violations if x["severity"] == "major"]
         verdict = "PASS" if not major and self.rules["guideline_hash_ok"] and (hal or ll) else "FAIL"
         return {"check_id": "SWE3-07", "guideline": self.rules["guideline"]["title"],
@@ -264,7 +269,19 @@ class Checker:
                 "rules_applied": [r["id"] for r in self.rules["rules"]],
                 "violations": self.violations,
                 **({"dispositions": self.dispositions} if self.dispositions else {}),
+                **({"provided_frozen_violations": frozen, "provided_frozen_files": sorted(provided)}
+                   if provided else {}),
                 "not_automated": "API semantics, process models and documentation completeness: manual SWE3 items"}
+
+
+def provided_frozen(ws: Path) -> set[str]:
+    """CAPA-141: files a (HAL) work order received as FROZEN delivered code of its source work order (CAPA-130:
+    brownfield.provided_frozen_paths); empty for every other work order, so their reports are unchanged."""
+    if not (Path(ws) / ".forge-run/manifest.json").is_file():
+        return set()
+    from ..brownfield import manifest_of, provided_frozen_paths
+
+    return set(provided_frozen_paths(manifest_of(ws)))
 
 
 def check_workspace(ws: Path, rules_path: Path = RULES_FILE) -> dict:

@@ -192,6 +192,31 @@ def generate(ws: Path) -> dict:
             [f"NOT_IN_RM:{n}" for n in missing]}
 
 
+_HAL_REG_DEFINE = re.compile(r"^\s*#\s*define\s+([A-Za-z_]\w*_(?:OFFSET|POS|MSK|Pos|Msk))\b", re.M)
+
+
+def _provided_ll_regmap(ws: Path) -> dict | None:
+    """CAPA-141: SWE3-08 checks the LL's register offset/bit/mask definitions against RM0486. A HAL on a provided
+    CMSIS LL (CAPA-128 `provided_build`) generates none: the LL is the register interface, verified in its own
+    lineage (source work order), and the HAL reaches registers only through it (CAPA-134). The HAL is checked for
+    defining no register offsets/positions/masks itself; None for every other work order (unchanged check)."""
+    if not (Path(ws) / ".forge-run/manifest.json").is_file():
+        return None
+    from ..brownfield.cmsis import provided_build
+
+    pb = provided_build(ws)
+    if pb is None:
+        return None
+    hal = Path(ws) / "software/hal"
+    found = sorted({(f.relative_to(ws).as_posix(), m.group(1)) for f in sorted(hal.glob("*.[ch]")) if hal.is_dir()
+                    for m in _HAL_REG_DEFINE.finditer(f.read_text(errors="replace"))})
+    findings = [f"REGMAP:HAL_DEFINES_REGISTER:{name}:{rel} (a HAL on a provided LL uses the LL's register "
+                f"definitions, verified in {pb.get('source_work_order') or 'its LL work order'})" for rel, name in found]
+    return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings, "mode": "PROVIDED_LL",
+            "stats": {"defines_checked": 0, "hal_register_defines": len(found),
+                      "register_map_verified_in": pb.get("source_work_order")}}
+
+
 def check_regmap(ws: Path) -> dict:
     """Every LL_RCC_<REG>_OFFSET/_<FIELD>_POS/_<FIELD>_MSK define in the LL header must match RM0486."""
     from .typed_registers import check_selected
@@ -199,6 +224,9 @@ def check_regmap(ws: Path) -> dict:
     typed = check_selected(ws)
     if typed is not None:
         return typed
+    provided = _provided_ll_regmap(ws)
+    if provided is not None:
+        return provided
     i = _ident(ws)
     p = ws / i["header"]
     if not p.is_file():

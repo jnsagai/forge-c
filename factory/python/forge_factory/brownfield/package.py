@@ -37,6 +37,22 @@ def static_findings(ws: Path) -> list[str]:
     return out
 
 
+def provided_guideline_findings(ws: Path) -> list[str]:
+    """CAPA-141: Cube2-guideline violations located in a HAL's provided FROZEN LL (ST code), one entry per rule and
+    file (vendor style repeats per function); delivered-code observations for the owner, never the HAL author's."""
+    from ..inspection.guideline import check_workspace
+
+    try:
+        rep = check_workspace(Path(ws))
+    except (OSError, ValueError, KeyError):
+        return ["GUIDELINE:PROVIDED_CHECK_FAILED"]
+    count: dict[tuple[str, str], int] = {}
+    for v in rep.get("provided_frozen_violations") or []:
+        count[(v["rule"], v["file"])] = count.get((v["rule"], v["file"]), 0) + 1
+    return [f"GUIDELINE:{rule}:{file} ({n} occurrence{'s' if n != 1 else ''})"
+            for (rule, file), n in sorted(count.items())]
+
+
 def _vendor_findings(ws: Path) -> list[str]:
     return list((_load(ws, "code_findings.json").get("code_checks") or {}).get("findings") or []) + static_findings(ws)
 
@@ -55,8 +71,8 @@ def findings(ws: Path) -> list[dict]:
         src = ", ".join(sorted({p.get("source_work_order") or "-" for p in m.get("provided") or []
                                 if p.get("delivered_code_mode") == "FROZEN"}))
         return [{"id": f"DELIVERED_CODE:{x[:120]}", "severity": "major",
-                 "detail": f"provided FROZEN delivered LL (source work order {src})"} for x in static_findings(ws)
-                if disposition_of(ws, x) is None]
+                 "detail": f"provided FROZEN delivered LL (source work order {src})"}
+                for x in static_findings(ws) + provided_guideline_findings(ws) if disposition_of(ws, x) is None]
     from .verify import verify
 
     out = []

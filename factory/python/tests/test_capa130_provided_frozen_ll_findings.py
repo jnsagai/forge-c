@@ -47,7 +47,8 @@ def test_provided_frozen_ll_findings_are_delivered_code_not_hal_issues(env, monk
     r = _cppcheck(ws)
     assert r["status"] == "PASS", r["issues"]
     assert any(i.startswith("DELIVERED_CODE:MISRA-20.7:software/ll/stm32n6xx_ll_iwdg.h:") for i in r["issues"])
-    gaps = BP.findings(ws)  # the owner sees them in the HAL's package, as in the LL work order's
+    gaps = [g for g in BP.findings(ws)  # the owner sees them in the HAL's package, as in the LL work order's
+            if g["id"].startswith("DELIVERED_CODE:STATIC_ANALYSIS:")]  # (CAPA-141 adds GUIDELINE observations)
     assert gaps and all(g["id"].startswith("DELIVERED_CODE:STATIC_ANALYSIS:MISRA-20.7:software/ll/") for g in gaps)
     assert "source work order WO-LL-ST" in gaps[0]["detail"]
 
