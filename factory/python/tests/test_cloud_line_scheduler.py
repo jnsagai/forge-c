@@ -83,6 +83,11 @@ def cloud(env, *, signed=True, revision="82fabdb9"):
     _git(env["camp"], "commit", "-qm", "cloud campaign")
     grant(env, models=[PROFILE], sign=signed)
     env["line"].gpu_holders = lambda: pytest.fail("queried local GPU")
+    def ended(wo, rid):
+        recorded = env["line"].workspace(wo) / ".forge-run/fabro_run_id"
+        return (recorded.is_file() and recorded.read_text().strip() == rid
+                and env["line"].fabro.get(rid, "").startswith(("succeeded", "failed", "cancelled")))
+    env["line"].ended_run = ended
     return CloudPlacer(env["line"], policy_path=path, campaigns_dir=env["camp"],
                        auth_base=env["tmp"] / "auth", allowed_signers=env["signers"],
                        clock=env["clock"], capa_of={})
@@ -106,6 +111,11 @@ def test_two_cloud_drivers_run_then_failure_reworks_from_last_passed_phase(env):
     assert last["wo"] == crc + "B"
     assert last["--resume-from"] == "WO-F014-CMP-SWE1-CRCHAL-20261104-T1"
     assert lin(p.cycle(), "wwdg-hal")["state"] == "RUNNING"
+    env["clock"].tick()
+    env["line"].finish(crc + "B", ["another current finding"])
+    p.cycle()
+    latest = LO._load(LO.supervisor_dir() / "line-orders" / f"{crc}C.json")
+    assert latest["rework_context"]["source_work_order"] == crc + "B"
 
 
 def test_unsigned_cloud_grant_never_places_orders(env):
@@ -164,3 +174,30 @@ def test_cloud_act_feed_validates_and_reports_both_drivers(env):
     assert len(feed["placement"]["lineages"]) == 2
     assert {item["state"] for item in feed["placement"]["lineages"]} == {"RUNNING"}
     assert LC.feed_errors(feed) == []
+
+
+def test_restart_after_retry_admission_preserves_its_name_and_findings(env):
+    p = cloud(env)
+    p.cycle()
+    p.cycle()
+    for item in list(env["line"].launched):
+        env["line"].finish(item["wo"])
+    p.cycle()
+    p.cycle()
+    crc = "WO-F014-CMP-SWE2-CRCHAL-20261104-T1"
+    env["line"].finish(crc, X)
+    original = env["line"].spawn_launch
+    def crash(*args):
+        raise RuntimeError("fixture interruption after durable admission")
+    env["line"].spawn_launch = crash
+    with pytest.raises(RuntimeError, match="after durable admission"):
+        p.cycle()
+    retry = LO.supervisor_dir() / "line-orders" / f"{crc}B.json"
+    before = json.loads(retry.read_text())
+    assert before["rework_context"]["source_work_order"] == crc
+    env["line"].spawn_launch = original
+    p.cycle()
+    after = json.loads(retry.read_text())
+    assert after["rework_context"] == before["rework_context"] and after["digest"] == before["digest"]
+    assert env["line"].launched[-1]["wo"] == crc + "B"
+    assert not retry.with_name(f"{crc}C.json").exists()

@@ -12,10 +12,57 @@ import subprocess
 import time
 from pathlib import Path
 
+from ..common import sha256_file
 from . import line_orders as LO
 
 PROFILE = "cloud-bridge-terra-author-sol-inspector"
 CAPACITY = 2
+
+
+def context_arguments(spec):
+    context = spec.get("rework_context")
+    if context is None:
+        return []
+    if (not isinstance(context, dict) or set(context) != {
+            "source_work_order", "phase", "inspection_sha256", "gate_log_sha256"}
+            or context.get("phase") != spec.get("stop_after")
+            or not spec.get("resume_from")
+            or not isinstance(context["source_work_order"], str)
+            or not re.fullmatch(r"WO-[A-Za-z0-9_-]{1,180}", context["source_work_order"])
+            or context["source_work_order"] == spec.get("wo")
+            or not isinstance(context["gate_log_sha256"], str)
+            or not re.fullmatch(r"[0-9a-f]{64}", context["gate_log_sha256"])
+            or not isinstance(context["inspection_sha256"], str)
+            or not (context["inspection_sha256"] == "ABSENT"
+                    or re.fullmatch(r"[0-9a-f]{64}", context["inspection_sha256"]))):
+        raise ValueError("CLOUD_REWORK_BINDING_INVALID")
+    return ["--rework-from", context["source_work_order"],
+            "--rework-inspection-sha256", context["inspection_sha256"],
+            "--rework-gates-sha256", context["gate_log_sha256"]]
+
+
+def failed_context(line, plan):
+    previous = plan.current
+    if (previous is None or previous.phase != plan.order["phase"] or not previous.rid
+            or not line.ended_run(previous.wo, previous.rid)):
+        raise ValueError("CLOUD_REWORK_SOURCE_NOT_KNOWN_TERMINAL")
+    ws = line.workspace(previous.wo)
+    if ws.is_symlink() or ws.parent.is_symlink() or not ws.is_dir():
+        raise ValueError("CLOUD_REWORK_SOURCE_INVALID")
+
+    def pin(path):
+        if (not path.is_file() or path.is_symlink() or not path.resolve().is_relative_to(ws.resolve())
+                or path.stat().st_size > 1024 * 1024
+                or any(parent.is_symlink() for parent in path.parents if parent.is_relative_to(ws))):
+            raise ValueError("CLOUD_REWORK_SOURCE_INVALID")
+        return sha256_file(path)
+
+    gates = pin(ws / ".forge-run/gates/gate-log.jsonl")
+    inspections = sorted((ws / "inspection" / previous.phase).glob("INS*"))
+    context = {"source_work_order": previous.wo, "phase": previous.phase, "gate_log_sha256": gates,
+               "inspection_sha256": pin(inspections[-1]) if inspections else "ABSENT"}
+    context_arguments({**plan.order, "rework_context": context})
+    return context
 
 
 def validate_profile(profile):
@@ -86,6 +133,7 @@ def _authorized_spec(path, cfg):
     expected = LO.supervisor_dir() / "line-orders" / f"{spec['wo']}.json"
     if path.is_symlink() or path.resolve() != expected.resolve() or spec.get("digest") != LO._digest(spec):
         raise ValueError("CLOUD_ORDER_SPEC_CHANGED")
+    context_arguments(spec)
     policy = LO.load_policy()
     if not CloudPlacer._policy_valid(policy):
         raise ValueError("CLOUD_POLICY_REQUIRED")
@@ -163,11 +211,14 @@ def launch(path, *, line=None, run=subprocess.run):
         reader = LL.RevReader(cfg.repo, order.rev)
         import yaml
         validate_profile(yaml.safe_load(reader.read(f"config/factory/profiles/{PROFILE}.yaml") or b"{}"))
+        rework_args = context_arguments(spec)
+        if rework_args and b"--rework-from" not in (reader.read("factory/python/forge_factory/workorder.py") or b""):
+            raise ValueError("CLOUD_REWORK_NOT_SUPPORTED_AT_REVISION")
         inputs = LL.plan_inputs(reader, order.example, cfg, wt)
         LL.provision_inputs(inputs, wt, cfg.inputs_cache)
         env = LL.run_env(cfg, wt, order.profile)
         command = [str(cfg.python), "-m", "forge_factory.lrtx.stack", "exec", "--", str(cfg.python),
-                   "-m", "forge_factory.workorder", *order.workorder_args()]
+                   "-m", "forge_factory.workorder", *order.workorder_args(), *rework_args]
         log = cfg.launch_dir / f"cloud-submit-{order.wo}.out"
         record = {"attempt": 1, "work_order": order.wo, "revision": order.rev, "started_at": LO._utc(time.time()),
                   "outcome": "CLOUD_DISPATCH_UNCERTAIN", "class": "REFUSED"}
@@ -305,6 +356,22 @@ class CloudPlacer(LO.Placer):
         if plan.sweep:
             return {"action": plan.action, "wo": plan.order["wo"], "outcome": "REFUSED",
                     "detail": "CLOUD_INFRA_RECOVERY_REQUIRES_OWNED_RECIPE"}
+        if plan.order["kind"] == "RETRY":
+            try:
+                previous_spec = getattr(plan.current, "spec", None) or {}
+                retained = plan.order.get("rework_context")
+                if retained is None and not getattr(plan.current, "rid", None):
+                    retained = previous_spec.get("rework_context")
+                if retained is not None:
+                    if previous_spec and previous_spec.get("digest") != LO._digest(previous_spec):
+                        raise ValueError("CLOUD_ORDER_SPEC_CHANGED")
+                    context_arguments({**plan.order, "rework_context": retained})
+                    plan.order["rework_context"] = retained
+                else:
+                    plan.order["rework_context"] = failed_context(self.line, plan)
+            except (OSError, ValueError) as exc:
+                return {"action": plan.action, "wo": plan.order["wo"], "outcome": "REFUSED",
+                        "detail": str(exc)[:160]}
         return super()._execute(plan, policy, grant, campaigns, now, execute=execute)
 
 

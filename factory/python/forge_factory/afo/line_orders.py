@@ -761,6 +761,8 @@ class Planner:
             if self.durable_control is not None and o.get("durable_control") == self.durable_control:
                 if o.get("durable_recovery"):
                     fresh["durable_recovery"] = o["durable_recovery"]
+            if "rework_context" in o:
+                fresh["rework_context"] = o["rework_context"]
             if a.spec and _digest(fresh) == _digest(a.spec):
                 self._place(P, a.spec, "LAUNCH")
             else:  # the campaign changed under a never-launched order: a new name, the old one is superseded
@@ -865,7 +867,7 @@ ORDER_KEYS = ("schema", "wo", "phase", "kind", "lineage", "lineage_sha", "campai
 def _digest(spec: dict) -> str:
     """The order spec's identity (the queue's payload_digest): only the fields that define the launch."""
     identity = {k: spec.get(k) for k in ORDER_KEYS}
-    for key in ("durable_control", "durable_recovery"):
+    for key in ("durable_control", "durable_recovery", "rework_context"):
         if key in spec:
             identity[key] = spec[key]
     return sha256_bytes(canonical_json(identity))

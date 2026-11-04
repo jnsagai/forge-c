@@ -21,7 +21,7 @@ def env(tmp_path, monkeypatch):
 
 
 @pytest.fixture
-def admitted(env, monkeypatch):
+def admitted(env, monkeypatch, request):
     source = env["tmp"] / "source"
     source.mkdir()
     _git(source, "init", "-q")
@@ -36,18 +36,28 @@ def admitted(env, monkeypatch):
     p = source / "factory/python/fixture.py"
     p.parent.mkdir(parents=True)
     p.write_text("# Transport fixture only; no inference.\n")
+    marker = source / "factory/python/forge_factory/workorder.py"
+    marker.parent.mkdir(parents=True)
+    marker.write_text('SUPPORTED_ARGUMENTS = ["--rework-from"]  # Transport fixture, never executed.\n')
     _git(source, "add", ".")
     _git(source, "commit", "-qm", "fixture source")
     rev = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
     env["line"].revs[rev] = rev
     p = cloud(env, revision=rev)
+    wo = "WO-F014-CMP-SWE1-CRCHAL-20261104-T1"
+    if getattr(request, "param", False):
+        p.cycle()
+        env["line"].finish(wo)
+        p.cycle()
+        failed = "WO-F014-CMP-SWE2-CRCHAL-20261104-T1"
+        env["line"].finish(failed, M3.X)
+        wo = failed + "B"
     env["line"].spawn_launch = lambda *a: {"pid": 0, "start": None}
     out = p.cycle()
     assert out["actions"][-1]["outcome"] == "LAUNCHING"
     monkeypatch.setenv("FORGE_LINE_POLICY", str(env["tmp"] / "line-policy.yaml"))
     monkeypatch.setattr(authz, "AUTH_DIR", env["tmp"] / "auth")
     monkeypatch.setattr(authz, "ALLOWED_SIGNERS", env["signers"])
-    wo = "WO-F014-CMP-SWE1-CRCHAL-20261104-T1"
     spec = LO.supervisor_dir() / "line-orders" / f"{wo}.json"
     cfg = S(repo=source, runs_root=env["line"].runs, launch_dir=env["line"].launch_d,
             python=sys.executable, stack_root=env["tmp"], inputs_cache=None, references=(source,), fabro_bin="fixture")
@@ -124,3 +134,22 @@ def test_cloud_profile_must_keep_account_transport_and_actual_role_models():
     profile["runtime"]["cloud_bridge"]["models"]["gpt-6.1-sol"]["backend"] = "openai-api"
     with pytest.raises(ValueError, match="ACCOUNT_ROLE_BINDING"):
         C.validate_profile(profile)
+
+
+@pytest.mark.parametrize("admitted", [True], indirect=True)
+def test_real_admitted_retry_forwards_its_sealed_failed_findings(admitted):
+    _, line, spec, wo, ws = admitted
+    expected = json.loads(spec.read_text())["rework_context"]
+
+    def submit(argv, **kwargs):
+        assert argv[argv.index("--rework-from") + 1] == expected["source_work_order"]
+        assert argv[argv.index("--rework-inspection-sha256") + 1] == expected["inspection_sha256"]
+        assert argv[argv.index("--rework-gates-sha256") + 1] == expected["gate_log_sha256"]
+        assert argv[argv.index("--stop-after") + 1] == expected["phase"]
+        assert argv.count("--rework-from") == 1
+        (ws / ".forge-run").mkdir(parents=True)
+        (ws / ".forge-run/manifest.json").write_text(json.dumps({"work_order": wo}))
+        (ws / ".forge-run/fabro_run_id").write_text("01CLOUDFIXTURE")
+        return S(returncode=0)
+
+    assert C.launch(spec, line=line, run=submit)["outcome"] == "LAUNCHED"
