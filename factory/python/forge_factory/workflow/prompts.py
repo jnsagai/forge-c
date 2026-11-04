@@ -1363,7 +1363,48 @@ def providedize(text: str) -> str:
             f"first argument - pass the instance macro {inst} of the device header, e.g. {api['calls'][ex]}, never a "
             f"register address or a local copy; the exact signatures are in the provided header, e.g. "
             f"{api['signatures'][ex]}.")
-    return _re.sub(r"(use only the LL_\w+ functions it already declares\.)", lambda m: m.group(1) + rule, text, count=1)
+    text = _re.sub(r"(use only the LL_\w+ functions it already declares\.)", lambda m: m.group(1) + rule, text, count=1)
+    return provided_registers(text, api)
+
+
+def provided_registers(text: str, api: dict) -> str:
+    """CAPA-143 (WO-F014-SWE5-CRCHAL-20261103-L31B): a HAL on a provided ST (CMSIS) LL has no register-block array and
+    no <REG>_OFFSET defines - its registers are the CMSIS instance's, reached through the provided LL (CAPA-134) - but
+    the peripheralized HAL texts told the SWE.5/SWE.6 test authors to check '<block>[LL_<P>_<REG>_OFFSET / 4U]' bits and
+    the SWE.2/SWE.3 notes that the driver uses that extern array, so a target test did not build ('ll_crc_regs'
+    undeclared). Each greenfield register sentence becomes the provided-LL one; a text without one is unchanged."""
+    import re as _re
+
+    inst = api["instance"]
+    get = next((n for n in api["functions"] if _re.search(r"_(?:Read|Get|Is)", n)), None)
+    via = f" (e.g. {api['calls'][get]})" if get else ""
+    regs = (f"the {inst} registers, read through the provided LL functions with the instance {inst}{via} or as "
+            f"{inst}-><REG> & the device header's {inst}_<REG>_<FIELD>_Msk masks; there is no register-block array and "
+            "no <REG>_OFFSET define")
+    nodef = f"No printf, no stdlib; never define a register block or the instance {inst} (the device header provides it)."
+    blk = r"(\w+_regs)"
+    subs = [
+        (rf"on HAL return values and {blk}\[LL_\w+_<REG>_OFFSET / 4U\] bits\. No printf, no stdlib, no \1 definition "
+         r"\(the linker places it\)\.", f"on HAL return values and {regs}. {nodef}"),
+        (rf"with conditions on HAL return values and {blk}\[LL_\w+_<REG>_OFFSET / 4U\] & LL_\w+_<REG>_<FIELD>_MSK bits "
+         r"\([^)]*\)\. No printf, no stdlib, no \1 definition\.", f"with conditions on HAL return values and {regs}. {nodef}"),
+        (rf"Register access is fixed by the SWE\.2 architecture \(ADR-0009\): the driver uses only the extern volatile "
+         rf"uint32_t {blk} array, which the linker places at the \w+ base on target and the test harness defines on host\. "
+         r"No base address, no defining unit and no integer-to-pointer cast in the driver code is the required design, "
+         r"not a finding: never ask for them\.",
+         f"Register access is fixed by the provided (CMSIS) LL: the HAL reaches the {inst} registers only through the "
+         f"provided LL functions with the instance {inst} (never directly, through a register-block array or an "
+         f"address); the device header provides {inst} (on host tests the factory maps it to a RAM struct, "
+         "forge_host_device.h). No base address, no register defines and no integer-to-pointer cast in the HAL code is "
+         "the required design, not a finding: never ask for them."),
+        (rf"Never define {blk} or add other source files: the register block is placed by the linker on target and "
+         r"defined by the test harness on host; only the extern declaration in the LL header exists\.",
+         f"Never define a register block or the instance {inst} or add other source files: the provided LL header and "
+         "the device header declare everything the HAL uses."),
+    ]
+    for pat, new in subs:
+        text = _re.sub(pat, lambda m, new=new: new, text)
+    return text
 
 
 def _peripheral_prompts() -> None:
