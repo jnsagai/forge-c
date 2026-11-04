@@ -239,6 +239,15 @@ class RealLine:
             return None
         return f"{w['status']}:{w['reason']}" if w.get("reason") else str(w["status"])
 
+    def ended_run(self, wo: str, run_id: str) -> bool:
+        """Authoritative terminal evidence bound to this exact own workspace and Fabro run."""
+        try:
+            run = self.host.fabro_run(run_id)
+        except self.LL.FabroUnavailable:
+            return False
+        return (run.get("id") == run_id and run.get("source_directory") == str(self.workspace(wo))
+                and self.LL._kind(run) in self.LL.ENDED_KINDS)
+
     def live_runs(self) -> list[str] | None:
         """Live Forge-C runs of this stack root; None when the API does not answer (fail closed: busy)."""
         try:
@@ -1163,9 +1172,11 @@ class Placer:
         out = []
         rows = _queue_rows(self.queue_path)
         store = None
+        visited = set()
         for P in plans:
             for ph in P.lineage.phases:
                 for a in self._known(P, ph):
+                    visited.add(a.wo)
                     row = rows.get(a.wo)
                     try:
                         store = store or Store(self.queue_path, producer=f"line-conductor:{self.line_id}")
@@ -1174,6 +1185,43 @@ class Placer:
                         ev = {"action": "QUEUE_SYNC", "wo": a.wo, "outcome": "QUEUE_REFUSED", "detail": str(exc)[:160]}
                     if ev:
                         out.append(ev)
+        # Campaign series can change while an old launch is running. Its immutable queue row still owns
+        # capacity; settle it from authoritative terminal evidence even after the planner stops enumerating it.
+        ended_run = getattr(self.line, "ended_run", None)
+        if not callable(ended_run):
+            return out
+        recs = Records(self.line, self.queue_path, now, {})
+        for wo, row in rows.items():
+            env = row["envelope"]
+            if wo in visited or row["state"] not in ("RUNNING", "ADMITTED") or Path(wo).name != wo or "\\" in wo:
+                continue
+            if env.get("tenant_scope") != f"line-{self.line_id}" or env.get("request_id") != wo:
+                continue
+            spec = _load(supervisor_dir() / "line-orders" / f"{wo}.json")
+            if not spec or spec.get("wo") != wo or env.get("payload_digest") != _digest(spec):
+                continue
+            if spec.get("driver_class") != env.get("driver_class") or spec.get("profile") != env.get("model_profile"):
+                continue
+            ph = spec.get("phase")
+            if ph not in tuple(f"SWE.{n}" for n in range(1, 7)) or not grant.permit(
+                    "recover_workorder", {"driver_class": env.get("driver_class"),
+                                          "model": env.get("model_profile")}).allow:
+                continue
+            store = store or Store(self.queue_path, producer=f"line-conductor:{self.line_id}")
+            attempts = store.attempts(row["order_id"])
+            live = attempts[-1] if attempts else None
+            rid = (live or {}).get("record", {}).get("fabro_run_id")
+            if not rid or live["state"] != "RUNNING" or not ended_run(wo, rid):
+                continue
+            a = recs.attempt(wo, ph, 1)
+            if a.rid != rid or a.status != "ENDED":
+                continue
+            try:
+                ev = self._sync(store, None, a, row, policy, grant, campaigns, now)
+            except QueueError as exc:
+                ev = {"action": "QUEUE_SYNC", "wo": wo, "outcome": "QUEUE_REFUSED", "detail": str(exc)[:160]}
+            if ev:
+                out.append(ev)
         return out
 
     def _known(self, P: Plan, phase: str) -> list[Att]:
