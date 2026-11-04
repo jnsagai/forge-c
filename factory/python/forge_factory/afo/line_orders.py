@@ -442,6 +442,7 @@ class Records:
         self.queue_rows = _queue_rows(queue_path)
         self.legacy = {la["wo"]: la for la in scan_launches(line.launch_dir(), now, float("inf"))}
         self.capa_of = capa_of or {}
+        self.cre_db: Path | None = None
         self.orders_dir = supervisor_dir() / "line-orders"
         self.launching_dir = supervisor_dir() / "launching"
         self._cache: dict = {}
@@ -647,8 +648,11 @@ class Planner:
 
     def __init__(self, campaigns: list[LCMP.Campaign], recs: Records, line, policy: LinePolicy, now: float,
                  *, durable_control=None):
+        from .line_verified_causes import Guard
+
         self.campaigns, self.recs, self.line, self.policy, self.now = campaigns, recs, line, policy, now
         self.durable_control = durable_control
+        self.verified_causes = Guard(getattr(recs, "cre_db", None))
         self.plans: dict[str, Plan] = {}
 
     def run(self) -> list[Plan]:
@@ -757,6 +761,13 @@ class Planner:
             self._place(P, self._order(P, ph, kind, resume_from=prev.wo if prev else None), "PLACE")
             return
         if a.status == "QUEUED":
+            prior = [x for x in P.atts.get(ph, []) if x.status == "ENDED" and x.verdict == "NO"]
+            failed = max(prior, key=lambda x: ((x.created or 0), x.n)) if prior else None
+            reason = self.verified_causes.blocked(failed, full, self.recs)
+            if reason:
+                P.state, P.reason = (("ESCALATED", "SAME_ISSUE_EXCEEDED_3") if P.strikes > STRIKE_LIMIT
+                                     else ("WAITING", reason))
+                return
             o = dict(a.spec or {})
             fresh = self._order(P, ph, o.get("kind") or "CHAIN", resume_from=o.get("resume_from"),
                                 resume_upto=o.get("resume_upto"), wo=a.wo)
@@ -801,6 +812,10 @@ class Planner:
                 P.state, P.reason = "PARKED", "FABRO_RUN_CANCELLED"
                 return
             cls = "RELEASED"
+        reason = self.verified_causes.blocked(a, full, self.recs)
+        if reason:
+            P.state, P.reason = "WAITING", reason
+            return
         if cls == "FACTORY_DEFECT":
             if self._same_rev(a.revision, full):
                 P.state = "WAITING"
@@ -987,6 +1002,7 @@ class Placer:
 
             capa_of = read_cre(self.cre_db or supervisor_dir() / "incidents.sqlite3")["capa_of"]
         recs = self._records(now, capa_of)
+        recs.cre_db = self.cre_db or supervisor_dir() / "incidents.sqlite3"
         if self.recovery_config is not None:
             from .line_recovery_coordination import reference
 
