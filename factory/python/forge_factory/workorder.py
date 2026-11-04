@@ -666,6 +666,9 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     }
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     bind_resume(src, ws, stable, target_proof_carry_promotion)
+    from .inspection.provided_early_code import carry as carry_early_provided_code
+
+    carry_early_provided_code(src, ws, stable)
     subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
     subprocess.run(
         [
@@ -1040,6 +1043,8 @@ def run(
         from .rework_context import install
 
         install(ws, manifest, rework_context, stop_after)
+    from .inspection.provided_early_code import enabled as early_provided_code_enabled
+
     graph, nodes = build(
         wo,
         goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
@@ -1051,6 +1056,7 @@ def run(
         trace=manifest.get("trace_profile") == TRACE_PROFILE,
         isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
         uspec_gtest=manifest.get("unit_verification") == UNIT_VERIFICATION,
+        provided_code_handoff=early_provided_code_enabled(ws),
         brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
         peripheral=manifest.get("peripheral"),
         operation_scope=manifest.get("operation_scope"),
