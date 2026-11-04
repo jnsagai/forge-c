@@ -1015,6 +1015,8 @@ def author_prompt(phase: str) -> str:
         scope_note += (" " if scope_note else "") + unit_target_timing_note()
     if phase == "SWE.4" and unit_target_observation_note():
         scope_note += (" " if scope_note else "") + unit_target_observation_note()
+    if phase == "SWE.4" and ll_call_arguments_note():
+        scope_note += (" " if scope_note else "") + ll_call_arguments_note()
     timing_note = native_swe3_timing_note() if phase == "SWE.3" else ""
     if timing_note:
         scope_note += (" " if scope_note else "") + timing_note
@@ -1450,6 +1452,8 @@ def gtest_unit_test_steps(marker: str) -> list[str]:
             "Every UT id of the plan is exactly one TEST;",
             "Every UT id of the plan has exactly one executed verification backend; each host-observed row is "
             "exactly one TEST;") for s in steps]
+    if ll_call_arguments_note():
+        steps.insert(0, ll_call_arguments_note())
     return steps
 
 
@@ -1525,6 +1529,32 @@ def unit_target_observation_note() -> str:
         "and Matrix 4 require the current sealed execution proof. If this exact frozen row "
         "does not match, report the unsupported verification scope rather than changing it. "
         "This is evidence in the existing simulator model, without a silicon-verification claim.")
+
+
+def ll_call_arguments_note() -> str:
+    from .ll_call_arguments import MARKER
+    from .provided_ll_unit import supported
+
+    manifest = ASSESSMENT.get("manifest") or {}
+    if not (supported(manifest) and manifest.get("peripheral") == "crc"):
+        return ""
+    return (
+        "LL CALL ARGUMENT HISTORY: for tests requiring every Calculate/Accumulate feed value and order, "
+        "make the FIRST LINE of the existing software/tests/unit/test_crc.cpp exactly '" + MARKER + "'. "
+        "Keep the generated harness body. The factory generates a private build-only extension from the "
+        "same provided LL; the original generated fake and vendor inputs remain unchanged. The extended "
+        "backend offers uint32_t ll_fake_call_arg(fn,k,j,&observed): k is the function occurrence starting "
+        "at1; j is a scalar argument index starting at0, excluding the CMSIS instance pointer. At most two "
+        "scalar parameters per call are recorded. The query returns1 only for an actually recorded, "
+        "in-range argument; assert that return before comparing observed with the specified input value. "
+        "A missing occurrence, invalid function/index, pointer/no-argument slot, NULL output or history "
+        "overflow returns0 and changes no output value. Reset invalidates old history. For EACH input word "
+        "i, ASSERT_EQ(ll_fake_call_arg(LL_FAKE_LL_CRC_FeedData32,i+1U,0U,&observed),1U), then "
+        "EXPECT_EQ(observed,data[i]); use ll_fake_index_of for the specified inter-call order and retain "
+        "the count/initialisation/result assertions. Check actual size/reversal configuration values too; "
+        "a last-argument assertion alone cannot verify all words. Choose LL function IDs and expected "
+        "values from the provided API and frozen USPEC/requirements. This is call observation only, "
+        "without register effects or target-timing evidence; keep those rows in their proper backends.")
 
 
 # CAPA-131: the instance API of a HAL's provided CMSIS LL (brownfield/cmsis.provided_api), set by the builder for a

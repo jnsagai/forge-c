@@ -217,7 +217,70 @@ uint32_t ll_fake_internal_query_bit(ll_fake_fn_t fn, uint32_t k)
 """
 
 
-def generate(ll_header: str, block: str = "ll_rcc_regs") -> str:
+def _history_pointers(text: str, function: str) -> list[bool]:
+    """History supports explicit fixed-width scalars and simple pointers; unknown aliases fail closed."""
+    if text.strip() in ("", "void"):
+        return []
+    pointers = []
+    for declaration in text.split(","):
+        normalized = re.sub(r"\b(?:const|volatile|restrict|__restrict)\b", "", declaration).strip()
+        if re.fullmatch(r"u?int(?:8|16|32)_t\s+\w+", normalized):
+            pointers.append(False)
+        elif re.fullmatch(r"\w+\s*(?:\*\s*)+\w+", normalized):
+            pointers.append(True)
+        else:
+            raise ValueError("LL_FAKE_HISTORY_ARGUMENT_TYPE_UNSUPPORTED:" + function)
+    return pointers
+
+
+def _history_api(api: str, arities: list[int]) -> str:
+    """An explicit build-only extension; the default v1 output remains byte-identical."""
+    def replace(old, new, count=1):
+        nonlocal api
+        if api.count(old) != count:
+            raise ValueError("LL_FAKE_HISTORY_TEMPLATE_MISMATCH")
+        api = api.replace(old, new)
+
+    declaration = "uint32_t ll_fake_last_arg(ll_fake_fn_t fn, uint32_t j);"
+    replace(declaration, declaration + "\n/** Observed scalar j of occurrence k (1-based). Returns 1 only when available;\n"
+            " * otherwise 0 without changing *out. Pointers and scalars beyond the first two are not recorded.\n"
+            " * Any log overflow invalidates argument history until reset. */\n"
+            "uint32_t ll_fake_call_arg(ll_fake_fn_t fn, uint32_t k, uint32_t j, uint32_t *out);")
+    storage = "static uint32_t ll_fake_args_[LL_FAKE_COUNT][2];"
+    replace(storage, storage + f"\nstatic uint32_t ll_fake_call_args_[{LOG_CAPACITY}U][2];\n"
+            "static uint32_t ll_fake_history_overflow_;\n"
+            "static const uint32_t ll_fake_scalar_arity_[LL_FAKE_COUNT] = { "
+            + ", ".join(f"{n}U" for n in arities) + " };" )
+    replace("    ll_fake_n_ = 0U;", "    ll_fake_n_ = 0U;\n    ll_fake_history_overflow_ = 0U;")
+    marker = "        ll_fake_log_[ll_fake_n_] = fn;\n    }"
+    replace(marker, "        ll_fake_log_[ll_fake_n_] = fn;\n"
+            "        ll_fake_call_args_[ll_fake_n_][0] = a0;\n"
+            "        ll_fake_call_args_[ll_fake_n_][1] = a1;\n"
+            "    }\n    else\n    {\n        ll_fake_history_overflow_ = 1U;\n    }")
+    replace("ll_fake_internal_query_bit(ll_fake_fn_t fn, uint32_t k)",
+            "ll_fake_internal_query_bit(ll_fake_fn_t fn, uint32_t k, uint32_t a0, uint32_t a1)", count=2)
+    replace("    ll_fake_internal_record(fn, 0U, 0U);", "    ll_fake_internal_record(fn, a0, a1);")
+    function = """
+uint32_t ll_fake_call_arg(ll_fake_fn_t fn, uint32_t k, uint32_t j, uint32_t *out)
+{
+    int32_t position;
+    if (((uint32_t)fn >= (uint32_t)LL_FAKE_COUNT) || (k == 0U) || (j >= 2U) ||
+        (out == (uint32_t *)0) || (ll_fake_history_overflow_ != 0U))
+    {
+        return 0U;
+    }
+    if (j >= ll_fake_scalar_arity_[fn]) { return 0U; }
+    position = ll_fake_index_of(fn, k);
+    if (position < 0) { return 0U; }
+    *out = ll_fake_call_args_[(uint32_t)position][j];
+    return 1U;
+}
+"""
+    replace("#endif /* LL_FAKE_IMPLEMENTATION */", function + "#endif /* LL_FAKE_IMPLEMENTATION */")
+    return api
+
+
+def generate(ll_header: str, block: str = "ll_rcc_regs", *, argument_history: bool = False) -> str:
     _SET, _CLR, _GET = _patterns(block)  # noqa: N806
     fns = sorted([(m.group(1), m.group(2), _params(m.group(3)), m.start(), m.end() - 1, None)
                   for m in _FN.finditer(ll_header)]
@@ -226,6 +289,9 @@ def generate(ll_header: str, block: str = "ll_rcc_regs") -> str:
     if not fns:
         raise ValueError("no static inline LL function in the provided header")
     bodies = {name: ll_header[brace:_body_end(ll_header, brace)] for _, name, _, _, brace, _ in fns}
+    pointer_masks = ({m.group(2): _history_pointers(m.group(3), m.group(2))
+                      for rx in (_FN, _FN_ST) for m in rx.finditer(ll_header)} if argument_history else {})
+    arities = []
 
     def key(m: re.Match, st: bool) -> tuple[str, str]:  # an ST key names the instance member (->CR), never an offset
         return ("->" + m.group(1), m.group(2)) if st else (m.group(1), m.group(2))
@@ -241,15 +307,18 @@ def generate(ll_header: str, block: str = "ll_rcc_regs") -> str:
         b, st = bodies[name], ptr is not None
         # ST: the instance pointer is the device, not a recorded argument (a pointer-to-uint32_t cast does not build
         # in a GoogleTest C++ unit); the scalar arguments are recorded as before
-        scalars = [p for p, is_ptr in zip(params, ptr or [False] * len(params), strict=True) if not is_ptr]
-        unused = [p for p, is_ptr in zip(params, ptr or [False] * len(params), strict=True) if is_ptr] + scalars[2:]
+        mask = pointer_masks[name] if argument_history else ptr or [False] * len(params)
+        scalars = [p for p, is_ptr in zip(params, mask, strict=True) if not is_ptr]
+        arities.append(len(scalars))
+        unused = [p for p, is_ptr in zip(params, mask, strict=True) if is_ptr] + scalars[2:]
         args = ", ".join([f"(uint32_t)({p})" for p in scalars[:2]] + ["0U"] * (2 - min(2, len(scalars))))
         query = ret != "void" if st else ret == "uint32_t"
         cast = f"({ret})" if st and ret != "uint32_t" else ""
         get = (_ST_GET if st else _GET).search(b)
         if query and get and key(get, st) in written:  # state query (IsEnabled ...)
             state[name] = written[key(get, st)]
-            call = f"return {cast}ll_fake_internal_query_bit(LL_FAKE_{name}, {state[name]}U);"
+            call = (f"return {cast}ll_fake_internal_query_bit(LL_FAKE_{name}, {state[name]}U"
+                    + (", " + args if argument_history else "") + ");")
         elif query:  # a flag only hardware sets (IsReady ...): scripted, default 0U
             call = f"return {cast}ll_fake_internal_query(LL_FAKE_{name}, {args});"
         else:
@@ -266,6 +335,8 @@ def generate(ll_header: str, block: str = "ll_rcc_regs") -> str:
     if block != "ll_rcc_regs":  # feature 009: no RCC example in another peripheral's test double
         api = api.replace("(e.g. (LL_FAKE_LL_RCC_ADC12_IsEnabled, 1U): already enabled)",
                           "(e.g. (LL_FAKE_<state query>, 1U): already set)")
+    if argument_history:
+        api = _history_api(api, arities)
     banner = ("/* GENERATED by forge_factory.workflow.ll_fake from the provided LL header - HAL unit-test double, do "
               "not edit (run_unit regenerates and compares it). */\n")
     # the API (enum + prototypes) goes before the first LL function (and its doc comment): the text before it is

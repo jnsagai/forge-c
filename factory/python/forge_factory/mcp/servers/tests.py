@@ -190,10 +190,16 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         return result(ctx, "FAIL", "generated LL test double was modified", issues=[
             f"GENERATED_TEST_DOUBLE_MODIFIED:{fake_header(ctx.workspace)} (generated from the provided LL header; "
             f"restore it - write the test cases in {unit_test(ctx.workspace)} only)"], tool="clang")
+    from ...workflow import ll_call_arguments
     from ...workflow.provided_ll_unit import selected as real_ll_selected
 
     try:
-        real_ll_tests = {t for t in tests if level == "unit" and real_ll_selected(ctx.workspace, t)}
+        real_ll_tests, argument_history_tests = set(), set()
+        for t in tests if level == "unit" else []:
+            if ll_call_arguments.selected(ctx.workspace, t):
+                argument_history_tests.add(t)
+            elif real_ll_selected(ctx.workspace, t):
+                real_ll_tests.add(t)
     except ValueError as exc:
         return result(ctx, "FAIL", "invalid provided LL unit backend", issues=[str(exc)], tool="clang",
                       metrics={"verification_executed": False})
@@ -233,13 +239,15 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     for t in tests:
         exe = bdir / t.stem
         real_ll = t in real_ll_tests
-        if real_ll_tests:
-            log += (f"# unit_backend {t.name} " + ("provided-ll-ram-v1" if real_ll else "default") + "\n").encode()
+        if real_ll_tests or argument_history_tests:
+            backend = ("provided-ll-ram-v1" if real_ll else
+                       "ll-call-arguments-v1" if t in argument_history_tests else "default")
+            log += f"# unit_backend {t.name} {backend}\n".encode()
         test_incs = [i for i in incs if i != f"-I{ctx.workspace / FAKE_DIR}"] if real_ll else incs
         if t.suffix == ".cpp":
             exe = bdir / (t.stem + GTEST_EXE_SUFFIX)
             b, blog = _build_gtest(ctx, t, exe, bdir, test_incs, srcs, coverage, fake and not real_ll, gt,
-                                   real_ll=real_ll)
+                                   real_ll=real_ll, argument_history=t in argument_history_tests)
         else:
             argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
                     *(COV_FLAGS if coverage else []), *incs, str(t), *srcs, "-o", str(exe)]
@@ -324,19 +332,23 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         issues += [f"DUPLICATE_TEST_ID:{d}:used by {seen[d]} checks - give each check its own id; preserve predicates "
                    "and order, use a unique suffix, do not combine checks" for d in dups[:10]]
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed,
-        **({"backends": {t.name: "provided-ll-ram-v1" if t in real_ll_tests else "default" for t in tests}}
-           if real_ll_tests else {})}))
+        **({"backends": {t.name: "provided-ll-ram-v1" if t in real_ll_tests else
+                        "ll-call-arguments-v1" if t in argument_history_tests else "default" for t in tests}}
+           if real_ll_tests or argument_history_tests else {})}))
     write_progress(ctx.workspace, ctx.phase, pop, "tests", total, n_done, n_pass, n_fail, running=False)
     op = "run_unit" if level == "unit" else "run_integration"
     record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",
                      integrity(ctx.workspace, integrity_files, asserted))
     undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, op) if failed == 0 else []
     issues = undeclared + issues
+    argument_refs = [ctx.store(path.read_bytes(), "json") for t in sorted(argument_history_tests)
+                     if (path := bdir / (t.stem + ".ll-call-arguments") / "binding.json").is_file()]
     return result(ctx, "PASS" if failed == 0 and not undeclared else "FAIL",
                   f"{level}: {passed} passed, {failed} failed (HOST)"
                   + "".join(target_summaries)
                   + ("; undeclared test change - declare it" if undeclared else ""),
-                  [ctx.store(log), *target_refs], issues, {"passed": passed, "failed": failed, "executables": len(tests),
+                  [ctx.store(log), *target_refs, *argument_refs], issues,
+                  {"passed": passed, "failed": failed, "executables": len(tests),
                                              "environment": "host", "target_evidence": False, **target_metrics},
                   "clang+self-checking tests", tool_version("clang"), 0 if failed == 0 else 1, ms, None, log)
 
@@ -350,11 +362,16 @@ def _generated_ll_unit(p: Path) -> bool:
 
 
 def _build_gtest(ctx: ToolContext, t: Path, exe: Path, bdir: Path, incs: list[str], srcs: list[str], coverage: bool,
-                 fake: bool, gt: dict, *, real_ll: bool = False):
+                 fake: bool, gt: dict, *, real_ll: bool = False, argument_history: bool = False):
     """The driver C sources compiled as C (same flags as the C harness), the GoogleTest file as C++17, linked with the
     pinned gtest/gmock. With the generated LL test double (CAPA-038) its state is defined once in a generated C unit."""
     cov = COV_FLAGS if coverage else []
     log, objs = b"", []
+    if argument_history:
+        from ...workflow.ll_call_arguments import generate
+
+        private = generate(ctx.workspace, bdir / (t.stem + ".ll-call-arguments"))
+        incs = [f"-I{private}", *incs]
     # the GENERATED compile unit of a header-only LL (ADR-0009: it only includes the header, no driver logic) is not
     # linked: the test unit includes the header itself, and the unit's unused static inline copies made llvm-cov count
     # a header line as missed (L6 IWDG: 48/49 lines with every region covered) - like the mutation campaign skips it
