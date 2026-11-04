@@ -550,6 +550,29 @@ def test_a_deterministic_factory_rule_rejection_is_a_factory_defect_never_infra(
 REPLAY_LIVE = os.environ.get("FORGE_M1_REPLAY_LIVE_DIR")
 
 
+@pytest.mark.parametrize("codes,expected", [
+    (["UNIT:NO_UNITS"], "FACTORY_DEFECT"),
+    (["UNIT:SPEC_TODO:USPEC-HAL-01-01"], "MODEL_CONVERGENCE"),
+    (["UNIT:NO_UNITS", "MISSING_REQUIRED_OUTPUT:unit_specifications.md"], "MODEL_CONVERGENCE"),
+])
+def test_repeated_empty_unit_inventory_is_suspected_factory_failure_without_guessing_other_unit_findings(
+        line, codes, expected):
+    wo = "WO-F014-SWE3-CRCHAL-20261103-L27"
+    gates = [{"phase": "SWE.3", "step": "author", "result": "REJECTED", "status": "INCOMPLETE", "issues": codes},
+             {"phase": "SWE.3", "step": "author", "result": "REJECTED", "status": "INCOMPLETE", "issues": codes},
+             {"phase": "SWE.3", "step": "route", "gate": {"decision": "BLOCKED",
+              "reason": "STUCK: identical deterministic rejection twice; stopped early"}}]
+    mk_order(line["state"], wo, gates=gates, package=True, rid="01EMPTYUNITS", stop_after="SWE.3", created=T0 + 600)
+    issue = by_wo(conductor(line).cycle(), wo)
+    assert issue["class"] == expected
+    if expected == "FACTORY_DEFECT":
+        assert issue["status"] == "WAITING_EXTERNAL_CHANGE"
+        assert issue["proposals"][0]["strategy"] == "OPEN_CAPA_FACTORY_DEFECT_SUSPECTED"
+        assert issue["proposals"][0]["status"] == "PROPOSED"
+    else:
+        assert issue["status"] == "OPEN"
+
+
 @pytest.mark.skipif(not REPLAY_LIVE, reason="FORGE_M1_REPLAY_LIVE_DIR (read-only copy of the live line + supervisor state) not given")
 def test_replay_live_state_with_its_persisted_feed(tmp_path, monkeypatch):
     src = Path(REPLAY_LIVE)
