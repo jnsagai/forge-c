@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import fcntl
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +37,10 @@ def _update(binding_id: str, fn: Any) -> Any:
         f.seek(0)
         f.truncate()
         f.write(json.dumps(st))
+        # Buffered a+ writes must reach the file before another hook takes the lock.
+        # Unlocking before close otherwise lets concurrent closes append several JSON snapshots.
+        f.flush()
+        os.fsync(f.fileno())
         fcntl.flock(f, fcntl.LOCK_UN)
     return out
 
