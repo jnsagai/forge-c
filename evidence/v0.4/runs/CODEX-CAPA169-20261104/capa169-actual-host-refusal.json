@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-04T22:43:06.306813+00:00",
+  "first_recover": "FAILED_MODULE_NOT_FOUND_YAML",
+  "outside_interpreter": "/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/bin/python3.13",
+  "source": "826a8724e94229c7b8d3bde45909fa6f008251c6",
+  "restored_observer_bytes": true,
+  "observer_after": "Result=success\nExecMainStatus=0\n",
+  "conductor_restart": false,
+  "model_calls": 0,
+  "private_policy_and_intent_prepared": true,
+  "M5_automatic_recovery": "NOT_ACTIVATED_DEPENDENCY_BLOCKER",
+  "original_failure_log_sha256": "b5f8a6fe214d162c534c562a2019e4056c4bc8c0ba4ab82f0f8d348181f9684c"
+}

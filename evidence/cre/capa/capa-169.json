@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<405ea04291ae"
+  ],
+  "candidate_patch_sha256": "25e4bdd0883fc033c800503f122e4a8e638d9d4c7c563080424c788d4fdba784",
+  "capa_id": "CAPA-169",
+  "created_at": "2026-11-04T22:58:58.555546Z",
+  "event_ids": [],
+  "incident_ids": [
+    "CAPA-169"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-169",
+  "reproducer_id": "RPR-169",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-01c44278015195c7de5c",
+    "reproducer-run:rr-14ca08e6230e628843f0"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Standalone archive omits runtime policy/schema dependency closure; independent fixture now includes the exact committed lock as build input.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-04T23:10:59.279347Z"
+}

@@ -1,0 +1,25 @@
+id: RPR-168
+script: rpr168_frozen_plan_observation_binding.py
+sha256: 337a629cc5d6a85d9b2f98814966e6656a3ae65db3178423437a3106bd7474cf
+symptom_signature: frozen approved preservation case cannot bind its actual plan identifiers
+observed_in: '2026-11-04 actual cloud WWDG SWE4 T1I: approved unchanged SWE3 specification
+  maps preservation USPEC-HAL-04-03 to generated UT-023; producer requires literal
+  UT-021 which current plan maps to nominal clear/return USPEC-HAL-04-01. Full hash-equal
+  private actual workspace with genuine SWE1/2/3 PASS and approved corrected LL reproduced
+  both refusals; original source, plan, requirements, verdicts and history unchanged.'
+baseline_revision: 3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8
+error_codes:
+- TARGET_OBSERVATION_SCOPE_OR_CASE_INVALID
+- TARGET_OBSERVATION_FROZEN_PREDICATE_UNSUPPORTED
+operations:
+- forge-tests-mcp.run_unit
+- workflow.unit_target_observation.declaration
+root_cause: Typed WWDG producer binds preservation semantics to one historical numeric
+  UT and one exact authored behavior phrase, instead of the unique actual frozen plan
+  row and its parsed approved USPEC. Correct current UT023 is refused and old UT021
+  contradicts the actual approved plan.
+remedy: Bind the existing exact ClearEarlyWakeupFlag preservation semantics to unique
+  actual planned identifiers and parsed frozen USPEC plus exact SWR033/034 clauses;
+  retain exact legacy control domain, strict MMIO reserved-write mask, source/approval/plan/proof
+  identity and fresh proof version. Keep all other host obligations, no silicon claim
+  or criterion waiver.

@@ -1,0 +1,27 @@
+{
+  "schema": "forge-c/integration14-validation/1",
+  "source": "0774236593bdb3e969c6127567c39bd573f25992",
+  "baseline": "a4334cd57654a6530658d00bda9bca3dd12d9e86",
+  "source_tree_matches_qualified169": "405ea04291aea7250861f4d4a7f63749c017ab8d except earlier protected evidence",
+  "combined_CHANGE": "pd-ef4b656ef253d9ba447d",
+  "hard_gates": "ALL_PASS",
+  "full_frozen_prevention_count": 168,
+  "last_reproducer": "RPR-169",
+  "all_receipt_logs_hash_verified": true,
+  "delta_regression": {
+    "modules": 8,
+    "cases": 105,
+    "passed": 105,
+    "failed": 0,
+    "skipped": 0,
+    "xml_sha256": "8e6983700360d62f024e0ec0d32c9af9be5a8b4d20d8961239073761f786b0f1"
+  },
+  "broader_comparison": "Inherited source7d regression had2974PASS6baseline-identicalFAIL27SKIP/249modules, plus clean rerunPASS of one dirty-evidence skip. This source delta has105 affected/relatedPASS plus full169 normal gates, not a new full249-module run.",
+  "published_old_manifest_prefix_byte_exact": true,
+  "limits": [
+    "Local managed product lifecycle repair170 remains incomplete and actual M6/M7 role qualification unproven.",
+    "Four current WWDG instruction/virtual-time obligations need a separate typed capability; preservation observation does not satisfy timing.",
+    "M5 real fault/recovery exposure and long endurance are not established by this source validation.",
+    "No source promotion, main merge or safety approval is authorised by this evidence."
+  ]
+}

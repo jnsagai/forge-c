@@ -1,0 +1,10 @@
+{
+  "script": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa169-oracle/tests/reliability/reproducers/rpr169_watchdog_artifact_recovery_dependencies.py",
+  "sha256": "0da4c518389acab4df8ca32115a2d008760cab1648aee6da9a376deee0a3742a",
+  "manifest": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa169-oracle/tests/reliability/reproducers/manifest.yaml",
+  "old168_prefix_byte_exact": true,
+  "new_last": "RPR-169",
+  "private_baseline": "PRESENT",
+  "candidate_not_examined": true,
+  "notes": "Fixture mirrors evaluated Python source bytes into a private committed repository for the public archive builder; no owner Git object-store exposure or physical-volume test claimed."
+}
