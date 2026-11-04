@@ -25,8 +25,9 @@ def authorize(job, store=None):
     store = store or Store(state_dir() / "supervisor/line-queue.sqlite3")
     order = store.order(job["order_id"])
     eff = load()
-    if (not order or not job.get("durable_protocol") or not job.get("line_origin")
-            or job.get("role") != "afo-recovery-planner" or job.get("policy_sha256") != eff.sha256
+    protocol = ((job.get("role") == "afo-recovery-planner" and job.get("durable_protocol"))
+                or (job.get("role") == "afo-factory-maintainer" and job.get("durable_native") == "maintenance-1"))
+    if (not order or not protocol or not job.get("line_origin") or job.get("policy_sha256") != eff.sha256
             or job.get("state") != "LAUNCHING" or time.time() >= job.get("deadline_epoch", 0)
             or not L.enabled(job["role"], eff) or not L.authorized_job(order, eff, job)):
         return False

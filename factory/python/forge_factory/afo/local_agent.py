@@ -122,11 +122,27 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
 
         line_context = context(store, order["order_id"], attempt_id, ws, line_origin)
         source = json.loads(case.read_text())
-        if not source.get("packet_ref") or not source.get("mission_id"):
-            raise QueueError("LINE_RECOVERY_DURABLE_PROTOCOL_REQUIRED", role)
+        if role == "afo-factory-maintainer":
+            from ..common import canonical_json, sha256_bytes
+            from .mission_ledger import MissionLedger
+
+            if os.environ.get("FORGE_DURABLE_AUTONOMY") != "1":
+                raise QueueError("LINE_MAINTENANCE_DURABLE_PROTOCOL_REQUIRED", role)
+            binding = source.get("line_binding") or {}
+            if (binding.get("schema") != "forge-c/line-maintenance-origin/1"
+                    or binding.get("context_sha256") != sha256_bytes(canonical_json(line_context))
+                    or binding.get("mission_id") != MissionLedger(store).for_order(order["order_id"])
+                    or binding.get("source_revision") != source.get("base")
+                    or source.get("base") != line_context.get("source_revision")):
+                raise QueueError("LINE_MAINTENANCE_CASE_BINDING_MISMATCH", role)
+            source_workspace = binding.get("workspace", "")
+        else:
+            if not source.get("packet_ref") or not source.get("mission_id"):
+                raise QueueError("LINE_RECOVERY_DURABLE_PROTOCOL_REQUIRED", role)
+            source_workspace = source.get("workspace", "")
         bundle = source.get("bundle") or source.get("incident") or {}
         if (bundle.get("order_id") != order["order_id"] or bundle.get("attempt_id") != attempt_id
-                or Path(source.get("workspace", "")).resolve() != ws.resolve()):
+                or Path(source_workspace).resolve() != ws.resolve()):
             raise QueueError("LINE_RECOVERY_CASE_BINDING_MISMATCH", role)
     if development_execution(ws) and role in ("afo-recovery-planner", "afo-factory-maintainer") and line_context is None:
         raise QueueError("DEFERRED_BY_DEVELOPMENT_POLICY", role)
