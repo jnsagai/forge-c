@@ -303,9 +303,10 @@ def test_the_example_campaign_matches_todays_line_and_validates():
     assert by["crc-ll"].status == "DONE" and by["crc-ll"].completed_by == "WO-F014-SWE6-CRCL-20261103-L24"
     h = by["crc-hal"]
     assert h.provided_from == "WO-F014-SWE6-CRCL-20261103-L24" and h.depends_on is None
-    assert h.start == {"resume_from": "WO-F014-SWE1-CRCHAL-20261103-L27", "at": "SWE.2"} and h.factory_revision == "347e9381"
+    assert h.start == {"resume_from": "WO-F014-SWE4-CRCHAL-20261103-L31", "at": "SWE.5"} and h.factory_revision == "71e44937746661b3767004bd100f1fb93d6b0592"
     assert h.wo("SWE.2") == "WO-F014-SWE2-CRCHAL-20261103-L31"
-    assert by["wwdg-hal"].depends_on["lineage"] == "wwdg-ll" and by["wwdg-hal"].factory_revision == "347e9381"  # run/gen12
+    assert by["wwdg-hal"].depends_on["lineage"] == "wwdg-ll" and by["wwdg-hal"].factory_revision == "71e44937746661b3767004bd100f1fb93d6b0592"  # run/gen17
+    assert by["wwdg-hal"].start == {"resume_from": "WO-F014-SWE4-WWDGHAL-20261103-L32", "at": "SWE.5"}
     assert by["rcc-ll"].status == "ON_HOLD"
     assert by["wwdg-ll"].priority > by["crc-hal"].priority > by["wwdg-hal"].priority
     if LCMP.CONTRACT.is_file():

@@ -59,17 +59,16 @@ lineages:
     priority: 0
 
   - id: crc-hal
-    example: 0014m-crc-hal             # CRC HAL on the verified ST CRC LL L24; SWE.1 of L27 holds, SWE.2 is
-    tag: CRCHAL                        # re-inspected (inspected under the old SWE2-08 wording; a HAL is always re-inspected)
+    example: 0014m-crc-hal             # CRC HAL on verified ST CRC LL L24; continue after its passed SWE.4
+    tag: CRCHAL
     series: 20261103-L31
     driver_class: STM32N6_CRC_HAL
-    factory_revision: 347e9381         # run/gen12 = PR #46 685909b3 (batch 2: CAPA-128..134, SWE2-08 record, WWDG
-                                       # profile, M2) + run-branch examples; L31 SWE.2 launched 2026-11-03 (adopted)
+    factory_revision: 71e44937746661b3767004bd100f1fb93d6b0592 # run/gen17: CAPA-142/143 + the frozen run examples
     profile: *profile
     run_model: *orn
     purpose: ASPICE_ONLY
     phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
-    start: {resume_from: WO-F014-SWE1-CRCHAL-20261103-L27, at: SWE.2}
+    start: {resume_from: WO-F014-SWE4-CRCHAL-20261103-L31, at: SWE.5}
     provided_from: WO-F014-SWE6-CRCL-20261103-L24
     priority: 40
     quality: *defaults
@@ -79,11 +78,12 @@ lineages:
     tag: WWDGHAL
     series: 20261103-L32
     driver_class: STM32N6_WWDG_HAL
-    factory_revision: 347e9381         # run/gen12; L32 queued behind L31 on the local queue lock (adopted)
+    factory_revision: 71e44937746661b3767004bd100f1fb93d6b0592 # run/gen17; adopts the existing L32 orders
     profile: *profile
     run_model: *orn
     purpose: ASPICE_ONLY
     phases: [SWE.1, SWE.2, SWE.3, SWE.4, SWE.5, SWE.6]
+    start: {resume_from: WO-F014-SWE4-WWDGHAL-20261103-L32, at: SWE.5}
     depends_on: {lineage: wwdg-ll, phase: SWE.6, verdict: PASS}
     priority: 30
     quality: *defaults
