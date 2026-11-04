@@ -1542,16 +1542,19 @@ def unit_target_observation_note() -> str:
         return ""
     return (
         "SWE.4 WWDG FLAG OBSERVATION: plain host RAM cannot implement the status register's "
-        "write-zero-to-clear and reserved-bit read-as-zero semantics. For the exact frozen "
-        "UT-021 / USPEC-HAL-04-03 clear-flag preservation row, write "
-        "software/tests/unit/target_observations.json with exactly this JSON object: "
-        '{"schema":"forge-c/swe4-wwdg-target-observation/1","ut":"UT-021",'
-        '"uspec":"USPEC-HAL-04-03","function":"HAL_WWDG_ClearEarlyWakeupFlag",'
-        '"scenario":"wwdg-ewif-clear-v1"}. '
+        "write-zero-to-clear semantics. Find the unique frozen plan row for HAL_WWDG_ClearEarlyWakeupFlag "
+        "that preserves other writable fields and reserved bits at reset values during writes (or when "
+        "clearing the flag), traced to SWR-033 and SWR-034. Use its exact planned UT and USPEC identifiers, "
+        "not a guessed numeric offset or the separate nominal clear/return-status row. Write "
+        "software/tests/unit/target_observations.json with exactly schema='forge-c/swe4-wwdg-target-observation/1', "
+        "ut=<that planned UT>, uspec=<that frozen USPEC>, function='HAL_WWDG_ClearEarlyWakeupFlag', "
+        "scenario='wwdg-ewif-clear-v1'. "
         "That row belongs in this target declaration instead of either host TEST file. "
         "run_unit executes the original HAL and provided LL on the existing WWDG Renode model; "
         "the factory observes the real flag precondition, HAL return, register write and status "
-        "readback. Keep all other rows as executed host TESTs using their appropriate mock or "
+        "readback. Every actual call write must preserve reserved reset bits (SR mask 0xFFFFFFFE); "
+        "zero readback alone cannot establish correct reserved-bit writes or a silicon RAZ/WI guarantee. "
+        "Keep all other rows as executed host TESTs using their appropriate mock or "
         "real-LL RAM backend. Never use GTEST_SKIP, duplicate a UT, mask away the reserved-bit "
         "criterion, or alter HAL/LL code solely to make plain RAM look like the peripheral. "
         "A declaration alone supplies no passing evidence. run_unit, validate_planned_units "

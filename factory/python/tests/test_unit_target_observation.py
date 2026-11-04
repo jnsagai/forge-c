@@ -76,7 +76,8 @@ def test_no_arbitrary_case_or_requirement(ws, field, value):
     case = copy.deepcopy(O.CASE)
     case[field] = value
     write(ws, O.DECLARATION, case)
-    with pytest.raises(O.ObservationError, match="SCOPE_OR_CASE_INVALID"):
+    guard = "FROZEN_PREDICATE_UNSUPPORTED" if field in ("ut", "uspec") else "SCOPE_OR_CASE_INVALID"
+    with pytest.raises(O.ObservationError, match=guard):
         O.declaration(ws)
 
 

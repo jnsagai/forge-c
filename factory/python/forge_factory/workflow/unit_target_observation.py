@@ -22,25 +22,42 @@ from . import unit_target_timing as trusted
 
 DECLARATION = "software/tests/unit/target_observations.json"
 SCHEMA = "forge-c/swe4-wwdg-target-observation/1"
-PROOF = "forge-c/swe4-target-observation-proof/3"
+PROOF = "forge-c/swe4-target-observation-proof/4"
 METRIC = "unit_target_observation_report"
 FUNCTION = "HAL_WWDG_ClearEarlyWakeupFlag"
 CASE = {"schema": SCHEMA, "ut": "UT-021", "uspec": "USPEC-HAL-04-03", "function": FUNCTION,
         "scenario": "wwdg-ewif-clear-v1"}
 BEHAVIOUR = "Preserve other writable fields and reserved bits at reset values when clearing the flag."
 SWR = "When writing a WWDG register, the WWDG driver shall preserve its reserved bits at their reset values."
+OTHER_FIELDS_SWR = ("When writing a WWDG field, the WWDG driver shall preserve the other writable fields in that "
+                    "register except for fields explicitly changed by the requested operation as the driver's "
+                    "defined behaviour.")
+WRITE_BEHAVIOUR = "Preserve other writable fields and reserved bits at reset values during writes."
+# These are private harness checks, not planned UT identifiers (which range from 001 to 999).
+PRECONDITION_CHECK, STATUS_CHECK, READBACK_CHECK = 1001, 1002, 1003
 
 
 class ObservationError(ValueError):
     pass
 
 
-def declaration(ws):
+def _tokens(text):
+    if not isinstance(text, str) or not re.fullmatch(r"[A-Za-z]+(?:\s+[A-Za-z]+)*\.?", text.strip()):
+        return ()  # never erase a symbolic negation, condition or unsupported punctuation
+    return tuple(text.strip().removesuffix(".").lower().split())
+
+
+def _binding(ws):
     ws = Path(ws)
     if not (ws / DECLARATION).exists():
         return None
     value = trusted._read(ws, DECLARATION)
-    if value != CASE or layer.layer_of(ws) != "HAL" or layer.profile(ws)["register_prefix"] != "WWDG":
+    if (not isinstance(value, dict) or set(value) != set(CASE)
+            or any(value[k] != CASE[k] for k in ("schema", "function", "scenario"))
+            or not isinstance(value["ut"], str) or not uspec_plan.UT_RX.fullmatch(value["ut"])
+            or value["ut"] == "UT-000" or not isinstance(value["uspec"], str)
+            or not re.fullmatch(r"USPEC-HAL-\d{2,}-\d{2,}", value["uspec"])
+            or layer.layer_of(ws) != "HAL" or layer.profile(ws)["register_prefix"] != "WWDG"):
         raise ObservationError("TARGET_OBSERVATION_SCOPE_OR_CASE_INVALID")
     trusted._approved_inputs(ws)
     manifest = trusted._read(ws, ".forge-run/manifest.json")
@@ -52,11 +69,28 @@ def declaration(ws):
     unit = trusted._safe_path(ws, swtrace.UNITS_MD)
     if sha256_file(unit) != plan["unit_specification"]["sha256"]:
         raise ObservationError("TARGET_OBSERVATION_FROZEN_UNIT_CHANGED")
-    rows = [t for t in plan["tasks"] + plan.get("closure", []) if t["ut"] == CASE["ut"]]
-    if (len(rows) != 1 or rows[0]["uspec"] != CASE["uspec"] or rows[0]["functions"] != [FUNCTION]
-            or rows[0]["behaviour"] != BEHAVIOUR or set(rows[0]["swrs"]) != {"SWR-033", "SWR-034"}
-            or swtrace.swr_texts(ws).get("SWR-034") != SWR):
+    tasks = plan["tasks"] + plan.get("closure", [])
+    rows = [t for t in tasks if t["ut"] == value["ut"]]
+    texts = swtrace.swr_texts(ws)
+    if (len(rows) != 1 or rows[0]["uspec"] != value["uspec"] or rows[0]["functions"] != [FUNCTION]
+            or len(rows[0]["swrs"]) != 2 or set(rows[0]["swrs"]) != {"SWR-033", "SWR-034"}
+            or texts.get("SWR-034") != SWR):
         raise ObservationError("TARGET_OBSERVATION_FROZEN_PREDICATE_UNSUPPORTED")
+    row = rows[0]
+    # Preserve the exact historical control contract used by frozen prevention
+    # reproducers. It cannot admit any new IDs or behaviour. The dynamic path
+    # additionally binds the actual parsed USPEC and BOTH requirement clauses.
+    legacy = value == CASE and row["behaviour"] == BEHAVIOUR
+    if not legacy:
+        specs = [(u, s) for u in swtrace.parse_units(unit.read_text()) for s in u["specs"]
+                 if s["id"] == value["uspec"]]
+        if (len(specs) != 1 or specs[0][0]["functions"] != [FUNCTION]
+                or row.get("unit") != specs[0][0]["id"] or specs[0][1]["text"] != row["behaviour"]
+                or specs[0][1]["swrs"] != sorted(row["swrs"])
+                or _tokens(row["behaviour"]) not in {_tokens(BEHAVIOUR), _tokens(WRITE_BEHAVIOUR)}
+                or texts.get("SWR-033") != OTHER_FIELDS_SWR
+                or len([t for t in tasks if t["uspec"] == value["uspec"]]) != 1):
+            raise ObservationError("TARGET_OBSERVATION_FROZEN_PREDICATE_UNSUPPORTED")
     calls = trusted._read(ws, "workproducts/SWE.2/api_calls.json").get("calls", {})
     if not any(c.get("function") == FUNCTION and c.get("args") == [] for c in calls.values()):
         raise ObservationError("TARGET_OBSERVATION_FROZEN_CALL_MISSING")
@@ -64,7 +98,13 @@ def declaration(ws):
 
     if sim.shadowed_harness(ws):
         raise ObservationError("TARGET_OBSERVATION_FACTORY_HARNESS_SHADOWED")
-    return value
+    return {"case": value, "plan_row": row,
+            "validation_domain": "exact-legacy-case-v1" if legacy else "parsed-frozen-uspec-v2"}
+
+
+def declaration(ws):
+    binding = _binding(ws)
+    return binding["case"] if binding is not None else None
 
 
 def harness():
@@ -81,13 +121,13 @@ int main(void)
     WWDG->CR = WWDG_CR_WDGA | 0x40U;
     (void)WWDG->CR; /* existing model reaches EWIF at the 0x40 counter threshold */
     before = WWDG->SR;
-    TCHECK(901, before == WWDG_SR_EWIF);
+    TCHECK(1001, before == WWDG_SR_EWIF);
     FORGE_ACCESS_PHASE(2U);
     status = HAL_WWDG_ClearEarlyWakeupFlag();
     FORGE_ACCESS_PHASE(3U);
     after = WWDG->SR;
-    TCHECK(902, status == HAL_OK);
-    TCHECK(21, after == 0U);
+    TCHECK(1002, status == HAL_OK);
+    TCHECK(1003, after == 0U);
     FORGE_TEST_END();
     return 0;
 }
@@ -96,9 +136,10 @@ int main(void)
 
 def expected_tests(ws):
     """Validated progress/identity metadata only; declaration alone is never execution evidence."""
-    if declaration(ws) is None:
+    case = declaration(ws)
+    if case is None:
         return []
-    return [{"id": CASE["ut"], "uspec": CASE["uspec"], "function": FUNCTION,
+    return [{"id": case["ut"], "uspec": case["uspec"], "function": FUNCTION,
              "file": DECLARATION, "status": "DECLARED_NOT_EXECUTED"}]
 
 
@@ -106,13 +147,16 @@ def _identity(ws):
     from ..mcp.servers import sim
 
     effective = trusted._approved_inputs(ws)
+    binding = _binding(ws)
     files = (DECLARATION, ".forge-run/manifest.json", uspec_plan.PLAN, swtrace.UNITS_MD,
              swtrace.REQS, "workproducts/SWE.2/api_calls.json")
     selected = layer.profile(ws)["sim"]
     renode = sim.renode_bin()
     compiler = shutil.which("arm-none-eabi-gcc")
     return {"files": {rel: sha256_file(trusted._safe_path(ws, rel)) for rel in files},
-            "source_files": simulation_performance.source_files(ws), "case": CASE, "provided_effective_identity": effective,
+            "source_files": simulation_performance.source_files(ws), "case": binding["case"],
+            "plan_binding": binding, "provided_effective_identity": effective,
+            "mailbox_checks": {"precondition": PRECONDITION_CHECK, "status": STATUS_CHECK, "readback": READBACK_CHECK},
             "generated_test_sha256": hashlib.sha256(harness().encode()).hexdigest(),
             "adapter_sha256": sha256_file(Path(__file__)), "trusted_input_adapter_sha256": sha256_file(Path(trusted.__file__)),
             "simulator_adapter_sha256": sha256_file(Path(sim.__file__)),
@@ -139,7 +183,10 @@ def _shadow(ws, dest):
     return test
 
 
-def _observed(mailbox, access):
+def _observed(mailbox, access, case=None):
+    # The optional exact legacy case preserves the existing private test helper
+    # interface; every production run/verify call passes its validated binding.
+    case = CASE if case is None else case
     if (not mailbox["magic_ok"] or not mailbox["done"] or mailbox["passed"] + mailbox["failed"] != 3
             or len(mailbox["failed_ids"]) != mailbox["failed"] or not access):
         raise ObservationError("TARGET_OBSERVATION_INCOMPLETE")
@@ -151,12 +198,12 @@ def _observed(mailbox, access):
         a["offset"] == 8 and type(a["value"]) is int and 0 <= a["value"] <= 0xffffffff
         and a["value"] & reserved_mask == 0 for a in writes)
     observed = {"sr_before": pre[-1] if pre else None, "sr_after": post[-1] if post else None,
-                "actual_hal_status_matches_HAL_OK": 902 not in mailbox["failed_ids"],
+                "actual_hal_status_matches_HAL_OK": STATUS_CHECK not in mailbox["failed_ids"],
                 "call_writes": [{"offset": a["offset"], "value": a["value"]} for a in writes],
                 "sr_reserved_write_mask": reserved_mask, "sr_reserved_write_values_valid": reserved_valid}
     ok = (mailbox["failed"] == 0 and pre == [1] and post == [0]
           and reserved_valid)
-    return {"id": CASE["ut"], "uspec": CASE["uspec"], "function": FUNCTION,
+    return {"id": case["ut"], "uspec": case["uspec"], "function": FUNCTION,
             "status": "PASS" if ok else "FAIL", "observed": observed,
             "scope": "EXPLICIT_EXISTING_RENODE_MODEL_CASE_NOT_SILICON", "silicon_verified": False}
 
@@ -171,7 +218,7 @@ def run(ctx):
         return None
     refs, issues, tests, metrics = [], [], [], {}
     try:
-        declaration(ws)
+        case = declaration(ws)
         before = _identity(ws)
         renode = sim.renode_bin()
         if not renode or not shutil.which("arm-none-eabi-gcc"):
@@ -209,7 +256,7 @@ def run(ctx):
                       "data": base64.b64encode(elf.read_bytes()).decode("ascii")}
             binary_ref = ctx.store(canonical_json(binary), "json")
             refs.append(binary_ref)
-            tests = [_observed(mailbox, access)]
+            tests = [_observed(mailbox, access, case)]
             if _identity(ws) != before:
                 raise ObservationError("TARGET_OBSERVATION_INPUT_CHANGED_DURING_EXECUTION")
             proof = {"schema": PROOF, "identity": before, "invocation_id": ctx.invocation_id,
@@ -235,7 +282,8 @@ def verify(ws, result):
     from ..mcp.servers import sim
 
     ws = Path(ws)
-    if declaration(ws) is None:
+    case = declaration(ws)
+    if case is None:
         raise ObservationError("TARGET_OBSERVATION_DECLARATION_MISSING")
     refs = result.get("artifact_refs", [])
     proof = json.loads(trusted._artifact(ws, refs, result.get("metrics", {}).get(METRIC), "json"))
@@ -256,7 +304,7 @@ def verify(ws, result):
     with tempfile.TemporaryDirectory(prefix="forge-unit-observation-verify-") as td:
         path = Path(td) / "access.log"
         path.write_bytes(trusted._artifact(ws, refs, proof["access_log_ref"], "log"))
-        observed = _observed(mailbox, sim.read_access_log(path))
+        observed = _observed(mailbox, sim.read_access_log(path), case)
     if mailbox != proof["mailbox"] or [observed] != proof["tests"]:
         raise ObservationError("TARGET_OBSERVATION_RESULT_CHANGED")
     return [observed]
@@ -267,12 +315,12 @@ def trace(ws):
     if not (Path(ws) / DECLARATION).exists():
         return [], {}, []
     try:
-        declaration(ws)
+        case = declaration(ws)
         records = [r for r in swtrace._tool_records(Path(ws)) if r.get("op") == "run_unit"]
         if not records:
             raise ObservationError("TARGET_OBSERVATION_NO_EXECUTED_UNIT_RUN")
         tests = verify(ws, records[-1]["result"])
-        tagged = [{"test": CASE["ut"], "file": DECLARATION, "file_level": False, "verifies": [CASE["uspec"]]}]
+        tagged = [{"test": case["ut"], "file": DECLARATION, "file_level": False, "verifies": [case["uspec"]]}]
         return tagged, {t["id"]: t["status"] for t in tests}, []
     except (OSError, ValueError, KeyError, TypeError) as exc:
         return [], {}, ["UT:TARGET_OBSERVATION_UNVERIFIED:" + str(exc)[:200]]
