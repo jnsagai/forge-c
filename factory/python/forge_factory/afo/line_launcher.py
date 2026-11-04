@@ -71,7 +71,8 @@ CODES = {
     "WORKTREE_ALREADY_LAUNCHED": "ORDER", "WORKTREE_NOT_CLEAN": "ORDER", "INPUT_OUTSIDE_REPO": "ORDER",
     "INPUT_MISSING": "ORDER", "INPUT_HASH_UNKNOWN": "ORDER", "INPUT_UNAVAILABLE": "ORDER",
     "WORKTREE_ADD_FAILED": "INFRA", "FABRO_API_UNREACHABLE": "INFRA", "STACK_STOP_INCOMPLETE": "INFRA",
-    "STACK_START_FAILED": "INFRA", "STACK_NOT_HEALTHY": "INFRA", "EXPOSE_FAILED": "INFRA", "SMOKE_FAIL": "INFRA",
+    "STACK_START_FAILED": "INFRA", "STACK_STOP_FAILED": "INFRA", "STACK_NOT_HEALTHY": "INFRA",
+    "EXPOSE_FAILED": "INFRA", "SMOKE_FAIL": "INFRA",
     "WORKORDER_LAUNCH_FAILED": "WORKORDER", "LAUNCH_NO_RUN_ID": "WORKORDER", "UNEXPECTED_ERROR": "INFRA",
     "QUALITY_FLAG_UNSUPPORTED": "ORDER", "DURABLE_EXECUTION_BUSY": "REFUSED",
 }
@@ -771,7 +772,8 @@ def provision_inputs(items: list[dict], wt: Path, cache: Path | None) -> list[di
 # ---------------------------------------------------------------------------------------------------------- host
 LOCK_FD_ENV = ST.LOCK_FD_ENV
 DROP_ENV = ("PYTHONPATH", "FORGE_REPO_ROOT", "FORGE_OPERATIONS_INTENT", "FORGE_DURABLE_AUTONOMY", "VIRTUAL_ENV",
-            "FORGE_LRTX_ROOT", "FORGE_LRTX_PROFILE", "FORGE_FABRO_BIN", LOCK_FD_ENV, "FORGE_FABRO_TOKEN")
+            "FORGE_LRTX_ROOT", "FORGE_LRTX_PROFILE", "FORGE_FABRO_BIN", LOCK_FD_ENV, "FORGE_FABRO_TOKEN",
+            "FORGE_LINE_STACK_PAYLOAD", "FORGE_LINE_STACK_PAYLOAD_SHA256")
 
 
 def run_env(cfg: LineConfig, wt: Path, profile: str) -> dict:
@@ -1166,6 +1168,8 @@ def _launch_locked(att: Attempt, cfg: LineConfig, order: Order, host, procs, say
         rc, out = host.stack(["stop"], env=env, cwd=cwd, log=att.logdir / "stack-stop.log", lock_fd=lock_fd)
         att.step("stack_stop", "OK" if rc == 0 else f"RC_{rc}", rc=rc, out=out.strip()[-300:])
         say(f"step stack_stop rc {rc}: {out.strip()[-160:]}")
+        if order.durable_file is not None and rc != 0:
+            raise LaunchError("STACK_STOP_FAILED", f"managed stop rc {rc}: {out.strip()[-200:]}")
         rep = sweep(cfg.stack_root, procs, uid=cfg.uid, kill=True, grace_s=cfg.sweep_grace_s, sleep=host.sleep)
         att.step("sweep", killed=rep["killed"], survivors=rep["survivors"],
                  orphans=[{k: c[k] for k in ("pid", "kind", "netns", "evidence", "storage_lock")}

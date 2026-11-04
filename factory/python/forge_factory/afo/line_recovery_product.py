@@ -194,6 +194,7 @@ def launcher(store, cmd, spec, *, cfg=None, launch=None):
             "FABRO_API_UNREACHABLE",
             "STACK_STOP_INCOMPLETE",
             "STACK_START_FAILED",
+            "STACK_STOP_FAILED",
             "STACK_NOT_HEALTHY",
             "EXPOSE_FAILED",
             "SMOKE_FAIL",
@@ -506,7 +507,8 @@ def claim_for_launch(cfg, order):
         grant = bound_order(store, worker)["grant"]
         if not grant.permit(
             "launch_workorder",
-            {"order_id": spec["wo"], "driver_class": spec["driver_class"], "model": spec["profile"], "service_action": "line_stack_restart"},
+            {"order_id": spec["wo"], "driver_class": spec["driver_class"], "model": spec["profile"],
+             "service_action": "line_stack_restart"},
         ).allow:
             raise Refused("LINE_PRODUCT_STACK_LAUNCH_NOT_AUTHORIZED")
         return claim(cfg, job)
@@ -526,7 +528,9 @@ def execution_context(order):
     value = validate_launch_order(order)
     store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     job, _, _ = _job_for_payload(store, value)
-    return {**role_context(job), "FORGE_DURABLE_AUTONOMY": "1", "FORGE_AFO_QUEUE_SCOPE": "line-local"}
+    return {**role_context(job), "FORGE_DURABLE_AUTONOMY": "1", "FORGE_AFO_QUEUE_SCOPE": "line-local",
+            "FORGE_OPERATIONS_PROFILE": job["profile"], "FORGE_LINE_STACK_PAYLOAD": str(order.durable_file),
+            "FORGE_LINE_STACK_PAYLOAD_SHA256": order.durable_sha256}
 
 
 def _native_prepare_claim(store, job):

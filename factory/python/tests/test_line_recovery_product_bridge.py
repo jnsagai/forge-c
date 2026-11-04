@@ -30,7 +30,7 @@ from test_da014_protocol import protocol  # noqa: F401
 
 
 @pytest.fixture
-def product(tmp_path, monkeypatch):
+def product(tmp_path, monkeypatch, request):
     from forge_factory import workorder
     from forge_factory.afo import line_launcher as LL
     from forge_factory.afo import line_orders as O
@@ -40,7 +40,10 @@ def product(tmp_path, monkeypatch):
     monkeypatch.setenv("FORGE_STATE_DIR", str(state))
     monkeypatch.setenv("FORGE_AFO_QUEUE_SCOPE", "line-local")
     monkeypatch.setenv("FORGE_OPERATIONS_INTENT", str(tmp_path / "intent.json"))
-    monkeypatch.setattr(operations, "configured", lambda: False)
+    managed = getattr(request, "param", False)
+    monkeypatch.setattr(operations, "configured", lambda: managed)
+    if managed:
+        operations.Intent().set("RUNNING", actor="private-fixture-owner", reason="isolated managed control", initialize=True)
     store = Store(state / "supervisor/line-queue.sqlite3")
     repo = tmp_path / "repo"
     (repo / "afo-manifests").mkdir(parents=True)

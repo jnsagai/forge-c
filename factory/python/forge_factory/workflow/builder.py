@@ -415,9 +415,17 @@ def serve_swaps(dot: str, structured: dict, nodes: dict | None = None) -> str:
     for node, model in sorted(models.items()):
         sv = f"{node}_serve"
         dot = re.sub(rf'^  (\w+) -> {node}( \[condition="[^"]*"\])?$',
-                     lambda m: m.group(0) if m.group(1) == sv else f"  {m.group(1)} -> {sv}{m.group(2) or ''}",
+                     lambda m, sv=sv: m.group(0) if m.group(1) == sv else f"  {m.group(1)} -> {sv}{m.group(2) or ''}",
                      dot, flags=re.M)
-        cmd = (f"{_env()} FORGE_LRTX_ROOT={shlex.quote(root)} {sys.executable} -m forge_factory.lrtx.stack serve "
+        line_context = ""
+        if os.environ.get("FORGE_LINE_STACK_PAYLOAD") or os.environ.get("FORGE_LINE_STACK_PAYLOAD_SHA256"):
+            for key in ("FORGE_LINE_STACK_PAYLOAD", "FORGE_LINE_STACK_PAYLOAD_SHA256", "FORGE_OPERATIONS_PROFILE",
+                        "FORGE_OPERATIONS_INTENT", "FORGE_DURABLE_AUTONOMY", "FORGE_AFO_QUEUE_SCOPE",
+                        "FORGE_AFO_POLICY", "FORGE_AFO_AUTH_DIR", "FORGE_AFO_ALLOWED_SIGNERS", "FORGE_DURABLE_NATIVE_HEADER",
+                        "FORGE_LINE_STACK_ROOT", "FORGE_LINE_GPU_LOCK", "FORGE_LINE_FABRO_PORT", "FORGE_LINE_LAUNCH_DIR"):
+                if key in os.environ:
+                    line_context += f" {key}={shlex.quote(os.environ[key])}"
+        cmd = (f"{_env()}{line_context} FORGE_LRTX_ROOT={shlex.quote(root)} {sys.executable} -m forge_factory.lrtx.stack serve "
                f"--model {shlex.quote(model)} --workspace .")
         added += [f'  {sv} [shape=parallelogram, label="Serve {_q(model)} for {node} (in-run model swap)", '
                   f'max_visits={8 * MAX_VISITS}, timeout="900s", script="{_q(cmd)}"]',

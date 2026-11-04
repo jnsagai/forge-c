@@ -9,6 +9,7 @@ See https://man7.org/linux/man-pages/man7/pid_namespaces.7.html.
 
 from __future__ import annotations
 
+import hashlib
 import os
 import re
 import signal
@@ -50,6 +51,32 @@ def identity(pid: int) -> dict | None:
     return record
 
 
+def owner_view(pid: int) -> dict:
+    """Capture the kernel UID mapping and user namespaces in this observer's view."""
+    return {"user_namespace": os.readlink(f"/proc/{pid}/ns/user"),
+            "uid_map": [list(map(int, line.split())) for line in Path(f"/proc/{pid}/uid_map").read_text().splitlines()],
+            "observer_user_namespace": os.readlink("/proc/self/ns/user"), "observer_uid": os.getuid()}
+
+
+def require_owner_view(pid: int, expected_uid: int, captured: dict) -> None:
+    """Require the original observer, or the exact captured one-level mapped owner view."""
+    actual = identity(pid)
+    if not actual or actual.get("uid") != os.getuid() or not isinstance(captured, dict):
+        raise Refused("PROVIDER_OWNER_VIEW_UNPROVEN")
+    current = os.readlink("/proc/self/ns/user")
+    if current == captured.get("observer_user_namespace"):
+        if actual["uid"] != expected_uid or os.getuid() != captured.get("observer_uid"):
+            raise Refused("PROVIDER_OWNER_VIEW_UNPROVEN")
+        return
+    mapping = captured.get("uid_map")
+    if (current != captured.get("user_namespace") or not isinstance(mapping, list) or len(mapping) != 1
+            or len(mapping[0]) != 3 or mapping[0][2] != 1
+            or owner_view(pid)["uid_map"] != mapping
+            or os.readlink(f"/proc/{pid}/ns/user") != current
+            or actual["uid"] != mapping[0][0] or expected_uid != mapping[0][1]):
+        raise Refused("PROVIDER_OWNER_VIEW_UNPROVEN")
+
+
 def capture(root: Path, *, profile: str, profile_sha256: str, parent_pid: int) -> dict:
     """Discover the private namespace init directly below our pinned unshare process."""
     parent = identity(parent_pid)
@@ -85,6 +112,7 @@ def capture(root: Path, *, profile: str, profile_sha256: str, parent_pid: int) -
         "profile": profile,
         "profile_sha256": profile_sha256,
         "observer_user_namespace": os.readlink("/proc/self/ns/user"),
+        "init_owner_view": owner_view(pid),
         "parent_pid": parent_pid,
         "parent": {k: v for k, v in parent.items() if k != "state"},
         "init_pid": pid,
@@ -199,3 +227,97 @@ def stop(instance: dict, *, fenced_effect) -> dict | None:
         if proof or time.monotonic() >= deadline:
             return proof
         time.sleep(0.05)
+
+
+def require_live_instance(instance: dict) -> None:
+    """Observe a still-identical provider from host or its own mapped user namespace.
+
+    Numeric UIDs are relative to the observer: require the current observer's own
+    UID and its namespace to be either the captured observer or this exact init's
+    user namespace. Boot/start/private PID identity must match in both cases.
+    This proves liveness only; it never supplies a quiescence/release receipt.
+    """
+    validate(instance)
+    actual = identity(instance["init_pid"])
+    require_owner_view(instance["init_pid"], instance["init"]["uid"], instance.get("init_owner_view"))
+    if (not actual or actual.get("state") == "Z"
+            or any(actual.get(k) != instance["init"].get(k)
+                   for k in ("boot_id", "start_ticks", "pid_namespace", "namespace_pid"))):
+        raise Refused("PROVIDER_LIVE_INSTANCE_UNCONFIRMED")
+
+
+def capture_worker(instance: dict, parent_pid: int, argv: list[str], *, timeout=3) -> dict:
+    """Find the exact executable under an nsenter waiter, never treat that waiter as its private-PID child."""
+    from ..afo.durable import immutable_json
+
+    require_live_instance(instance)
+    expected = b"\0".join(os.fsencode(arg) for arg in argv) + b"\0"
+    deadline = time.monotonic() + timeout
+    while True:
+        parent = identity(parent_pid)
+        if not parent or parent.get("state") == "Z" or parent["uid"] != os.getuid():
+            raise Refused("PROVIDER_WORKER_PARENT_UNPROVEN")
+        pending, seen, matches = [parent_pid], set(), []
+        while pending:
+            pid = pending.pop()
+            if pid in seen:
+                continue
+            seen.add(pid)
+            if len(seen) > 128:
+                raise Refused("PROVIDER_WORKER_OBSERVATION_BOUND")
+            actual = identity(pid)
+            if actual and actual.get("state") != "Z":
+                try:
+                    command = Path(f"/proc/{pid}/cmdline").read_bytes()
+                    if (actual["uid"] == os.getuid() and actual["pid_namespace"] == instance["init"]["pid_namespace"]
+                            and command == expected):
+                        matches.append((pid, actual))
+                    pending.extend(int(p) for p in Path(f"/proc/{pid}/task/{pid}/children").read_text().split())
+                except FileNotFoundError:
+                    continue
+                except (OSError, ValueError) as exc:
+                    raise Refused("PROVIDER_WORKER_OBSERVATION_UNAVAILABLE") from exc
+        if len(matches) > 1:
+            raise Refused("PROVIDER_WORKER_IDENTITY_AMBIGUOUS")
+        if matches:
+            pid, actual = matches[0]
+            record = {"schema": "forge-c/managed-provider-worker/1", "instance_sha256": digest(instance),
+                      "pid": pid, "identity": {k: v for k, v in actual.items() if k != "state"},
+                      "parent_pid": parent_pid, "parent": {k: v for k, v in parent.items() if k != "state"},
+                      "argv_sha256": hashlib.sha256(expected).hexdigest(),
+                      "observer_user_namespace": os.readlink("/proc/self/ns/user")}
+            immutable_json(Path(instance["root"]) / "run/provider-workers" / (digest(record) + ".json"), record)
+            return record
+        if time.monotonic() >= deadline:
+            raise Refused("PROVIDER_WORKER_IDENTITY_UNPROVEN")
+        time.sleep(0.02)
+
+
+def signal_worker(instance: dict, worker: dict, argv: list[str], sig: int, *, fenced_effect) -> None:
+    """Signal only the still-identical captured private namespace worker through a pidfd."""
+    import hashlib
+
+    from ..afo.durable import strict_json
+
+    validate(instance)
+    if (not isinstance(worker, dict) or worker.get("instance_sha256") != digest(instance)
+            or worker.get("observer_user_namespace") != os.readlink("/proc/self/ns/user")
+            or worker.get("argv_sha256") != hashlib.sha256(b"\0".join(os.fsencode(a) for a in argv) + b"\0").hexdigest()):
+        raise Refused("PROVIDER_WORKER_BINDING_CHANGED")
+    proof = Path(instance["root"]) / "run/provider-workers" / (digest(worker) + ".json")
+    if proof.is_symlink() or strict_json(proof.read_bytes(), 16384) != worker:
+        raise Refused("PROVIDER_WORKER_EVIDENCE_CHANGED")
+    pid = worker["pid"]
+    descriptor = pidfd.open_pid(pid)
+    try:
+        def effect():
+            actual = identity(pid)
+            if (not actual or actual.get("state") == "Z"
+                    or {k: v for k, v in actual.items() if k != "state"} != worker["identity"]
+                    or actual["pid_namespace"] != instance["init"]["pid_namespace"]
+                    or Path(f"/proc/{pid}/cmdline").read_bytes() != b"\0".join(os.fsencode(a) for a in argv) + b"\0"):
+                raise Refused("PROVIDER_WORKER_IDENTITY_CHANGED")
+            pidfd.send_signal(descriptor, sig)
+        fenced_effect(effect)
+    finally:
+        os.close(descriptor)

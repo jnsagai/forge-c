@@ -28,6 +28,7 @@ import tempfile
 import time
 import urllib.request
 from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 
 from ..common import REPO_ROOT, pretty_json, utc_now
@@ -36,6 +37,24 @@ from . import profile as lp
 
 SYSTEM_PATH = "/usr/local/bin:/usr/bin:/bin"
 LOCK_FD_ENV = "FORGE_STACK_LOCK_FD"
+
+
+_EFFECT_GUARD = ContextVar("forge_line_stack_effect_guard", default=None)
+
+
+@contextmanager
+def line_effect_guard(guard):
+    token = _EFFECT_GUARD.set(guard)
+    try:
+        yield
+    finally:
+        _EFFECT_GUARD.reset(token)
+
+
+def _guard_effect():
+    guard = _EFFECT_GUARD.get()
+    if guard is not None:
+        guard()
 
 
 class StackLockHeld(RuntimeError):
@@ -146,6 +165,12 @@ def envmap(s: dict) -> dict[str, str]:
         for name in (
             "FORGE_OPERATIONS_INTENT",
             "FORGE_OPERATIONS_PROFILE",
+            "FORGE_LINE_STACK_PAYLOAD",
+            "FORGE_LINE_STACK_PAYLOAD_SHA256",
+            "FORGE_LINE_STACK_ROOT",
+            "FORGE_LINE_GPU_LOCK",
+            "FORGE_LINE_FABRO_PORT",
+            "FORGE_LINE_LAUNCH_DIR",
             "FORGE_CONDUCTOR_UNIT",
             "FORGE_DURABLE_AUTONOMY",
             "FORGE_DURABLE_NATIVE_HEADER",
@@ -396,6 +421,10 @@ def start(s: dict, *, recovery=False) -> dict:
 
 
 def _locked_start(s: dict, *, recovery=False) -> dict:
+    from ..afo import line_stack_lifecycle
+
+    if line_stack_lifecycle.selected():
+        return line_stack_lifecycle.start(s, recovery=recovery)
     from ..afo.operations import Intent, configured, fenced_call
 
     if configured():
@@ -592,6 +621,8 @@ def serving_instance(s: dict) -> dict:
 
 
 def _start(s: dict, *, recovery=False, control_only=False) -> dict:
+    guard = _guard_effect
+    guard()
     r, p, prof = s["root"], s["ports"], s["profile"]
     env = envmap(s)
     if not (r / "venv/bin/python").exists():
@@ -621,6 +652,7 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
                     raise ValueError("LOCAL_PROCESS_OWNERSHIP_UNPROVEN")
     if holder is None:
         # user + network namespace: loopback only; the GPU device nodes stay usable
+        guard()
         subprocess.Popen(
             [
                 "setsid",
@@ -675,6 +707,7 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
             ):
                 parent_pid = pending["pid"]
             else:
+                guard()
                 proc = _in_ns(
                     holder,
                     ["unshare", "--mount", "--pid", "--fork", "--mount-proc", "--kill-child=SIGKILL", "sleep", "infinity"],
@@ -780,6 +813,7 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         old = procs.get(name)
         if old and _alive(old["pid"], {"ollama": "ollama", "llama_server": "llama-server"}.get(name, argv[1])):
             continue
+        guard()
         if managed_serving() and name in ("ollama", "llama_server", "gateway"):
             proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r, serving=serving)
         else:
@@ -787,8 +821,15 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         procs[name] = {"pid": proc.pid, "argv": argv, "health": health}
         deadline = time.monotonic() + (5 if recovery else 60)
         while time.monotonic() < deadline and not _probe(holder, env, health):
+            guard()
             time.sleep(1)
         procs[name]["identity"] = process_identity(proc.pid)
+        if managed_serving():
+            from . import provider_process as provider
+
+            procs[name]["owner_view"] = provider.owner_view(proc.pid)
+        if managed_serving() and serving is not None and name == "llama_server":
+            procs[name]["worker"] = provider.capture_worker(serving, proc.pid, argv)
     health = {n: _probe(holder, env, v["health"]) for n, v in procs.items()}
     if cb is not None:
         health["cloud_bridge"] = bridge_healthy(bridge_socket(r, prof))
@@ -868,9 +909,19 @@ def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
     memory the profile states for the model; start it with its pinned spec; wait for health and require /v1/models
     to list exactly that model. Any failure leaves no llama-server running and raises: the graph's serve node then
     goes to the finalizer (fail closed, never a fallback to the other model). Every swap is recorded."""
-    prof, r, p = s["profile"], s["root"], s["ports"]
+    from ..afo import line_stack_lifecycle
+
+    if line_stack_lifecycle.selected():
+        return line_stack_lifecycle.serve(s, model, workspace)
     if managed_serving():
         raise RuntimeError("MODEL_SWAP_REFUSED_MANAGED_SERVING")
+    return _serve_model(s, model, workspace)
+
+
+def _serve_model(s: dict, model: str, workspace: Path | None = None, *, serving=None) -> dict:
+    guard = _guard_effect
+    guard()
+    prof, r, p = s["profile"], s["root"], s["ports"]
     cb = cloud_bridge(prof)
     if cb is not None:  # comparison line: both models are answered by the bridge; nothing is swapped on any GPU
         if model not in cb["models"]:
@@ -934,13 +985,30 @@ def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
         if cur.get("identity") and not _same_process(process_identity(cur["pid"]), cur["identity"]):
             record("REFUSED", reason="OWNERSHIP_UNPROVEN")
             raise RuntimeError("MODEL_SWAP_OWNERSHIP_UNPROVEN")
-        os.kill(cur["pid"], signal.SIGTERM)
+        def owned_signal(sig):
+            guard()
+            if serving is None:
+                os.kill(cur["pid"], sig)
+                return
+            from ..afo.durable import Refused
+            from . import provider_process as provider
+
+            if not cur.get("identity") or not _same_process(process_identity(cur["pid"]), cur["identity"]):
+                raise Refused("LINE_STACK_MODEL_PROCESS_OWNERSHIP_UNPROVEN")
+            # The namespace observer may differ from the original host start.
+            # Recapture the same exact waiter/argv's worker in this observer view.
+            worker = provider.capture_worker(serving, cur["pid"], cur["argv"])
+            provider.signal_worker(serving, worker, cur["argv"], sig,
+                                   fenced_effect=lambda effect: (guard(), effect())[1])
+
+        owned_signal(signal.SIGTERM)
         for _ in range(60):
+            guard()
             if not _alive(cur["pid"], "llama-server"):
                 break
             time.sleep(1)
         else:
-            os.kill(cur["pid"], signal.SIGKILL)
+            owned_signal(signal.SIGKILL)
             time.sleep(2)
     procs.pop("llama_server", None)
     _save_services(r, {**rec, "updated_at": utc_now()})
@@ -950,6 +1018,7 @@ def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
     need = int(spec.get("vram_required_mib") or 0)
     free = _vram_free_mib()
     for _ in range(int(swap_cfg.get("vram_wait_s", 120))):
+        guard()
         if free is not None and free >= need:
             break
         time.sleep(1)
@@ -958,15 +1027,17 @@ def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
         record("FAILED", reason="VRAM_NOT_AVAILABLE", vram_free_mib=free, vram_required_mib=need)
         raise RuntimeError("MODEL_SWAP_VRAM_NOT_AVAILABLE")
     log = r / "logs/llama_server.log"
-    if inside:
+    guard()
+    if inside and serving is None:
         with log.open("ab") as fh:
             proc = subprocess.Popen(argv, env=penv, stdout=fh, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                                     cwd=r, start_new_session=True)
     else:
-        proc = _in_ns(holder, argv, penv, log, r)
+        proc = _in_ns(holder, argv, penv, log, r, **({"serving": serving} if serving else {}))
     deadline = time.monotonic() + float(swap_cfg.get("health_timeout_s", 600))
     ok = False
     while time.monotonic() < deadline and proc.poll() is None:
+        guard()
         if _serves(p["llama"], model, holder, env, inside):
             ok = True
             break
@@ -976,8 +1047,13 @@ def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
             proc.kill()
         record("FAILED", reason="NOT_HEALTHY_OR_WRONG_MODEL", exit=proc.poll())
         raise RuntimeError("MODEL_SWAP_NOT_SERVED")
+    worker = None
+    if serving is not None:
+        from . import provider_process as provider
+
+        worker = provider.capture_worker(serving, proc.pid, argv)
     procs["llama_server"] = {"pid": proc.pid, "argv": argv, "health": health, "identity": process_identity(proc.pid),
-                             "model": model}
+                             "model": model, **({"worker": worker} if worker else {})}
     rec["health"] = {**(rec.get("health") or {}), "llama_server": True}
     _save_services(r, {**rec, "updated_at": utc_now()})
     return record("SWAPPED", pid=proc.pid, argv_sha256=hashlib.sha256("\0".join(argv).encode()).hexdigest(),
@@ -990,6 +1066,10 @@ def stop(s: dict) -> dict:
 
 
 def _locked_stop(s: dict) -> dict:
+    from ..afo import line_stack_lifecycle
+
+    if line_stack_lifecycle.selected():
+        return line_stack_lifecycle.stop(s)
     if managed_serving():
         from ..afo import operations
         from ..afo.durable import Refused
@@ -1011,6 +1091,8 @@ def _locked_stop(s: dict) -> dict:
 
 
 def _stop(s: dict, *, managed=False) -> dict:
+    guard = _guard_effect
+    guard()
     r = s["root"]
     f = r / "run/services.json"
     rec = json.loads(f.read_text()) if f.is_file() else {"processes": {}}
@@ -1031,6 +1113,7 @@ def _stop(s: dict, *, managed=False) -> dict:
         try:
             if process_identity(pid) != expected:
                 raise Refused("LOCAL_PROCESS_OWNERSHIP_UNPROVEN")
+            guard()
             pidfd.send_signal(descriptor, sig)
         finally:
             os.close(descriptor)
