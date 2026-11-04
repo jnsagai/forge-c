@@ -686,7 +686,7 @@ def trace_step(kind: str) -> list[str]:
         "vt": "OWNER TRACE RULES: every Robot test keeps its SWR tag; every SWR needs a passing test (VT:* issues; "
               "matrix 6).",
     }
-    if kind == "it" and _layer() == "HAL":
+    if kind == "it" and _layer() == "HAL" and UNIT_VERIFICATION["gtest"] and PROVIDED_API["api"]:
         rules[kind] += (
             " HOST RESULT PROTOCOL: every executed host check prints its id followed immediately by PASS or FAIL "
             "on its own line, for example 'IT-001-NOMINAL PASS' or 'IT-001-INVALID FAIL'. Inside the function tagged "

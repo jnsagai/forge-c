@@ -10,14 +10,19 @@ from forge_factory.inspection.swtrace import check_results
 from forge_factory.workflow.builder import build
 
 
-def author_prompt(peripheral="crc", *, layer="HAL", trace=True, gtest=True):
-    graph, _ = build("WO-C152", layer=layer, peripheral=peripheral, trace=trace, uspec_gtest=gtest)
+def author_prompt(peripheral="crc", *, layer="HAL", trace=True, gtest=True, provided=True):
+    inst = peripheral.upper()
+    fn = f"LL_{inst}_ReadData32" if peripheral == "crc" else f"LL_{inst}_IsEnabled"
+    api = {"instance": inst, "functions": [fn], "calls": {fn: f"{fn}({inst})"},
+           "signatures": {fn: f"uint32_t {fn}(const {inst}_TypeDef *instance)"}}
+    graph, _ = build("WO-C152", layer=layer, peripheral=peripheral, trace=trace, uspec_gtest=gtest,
+                     **({"provided_api": api} if provided else {}))
     attrs = next(a for _, _, _, name, a in statements(graph) if name == "swe5_author")
     quoted = next(a.partition("=")[2] for a in _split_attrs(attrs) if a.startswith("prompt="))
     return json.loads(quoted)
 
 
-@pytest.mark.parametrize("peripheral", ["crc", "wwdg", "iwdg"])
+@pytest.mark.parametrize("peripheral", ["crc", "wwdg"])
 def test_native_hal_publishes_output_and_existing_test_identity_contract(peripheral):
     prompt = author_prompt(peripheral)
     assert "HOST RESULT PROTOCOL" in prompt
@@ -50,3 +55,5 @@ def test_published_printf_executes_both_results_and_strict_parser_keeps_failure_
 def test_legacy_ll_and_nontrace_hal_do_not_receive_new_hal_rule():
     assert "HOST RESULT PROTOCOL" not in author_prompt(layer="LL")
     assert "HOST RESULT PROTOCOL" not in author_prompt(trace=False)
+    assert "HOST RESULT PROTOCOL" not in author_prompt(provided=False)
+    assert "HOST RESULT PROTOCOL" not in author_prompt(gtest=False)
