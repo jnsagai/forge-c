@@ -82,6 +82,12 @@ class Binding:
                                     "nodes": self.nodes}, indent=2, sort_keys=True), encoding="utf-8")
 
 
+# CAPA-142 (run WO-F014-SWE5-WWDGHAL-20261103-L32): headers the factory build provides to target images
+# (factory/sim/stm32n6/forge_target_test.h; forge_performance_calls.h is generated into the build directory). A workspace
+# copy precedes them on the include path and silently replaces the harness.
+FACTORY_HARNESS_HEADERS = ("forge_target_test.h", "forge_performance_calls.h")
+
+
 def _match(rel: str, globs: list[str]) -> bool:
     return any(fnmatch.fnmatchcase(rel, g) or fnmatch.fnmatchcase(rel + "/", g) or rel == g.rstrip("/*")
                for g in globs)
@@ -282,6 +288,10 @@ class Authorizer:
                 # CAPA-138 (run WO-F014-SWE1-WWDGHAL-20261103-L32B): a directory prefix (".../") admits only paths
                 # strictly inside it. Its own path, or any existing directory, is never written as a file - an empty
                 # file "workproducts/SWE.1" blocked every later write below it ("File exists") for the whole run.
+                if rel.startswith("software/") and Path(rel).name in FACTORY_HARNESS_HEADERS:
+                    return Decision(False, "HARNESS_SHADOW_DENIED", f"{rel}: {Path(rel).name} is provided by the factory "
+                                    f"build; include it with #include \"{Path(rel).name}\" and call FORGE_TEST_BEGIN() "
+                                    "first - do not write a copy", role_id)
                 if any(p.endswith("/") and rel == p.rstrip("/") for p in prefixes) or (self.workspace / rel).is_dir():
                     return Decision(False, "PATH_IS_DIRECTORY", f"{rel} is a directory: write the file inside it "
                                     f"({rel}/<name>); write_file creates missing parent directories", role_id)

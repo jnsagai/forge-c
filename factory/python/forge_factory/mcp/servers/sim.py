@@ -48,6 +48,31 @@ SIM_DIR = REPO_ROOT / "factory" / "sim" / "stm32n6"
 ADAPTER_ID = "stm32n6-cortex-m55-v1"
 MAILBOX = 0x341F0000
 MAGIC = 0xF0C6E5A1
+
+
+def no_result_issue(name: str, scenario: str, res: dict | None) -> str:
+    """CAPA-142 (run WO-F014-SWE5-WWDGHAL-20261103-L32): why an image gave no usable result. The bare
+    "NO_RESULT:<test>:<scenario>" hid that the checks HAD run with the mailbox magic unset (no FORGE_TEST_BEGIN), and the
+    author shadowed the factory harness instead. The code prefix stays; such results are never counted. The action
+    comes first: tool issues are cut at 120 characters (mcp/sdk.py)."""
+    base = f"NO_RESULT:{name}:{scenario}"
+    if res is None:
+        return base + ": no mailbox output - the image crashed, hung or reset before FORGE_TEST_END()"
+    if not res["magic_ok"] and (res["passed"] or res["failed"] or res["done"]):
+        return (base + f": call FORGE_TEST_BEGIN() first - checks ran (passed {res['passed']}, failed {res['failed']}) "
+                "with the mailbox magic unset; not counted")
+    if not res["magic_ok"]:
+        return base + ": mailbox never initialised - call FORGE_TEST_BEGIN() first, FORGE_TEST_END() last"
+    return base + ": FORGE_TEST_END() not reached (done flag unset)"
+
+
+def shadowed_harness(ws: Path) -> list[str]:
+    """CAPA-142: workspace copies of factory harness headers (they precede factory/sim on the include path)."""
+    from ...policy.authz import FACTORY_HARNESS_HEADERS
+
+    return [str(p.relative_to(ws)) for d in ("software/hal", "software/ll", "software/include", "software/tests/target",
+                                             "software/tests/software")
+            for n in FACTORY_HARNESS_HEADERS for p in [ws / d / n] if p.is_file()]
 CFLAGS = ["-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os", "-ffreestanding", "-nostdlib",
           "-Wall", "-Wextra"]
 
@@ -300,7 +325,7 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
         res, out = run_image(renode, elf, scenario, wd, ctx.workspace)
         log += out
         if res is None or not res["magic_ok"] or not res["done"]:
-            issues.append(f"NO_RESULT:{t.name}:{scenario}")
+            issues.append(no_result_issue(t.name, scenario, res))
             failed += 1
             continue
         per[t.name] = {**res, "scenario": scenario}
@@ -319,6 +344,9 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
     if tests:
         n_ok, n_bad = (n_ok, n_bad + 1) if failed > f0 else (n_ok + 1, n_bad)
     write_progress(ctx.workspace, ctx.phase, "run_renode", "images", len(tests), len(tests), n_ok, n_bad, running=False)
+    if issues:  # CAPA-142: a local copy of a factory harness header shadows the factory one (diagnosis, not a criterion)
+        issues += [f"HARNESS_SHADOWED:{h} - delete it: the factory build provides this header"
+                   for h in shadowed_harness(ctx.workspace)]
     ok = not issues and passed > 0
     record_integrity(ctx.workspace, ctx.phase, "run_renode", "PASS" if ok else "FAIL",
                      integrity(ctx.workspace, tests, asserted))
