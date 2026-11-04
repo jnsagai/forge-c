@@ -196,7 +196,7 @@ def test_bare_recovery_rejects_integrity_bound_but_wrong_native_abi(packaged_rec
     assert intent.read_bytes() == before
 
 
-def test_default_active_policy_still_cannot_start_healthy_or_disabled_unit(packaged_recovery):
+def test_default_active_policy_still_cannot_start_healthy_unit(packaged_recovery):
     import yaml
 
     artifact, intent, effect, run = packaged_recovery
@@ -206,7 +206,7 @@ def test_default_active_policy_still_cannot_start_healthy_or_disabled_unit(packa
     policy = yaml.safe_load(policy_path.read_text())
     policy["mode"] = "ACTIVE"
     policy["authorization"] = {"runbook_ref": "private-test-runbook", "approved_by": "test-owner",
-                               "approved_at": "2026-11-04T00:00:00Z"}
+                               "approved_on": "2026-11-04"}
     policy["promotion"]["allowed_automatic_operational_actions"] = ["restart_conductor"]
     policy_path.write_text(yaml.safe_dump(policy))
     report = run("healthy")
