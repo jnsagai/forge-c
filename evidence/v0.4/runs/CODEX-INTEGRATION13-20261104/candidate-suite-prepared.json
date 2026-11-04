@@ -1,0 +1,13 @@
+{
+  "candidate": "7d7b3ffa34641f0b6bdbb4bcc7fe41b3f125e79f",
+  "source_tree_byte_identical_qualified167": "3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8",
+  "baseline": "a7171bd5ee4f4c172cd24167dd0ff3f757d22acb",
+  "baseline_modules": 234,
+  "candidate_modules": 249,
+  "selection_sha256": "cdedef78ca3ea6a22e65f1e121dd59a9f2ddcd16bbbc20211b50463521f8c332",
+  "manifest_at_start_sha256": "589a0a0a03504ceaff7e3eb3fad7f821528716f86ca999ed772db59ca06b8269",
+  "caller_at_start": "through RPR166; protected167 import deferred until suite ends, no source modifications",
+  "all8inputs_verified": true,
+  "script_sha256": "3394349a0d129e4a6d826208e031d7ddcd268f89575a175a449939b714fce321",
+  "state": "FROZEN_CANDIDATE_STARTING"
+}

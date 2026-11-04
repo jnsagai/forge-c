@@ -1,0 +1,7 @@
+{
+  "source": "7d7b3ffa34641f0b6bdbb4bcc7fe41b3f125e79f",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-batch13-clean-check",
+  "all8ignoredrefs_hashverified": true,
+  "tracked_and_untracked_status": "CLEAN",
+  "reason": "Rerun the single candidate-only dirty-evidence skip without source or test changes"
+}

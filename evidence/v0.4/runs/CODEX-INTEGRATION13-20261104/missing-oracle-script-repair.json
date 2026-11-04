@@ -1,0 +1,11 @@
+{
+  "source_unchanged": true,
+  "oracle_unchanged": true,
+  "prior_decision": "pd-8b31b3aa32da292e3599",
+  "failure": "MANIFEST:RPR-167:SCRIPT_MISSING",
+  "cause": "167exportindexomittedoriginalfrozenreproducerscript",
+  "restored_from": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa167-provided-code-handoff/tests/reliability/reproducers/rpr167_early_provided_code_owner_unreachable.py",
+  "restored_to": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-batch13-gate/tests/reliability/reproducers/rpr167_early_provided_code_owner_unreachable.py",
+  "sha256": "aa807decfd404d2948157fc191f407268df2312c0538d0a9a63e88b52e0542f3",
+  "status": "RESTORED_EXACT_ORIGINAL_SCRIPT_NEW_NORMAL_GATE_REQUIRED"
+}

@@ -1,0 +1,16 @@
+
+--- stderr ---
+No user exists for uid 2001
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa164-cloud-upstream-context/tests/reliability/reproducers/rpr164_cloud_upstream_findings_dropped.py", line 85, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa164-cloud-upstream-context/tests/reliability/reproducers/rpr164_cloud_upstream_findings_dropped.py", line 25, in main
+    env = M.env.__wrapped__(Path(td), mp)
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-wt-9dcade9f2c/0965d474aff8/factory/python/tests/test_line_conductor_m3.py", line 220, in env
+    subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "owner", "-f", str(key)], check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', 'owner', '-f', '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-repro-94fad7ed89/state/rpr164-cry8qkm6/owner_ed25519']' returned non-zero exit status 255.

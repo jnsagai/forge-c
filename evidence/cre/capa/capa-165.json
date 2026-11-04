@@ -1,0 +1,101 @@
+{
+ "CAPA-165": {
+  "history": [
+   {
+    "at": "2026-11-04T20:17:21.015927Z",
+    "capa_id": "CAPA-165",
+    "evidence": "[\"INC-M1:WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G:COMPLETED_UPSTREAM_IGNORED\"]",
+    "from_state": null,
+    "reason": "Actual completed cloud WWDG4G ends internal SWE3 with an intact independently failed review and OPEN ARCH target2, but M1 synthesizes infrastructure and cloud refuses an unnecessary sweep. Readonly proofs retained; no history edits.",
+    "seq": 1239,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T20:17:21.095352Z",
+    "capa_id": "CAPA-165",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1240,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T20:17:21.258825Z",
+    "capa_id": "CAPA-165",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-165 assigned",
+    "seq": 1241,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T20:17:24.187445Z",
+    "capa_id": "CAPA-165",
+    "evidence": "[\"reproducer-run:rr-67b1aba854566e72cb88\", \"reproducer-run:rr-29e0df80ba1cbb150e4f\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1242,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T20:17:24.208097Z",
+    "capa_id": "CAPA-165",
+    "evidence": "[\"git:7ad0f763ca0b..297f8ebd8f13\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 297f8ebd8f13 (patch 24978 bytes)",
+    "seq": 1243,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T20:21:40.925321Z",
+    "capa_id": "CAPA-165",
+    "evidence": "[\"reproducer-run:rr-ff02faa313f9cc77e0be\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-165 absent at 297f8ebd8f13",
+    "seq": 1244,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T20:21:40.966923Z",
+    "capa_id": "CAPA-165",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1245,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-a81e945553ed96875529cc6736c721dc0624e801",
+   "7ad0f763ca0bedc81651f1d5b8dc91a52200b974",
+   "297f8ebd8f130b31536f77790f5fa99808c8f3e4",
+   "pd-6c7a290ffdcb39ed0813"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<297f8ebd8f13"
+   ],
+   "candidate_patch_sha256": "db1b8f2595a868fe0e6d0405c8a4ffeaf68ef9e0d5115ee8c9f145395ffbc4df",
+   "capa_id": "CAPA-165",
+   "created_at": "2026-11-04T20:17:21.015927Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-M1:WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G:COMPLETED_UPSTREAM_IGNORED"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-165",
+   "reproducer_id": "RPR-165",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-67b1aba854566e72cb88",
+    "reproducer-run:rr-29e0df80ba1cbb150e4f"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Generic RUN_NOT_COMPLETED suppresses current typed upstream findings. Promote only that synthetic class after current author/inspector-bound baseline failure plus exact native run/workspace SUCCEEDED:completed; unknown and real infrastructure/security/failed/governor outcomes remain unchanged.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T20:21:40.966923Z"
+  }
+ }
+}

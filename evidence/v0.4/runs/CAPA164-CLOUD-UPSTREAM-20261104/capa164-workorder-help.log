@@ -1,0 +1,97 @@
+usage: workorder.py [-h] --example EXAMPLE
+                    [--purpose {DEVELOPMENT,FORMAL_REVIEW,ASPICE_ONLY,QM}]
+                    --wo WO
+                    [--stop-after {SWE.1,SWE.2,SWE.3,SWE.4,SWE.5,SWE.6}]
+                    [--detach] [--code-model CODE_MODEL] [--model MODEL]
+                    [--provider PROVIDER] [--resume-from RESUME_FROM]
+                    [--resume-upto {SWE.1,SWE.2,SWE.3,SWE.4,SWE.5,SWE.6}]
+                    [--resume-max-attempts RESUME_MAX_ATTEMPTS]
+                    [--resume-max-wall-seconds RESUME_MAX_WALL_SECONDS]
+                    [--provided-from PROVIDED_FROM] [--acp-authors {codex}]
+                    [--acp-inspectors {claude}]
+                    [--timeout-scale TIMEOUT_SCALE] [--profile PROFILE]
+                    [--quality QUALITY] [--intake-only]
+                    [--durable-launch DURABLE_LAUNCH]
+                    [--durable-launch-sha256 DURABLE_LAUNCH_SHA256]
+                    [--rework-from REWORK_FROM]
+                    [--rework-inspection-sha256 REWORK_INSPECTION_SHA256]
+                    [--rework-gates-sha256 REWORK_GATES_SHA256]
+                    [--rework-source-phase {SWE.1,SWE.2,SWE.3,SWE.4,SWE.5,SWE.6}]
+                    [--rework-upstream-sha256 REWORK_UPSTREAM_SHA256]
+                    [--target-proof-carry-promotion TARGET_PROOF_CARRY_PROMOTION]
+
+options:
+  -h, --help            show this help message and exit
+  --example EXAMPLE
+  --purpose {DEVELOPMENT,FORMAL_REVIEW,ASPICE_ONLY,QM}
+                        development defers SSA/TAA signatures; QM selects
+                        owner-classified quality management; ASPICE_ONLY
+                        excludes safety assurance; formal review retains
+                        strict policy
+  --wo WO
+  --stop-after {SWE.1,SWE.2,SWE.3,SWE.4,SWE.5,SWE.6}
+                        owner 2026-10-31: phase-scoped run; after this phase
+                        the run is finalized (later phases = gaps)
+  --detach
+  --code-model CODE_MODEL
+                        local model for the C code/test author nodes (trial
+                        profile)
+  --model MODEL         run-level model (default local qwen3:8b)
+  --provider PROVIDER   Fabro provider; non-ollama = user-authorized cloud
+                        benchmark
+  --resume-from RESUME_FROM
+                        carry over the leading PASSED phases of this work
+                        order
+  --resume-upto {SWE.1,SWE.2,SWE.3,SWE.4,SWE.5,SWE.6}
+                        restart at this phase or the first invalid phase,
+                        whichever is earlier
+  --resume-max-attempts RESUME_MAX_ATTEMPTS
+                        brownfield lineage attempt limit (default 6; inherited
+                        on resume)
+  --resume-max-wall-seconds RESUME_MAX_WALL_SECONDS
+                        brownfield lineage elapsed-time limit (default 86400;
+                        inherited on resume)
+  --provided-from PROVIDED_FROM
+                        HAL layer (ADR-0009): the verified LL work order whose
+                        LL header this HAL builds on
+  --acp-authors {codex}
+                        owner decision 2026-10-18: author roles on Codex via
+                        the forge ACP proxy and policy gates
+  --acp-inspectors {claude}
+                        OD-2026-10-19-08: inspectors + Release Manager on
+                        Claude (owner account) via the same gates
+  --timeout-scale TIMEOUT_SCALE
+                        multiply every node timeout (1..10) for a slower
+                        model, e.g. local Qwen; recorded in the manifest
+  --profile PROFILE     feature 010: explicit local profile (e.g. local-
+                        rtx-v1); refuses ACP, cloud providers and runtime
+                        roots/endpoints shared with the existing deployment
+  --quality QUALITY     autonomous line M3: the order's quality block (JSON,
+                        owner rule 2026-11-03) from the approved campaign; it
+                        replaces the example's block and is validated like it
+                        (an invalid block is refused, never repaired)
+  --intake-only         feature 008: prepare the work order (brownfield:
+                        intake, fingerprints, build check) and stop
+  --durable-launch DURABLE_LAUNCH
+                        explicit immutable line product context; no inferred
+                        authority
+  --durable-launch-sha256 DURABLE_LAUNCH_SHA256
+  --rework-from REWORK_FROM
+                        failed work order whose bound findings are untrusted
+                        retry input
+  --rework-inspection-sha256 REWORK_INSPECTION_SHA256
+                        full latest failed inspection SHA-256, or explicit
+                        ABSENT
+  --rework-gates-sha256 REWORK_GATES_SHA256
+                        full source gate-log SHA-256; requires --resume-from
+                        and --stop-after
+  --rework-source-phase {SWE.1,SWE.2,SWE.3,SWE.4,SWE.5,SWE.6}
+                        terminal detecting order phase for a bound upstream
+                        rework
+  --rework-upstream-sha256 REWORK_UPSTREAM_SHA256
+                        full canonical upstream defect/review snapshot hash;
+                        requires --rework-source-phase
+  --target-proof-carry-promotion TARGET_PROOF_CARRY_PROMOTION
+                        explicit bounded JSON reference to an exact eligible
+                        creator-to-consumer CRE registry row; not a decision
+                        document

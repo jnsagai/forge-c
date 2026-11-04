@@ -1,0 +1,3 @@
+{
+  "reason": "Verifier UID2001 has no NSS passwd identity; ssh-keygen fixture startup failed on BOTH baseline and candidate before exercising source. Preserve ERROR runs. Replace only oracle host/admission fixture with pure capturing seam; production authorization unchanged and real TEST-signed placement/native controls already pass outside verifier. Candidate/evaluator unchanged; no runner permission/NSS change."
+}

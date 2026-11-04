@@ -1,0 +1,39 @@
+{
+  "schema": "forge-c/integration13-regression-comparison/1",
+  "candidate_source": "7d7b3ffa34641f0b6bdbb4bcc7fe41b3f125e79f",
+  "baseline": {
+    "modules": 234,
+    "passed": 2769,
+    "failed": 6,
+    "skipped": 26,
+    "xml_sha256": "42f1da712afdd802167e2ad596390fe72b41b9b0279fde02bd323e4e2cbc50a1"
+  },
+  "normal_combined_CHANGE": "pd-0aa999b947a0f18274ca",
+  "source_scope": "Qualified changes through CAPA167. The newly observed current-plan target-observation restriction remains open in separate CAPA168 triage; no claim it is repaired here.",
+  "candidate": {
+    "modules": 249,
+    "passed": 2974,
+    "failed": 6,
+    "skipped": 27,
+    "xml_sha256": "bfa0c123be568fa4af7f86d2c6c2f2d72b99ab20cf2193e54ec9372f60467113"
+  },
+  "candidate_only_failures": [],
+  "baseline_cases_missing": [],
+  "additional_cases": 206,
+  "additional_cases_result": "ALL_PASS",
+  "common_outcome_change": {
+    "case": "test_lrtx_review_bundle.py::test_bundle_is_byte_identical_for_the_same_revision",
+    "full_candidate_outcome": "SKIP_DIRTY_PROTECTED_REVIEW_EVIDENCE",
+    "clean_same_source_rerun": "PASS",
+    "clean_xml_sha256": "fdbfa6e35c546386cada52839b05b79de2f5df7b3d3556d41a9198b607f80f17"
+  },
+  "interpretation": "The full run retains6 baseline-identical failures. Its one additional dirty-evidence skip is separately reproduced PASS on a clean checkout of exactly the same source; no source or test edits. This is composite evidence, not an all-green full run.",
+  "full_frozen_manifest_last": "RPR-167",
+  "full_prevention_receipts": 166,
+  "all166_log_hashes_verified": true,
+  "frozen_manifest_sha256": "3eed8731407cbacacb40a43f4ffcf9b9f7dfc2704fb48a3f6f8fa8ba73225802",
+  "original_published_prefix_byte_exact": true,
+  "hardware_WCET": "NOT_MEASURED",
+  "autonomy_model_role_qualification_and_real_soak": "NOT_RUN",
+  "allowed_auto_deployment": false
+}

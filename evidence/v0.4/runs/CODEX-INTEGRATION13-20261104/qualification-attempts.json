@@ -1,0 +1,25 @@
+{
+  "source_unchanged_across_attempts": true,
+  "policy_evaluator_and_frozen_scripts_unchanged": true,
+  "attempts": [
+    {
+      "decision": "pd-8b31b3aa32da292e3599",
+      "result": "REJECTED",
+      "reason": "Export index omitted original frozen RPR167 script. Exact original script was restored; prior rejection is retained.",
+      "log": "initial-rejected-change.log"
+    },
+    {
+      "result": "UNRESOLVED_INFRASTRUCTURE_TIMEOUT",
+      "reason": "Podman launch for RPR080 timed out after the unchanged600second bound; no final promotion decision. Raw command-environment log remains private OPS.",
+      "private_log_sha256": "1a7b9fa17610cd015e363dde22886caf409c55850501bf928ced523b8c729438"
+    },
+    {
+      "decision": "pd-0aa999b947a0f18274ca",
+      "result": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+      "backend": "already-qualified bubblewrap-userns-scoped-mounts",
+      "hard_gates": "ALL_PASS",
+      "prevention_receipts": 166,
+      "log": "combined-change.log"
+    }
+  ]
+}

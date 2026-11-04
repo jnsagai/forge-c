@@ -1,0 +1,21 @@
+reproducers:
+- id: RPR-162
+  script: rpr162_governor_buffered_unlock_corrupts_state.py
+  sha256: 7b05377eb4d793ef0cea0908728deb1059ed1f59f274560e87906b3b9d9205a1
+  symptom_signature: parallel native hook governor writes concatenate JSON snapshots
+    and deny all subsequent allowed tools
+  observed_in: 'Omniverse2 WWDG SWE6 L35 exactb20: latestnativehook errorFORGE_POLICY:HOOK_ERROR:JSONDecodeError;
+    readonlycounter91bytes SHA99897047 contains2completeJSONdicts,ExtraData at45;
+    fixture4writers reproducesactualunlock-beforebufferclose exposure. No livecounterrepair/modelcalls.'
+  baseline_revision: d2eb6d0e540ba873d32852bf0a36ae61c53337e6
+  error_codes:
+  - GOVERNOR_CONCURRENT_SNAPSHOT_CORRUPTION
+  - HOOK_ERROR:JSONDecodeError
+  operations:
+  - policy.governor._update
+  - policy.fabro_hook.handle
+  root_cause: a+ buffered counter writes releaseflock beforestreamflush/close, permittinglaterconcurrent
+    bufferedcloses toappendmultipleJSONdocuments orlose debitupdates.
+  remedy: Flush andfsync whiletheexistingowningexclusiveflock isstillheld. Preserveallbudgetlimits,
+    inspectorreservations, node-resetsemantics, andmalformedexistingstate refusal;
+    no allowance refill orproductionstate edits.

@@ -1,0 +1,66 @@
+{
+  "schema": "forge-c/capa167-actual-failed-source-classification/1",
+  "at": "2026-11-04T21:21:45.477275+00:00",
+  "work_order": "WO-F014-CMP-SWE2-WWDGHAL-20261104-T1H",
+  "rid": "01M6M2S1YCSPKR4QC8WXV7KB4J",
+  "status": "ENDED",
+  "phase": "SWE.2",
+  "verdict": "NO",
+  "source_revision": "5b08fef7c1f44bb100f1a01883130f37f5364137",
+  "native_lifecycle": {
+    "kind": "succeeded",
+    "reason": "completed"
+  },
+  "core": {
+    "class": "UNKNOWN",
+    "phase": "SWE.2",
+    "error_code": "UNCLASSIFIED",
+    "route": "REWORK_BUDGET_EXHAUSTED",
+    "codes": [],
+    "suspected": false,
+    "fingerprint": "cfp1-85d3ebea90515aba1edb605ff57276e84b517643",
+    "cre_fingerprint": "cfp1-85d3ebea90515aba1edb605ff57276e84b517643",
+    "evidence": [
+      {
+        "kind": "gate_log",
+        "ref": "workorders/WO-F014-CMP-SWE2-WWDGHAL-20261104-T1H/workspace/.forge-run/gates/gate-log.jsonl#14"
+      },
+      {
+        "kind": "manifest",
+        "ref": "workorders/WO-F014-CMP-SWE2-WWDGHAL-20261104-T1H/workspace/.forge-run/manifest.json"
+      },
+      {
+        "kind": "package",
+        "ref": "workorders/WO-F014-CMP-SWE2-WWDGHAL-20261104-T1H/workspace/.forge-run/package.json"
+      },
+      {
+        "kind": "fabro_run",
+        "ref": "fabro:runs/01M6M2S1YCSPKR4QC8WXV7KB4J"
+      },
+      {
+        "kind": "cre_observation",
+        "ref": "cre-observation:cre-e007c217520f63899f21e1babe7da7ff398961cd"
+      },
+      {
+        "kind": "cre_observation",
+        "ref": "cre-observation:cre-b85450283af0218c986664cfe89f92379c44d258"
+      },
+      {
+        "kind": "cre_observation",
+        "ref": "cre-observation:cre-36db6736d8d0bcbdbf64cd62c5e0e739623a1acf"
+      }
+    ],
+    "upstream": [],
+    "status": "ESCALATED",
+    "capa": null
+  },
+  "references_unchanged": {
+    ".forge-run/manifest.json": "5863b7ca264759affa6ebf94702febf5d632de27ed17d2c37516a8f657d1774d",
+    ".forge-run/package.json": "58022ecad42a110ffab2e5a28c3558e7a20f031f26a3613eb7775494238c2ba6",
+    ".forge-run/gates/gate-log.jsonl": "259ed5bdcdcbd47e51a22f6739ad2cb496becd181c0421d7b16ccde1272949db",
+    ".forge-run/defects/DEF-001.json": "6d1accf679381b742204117b0fdd93a603403791464b3bb8966d88a2b35fba90"
+  },
+  "model_calls": 0,
+  "live_actions": false,
+  "code_revision": "9a6c067d6e1711f347a07648349cb708df21e86d"
+}

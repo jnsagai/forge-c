@@ -1,0 +1,26 @@
+id: RPR-165
+script: rpr165_completed_upstream_product_routed_as_infra.py
+sha256: b9d113c33df45c322b83934c212c70bc93299ed844a3bd7cce779c2294d813e9
+symptom_signature: completed native upstream product finding routed as infrastructure
+observed_in: 2026-11-04 retained cloud WWDG SWE4 T1G native SUCCEEDED/completed ends
+  internal SWE3 with current independent INS-SWE.3-002 FAIL, intact baseline, Store.gate
+  SWE3 REWORK and normal OPEN ARCH DEF005 targeting SWE2. Actual 0965 M1 classifies
+  INFRA/RUN_NOT_COMPLETED and CloudPlacer refuses an infrastructure sweep. Readonly
+  candidate contrast restores PRODUCT/upstream SWE2; no native or product mutation.
+baseline_revision: 7ad0f763ca0bedc81651f1d5b8dc91a52200b974
+error_codes:
+- COMPLETED_UPSTREAM_PRODUCT_MISCLASSIFIED
+operations:
+- afo.line_conductor.classify_order
+- afo.line_conductor.Observer._core
+- afo.line_orders.Records.attempt
+root_cause: The generic finished-run bundle is synthesized as infrastructure when
+  a bounded internal upstream loop ends before its stop phase without a final BLOCKED
+  gate. M1 reads owning product defects only for PRODUCT_QUALITY; packaged records
+  also skip native liveness and manufacture a completed default.
+remedy: For only synthetic RUN_NOT_COMPLETED, independently prove a current failed
+  author/inspector-bound inspection, its exact intact baseline/current gate and normal
+  typed open owning defect route; then require actual exact native run/workspace SUCCEEDED:completed
+  before projecting PRODUCT/upstream. Keep other causes, unknown/failed/security/native
+  errors and historical counters unchanged; bind recurring issue fingerprints to the
+  sorted requirement identities.

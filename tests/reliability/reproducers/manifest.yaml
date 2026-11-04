@@ -2705,3 +2705,173 @@ reproducers:
     new submit/admission and manual adoption before spec/queue writes; preserve exact
     already-bound terminal settlement under original dispatch identity and never release
     unknown leases or initiate unlisted recovery.
+- id: RPR-160
+  script: rpr160_provided_ll_unit_register_observation.py
+  sha256: 1371342046b4fbc37455ce66943d753de19bcd991fa6f8f7605335dccaa5823f
+  symptom_signature: provided LL unit register observation unavailable
+  observed_in: Actual cloud WWDG SWE.4 T1F FACTORY DEF-001; independent same-RAM original
+    LL vs generated fake CPU contrast and unchanged retained HAL Refresh probe
+  baseline_revision: 796d662a450b243843f7637c15bba29b57adf2f1
+  error_codes:
+  - PROVIDED_LL_UNIT_OBSERVATION_UNAVAILABLE
+  operations:
+  - forge-tests-mcp.run_unit
+  root_cause: Unit build always selects generated LL call-recording fake; real provided
+    CMSIS LL backend unavailable for required register-effect observations.
+  remedy: Explicit separate GoogleTest unit backend verifies bound real LL and vendor
+    inputs, compiles original HAL C against original LL, and shares host RAM; default
+    call-contract mock retained, both execute with exact UT identities and aggregate
+    coverage. HOST only, no timing or peripheral emulation claim.
+- id: RPR-161
+  script: rpr161_verified_factory_source_hold.py
+  sha256: 1a194eb008ec54d4f66cc6e43dd6c5f77eca1b24314acecd5da84378a2324b2b
+  symptom_signature: verified factory cause retries its known failing source after
+    fix qualification
+  observed_in: Actual retained cloud WWDG SWE4 F, verified/effectiveness CAPA160,
+    actual source002f independent PRESENT and qualified G27 prevention ABSENT; pure
+    Planner baseline queued the known bad source with two preserved strikes.
+  baseline_revision: 04d95051047ae0b5e13ed8b8b375ff61ada3bd3d
+  error_codes:
+  - VERIFIED_FACTORY_SOURCE_RETRY
+  operations:
+  - afo.line_orders.Planner.decide
+  - afo.line_orders.Placer.cycle
+  root_cause: Only open CAPAs are read. Qualified FIX moves CAPA to effectiveness
+    observation while the campaign can still name its proven failing factory revision;
+    UNKNOWN then follows normal retry.
+  remedy: Keep open map/classifications unchanged; source-bound verified-cause guard
+    requires eligible FIX contrast and exact source PRESENT receipt; replacement requires
+    exact eligible promotion with cause-specific ABSENT prevention. Preserve history/counters,
+    queued/live adoption, healthy PASS and signed admission.
+- id: RPR-162
+  script: rpr162_governor_buffered_unlock_corrupts_state.py
+  sha256: 7b05377eb4d793ef0cea0908728deb1059ed1f59f274560e87906b3b9d9205a1
+  symptom_signature: buffered concurrent governor closes append multiple JSON snapshots
+  observed_in: 'Omniverse2 WWDG SWE6 L35 exactb20: latestnativehook errorFORGE_POLICY:HOOK_ERROR:JSONDecodeError;
+    readonlycounter91bytes SHA99897047 contains2completeJSONdicts,ExtraData at45;
+    fixture4writers reproducesactualunlock-beforebufferclose exposure. No livecounterrepair/modelcalls.'
+  baseline_revision: d2eb6d0e540ba873d32852bf0a36ae61c53337e6
+  error_codes:
+  - GOVERNOR_CONCURRENT_SNAPSHOT_CORRUPTION
+  - HOOK_ERROR:JSONDecodeError
+  operations:
+  - policy.governor._update
+  - policy.fabro_hook.handle
+  root_cause: a+ buffered counter writes releaseflock beforestreamflush/close, permittinglaterconcurrent
+    bufferedcloses toappendmultipleJSONdocuments orlose debitupdates.
+  remedy: Flush andfsync whiletheexistingowningexclusiveflock isstillheld. Preserveallbudgetlimits,
+    inspectorreservations, node-resetsemantics, andmalformedexistingstate refusal;
+    no allowance refill orproductionstate edits.
+- id: RPR-163
+  script: rpr163_wwdg_reserved_write_false_pass.py
+  sha256: fcd8a5538272bb6b843a7cd36ff644365c37d489ffeefc7fb27a5de8938d0c85
+  symptom_signature: reserved SR write credited as full WWDG unit verification
+  observed_in: Independent actual Renode CONTROL; original ST complement SR write
+    has before1/after0/HAL_OK but writes reserved bits as1; not production SWE4 PASS
+  baseline_revision: b0d8ef13998291a3e16d65d5158a63eaf7bfdadf
+  error_codes:
+  - TARGET_OBSERVATION_RESERVED_WRITE_FALSE_PASS
+  operations:
+  - forge-tests-mcp.run_unit
+  root_cause: Target observation credits zero model readback while ignoring actual
+    MMIO SR reserved write values; frozen SWR034 constrains WHEN WRITING, not merely
+    final readback.
+  remedy: Check every actual phase2SR write against reserved reset mask and refuse
+    other-register writes; require genuine pre1/post0/HAL_OK; seal proofversion2 and
+    require re-verification of old proofs.
+- id: RPR-164
+  script: rpr164_cloud_upstream_findings_dropped.py
+  sha256: 4441f246f2db7df637a2c4391492fa347b0b7ca8ecb6e360b42b44d555a46b0f
+  symptom_signature: cloud upstream route drops the failed inspection and owning defect
+    context
+  observed_in: Independent CloudPlacer pre-admission boundary CONTROL with explicit
+    host/admission fixtures; real TEST-signed placement/native transport separately
+    tested; actual WWDG4G applicability privately verified using normal resume and
+    real native status.
+  baseline_revision: 0965d474aff8e1fbb4ea683d0b4f934bd74462fe
+  error_codes:
+  - CLOUD_UPSTREAM_FINDINGS_MISSING
+  operations:
+  - cloud-line.recover_workorder
+  root_cause: Only RETRY attaches bound failed findings; normal UPSTREAM placement
+    drops them and original four-field same-phase binding cannot represent source
+    stop4/current failed3/owning2.
+  remedy: Attach bounded six-field upstream reference; seal current owning defect
+    and complete failed independent reviews/current baseline, bind exact source terminal
+    identity and fresh leading prefix, route to owning phase without importing verdict
+    or defect state. Consumer capability preflight precedes native dispatch.
+- id: RPR-165
+  script: rpr165_completed_upstream_product_routed_as_infra.py
+  sha256: b9d113c33df45c322b83934c212c70bc93299ed844a3bd7cce779c2294d813e9
+  symptom_signature: completed native upstream product finding routed as infrastructure
+  observed_in: 2026-11-04 retained cloud WWDG SWE4 T1G native SUCCEEDED/completed
+    ends internal SWE3 with current independent INS-SWE.3-002 FAIL, intact baseline,
+    Store.gate SWE3 REWORK and normal OPEN ARCH DEF005 targeting SWE2. Actual 0965
+    M1 classifies INFRA/RUN_NOT_COMPLETED and CloudPlacer refuses an infrastructure
+    sweep. Readonly candidate contrast restores PRODUCT/upstream SWE2; no native or
+    product mutation.
+  baseline_revision: 7ad0f763ca0bedc81651f1d5b8dc91a52200b974
+  error_codes:
+  - COMPLETED_UPSTREAM_PRODUCT_MISCLASSIFIED
+  operations:
+  - afo.line_conductor.classify_order
+  - afo.line_conductor.Observer._core
+  - afo.line_orders.Records.attempt
+  root_cause: The generic finished-run bundle is synthesized as infrastructure when
+    a bounded internal upstream loop ends before its stop phase without a final BLOCKED
+    gate. M1 reads owning product defects only for PRODUCT_QUALITY; packaged records
+    also skip native liveness and manufacture a completed default.
+  remedy: For only synthetic RUN_NOT_COMPLETED, independently prove a current failed
+    author/inspector-bound inspection, its exact intact baseline/current gate and
+    normal typed open owning defect route; then require actual exact native run/workspace
+    SUCCEEDED:completed before projecting PRODUCT/upstream. Keep other causes, unknown/failed/security/native
+    errors and historical counters unchanged; bind recurring issue fingerprints to
+    the sorted requirement identities.
+- id: RPR-166
+  script: rpr166_reviewed_provided_code_rejected.py
+  sha256: 8bf5ea18c3ca918ee16d0aa26a51da2b08e268fe9d6bd963bdca05171ec93a00
+  symptom_signature: reviewed provided CODE correction is refused as an unauthorized
+    input change
+  observed_in: Independent normal PC/CODE/SWE1-3 CONTROL; existing owner20261103 workspace-only
+    correction with preserved pristine/original SHA and independent approval
+  baseline_revision: 297f8ebd8f130b31536f77790f5fa99808c8f3e4
+  error_codes:
+  - PROVIDED_LL_UNIT_INPUT_CHANGED
+  - TARGET_TIMING_APPROVED_INPUT_CHANGED
+  operations:
+  - forge-tests-mcp.run_unit
+  - workorder.resume_from
+  root_cause: Verification selectors equate effective workspace LL bytes to original
+    approval SHA and discard normal CODE/diff/independent approval context, despite
+    existing owner-authorized workspace-only correction protocol. Resume and restored-test
+    verification lose that context.
+  remedy: Pure effective identity validates original/pristine plus normal independentSWE1-3/CODE/diff
+    history, imports only attested corrected bytes/provenance and binds actual restored-test
+    receipts; vendor/unlinked/stale inputs stay refused and original approvals are
+    never repinned.
+- id: RPR-167
+  script: rpr167_early_provided_code_owner_unreachable.py
+  sha256: aa807decfd404d2948157fc191f407268df2312c0538d0a9a63e88b52e0542f3
+  symptom_signature: normal early provided LL CODE is refused or routed as a forward
+    upstream loop
+  observed_in: '2026-11-04 actual cloud WWDG SWE2 T1H PC.enabled/uspec-gtest provided
+    HAL non-brownfield: exact SWR034 and supplied LL:272 normal CODE is refused TARGET_NOT_UPSTREAM;
+    actual INPUT history retained. Private candidate records a separate normal CODE;
+    no production edits.'
+  baseline_revision: 1f6802b53ab5d4193c2b6efdb5466710a8d28a86
+  error_codes:
+  - EARLY_PROVIDED_CODE_OWNER_UNREACHABLE
+  operations:
+  - forge-evidence-mcp.report_defect
+  - workorder.resume_from
+  - inspection.gate.provided_code_claim
+  root_cause: Normal early CODE exception and entry claim exist only for brownfield
+    delivered code. Provided HAL LL workspace correction is already authorized by
+    uspec-gtest policy, but SWE2 cannot hand that linked CODE to its future SWE3 owner;
+    same-owner SWE3 report is also refused.
+  remedy: Bind only existing PC-enabled HAL provided LL plus exact original/item/location/quoted
+    requirement, retain pending CODE without forward upstream or loop debit, carry
+    only validated pending finding across genuine passed1/2 and claim at normal3 entry.
+    Verify reviewed correction with actual4 tools; preserve original inputs, human
+    review, no future PASS or old INPUT inheritance. New graph/guidance explicitly
+    enabled by normal workorder scope; legacy direct graphs remain identical.
