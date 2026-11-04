@@ -1307,7 +1307,11 @@ class Placer:
             # must not strand a previously admitted exact native attempt.
             # This path only observes terminal state under original dispatch
             # identity; it neither submits/adopts nor starts a replacement.
-            if (ph not in tuple(f"SWE.{n}" for n in range(1, 7)) or not grant.allow
+            # The generic recover check authenticates the observing actor only;
+            # original admitted identity bounds this monotonic settlement.
+            # New admission and any new replan use full current order scope.
+            if (ph not in tuple(f"SWE.{n}" for n in range(1, 7))
+                    or not grant.permit("recover_workorder", {}).allow
                     or not row.get("authorization_id")
                     or row["authorization_id"] != env.get("authorization_ref")):
                 continue
