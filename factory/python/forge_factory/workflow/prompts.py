@@ -43,6 +43,19 @@ PROVIDED_HAL_SWE6_PLAN = (
     "validate_trace and write workproducts/SWE.6/software_verification_report.md from the real results before "
     "replying PASS. If the tool budget is exhausted, stop and reply status BLOCKED with the remaining gaps; "
     "do not change skill, policy, budget, prior baselines or gate records.")
+
+
+def _rework_steps(phase: str, steps: list[str]) -> list[str]:
+    from ..rework_context import prompt_note
+
+    note = prompt_note(ASSESSMENT["manifest"], phase)
+    if not note:
+        return steps
+    # Retain SWE.6 evidence-first ordering while loading the data before author edits.
+    index = 3 if len(steps) > 2 and steps[2].startswith("Call mcp__forge_tests_mcp__run_robot FIRST") else 2
+    return steps[:index] + note + steps[index:]
+
+
 FIX = "If inspection/{p}/ has INS-*.json files or .forge-run/gates/gate-log.jsonl has {p} entries, read the newest and fix every listed finding first."
 # ADR-0008 loopbacks. Upstream owners (SWE.1-3) fix defects routed to them; downstream roles report instead of bending.
 FIX_DEFECTS = ("glob .forge-run/defects/DEF-*.json and read every defect with target_phase {p} and status IN_FIX: "
@@ -437,7 +450,7 @@ def robot_test_author_prompt() -> str:
     robot = LL_ROBOT_STEPS if _layer() == "LL" else ROBOT_STEPS
     steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + robot + trace_step("vt") + [DEFECT_RULE] + \
         [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.6", steps), 1))
 
 
 def target_test_author_prompt() -> str:
@@ -445,7 +458,7 @@ def target_test_author_prompt() -> str:
     target = LL_TARGET_STEPS if _layer() == "LL" else TARGET_STEPS
     steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + target + trace_step("tt") + [DEFECT_RULE] + \
         [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.5", steps), 1))
 
 
 def unit_test_author_prompt() -> str:
@@ -455,7 +468,7 @@ def unit_test_author_prompt() -> str:
     if UNIT_VERIFICATION["gtest"]:  # owner 2026-11-03: one GoogleTest TEST per USPEC item of the SWE.4 plan
         steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
             gtest_unit_test_steps(TEST_CASES_MARKER) + trace_step("ut") + [DEFECT_RULE, REPLY]
-        return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+        return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.4", steps), 1))
     ut, example = (LL_UT_STEPS, LL_UT_EXAMPLE) if _layer() == "LL" else (UT_STEPS, UT_EXAMPLE)
     if ISOLATION["on"] and _layer() == "HAL":  # CAPA-038
         ut, example = [FAKE_UT_FIRST] + [x.replace("adapt names, registers and UT ids; use ONLY LL_RCC_<REG>_OFFSET / "
@@ -466,7 +479,7 @@ def unit_test_author_prompt() -> str:
     steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
         [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", example)
          for x in ut] + trace_step("ut") + [DEFECT_RULE, REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.4", steps), 1))
 
 
 FIX3_STEPS = [
@@ -742,11 +755,11 @@ def fix3_author_prompt() -> str:
     if BROWNFIELD["mode"]:  # feature 008: work products first; delivered code only for an IN_FIX CODE defect
         steps = ["Call use_skill with skill_name swe3-author.", READ, small(), delivered_note(), FIX.format(p="SWE.3"),
                  FIX_DEFECTS.format(p="SWE.3")] + brownfield_fix3_steps() + [REPLY]
-        return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+        return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
     steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
              FIX_DEFECTS.format(p="SWE.3")] + (LL_FIX3_STEPS if _layer() == "LL" else FIX3_STEPS) + \
         ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("keep") + [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
 
 
 def ll_author_prompt() -> str:
@@ -756,7 +769,7 @@ def ll_author_prompt() -> str:
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", FUNCTIONS_MARKER) for x in (LL_LL_STEPS if _layer() == "LL" else LL_STEPS)] + \
         (trace_step("code") + [CONTRACT_SWE3] if _layer() == "LL" else []) + [REENTRY] + [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
 
 
 def hal_author_prompt() -> str:
@@ -766,7 +779,7 @@ def hal_author_prompt() -> str:
          for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("code") + \
         [CONTRACT_SWE3, REENTRY] + \
         [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
 
 
 # owner decision 2026-10-19 (option B): the independent EASA oracle reads this contract, never the code
@@ -1040,7 +1053,7 @@ def author_prompt(phase: str) -> str:
         # the existing FIRST instruction; all deterministic gates, budgets and defect/report rules remain.
         steps = [f"Call use_skill with skill_name swe{n}-author.", READ, body[0], PROVIDED_HAL_SWE6_PLAN] + \
             ([scope_note] if scope_note else []) + manifest + [FIX.format(p=phase)] + extra + body[1:] + [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps(phase, steps), 1))
 
 
 def inspector_prompt(phase: str, checklist: dict | None = None) -> str:

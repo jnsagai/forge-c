@@ -166,6 +166,7 @@ class Order:
     quality_file: str | None = None  # absolute path of the order's quality block (JSON), outside the run worktree
     durable_file: str | None = None
     durable_sha256: str | None = None
+    rework_context: dict | None = None
 
     def validate(self) -> None:
         bad = [n for n, v, rx in (("wo", self.wo, _WO_RX), ("rev", self.rev, _REV_RX), ("example", self.example, _EX_RX),
@@ -181,6 +182,13 @@ class Order:
             bad.append("example")
         if self.quality_file is not None and (not os.path.isabs(self.quality_file) or not os.path.isfile(self.quality_file)):
             bad.append("quality_file")
+        if self.rework_context is not None:
+            from ..rework_context import ReworkRefused, request
+
+            try:
+                request(self.rework_context, self.stop_after, self.resume_from)
+            except ReworkRefused:
+                bad.append("rework_context")
         if self.durable_file is not None or self.durable_sha256 is not None:
             if (not isinstance(self.durable_file, str) or not os.path.isabs(self.durable_file)
                     or not isinstance(self.durable_sha256, str) or not re.fullmatch(r"[0-9a-f]{64}", self.durable_sha256)):
@@ -203,11 +211,15 @@ class Order:
             v = getattr(self, name)
             if v is not None:
                 a += [flag, str(v)]
+        if self.rework_context is not None:
+            a += ["--rework-from", self.rework_context["source_work_order"],
+                  "--rework-inspection-sha256", self.rework_context["inspection_sha256"],
+                  "--rework-gates-sha256", self.rework_context["gate_log_sha256"]]
         return a + ["--detach"]
 
     def view(self):
         result = asdict(self)
-        for key in ("durable_file", "durable_sha256"):
+        for key in ("durable_file", "durable_sha256", "rework_context"):
             if result[key] is None:
                 result.pop(key)
         return result

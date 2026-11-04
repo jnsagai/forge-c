@@ -839,11 +839,16 @@ def run(
     evaluation_holdout: bool = False,
     stop_after: str | None = None,
     quality: dict | None = None,
+    rework_context: dict | None = None,
 ) -> dict:
     from .release import qm
     from .release.aspice import PURPOSE as ASPICE_PURPOSE
     from .release.aspice import validate_profile
     from .release.development import PURPOSES
+    if rework_context is not None:
+        from .rework_context import request
+
+        rework_context = request(rework_context, stop_after, resume)
 
     if purpose not in (*PURPOSES, ASPICE_PURPOSE, qm.PURPOSE):
         raise ValueError("WORK_ORDER_PURPOSE_INVALID")
@@ -1004,6 +1009,10 @@ def run(
     if intake_only:  # feature 008: stop after brownfield intake (or a greenfield prepare)
         return {"work_order": wo, "workspace": str(ws), "intake": manifest.get("delivery_intake")}
     phases = resume_from(ws, manifest, resume, resume_upto) if resume else None
+    if rework_context is not None and (not phases or phases[0] != stop_after):
+        from .rework_context import ReworkRefused
+
+        raise ReworkRefused("REWORK_CONTEXT_RESTART_PHASE_MISMATCH")
     if phases == []:
         return {"work_order": wo, "workspace": str(ws), "package": finalize(ws, wo), "resumed_from": resume}
     secmap = section_map(ws)
@@ -1020,6 +1029,10 @@ def run(
         manifest["phase_scope"] = {"stop_after": stop_after, "rule": "later phases are not run; the finalizer "
                                    "reports them as gaps (no READY package from a phase-scoped run)"}
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if rework_context is not None:
+        from .rework_context import install
+
+        install(ws, manifest, rework_context, stop_after)
     graph, nodes = build(
         wo,
         goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
@@ -1208,6 +1221,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--durable-launch", type=Path, help="explicit immutable line product context; no inferred authority")
     ap.add_argument("--durable-launch-sha256")
+    ap.add_argument("--rework-from", help="failed work order whose bound findings are untrusted retry input")
+    ap.add_argument("--rework-inspection-sha256", help="full latest failed inspection SHA-256, or explicit ABSENT")
+    ap.add_argument("--rework-gates-sha256", help="full source gate-log SHA-256; requires --resume-from and --stop-after")
     a = ap.parse_args(argv)
     quality = json.loads(a.quality.read_text()) if a.quality else None
     from .afo.durable import Refused
@@ -1215,8 +1231,16 @@ def main(argv: list[str] | None = None) -> int:
     from .brownfield.delivery import DeliveryBlocked
     from .brownfield.resume import ResumeRefused
     from .lrtx.profile import ProfileRefused
+    from .rework_context import ReworkRefused
 
     try:
+        rework = None
+        if any(x is not None for x in (a.rework_from, a.rework_inspection_sha256, a.rework_gates_sha256)):
+            from .rework_context import request
+
+            rework = request({"source_work_order": a.rework_from, "phase": a.stop_after,
+                              "inspection_sha256": a.rework_inspection_sha256,
+                              "gate_log_sha256": a.rework_gates_sha256}, a.stop_after, a.resume_from)
         durable = {}
         if a.durable_launch is not None or a.durable_launch_sha256 is not None:
             from .afo.line_recovery_product import native_parameters
@@ -1224,6 +1248,8 @@ def main(argv: list[str] | None = None) -> int:
             expected = {"wo": a.wo, "model": a.model, "profile": a.profile, "purpose": a.purpose,
                         "stop_after": a.stop_after, "resume_from": a.resume_from, "provided_from": a.provided_from,
                         "resume_upto": a.resume_upto, "quality": quality}
+            if rework is not None:
+                expected["rework_context"] = rework
             durable = native_parameters(a.durable_launch, a.durable_launch_sha256, expected)
         res = run(
             a.example.resolve(),
@@ -1245,8 +1271,13 @@ def main(argv: list[str] | None = None) -> int:
             purpose=a.purpose,
             stop_after=a.stop_after,
             quality=quality,
+            **({"rework_context": rework} if rework is not None else {}),
             **durable,
         )
+    except ReworkRefused as exc:
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "bound_rework_context",
+                          "issues": [str(exc)]}))
+        return 2
     except Refused as exc:
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "durable_line_product", "issues": [exc.code]}))
         return 2

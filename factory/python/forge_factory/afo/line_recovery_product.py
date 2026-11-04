@@ -146,6 +146,7 @@ def launcher(store, cmd, spec, *, cfg=None, launch=None):
                 "profile": spec["profile"],
                 **{k: spec.get(k) for k in ("purpose", "stop_after", "resume_from", "provided_from", "resume_upto")},
                 "quality": spec.get("quality") if spec.get("quality_via") == "FLAG" else None,
+                **({"rework_context": spec["rework_context"]} if spec.get("rework_context") is not None else {}),
             },
         }
         path = root / (job["job_id"] + ".json")
@@ -426,10 +427,13 @@ def payload(path, sha256):
 
 
 def order_arguments(order):
-    return {
+    value = {
         key: getattr(order, key)
         for key in ("wo", "model", "profile", "purpose", "stop_after", "resume_from", "provided_from", "resume_upto")
     }
+    if getattr(order, "rework_context", None) is not None:
+        value["rework_context"] = order.rework_context
+    return value
 
 
 def validate_launch_order(order):
@@ -455,6 +459,8 @@ def _job_for_payload(store, value):
     ):
         raise Refused("LINE_PRODUCT_REGISTERED_BINDING_CHANGED")
     cmd, worker, spec, row = metadata(store, value["command_id"])
+    if value["order"].get("rework_context") != spec.get("rework_context"):
+        raise Refused("LINE_PRODUCT_REWORK_CONTEXT_CHANGED")
     if (
         worker["mode"] != "PRODUCT"
         or cmd["attempt_id"] != job["attempt_id"]
@@ -550,6 +556,13 @@ def native_parameters(path, sha256, expected):
     value = payload(path, sha256)
     if value["order"] != expected:
         raise Refused("LINE_PRODUCT_NATIVE_ARGUMENTS_CHANGED")
+    if expected.get("rework_context") is not None:
+        from ..rework_context import request
+
+        try:
+            request(expected["rework_context"], expected.get("stop_after"), expected.get("resume_from"))
+        except ValueError:
+            raise Refused("LINE_PRODUCT_REWORK_CONTEXT_INVALID") from None
     store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     job, row, spec = _job_for_payload(store, value)
     _native_prepare_claim(store, job)
