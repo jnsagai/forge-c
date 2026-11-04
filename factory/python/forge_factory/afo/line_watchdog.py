@@ -9,11 +9,10 @@ from __future__ import annotations
 import argparse
 import json
 import math
-from pathlib import Path
 import subprocess
 import time
+from pathlib import Path
 
-from .durable import Refused
 from .operations import Intent
 
 UNIT = "forge-line-conductor-local.service"
@@ -66,6 +65,9 @@ def recover(intent_path, *, now=None, probe=None, runner=None, authorize=None, r
         return {"action": "WAITING_FOR_AUTHENTICATED_OPERATIONS_INTENT", "intent": record["mode"]}
     if not (ready or preflight)()["ok"]:
         return {"action": "WAITING_FOR_AUTHORITATIVE_VOLUME"}
+    from .line_watchdog_package import verify_runtime_dependencies
+
+    verify_runtime_dependencies()
     # Intent.start keeps its default CRE authorization check unless an independent test supplies a fixture.
     return intent.start(record["epoch"], probe=probe or unit_state, runner=runner, now=now,
                         authorize=authorize, unit=UNIT)
