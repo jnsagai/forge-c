@@ -1,0 +1,11 @@
+[Unit]
+Description=Forge-C local line independent model-free recovery cadence
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=2min
+AccuracySec=15s
+Unit=forge-line-watchdog-local.service
+
+[Install]
+WantedBy=timers.target

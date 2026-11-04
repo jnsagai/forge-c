@@ -1,0 +1,3 @@
+# Optional operator-installed boot fence; uses command-local arguments, never exports legacy operations env to jobs.
+[Service]
+ExecCondition=@VENV@/bin/python -m forge_factory.afo.line_watchdog boot-check --intent @INTENT@

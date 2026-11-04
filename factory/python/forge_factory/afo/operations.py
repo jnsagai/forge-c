@@ -24,7 +24,9 @@ from .durable import Refused, canonical, digest, strict_json
 MODES = {"RUNNING", "PAUSED", "DRAINING", "STOPPED"}
 # Fixed approved operational recipe: Conductor only; no recursive supervisor restarts.
 UNIT = os.environ.get("FORGE_CONDUCTOR_UNIT", "forge-conductor.service")
-if UNIT not in ("forge-conductor.service", "forge-conductor-local-omniverse2.service"):
+APPROVED_CONDUCTOR_UNITS = {"forge-conductor.service", "forge-conductor-local-omniverse2.service",
+                            "forge-line-conductor-local.service"}
+if UNIT not in APPROVED_CONDUCTOR_UNITS:
     raise ValueError("UNAPPROVED_CONDUCTOR_RECOVERY_UNIT")
 COOLDOWN = 600
 
@@ -122,7 +124,10 @@ class Intent:
                 self._write(rec)
             return rec
 
-    def start(self, epoch, *, probe, runner=None, now=None, authorize=None):
+    def start(self, epoch, *, probe, runner=None, now=None, authorize=None, unit=None):
+        target = unit or UNIT
+        if target not in APPROVED_CONDUCTOR_UNITS:
+            raise Refused("UNAPPROVED_CONDUCTOR_RECOVERY_UNIT")
         now = time.time() if now is None else now
         with self.lock():
             rec = self.read()
@@ -152,7 +157,7 @@ class Intent:
             rec["pending_start"] = True
             self._write(rec)  # persist cooldown before uncertain external start
             run = runner or (lambda argv: subprocess.run(argv, capture_output=True, text=True, timeout=20))
-            result = run(["systemctl", "--user", "start", UNIT])
+            result = run(["systemctl", "--user", "start", target])
             rec["pending_start"] = False
             self._write(rec)
             # Do not reset-failed: retain systemd's burst limit. A future bounded probe can try after its interval.
