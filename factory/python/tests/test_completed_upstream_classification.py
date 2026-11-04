@@ -18,7 +18,8 @@ def records(root: Path):
     files = {
         ".forge-run/manifest.json": json.dumps({"work_order": wo, "created_at": utc_now(),
             "driver": "Fixture WWDG HAL", "phase_scope": {"stop_after": "SWE.4"}}),
-        "workproducts/SWE.1/software_requirements.md": "- **SWR-001** The driver shall preserve register state.\n",
+        "workproducts/SWE.1/software_requirements.md": ("- **SWR-001** The driver shall preserve register state.\n"
+                                                       "- **SWR-002** The driver shall preserve configuration.\n"),
         "workproducts/SWE.2/software_architecture.md": "# Architecture\nRegister state must be preserved.\n",
         "software/hal/driver.c": "int driver_state(void) { return 0; }\n",
     }
@@ -135,6 +136,28 @@ def test_the_failed_review_must_retain_distinct_normal_author_and_inspector_iden
     changed = json.loads(path.read_text())
     changed[field] = "swe3-inspector" if field == "author_role" else "swe3-author"
     path.write_text(pretty_json(changed))
+    assert observe(upstream)["class"] == "INFRA"
+
+
+def test_unrelated_requirement_findings_are_distinct_without_attempt_specific_fingerprints(upstream):
+    ws, _, _, _, _, defect = upstream
+    first = observe(upstream)["fingerprint"]
+    assert observe(upstream)["fingerprint"] == first
+    D.reject(ws, defect["id"], "swe2-author", "This finding has been superseded by the separately reviewed configuration issue.")
+    D.report(ws, detected_phase="SWE.3", reported_by="swe3-inspector", kind="ARCHITECTURE",
+        summary="The architecture does not establish configuration preservation.", requirement_ids=["SWR-002"],
+        test_files=[], evidence_refs=["workproducts/SWE.2/software_architecture.md:1"],
+        requirement_quote="The driver shall preserve configuration.")
+    second = observe(upstream)
+    assert second["class"] == "PRODUCT" and second["fingerprint"] != first
+
+
+def test_missing_requirement_binding_cannot_create_a_product_projection(upstream):
+    ws, _, _, _, _, defect = upstream
+    path = ws / D.DIR / (defect["id"] + ".json")
+    record = json.loads(path.read_text())
+    record["requirement_ids"] = []
+    path.write_text(pretty_json(record))
     assert observe(upstream)["class"] == "INFRA"
 
 
