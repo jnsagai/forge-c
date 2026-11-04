@@ -978,6 +978,11 @@ def run(
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if local:  # LRTX-T007: the selected profile identifies the work order, its checkpoints and its package
         manifest["local_profile"] = {k: local[k] for k in ("id", "version", "config", "config_sha256", "status")}
+        from .policy.governor import profile_inspector_capacity_binding
+
+        inspector_budget = profile_inspector_capacity_binding(selected_profile)
+        if inspector_budget is not None:
+            manifest["profile_inspector_budget"] = inspector_budget
         if "semantic_profile" in local:
             manifest["local_profile"]["semantic_profile"] = local["semantic_profile"]
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))

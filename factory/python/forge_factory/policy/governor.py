@@ -90,6 +90,42 @@ def _native_author_limit(role: str, workspace: str) -> int | None:
     return binding["author_calls_per_visit"]
 
 
+def profile_inspector_capacity_binding(profile: dict) -> dict | None:
+    """Prospective finite capacity, bound to the selected profile; no tools or review criteria are granted."""
+    limit = (profile.get("structured") or {}).get("native_inspector_tool_calls_per_visit")
+    if limit is None:
+        return None
+    if type(limit) is not int or not RESERVED_FOR_INSPECTORS < limit <= 256:
+        raise ValueError("PROFILE_INSPECTOR_TOOL_BUDGET_INVALID")
+    return {"schema": "forge-c/profile-inspector-tool-budget/1", "profile_id": profile["id"],
+            "profile_sha256": profile["_sha256"], "inspector_calls_per_visit": limit}
+
+
+def _profile_inspector_limit(role: str, workspace: str) -> int | None:
+    if role not in {f"swe{n}-inspector" for n in range(1, 7)}:
+        return None
+    path = Path(workspace) / ".forge-run/manifest.json"
+    if not path.is_file():
+        return None
+    manifest = json.loads(path.read_text())
+    binding = manifest.get("profile_inspector_budget")
+    if binding is None:
+        return None  # Existing jobs do not acquire capacity from a later profile edit.
+    from ..lrtx.profile import load
+    import re
+
+    local = manifest.get("local_profile") or {}
+    ident = local.get("id")
+    if not isinstance(ident, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,127}", ident):
+        raise ValueError("PROFILE_INSPECTOR_TOOL_BUDGET_BINDING_CHANGED")
+    profile = load(ident)
+    if (manifest.get("purpose") not in ("ASPICE_ONLY", "QM")
+            or local.get("config_sha256") != profile["_sha256"]
+            or binding != profile_inspector_capacity_binding(profile)):
+        raise ValueError("PROFILE_INSPECTOR_TOOL_BUDGET_BINDING_CHANGED")
+    return binding["inspector_calls_per_visit"]
+
+
 def _in_fix_loop(workspace: str, role: str) -> bool:
     phase = {"swe1-author": "SWE.1", "swe2-author": "SWE.2", "swe3-author": "SWE.3"}.get(role)
     if not phase:
@@ -118,6 +154,9 @@ def turn_limit(role: str, workspace: str | None = None) -> int:
         native = _native_author_limit(role, workspace)
         if native is not None:
             return native
+        inspector = _profile_inspector_limit(role, workspace)
+        if inspector is not None:
+            return inspector
     base = next((a.max_turns for a in load_agents(include_afo=role.startswith("afo-"))[0] if a.id == role), 20)
     if workspace and role in TRACE_ROLES:
         from ..layer import swtrace_enabled
