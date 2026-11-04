@@ -1458,3 +1458,21 @@ reproducers:
     error_codes: [UNIT:DESIGN_RENDER_FAILED]
     operations: [inspection/swtrace check_units (design render), inspection/swtrace render_ok]
     root_cause: "factory/python/forge_factory/inspection/swtrace.py check_units appended render_ok's text cut to 80 characters, which kept PlantUML's generic stderr ('No diagram found') and dropped the -syntax error; the -syntax line index is 0-based and the offending file line was never shown, so the author could not find the activity keyword written as an action (`:if ... then (yes)`)."
+  - id: RPR-140
+    script: rpr140_contract_identifier_declared_by_prose.py
+    sha256: 783a6d0b563b90bb3771320fe8e0adbf194655c8e3ff1c5332e6b363eedc9074
+    symptom_signature: "an SWE.2 call-contract argument named only by SWE.2 prose or a prototype parameter passes the SWE.2 identifier check"
+    observed_in: "Fabro run WO-F014-SWE3-WWDGHAL-20261103-L32 (local line, Omniverse2, gen14 6365c843 with CAPA-137, run 01M6HSYFSSVYX1488MVY2CFNRR, 2026-11-03): SWE.3 STUCK on CONTRACT_CALL_DOES_NOT_COMPILE:workproducts/SWE.2/api_calls.json:'flag' undeclared (cases FLAG_QUERY, NO_INIT_AFTER_RESET_PRESERVE, HAL_WWDG_GetEarlyWakeupFlag(&flag)); WO-F014-SWE2-WWDGHAL-20261103-L32 had PASSED; the SWE.2 author rejected DEF-001 and the triage could not overrule it"
+    baseline_revision: 203b6db4c6bd1b3cc06b035a3ae05c06939946bd
+    error_codes: [CONTRACT_CALL_DOES_NOT_COMPILE]
+    operations: [assurance/register_contract check_args_declared, assurance/register_contract swe2_compile_findings (SWE.2 gate, lrtx swe2 self_check, SWE.2 triage)]
+    root_cause: "factory/python/forge_factory/assurance/register_contract.py _declared_words (CAPA-137) took every word of the SWE.2 work products (.md/.puml/.json prose included) and of the headers as declared, so a prose word ('flag' in 'NULL flag pointer'), a prototype parameter name or a struct member counted as a declaration and check_args_declared reported nothing; SWE.3's real compile then rejected the call. Recurrence of the CAPA-137 class."
+  - id: RPR-141
+    script: rpr141_swe3_checks_charge_provided_ll.py
+    sha256: 00e113ce468ef7ae55201c50a50c804cbdd43850c5c4ad624eda7b003c3c64a1
+    symptom_signature: "SWE.3 guideline/register-map checks charge a HAL for its provided FROZEN ST LL"
+    observed_in: "Fabro run WO-F014-SWE3-CRCHAL-20261103-L31D (local line, Omniverse2, gen15 9ddc1b92, run 01M6HX62A2ZNPJJ6F66063VCW0, 2026-11-04): inspection INS-SWE.3-001 failed SWE3-07 with GL-GUARD-01/GL-MACRO-01/GL-ARG-01 located in the provided FROZEN software/ll/stm32n6xx_ll_crc.h (41 of 43 violations) and SWE3-08 with REGMAP:NO_REGISTER_DEFINES; rework budget exhausted"
+    baseline_revision: 1bfe4ada923c82d7111ef55e72d5c2c94c789caa
+    error_codes: [GL-GUARD-01, GL-MACRO-01, GL-ARG-01, REGMAP:NO_REGISTER_DEFINES]
+    operations: [inspection/guideline check_workspace (SWE3-07), inspection/regmap check_regmap (SWE3-08), brownfield/package findings]
+    root_cause: "factory/python/forge_factory/inspection/guideline.py Checker.run checked every file in software/ll, including the provided FROZEN ST LL header a HAL work order receives (CAPA-130 provided_frozen_paths), and counted its vendor-style violations in the SWE3-07 verdict although SWE3-07 covers generated code and the HAL author may not change that file; inspection/regmap.py check_regmap looked for generated LL_<PPP>_* OFFSET/POS/MSK defines in the LL header, which a HAL on a provided CMSIS LL (CAPA-128 provided_build) never has - its register map is the LL's, verified in the LL work order, and CAPA-134 forbids the HAL its own register access."
