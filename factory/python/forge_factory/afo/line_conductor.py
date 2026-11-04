@@ -541,6 +541,7 @@ def read_afo_queue(db: Path, now: float, lookback_s: float) -> list[dict]:
 
 # ---------------------------------------------------------------------------------------------- classification
 FACTORY_RULE_CHECKS = {"VIEWS"}  # deterministic factory-rule checks of a work product's form (inspection/views.py)
+FACTORY_RULE_CODES = {"UNIT:NO_UNITS"}  # CAPA-147: repeated empty factory-derived unit inventory needs diagnosis
 _CODE_TOKEN = re.compile(r"^[A-Z][A-Z0-9_]*$")
 _DETAIL_TOKEN = re.compile(r"^[A-Za-z0-9_.-]{1,60}$")
 
@@ -637,7 +638,7 @@ def classify_order(rec: dict, life: str | None, capa_of: dict) -> dict | None:
     error_code = _code(b["error_code"])
     suspected = False
     if codes and cls not in ("FACTORY_DEFECT",):  # the blocking rejection came from the deterministic author gate
-        if route == "STUCK" and all(c.split(":")[0] in FACTORY_RULE_CHECKS for c in codes):
+        if route == "STUCK" and all(c.split(":")[0] in FACTORY_RULE_CHECKS or c in FACTORY_RULE_CODES for c in codes):
             cls, suspected = "FACTORY_DEFECT", True  # the same factory-rule rejection twice: the rule is suspect
         elif cls == "INFRA":  # never INFRA; a security denial (UNKNOWN) keeps its class
             cls = "PRODUCT" if up else "MODEL_CONVERGENCE"
