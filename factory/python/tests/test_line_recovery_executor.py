@@ -126,3 +126,35 @@ def test_default_line_dispatch_uses_existing_host_interlocks_adapter(bound, monk
     result = L.poll(s, o, job, eff, client=client())
     assert result["state"] == "RUNNING" and result["run_id"] == "RUN-LOCKED"
     assert calls == [job["job_id"]]
+
+
+def test_explicit_controller_role_inputs_are_bound_without_source_inference(bound, monkeypatch):
+    from forge_factory.afo import line_recovery_control as control
+    from forge_factory.lrtx.profile import load
+
+    _, _, _, _, _, _, _, context = bound
+    profile = load("local-rtx-v2-omniverse2")
+    context["source_revision"] = "1" * 40
+    authority = {"path": "/controller/frozen.json", "sha256": "f" * 64}
+    value = {"profile": profile["id"], "profile_sha256": profile["_sha256"], "source_revision": "1" * 40,
+             "role_capabilities": {}, "product_role_trial": None}
+    seen = []
+    monkeypatch.setattr(control, "configuration", lambda ref, eff, **kw: seen.append(ref) or value)
+    job = prepare(bound, line_role_authority_ref=authority)
+    assert job["line_role_authority_ref"] == authority and job["role_capabilities"] == {}
+    assert seen == [authority]  # signed controller inputs cannot invent a capability receipt
+    assert prepare(bound, line_role_authority_ref=authority) == job
+    with pytest.raises(QueueError, match="LOCAL_AGENT_JOB_REBOUND"):
+        prepare(bound, line_role_authority_ref=dict(authority, sha256="e" * 64))
+
+
+def test_controller_role_authority_is_rechecked_before_dispatch(bound, monkeypatch):
+    from forge_factory.afo import line_recovery_control as control
+    from forge_factory.afo.durable import Refused
+
+    job = prepare(bound)
+    job["line_role_authority_ref"] = {"path": "/controller/frozen.json", "sha256": "f" * 64}
+    def refuse(*args, **kwargs):
+        raise Refused("AUTH_REVOKED")
+    monkeypatch.setattr(control, "configuration", refuse)
+    assert not L.authorized_job(bound[1], bound[3], job)

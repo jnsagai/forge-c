@@ -78,6 +78,13 @@ def authorized_job(order, eff, job):
     """Keep the existing generic authority API; intersect line provenance for line-origin jobs."""
     if not authorized(order, eff, job["model"]):
         return False
+    if job.get("line_role_authority_ref"):
+        from .line_recovery_control import configuration
+
+        try:
+            configuration(job["line_role_authority_ref"], eff, request=request_for(order))
+        except (ValueError, OSError, KeyError, TypeError):
+            return False
     if job and "line_origin" in job:
         from .line_recovery import valid_job
 
@@ -101,7 +108,7 @@ def enabled(role: str, eff) -> bool:
 
 
 def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path, eff, *, qualification_manifest=None,
-            line_origin=None) -> dict:
+            line_origin=None, line_role_authority_ref=None) -> dict:
     """Reserve the role call and its worst-case capacity BEFORE dispatch (including crashed launches)."""
     from ..registry.agents import load_agents
     from ..workorder import factory_revision
@@ -157,6 +164,17 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     from ..lrtx.profile import load as load_profile
 
     selected = load_profile(profile)
+    role_inputs = None
+    if line_role_authority_ref is not None:
+        from .line_recovery_control import configuration
+
+        if line_context is None:
+            raise QueueError("LINE_RECOVERY_ROLE_AUTHORITY_REQUIRES_CONTEXT", role)
+        control = configuration(line_role_authority_ref, eff, request=request_for(order))
+        if (control["profile"] != profile or control["profile_sha256"] != selected["_sha256"]
+                or control["source_revision"] != line_context["source_revision"]):
+            raise QueueError("LINE_RECOVERY_ROLE_AUTHORITY_BINDING_CHANGED", role)
+        role_inputs = {key: control[key] for key in ("role_capabilities", "product_role_trial")}
     tokens = role_job_tokens(selected, role, agent.max_stage_tokens)
     profile_reservation = None
     if role in (selected.get("afo", {}).get("role_job_tokens") or {}):
@@ -179,6 +197,7 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
                 or prior["case_sha256"] != sha256_file(case)
                 or prior.get("profile_sha256", selected["_sha256"]) != selected["_sha256"]
                 or prior.get("profile_initial_reservation") != profile_reservation
+                or prior.get("line_role_authority_ref") != line_role_authority_ref
                 or prior.get("line_context_sha256") != (
                     hashlib.sha256(json.dumps(line_context, sort_keys=True, separators=(",", ":"),
                                               ensure_ascii=False).encode()).hexdigest() if line_context else None)):
@@ -218,6 +237,8 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
 
         job["line_origin"] = dict(line_origin)
         job["line_context_sha256"] = sha256_bytes(canonical_json(line_context))
+    if line_role_authority_ref is not None:
+        job["line_role_authority_ref"] = dict(line_role_authority_ref)
     doc = json.loads(case.read_text())
     if doc.get("retained_rework"):
         # A refinement cannot restart the original recovery wall allowance.
@@ -253,7 +274,7 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
             fixture = doc.get("qualification_fixture") or {}
             seeded = fixture.get("source_kind") == "SEEDED_PROTOCOL_NOT_PRODUCT"
             job["work_class"] = "PROTOCOL_DIAGNOSIS" if seeded else "PRODUCT_DIAGNOSIS"
-        job["role_capabilities"] = man.get("role_capabilities") or {}
+        job["role_capabilities"] = (role_inputs or man).get("role_capabilities") or {}
         job["qualified_local_alternatives"] = man.get("qualified_local_alternatives") or []
         job["qualification_manifest_sha256"] = doc.get("qualification_manifest_sha256")
         model_identity = selected["models"]["allowed"][model]
@@ -266,7 +287,9 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         from .product_role_trial import bind as bind_trial
 
         launch_path = REPO_ROOT / order["input_manifest_ref"]
-        if line_context is not None:
+        if role_inputs is not None:
+            bind_trial(role_inputs.get("product_role_trial"), job, eff)
+        elif line_context is not None:
             # M3 intake is a hash-bound campaign YAML, not the generic AFO JSON launch manifest.
             bind_trial(man.get("product_role_trial"), job, eff)
         elif launch_path.is_file():
@@ -753,12 +776,12 @@ def supervise(store, eff) -> list[dict]:
     return out
 
 
-def make_planner(store, eff, *, line_origin=None):
+def make_planner(store, eff, *, line_origin=None, line_role_authority_ref=None):
     def invoke(case: Path) -> str:
         doc = json.loads(case.read_text())
         order = store.order(doc["bundle"]["order_id"])
         job = prepare(store, order, doc["bundle"]["attempt_id"], "afo-recovery-planner", case, Path(doc["workspace"]), eff,
-                      line_origin=line_origin)
+                      line_origin=line_origin, line_role_authority_ref=line_role_authority_ref)
         job = poll(store, order, job, eff)
         if job["state"] in ("PREPARED", "LAUNCHING", "RUNNING"):
             raise planner.Pending(job["job_id"])
