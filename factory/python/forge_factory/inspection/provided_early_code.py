@@ -109,6 +109,30 @@ def pending(ws):
     return values
 
 
+def passed(ws, phase):
+    """Require actual intact, independently reviewed prefix records; a declared PASS string is insufficient."""
+    store = Store(Path(ws))
+    baseline, reviews = store.latest_baseline(phase), store.inspections(phase)
+    require(isinstance(baseline, dict) and bool(reviews), "PREFIX_APPROVAL_MISSING:" + phase)
+    review = reviews[-1]
+    for record, key, directory, prefix in ((baseline, "baseline_id", "configuration/baselines", "BL"),
+                                            (review, "inspection_id", "inspection", "INS")):
+        ident = record.get(key)
+        require(isinstance(ident, str) and re.fullmatch(prefix + "-" + re.escape(phase) + r"-[0-9]{3,6}", ident),
+                "PREFIX_ID_INVALID:" + phase)
+        require(json.loads(read_file(Path(ws), f"{directory}/{phase}/{ident}.json")) == record,
+                "PREFIX_RECORD_CHANGED:" + phase)
+    require(baseline.get("author_role") == "swe" + phase[-1] + "-author"
+            and review.get("author_role") == baseline["author_role"]
+            and review.get("inspector_role") == "swe" + phase[-1] + "-inspector"
+            and review.get("baseline_id") == baseline["baseline_id"]
+            and review.get("baseline_hash") == baseline["baseline_hash"]
+            and review.get("checklist_sha256") == store.checklist(phase)["sha256"], "PREFIX_NOT_INDEPENDENT:" + phase)
+    require(store.gate(phase)["decision"] == "PASS", "PREFIX_NOT_PASSED:" + phase)
+    require(baseline["baseline_hash"] == store.current_hash(phase), "PREFIX_CHANGED:" + phase)
+    return baseline["baseline_hash"]
+
+
 def claim(ws):
     """Controller SWE.3 entry only; no phase or inspection result is created or copied."""
     from . import defects as D
@@ -116,12 +140,8 @@ def claim(ws):
     values = pending(ws)
     if not values:
         return []
-    store = Store(Path(ws))
     for phase in ("SWE.1", "SWE.2"):
-        require(store.gate(phase)["decision"] == "PASS", "PREFIX_NOT_PASSED:" + phase)
-        baseline = store.latest_baseline(phase)
-        require(baseline is not None and baseline["baseline_hash"] == store.current_hash(phase),
-                "PREFIX_CHANGED:" + phase)
+        passed(ws, phase)
     for record in values:
         D._event(record, "IN_FIX", note="normal SWE.3 entry: supplied LL correction remains workspace-only "
                  "and independently reviewed")
@@ -142,12 +162,8 @@ def carry(src, dst, stable):
         require(origin.get(key) == target.get(key), "RESUME_SCOPE_CHANGED:" + key)
     prefix = {}
     for phase in ("SWE.1", "SWE.2"):
-        a, b = Store(src), Store(dst)
-        require(a.gate(phase)["decision"] == b.gate(phase)["decision"] == "PASS", "PREFIX_NOT_PASSED:" + phase)
-        before, after = a.latest_baseline(phase), b.latest_baseline(phase)
-        require(before["baseline_hash"] == after["baseline_hash"] == a.current_hash(phase) == b.current_hash(phase),
-                "RESUME_PREFIX_CHANGED:" + phase)
-        prefix[phase] = before["baseline_hash"]
+        prefix[phase] = passed(src, phase)
+        require(prefix[phase] == passed(dst, phase), "RESUME_PREFIX_CHANGED:" + phase)
     snapshots = []
     for record in values:
         validate(dst, record)

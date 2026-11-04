@@ -144,7 +144,8 @@ def test_actual_phase2_pass_normal_resume_and_deterministic_phase3_claim(provide
     assert not (ws / "configuration/baselines/SWE.3").exists()
 
 
-@pytest.mark.parametrize("change", ["prefix", "input", "defect_binding", "symlink", "premature_edit"])
+@pytest.mark.parametrize("change", ["prefix", "input", "defect_binding", "symlink", "premature_edit",
+                                    "review_role", "review_symlink", "review_missing"])
 def test_deferred_claim_refuses_changed_scope_without_claiming(provided, change):
     report(provided)
     prefix(provided)
@@ -160,6 +161,19 @@ def test_deferred_claim_refuses_changed_scope_without_claiming(provided, change)
         D._save(provided, row)
     elif change == "premature_edit":
         (provided / LL).write_text("ILLEGAL PREMATURE EDIT\n")
+    elif change.startswith("review_"):
+        path = next((provided / "inspection/SWE.2").glob("INS-*.json"))
+        if change == "review_role":
+            value = json.loads(path.read_text())
+            value["inspector_role"] = "swe2-author"
+            path.write_text(pretty_json(value))
+        elif change == "review_symlink":
+            copy = provided / "review-copy.json"
+            copy.write_bytes(path.read_bytes())
+            path.unlink()
+            path.symlink_to(copy)
+        else:
+            path.unlink()
     else:
         original = provided / PC.ORIGINALS / LL
         copy = provided / "original-copy.h"
