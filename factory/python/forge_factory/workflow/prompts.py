@@ -1013,6 +1013,8 @@ def author_prompt(phase: str) -> str:
         scope_note += (" " if scope_note else "") + provided_ll_unit_note()
     if phase == "SWE.4" and unit_target_timing_note():
         scope_note += (" " if scope_note else "") + unit_target_timing_note()
+    if phase == "SWE.4" and unit_target_observation_note():
+        scope_note += (" " if scope_note else "") + unit_target_observation_note()
     timing_note = native_swe3_timing_note() if phase == "SWE.3" else ""
     if timing_note:
         scope_note += (" " if scope_note else "") + timing_note
@@ -1441,9 +1443,9 @@ def gtest_unit_test_steps(marker: str) -> list[str]:
     if note:
         steps.insert(0, note)
         steps[3] = steps[3].replace("For EACH row", "For each LL call-contract row")
-    timing_note = unit_target_timing_note()
-    if timing_note:
-        steps.insert(0, timing_note)
+    backend_note = unit_target_timing_note() or unit_target_observation_note()
+    if backend_note:
+        steps.insert(0, backend_note)
         steps = [s.replace("For EACH row", "For each host-observed row").replace(
             "Every UT id of the plan is exactly one TEST;",
             "Every UT id of the plan has exactly one executed verification backend; each host-observed row is "
@@ -1497,6 +1499,32 @@ def unit_target_timing_note() -> str:
         "must pass, and Matrix 4 recomputes the sealed source, arguments, binary and measurement. "
         "Report host register effects and simulated timing as their actual environments, without "
         "claiming hardware WCET or silicon verification.")
+
+
+def unit_target_observation_note() -> str:
+    from .provided_ll_unit import supported
+
+    manifest = ASSESSMENT.get("manifest") or {}
+    if not (supported(manifest) and manifest.get("peripheral") == "wwdg"):
+        return ""
+    return (
+        "SWE.4 WWDG FLAG OBSERVATION: plain host RAM cannot implement the status register's "
+        "write-zero-to-clear and reserved-bit read-as-zero semantics. For the exact frozen "
+        "UT-021 / USPEC-HAL-04-03 clear-flag preservation row, write "
+        "software/tests/unit/target_observations.json with exactly this JSON object: "
+        '{"schema":"forge-c/swe4-wwdg-target-observation/1","ut":"UT-021",'
+        '"uspec":"USPEC-HAL-04-03","function":"HAL_WWDG_ClearEarlyWakeupFlag",'
+        '"scenario":"wwdg-ewif-clear-v1"}. '
+        "That row belongs in this target declaration instead of either host TEST file. "
+        "run_unit executes the original HAL and provided LL on the existing WWDG Renode model; "
+        "the factory observes the real flag precondition, HAL return, register write and status "
+        "readback. Keep all other rows as executed host TESTs using their appropriate mock or "
+        "real-LL RAM backend. Never use GTEST_SKIP, duplicate a UT, mask away the reserved-bit "
+        "criterion, or alter HAL/LL code solely to make plain RAM look like the peripheral. "
+        "A declaration alone supplies no passing evidence. run_unit, validate_planned_units "
+        "and Matrix 4 require the current sealed execution proof. If this exact frozen row "
+        "does not match, report the unsupported verification scope rather than changing it. "
+        "This is evidence in the existing simulator model, without a silicon-verification claim.")
 
 
 # CAPA-131: the instance API of a HAL's provided CMSIS LL (brownfield/cmsis.provided_api), set by the builder for a

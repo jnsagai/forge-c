@@ -712,13 +712,15 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
         # owner 2026-11-03: GoogleTest requirement-based tests (.cpp) carry the same @test/@verifies blocks
         tests = tagged_tests(sorted(ws.glob("software/tests/unit/*.c")) + sorted(ws.glob("software/tests/unit/*.cpp")),
                              ws)
-        from ..workflow.unit_target_timing import trace as target_timing_trace
+        from ..workflow import unit_target_observation, unit_target_timing
 
-        target_tests, target_results, target_issues = target_timing_trace(ws)
-        duplicate = {t["test"] for t in tests} & {t["test"] for t in target_tests}
-        tests += target_tests
-        res.update(target_results)  # recomputed target failures cannot be replaced by a printed PASS
-        rows4, f4 = [], target_issues + [f"UT:DUPLICATE_TARGET_HOST_TEST:{t}" for t in sorted(duplicate)]
+        rows4, f4 = [], []
+        for adapter in (unit_target_timing, unit_target_observation):
+            target_tests, target_results, target_issues = adapter.trace(ws)
+            duplicate = {t["test"] for t in tests} & {t["test"] for t in target_tests}
+            tests += target_tests
+            res.update(target_results)  # recomputed target failures cannot be replaced by a printed PASS
+            f4 += target_issues + [f"UT:DUPLICATE_TARGET_HOST_TEST:{t}" for t in sorted(duplicate)]
         for t in tests:
             if not t["verifies"]:
                 f4.append(f"UT:TEST_WITHOUT_TRACE:{t['test']}")

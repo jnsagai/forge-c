@@ -222,7 +222,7 @@ def _plan_findings(ws) -> tuple[list[str], int]:
     """Owner 2026-11-03: every UT id of the SWE.4 plan is a test in the unit-test files that calls a function of its
     USPEC's unit (the per-USPEC form of CAPA-024)."""
     from ...inspection import uspec_plan
-    from ...workflow.unit_target_timing import trace as target_timing_trace
+    from ...workflow import unit_target_observation, unit_target_timing
 
     plan = uspec_plan.load(ws)
     if plan is None:
@@ -232,7 +232,13 @@ def _plan_findings(ws) -> tuple[list[str], int]:
         code = re.sub(r"/\*.*?\*/|//[^\n]*", "", f.read_text(errors="replace"), flags=re.S)
         for k, v in {**_check_function_bodies(code), **_gtest_bodies(code)}.items():
             bodies.setdefault(k, v)
-    target_tests, target_results, target_issues = target_timing_trace(ws)
+    target_tests, target_results, target_issues = [], {}, []
+    for adapter in (unit_target_timing, unit_target_observation):
+        tagged, statuses, errors = adapter.trace(ws)
+        duplicates = {t["test"] for t in target_tests} & {t["test"] for t in tagged}
+        target_tests += tagged
+        target_results.update(statuses)
+        target_issues += errors + [f"DUPLICATE_TARGET_TEST:{t}" for t in sorted(duplicates)]
     target_by = {t["test"]: t for t in target_tests}
     out = list(target_issues)
     tasks = plan["tasks"] + plan.get("closure", [])
@@ -243,7 +249,7 @@ def _plan_findings(ws) -> tuple[list[str], int]:
             if body is not None:
                 out.append(f"DUPLICATE_TARGET_HOST_TEST:{t['ut']}")
             if target_results.get(t["ut"]) != "PASS" or target["verifies"] != [t["uspec"]]:
-                out.append(f"TARGET_TIMING_NOT_VERIFIED:{t['ut']}:{t['uspec']}")
+                out.append(f"TARGET_UNIT_NOT_VERIFIED:{t['ut']}:{t['uspec']}")
             continue
         if body is None:
             out.append(f"PLANNED_TEST_MISSING:{t['ut']}:{t['uspec']}")
