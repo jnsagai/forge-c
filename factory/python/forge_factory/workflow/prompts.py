@@ -24,6 +24,25 @@ def sec(*nums: str) -> str:
 REPLY = ('Finish with ONLY this JSON (no other text): {"status":"PASS","artifacts":["<paths you wrote>"],'
          '"issues":[],"next_action":"next"}. next_action is one literal enum value: next, rework, halt, package, '
          'escalate, none or retry; put any explanation in issues.')
+# Prospective planning clarification after CRC SWE.6 L34D: the test author repaired 14 -> 22/24 cases, but
+# the report author spent its bounded visits on discovery before it could edit the remaining scenarios.
+# This is not a larger tool budget or evidence of improved model performance; the live escalation is retained.
+PROVIDED_HAL_SWE6_PLAN = (
+    "SWE.6 DELIVERABLE PLAN: the previous test-author step already supplied the Robot suite and C scenarios. "
+    "Use the first run_robot result to choose the next action, before discovery. Read the cited SWE.1 requirement "
+    "once and read each implicated scenario at most once; use the exact paths and check IDs in the result and "
+    "the existing Robot suite. Do not repeatedly glob the workspace or search its parents, the factory, model "
+    "configuration, other skills or tool implementations. Reserve remaining tool calls for the actual edits, "
+    "their TEST declaration when required, a fresh run_robot, validate_trace and the required report. "
+    "Do not create C/Python verification helpers: file tools do not execute them. Edit the actual scn_*.c and "
+    "test_rcc_requirements.robot files directly through your approved file tools. Undefined TCHECK IDs, "
+    "NOT IMPLEMENTED placeholders and missing access-log/phase evidence are test-evidence gaps to diagnose "
+    "against the requirement, not proof of a driver defect. Preserve every required test, tag and functional "
+    "predicate; never turn absent observations into PASS. Use the defect rule for a genuine driver or API "
+    "violation, with requirement_ids, requirement_quote and test_files. When run_robot PASSes, complete "
+    "validate_trace and write workproducts/SWE.6/software_verification_report.md from the real results before "
+    "replying PASS. If the tool budget is exhausted, stop and reply status BLOCKED with the remaining gaps; "
+    "do not change skill, policy, budget, prior baselines or gate records.")
 FIX = "If inspection/{p}/ has INS-*.json files or .forge-run/gates/gate-log.jsonl has {p} entries, read the newest and fix every listed finding first."
 # ADR-0008 loopbacks. Upstream owners (SWE.1-3) fix defects routed to them; downstream roles report instead of bending.
 FIX_DEFECTS = ("glob .forge-run/defects/DEF-*.json and read every defect with target_phase {p} and status IN_FIX: "
@@ -944,6 +963,30 @@ def assessment_scope_note() -> str:
                    "do not claim its verification passed.")
 
 
+def native_swe3_timing_note() -> str:
+    """Explain the existing factory-owned measurement only for an explicitly budgeted provided-CMSIS HAL."""
+    from ..simulation_performance import FIELD, validate
+
+    manifest = ASSESSMENT["manifest"] or {}
+    if not (_layer() == "HAL" and PROVIDED_API["api"] and manifest.get("provided")
+            and (manifest.get("provided_build") or {}).get("style") == "cmsis" and FIELD in manifest):
+        return ""
+    validate(manifest[FIELD])
+    return ("SWE.3 FACTORY TIMING GATE: after this author reply, the deterministic factory author gate runs "
+            "static_timing.gate before it honors the author status. It computes the bound and, for paths needing "
+            "measurement, attempts the pinned Renode measurement on the frozen SWE.2 api_calls.json cases. "
+            "The factory generates or refreshes workproducts/SWE.3/static_timing_bound.json and the timing "
+            "section of detailed_design.md. A separate author timing MCP operation is not required. Complete "
+            "your assigned source, design and current call-contract obligations first; when those author outputs "
+            "are complete, truthfully reply PASS for that author work instead of self-BLOCKED solely because no "
+            "timing tool is exposed. The independent gate can still reject missing, unbounded or over-budget "
+            "timing; author PASS does not mean SWE.3 inspection or full software verification passed. Never "
+            "fabricate measurements, edit the factory timing record, or claim a measurement ran before its "
+            "record exists. Cite only the actual measured cases, arguments and conditions; do not infer coverage "
+            "for other input lengths, timeout paths or hardware WCET. SWE.6 still performs its separate "
+            "requirement verification and instrumented performance test.")
+
+
 def author_prompt(phase: str) -> str:
     n = phase[-1]
     pr = PERIPHERAL["profile"]  # feature 009 (i001): the work order's key RM sections (RCC: 14.10.1/2/79/64)
@@ -953,6 +996,9 @@ def author_prompt(phase: str) -> str:
     table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
     body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
     scope_note = assessment_scope_note()
+    timing_note = native_swe3_timing_note() if phase == "SWE.3" else ""
+    if timing_note:
+        scope_note += (" " if scope_note else "") + timing_note
     if scope_note and phase == "SWE.1":
         body = [x.replace("then 12-26 requirements", "then enough atomic requirements to cover the full scope")
                 .replace("then 8-15 requirements", "then enough atomic requirements to cover the full scope")
@@ -988,6 +1034,12 @@ def author_prompt(phase: str) -> str:
         body = body[:-1] + [NEGATIVE_RULES[phase]] + body[-1:]
     steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + ([scope_note] if scope_note else []) + manifest + [FIX.format(p=phase)] + extra + body \
         + [REPLY]
+    if (phase == "SWE.6" and _layer() == "HAL" and TRACE["on"] and UNIT_VERIFICATION["gtest"]
+            and PROVIDED_API["api"] and not BROWNFIELD["mode"]):
+        # Keep the exact legacy graph in every other scope. Evidence first is an ordering clarification of
+        # the existing FIRST instruction; all deterministic gates, budgets and defect/report rules remain.
+        steps = [f"Call use_skill with skill_name swe{n}-author.", READ, body[0], PROVIDED_HAL_SWE6_PLAN] + \
+            ([scope_note] if scope_note else []) + manifest + [FIX.format(p=phase)] + extra + body[1:] + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
 
 
