@@ -145,17 +145,43 @@ def order_id_for(tenant: str, request_id: str) -> str:
 
 
 class Store:
-    def __init__(self, path: Path | None = None, producer: str = "afo-conductor"):
-        self.path = Path(path or default_path())
+    def __init__(self, path: Path | None = None, producer: str = "afo-conductor", *, must_exist: bool | None = None):
         import os
+
+        if must_exist is not None and type(must_exist) is not bool:
+            raise QueueError("AUTHORITATIVE_DATABASE_REQUIREMENT_INVALID")
+        # Native gateway/MCP consumers of the explicit line-local scope cannot
+        # initialize authority. Initial M3 admission uses an explicit path.
+        self._existing_only = must_exist if must_exist is not None else (
+            path is None and os.environ.get("FORGE_AFO_QUEUE_SCOPE") == "line-local"
+        )
+        self.path = Path(path or default_path())
+        self.producer = producer
 
         if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
             from .host import preflight
 
             if not preflight()["ok"]:
                 raise QueueError("DURABLE_DATA_VOLUME_NOT_READY")
+        if self._existing_only:
+            self._existing_identity = None
+            self._check_existing()
+            # No mkdir, migration, chmod or WAL conversion before proving this
+            # is the already initialized M3 store. A lookalike empty SQLite DB
+            # cannot acquire authority through a consumer constructor.
+            try:
+                c = sqlite3.connect(self.path.absolute().as_uri() + "?mode=ro", uri=True, timeout=2)
+                try:
+                    have = c.execute("SELECT MAX(version) FROM afo_schema_version").fetchone()[0]
+                finally:
+                    c.close()
+                self._check_existing()
+                if type(have) is not int or have < len(MIGRATIONS):
+                    raise QueueError("AUTHORITATIVE_DATABASE_SCHEMA_UNAVAILABLE")
+            except sqlite3.Error as exc:
+                raise QueueError("AUTHORITATIVE_DATABASE_SCHEMA_UNAVAILABLE") from exc
+            return
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.producer = producer
         with self.tx() as c:
             c.execute("CREATE TABLE IF NOT EXISTS afo_schema_version (version INTEGER NOT NULL, applied_utc TEXT NOT NULL)")
             have = c.execute("SELECT COALESCE(MAX(version), 0) FROM afo_schema_version").fetchone()[0]
@@ -167,6 +193,25 @@ class Store:
                     c.execute("INSERT INTO afo_schema_version VALUES (?, ?)", (v, utc_now()))
         self.path.chmod(0o600)
 
+    def _check_existing(self):
+        import os
+        import stat
+
+        try:
+            fd = os.open(self.path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            try:
+                info = os.fstat(fd)
+                if not stat.S_ISREG(info.st_mode) or os.read(fd, 16) != b"SQLite format 3\x00":
+                    raise QueueError("AUTHORITATIVE_DATABASE_UNAVAILABLE")
+            finally:
+                os.close(fd)
+            identity = (info.st_dev, info.st_ino)
+            if self._existing_identity is not None and identity != self._existing_identity:
+                raise QueueError("AUTHORITATIVE_DATABASE_IDENTITY_CHANGED")
+            self._existing_identity = identity
+        except OSError as exc:
+            raise QueueError("AUTHORITATIVE_DATABASE_UNAVAILABLE") from exc
+
     def connect(self) -> sqlite3.Connection:
         import os
 
@@ -176,7 +221,21 @@ class Store:
             if hasattr(self, "_data_device") and data_root().stat().st_dev != self._data_device:
                 raise QueueError("AUTHORITATIVE_DATA_DEVICE_CHANGED")
             self._data_device = data_root().stat().st_dev
-        c = sqlite3.connect(self.path, timeout=10, isolation_level=None)
+        existing = getattr(self, "_existing_only", False)
+        if existing:
+            self._check_existing()
+        try:
+            c = sqlite3.connect(self.path.absolute().as_uri() + "?mode=rw", uri=True, timeout=10,
+                                isolation_level=None) if existing else sqlite3.connect(
+                                    self.path, timeout=10, isolation_level=None)
+            if existing:
+                self._check_existing()
+        except (OSError, sqlite3.Error) as exc:
+            raise QueueError("AUTHORITATIVE_DATABASE_UNAVAILABLE") from exc
+        except BaseException:
+            if 'c' in locals():
+                c.close()
+            raise
         c.row_factory = sqlite3.Row
         c.execute("PRAGMA journal_mode=WAL")
         c.execute("PRAGMA synchronous=FULL")

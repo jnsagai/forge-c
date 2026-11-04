@@ -252,7 +252,7 @@ def main(argv=None):
     from ..fabro.client import FabroClient, load_token
     from .policy import load
 
-    store = Store(state_dir() / 'supervisor/line-queue.sqlite3')
+    store = Store(state_dir() / 'supervisor/line-queue.sqlite3', must_exist=True)
     queue = VerificationJobs(store)
     queue.claim(args.job, args.epoch, dedicated_group=True)
     job = _saved(store, args.job)

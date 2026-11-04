@@ -21,7 +21,7 @@ from .queue import Store
 def authorize(job, store=None):
     from .policy import load
 
-    store = store or Store(state_dir() / "supervisor/line-queue.sqlite3")
+    store = store or Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     order = store.order(job["order_id"])
     eff = load()
     protocol = ((job.get("role") == "afo-recovery-planner" and job.get("durable_protocol"))
@@ -177,7 +177,7 @@ def launch(job, *, cfg=None, host=None, procs=None, authorization=None):
 
 
 def native_job(order_id, job_id):
-    store = Store(state_dir() / "supervisor/line-queue.sqlite3")
+    store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     rows = [job for job in L.records(store, order_id) if job["job_id"] == job_id]
     if len(rows) != 1 or not authorize(rows[0], store):
         raise R.BindingRefused("LINE_RECOVERY_NATIVE_JOB_NOT_AUTHORIZED")

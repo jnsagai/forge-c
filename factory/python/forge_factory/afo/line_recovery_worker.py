@@ -136,7 +136,7 @@ def bootstrap(cid, *, cfg=None, execute=None, quiesce=False):
     cfg = cfg or LL.LineConfig.from_env()
     if state_dir().resolve() != (cfg.stack_root / "state").resolve():
         raise Refused("LINE_RECOVERY_WORKER_STATE_MISMATCH")
-    store = Store(state_dir() / "supervisor/line-queue.sqlite3")
+    store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     cmd, value, spec, row = metadata(store, cid)
     revision = LL.resolve_rev(cfg.repo, spec["revision"])
     from .local_agent import request_for
@@ -310,8 +310,8 @@ def step(cid, *, client=None, quiesce=False):
     from .local_agent import request_for
     from .policy import load
 
+    store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     with worker_lock(cid):
-        store = Store(state_dir() / "supervisor/line-queue.sqlite3")
         cmd, value, spec, row = metadata(store, cid)
         eff = load()
         own = client is None
@@ -350,7 +350,7 @@ def record_refusal(cid, exc):
 
     if getattr(exc, "code", "") == "LINE_RECOVERY_WORKER_LOCK_HELD":
         return {"action": "existing_worker_owns_command", "inference_release": False}
-    store = Store(state_dir() / "supervisor/line-queue.sqlite3")
+    store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     cmd, value, _, row = metadata(store, cid)
     job = existing_job(store, value)
     if job:

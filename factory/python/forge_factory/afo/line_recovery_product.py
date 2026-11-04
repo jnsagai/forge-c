@@ -475,7 +475,7 @@ def claim_for_launch(cfg, order):
     from .queue import Store
 
     value = validate_launch_order(order)
-    store = Store(cfg.stack_root / "state/supervisor/line-queue.sqlite3")
+    store = Store(cfg.stack_root / "state/supervisor/line-queue.sqlite3", must_exist=True)
     job = registered(store, value["job_id"])
     if Executions(store)._evidence(job["job_id"], KIND):
         raise ClaimUncertain("LINE_LOCAL_LAUNCH_ALREADY_CLAIMED")
@@ -518,7 +518,7 @@ def execution_context(order):
     from .queue import Store
 
     value = validate_launch_order(order)
-    store = Store(state_dir() / "supervisor/line-queue.sqlite3")
+    store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     job, _, _ = _job_for_payload(store, value)
     return {**role_context(job), "FORGE_DURABLE_AUTONOMY": "1", "FORGE_AFO_QUEUE_SCOPE": "line-local"}
 
@@ -550,7 +550,7 @@ def native_parameters(path, sha256, expected):
     value = payload(path, sha256)
     if value["order"] != expected:
         raise Refused("LINE_PRODUCT_NATIVE_ARGUMENTS_CHANGED")
-    store = Store(state_dir() / "supervisor/line-queue.sqlite3")
+    store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     job, row, spec = _job_for_payload(store, value)
     _native_prepare_claim(store, job)
 
