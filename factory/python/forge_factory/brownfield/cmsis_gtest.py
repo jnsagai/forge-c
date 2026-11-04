@@ -12,8 +12,8 @@ import re
 from pathlib import Path
 
 from ..common import sha256_file
-from . import DELIVERY_DIR, delivered_paths, manifest_of
-from . import cmsis, scope as S
+from . import DELIVERY_DIR, cmsis, delivered_paths, manifest_of
+from . import scope as S
 
 
 def generate(ws: Path, output: Path) -> tuple[Path, Path] | None:
@@ -23,7 +23,13 @@ def generate(ws: Path, output: Path) -> tuple[Path, Path] | None:
     headers = [ws / p for p in delivered_paths(manifest) if p.endswith('.h')]
     resolved = json.loads((ws / DELIVERY_DIR / 'scope.json').read_text())
     selected = [r['name'] for r in resolved.get('functions', [])]
-    if (not selected or any(not isinstance(n, str) or not re.fullmatch(S.IDENT, n) for n in selected)
+    if not selected:
+        raise ValueError('CMSIS_GTEST_SCOPE_INVALID')
+    return _generate(ws, output, headers, selected, cmsis.GTEST_LINKAGE)
+
+
+def _generate(ws: Path, output: Path, headers: list[Path], selected: list[str], linkage: str):
+    if (any(not isinstance(n, str) or not re.fullmatch(S.IDENT, n) for n in selected)
             or len(selected) != len(set(selected)) or not headers):
         raise ValueError('CMSIS_GTEST_SCOPE_INVALID')
     if len({p.name for p in headers}) != len(headers):
@@ -82,7 +88,7 @@ def generate(ws: Path, output: Path) -> tuple[Path, Path] | None:
     source = output / 'forge_cmsis_ll_abi.c'
     source.write_text('\n'.join(lines) + '\n')
     (destination / 'binding.json').write_text(json.dumps({
-        'schema': 'forge-c/cmsis-host-c-abi/1', 'linkage': cmsis.GTEST_LINKAGE,
+        'schema': 'forge-c/cmsis-host-c-abi/1', 'linkage': linkage,
         'source_headers': sources, 'resolved_scope': selected,
         'exported_symbols': ['forge_cmsis_cabi_' + name for name in selected],
         'forwarding_unit_sha256': sha256_file(source), 'environment': 'HOST_ONLY',

@@ -1009,6 +1009,8 @@ def author_prompt(phase: str) -> str:
     table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
     body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
     scope_note = assessment_scope_note()
+    if phase == "SWE.4" and provided_ll_unit_note():
+        scope_note += (" " if scope_note else "") + provided_ll_unit_note()
     timing_note = native_swe3_timing_note() if phase == "SWE.3" else ""
     if timing_note:
         scope_note += (" " if scope_note else "") + timing_note
@@ -1419,7 +1421,7 @@ def gtest_unit_test_steps(marker: str) -> list[str]:
              "read_file software/tests/unit/test_rcc.cpp (GENERATED GoogleTest harness: the host register store, "
              f"ut_reset_regs(), the marker; never change it), {code} and {PLAN_MD} (GENERATED from the frozen SWE.3 "
              "unit specification: one row per USPEC item with its UT id, unit, function and requirement ids).")
-    return [first,
+    steps = [first,
             "read_file workproducts/SWE.3/unit_specifications.md (the behaviour of each USPEC item) and "
             "workproducts/SWE.1/software_requirements.md (the expected values of the requirements a USPEC traces). The "
             "expected values come ONLY from them, never from the implementation.",
@@ -1433,6 +1435,34 @@ def gtest_unit_test_steps(marker: str) -> list[str]:
             "Call mcp__forge_tests_mcp__run_unit once and report its summary (GTEST_FAIL lines name the failed TEST "
             "and its expected and actual values).",
             "Reply with the list of UT ids you wrote."]
+    note = provided_ll_unit_note()
+    if note:
+        steps.insert(0, note)
+        steps[3] = steps[3].replace("For EACH row", "For each LL call-contract row")
+    return steps
+
+
+def provided_ll_unit_note() -> str:
+    from .provided_ll_unit import MARKER, supported
+
+    if not supported(ASSESSMENT.get("manifest") or {}):
+        return ""
+    return (
+        "PROVIDED LL REGISTER TESTS: choose the observation required by each frozen USPEC row. "
+        "Keep call-count/order and scripted-query rows in the existing generated mock harness. "
+        "For a row requiring actual register preservation/effects, create a separate "
+        "software/tests/unit/test_rcc_registers.cpp whose first line is exactly '" + MARKER + "'. "
+        "Only that additional file may add #include <gtest/gtest.h> and, inside extern \"C\" { }, "
+        "#include \"stm32n6xx_hal_rcc.h\". The factory compiles the HAL C source against the immutable "
+        "provided LL and shares the real vendor register layout in host RAM through RCC. Preset only "
+        "the registers required by the specified precondition, call the HAL API, and assert the "
+        "specified return/register values with vendor masks. Use the exact planned UT/USPEC tag "
+        "once across both files; a register row belongs in this additional file instead of the mock "
+        "file. No LL calls, ll_fake_* helpers, replacement driver implementations, fabricated "
+        "register effects or edits to generated/vendor inputs. run_unit executes both backends and "
+        "llvm_coverage merges their real driver coverage. This is HOST RAM evidence, without "
+        "peripheral side effects or target timing. Target-simulation timing requires its actual "
+        "measured case with the specified arguments and buffer length; a host test cannot supply it.")
 
 
 # CAPA-131: the instance API of a HAL's provided CMSIS LL (brownfield/cmsis.provided_api), set by the builder for a

@@ -184,9 +184,16 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         return result(ctx, "FAIL", "generated LL test double was modified", issues=[
             f"GENERATED_TEST_DOUBLE_MODIFIED:{fake_header(ctx.workspace)} (generated from the provided LL header; "
             f"restore it - write the test cases in {unit_test(ctx.workspace)} only)"], tool="clang")
+    from ...workflow.provided_ll_unit import selected as real_ll_selected
+
+    try:
+        real_ll_tests = {t for t in tests if level == "unit" and real_ll_selected(ctx.workspace, t)}
+    except ValueError as exc:
+        return result(ctx, "FAIL", "invalid provided LL unit backend", issues=[str(exc)], tool="clang",
+                      metrics={"verification_executed": False})
     internal = [f"LL_FAKE_INTERNAL_CALL:{t.name}:{n} (internal to the generated LL bodies; preset state with "
                 "ll_fake_set_state(query_fn, value), script flags with ll_fake_return_from)"
-                for t in tests if fake for n in internal_calls(t.read_text(errors="replace"))]
+                for t in tests if fake and t not in real_ll_tests for n in internal_calls(t.read_text(errors="replace"))]
     if internal:
         return result(ctx, "FAIL", "unit test calls LL test-double internals", issues=internal[:10], tool="clang")
     bdir = ctx.workspace / "build" / f"tests-{level}"
@@ -211,9 +218,14 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), 0)
     for t in tests:
         exe = bdir / t.stem
+        real_ll = t in real_ll_tests
+        if real_ll_tests:
+            log += (f"# unit_backend {t.name} " + ("provided-ll-ram-v1" if real_ll else "default") + "\n").encode()
+        test_incs = [i for i in incs if i != f"-I{ctx.workspace / FAKE_DIR}"] if real_ll else incs
         if t.suffix == ".cpp":
             exe = bdir / (t.stem + GTEST_EXE_SUFFIX)
-            b, blog = _build_gtest(ctx, t, exe, bdir, incs, srcs, coverage, fake, gt)
+            b, blog = _build_gtest(ctx, t, exe, bdir, test_incs, srcs, coverage, fake and not real_ll, gt,
+                                   real_ll=real_ll)
         else:
             argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
                     *(COV_FLAGS if coverage else []), *incs, str(t), *srcs, "-o", str(exe)]
@@ -268,7 +280,9 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         failed += 1
         issues += [f"DUPLICATE_TEST_ID:{d}:used by {seen[d]} checks - give each check its own id; preserve predicates "
                    "and order, use a unique suffix, do not combine checks" for d in dups[:10]]
-    (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed}))
+    (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed,
+        **({"backends": {t.name: "provided-ll-ram-v1" if t in real_ll_tests else "default" for t in tests}}
+           if real_ll_tests else {})}))
     write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), n_done, n_pass, n_fail, running=False)
     op = "run_unit" if level == "unit" else "run_integration"
     record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",
@@ -292,7 +306,7 @@ def _generated_ll_unit(p: Path) -> bool:
 
 
 def _build_gtest(ctx: ToolContext, t: Path, exe: Path, bdir: Path, incs: list[str], srcs: list[str], coverage: bool,
-                 fake: bool, gt: dict):
+                 fake: bool, gt: dict, *, real_ll: bool = False):
     """The driver C sources compiled as C (same flags as the C harness), the GoogleTest file as C++17, linked with the
     pinned gtest/gmock. With the generated LL test double (CAPA-038) its state is defined once in a generated C unit."""
     cov = COV_FLAGS if coverage else []
@@ -303,7 +317,12 @@ def _build_gtest(ctx: ToolContext, t: Path, exe: Path, bdir: Path, incs: list[st
     c_units = [x for x in srcs if not _generated_ll_unit(Path(x))]
     from ...brownfield.cmsis_gtest import generate as cmsis_gtest
 
-    abi = cmsis_gtest(ctx.workspace, bdir)
+    if real_ll:
+        from ...workflow.provided_ll_unit import generate
+
+        abi = generate(ctx.workspace, bdir / t.stem)
+    else:
+        abi = cmsis_gtest(ctx.workspace, bdir)
     if abi:
         c_units.append(str(abi[1]))
     if fake:
