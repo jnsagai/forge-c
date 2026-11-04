@@ -3,7 +3,6 @@ import fcntl
 import json
 import multiprocessing
 import os
-from pathlib import Path
 
 import pytest
 
@@ -31,11 +30,15 @@ def _many(root, start, queue, writer):
     seen = []
     try:
         for _ in range(12):
-            def change(state):
-                if writer:
+            if writer:
+                def change(state):
                     state['calls'] = state.get('calls', 0) + 1
-                return state.get('calls', 0)
-            seen.append(G._update('fixture', change))
+                    return state['calls']
+                seen.append(G._update('fixture', change))
+            else:
+                with (root / 'governor/fixture.json').open() as stream:
+                    fcntl.flock(stream, fcntl.LOCK_SH)
+                    seen.append(json.load(stream)['calls'])
         queue.put({'ok': True, 'seen': seen})
     except Exception as exc:
         queue.put({'ok': False, 'error': type(exc).__name__})
@@ -69,6 +72,8 @@ def test_four_writers_cannot_append_after_unlock_before_buffer_close(tmp_path):
 
 
 def test_four_writers_and_four_readers_keep_every_debit_and_monotonic_snapshots(tmp_path):
+    (tmp_path / 'governor').mkdir()
+    (tmp_path / 'governor/fixture.json').write_text('{"calls": 0}')
     context = multiprocessing.get_context('fork')
     start, queue = context.Barrier(8), context.Queue()
     workers = [context.Process(target=_many, args=(tmp_path, start, queue, index < 4)) for index in range(8)]

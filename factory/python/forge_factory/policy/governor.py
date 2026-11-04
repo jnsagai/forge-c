@@ -116,8 +116,9 @@ def _profile_inspector_limit(role: str, workspace: str) -> int | None:
     binding = manifest.get("profile_inspector_budget")
     if binding is None:
         return None  # Existing jobs do not acquire capacity from a later profile edit.
-    from ..lrtx.profile import load
     import re
+
+    from ..lrtx.profile import load
 
     local = manifest.get("local_profile") or {}
     ident = local.get("id")
