@@ -195,6 +195,20 @@ def test_additional_independent_review_retains_exact_original_fix_approval(corre
     assert before["approval"]["phase3_inspection_sha256"] != after["approval"]["phase3_inspection_sha256"]
 
 
+@pytest.mark.parametrize("missing", ["baseline", "inspection"])
+def test_gate_pass_cannot_replace_missing_actual_approval_records(corrected, monkeypatch, missing):
+    ws = corrected
+    gate = Store.gate
+    monkeypatch.setattr(Store, "gate", lambda self, phase: {"decision": "PASS"}
+                        if phase == "SWE.3" else gate(self, phase))
+    root, pattern = (("configuration/baselines/SWE.3", "BL-*.json") if missing == "baseline"
+                     else ("inspection/SWE.3", "INS-*.json"))
+    for path in (ws / root).glob(pattern):
+        path.unlink()
+    with pytest.raises(I.ProvidedIdentityError, match="INDEPENDENT_PHASE_APPROVAL_MISSING:SWE.3"):
+        I.effective_identity(ws, LL)
+
+
 def test_vendor_dependencies_remain_original_strict_despite_LL_approval(corrected):
     ws = corrected
     path = ws / "inputs/vendor/include/stm32n6xx.h"

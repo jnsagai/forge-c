@@ -62,7 +62,11 @@ def _phase3(ws):
                 safe_path(ws, path.relative_to(ws).as_posix())
         require(store.gate(phase)["decision"] == "PASS", "PHASE_NOT_PASSED:" + phase)
         baseline = store.latest_baseline(phase)
-        inspection = store.inspections(phase)[-1]
+        inspections = store.inspections(phase)
+        require(isinstance(baseline, dict) and bool(baseline)
+                and isinstance(inspections, list) and bool(inspections) and isinstance(inspections[-1], dict),
+                "INDEPENDENT_PHASE_APPROVAL_MISSING:" + phase)
+        inspection = inspections[-1]
         checklist = store.checklist(phase)
         require(baseline["author_role"] == f"swe{phase[-1]}-author"
                 and inspection["author_role"] == baseline["author_role"]
