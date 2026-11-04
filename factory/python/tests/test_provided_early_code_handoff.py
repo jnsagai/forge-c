@@ -193,3 +193,21 @@ def test_early_verification_uses_phase4_only_after_validating_reference(provided
     row[E.FIELD]["path"] = "software/ll/other.h"
     with pytest.raises(ValueError, match="EARLY_PROVIDED_CODE"):
         D.verification_phase(provided, row)
+
+
+def test_typed_provided_prompts_agree_on_deferred_owner_and_write_boundary(tmp_path):
+    from forge_factory.brownfield.cmsis import provided_api
+    from forge_factory.workflow import builder as B
+    from test_capa131_hal_prompts_provided_api import ST_HDR, _prompts, _ws
+
+    api = provided_api(_ws(tmp_path, ST_HDR))
+    graph, _ = B.build("WO-CONTROL", layer="HAL", uspec_gtest=True, provided_api=api,
+                       provided_code_handoff=True, peripheral="crc", stop_after="SWE.3")
+    values = _prompts(graph)
+    for node in ("swe2_author", "swe2_inspector", "swe3_hal_author", "swe3_fix_author", "swe3_author"):
+        assert "PROVIDED LL CODE OWNERSHIP" in values[node]
+        assert "header file:line" in values[node]
+    for node in ("swe3_hal_author", "swe3_fix_author"):
+        assert "normal linked IN_FIX CODE correction" in values[node]
+        assert "never write or edit it" not in values[node]
+        assert "glob .forge-run/defects/DEF-*.json" in values[node]

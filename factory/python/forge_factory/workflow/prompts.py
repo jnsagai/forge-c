@@ -758,7 +758,7 @@ def fix3_author_prompt() -> str:
         return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
     steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
              FIX_DEFECTS.format(p="SWE.3")] + (LL_FIX3_STEPS if _layer() == "LL" else FIX3_STEPS) + \
-        ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("keep") + [REPLY]
+        ([hal_on_provided_ll()] if _layer() == "HAL" else []) + trace_step("keep") + [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
 
 
@@ -776,7 +776,7 @@ def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
-         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("code") + \
+         for x in HAL_STEPS] + ([hal_on_provided_ll()] if _layer() == "HAL" else []) + trace_step("code") + \
         [CONTRACT_SWE3, REENTRY] + \
         [REPLY]
     return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
@@ -1000,6 +1000,31 @@ def native_swe3_timing_note() -> str:
             "requirement verification and instrumented performance test.")
 
 
+def provided_code_ownership_note(phase: str) -> str:
+    if not (phase in ("SWE.1", "SWE.2", "SWE.3") and _layer() == "HAL" and UNIT_VERIFICATION["gtest"]
+            and PROVIDED_API["api"] and not BROWNFIELD["mode"]):
+        return ""
+    return ("PROVIDED LL CODE OWNERSHIP: the versioned provided-input correction policy permits a linked, "
+            "workspace-only correction of the supplied software/ll header in SWE.3. If its implementation "
+            "contradicts a declared SWR, report kind CODE with that exact requirement quote and the supplied "
+            "header file:line as evidence. In SWE.1/SWE.2 keep the header unchanged: this pending CODE is "
+            "deferred to its normal SWE.3 owner, not a forward upstream loop. Complete and independently "
+            "review your own requirements/architecture honestly; a pending CODE finding does not excuse "
+            "incorrect architecture or imply any phase PASS. Normal SWE.3 entry claims the pending record "
+            "IN_FIX; preserve its original snapshot and public LL API, and produce the linked diff, reasons "
+            "and required human-review record. Do not edit vendor inputs or bypass the provided LL through "
+            "LL_WriteReg/LL_ReadReg or raw register access. Later real tests and independent inspection must "
+            "verify the correction; INPUT remains appropriate for genuinely missing or wrong approved inputs.")
+
+
+def hal_on_provided_ll() -> str:
+    if not provided_code_ownership_note("SWE.3"):
+        return HAL_ON_PROVIDED_LL
+    return HAL_ON_PROVIDED_LL.replace("never write or edit it", "keep it unchanged except for a normal linked "
+                                    "IN_FIX CODE correction in this SWE.3 workspace") + " " + \
+        FIX_DEFECTS.format(p="SWE.3") + " " + provided_code_ownership_note("SWE.3")
+
+
 def author_prompt(phase: str) -> str:
     n = phase[-1]
     pr = PERIPHERAL["profile"]  # feature 009 (i001): the work order's key RM sections (RCC: 14.10.1/2/79/64)
@@ -1020,20 +1045,8 @@ def author_prompt(phase: str) -> str:
     timing_note = native_swe3_timing_note() if phase == "SWE.3" else ""
     if timing_note:
         scope_note += (" " if scope_note else "") + timing_note
-    if (phase in ("SWE.1", "SWE.2", "SWE.3") and _layer() == "HAL" and UNIT_VERIFICATION["gtest"]
-            and PROVIDED_API["api"] and not BROWNFIELD["mode"]):
-        scope_note += (" " if scope_note else "") + (
-            "PROVIDED LL CODE OWNERSHIP: the versioned provided-input correction policy permits a linked, "
-            "workspace-only correction of the supplied software/ll header in SWE.3. If its implementation "
-            "contradicts a declared SWR, report kind CODE with that exact requirement quote and the supplied "
-            "header file:line as evidence. In SWE.1/SWE.2 keep the header unchanged: this pending CODE is "
-            "deferred to its normal SWE.3 owner, not a forward upstream loop. Complete and independently "
-            "review your own requirements/architecture honestly; a pending CODE finding does not excuse "
-            "incorrect architecture or imply any phase PASS. Normal SWE.3 entry claims the pending record "
-            "IN_FIX; preserve its original snapshot and public LL API, and produce the linked diff, reasons "
-            "and required human-review record. Do not edit vendor inputs or bypass the provided LL through "
-            "LL_WriteReg/LL_ReadReg or raw register access. Later real tests and independent inspection must "
-            "verify the correction; INPUT remains appropriate for genuinely missing or wrong approved inputs.")
+    if provided_code_ownership_note(phase):
+        scope_note += (" " if scope_note else "") + provided_code_ownership_note(phase)
     if scope_note and phase == "SWE.1":
         body = [x.replace("then 12-26 requirements", "then enough atomic requirements to cover the full scope")
                 .replace("then 8-15 requirements", "then enough atomic requirements to cover the full scope")
@@ -1097,6 +1110,7 @@ def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
              *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),
+             *([provided_code_ownership_note(phase)] if provided_code_ownership_note(phase) else []),
              *([INSPECT_DELIVERED] if BROWNFIELD["mode"] and phase != "SWE.1" else []),
              *([REGISTER_BLOCK_NOTE] if phase in ("SWE.2", "SWE.3") else []),
              *([GATE_DECLARED_CHECK.format(p=phase)] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
