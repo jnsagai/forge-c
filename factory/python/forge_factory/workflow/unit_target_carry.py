@@ -21,11 +21,11 @@ from pathlib import Path
 from ..common import REPO_ROOT, canonical_json, pretty_json, sha256_file, state_dir
 from ..inspection import swtrace
 from ..inspection.engine import PHASES, Store
-from . import unit_target_observation, unit_target_timing
+from . import unit_target_observation, unit_target_timing, unit_target_wwdg_timing
 
 PATH = ".forge-run/resume/target-proof-carry.json"
 SCHEMA = "forge-c/swe4-target-proof-carry/1"
-ADAPTERS = (unit_target_timing, unit_target_observation)
+ADAPTERS = (unit_target_timing, unit_target_observation, unit_target_wwdg_timing)
 ADMIN = {"work_order", "created_at", "input_baseline_commit", "phase_scope", "resumed_from", "rework_context"}
 
 
@@ -293,7 +293,11 @@ def trace(ws, adapter):
         _require(not inherited[2], "CREATOR_PROOF_NO_LONGER_VALID")
         return inherited
     except (OSError, ValueError, KeyError, TypeError, sqlite3.Error, subprocess.SubprocessError) as exc:
-        return [], {}, ["UT:TARGET_PROOF_CARRY_REFUSED:" + str(exc)[:200]]
+        issues = ["UT:TARGET_PROOF_CARRY_REFUSED:" + str(exc)[:200]]
+        if adapter is unit_target_wwdg_timing:
+            # A failed carry cannot restore host credit for a target-only predicate.
+            return direct[0], direct[1], issues + direct[2]
+        return [], {}, issues
 
 
 def bind_resume(src, ws, stable, promotion=None):

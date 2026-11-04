@@ -1039,6 +1039,8 @@ def author_prompt(phase: str) -> str:
         scope_note += (" " if scope_note else "") + provided_ll_unit_note()
     if phase == "SWE.4" and unit_target_timing_note():
         scope_note += (" " if scope_note else "") + unit_target_timing_note()
+    if phase == "SWE.4" and unit_target_wwdg_timing_note():
+        scope_note += (" " if scope_note else "") + unit_target_wwdg_timing_note()
     if phase == "SWE.4" and unit_target_observation_note():
         scope_note += (" " if scope_note else "") + unit_target_observation_note()
     if phase == "SWE.4" and ll_call_arguments_note():
@@ -1474,7 +1476,7 @@ def gtest_unit_test_steps(marker: str) -> list[str]:
     if note:
         steps.insert(0, note)
         steps[3] = steps[3].replace("For EACH row", "For each LL call-contract row")
-    backend_note = unit_target_timing_note() or unit_target_observation_note()
+    backend_note = " ".join(n for n in (unit_target_timing_note(), unit_target_wwdg_timing_note(), unit_target_observation_note()) if n)
     if backend_note:
         steps.insert(0, backend_note)
         steps = [s.replace("For EACH row", "For each host-observed row").replace(
@@ -1532,6 +1534,32 @@ def unit_target_timing_note() -> str:
         "must pass, and Matrix 4 recomputes the sealed source, arguments, binary and measurement. "
         "Report host register effects and simulated timing as their actual environments, without "
         "claiming hardware WCET or silicon verification.")
+
+
+def unit_target_wwdg_timing_note() -> str:
+    from .provided_ll_unit import supported
+
+    manifest = ASSESSMENT.get("manifest") or {}
+    if not (supported(manifest) and manifest.get("peripheral") == "wwdg" and manifest.get("simulation_performance")):
+        return ""
+    return (
+        "SWE.4 WWDG TARGET TIMING: the frozen per-call target instruction/virtual-time rows for "
+        "HAL_WWDG_Init, HAL_WWDG_Refresh, HAL_WWDG_GetEarlyWakeupFlag and HAL_WWDG_ClearEarlyWakeupFlag "
+        "require actual typed Renode measurements through run_unit. Host clocks, host disassembly and "
+        "constant assertions cannot verify them, even if no declaration exists. Write "
+        "software/tests/unit/target_wwdg_timing.json with schema='forge-c/swe4-wwdg-target-timing/1', "
+        "scenario='wwdg-declared-per-call-v1', config={prescaler,window,counter,ewi_enable}, "
+        "refresh_counter and query_initial as unsigned JSON integers matching the exact valid frozen "
+        "SWE.2 api_calls.json arguments, and cases containing exactly those four frozen timing rows. "
+        "Each case has ut,uspec,function,expected_status='HAL_OK'. Preserve their exact planned identifiers "
+        "and predicates; do not move them to SWE.6 or rewrite the plan. run_unit builds four direct calls "
+        "privately and observes their actual returned HAL status, executed instructions and virtual time "
+        "at the declared MIPS. Only those four timing rows belong in this declaration. The independent "
+        "reserved-write row uses target_observations.json; all remaining host rows still require executed "
+        "TESTs. Do not duplicate UT IDs across backends, use GTEST_SKIP, fabricate samples/status, change "
+        "arguments or lower a criterion. A declaration alone is never evidence. run_unit, "
+        "validate_planned_units and Matrix4 recompute current sealed target proofs. This verifies only "
+        "the explicit simulated calls, without silicon timing or hardware WCET claims.")
 
 
 def unit_target_observation_note() -> str:

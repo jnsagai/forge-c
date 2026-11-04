@@ -222,7 +222,7 @@ def _plan_findings(ws) -> tuple[list[str], int]:
     """Owner 2026-11-03: every UT id of the SWE.4 plan is a test in the unit-test files that calls a function of its
     USPEC's unit (the per-USPEC form of CAPA-024)."""
     from ...inspection import uspec_plan
-    from ...workflow import unit_target_carry, unit_target_observation, unit_target_timing
+    from ...workflow import unit_target_carry, unit_target_observation, unit_target_timing, unit_target_wwdg_timing
 
     plan = uspec_plan.load(ws)
     if plan is None:
@@ -233,7 +233,7 @@ def _plan_findings(ws) -> tuple[list[str], int]:
         for k, v in {**_check_function_bodies(code), **_gtest_bodies(code)}.items():
             bodies.setdefault(k, v)
     target_tests, target_results, target_issues = [], {}, []
-    for adapter in (unit_target_timing, unit_target_observation):
+    for adapter in (unit_target_timing, unit_target_observation, unit_target_wwdg_timing):
         tagged, statuses, errors = unit_target_carry.trace(ws, adapter)
         duplicates = {t["test"] for t in target_tests} & {t["test"] for t in tagged}
         target_tests += tagged
@@ -249,7 +249,8 @@ def _plan_findings(ws) -> tuple[list[str], int]:
             if body is not None:
                 out.append(f"DUPLICATE_TARGET_HOST_TEST:{t['ut']}")
             if target_results.get(t["ut"]) != "PASS" or target["verifies"] != [t["uspec"]]:
-                kind = "TIMING" if target["file"] == unit_target_timing.DECLARATION else "OBSERVATION"
+                timing_files = (unit_target_timing.DECLARATION, unit_target_wwdg_timing.DECLARATION)
+                kind = "TIMING" if target["file"] in timing_files else "OBSERVATION"
                 out.append(f"TARGET_{kind}_NOT_VERIFIED:{t['ut']}:{t['uspec']}")
             continue
         if body is None:

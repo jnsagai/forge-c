@@ -712,10 +712,10 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
         # owner 2026-11-03: GoogleTest requirement-based tests (.cpp) carry the same @test/@verifies blocks
         tests = tagged_tests(sorted(ws.glob("software/tests/unit/*.c")) + sorted(ws.glob("software/tests/unit/*.cpp")),
                              ws)
-        from ..workflow import unit_target_carry, unit_target_observation, unit_target_timing
+        from ..workflow import unit_target_carry, unit_target_observation, unit_target_timing, unit_target_wwdg_timing
 
         rows4, f4 = [], []
-        for adapter in (unit_target_timing, unit_target_observation):
+        for adapter in (unit_target_timing, unit_target_observation, unit_target_wwdg_timing):
             target_tests, target_results, target_issues = unit_target_carry.trace(ws, adapter)
             duplicate = {t["test"] for t in tests} & {t["test"] for t in target_tests}
             tests += target_tests

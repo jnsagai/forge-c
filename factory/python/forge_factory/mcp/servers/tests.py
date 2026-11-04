@@ -159,14 +159,16 @@ def _host_check_exprs(test: Path, out: bytes, limit: int = 8) -> list[str]:
 def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     from ...workflow import unit_target_observation as observation
     from ...workflow import unit_target_timing as timing
+    from ...workflow import unit_target_wwdg_timing as wwdg_timing
 
     tdir = ctx.workspace / "software" / "tests" / level
     tests = sorted(tdir.glob("test_*.c")) if tdir.is_dir() else []
     if level == "unit" and tdir.is_dir():  # owner 2026-11-03: GoogleTest requirement-based unit tests
         tests = sorted(tests + sorted(tdir.glob("test_*.cpp")))
     target_adapters = [(name, adapter, ctx.workspace / adapter.DECLARATION)
-                       for name, adapter in (("timing", timing), ("observation", observation))
-                       if level == "unit" and (ctx.workspace / adapter.DECLARATION).exists()]
+                       for name, adapter in (("timing", timing), ("observation", observation), ("wwdg_timing", wwdg_timing))
+                       if level == "unit" and ((ctx.workspace / adapter.DECLARATION).exists()
+                           or adapter is wwdg_timing and wwdg_timing.selected(ctx.workspace))]
     if not tests and not target_adapters:
         return result(ctx, "BLOCKED", f"no {level} tests", issues=[f"NO_TESTS:software/tests/{level}"], tool="clang",
                       metrics={"verification_executed": False})
@@ -223,7 +225,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     target_total = 0
     for name, adapter, _declaration in target_adapters:
         try:
-            target_total += (len(adapter.expected_tests(ctx.workspace)) if name == "observation"
+            target_total += (len(adapter.expected_tests(ctx.workspace)) if name in ("observation", "wwdg_timing")
                              else len(adapter.declaration(ctx.workspace)["cases"]))
         except (OSError, ValueError, KeyError, TypeError):
             pass  # run() reports the precise refusal; invalid declarations never supply progress or results.
@@ -309,7 +311,8 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             failed += 1
             issues.append(f"TARGET_DECLARATION_CHANGED_DURING_EXECUTION:{declaration.name}")
             continue
-        integrity_files.append(declaration)
+        if declaration.is_file():
+            integrity_files.append(declaration)
         measured = fragment["tests"]
         target_tests += measured
         successes = sum(t["status"] == "PASS" for t in measured)
