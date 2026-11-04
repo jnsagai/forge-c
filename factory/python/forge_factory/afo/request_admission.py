@@ -56,7 +56,7 @@ def reserve(store, binding, body, *, eff=None, measurement=None):
             time.time() < job["deadline_epoch"]
             and eff.sha256 == job["policy_sha256"]
             and (product or local_agent.enabled(job["role"], eff))
-            and local_agent.authorized(order, eff, job["model"])
+            and local_agent.authorized_job(order, eff, job)
         )
 
     measured = measurement if measurement is not None else measure_request(body)

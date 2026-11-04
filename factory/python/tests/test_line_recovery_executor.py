@@ -77,12 +77,13 @@ def test_current_line_binding_is_required_in_addition_to_generic_authority(bound
     job = prepare(bound)
     s, o, _, eff, _, _, _, state = bound
     monkeypatch.setattr(authority, "decide", lambda *a, **kw: SimpleNamespace(allow=True))
-    assert BASE_AUTHORIZED(o, eff, job["model"], job=job)
+    monkeypatch.setattr(L, "authorized", BASE_AUTHORIZED)
+    assert L.authorized_job(o, eff, job)
     state["generation"] = 2
-    assert not BASE_AUTHORIZED(o, eff, job["model"], job=job)
+    assert not L.authorized_job(o, eff, job)
     monkeypatch.setattr(authority, "decide", lambda *a, **kw: SimpleNamespace(allow=False))
     state["generation"] = 1
-    assert not BASE_AUTHORIZED(o, eff, job["model"], job=job)
+    assert not L.authorized_job(o, eff, job)
 
 
 def test_revocation_before_dispatch_never_calls_fabro_and_preserves_reservation(bound, monkeypatch):
@@ -113,3 +114,15 @@ def test_line_origin_never_dispatches_the_legacy_unqualified_agent_protocol(boun
     with pytest.raises(QueueError, match="DURABLE_PROTOCOL_REQUIRED"):
         prepare(bound)
     assert L.records(s, o["order_id"]) == []
+
+
+def test_default_line_dispatch_uses_existing_host_interlocks_adapter(bound, monkeypatch):
+    from forge_factory.afo import line_recovery_runtime
+
+    s, o, _, eff, _, _, _, _ = bound
+    job = prepare(bound)
+    calls = []
+    monkeypatch.setattr(line_recovery_runtime, "launch", lambda j: calls.append(j["job_id"]) or "RUN-LOCKED")
+    result = L.poll(s, o, job, eff, client=client())
+    assert result["state"] == "RUNNING" and result["run_id"] == "RUN-LOCKED"
+    assert calls == [job["job_id"]]

@@ -64,13 +64,18 @@ def request_for(order: dict) -> dict:
     return {"order_id": env["request_id"], "driver_class": env["driver_class"], "model": env["model_profile"]}
 
 
-def authorized(order: dict, eff, model: str | None = None, *, job=None) -> bool:
+def authorized(order: dict, eff, model: str | None = None) -> bool:
     from . import authority
 
     request = request_for(order)
     if model is not None:
         request["model"] = model
-    if not authority.decide("recover_workorder", request, afo=eff).allow:
+    return authority.decide("recover_workorder", request, afo=eff).allow
+
+
+def authorized_job(order, eff, job):
+    """Keep the existing generic authority API; intersect line provenance for line-origin jobs."""
+    if not authorized(order, eff, job["model"]):
         return False
     if job and "line_origin" in job:
         from .line_recovery import valid_job
@@ -558,6 +563,10 @@ def endpoint_for(job):
 
 
 def poll(store, order, job, eff, *, client=None, launch_fn=None):
+    if launch_fn is None and job.get("line_origin"):
+        from .line_recovery_runtime import launch as line_launch
+
+        launch_fn = line_launch
     own = client is None
     client = client or FabroClient(base_url=endpoint_for(job), token=load_token(job.get("fabro_storage")), timeout=5)
     try:
@@ -577,7 +586,7 @@ def _poll(store, order: dict, job: dict, eff, *, client=None, launch_fn=None) ->
         return durable_poll(store, order, job, eff, client, launch_fn)
     if job["state"] in ("FAILED", "UNKNOWN", "TIMED_OUT", "REVOKED"):
         return job
-    if eff.sha256 != job["policy_sha256"] or not enabled(job["role"], eff) or not authorized(order, eff, job["model"], job=job):
+    if eff.sha256 != job["policy_sha256"] or not enabled(job["role"], eff) or not authorized_job(order, eff, job):
         job["state"] = "REVOKED"
     elif time.time() >= job["deadline_epoch"]:
         job["state"] = "TIMED_OUT"
@@ -711,7 +720,7 @@ def supervise(store, eff) -> list[dict]:
                 eff.sha256 == job["policy_sha256"]
                 and enabled(job["role"], eff)
                 and time.time() < job["deadline_epoch"]
-                and authorized(order, eff, job["model"], job=job)
+                and authorized_job(order, eff, job)
             ):
                 continue
             out.append(poll(store, order, job, eff))
