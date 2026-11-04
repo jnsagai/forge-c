@@ -37,7 +37,7 @@ RULES: list[tuple[re.Pattern, str, str]] = [(re.compile(p, re.I), cat, code) for
     # transient dependencies
     # CAPA-125: TIMEOUT inside a product/check identifier is not a transport timeout. Keep actual timeout
     # words and conventional provider exception names (httpx ReadTimeout, Python TimeoutError, etc.).
-    (r"\b429\b|rate.?limit|timed? ?out|\b(?:read|write|connect|pool)?timeout(?:error|exception)?\b|"
+    (r"\b429\b|rate.?limit|\btimed? ?out\b|\b(?:read|write|connect|pool)?timeout(?:error|exception)?\b|"
      r"temporar(?:il)?y unavailable|connection (?:reset|refused)|"
      r"dropped_output|upstream.*(?:empty|dropped)", "TRANSIENT_ENVIRONMENT", "TRANSIENT_UPSTREAM"),
     # orchestration / infrastructure
