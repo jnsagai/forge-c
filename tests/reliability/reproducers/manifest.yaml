@@ -1449,3 +1449,12 @@ reproducers:
     error_codes: [WRITE_SCOPE_DENIED, MISSING_REQUIRED_OUTPUT]
     operations: [policy/authz Authorizer.decide (write_file/edit_file/apply_patch), Fabro native write_file]
     root_cause: "factory/python/forge_factory/policy/authz.py Authorizer.decide admitted `rel == p.rstrip(\"/\") or rel.startswith(p)`, so a role's directory prefix (workproducts/SWE.1/, traceability/) admitted the directory path itself; Fabro write_file then created an empty regular file with the directory's name, blocking every write below it."
+  - id: RPR-139
+    script: rpr139_design_render_finding_truncated.py
+    sha256: 7847d4e1fd995ae44c88e94669367c5161b837262b9f95fa8546db712b6aecc3
+    symptom_signature: "the design render finding omits the PlantUML syntax error line and its text"
+    observed_in: "Fabro run WO-F014-SWE3-CRCHAL-20261103-L31C (local line, Omniverse2, gen14 6365c843, run 01M6HP7V8DPB6WWEDZ70STDZ8X, 2026-11-03): SWE.3 STUCK after three cycles on UNIT:DESIGN_RENDER_FAILED for all four unit designs reading only 'Some diagram description contains errors No diagram found; syntax: ERROR 5 Synta'"
+    baseline_revision: 185a33490ecab62441645bffe07493941b270750
+    error_codes: [UNIT:DESIGN_RENDER_FAILED]
+    operations: [inspection/swtrace check_units (design render), inspection/swtrace render_ok]
+    root_cause: "factory/python/forge_factory/inspection/swtrace.py check_units appended render_ok's text cut to 80 characters, which kept PlantUML's generic stderr ('No diagram found') and dropped the -syntax error; the -syntax line index is 0-based and the offending file line was never shown, so the author could not find the activity keyword written as an action (`:if ... then (yes)`)."

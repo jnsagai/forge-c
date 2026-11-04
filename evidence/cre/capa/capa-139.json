@@ -1,0 +1,101 @@
+{
+ "CAPA-139": {
+  "history": [
+   {
+    "at": "2026-11-03T23:08:42.618234Z",
+    "capa_id": "CAPA-139",
+    "evidence": "[\"crchal-l31c-swe3-render-finding\"]",
+    "from_state": null,
+    "reason": "Local CRC HAL L31C SWE.3: the design render finding was cut to 80 chars, hiding the PlantUML syntax error; STUCK after 3 cycles",
+    "seq": 1022,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T23:08:42.695679Z",
+    "capa_id": "CAPA-139",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1023,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T23:08:42.844642Z",
+    "capa_id": "CAPA-139",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-139 assigned",
+    "seq": 1024,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T23:08:51.719730Z",
+    "capa_id": "CAPA-139",
+    "evidence": "[\"reproducer-run:rr-64e2152a381923883f0e\", \"reproducer-run:rr-cd750b0c3ec63fedf757\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1025,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T23:08:51.748255Z",
+    "capa_id": "CAPA-139",
+    "evidence": "[\"git:185a33490eca..203b6db4c6bd\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 203b6db4c6bd (patch 8344 bytes)",
+    "seq": 1026,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T23:12:54.638237Z",
+    "capa_id": "CAPA-139",
+    "evidence": "[\"reproducer-run:rr-d3561b74e76f51a3a37d\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-139 absent at 203b6db4c6bd",
+    "seq": 1027,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T23:12:54.654308Z",
+    "capa_id": "CAPA-139",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1028,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-4aa7ce5dfbc8899f0213dc549aa8efd153623587",
+   "185a33490ecab62441645bffe07493941b270750",
+   "203b6db4c6bd1b3cc06b035a3ae05c06939946bd",
+   "pd-bffded24b028ca3f25cd"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<203b6db4c6bd"
+   ],
+   "candidate_patch_sha256": "4a55d3b6386d55873e1a5ffd66326756da4359c6fcd541811c9d20b630463d6a",
+   "capa_id": "CAPA-139",
+   "created_at": "2026-11-03T23:08:42.618234Z",
+   "event_ids": [],
+   "incident_ids": [
+    "crchal-l31c-swe3-render-finding"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-139",
+   "reproducer_id": "RPR-139",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-64e2152a381923883f0e",
+    "reproducer-run:rr-cd750b0c3ec63fedf757"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T23:12:54.654308Z"
+  }
+ }
+}
