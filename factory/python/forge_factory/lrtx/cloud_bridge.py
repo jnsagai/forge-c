@@ -540,6 +540,13 @@ class CodexBackend:
     tool-call emulation as the Claude account (owner 2026-11-03: account mode never falls back to the OpenAI API)."""
 
     REPAIR_ATTEMPTS = 1
+    # The isolated home can also serve ACP workers, whose status-only developer instructions conflict with the
+    # bridge's tool-call envelope and per-request output schemas. Override only this invocation's reply contract.
+    REPLY_INSTRUCTIONS = (
+        "You are a stateless model backend. Follow the supplied system instructions and JSON schema exactly. "
+        "Do not execute tools yourself. The caller executes requested tool calls. "
+        "Return only the requested JSON response."
+    )
 
     def __init__(self, codex_home: str | None = None, run=subprocess.run):
         self.codex_home, self.run = codex_home, run
@@ -567,7 +574,8 @@ class CodexBackend:
         with tempfile.TemporaryDirectory(prefix="forge-codex-") as td:
             out, sch = Path(td) / "last-message.txt", Path(td) / "schema.json"
             argv = ["codex", "exec", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only", "--color", "never",
-                    "--json", "-C", td, "-o", str(out)]
+                    "--json", "-C", td, "-o", str(out),
+                    "-c", "developer_instructions=" + json.dumps(self.REPLY_INSTRUCTIONS)]
             if cfg.get("model"):
                 argv += ["-m", cfg["model"]]
             mode = "prompt_schema"
