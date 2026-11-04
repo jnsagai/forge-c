@@ -615,8 +615,11 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     # CAPA-040 (r132/r133): provided read-only inputs (HAL: the LL header) are this work order's own verified copy;
     # they are never overwritten, and the source's copy must be byte-identical or its carried phases do not apply
     provided = {r["path"]: r["sha256"] for r in manifest.get("provided") or []}
+    from .workflow.provided_input_identity import prepare_resume, validate_resumed
+
+    corrected_provided = prepare_resume(src, ws, manifest, stable)
     for rel, sha in provided.items():
-        if (src / rel).is_file() and sha256_file(src / rel) != sha:
+        if rel not in corrected_provided and (src / rel).is_file() and sha256_file(src / rel) != sha:
             raise ValueError(f"RESUME_PROVIDED_MISMATCH:{rel}:{source_wo} built on a different provided file")
     copied = []
     for ph in stable:
@@ -654,6 +657,7 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     for ph in stable:  # carried-over phases must still pass in the new workspace (integrity check)
         if d.gate(ph)["decision"] != "PASS":
             raise ValueError(f"carried-over {ph} does not pass in the new workspace: {d.gate(ph)}")
+    validate_resumed(ws, corrected_provided)
     remaining = PHASES[len(stable) :]
     rid = src / ".forge-run" / "fabro_run_id"
     manifest["resumed_from"] = {

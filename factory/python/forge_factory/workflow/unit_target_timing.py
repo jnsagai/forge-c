@@ -20,7 +20,7 @@ from ..inspection import uspec_plan
 
 DECLARATION = "software/tests/unit/target_timing.json"
 SCHEMA = "forge-c/swe4-crc-target-timing/1"
-PROOF = "forge-c/swe4-target-timing-proof/1"
+PROOF = "forge-c/swe4-target-timing-proof/2"
 METRIC = "unit_target_timing_report"
 CONFIG_KEYS = ("polynomial", "polynomial_size", "init_value", "input_reverse", "output_reverse")
 FUNCTIONS = ("HAL_CRC_Init", "HAL_CRC_Calculate", "HAL_CRC_Accumulate")
@@ -65,6 +65,8 @@ def _approved_inputs(ws):
                   or any(not isinstance(item, dict) or not str(item.get("path", "")).startswith("inputs/vendor/include/")
                          for item in build["files"])):
         raise TimingError("TARGET_TIMING_VENDOR_BINDING_INVALID")
+    from .provided_input_identity import effective_identity
+
     items = provided + (build.get("files") or [])
     seen = set()
     for item in items:
@@ -74,12 +76,19 @@ def _approved_inputs(ws):
             raise TimingError("TARGET_TIMING_PROVIDED_BINDING_INVALID")
         seen.add(item.get("path"))
         path = _safe_path(ws, item.get("path"))
-        if sha256_file(path) != item["sha256"]:
+        if item not in provided and sha256_file(path) != item["sha256"]:
             raise TimingError("TARGET_TIMING_APPROVED_INPUT_CHANGED:" + item["path"])
+    effective = []
+    for item in provided:
+        try:
+            effective.append(effective_identity(ws, item["path"]))
+        except ValueError as exc:
+            raise TimingError("TARGET_TIMING_APPROVED_INPUT_CHANGED:" + item["path"] + ":" + str(exc)) from exc
     # Every compiler source/header, including ancestor directories, remains in
     # the original workspace. A copied symlink target is never a new approval.
     for rel in performance.source_files(ws):
         _safe_path(ws, rel)
+    return effective
 
 
 def declaration(ws):
@@ -176,14 +185,14 @@ def harness(value):
 def _identity(ws, value):
     from ..mcp.servers import sim
 
-    _approved_inputs(ws)
+    effective = _approved_inputs(ws)
     assets = layer.profile(ws)["sim"]
     return {"declaration_sha256": sha256_file(Path(ws) / DECLARATION),
             "plan_sha256": sha256_file(Path(ws) / uspec_plan.PLAN),
             "unit_specification_sha256": sha256_file(Path(ws) / "workproducts/SWE.3/unit_specifications.md"),
             "call_contract_sha256": sha256_file(Path(ws) / "workproducts/SWE.2/api_calls.json"),
             "manifest_sha256": sha256_file(Path(ws) / ".forge-run/manifest.json"),
-            "source_files": performance.source_files(ws), "arguments": value,
+            "source_files": performance.source_files(ws), "arguments": value, "provided_effective_identity": effective,
             "adapter_sha256": sha256_file(Path(__file__)),
             "simulation_adapter_sha256": sha256_file(Path(sim.__file__)),
             "simulation_assets": {k: sha256_file(sim.SIM_DIR / assets[k]) for k in ("model", "platform")}}
@@ -325,7 +334,9 @@ def verify(ws, result):
     reference = result.get("metrics", {}).get(METRIC)
     refs = result.get("artifact_refs", [])
     proof = json.loads(_artifact(ws, refs, reference, "json"))
-    if (proof.get("schema") != PROOF or proof.get("identity") != _identity(ws, value)
+    if proof.get("schema") != PROOF:
+        raise TimingError("TARGET_TIMING_PROOF_VERSION_UNSUPPORTED")
+    if (proof.get("identity") != _identity(ws, value)
             or proof.get("invocation_id") != result.get("provenance", {}).get("invocation_id")):
         raise TimingError("TARGET_TIMING_PROOF_BINDING_CHANGED")
     with tempfile.TemporaryDirectory(prefix="forge-unit-timing-verify-") as td:

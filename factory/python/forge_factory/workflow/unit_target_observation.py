@@ -22,7 +22,7 @@ from . import unit_target_timing as trusted
 
 DECLARATION = "software/tests/unit/target_observations.json"
 SCHEMA = "forge-c/swe4-wwdg-target-observation/1"
-PROOF = "forge-c/swe4-target-observation-proof/2"
+PROOF = "forge-c/swe4-target-observation-proof/3"
 METRIC = "unit_target_observation_report"
 FUNCTION = "HAL_WWDG_ClearEarlyWakeupFlag"
 CASE = {"schema": SCHEMA, "ut": "UT-021", "uspec": "USPEC-HAL-04-03", "function": FUNCTION,
@@ -105,14 +105,14 @@ def expected_tests(ws):
 def _identity(ws):
     from ..mcp.servers import sim
 
-    trusted._approved_inputs(ws)
+    effective = trusted._approved_inputs(ws)
     files = (DECLARATION, ".forge-run/manifest.json", uspec_plan.PLAN, swtrace.UNITS_MD,
              swtrace.REQS, "workproducts/SWE.2/api_calls.json")
     selected = layer.profile(ws)["sim"]
     renode = sim.renode_bin()
     compiler = shutil.which("arm-none-eabi-gcc")
     return {"files": {rel: sha256_file(trusted._safe_path(ws, rel)) for rel in files},
-            "source_files": simulation_performance.source_files(ws), "case": CASE,
+            "source_files": simulation_performance.source_files(ws), "case": CASE, "provided_effective_identity": effective,
             "generated_test_sha256": hashlib.sha256(harness().encode()).hexdigest(),
             "adapter_sha256": sha256_file(Path(__file__)), "trusted_input_adapter_sha256": sha256_file(Path(trusted.__file__)),
             "simulator_adapter_sha256": sha256_file(Path(sim.__file__)),

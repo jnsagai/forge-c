@@ -211,6 +211,7 @@ def _git_receipt(ws):
 def _view(ws, creator_bytes, record, adapter):
     """Only a private CURRENT-input view receives the original creator manifest."""
     from ..brownfield.resume import files
+    from .provided_input_identity import copy_validation_context, effective_identity
 
     with tempfile.TemporaryDirectory(prefix="forge-carried-target-proof-") as td:
         view = Path(td) / "workspace"
@@ -220,18 +221,23 @@ def _view(ws, creator_bytes, record, adapter):
             if (Path(ws) / rel).is_dir():
                 files(Path(ws), rel)  # reject original symlinks before copying, not only the private view
                 shutil.copytree(Path(ws) / rel, view / rel)
+        context_records = copy_validation_context(ws, view, manifest=False)
         manifest = json.loads(creator_bytes)
-        items = (manifest.get("inputs", []) + manifest.get("provided", [])
-                 + (manifest.get("provided_build") or {}).get("files", []))
+        items = manifest.get("inputs", []) + (manifest.get("provided_build") or {}).get("files", [])
         for item in items:
             path = unit_target_timing._safe_path(ws, item["path"])
             _require(sha256_file(path) == item["sha256"], "DECLARED_INPUT_CHANGED")
             target = view / item["path"]
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, target)
-        (view / ".forge-run").mkdir(parents=True)
+        provided = {item["path"]: effective_identity(ws, item["path"]) for item in manifest.get("provided", [])}
+        if (Path(ws) / "configuration/system_names.json").is_file():
+            target = view / "configuration/system_names.json"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(unit_target_timing._safe_path(ws, "configuration/system_names.json"), target)
+        (view / ".forge-run").mkdir(parents=True, exist_ok=True)
         (view / ".forge-run/manifest.json").write_bytes(creator_bytes)
-        (view / "evidence/raw").mkdir(parents=True)
+        (view / "evidence/raw").mkdir(parents=True, exist_ok=True)
         for ref in record["result"].get("artifact_refs", []):
             _require(re.fullmatch(r"artifact:sha256:[0-9a-f]{64}", ref) is not None, "ARTIFACT_REFERENCE_INVALID")
             found = list((Path(ws) / "evidence/raw").glob(ref.split(":")[-1] + ".*"))
@@ -240,7 +246,9 @@ def _view(ws, creator_bytes, record, adapter):
                 path = unit_target_timing._safe_path(ws, path.relative_to(ws).as_posix())
                 _require(sha256_file(path) == ref.split(":")[-1], "ARTIFACT_CHANGED")
                 shutil.copyfile(path, view / "evidence/raw" / path.name)
-        (view / "evidence/tool-results.jsonl").write_text(json.dumps(record) + "\n")
+        (view / "evidence/tool-results.jsonl").write_text("".join(json.dumps(r) + "\n" for r in context_records + [record]))
+        for rel, identity in provided.items():
+            _require(effective_identity(view, rel) == identity, "PRIVATE_PROVIDED_CONTEXT_CHANGED")
         return adapter.trace(view)
 
 

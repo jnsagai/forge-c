@@ -6,11 +6,12 @@ never target execution or peripheral emulation.
 """
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path, PurePosixPath
 
 from ..brownfield import cmsis, manifest_of
-from ..common import sha256_file
+from .provided_input_identity import effective_identity
 
 MARKER = "// FORGE_UNIT_BACKEND: provided-ll-ram-v1"
 
@@ -37,9 +38,12 @@ def headers(ws: Path) -> list[Path]:
                 or not re.fullmatch(r"[0-9a-f]{64}", item.get("sha256", ""))):
             raise ValueError("PROVIDED_LL_UNIT_INPUT_INVALID")
         source = ws / rel
-        if (any(p.is_symlink() for p in [source, *source.parents] if p != ws.parent)
-                or not source.is_file() or sha256_file(source) != item["sha256"]):
+        if (any(p.is_symlink() for p in [source, *source.parents] if p != ws.parent) or not source.is_file()):
             raise ValueError("PROVIDED_LL_UNIT_INPUT_CHANGED:" + rel)
+        try:
+            effective_identity(ws, rel)
+        except ValueError as exc:
+            raise ValueError("PROVIDED_LL_UNIT_INPUT_CHANGED:" + rel + ":" + str(exc)) from exc
         result.append(source)
     if len({p.name for p in result}) != len(result):
         raise ValueError("PROVIDED_LL_UNIT_HEADER_COLLISION")
@@ -67,4 +71,10 @@ def generate(ws: Path, output: Path):
     """
     from ..brownfield.cmsis_gtest import _generate
 
-    return _generate(ws, output, headers(ws), [], "provided-ll-ram-v1")
+    selected = headers(ws)
+    result = _generate(ws, output, selected, [], "provided-ll-ram-v1")
+    path = result[0] / "binding.json"
+    binding = json.loads(path.read_text())
+    binding["provided_effective_identity"] = [effective_identity(ws, p.relative_to(ws).as_posix()) for p in selected]
+    path.write_text(json.dumps(binding, indent=2) + "\n")
+    return result

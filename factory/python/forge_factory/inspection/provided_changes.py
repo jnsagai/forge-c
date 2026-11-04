@@ -179,6 +179,19 @@ def write(ws: Path) -> dict:
         p = Path(ws) / rel
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(text)
+    if rep["human_review_required"]:
+        from ..workflow.provided_input_identity import safe_path
+
+        raw = (Path(ws) / REPORT_JSON).read_bytes()
+        rel = ".forge-run/provided/report-snapshots/" + sha256_bytes(raw) + ".json"
+        target = safe_path(ws, rel, missing=True)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists():
+            if target.read_bytes() != raw:
+                raise ValueError("PROVIDED_REPORT_SNAPSHOT_CHANGED")
+        else:
+            target.write_bytes(raw)
+            target.chmod(0o444)
     return rep
 
 

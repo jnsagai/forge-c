@@ -324,12 +324,22 @@ def verify_on_freeze(ws: Path, phase: str) -> list[str]:
         if changed and d["status"] == "FIXED":
             # r75: the author extended the cited test file before any post-fix run. The gate runs the cited
             # version itself (restored from the snapshots) against the fixed code: that is the verification.
-            from .reverify import reverify
+            from .reverify import receipt_binding, reverify
 
             status, found = reverify(ws, d, ws / SNAPSHOTS)
             if status == "PASS":
+                binding = receipt_binding(ws, d)
+                from ..brownfield import manifest_of
+
+                corrected_provided = any((ws / item["path"]).is_file()
+                                         and sha256_file(ws / item["path"]) != item["sha256"]
+                                         for item in manifest_of(ws).get("provided", []))
+                if corrected_provided and binding is None:
+                    issues.append(f"REVERIFY_RECEIPT_UNAVAILABLE:{d['id']}")
+                    continue
                 _event(d, "VERIFIED", tools=["gate-reverify"], note="cited tests restored from the snapshots "
-                       "passed on the fixed code; the edited copies are checked by anti-bending")
+                       "passed on the fixed code; the edited copies are checked by anti-bending",
+                       **({"reverify_receipt": binding} if binding is not None else {}))
                 _save(ws, d)
                 continue
             if status == "FAIL":
