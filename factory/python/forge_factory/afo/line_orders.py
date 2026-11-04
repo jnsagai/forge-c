@@ -989,6 +989,17 @@ class Placer:
             if acting and key not in self._logged:
                 append_jsonl(supervisor_dir() / "placement.jsonl", {"at": _utc(now), "mode": mode, **a})
             self._logged.add(key) if a.get("outcome") not in ("LAUNCHING", "REMOVED", "RUNNING") else None
+        if acting:
+            from .line_lessons import capture
+            from .queue import Store
+            import sqlite3
+
+            try:
+                learning = capture(Store(self.queue_path, producer=f"line-learning:{self.line_id}"), limit=8)
+            except (OSError, ValueError, sqlite3.Error) as exc:
+                learning = {"schema": "forge-c/line-learning-capture/1", "status": "CAPTURE_FAILED",
+                            "code": getattr(exc, "code", type(exc).__name__), "model_calls": 0, "new_lessons": 0}
+            _atomic(supervisor_dir() / "line-learning.json", learning)
         return {"mode": mode, **({"error": "ACT_LOCK_HELD"} if locked else {}), "authorization": grant.view(),
                 "policy_issues": policy.issues[:6],
                 "campaigns": [{"campaign_id": c.campaign_id, "file": c.rel, "sha256": c.sha256, "commit": c.commit}
