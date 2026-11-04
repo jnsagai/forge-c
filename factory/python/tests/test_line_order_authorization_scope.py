@@ -18,11 +18,52 @@ import yaml
 
 
 ALLOWED = 'WO-F014-SWE6-AFOQUAL-20261104-L90'
-UNLISTED = 'WO-F014-SWE6-AFOQUAL-20261104-L91'
+UNLISTED = 'WO-F014-SWE6-AFOQUAL-20261104-L90B'
 
 
 class NextValidationReached(Exception):
     pass
+
+
+def adoption_checks(folder, profile, policy, grant, now):
+    from forge_factory.afo import line_campaign as LC, line_orders as LO
+    from forge_factory.afo.queue import Store
+
+    repo = folder / 'approved-adoption-campaign'
+    repo.mkdir()
+    document = {'schema': LC.SCHEMA_ID, 'campaign_id': 'CMP-SIGNED-SCOPE-ADOPTION', 'line': 'local',
+                'wo_prefix': 'WO-F014', 'lineages': [{'id': 'scope-crc', 'example': '0014m-crc-hal',
+                 'tag': 'AFOQUAL', 'series': '20261104-L90', 'driver_class': 'STM32N6_CRC_HAL',
+                 'factory_revision': 'a' * 40, 'profile': profile,
+                 'run_model': 'hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0', 'purpose': 'ASPICE_ONLY',
+                 'phases': ['SWE.6']}]}
+    campaign_path = repo / 'campaign.yaml'
+    campaign_path.write_text(yaml.safe_dump(document, sort_keys=False))
+    for command in [('init', '-q'), ('add', '.'), ('commit', '-qm', 'Explicit isolated approved campaign fixture')]:
+        subprocess.run(['git', '-C', str(repo), '-c', 'user.name=isolated-test',
+                        '-c', 'user.email=isolated@example.invalid', '-c', 'commit.gpgsign=false',
+                        '-c', 'core.hooksPath=/dev/null', *command], check=True, capture_output=True)
+    campaign = LC.parse(campaign_path, require_approval=True)
+    results = {}
+    for wo in (ALLOWED, UNLISTED):
+        state = folder / ('adoption-' + wo) / 'state'
+        with patch.dict(os.environ, {'FORGE_STATE_DIR': str(state)}):
+            placer = LO.Placer(SimpleNamespace(), unit='isolated-test-adoption')
+            store = Store(placer.queue_path)
+            plan = SimpleNamespace(lineage=campaign.lineages[0])
+            att = LO.Att(wo, 'SWE.6', 1 if wo == ALLOWED else 2, created=now,
+                         rec={'revision': 'a' * 40}, rid='isolated-native-fixture-' + wo, status='RUNNING')
+            try:
+                placer._sync(store, plan, att, None, policy, grant, [campaign], now)
+                outcome = 'RETURNED'
+            except Exception as exc:
+                outcome = getattr(exc, 'code', type(exc).__name__)
+            row = LO._queue_rows(placer.queue_path).get(wo)
+            results[wo] = {'admitted': bool(row and row['state'] == 'RUNNING'), 'outcome': outcome,
+                           'spec_created': (LO.supervisor_dir() / 'line-orders' / (wo + '.json')).exists()}
+    if not results[ALLOWED]['admitted']:
+        raise RuntimeError('SIGNED_LISTED_ADOPTION_CONTROL_REFUSED:' + repr(results))
+    return results
 
 
 def scenario(root):
@@ -104,6 +145,7 @@ def scenario(root):
             if ALLOWED not in planned:
                 raise RuntimeError('LISTED_ORDER_CLEANUP_CONTROL_REFUSED')
             result['unlisted_cleanup_allowed'] = UNLISTED in planned
+            result['live_adoption'] = adoption_checks(folder, profile, loaded, verified, now)
         if line == 'cloud':
             def next_validation(*args, **kwargs):
                 raise NextValidationReached()
@@ -138,6 +180,8 @@ def test_real_signed_scope_is_enforced_by_local_cloud_and_child(tmp_path):
     reports = scenario(tmp_path)
     assert all(not value['unlisted_any_allowed'] for value in reports.values()), reports
     assert reports['local']['unlisted_cleanup_allowed'] is False, reports
+    assert reports['local']['live_adoption'][UNLISTED]['admitted'] is False, reports
+    assert reports['local']['live_adoption'][UNLISTED]['spec_created'] is False, reports
     assert reports['cloud']['unlisted_child_allowed'] is False, reports
 
 
@@ -173,6 +217,10 @@ def main():
         print(json.dumps({'scope': 'ISOLATED_TEST_KEYS_AUTHORIZATION_STAGE_ONLY', 'model_calls': 0, 'reports': reports}))
         if (any(value['unlisted_any_allowed'] for value in reports.values()) or reports['cloud']['unlisted_child_allowed']
                 or reports['local']['unlisted_cleanup_allowed']):
+            print('SYMPTOM_PRESENT:order-scoped line grants authorize unlisted work orders')
+            return 1
+        if (reports['local']['live_adoption'][UNLISTED]['admitted']
+                or reports['local']['live_adoption'][UNLISTED]['spec_created']):
             print('SYMPTOM_PRESENT:order-scoped line grants authorize unlisted work orders')
             return 1
     print('SYMPTOM_ABSENT')

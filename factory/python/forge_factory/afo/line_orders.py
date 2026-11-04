@@ -549,12 +549,14 @@ def _queue_rows(path: Path) -> dict:
     except sqlite3.Error:
         return {}
     try:
-        rows = c.execute("SELECT order_id, request_id, state, envelope, terminal_reason FROM afo_work_orders").fetchall()
+        rows = c.execute("SELECT order_id, request_id, state, envelope, terminal_reason, authorization_id, policy_sha256 "
+                         "FROM afo_work_orders").fetchall()
     except sqlite3.Error:
         rows = []
     finally:
         c.close()
-    return {r[1]: {"order_id": r[0], "state": r[2], "envelope": json.loads(r[3]), "terminal_reason": r[4]} for r in rows}
+    return {r[1]: {"order_id": r[0], "state": r[2], "envelope": json.loads(r[3]), "terminal_reason": r[4],
+                   "authorization_id": r[5], "policy_sha256": r[6]} for r in rows}
 
 
 # ------------------------------------------------------------------------------------------------------ the planner
@@ -1206,6 +1208,7 @@ class Placer:
         from .queue import QueueError
 
         row = _queue_rows(self.queue_path).get(env["request_id"])
+        self._check_admission_scope(env, grant, submit=row is None)
         if row is None:
             oid, _created = store.submit(env, repo=camp.root or camp.path.parent, max_queued=100,
                                          approve=lambda e: (True, "CAMPAIGN_APPROVED"))
@@ -1231,6 +1234,21 @@ class Placer:
                           **({"recovery_plan_id": recovery_plan_id} if recovery_plan_id is not None else {}))
         store.attempt_transition(aid, "DISPATCH_PENDING")
         return aid, oid
+
+    @staticmethod
+    def _check_admission_scope(env, grant, *, submit):
+        """New admission/adoption rechecks the actual immutable request identity.
+
+        This is not a gate on observation or settlement of an already bound
+        native attempt. It never revokes an existing inference lease.
+        """
+        from .queue import QueueError
+
+        request = {"order_id": env["request_id"], "driver_class": env["driver_class"], "model": env["model_profile"]}
+        for action in (("submit_workorder", "launch_workorder") if submit else ("launch_workorder",)):
+            decision = grant.permit(action, request)
+            if not decision.allow:
+                raise QueueError("ORDER_ADMISSION_NOT_AUTHORIZED", f"{decision.code}:{action}")
 
     def _admission_capacity(self, policy: LinePolicy) -> int:
         return 1  # Local production retains the single-GPU admission floor.
@@ -1285,9 +1303,13 @@ class Placer:
             if spec.get("driver_class") != env.get("driver_class") or spec.get("profile") != env.get("model_profile"):
                 continue
             ph = spec.get("phase")
-            if ph not in tuple(f"SWE.{n}" for n in range(1, 7)) or not grant.permit(
-                    "recover_workorder", {"order_id": wo, "driver_class": env.get("driver_class"),
-                                          "model": env.get("model_profile")}).allow:
+            # A current narrowed grant cannot authorize a NEW order, but it
+            # must not strand a previously admitted exact native attempt.
+            # This path only observes terminal state under original dispatch
+            # identity; it neither submits/adopts nor starts a replacement.
+            if (ph not in tuple(f"SWE.{n}" for n in range(1, 7)) or not grant.allow
+                    or not row.get("authorization_id")
+                    or row["authorization_id"] != env.get("authorization_ref")):
                 continue
             store = store or Store(self.queue_path, producer=f"line-conductor:{self.line_id}")
             attempts = store.attempts(row["order_id"])
@@ -1322,9 +1344,11 @@ class Placer:
                               "driver_class": P.lineage.driver_class, "revision": a.revision,
                               "profile": P.lineage.profile, "placed_at": _utc(a.created or now), "fabro_run_id": a.rid}
             spec["digest"] = _digest(spec)
-            _atomic(supervisor_dir() / "line-orders" / f"{a.wo}.json", spec)
             camp = next(c for c in campaigns if c.campaign_id == P.lineage.campaign_id)
-            aid, oid = self._admit(store, self._env(spec, P.lineage, camp, grant, now, spec["digest"]), camp, policy,
+            envelope = self._env(spec, P.lineage, camp, grant, now, spec["digest"])
+            self._check_admission_scope(envelope, grant, submit=True)
+            _atomic(supervisor_dir() / "line-orders" / f"{a.wo}.json", spec)
+            aid, oid = self._admit(store, envelope, camp, policy,
                                    grant, "adopted live run")
             store.attempt_transition(aid, "RUNNING", fabro_run_id=a.rid)
             store.transition(oid, "RUNNING", "adopted: a live run of a campaign lineage placed outside the conductor")
@@ -1368,7 +1392,10 @@ class Placer:
                 store.transition(oid, "READY_FOR_OFFLINE_REVIEW", reason, terminal_reason=reason[:200])
             else:  # a phase-scoped order's package is BLOCKED (later phases are gaps); the phase verdict is the reason
                 if (a.verdict != "PASS" and self.durable_control is not None
-                        and (a.spec or {}).get("durable_control") == self.durable_control):
+                        and (a.spec or {}).get("durable_control") == self.durable_control
+                        and grant.permit("recover_workorder", {"order_id": a.wo,
+                            "driver_class": row["envelope"].get("driver_class"),
+                            "model": row["envelope"].get("model_profile")}).allow):
                     from .line_recovery_coordination import request_replan
 
                     store.transition(oid, "WAITING_RECOVERY", reason)

@@ -5,6 +5,7 @@ from types import SimpleNamespace
 import pytest
 from forge_factory.afo import line_orders as LO, line_launcher as LL
 from forge_factory.afo.queue import Store
+from forge_factory.afo import authz
 from test_line_conductor_m3 import env, grant, placer, lineage, write_campaign, queue_rows
 
 
@@ -46,6 +47,44 @@ def test_terminal_old_series_releases_capacity_without_changing_payload(env):
     write_campaign(env, [lineage("crc", "CRCHAL", "20261104-L2", phases=["SWE.1"])])
     pl.cycle()
     assert len(env["line"].launched) == 2
+
+
+@pytest.mark.parametrize("native", ["terminal", "running", "wrong_id", "unknown"])
+def test_narrowed_current_scope_does_not_revoke_original_terminal_observation(env, native):
+    pl, wo, row, rid, policy, original_auth = setup_old(env)
+    assert original_auth.permit("launch_workorder", {"order_id": wo, "driver_class": "STM32N6_CRCHAL",
+                                                     "model": row["envelope"]["model_profile"]}).allow
+    path = env["tmp"] / "auth/AUTH-T.json"
+    record = json.loads(path.read_text())
+    record["scope"]["order_ids"] = ["WO-F014-SWE6-AFOQUAL-20261104-L90"]
+    record["scope"]["models"] = ["different-approved-qualification-profile"]
+    path.write_text(json.dumps(record))
+    authz.sign(path, env["key"])  # isolated fixture's fresh TEST key, never the owner key
+    narrowed = LO.verify_grant(policy, now=env["clock"](), base=env["tmp"] / "auth", allowed_signers=env["signers"])
+    assert narrowed.allow
+    assert not narrowed.permit("launch_workorder", {"order_id": wo,
+                              "driver_class": "STM32N6_CRCHAL", "model": row["envelope"]["model_profile"]}).allow
+    if native != "terminal":
+        def probe(_):
+            if native == "unknown":
+                raise LL.FabroUnavailable("isolated unavailable fixture")
+            return {"id": "foreign" if native == "wrong_id" else rid,
+                    "source_directory": str(env["line"].workspace(wo)),
+                    "lifecycle": {"status": {"kind": "running" if native == "running" else "failed"}}}
+        env["line"].host.fabro_run = probe
+    before = Store(pl.queue_path).order(row["order_id"])
+    spec = LO.supervisor_dir() / "line-orders" / (wo + ".json")
+    spec_bytes = spec.read_bytes()
+    actions = pl._reconcile([], policy, narrowed, [], env["clock"]())
+    after = Store(pl.queue_path).order(row["order_id"])
+    assert len(env["line"].launched) == 1
+    assert after["envelope"] == before["envelope"] and spec.read_bytes() == spec_bytes
+    if native == "terminal":
+        assert actions == [{"action": "QUEUE_SYNC", "wo": wo, "outcome": "ENDED_NO"}]
+        assert after["state"] == "BLOCKED"
+        assert Store(pl.queue_path).attempts(row["order_id"])[-1]["state"] == "FAILED"
+    else:
+        assert not actions and after["state"] == "RUNNING"
 
 
 @pytest.mark.parametrize("problem", ["live", "unknown", "wrong_source", "wrong_id", "wrong_attempt", "spec_changed", "denied", "foreign_line"])
