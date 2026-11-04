@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 import signal
@@ -35,6 +36,17 @@ def _saved(store, job_id):
     if not row:
         raise Refused('LINE_MAINTENANCE_JOB_ABSENT')
     return json.loads(row[0])
+
+
+def _review_deadline(store, job, *, mission=None):
+    mission = mission or MissionLedger(store).snapshot(job['mission_id'])
+    deadlines = [job.get('deadline_epoch'), mission['limits'].get('deadline')]
+    queued = VerificationJobs(store).get(job['job_id'])
+    if queued and queued['record'].get('deadline_epoch') is not None:
+        deadlines.append(queued['record']['deadline_epoch'])
+    if any(type(value) not in (int, float) or not math.isfinite(value) for value in deadlines):
+        raise Refused('LINE_MAINTENANCE_DEADLINE_INVALID')
+    return min(deadlines)
 
 
 def _authorized(store, job, eff):
@@ -74,7 +86,7 @@ def _authorized(store, job, eff):
                 or registered.get('limits') != control['mission']['limits']
                 or registered.get('authorization_ref') != control['authorization_ref']):
             raise Refused('LINE_MAINTENANCE_CONTROL_MISSION_OR_INTENT_CHANGED')
-    if time.time() >= min(job['deadline_epoch'], mission['limits']['deadline']):
+    if time.time() >= _review_deadline(store, job, mission=mission):
         raise Refused('LINE_MAINTENANCE_DEADLINE')
     return order
 
@@ -102,7 +114,8 @@ def _quiet(store, client, job):
 
 def _dispatch_review(store, job):
     queue = VerificationJobs(store)
-    queue.ensure(job['job_id'], job['case_sha256'], deadline_epoch=job['deadline_epoch'])
+    queue.ensure(job['job_id'], job['case_sha256'], deadline_epoch=_review_deadline(store, job),
+                 cap_deadline=True)
 
     def spawn(epoch):
         log = L.directory(job['job_id']) / 'line-review.log'
@@ -198,14 +211,19 @@ def review(store, job, eff, *, fence, client, evaluator=None):
     def expired(*_):
         raise TimeoutError('LINE_MAINTENANCE_REVIEW_DEADLINE')
 
+    deadline = _review_deadline(store, job)
     previous = signal.signal(signal.SIGALRM, expired)
-    signal.alarm(max(1, int(job['deadline_epoch'] - time.time())))
     try:
+        remaining = deadline - time.time()
+        if remaining <= 0:
+            raise TimeoutError('LINE_MAINTENANCE_REVIEW_DEADLINE')
+        # Fractional remaining walls cannot receive an extra second through alarm(1).
+        signal.setitimer(signal.ITIMER_REAL, remaining)
         record = M.process(store, case['proposal_id'], CREStore(), cre_policy(),
                            fingerprints=[case['incident']['fingerprint']],
                            tests_ref='local-agent:' + job['job_id'], evaluator=guarded_evaluator)
     finally:
-        signal.alarm(0)
+        signal.setitimer(signal.ITIMER_REAL, 0)
         signal.signal(signal.SIGALRM, previous)
     from .policy import load
 

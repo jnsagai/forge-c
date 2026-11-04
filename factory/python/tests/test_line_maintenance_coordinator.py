@@ -29,6 +29,11 @@ def scoped(tmp_path, monkeypatch):
            'case': str(case_path), 'case_sha256': 'c' * 64, 'deadline_epoch': 2000000000,
            'order_id': bundle['order_id'], 'attempt_id': bundle['attempt_id'],
            'run_id': '01NATIVE_FIXTURE', 'nonce': 'frozen-fixture-nonce'}
+    job['mission_id'] = 'mission-coordinator-fixture'
+    C.MissionLedger(store).register(job['mission_id'], job['mission_id'], {
+        'max_attempts': 0, 'max_jobs': 0, 'max_requests': 0, 'max_tokens': 0,
+        'max_tools': 0, 'max_corrections': 0, 'deadline': job['deadline_epoch'],
+    }, 'ISOLATED_CPU_FIXTURE', authorize=lambda *a: True)
     calls = []
     monkeypatch.setattr(C.binding, 'prepare', lambda *a, **k: copy.deepcopy(case))
     monkeypatch.setattr(C.L, 'prepare', lambda *a, **k: (calls.append(('prepare', k)) or copy.deepcopy(job)))
