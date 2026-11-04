@@ -23,6 +23,7 @@ def main():
     ap.add_argument('--source', required=True, type=Path)
     ap.add_argument('--binary', required=True, type=Path)
     ap.add_argument('--root', required=True, type=Path)
+    ap.add_argument('--profile', default='local-rtx-v2-omniverse2-ornith-think-author-q38-inspector')
     args = ap.parse_args()
     import sys
     sys.path.insert(0, str(args.source / 'factory/python'))
@@ -52,7 +53,10 @@ def main():
             rows.append({'path': self.path, 'x_session_id': self.headers.get('x-session-id'),
                          'model': body.get('model'), 'stream': body.get('stream'),
                          'max_tokens': body.get('max_tokens'),
-                         'max_completion_tokens': body.get('max_completion_tokens')})
+                         'max_completion_tokens': body.get('max_completion_tokens'),
+                         'temperature': body.get('temperature'), 'top_p': body.get('top_p'),
+                         'seed': body.get('seed'),
+                         'response_format_type': (body.get('response_format') or {}).get('type')})
             data = {'id': 'transport-fixture', 'object': 'chat.completion', 'created': int(time.time()),
                     'model': body.get('model'),
                     'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': 'TRANSPORT_FIXTURE_ONLY'},
@@ -77,7 +81,7 @@ def main():
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', 0))
         port = sock.getsockname()[1]
-    prof = load('local-rtx-v2-omniverse2-ornith-think-author-q38-inspector')
+    prof = load(args.profile)
     for rel in ('fabro/storage/objects', 'fabro/home/.fabro', 'home'):
         (root / rel).mkdir(parents=True)
     settings = root / 'fabro/settings.toml'
