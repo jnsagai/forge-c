@@ -139,3 +139,41 @@ def bind(store, order_id: str, attempt_id: str, *, workspace: Path, campaign_pat
             "order_digest": digest, "campaign_sha256": camp.sha256, "campaign_commit": camp.commit,
             "lineage_sha256": lin.sha256, "profile_sha256": profile["_sha256"], "profile": lin.profile,
             "model": lin.run_model, "authorization": grant.view()}
+
+
+ORIGIN_KEYS = {"campaign_path", "policy_path", "auth_base", "allowed_signers"}
+
+
+def context(store, order_id, attempt_id, workspace, origin):
+    """Controller configuration only; never read origin overrides from model output or a case."""
+    _require(isinstance(origin, dict) and "campaign_path" in origin and set(origin) <= ORIGIN_KEYS,
+             "LINE_ORIGIN_CONFIGURATION_INVALID")
+    _require(store.path.resolve() == (state_dir() / "supervisor/line-queue.sqlite3").resolve(),
+             "LINE_QUEUE_STORE_MISMATCH")
+    paths = {}
+    for key, value in origin.items():
+        _require(isinstance(value, str) and Path(value).is_absolute(), "LINE_ORIGIN_PATH_INVALID")
+        paths[key] = Path(value)
+    return bind(store, order_id, attempt_id, workspace=workspace, **paths)
+
+
+def valid_job(job, store=None):
+    """Reverify a line-origin job before every dispatch/poll, including after process restart."""
+    if "line_origin" not in job:
+        return True
+    from ..common import canonical_json, sha256_bytes
+    from .queue import Store
+
+    try:
+        current = context(store or Store(state_dir() / "supervisor/line-queue.sqlite3"), job["order_id"],
+                          job["attempt_id"], Path(job["source_workspace"]), job["line_origin"])
+        return sha256_bytes(canonical_json(current)) == job.get("line_context_sha256")
+    except (BindingRefused, OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+        return False
+
+
+def make_planner(store, eff, *, origin):
+    """Use the existing bounded Fabro planner lifecycle; no queue, scheduler or inferred grant is added."""
+    from . import local_agent
+
+    return local_agent.make_planner(store, eff, line_origin=origin)
