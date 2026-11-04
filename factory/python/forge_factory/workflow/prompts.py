@@ -778,9 +778,12 @@ def contract_step(phase: str) -> list[str]:
                 pr = PERIPHERAL["profile"]
                 if pr and pr["id"] != "rcc":
                     extra += " " + (pr.get("prompt") or {}).get("swe1_effect_rule", "")
-            extra += (" Include every read/query requirement too: use op no_write WITH the exact named register and "
-                      "field. That case checks preservation of register state; return values require the separate "
-                      "requirement-based tests. Each case must name a register/field present in its own SWR text.")
+            extra += (" Include every read/query requirement too. For a call that preserves the queried register, "
+                      "use op no_write WITH the exact named register and field; that case checks preservation of "
+                      "register state. A calculation or update call can write and then read the same register: "
+                      "declare its actual write effects, never assert no_write on a register that call changes. "
+                      "Specify returned data and verify it in the separate requirement-based tests. Each case "
+                      "must name a register/field present in its own SWR text.")
         return [CONTRACT_SWE1.format(example=ex, extra=extra)]
     if phase == "SWE.2":
         ex = (', e.g. \"&(const hal_rcc_osc_config_t){ .oscillator = HAL_RCC_OSC_HSE }\" and \"{timeout}\" where '
@@ -907,6 +910,11 @@ def assessment_scope_note() -> str:
             "example requirement counts do not narrow it. Account for every requested source section and field; "
             "record justified exclusions against the actual out-of-scope text, never an omitted catalog entry. "
             "Missing coverage is a finding, not a completed reduced product. ")
+    if "semantic_required_operations" in manifest:
+        note += ("semantic_required_operations lists source-bound engine capability preflight forms. Preserve "
+                 "that frozen catalog; it does not allocate additional driver APIs or query requirements. "
+                 "Derive required behavior from the literal work-order scope and its declared layer, including "
+                 "every requested read/query. Do not invent getter functions from the preflight catalog. ")
     from ..simulation_performance import FIELD, validate
 
     if FIELD in manifest:
