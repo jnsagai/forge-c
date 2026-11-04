@@ -65,7 +65,7 @@ lineages:
     tag: CRCHAL
     series: 20261104-L34
     driver_class: STM32N6_CRC_HAL
-    factory_revision: 9f55eb5266f7f9f410bc515de37967a99253f93a # run/gen17: CAPA-142/143 + the frozen run examples
+    factory_revision: 6cc0abca4e65240e02cdf29630815c32ec030ae2 # run/gen17: CAPA-142/143 + the frozen run examples
     profile: *profile
     run_model: *orn
     purpose: ASPICE_ONLY
@@ -80,7 +80,7 @@ lineages:
     tag: WWDGHAL
     series: 20261104-L35
     driver_class: STM32N6_WWDG_HAL
-    factory_revision: 9f55eb5266f7f9f410bc515de37967a99253f93a # run/gen19: CAPA-149; regenerate SWE.2 from valid SWE.1
+    factory_revision: 6cc0abca4e65240e02cdf29630815c32ec030ae2 # run/gen20: CAPA-149; regenerate SWE.2 from valid SWE.1
     profile: *profile
     run_model: *orn
     purpose: ASPICE_ONLY
