@@ -332,16 +332,142 @@ _ARG_TOK = re.compile(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|\b0[xX][0-9A-Fa-f
 _COMMENTS = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
 
 
+_STRINGS = re.compile(r'"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'')
+_C_TOK = re.compile(r"[A-Za-z_]\w*|[{}()\[\];,=*]|\S")
+_FENCE = re.compile(r"^```[ \t]*([A-Za-z0-9_+-]*)[^\n]*\n(.*?)^```", re.S | re.M)
+_INLINE = re.compile(r"`([^`\n]+)`")
+_CONST_OR_TYPE = re.compile(r"^(?:[A-Z][A-Z0-9_]*[A-Z0-9]|[A-Za-z_]\w*_t)$")
+
+
+def _file_scope_names(code: str) -> set[str]:
+    """CAPA-140: the names C code declares at file scope - macros, typedef names, struct/union/enum tags, enum
+    constants, function names and file-scope variables. Not parameter names, struct members, locals or comments: a
+    contract argument can only use what a translation unit sees at file scope (WO-F014-SWE3-WWDGHAL-20261103-L32:
+    `&flag`, where "flag" was only a parameter/prose word)."""
+    code = _STRINGS.sub(" STR ", _COMMENTS.sub(" ", code))
+    names: set[str] = set()
+    body = []
+    for line in code.splitlines():
+        m = re.match(r"\s*#\s*define\s+([A-Za-z_]\w*)", line)
+        if m:
+            names.add(m.group(1))
+        if not line.lstrip().startswith("#"):
+            body.append(line)
+    toks = _C_TOK.findall("\n".join(body))
+    stack: list[str] = []  # brace kinds: "extern" (transparent), "enum", "aggregate", "body"
+    paren, stmt, i = 0, [], 0
+    expect_enum = False
+    while i < len(toks):
+        t = toks[i]
+        depth = sum(1 for k in stack if k != "extern")
+        if t == "{":
+            prev = stmt[-1] if stmt else None
+            prev2 = stmt[-2] if len(stmt) > 1 else None
+            if prev == "STR" and prev2 == "extern":
+                stack.append("extern")
+                stmt = []
+            elif expect_enum or prev == "enum" or (prev2 == "enum" and prev is not None):
+                stack.append("enum")
+                expect_enum = False
+            elif prev in ("struct", "union") or prev2 in ("struct", "union") or (depth > 0 and stack[-1] == "aggregate"):
+                stack.append("aggregate")
+            elif prev == ")" and depth == 0:
+                stack.append("body")  # function definition: locals are not file scope
+            else:
+                stack.append("aggregate")  # initialiser or other braces: nothing declared inside
+            i += 1
+            continue
+        if t == "}":
+            if stack:
+                k = stack.pop()
+                if k == "body" and not any(x != "extern" for x in stack):
+                    stmt = []  # a function definition ends the top-level statement
+                    i += 1
+                    continue
+            stmt.append(t)
+            i += 1
+            continue
+        inside = [k for k in stack if k != "extern"]
+        if inside and inside[-1] == "body":
+            i += 1
+            continue
+        if inside and inside[-1] == "enum":  # enum constants are file-scope names wherever the enum is
+            if re.match(r"[A-Za-z_]\w*$", t) and (toks[i - 1] in ("{", ",")):
+                names.add(t)
+            i += 1
+            continue
+        if t in ("struct", "union", "enum") and i + 1 < len(toks) and re.match(r"[A-Za-z_]\w*$", toks[i + 1]) \
+                and toks[i + 1] not in _C_WORDS:
+            names.add(toks[i + 1])  # tag
+        if t == "enum":
+            expect_enum = True
+        elif t != "{" and expect_enum and not re.match(r"[A-Za-z_]\w*$", t):
+            expect_enum = False
+        if inside:  # inside a struct/union/initialiser: members are not file-scope names
+            stmt.append(t)
+            i += 1
+            continue
+        if t == "(":
+            if paren == 0 and stmt and re.match(r"[A-Za-z_]\w*$", stmt[-1]) and stmt[-1] not in _C_WORDS \
+                    and "typedef" not in stmt:
+                names.add(stmt[-1])  # function name of a prototype or definition
+            paren += 1
+        elif t == ")":
+            paren = max(0, paren - 1)
+        elif paren == 0 and t in (";", ",", "=", "["):
+            ids = [x for x in stmt if re.match(r"[A-Za-z_]\w*$", x) and x not in _C_WORDS and x != "STR"]
+            if stmt and stmt[0] == "typedef":
+                fp = [stmt[j + 2] for j in range(len(stmt) - 2) if stmt[j] == "(" and stmt[j + 1] == "*"
+                      and re.match(r"[A-Za-z_]\w*$", stmt[j + 2])]
+                if fp:
+                    names.add(fp[0])
+                elif ids:
+                    names.add(ids[-1])
+            elif ids and stmt[-1] == ids[-1]:
+                names.add(ids[-1])  # declarator of a file-scope variable
+            if t == ";":
+                stmt = []
+                i += 1
+                continue
+            if t == "=":  # skip the initialiser up to the next , or ; at this level
+                lvl, i = 0, i + 1
+                while i < len(toks) and not (lvl == 0 and toks[i] in (",", ";")):
+                    lvl += toks[i] in ("(", "{", "[")
+                    lvl -= toks[i] in (")", "}", "]")
+                    i += 1
+                if i < len(toks) and toks[i] == ";":
+                    stmt = []
+                    i += 1
+                    continue
+            if t == ",":  # next declarator of the same declaration (a typedef stays a typedef)
+                stmt = ["typedef"] if stmt[:1] == ["typedef"] else []
+            i += 1
+            continue
+        stmt.append(t)
+        i += 1
+    return names
+
+
 def _declared_words(ws: Path) -> set[str]:
-    """Identifiers the work order can declare at SWE.3: every word of the SWE.2 interface work products, and of the
-    headers it already has (provided/delivered LL, vendor and host device headers; comments stripped)."""
+    """Identifiers the work order can declare at SWE.3 (CAPA-140 replaces CAPA-137's "every word"): the file-scope
+    declarations of the SWE.2 interface's C code blocks and of the headers the work order already has
+    (provided/delivered LL, vendor and host device headers), plus the constant-like (UPPER_CASE) and type-like (*_t)
+    names the SWE.2 text sets in inline code - SWE.3 declares those in the interface header it writes. A parameter
+    name, a struct member or a prose word ("flag") is not a declaration a contract argument can use."""
     ws, words = Path(ws), set()
-    for p in sorted((ws / "workproducts/SWE.2").glob("*")):
-        if p.suffix in (".md", ".puml", ".json") and p.name != Path(CALLS).name and p.is_file():
-            words |= set(re.findall(r"[A-Za-z_]\w*", p.read_text(errors="replace")))
+    for p in sorted((ws / "workproducts/SWE.2").glob("*.md")):
+        if not p.is_file():
+            continue
+        text = p.read_text(errors="replace")
+        for m in _FENCE.finditer(text):
+            if m.group(1).lower() in ("", "c", "h", "cpp", "c++"):
+                words |= _file_scope_names(m.group(2))
+        prose = _FENCE.sub(" ", text)
+        for m in _INLINE.finditer(prose):
+            words |= {w for w in re.findall(r"[A-Za-z_]\w*", m.group(1)) if _CONST_OR_TYPE.match(w)}
     for root in (ws / "software", ws / "inputs/vendor/include"):
         for h in sorted(root.rglob("*.h")) if root.is_dir() else []:
-            words |= set(re.findall(r"[A-Za-z_]\w*", _COMMENTS.sub(" ", h.read_text(errors="replace"))))
+            words |= _file_scope_names(h.read_text(errors="replace"))
     return words
 
 
