@@ -22,6 +22,7 @@ def env(tmp_path, monkeypatch):
 
 @pytest.fixture
 def admitted(env, monkeypatch, request):
+    upstream = str(getattr(request, "param", "")).startswith("upstream")
     source = env["tmp"] / "source"
     source.mkdir()
     _git(source, "init", "-q")
@@ -38,14 +39,41 @@ def admitted(env, monkeypatch, request):
     p.write_text("# Transport fixture only; no inference.\n")
     marker = source / "factory/python/forge_factory/workorder.py"
     marker.parent.mkdir(parents=True)
-    marker.write_text('SUPPORTED_ARGUMENTS = ["--rework-from"]  # Transport fixture, never executed.\n')
+    flags = ["--rework-from"]
+    if upstream and request.param != "upstream_unsupported":
+        flags += ["--rework-source-phase", "--rework-upstream-sha256"]
+    marker.write_text("SUPPORTED_ARGUMENTS = " + repr(flags) + "  # Transport fixture, never executed.\n")
     _git(source, "add", ".")
     _git(source, "commit", "-qm", "fixture source")
     rev = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
     env["line"].revs[rev] = rev
     p = cloud(env, revision=rev)
     wo = "WO-F014-CMP-SWE1-CRCHAL-20261104-T1"
-    if getattr(request, "param", False):
+    if upstream:
+        from forge_factory.inspection import defects as D
+
+        for _ in range(3):
+            p.cycle()
+            p.cycle()
+            for launched in list(env["line"].launched):
+                ws0 = env["line"].workspace(launched["wo"])
+                rid = (ws0 / ".forge-run/fabro_run_id").read_text()
+                if env["line"].fabro[rid] == "running":
+                    env["line"].finish(launched["wo"])
+        p.cycle()
+        p.cycle()
+        failed = "WO-F014-CMP-SWE4-CRCHAL-20261104-T1"
+        ws0 = env["line"].workspace(failed)
+        reqs = ws0 / "workproducts/SWE.1/software_requirements.md"
+        reqs.parent.mkdir(parents=True, exist_ok=True)
+        reqs.write_text("- **SWR-001** The driver shall preserve state.\n")
+        D.report(ws0, detected_phase="SWE.4", reported_by="swe4-author", kind="ARCHITECTURE",
+                 summary="The architecture cannot establish the required state preservation.",
+                 requirement_ids=["SWR-001"], test_files=[], evidence_refs=["workproducts/SWE.2/software_architecture.md:1"],
+                 requirement_quote="The driver shall preserve state.")
+        env["line"].finish(failed, M3.X)
+        wo = "WO-F014-CMP-SWE2-CRCHAL-20261104-T1B"
+    elif getattr(request, "param", False):
         p.cycle()
         env["line"].finish(wo)
         p.cycle()
@@ -136,7 +164,7 @@ def test_cloud_profile_must_keep_account_transport_and_actual_role_models():
         C.validate_profile(profile)
 
 
-@pytest.mark.parametrize("admitted", [True], indirect=True)
+@pytest.mark.parametrize("admitted", [True, "upstream"], indirect=True)
 def test_real_admitted_retry_forwards_its_sealed_failed_findings(admitted):
     _, line, spec, wo, ws = admitted
     expected = json.loads(spec.read_text())["rework_context"]
@@ -147,9 +175,21 @@ def test_real_admitted_retry_forwards_its_sealed_failed_findings(admitted):
         assert argv[argv.index("--rework-gates-sha256") + 1] == expected["gate_log_sha256"]
         assert argv[argv.index("--stop-after") + 1] == expected["phase"]
         assert argv.count("--rework-from") == 1
+        if "source_phase" in expected:
+            assert argv[argv.index("--rework-source-phase") + 1] == expected["source_phase"]
+            assert argv[argv.index("--rework-upstream-sha256") + 1] == expected["upstream_sha256"]
         (ws / ".forge-run").mkdir(parents=True)
         (ws / ".forge-run/manifest.json").write_text(json.dumps({"work_order": wo}))
         (ws / ".forge-run/fabro_run_id").write_text("01CLOUDFIXTURE")
         return S(returncode=0)
 
     assert C.launch(spec, line=line, run=submit)["outcome"] == "LAUNCHED"
+
+
+
+@pytest.mark.parametrize("admitted", ["upstream_unsupported"], indirect=True)
+def test_upstream_consumer_without_exact_cli_capabilities_refuses_before_dispatch(admitted):
+    _, line, spec, wo, _ = admitted
+    with pytest.raises(ValueError, match="CLOUD_REWORK_NOT_SUPPORTED_AT_REVISION"):
+        C.launch(spec, line=line, run=lambda *a, **kw: pytest.fail("unsupported revision reached native transport"))
+    assert not (line.cfg.runs_root / ".launch" / wo / "attempt-1.json").exists()
