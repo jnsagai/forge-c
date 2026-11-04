@@ -157,11 +157,14 @@ def _host_check_exprs(test: Path, out: bytes, limit: int = 8) -> list[str]:
 
 
 def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
+    from ...workflow import unit_target_timing as timing
+
     tdir = ctx.workspace / "software" / "tests" / level
     tests = sorted(tdir.glob("test_*.c")) if tdir.is_dir() else []
     if level == "unit" and tdir.is_dir():  # owner 2026-11-03: GoogleTest requirement-based unit tests
         tests = sorted(tests + sorted(tdir.glob("test_*.cpp")))
-    if not tests:
+    timing_decl = ctx.workspace / timing.DECLARATION
+    if not tests and not (level == "unit" and timing_decl.exists()):
         return result(ctx, "BLOCKED", f"no {level} tests", issues=[f"NO_TESTS:software/tests/{level}"], tool="clang",
                       metrics={"verification_executed": False})
     srcs = [str(p) for d in SOURCE_DIRS for p in sorted((ctx.workspace / d).glob("*.c"))
@@ -205,6 +208,13 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     pop = "run_unit" if level == "unit" else "run_integration"
     per_file = {t: (len(gtest_ids([t])) if t.suffix == ".cpp" else len(check_ids([t]))) or 1
                 for t in tests}  # tests = check ids / gtest TESTs (one executable may hold many)
+    timing_total = 0
+    if level == "unit" and timing_decl.exists():
+        try:
+            timing_total = len(timing.declaration(ctx.workspace)["cases"])
+        except (OSError, ValueError, KeyError, TypeError):
+            pass  # run() reports the precise refusal; invalid declarations never supply progress or results.
+    total = sum(per_file.values()) + timing_total
     gt = None
     if any(t.suffix == ".cpp" for t in tests):
         from ...gtest_toolchain import GtestToolchainError, load
@@ -215,7 +225,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             return result(ctx, "BLOCKED", "pinned GoogleTest toolchain unavailable", issues=[str(exc)[:200]],
                           tool="clang++", metrics={"verification_executed": False})
     n_done = n_pass = n_fail = 0
-    write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), 0)
+    write_progress(ctx.workspace, ctx.phase, pop, "tests", total, 0)
     for t in tests:
         exe = bdir / t.stem
         real_ll = t in real_ll_tests
@@ -234,7 +244,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
         log += blog
         if b.exit_code != 0:
             n_done, n_fail = n_done + per_file[t], n_fail + per_file[t]
-            write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), n_done, n_pass, n_fail)
+            write_progress(ctx.workspace, ctx.phase, pop, "tests", total, n_done, n_pass, n_fail)
             failed += 1
             issues.append(f"BUILD_FAIL:{t.name}")
             # the agent cannot fix what it cannot see; r76: link errors named only 'linker command failed'
@@ -257,7 +267,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
                 r = dataclasses.replace(r, exit_code=1)  # a skipped or missing TEST never passes
         n_done += per_file[t]
         n_pass, n_fail = (n_pass + per_file[t], n_fail) if r.exit_code == 0 else (n_pass, n_fail + per_file[t])
-        write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), n_done, n_pass, n_fail)
+        write_progress(ctx.workspace, ctx.phase, pop, "tests", total, n_done, n_pass, n_fail)
         if r.exit_code == 0:
             passed += 1
         else:
@@ -270,11 +280,33 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
                 continue
             exprs = _host_check_exprs(t, r.stdout)
             issues += exprs or _diag(r.stdout + r.stderr, ctx.workspace, ("FAIL",), 12)
+    timed = timing.run(ctx) if level == "unit" else None
+    timing_metrics, timing_refs, timing_tests = {}, [], []
+    integrity_files = list(tests)
+    if timed is not None:
+        integrity_files.append(timing_decl)
+        timing_tests = timed["tests"]
+        timing_metrics = {**timed["metrics"], "timing_environment": timed["environment"],
+                          "timing_ut_passed": sum(t["status"] == "PASS" for t in timing_tests),
+                          "timing_ut_failed": sum(t["status"] != "PASS" for t in timing_tests),
+                          "silicon_verified": False}
+        timing_refs = timed["artifact_refs"]
+        n_done += len(timing_tests)
+        n_pass += timing_metrics["timing_ut_passed"]
+        n_fail += timing_metrics["timing_ut_failed"]
+        log += b"# typed target-simulation timing results\n" + timed["raw_log"]
+        issues += timed["issues"]
+        if any(t["status"] != "PASS" for t in timing_tests):
+            asserted.append(timing_decl)
+        if timed["status"] != "PASS":
+            failed += 1
     # CAPA-022 (r86): UT-015/016 were used by two test functions; an id must name exactly one check (trace and
     # report cite ids), so duplicates fail the run deterministically instead of being found by the inspector
     seen = check_ids([t for t in tests if t.suffix == ".c"])
     for k, v in gtest_ids([t for t in tests if t.suffix == ".cpp"]).items():
         seen[k] = seen.get(k, 0) + v
+    for test in timing_tests:
+        seen[test["id"]] = seen.get(test["id"], 0) + 1
     dups = sorted(k for k, v in seen.items() if v > 1)
     if dups:
         failed += 1
@@ -283,17 +315,19 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     (bdir / "results.json").write_text(json.dumps({"level": level, "passed": passed, "failed": failed,
         **({"backends": {t.name: "provided-ll-ram-v1" if t in real_ll_tests else "default" for t in tests}}
            if real_ll_tests else {})}))
-    write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), n_done, n_pass, n_fail, running=False)
+    write_progress(ctx.workspace, ctx.phase, pop, "tests", total, n_done, n_pass, n_fail, running=False)
     op = "run_unit" if level == "unit" else "run_integration"
     record_integrity(ctx.workspace, ctx.phase, op, "PASS" if failed == 0 else "FAIL",
-                     integrity(ctx.workspace, tests, asserted))
+                     integrity(ctx.workspace, integrity_files, asserted))
     undeclared = undeclared_test_changes(ctx.workspace, ctx.phase, op) if failed == 0 else []
     issues = undeclared + issues
     return result(ctx, "PASS" if failed == 0 and not undeclared else "FAIL",
                   f"{level}: {passed} passed, {failed} failed (HOST)"
+                  + (f"; Renode timing UT: {timing_metrics['timing_ut_passed']} passed, "
+                     f"{timing_metrics['timing_ut_failed']} failed" if timed is not None else "")
                   + ("; undeclared test change - declare it" if undeclared else ""),
-                  [ctx.store(log)], issues, {"passed": passed, "failed": failed, "executables": len(tests),
-                                             "environment": "host", "target_evidence": False},
+                  [ctx.store(log), *timing_refs], issues, {"passed": passed, "failed": failed, "executables": len(tests),
+                                             "environment": "host", "target_evidence": False, **timing_metrics},
                   "clang+self-checking tests", tool_version("clang"), 0 if failed == 0 else 1, ms, None, log)
 
 

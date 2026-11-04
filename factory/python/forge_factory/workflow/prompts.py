@@ -1011,6 +1011,8 @@ def author_prompt(phase: str) -> str:
     scope_note = assessment_scope_note()
     if phase == "SWE.4" and provided_ll_unit_note():
         scope_note += (" " if scope_note else "") + provided_ll_unit_note()
+    if phase == "SWE.4" and unit_target_timing_note():
+        scope_note += (" " if scope_note else "") + unit_target_timing_note()
     timing_note = native_swe3_timing_note() if phase == "SWE.3" else ""
     if timing_note:
         scope_note += (" " if scope_note else "") + timing_note
@@ -1439,6 +1441,13 @@ def gtest_unit_test_steps(marker: str) -> list[str]:
     if note:
         steps.insert(0, note)
         steps[3] = steps[3].replace("For EACH row", "For each LL call-contract row")
+    timing_note = unit_target_timing_note()
+    if timing_note:
+        steps.insert(0, timing_note)
+        steps = [s.replace("For EACH row", "For each host-observed row").replace(
+            "Every UT id of the plan is exactly one TEST;",
+            "Every UT id of the plan has exactly one executed verification backend; each host-observed row is "
+            "exactly one TEST;") for s in steps]
     return steps
 
 
@@ -1463,6 +1472,31 @@ def provided_ll_unit_note() -> str:
         "llvm_coverage merges their real driver coverage. This is HOST RAM evidence, without "
         "peripheral side effects or target timing. Target-simulation timing requires its actual "
         "measured case with the specified arguments and buffer length; a host test cannot supply it.")
+
+
+def unit_target_timing_note() -> str:
+    from .provided_ll_unit import supported
+
+    manifest = ASSESSMENT.get("manifest") or {}
+    if not (supported(manifest) and manifest.get("peripheral") == "crc" and manifest.get("simulation_performance")):
+        return ""
+    return (
+        "SWE.4 TARGET TIMING: for the frozen CRC rows specifying instrumented target simulation "
+        "(Init with the valid configuration; Calculate and Accumulate with 64-word buffers), write "
+        "software/tests/unit/target_timing.json with exactly schema='forge-c/swe4-crc-target-timing/1', "
+        "config={polynomial,polynomial_size,init_value,input_reverse,output_reverse} as unsigned JSON "
+        "integers matching a valid HAL_CRC_Init initializer in frozen SWE.2 api_calls.json, and cases "
+        "containing exactly the three matching plan rows. Each case has ut,uspec,function,word_count,"
+        "expected_status; use its exact planned UT/USPEC/function, word_count=0 for HAL_CRC_Init or "
+        "64 for HAL_CRC_Calculate and HAL_CRC_Accumulate, expected_status='HAL_OK'. run_unit generates "
+        "a bounded target harness and measures the original HAL through Renode, including the actual "
+        "returned status. These three rows belong in that declaration instead of host TESTs; keep every "
+        "other row as an executed host TEST. Never use GTEST_SKIP, duplicate a UT across backends, "
+        "print a measured result, substitute a one-word measurement or reduce a frozen criterion. "
+        "The declaration alone supplies no passing evidence. run_unit and validate_planned_units "
+        "must pass, and Matrix 4 recomputes the sealed source, arguments, binary and measurement. "
+        "Report host register effects and simulated timing as their actual environments, without "
+        "claiming hardware WCET or silicon verification.")
 
 
 # CAPA-131: the instance API of a HAL's provided CMSIS LL (brownfield/cmsis.provided_api), set by the builder for a
