@@ -35,8 +35,14 @@ def test_model_switch_preserves_the_comparison_runner_and_host_isolation():
     assert P.role_models(new) == {"author": "gpt-6.1-terra", "inspector": "gpt-6.1-sol"}
     for key in ("gateway", "admission", "deployment", "network", "work_order_purpose"):
         assert new[key] == old[key]
-    assert {k: v for k, v in new["structured"].items() if k != "role_models"} == {
-        k: v for k, v in old["structured"].items() if k != "role_models"}
+    # The owner-selected comparison profile also has a prospective, finite inspection
+    # allowance. Assert that exact difference while keeping every runner/isolation
+    # setting equal to the original comparison profile.
+    assert new["structured"]["native_inspector_tool_calls_per_visit"] == 64
+    assert "native_inspector_tool_calls_per_visit" not in old["structured"]
+    allowed_differences = {"role_models", "native_inspector_tool_calls_per_visit"}
+    assert {k: v for k, v in new["structured"].items() if k not in allowed_differences} == {
+        k: v for k, v in old["structured"].items() if k not in allowed_differences}
 
 
 @pytest.mark.parametrize("model", ["gpt-6.1-terra", "gpt-6.1-sol"])
