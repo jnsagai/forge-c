@@ -9,7 +9,6 @@ import shutil
 import sqlite3
 import subprocess
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 from forge_factory import workorder as W
@@ -94,9 +93,6 @@ def passed(tmp_path, monkeypatch):
         pass_control(store, phase)
     # The normal SDK performs actual public compilation/execution and appends the ledger.
     with monkeypatch.context() as seam:
-        seam.setattr(T, "DECLARATION", O.DECLARATION)
-        seam.setattr(T, "declaration", lambda p: {"cases": O.expected_tests(p)})
-        seam.setattr(T, "run", O.run)
         for key, value in {"FORGE_MCP_TRUST": "env", "FORGE_ROLE": "swe4-author", "FORGE_PHASE": "SWE.4",
                            "FORGE_WORKSPACE": str(ws), "FORGE_RUN_ID": "CONTROL-NOT-LIVE"}.items():
             seam.setenv(key, value)
@@ -139,15 +135,10 @@ def test_actual_normal_resume_preserves_target_evidence_and_second_boundary(pass
     assert C.trace(ws, O)[2]  # unsealed destination metadata never accepted
     C.seal_after_setup(ws)
     assert C.trace(ws, O)[1:] == ({"UT-021": "PASS"}, [])
-    # Exercise the full real trace builder through the proposed shared integration seam.
-    timing = SimpleNamespace(trace=T.trace, METRIC=T.METRIC)
-    def traces(path):
-        a, b, c = C.trace(path, timing)
-        x, y, z = C.trace(path, O)
-        return a + x, {**b, **y}, c + z
-    with monkeypatch.context() as seam:
-        seam.setattr(T, "trace", traces)
-        report = swtrace.build_all(ws, render=False, doxygen=False, upto="SWE.5", write=set(), export=False)
+    # Exercise the real shared consumers, with no adapter monkeypatch.
+    report = swtrace.build_all(ws, render=False, doxygen=False, upto="SWE.5", write=set(), export=False)
+    from forge_factory.mcp.servers import evidence
+    assert evidence._plan_findings(ws)[0] == []
     assert report["findings"]["SWE.4"] == [], report
     # Real CPU integration tools plus the explicitly synthetic independent
     # inspection oracle make the next normal resume advance to SWE.6.
@@ -336,10 +327,9 @@ def test_actual_crc_timing_carries_with_normal_passed_phase_contract(tmp_path, m
     dst, current = destination(ws, "WO-CONTROL-CRC5")
     assert W.resume_from(dst, current, "WO-CONTROL-CRC") == ["SWE.5", "SWE.6"]
     assert C.trace(dst, T)[1:] == ({"UT-001": "PASS", "UT-002": "PASS", "UT-003": "PASS"}, [])
-    adapter = SimpleNamespace(trace=T.trace, METRIC=T.METRIC)
-    with monkeypatch.context() as seam:
-        seam.setattr(T, "trace", lambda p: C.trace(p, adapter))
-        report = swtrace.build_all(dst, render=False, doxygen=False, upto="SWE.5", write=set(), export=False)
+    report = swtrace.build_all(dst, render=False, doxygen=False, upto="SWE.5", write=set(), export=False)
+    from forge_factory.mcp.servers import evidence
+    assert evidence._plan_findings(dst)[0] == []
     assert report["findings"]["SWE.4"] == [], report
     for rel in (swtrace.REQS, "workproducts/SWE.2/software_architecture.md", swtrace.ARCH,
                 "inspection/SWE.1/INS-SWE.1-001.json"):

@@ -222,7 +222,7 @@ def _plan_findings(ws) -> tuple[list[str], int]:
     """Owner 2026-11-03: every UT id of the SWE.4 plan is a test in the unit-test files that calls a function of its
     USPEC's unit (the per-USPEC form of CAPA-024)."""
     from ...inspection import uspec_plan
-    from ...workflow import unit_target_observation, unit_target_timing
+    from ...workflow import unit_target_carry, unit_target_observation, unit_target_timing
 
     plan = uspec_plan.load(ws)
     if plan is None:
@@ -234,7 +234,7 @@ def _plan_findings(ws) -> tuple[list[str], int]:
             bodies.setdefault(k, v)
     target_tests, target_results, target_issues = [], {}, []
     for adapter in (unit_target_timing, unit_target_observation):
-        tagged, statuses, errors = adapter.trace(ws)
+        tagged, statuses, errors = unit_target_carry.trace(ws, adapter)
         duplicates = {t["test"] for t in target_tests} & {t["test"] for t in tagged}
         target_tests += tagged
         target_results.update(statuses)
