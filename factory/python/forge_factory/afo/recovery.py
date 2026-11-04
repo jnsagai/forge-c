@@ -307,7 +307,8 @@ def record_plan(store: Store, plan: dict, *, source: str, status: str, reasons: 
         )
 
 
-def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: list[str] | None, planner=None) -> dict:
+def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: list[str] | None, planner=None,
+           line_origin=None) -> dict:
     """Choose and validate a plan for this blocked attempt. Returns {plan, status, reasons}."""
     env = json.loads(order["envelope"])
     atts = store.attempts(order["order_id"])
@@ -339,7 +340,14 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
     source = "RULE"
     from ..development_execution import selected as development_execution
 
-    if ws is not None and development_execution(ws):
+    line_context = None
+    if line_origin is not None:
+        from .line_recovery import context
+
+        if bundle.get("order_id") != order["order_id"]:
+            raise QueueError("LINE_RECOVERY_BUNDLE_ORDER_MISMATCH")
+        line_context = context(store, order["order_id"], bundle["attempt_id"], ws, line_origin)
+    if ws is not None and development_execution(ws) and line_context is None:
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "DEFERRED_BY_DEVELOPMENT_POLICY")
     if plan is not None and plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY":  # retry n+1: its own fingerprint
         n = budget_snapshot(store, order, eff)["transient_retries"] + 1
