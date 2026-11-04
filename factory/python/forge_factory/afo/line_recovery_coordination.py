@@ -220,7 +220,7 @@ def prepare_continuation(placer, store, spec, grant):
     from .policy import load
 
     value = spec.get("durable_recovery")
-    request = {"driver_class": spec["driver_class"], "model": spec["profile"]}
+    request = {"order_id": spec["wo"], "driver_class": spec["driver_class"], "model": spec["profile"]}
     controller_configuration(
         spec["durable_control"], load(), target_revision=placer.line.resolve(spec["revision"]), request=request
     )

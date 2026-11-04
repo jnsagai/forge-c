@@ -506,7 +506,7 @@ def claim_for_launch(cfg, order):
         grant = bound_order(store, worker)["grant"]
         if not grant.permit(
             "launch_workorder",
-            {"driver_class": spec["driver_class"], "model": spec["profile"], "service_action": "line_stack_restart"},
+            {"order_id": spec["wo"], "driver_class": spec["driver_class"], "model": spec["profile"], "service_action": "line_stack_restart"},
         ).allow:
             raise Refused("LINE_PRODUCT_STACK_LAUNCH_NOT_AUTHORIZED")
         return claim(cfg, job)

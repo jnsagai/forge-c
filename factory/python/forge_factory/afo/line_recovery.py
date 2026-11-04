@@ -99,7 +99,7 @@ def bind_order(store, order_id: str, attempt_id: str, *, campaign_path: Path,
     _require(grant.allow, f"LINE_AUTH_REFUSED:{grant.code}")
     _require(grant.authorization_id == spec.get("authorization_id") == envelope.get("authorization_ref"),
              "LINE_AUTH_BINDING_MISMATCH")
-    permission = grant.permit("recover_workorder", {"driver_class": lin.driver_class, "model": lin.profile})
+    permission = grant.permit("recover_workorder", {"order_id": wo, "driver_class": lin.driver_class, "model": lin.profile})
     _require(permission.allow, f"LINE_AUTH_RECOVERY_REFUSED:{permission.code}")
     return {"row": row, "spec": spec, "campaign": camp, "lineage": lin, "grant": grant,
             "order_digest": digest}

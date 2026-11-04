@@ -53,9 +53,11 @@ def test_local_admission_capacity_remains_one_and_cloud_needs_distinct_policy():
 
 def test_cloud_requests_rework_authority_without_local_service_actions():
     p = planner([])
-    plan = S(lineage=S(driver_class="CRC", profile=PROFILE), action="PLACE", order={"kind": "RETRY"})
+    plan = S(lineage=S(driver_class="CRC", profile=PROFILE), action="PLACE",
+             order={"kind": "RETRY", "wo": "WO-F014-CMP-SWE3-CRCHAL-20261104-T1"})
     assert [a for a, _ in p._requests(plan)] == ["submit_workorder", "launch_workorder", "recover_workorder"]
     assert all("service_action" not in args for _, args in p._requests(plan))
+    assert all(args["order_id"] == plan.order["wo"] for _, args in p._requests(plan))
 
 
 def test_cloud_act_cannot_select_local_launcher_by_omitting_cloud_flag(monkeypatch):

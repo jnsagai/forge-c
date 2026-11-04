@@ -72,7 +72,7 @@ def authorize(job, store=None):
     grant = LO.verify_grant(LO.load_policy(Path(origin["policy_path"]) if origin.get("policy_path") else None),
                             now=time.time(), base=Path(origin["auth_base"]) if origin.get("auth_base") else None,
                             allowed_signers=Path(origin["allowed_signers"]) if origin.get("allowed_signers") else None)
-    return grant.permit("launch_workorder", {"service_action": "line_stack_restart"}).allow
+    return grant.permit("launch_workorder", {**L.request_for(order), "service_action": "line_stack_restart"}).allow
 
 
 class Journal:

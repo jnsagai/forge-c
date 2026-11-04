@@ -138,7 +138,7 @@ def _authorized_spec(path, cfg):
     if not CloudPlacer._policy_valid(policy):
         raise ValueError("CLOUD_POLICY_REQUIRED")
     grant = LO.verify_grant(policy, now=time.time())
-    request = {"driver_class": spec.get("driver_class"), "model": spec.get("profile")}
+    request = {"order_id": spec["wo"], "driver_class": spec.get("driver_class"), "model": spec.get("profile")}
     for action in ("submit_workorder", "launch_workorder", "recover_workorder"):
         if not grant.permit(action, request).allow:
             raise ValueError("CLOUD_AUTHORIZATION_REFUSED")
@@ -341,7 +341,7 @@ class CloudPlacer(LO.Placer):
     def _requests(self, plan):
         # Account-backed cloud orders share an already running server. They do
         # not request local model swaps, a GPU lock, stack restarts or orphan kills.
-        req = {"driver_class": plan.lineage.driver_class, "model": plan.lineage.profile}
+        req = {"order_id": plan.order["wo"], "driver_class": plan.lineage.driver_class, "model": plan.lineage.profile}
         result = [("launch_workorder", req)]
         if plan.action == "PLACE":
             result.insert(0, ("submit_workorder", req))

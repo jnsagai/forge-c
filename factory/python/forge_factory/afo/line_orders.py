@@ -1114,14 +1114,14 @@ class Placer:
     # ------------------------------------------------------------------------------------------------ execution
     def _requests(self, P: Plan) -> list[tuple[str, dict]]:
         o, L = P.order, P.lineage
-        req = {"driver_class": L.driver_class, "model": L.profile}
-        out = [("launch_workorder", req), ("launch_workorder", {"service_action": "line_stack_restart"})]
+        req = {"order_id": o["wo"], "driver_class": L.driver_class, "model": L.profile}
+        out = [("launch_workorder", req), ("launch_workorder", {**req, "service_action": "line_stack_restart"})]
         if P.action == "PLACE":
             out.insert(0, ("submit_workorder", req))
         if o["kind"] in RETRY_KINDS:
             out.append(("recover_workorder", req))
         if P.sweep:
-            out.append(("recover_workorder", {"service_action": "line_orphan_sweep"}))
+            out.append(("recover_workorder", {**req, "service_action": "line_orphan_sweep"}))
         return out
 
     def _execute(self, P: Plan, policy: LinePolicy, grant: Grant, campaigns, now: float, *, execute: bool) -> dict:
@@ -1286,7 +1286,7 @@ class Placer:
                 continue
             ph = spec.get("phase")
             if ph not in tuple(f"SWE.{n}" for n in range(1, 7)) or not grant.permit(
-                    "recover_workorder", {"driver_class": env.get("driver_class"),
+                    "recover_workorder", {"order_id": wo, "driver_class": env.get("driver_class"),
                                           "model": env.get("model_profile")}).allow:
                 continue
             store = store or Store(self.queue_path, producer=f"line-conductor:{self.line_id}")
@@ -1389,6 +1389,11 @@ class Placer:
         rows = _queue_rows(self.queue_path)
         for wo, row in rows.items():
             if row["state"] not in ("BLOCKED", "READY_FOR_OFFLINE_REVIEW"):
+                continue
+            if not grant.permit("recover_workorder", {"order_id": wo,
+                    "driver_class": row["envelope"].get("driver_class"),
+                    "model": row["envelope"].get("model_profile"),
+                    "service_action": "line_run_worktree_cleanup"}).allow:
                 continue
             pkg = self.line.workspace(wo) / ".forge-run/package.json"
             wt = self.line.run_worktree(wo)
