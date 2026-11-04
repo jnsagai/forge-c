@@ -162,7 +162,8 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
     if level == "unit" and tdir.is_dir():  # owner 2026-11-03: GoogleTest requirement-based unit tests
         tests = sorted(tests + sorted(tdir.glob("test_*.cpp")))
     if not tests:
-        return result(ctx, "BLOCKED", f"no {level} tests", issues=[f"NO_TESTS:software/tests/{level}"], tool="clang")
+        return result(ctx, "BLOCKED", f"no {level} tests", issues=[f"NO_TESTS:software/tests/{level}"], tool="clang",
+                      metrics={"verification_executed": False})
     srcs = [str(p) for d in SOURCE_DIRS for p in sorted((ctx.workspace / d).glob("*.c"))
             if (ctx.workspace / d).is_dir()]
     from ...workflow.ll_fake import FAKE_DIR, fake_header, internal_calls, modified
@@ -205,7 +206,7 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             gt = load()
         except GtestToolchainError as exc:
             return result(ctx, "BLOCKED", "pinned GoogleTest toolchain unavailable", issues=[str(exc)[:200]],
-                          tool="clang++")
+                          tool="clang++", metrics={"verification_executed": False})
     n_done = n_pass = n_fail = 0
     write_progress(ctx.workspace, ctx.phase, pop, "tests", sum(per_file.values()), 0)
     for t in tests:
@@ -569,7 +570,7 @@ def run_robot(ctx: ToolContext, a: RobotIn) -> dict:
     suites = sorted((ctx.workspace / "software/tests/software").glob("*.robot"))
     if not suites:
         return result(ctx, "BLOCKED", "no Robot suites", issues=["NO_TESTS:software/tests/software/*.robot"],
-                      tool="robotframework")
+                      tool="robotframework", metrics={"verification_executed": False})
     from .robot_policy import check_suite
 
     policy = [i for s in suites for i in check_suite(s)]

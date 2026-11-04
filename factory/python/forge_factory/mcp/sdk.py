@@ -311,6 +311,16 @@ def _authorize(server: str, op: str, args: dict) -> tuple[str, str | None, Path,
     return role, phase, ws, run
 
 
+def verification_executed(out: dict) -> bool:
+    """Only a trusted, explicit preflight refusal proves that verification did not run.
+
+    Real failures, missing provenance and uncertain exceptions retain their debit.
+    This does not change request, tool, token or cumulative mission accounting.
+    """
+    return not (out.get("status") in ("BLOCKED", "UNAVAILABLE", "UNSUPPORTED")
+                and (out.get("metrics") or {}).get("verification_executed") is False)
+
+
 def invoke(server: str, operation: Operation, args: dict) -> dict:
     t0 = time.monotonic()
     try:
@@ -333,7 +343,7 @@ def invoke(server: str, operation: Operation, args: dict) -> dict:
             if verify:
                 verification(ws, phase, role, key, "UNKNOWN")
             raise
-        if verify:
+        if verify and verification_executed(out):
             verification(ws, phase, role, key, out["status"])
         try:  # durable, append-only record of every tool result for deterministic gates/finalizer
             rec = {"ts_utc": utc_now(), "server": server, "op": operation.name, "role": role, "phase": phase,

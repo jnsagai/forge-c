@@ -116,12 +116,13 @@ def compile_(ctx: ToolContext, a: CompileIn) -> dict:
             raise ToolDenied("DEFINE_NOT_ALLOWED", m[:40])
     if not shutil.which(prof["cc"]):
         return result(ctx, "UNAVAILABLE", f"{prof['cc']} not installed", issues=[f"TOOL_MISSING:{prof['cc']}"],
-                      tool=prof["cc"], version="unavailable")
+                      tool=prof["cc"], version="unavailable", metrics={"verification_executed": False})
     od = out_dir(ctx, a.profile)
     log, issues, failed, total_ms = b"", [], 0, 0.0
     srcs = sources(ctx)
     if not srcs:
-        return result(ctx, "BLOCKED", "no sources to compile", issues=["NO_SOURCES"], tool=prof["cc"])
+        return result(ctx, "BLOCKED", "no sources to compile", issues=["NO_SOURCES"], tool=prof["cc"],
+                      metrics={"verification_executed": False})
     from ...layer import layer_of
 
     if layer_of(ctx.workspace) == "LL":
@@ -196,7 +197,8 @@ def measure_elf(ctx: ToolContext, a: ProfileIn) -> dict:
     prof = PROFILES[a.profile]
     objs = objects(ctx, a.profile)
     if not objs:
-        return result(ctx, "BLOCKED", "no objects; compile first", issues=["NO_OBJECTS"], tool=prof["size"])
+        return result(ctx, "BLOCKED", "no objects; compile first", issues=["NO_OBJECTS"], tool=prof["size"],
+                      metrics={"verification_executed": False})
     r = run_argv([prof["size"], *[str(o) for o in objs]], ctx.workspace, 60, ALLOW)
     text = data = bss = 0
     for line in r.stdout.decode().splitlines()[1:]:

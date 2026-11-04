@@ -283,19 +283,21 @@ def run_renode(ctx: ToolContext, a: SimIn) -> dict:
     if not renode:
         return result(ctx, "UNSUPPORTED", "Renode not installed; target simulation disabled",
                       issues=["TOOL_MISSING:renode", "SAFETY_GAP:target_behaviour_unverified"], tool="renode",
-                      version="unavailable")
+                      version="unavailable", metrics={"verification_executed": False})
     if not shutil.which("arm-none-eabi-gcc"):
         return result(ctx, "UNAVAILABLE", "GNU Arm toolchain missing", issues=["TOOL_MISSING:arm-none-eabi-gcc"],
-                      tool="renode")
+                      tool="renode", metrics={"verification_executed": False})
     tests = sorted((ctx.workspace / "software/tests/target").glob("test_*.c"))
     from ... import simulation_performance as performance
 
     budget = performance.selected(ctx.workspace)
     if budget and ctx.workspace / budget["test_source"] not in tests:
         return result(ctx, "BLOCKED", "declared simulation performance test is missing",
-                      issues=["SIMULATION_PERFORMANCE_TEST_MISSING"], tool="renode")
+                      issues=["SIMULATION_PERFORMANCE_TEST_MISSING"], tool="renode",
+                      metrics={"verification_executed": False})
     if not tests:
-        return result(ctx, "BLOCKED", "no target tests", issues=["NO_TESTS:software/tests/target"], tool="renode")
+        return result(ctx, "BLOCKED", "no target tests", issues=["NO_TESTS:software/tests/target"], tool="renode",
+                      metrics={"verification_executed": False})
     wd = ctx.workspace / "build" / "renode"
     if wd.exists():
         shutil.rmtree(wd)
