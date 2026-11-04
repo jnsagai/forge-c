@@ -563,16 +563,19 @@ def carry_checkpoints(src: Path, ws: Path, phases: list[str]) -> list[str]:
     return copied
 
 
-def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = None) -> list[str]:
+def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = None, *,
+                target_proof_carry_promotion: dict | None = None) -> list[str]:
     """Carry over the leading phases of an earlier work order that genuinely PASSED (gate PASS on an intact,
     non-stale baseline with its recorded inspection), stopping at the first phase that did not - or at `upto`
     (AFO-T040: a return to the owning upstream phase reruns that phase and everything after it). Returns the phases
     still to run. Files are copied byte-identical, so gates recompute PASS from the same evidence."""
     from .brownfield.resume import ResumeRefused, resume, source_workspace
     from .inspection.engine import PHASE_PATHS, PHASES, Store
+    from .workflow.unit_target_carry import bind_resume
 
     if manifest.get("delivery"):
         remaining = resume(ws, manifest, source_wo, upto)
+        bind_resume(source_workspace(source_wo), ws, PHASES[:len(PHASES) - len(remaining)], target_proof_carry_promotion)
         subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
         subprocess.run(
             [
@@ -662,6 +665,7 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
         "restarts at the first phase that did not pass",
     }
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    bind_resume(src, ws, stable, target_proof_carry_promotion)
     subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
     subprocess.run(
         [
@@ -840,6 +844,7 @@ def run(
     stop_after: str | None = None,
     quality: dict | None = None,
     rework_context: dict | None = None,
+    target_proof_carry_promotion: dict | None = None,
 ) -> dict:
     from .release import qm
     from .release.aspice import PURPOSE as ASPICE_PURPOSE
@@ -1008,7 +1013,9 @@ def run(
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if intake_only:  # feature 008: stop after brownfield intake (or a greenfield prepare)
         return {"work_order": wo, "workspace": str(ws), "intake": manifest.get("delivery_intake")}
-    phases = resume_from(ws, manifest, resume, resume_upto) if resume else None
+    phases = resume_from(ws, manifest, resume, resume_upto,
+                         **({"target_proof_carry_promotion": target_proof_carry_promotion}
+                            if target_proof_carry_promotion is not None else {})) if resume else None
     if rework_context is not None and (not phases or phases[0] != stop_after):
         from .rework_context import ReworkRefused
 
@@ -1112,6 +1119,9 @@ def run(
                                                  "native_model_agent_nodes": [], "local_inference_requests": 0,
                                                  "tool_budget": native_capacity_binding()}
             (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    from .workflow.unit_target_carry import seal_after_setup
+
+    seal_after_setup(ws)
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(prof))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
@@ -1224,6 +1234,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--rework-from", help="failed work order whose bound findings are untrusted retry input")
     ap.add_argument("--rework-inspection-sha256", help="full latest failed inspection SHA-256, or explicit ABSENT")
     ap.add_argument("--rework-gates-sha256", help="full source gate-log SHA-256; requires --resume-from and --stop-after")
+    ap.add_argument("--target-proof-carry-promotion", type=Path,
+                    help="explicit bounded JSON reference to an exact eligible creator-to-consumer CRE registry row; not a decision document")
     a = ap.parse_args(argv)
     quality = json.loads(a.quality.read_text()) if a.quality else None
     from .afo.durable import Refused
@@ -1232,8 +1244,14 @@ def main(argv: list[str] | None = None) -> int:
     from .brownfield.resume import ResumeRefused
     from .lrtx.profile import ProfileRefused
     from .rework_context import ReworkRefused
+    from .workflow.unit_target_carry import CarryRefused
 
     try:
+        carry_promotion = None
+        if a.target_proof_carry_promotion is not None:
+            from .workflow.unit_target_carry import promotion_reference
+
+            carry_promotion = promotion_reference(a.target_proof_carry_promotion)
         rework = None
         if any(x is not None for x in (a.rework_from, a.rework_inspection_sha256, a.rework_gates_sha256)):
             from .rework_context import request
@@ -1272,8 +1290,12 @@ def main(argv: list[str] | None = None) -> int:
             stop_after=a.stop_after,
             quality=quality,
             **({"rework_context": rework} if rework is not None else {}),
+            **({"target_proof_carry_promotion": carry_promotion} if carry_promotion is not None else {}),
             **durable,
         )
+    except CarryRefused as exc:
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "target_proof_carry", "issues": [str(exc)]}))
+        return 2
     except ReworkRefused as exc:
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "bound_rework_context",
                           "issues": [str(exc)]}))
