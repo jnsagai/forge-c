@@ -768,13 +768,20 @@ class ShellHost:
             env[LOCK_FD_ENV] = str(lock_fd)
         log.parent.mkdir(parents=True, exist_ok=True)
         with log.open("ab") as fh:  # a file, not a pipe: a daemon that kept a pipe open would hang the launcher
+            start = fh.tell()
             try:
                 rc = subprocess.run([str(self.cfg.python), "-m", "forge_factory.lrtx.stack", *args], env=env, cwd=cwd,
                                     stdin=subprocess.DEVNULL, stdout=fh, stderr=subprocess.STDOUT, timeout=timeout,
                                     pass_fds=(lock_fd,) if lock_fd is not None else ()).returncode
             except subprocess.TimeoutExpired:
                 rc = 124
-        return rc, log.read_text(errors="replace")[-20000:]
+        # One log can hold several commands (model swaps and their probes). curl emits no final newline, so
+        # reading the accumulated file joins separate JSON replies; an empty command can also reuse stale success.
+        # Preserve the complete attempt log, but return only this invocation's bounded output to its caller.
+        with log.open("rb") as fh:
+            fh.seek(max(start, log.stat().st_size - 20000))
+            out = fh.read().decode(errors="replace")
+        return rc, out
 
     def _client(self):
         from ..fabro.client import FabroClient, load_token
