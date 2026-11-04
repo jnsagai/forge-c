@@ -1,0 +1,34 @@
+# Prospective cloud product policy; inactive without its separate owner signature and explicit cloud scheduler.
+schema: forge-c/line-policy/1
+line: cloud
+mode: PILOT
+authorization_ref: AUTH-AFO-PILOT-20261104-CLOUD
+campaigns_dir: config/factory/campaigns-cloud
+owner_rules:
+  same_issue_limit: 3
+  resume_from_last_good_part: true
+  retries_while_progressing: unlimited
+  quality: order target, at least the order minimum, gap reported
+pacing:
+  max_concurrent_gpu_runs: 1
+  infra_backoff_base_s: 60
+  infra_cooldown_s: 600
+  infra_recoveries_per_hour_host: 6
+  max_concurrent_cloud_runs: 2
+disk:
+  min_free_gb: 30
+  cleanup_min_age_days: 3
+  cleanup: own run worktrees of finished archived orders, own pytest temps
+escalation:
+  github_repo: jnsagai/forge-c
+  mentions: false
+  issue_for:
+  - NEEDS_OWNER
+  - LINE_STOPPED
+  - DISK_BELOW_GUARD
+never:
+  merge: true
+  promote: true
+  weaken_gate: true
+  edit_requirements: true
+models: cloud-bridge-terra-author-sol-inspector

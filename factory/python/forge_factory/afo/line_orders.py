@@ -982,7 +982,7 @@ class Placer:
             from .line_conductor import read_cre
 
             capa_of = read_cre(self.cre_db or supervisor_dir() / "incidents.sqlite3")["capa_of"]
-        recs = Records(self.line, self.queue_path, now, capa_of)
+        recs = self._records(now, capa_of)
         if self.recovery_config is not None:
             from .line_recovery_coordination import reference
 
@@ -1075,6 +1075,9 @@ class Placer:
             return False
         self._act_lock = f
         return True
+
+    def _records(self, now, capa_of):
+        return Records(self.line, self.queue_path, now, capa_of)
 
     def _gpu(self, plans: list[Plan]) -> dict:
         busy = [P for P in plans if P.state in ("LAUNCHING", "RUNNING")]
@@ -1222,10 +1225,13 @@ class Placer:
         if epoch is None:
             raise QueueError("LEASE_HELD")
         aid = store.admit(oid, epoch=epoch, scope=f"line:{self.line_id}", policy_sha256=policy.sha256 or "",
-                          authorization_id=grant.authorization_id, max_concurrent=1,
+                          authorization_id=grant.authorization_id, max_concurrent=self._admission_capacity(policy),
                           **({"recovery_plan_id": recovery_plan_id} if recovery_plan_id is not None else {}))
         store.attempt_transition(aid, "DISPATCH_PENDING")
         return aid, oid
+
+    def _admission_capacity(self, policy: LinePolicy) -> int:
+        return 1  # Local production retains the single-GPU admission floor.
 
     def _argv(self, o: dict) -> list[str]:
         a = ["launch", o["revision"], o["wo"], o["example"], o["profile"], "--model", o["run_model"],

@@ -55,7 +55,7 @@ REQUIRED = ("id", "example", "tag", "series", "driver_class", "factory_revision"
 RX = {
     "campaign_id": re.compile(r"^CMP-[A-Z0-9][A-Z0-9-]{2,62}$"),
     "line": re.compile(r"^[a-z0-9-]{1,32}$"),
-    "wo_prefix": re.compile(r"^WO(-F\d{1,4})?$"),
+    "wo_prefix": re.compile(r"^WO(-F\d{1,4})?(-CMP)?$"),
     "id": re.compile(r"^[a-z0-9][a-z0-9-]{1,47}$"),
     "example": re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,120}$"),
     "tag": re.compile(r"^[A-Z0-9]{2,16}$"),
@@ -148,6 +148,8 @@ def validate(doc, *, purpose_check: bool = True) -> list[str]:
             out.append(f"FIELD_INVALID:{k}")
     if "wo_prefix" in doc and (not isinstance(doc["wo_prefix"], str) or not RX["wo_prefix"].match(doc["wo_prefix"])):
         out.append("FIELD_INVALID:wo_prefix")
+    if str(doc.get("wo_prefix", "")).endswith("-CMP") and doc.get("line") != "cloud":
+        out.append("FIELD_INVALID:wo_prefix_cloud_only")
     lins = doc.get("lineages")
     if not isinstance(lins, list) or not lins:
         return out + ["LINEAGES_REQUIRED"]

@@ -1254,6 +1254,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--once", action="store_true", help="one cycle, print the feed path and the open-issue count")
     ap.add_argument("--mode", choices=[MODE, "ACT"], default=MODE,
                     help="ACT (M3): place orders from the approved campaigns, only with a valid signed PILOT grant")
+    ap.add_argument("--cloud-account-line", action="store_true",
+                    help="Use the separately authorized two-slot cloud product scheduler; no local GPU actions")
     ap.add_argument("--dry-run", action="store_true", help="with --mode ACT: plan and verify, place nothing")
     ap.add_argument("--campaigns", default=os.environ.get("FORGE_LINE_CAMPAIGNS"))
     ap.add_argument("--recovery-config", default=os.environ.get("FORGE_LINE_RECOVERY_CONFIG"),
@@ -1266,6 +1268,8 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     if not re.fullmatch(r"[a-z0-9-]{1,32}", a.line):
         raise SystemExit("--line must match [a-z0-9-]{1,32}")
+    if a.mode == "ACT" and a.line == "cloud" and not a.cloud_account_line:
+        raise SystemExit("CLOUD_ACT_REQUIRES_CLOUD_ACCOUNT_LINE")
     fabro = FabroView.from_env(a.fabro_snapshot)
     placer, ports = None, {p for p in (fabro.port(),) if p}
     if a.mode == "ACT":
@@ -1275,11 +1279,21 @@ def main(argv: list[str] | None = None) -> int:
         cfg = LL.LineConfig.from_env(launch_dir=a.launch_dir)
         ports.add(cfg.fabro_host_port)  # the line's Fabro API, as the launcher reaches it
         snap = json.loads(Path(a.fabro_snapshot).read_text()) if a.fabro_snapshot else None
-        placer = LO.Placer(LO.RealLine(cfg, fabro_snapshot=snap), line_id=a.line, dry_run=a.dry_run,
-                           campaigns_dir=Path(a.campaigns) if a.campaigns else None,
-                           unit=os.environ.get("FORGE_LINE_CONDUCTOR_UNIT") or "manual",
-                           cre_db=Path(a.cre_db) if a.cre_db else None,
-                           recovery_config=Path(a.recovery_config) if a.recovery_config else None)
+        cls, line = LO.Placer, LO.RealLine(cfg, fabro_snapshot=snap)
+        extra = {}
+        if a.cloud_account_line:
+            if a.line != "cloud" or a.recovery_config or snap is not None:
+                raise SystemExit("CLOUD_ACCOUNT_LINE_REQUIRES_CLOUD_WITHOUT_LOCAL_RECOVERY")
+            from .line_cloud import CloudLine, CloudPlacer
+            cls, line = CloudPlacer, CloudLine(cfg)
+            if not os.environ.get("FORGE_LINE_POLICY"):
+                raise SystemExit("CLOUD_POLICY_REQUIRED")
+            extra["policy_path"] = Path(os.environ["FORGE_LINE_POLICY"])
+        placer = cls(line, line_id=a.line, dry_run=a.dry_run,
+                     campaigns_dir=Path(a.campaigns) if a.campaigns else None,
+                     unit=os.environ.get("FORGE_LINE_CONDUCTOR_UNIT") or "manual",
+                     cre_db=Path(a.cre_db) if a.cre_db else None,
+                     recovery_config=Path(a.recovery_config) if a.recovery_config else None, **extra)
     install_guard(ports)
     obs = Observer(a.line, Path(a.launch_dir) if a.launch_dir else None, fabro,
                    Path(a.cre_db) if a.cre_db else None, a.lookback_h * 3600)
