@@ -88,7 +88,7 @@ def reverify(ws: Path, defect: dict, snapshots: Path) -> tuple[str, list[str]]:
         outcomes = []
         for mod, op in tools:
             o = next(x for x in mods[mod].OPERATIONS if x.name == op)
-            ctx = sdk.ToolContext(f"forge-{mod}-mcp", op, "route-gate", defect["detected_phase"], copy,
+            ctx = sdk.ToolContext(f"forge-{mod}-mcp", op, "route-gate", D.verification_phase(ws, defect), copy,
                                   "reverify")
             res = o.handler(ctx, o.model())
             outcomes.append({"server": ctx.server, "op": op, "invocation_id": ctx.invocation_id, "result": res})

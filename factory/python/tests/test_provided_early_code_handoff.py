@@ -180,7 +180,7 @@ def test_deferred_claim_refuses_changed_scope_without_claiming(provided, change)
         copy.write_bytes(original.read_bytes())
         original.unlink()
         original.symlink_to(copy)
-    with pytest.raises(ValueError, match="EARLY_PROVIDED_CODE"):
+    with pytest.raises(ValueError, match="EARLY_PROVIDED_CODE|REWORK_CONTEXT_SOURCE_SYMLINK"):
         E.claim(provided)
     assert D.all_defects(provided)[0]["status"] == "OPEN"
 

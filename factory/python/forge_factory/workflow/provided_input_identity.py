@@ -152,7 +152,7 @@ def _defect(ws, row, baseline, inspection, file_row):
             safe_path(ws, "evidence/tool-results.jsonl")
             records = defects._tool_results(ws)
             for tool in verified["tools"]:
-                require(any(r.get("phase") == d["detected_phase"] and r.get("op") == tool
+                require(any(r.get("phase") == defects.verification_phase(ws, d) and r.get("op") == tool
                             and r.get("result", {}).get("status") == "PASS"
                             and fixed["ts"] < r.get("ts_utc", "") <= verified["ts"] for r in records),
                         "CODE_VERIFICATION_TOOL_MISSING")
@@ -341,7 +341,7 @@ def copy_validation_context(src, dst, *, manifest=True):
             _copy_reverify(src, dst, defect)
         else:
             fixed = next(e for e in defect["history"] if e["status"] == "FIXED")
-            records += [r for r in defects._tool_results(src) if r.get("phase") == defect["detected_phase"]
+            records += [r for r in defects._tool_results(src) if r.get("phase") == defects.verification_phase(src, defect)
                         and r.get("op") in event["tools"] and r.get("result", {}).get("status") == "PASS"
                         and fixed["ts"] < r.get("ts_utc", "") <= event["ts"]]
     # Preserve exact selected protected evidence only. This is not test-integrity
