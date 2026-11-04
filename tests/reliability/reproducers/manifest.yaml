@@ -1494,3 +1494,95 @@ reproducers:
     error_codes: [BUILD_FAIL]
     operations: [workflow/prompts providedize (swe5_target_author, swe6_test_author, swe2_inspector, swe3_inspector, swe3_hal_author)]
     root_cause: "factory/python/forge_factory/workflow/prompts.py providedize (CAPA-131) rewrote only the LL calls of the HAL prompts for a provided ST (CMSIS) LL; the peripheralized greenfield register sentences - TARGET_STEPS / ROBOT_STEPS '<block>[LL_<P>_<REG>_OFFSET / 4U] bits ... no <block> definition (the linker places it)', REGISTER_BLOCK_NOTE 'the driver uses only the extern volatile uint32_t <block> array' and the SWE.3 HAL author 'Never define <block> ...' - stayed, although the provided LL has no register-block array and no <REG>_OFFSET defines (its registers are the CMSIS instance's, reached through the provided LL, CAPA-134). The native lrtx/swe5.py registers_rule is an LL-order text and is not used for HAL orders."
+  - id: RPR-144
+    script: rpr144_launcher_reads_previous_command_output.py
+    sha256: 5fb3ce08cc4c793f2f50acd17441e82a8553d8c0b7c2bf60bf344f90d7e7e020
+    symptom_signature: "the line launcher interprets accumulated command output as the current model probe"
+    observed_in: "Omniverse2 ACT startup 2026-11-04: CRC HAL SWE.5 L31C and WWDG HAL SWE.5 L32B refused SMOKE_FAIL before Fabro launch although Ornith and Qwen swaps and both model lists were correct"
+    baseline_revision: 211f1162f0815ba244015292a911f6ce1cb09bdc
+    error_codes: [SMOKE_FAIL]
+    operations: [afo.line_launcher ShellHost.stack model-swap smoke]
+    root_cause: "ShellHost.stack appends subprocess output to an attempt log and returns the accumulated log on every invocation. curl model-list responses have no final newline; the second probe returns two concatenated JSON objects, so _last_json returns None and the healthy Qwen response is reported as an empty model list. Empty current output can also reuse a prior successful JSON reply."
+    remedy: "Keep the complete append-only command log, but record the invocation byte offset and return only the current invocation's bounded output. A real-subprocess reproducer checks both newline-free model probes and an empty-current-output control."
+  - id: RPR-145
+    script: rpr145_cloud_account_reply_contract.py
+    sha256: 5e09724721e815196b5aa2519fd91f2ca12d2de375ecb74e0e259307ae319169
+    symptom_signature: account bridge inherits an incompatible status-only worker reply contract
+    observed_in: Cloud CRC/WWDG HAL SWE.1 account runs01M6JXP5V9MRTKDBR6M59ERQCK and01M6JXP6BW9RE53XBSCCNR42GZ on2026-11-04 failed ENVELOPE_INVALID:$
+      afterboundedrepair; bothattemptscancelled. Livecontrast existingACP-home instructionsFAIL, scopedbridgeinstructionsPASS.
+    baseline_revision: 211f1162f0815ba244015292a911f6ce1cb09bdc
+    error_codes:
+    - ACCOUNT_MODE_TOOL_CALL_FAILED
+    - ENVELOPE_INVALID:$
+    operations:
+    - lrtx.cloud_bridge CodexBackend account native tool emulation
+    root_cause: Isolated ACP-home developer instructions demand status/artifacts/issues/next_action. CodexBackend reused that home without a scopedreply
+      contract. The loose toolenvelope cannot use --output-schema, so higher-priority inherited status shape overrides action/tool_calls/content.
+    remedy: Override developer_instructions per bridge invocation only; preserve isolated home, read-onlysandbox, ephemeral mode andaccountcredentials.
+      Plainstrict-schema outputiscontrol.
+  - id: RPR-146
+    script: rpr146_cloud_account_token_speed.py
+    sha256: 90bc998cb63392af924b2515e8f965338993bf23ed8574b4e7924b2026e31849
+    symptom_signature: active cloud account calls have no token speed before Fabro node completion
+    observed_in: 'Owner2026-11-04: token/s speed notworking. Cloudfloorhad2activeHALnativeorders andline_tok_s=null whileaccountmeterhad7calls2584completiontokens.
+      Nodeaverages unavailablebeforenodecompletion andgatewaycouldnotmeterrejectedaccountenvelopes; bridgealreadycontainedtokensandwalltime.'
+    baseline_revision: 211f1162f0815ba244015292a911f6ce1cb09bdc
+    error_codes:
+    - FLOOR_TOKEN_SPEED_MISSING
+    operations:
+    - lrtx.floor_api recent_speed and floor line_tok_s
+    root_cause: recent_speed read only gateway usage, ignoring cloud bridge completion_tokens/wall_ms. Floor line KPI required completed node or
+      structured phase metrics, so native calls showed no rate until node completion.
+    remedy: Use recent measured bridge calls when gateway measurements are absent, without double counting; use per-call rate for an active line
+      until node metrics arrive; stale/idle measurements do not become current speed.
+  - id: RPR-125
+    script: rpr125_timeout_identifier_classified_transient.py
+    sha256: 992b97f9c44257e73da4171a1669b25326ee84fe6b32744d1c3dedc459521be1
+    symptom_signature: a deterministic timeout-named gate finding is classified as a transient upstream outage
+    observed_in: Omniverse2 local CRC HAL WO-F014-SWE2-CRCHAL-20261103-L26; M1 supervisor feed misclassified VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH
+      as INFRA TRANSIENT_UPSTREAM, owner handoff2026-11-03
+    baseline_revision: 211f1162f0815ba244015292a911f6ce1cb09bdc
+    error_codes:
+    - TRANSIENT_UPSTREAM
+    operations:
+    - reliability.taxonomy.classify
+    root_cause: Both textual timed? ?out and TIMEOUT(?!_VALUE) alternatives searched without identifier boundaries, matching TIMEOUT substrings
+      inside deterministic gate codes such as VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH and VT:TIMEOUT_SCENARIO_UNOBSERVED. The transient rule runs before
+      engineering findings and assigned infrastructure recovery to product/factory-rule findings.
+    remedy: Bound textual timeout words and conventional timeout exception names at word boundaries; preserve actual transport timeouts, 429/rate
+      limits, reset/refused connections, and higher-priority security/budget classifications. Increment classifier version so historical observations
+      are retracted rather than overwritten.
+  - id: RPR-147
+    script: rpr147_empty_units_classified_model_convergence.py
+    sha256: 79bc38144635094f64b05865d9ba9d81f0414842af9f30a90935c51bcb5d3dd4
+    symptom_signature: a repeated deterministic empty-unit inventory is routed to another model retry instead of factory diagnosis
+    observed_in: 'Omniverse2 CRC HAL SWE.3 WO-F014-SWE3-CRCHAL-20261103-L27: repeated UNIT:NO_UNITS, later traced to factory HAL-on-provided-LL
+      gap CAPA-128; owner handoff M1/M4 follow-up'
+    baseline_revision: 211f1162f0815ba244015292a911f6ce1cb09bdc
+    error_codes:
+    - UNIT:NO_UNITS
+    operations:
+    - afo.line_conductor.classify_order
+    root_cause: Repeated STUCK deterministic author rejections are flagged as suspected factory rules only for VIEWS-prefixed codes. UNIT:NO_UNITS
+      is a known empty factory-derived inventory signature but fell through to MODEL_CONVERGENCE, proposing another model retry rather than investigation.
+    remedy: Include only exact UNIT:NO_UNITS among suspected factory rule codes when the route is STUCK and every blocking code is a recognized
+      factory-rule signature; keep mixed missing outputs, otherUNIT findings and mere rework-budget exhaustion unchanged. Root cause remains suspected
+      and parked for CAPA, never asserted verified.
+  - id: RPR-149
+    script: rpr149_provided_architecture_invents_register_array.py
+    sha256: f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202
+    symptom_signature: the provided CMSIS HAL architecture prompt mandates a fabricated register-block array
+    observed_in: 'Omniverse2 CRC HAL SWE.5 L31C, Fabro01M6JY7KXMXAB232QYZMHXTJZR ongen17: run_integration cannot link __REG___CRC; the frozen SWE.2
+      architecture explicitly mandates that array. WWDG frozen architecture similarly specifies WWDG_REGISTER_BLOCK.'
+    baseline_revision: 6dd3f516b368a13c9b5b2f3f098838b65949c72f
+    error_codes:
+    - BUILD_FAIL
+    - REQUIRED_TOOL_NOT_PASS
+    operations:
+    - workflow.prompts provided_registers SWE.2 architecture and SWE.5 host integration
+    root_cause: CAPA-143 rewrites named greenfield register-array instructions but misses the generic SWE.2 Components/Register access clause, which
+      still commands an extern volatile uint32_t register-block array placed by the linker even for a HAL on a provided CMSIS LL. Host integration
+      authors follow that frozen architecture and invent an unimplemented array instead of using the actual factory RAM instance.
+    remedy: For provided CMSIS HALs, the generic architecture clause describes LL calls with the device-header instance and the actual factory forge_host_device.h
+      RAM mapping. The host-integration instruction names that same mapping and the real provided LL. Greenfield graphs remain byte-identical; old
+      frozen architectures are retained and superseded by a new campaign series regenerated from the last valid SWE.1.
