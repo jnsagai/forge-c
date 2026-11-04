@@ -1476,3 +1476,21 @@ reproducers:
     error_codes: [GL-GUARD-01, GL-MACRO-01, GL-ARG-01, REGMAP:NO_REGISTER_DEFINES]
     operations: [inspection/guideline check_workspace (SWE3-07), inspection/regmap check_regmap (SWE3-08), brownfield/package findings]
     root_cause: "factory/python/forge_factory/inspection/guideline.py Checker.run checked every file in software/ll, including the provided FROZEN ST LL header a HAL work order receives (CAPA-130 provided_frozen_paths), and counted its vendor-style violations in the SWE3-07 verdict although SWE3-07 covers generated code and the HAL author may not change that file; inspection/regmap.py check_regmap looked for generated LL_<PPP>_* OFFSET/POS/MSK defines in the LL header, which a HAL on a provided CMSIS LL (CAPA-128 provided_build) never has - its register map is the LL's, verified in the LL work order, and CAPA-134 forbids the HAL its own register access."
+  - id: RPR-142
+    script: rpr142_renode_mailbox_magic_unset_not_actionable.py
+    sha256: e9fd67148497389cf7e6cbaf3dd6c43be83a5b6be898bf2706396a760e14f7b7
+    symptom_signature: "a target image whose checks ran with the mailbox magic unset reports a bare NO_RESULT, or the factory harness can be shadowed"
+    observed_in: "Fabro run WO-F014-SWE5-WWDGHAL-20261103-L32 (local line, Omniverse2, gen16 df5239ab, run 01M6J6J6NJPQTCXPKX6RNXFYPC, 2026-11-04): run_renode FAIL with only NO_RESULT:<test>:default for 3 images while the Renode log showed the mailbox magic 0x00000000 with passed=4/failed=0/done=1 and passed=7/failed=1/done=1; the author then wrote its own software/tests/target/forge_target_test.h (later 0 bytes) -> BUILD_FAIL undefined TCHECK; STUCK after 3 cycles"
+    baseline_revision: 01bd80dce11dca245ab1cadf0275d2ec7309cfe3
+    error_codes: [NO_RESULT, IT:TEST_NOT_OBSERVED, BUILD_FAIL]
+    operations: [mcp/sim run_renode (NO_RESULT issue), policy/authz write scope (software/tests/target)]
+    root_cause: "factory/python/forge_factory/mcp/servers/sim.py run_renode appended the bare NO_RESULT:<test>:<scenario> whenever the observation was missing, the magic unset or done unset, although run_image returned magic_ok/passed/failed/done - so an image whose checks ran without FORGE_TEST_BEGIN() looked like a crash; and policy/authz.py let the SWE.5 author write software/tests/target/forge_target_test.h, which the image build includes before factory/sim/stm32n6 (-I order), replacing the factory harness."
+  - id: RPR-143
+    script: rpr143_test_prompts_greenfield_registers_for_st_ll.py
+    sha256: d7cf0a253cdd273e498763fdc916dcc5f8b842761a49a852b989186cb099c84c
+    symptom_signature: "a HAL prompt for a provided ST LL names the greenfield register-block array or a <REG>_OFFSET define"
+    observed_in: "Fabro run WO-F014-SWE5-CRCHAL-20261103-L31B (local line, Omniverse2, gen16 df5239ab, 2026-11-04): the SWE.5 target test software/tests/target/test_crc_target_errors.c did not build - 'll_crc_regs' undeclared, 'LL_CRC_DR_OFFSET' / 'LL_CRC_POL_...' / 'LL_CRC_INIT...' / 'LL_CRC_CR_...' undeclared (Renode log evidence/raw/dcd1440e11c9...log); the swe5_target_author prompt said 'checks ... on HAL return values and ll_crc_regs[LL_CRC_<REG>_OFFSET / 4U] bits. No printf, no stdlib, no ll_crc_regs definition (the linker places it)'"
+    baseline_revision: 01bd80dce11dca245ab1cadf0275d2ec7309cfe3
+    error_codes: [BUILD_FAIL]
+    operations: [workflow/prompts providedize (swe5_target_author, swe6_test_author, swe2_inspector, swe3_inspector, swe3_hal_author)]
+    root_cause: "factory/python/forge_factory/workflow/prompts.py providedize (CAPA-131) rewrote only the LL calls of the HAL prompts for a provided ST (CMSIS) LL; the peripheralized greenfield register sentences - TARGET_STEPS / ROBOT_STEPS '<block>[LL_<P>_<REG>_OFFSET / 4U] bits ... no <block> definition (the linker places it)', REGISTER_BLOCK_NOTE 'the driver uses only the extern volatile uint32_t <block> array' and the SWE.3 HAL author 'Never define <block> ...' - stayed, although the provided LL has no register-block array and no <REG>_OFFSET defines (its registers are the CMSIS instance's, reached through the provided LL, CAPA-134). The native lrtx/swe5.py registers_rule is an LL-order text and is not used for HAL orders."
