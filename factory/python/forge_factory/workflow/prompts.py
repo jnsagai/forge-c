@@ -1001,7 +1001,8 @@ def native_swe3_timing_note() -> str:
 
 
 def provided_code_ownership_note(phase: str) -> str:
-    if not (phase in ("SWE.1", "SWE.2", "SWE.3") and _layer() == "HAL" and UNIT_VERIFICATION["gtest"]
+    if not (PROVIDED_CODE_HANDOFF["enabled"] and phase in ("SWE.1", "SWE.2", "SWE.3")
+            and _layer() == "HAL" and UNIT_VERIFICATION["gtest"]
             and PROVIDED_API["api"] and not BROWNFIELD["mode"]):
         return ""
     return ("PROVIDED LL CODE OWNERSHIP: the versioned provided-input correction policy permits a linked, "
@@ -1588,6 +1589,7 @@ def ll_call_arguments_note() -> str:
 # CAPA-131: the instance API of a HAL's provided CMSIS LL (brownfield/cmsis.provided_api), set by the builder for a
 # HAL work order on ST's LL; None (every other work order) leaves every prompt byte-identical
 PROVIDED_API = {"api": None}
+PROVIDED_CODE_HANDOFF = {"enabled": False}  # W.run derives this from the actual existing provided-correction scope.
 
 
 def providedize(text: str) -> str:

@@ -128,6 +128,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     prompts.ISOLATION["on"] = isolation and layer == "HAL"  # CAPA-038: HAL unit tests on the generated LL test double
     prompts.UNIT_VERIFICATION["gtest"] = uspec_gtest  # owner 2026-11-03: per-USPEC GoogleTest unit tests (SWE.4 UT ids)
     prompts.PROVIDED_API["api"] = provided_api if layer == "HAL" else None  # CAPA-131: ST LL instance API
+    prompts.PROVIDED_CODE_HANDOFF["enabled"] = provided_code_handoff and layer == "HAL" and uspec_gtest and not brownfield
     prompts.BROWNFIELD["mode"] = brownfield  # feature 008: delivered code (FROZEN | FIX_ALLOWED), None = greenfield
     prompts.BROWNFIELD["style"] = delivery_style if brownfield else None  # ST pilot: "cmsis" test prompts
     from ..operation_scope import scoped
