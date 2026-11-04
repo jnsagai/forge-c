@@ -164,6 +164,17 @@ def test_bounds_refuse_instead_of_truncating_findings(attempt):
         R.prepare(dst, manifest, req, "SWE.3")
 
 
+@pytest.mark.parametrize("records,issue", [(256, "A complete finding " * 10), (150, "gap")])
+def test_complete_context_must_fit_one_native_file_read_without_truncation(attempt, records, issue):
+    src, dst, manifest, req, _ = attempt
+    row = {"phase": "SWE.3", "step": "author", "result": "REJECTED", "issues": [issue]}
+    p = write(src, ".forge-run/gates/gate-log.jsonl", (json.dumps(row) + "\n") * records)
+    req["gate_log_sha256"] = sha256_file(p)
+    with pytest.raises(R.ReworkRefused, match="CONTEXT_TOO_LARGE"):
+        R.install(dst, manifest, req, "SWE.3")
+    assert not (dst / R.PATH).exists() and not (dst / R.RECEIPT).exists()
+
+
 def test_phase_binding_and_no_context_defaults(attempt):
     _, _, _, req, _ = attempt
     assert R.request(None, None, None) is None

@@ -15,6 +15,8 @@ SCHEMA = "forge-c/rework-context/1"
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 WO = re.compile(r"WO-[A-Za-z0-9_-]{1,180}\Z")
 MAX_FILE = 1024 * 1024
+MAX_CONTEXT = 32 * 1024
+MAX_CONTEXT_LINES = 1000  # below the native approved file tool's default 2000-line read
 MAX_ITEMS = 256
 MAX_TEXT = 4096
 TERMINAL = {"SUCCEEDED", "FAILED", "CANCELLED", "CANCELED", "DEAD"}
@@ -189,7 +191,9 @@ def _prepare(ws: Path, manifest: dict, value: dict, phase: str) -> dict:
            "gate_records": records, "carried_upstream_baselines": upstream, "provided_headers": provided,
            "failed_phase_current_unit_sources": units,
            "acceptance": "NEW_NATIVE_GATES_AND_INDEPENDENT_INSPECTION_REQUIRED"}
-    require(len(canonical_json(doc)) <= MAX_FILE, "CONTEXT_TOO_LARGE")
+    rendered = pretty_json(doc)
+    require(len(rendered.encode()) <= MAX_CONTEXT and len(rendered.splitlines()) <= MAX_CONTEXT_LINES,
+            "CONTEXT_TOO_LARGE")
     return doc
 
 
