@@ -1,0 +1,52 @@
+{
+  "at": "2026-11-04T16:00:01.780423+00:00",
+  "mode": "READ_ONLY_ACTUAL_SOURCE_PREPARE_NO_INSTALL_OR_LAUNCH",
+  "source_revision": "efc88ef99713031827eb3ceb3f63a3e818ec0f7f",
+  "module_sha256": "ec2e300d190f4c09b5f0f9aff304b507b605529494632da1a456674e8e8b3eef",
+  "model_calls": 0,
+  "results": [
+    {
+      "tag": "CRCHAL",
+      "status": "PASS",
+      "request": {
+        "source_work_order": "WO-F014-CMP-SWE3-CRCHAL-20261104-T1E",
+        "phase": "SWE.3",
+        "gate_log_sha256": "6f0182f816001497caa6cb0a41d99f9f723f7eb83f0bfd5336c8da684f7af520",
+        "inspection_sha256": "ABSENT"
+      },
+      "inspection_state": "ABSENT",
+      "gate_record_count": 10,
+      "failed_inspection_items": [],
+      "negative": "REWORK_CONTEXT_GATE_HASH_MISMATCH",
+      "prepared_data": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-qualification-v2/CRCHAL-prepared-data.json",
+      "prepared_sha256": "b0c0efbb7cde3b852689c96056bcb87214a24fbe47eb841119ea95b16764cc05",
+      "complete_bytes": 5626,
+      "complete_lines": 146,
+      "target_writes": false
+    },
+    {
+      "tag": "WWDGHAL",
+      "status": "PASS",
+      "request": {
+        "source_work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1E",
+        "phase": "SWE.4",
+        "gate_log_sha256": "bb1ed8674ff9563a13dffdfc7194cc1512123ad91a214a3b160efeb05ec40511",
+        "inspection_sha256": "9c17d77c6f0d9af812aaa33a04ad55a93556b09e6da62def43bb21e6e4562a73"
+      },
+      "inspection_state": "BOUND",
+      "gate_record_count": 7,
+      "failed_inspection_items": [
+        "SWE4-01",
+        "SWE4-02",
+        "SWE4-04",
+        "SWE4-06"
+      ],
+      "negative": "REWORK_CONTEXT_GATE_HASH_MISMATCH",
+      "prepared_data": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rework-context-qualification-v2/WWDGHAL-prepared-data.json",
+      "prepared_sha256": "b235ac52d22ad541bff75b2c5d04bdfcc9e7aeac46ab2e61b209acf6493495b6",
+      "complete_bytes": 7106,
+      "complete_lines": 172,
+      "target_writes": false
+    }
+  ]
+}

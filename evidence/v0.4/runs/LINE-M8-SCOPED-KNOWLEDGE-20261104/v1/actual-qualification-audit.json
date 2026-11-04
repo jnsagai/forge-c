@@ -1,0 +1,26 @@
+{
+  "schema": "forge-c/line-m8-real-scoped-lesson-qualification/1",
+  "at": "2026-11-04T12:29:11.495540Z",
+  "lesson_id": "lesson-41f8799b78b5",
+  "lesson_state": "VALIDATED",
+  "reasons": [],
+  "qualification_id": "lesson-qualification-b4088d04e86ee1a1bf9793b1",
+  "qualification_manifest_sha256": "eff704f5d15649b5a8bbf201aad5b0292f414a9cf2607eff8c6d7890da192ac8",
+  "qualification_report_sha256": "c6a28f0fbba16780b28da0a74be5e4d238dd8bcf19fe0a745b5151db87490d05",
+  "checks": {
+    "matching_scope_selected": true,
+    "excluded_phase": true,
+    "excluded_role": true,
+    "excluded_target": true,
+    "excluded_source_version": true
+  },
+  "source_files_unchanged": true,
+  "model_calls": 0,
+  "production_exposures_added": 0,
+  "conductor_pid_before": "3939078",
+  "conductor_pid_after": "3939078",
+  "actual_later_role_delivery": "NOT_RUN",
+  "measured_benefit": "NOT_RUN",
+  "full_M8": "INCOMPLETE",
+  "checks_pass": true
+}

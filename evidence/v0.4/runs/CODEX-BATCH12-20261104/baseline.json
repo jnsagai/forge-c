@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-04T14:11:36.510484+00:00",
+  "revision": "9a06266266ac550e5214f231576ce9354fff2b5c",
+  "files": 202,
+  "file_list_sha256": "378fdd8fe97fba7ad23f77bde2037c78549a4ee4a12ab5657f3b964e165c798c",
+  "selection": "Entire202-file selected comparative suite inherited from batch11; not all repository tests. Candidate additionally includes every new/modified test file in this batch.",
+  "source_checkout_clean": true,
+  "summary": "6 failed, 2461 passed, 26 skipped in 2430.72s (0:40:30)",
+  "exit_code": 1,
+  "failures": [
+    "factory/python/tests/test_afo_paging_limits.py::test_source_limit_is_bounded_and_does_not_enlarge_write_permissions",
+    "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_frozen_v1_fixtures",
+    "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_preserved_baseline_fixtures",
+    "factory/python/tests/test_lrtx_p3.py::test_changed_upstream_requirements_invalidate_dependent_swe2_tasks",
+    "factory/python/tests/test_lrtx_rework_unchanged.py::test_a_valid_checkpoint_without_findings_is_still_reused",
+    "factory/python/tests/test_owner_obligation_coverage.py::test_orders_without_obligations_are_unchanged"
+  ],
+  "new_vs_prior_known_failure_set": [],
+  "skips": 26,
+  "skip_limitation": "Previous batch11 recorded18 skips; these26 are not passes. Candidate comparison must record actual skip counts and investigate material candidate-only skips.",
+  "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-batch12-base-suite.log",
+  "log_sha256": "ea3d4af0fb392a8785140c3af14358cb9aac2a8d95380ea95207b5a8195a101e",
+  "state_scope": "Separate batch12-base-state and events, no production state mutation. Fresh execution, no cached/composite baseline."
+}

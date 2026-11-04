@@ -1,4 +1,4 @@
-# Frozen reproducer manifest. Protected oracle changes freeze separately from code.
+# Frozen reproducer manifest; protected oracle changes freeze separately from code.
 schema_version: '1.0'
 reproducers:
 - id: RPR-001
@@ -2551,3 +2551,157 @@ reproducers:
   remedy: Reconcile orphan own queue rows through existing Store transitions only with matching immutable spec digest, current signed recover
     authorization, exact attempt/run/workspace identity and authoritative terminal Fabro evidence. Preserve old payload and workproducts; retain
     all concurrency guards.
+- id: RPR-152
+  script: rpr152_native_hal_host_result_protocol.py
+  sha256: 808c56fbe268c0995a246d64943a7812b79a696d941246dcf061330025ecd671
+  symptom_signature: native HAL SWE5 omits the host result-line protocol required by the strict trace parser
+  observed_in: '2026-11-04 local CRC HAL SWE5 L34 gen20: actual host output descriptive CHECK lines, strict trace reports IT:TEST_NOT_OBSERVED.
+    Original wrong-extension hypothesis retracted: actual prompt already names .cpp. Wrong IT101 vs declaredIT001 remains separate author error.
+    V2 uses the actual provided CMSIS LL + GoogleTest context; initial fixture omitted the provided API and overbroad candidate broke legacy controls131143149.
+    V1 script/causal/rejection artifacts preserved in OPS/capa152-v1-audit; retriage retains history.'
+  baseline_revision: 5ecf65b9565a40f001e813d015b2949890e82e72
+  error_codes:
+  - IT:TEST_NOT_OBSERVED
+  operations:
+  - native Fabro HAL SWE5 author prompt and strict matrix5 result observer
+  root_cause: Native GoogleTest HAL on a provided CMSIS LL has no unit CHECK macro to copy and omits the host result grammar required by matrix5.
+    Preserve frozen greenfield/non-GTest workflows.
+  remedy: Publish an executable host printf protocol and actual-result/unique declared-id rules. Keep parser strict and failure-dominant, require
+    real predicates/nonzero failure exit, distinguish target-only TCHECK harness.
+- id: RPR-153
+  script: rpr153_refused_verification_consumes_repair_allowance.py
+  sha256: a75c91316f4a677eba7e17edd23c05eb12eb31aff1510d34539512fcb014afa0
+  symptom_signature: two unexecuted NO_TESTS refusals exhaust development verification allowance before the first actual test
+  observed_in: Handoff20261103 section9.6; controlled real policy-hook/MCP reproduction20261104; no production failure claim
+  baseline_revision: 7c15b0589906310a024c25381cd4b18d44590414
+  error_codes:
+  - DEVELOPMENT_PHASE_REPAIR_EXHAUSTED
+  operations:
+  - forge-tests-mcp.run_unit
+  - development.verification
+  root_cause: Unexecuted preflight BLOCKED results increment the development failed-check counter and close post-repair verification
+    just like actual executions.
+  remedy: Trusted explicit nonexecution markers preserve only the development verification allowance; real failures, uncertain
+    execution and cumulative request/tool/mission debit remain charged.
+- id: RPR-154
+  script: rpr154_maintenance_review_outlives_mission.py
+  sha256: 12666718fb1dad5601a2fb18bb04d9d2e45774e27640225828552520c7d74f92
+  symptom_signature: the line maintainer verification uses its later job wall beyond the finite mission deadline
+  observed_in: Independent static review of qualified M7 source7da0e9e84fcba8e0eeb820775b9a969b77376a37 on2026-11-04; isolated
+    real-timer confirmation2.503s beyond1.25s mission. Not a production failure or role qualification.
+  baseline_revision: 7da0e9e84fcba8e0eeb820775b9a969b77376a37
+  error_codes:
+  - LINE_MAINTENANCE_DEADLINE
+  operations:
+  - afo.line_maintenance_coordinator.review
+  - afo.line_maintenance_coordinator._dispatch_review
+  - afo.verification_job.VerificationJobs.ensure
+  root_cause: Review authorizes the minimum job/mission deadline before and after independent work but arms SIGALRM using
+    only the later job deadline. CPU queue ensure also receives only the job deadline and retains a pre-existing later wall.
+  remedy: Use the finite minimum of job, current mission and existing verifier wall for a fractional real-time timer, cap
+    only pending verifier records without resetting dispatch identity/allowance, and retain current/post authority and fence
+    checks.
+- id: RPR-155
+  script: rpr155_parallel_verifier_outlives_fence.py
+  sha256: 3245586deb898120182c2733d75d3930cab0d0f23a325173c94ddc3d2886445d
+  symptom_signature: threaded line verifier children outlive finite wall or operator intent
+  observed_in: 2026-11-04 isolated actual C.review/VerificationJobs/OS timer and nested bubblewrap namespace children;
+    explicit two-worker capacity fixture. Baseline8 descendants heartbeat1.862s beyondwall/2.962s beyond private
+    PAUSED epoch; no model or production role qualification.
+  baseline_revision: c247d107c2a3
+  error_codes:
+  - LINE_MAINTENANCE_DEADLINE
+  - LINE_MAINTENANCE_OPERATIONS_CHANGED
+  operations:
+  - afo.line_maintenance_coordinator.review
+  - reliability.parallel.ordered_map
+  - afo.verification_job.VerificationJobs.claim
+  root_cause: SIGALRM raises into ThreadPoolExecutor which waits for threads and backend commands on unwind; intent
+    authorization is checked before/after independent work without a live owned-worker intent fence.
+  remedy: For actual managed verifier only, bind boot/PID-start/PGID/SID and terminate that exact owned group before
+    threaded unwind; monitor current private intent epoch; require independently measured bubblewrap teardown and
+    refuse unqualified Podman path. Retain offline-only result fences and all deterministic gates.
+- id: RPR-156
+  script: rpr156_pinned_inputs_missing_in_sandbox.py
+  sha256: 927e2440d379f7db84de41906bb17cd5779d2c342e16d82ba74c46147616c5e8
+  symptom_signature: scoped CRE verifier cannot read its pinned ST dependencies
+  observed_in: 2026-11-04 cloud G23 pd-8390fad485130320aa55 rejected with pinned ST inputs missing; explicit read-only
+    executor configuration succeeded. Independent nested kernel confirmation; no live repair claim.
+  baseline_revision: e014fd86a00233605b2f82c026499aa4e8fbd7b4
+  error_codes:
+  - PINNED_INPUT_MISSING
+  operations:
+  - reliability.isolation.bubblewrap_argv
+  - reliability.isolation.execute
+  root_cause: Scoped Bubblewrap mounts source and toolchains but omits the required pinned inputs subtree. Independent
+    tests cannot load their pinned vendor inputs.
+  remedy: Mount existing data_root inputs and resolved symlink target read-only; do not expose parent data root,
+    state, HOME, credentials, network or GPU.
+- id: RPR-157
+  script: rpr157_missing_line_store_reinitialized.py
+  sha256: 48f2093f3715a2f473561c7bd054277ceb30eddbaaab1a41eaa1aee69cbe39d9
+  symptom_signature: line recovery consumers create missing authoritative M3 database
+  observed_in: 2026-11-04 source review and isolated10-runtime-consumer confirmation on integrated0def/e014; privatefixture
+    paths only, zero model calls, no production incident or authority claim.
+  baseline_revision: 0def06430174c4de67c58ef05ca8a6043e1fa4fa
+  error_codes:
+  - AUTHORITATIVE_DATABASE_UNAVAILABLE
+  operations:
+  - afo.line_recovery_worker.bootstrap
+  - afo.line_recovery_worker.step
+  - afo.line_recovery_worker.record_refusal
+  - afo.line_recovery_product.claim_for_launch
+  - afo.line_recovery_product.native_parameters
+  - afo.line_maintenance_coordinator.main
+  root_cause: Consumer paths construct the normal initializing Store before command/job binding; a missing application
+    database can therefore become an empty migrated store despite refusal later.
+  remedy: Consumers require an existing regular SQLite store with initialized M3 schema, reject symlinks/empty/foreign
+    schema before mutations, use SQLite mode=rw and stable device/inode checks on every connection; implicit line-local
+    native consumers also cannot initialize. Explicit initial M3 admission and legacy defaults retain initialization.
+- id: RPR-158
+  script: rpr158_python_version_alias_unmounted.py
+  sha256: 0793d3a7af0defb9b341ec2433bbf947bbc5c6717b2e65655b59e01ade16cabd
+  symptom_signature: scoped verifier cannot execute venv Python through its version alias
+  observed_in: 'Omniverse2 prospective0def CPU preflight2026-11-04: actualvenv/bin/python targetsUVminorversionalias
+    butbaseprefixmountusesresolvedpatchversion; actualsamecommandfail1normal/success0withexactreadonlyaliasandjsonschemavenvimport.
+    No productionmutation/modelcalls.'
+  baseline_revision: f47ed125d6173fc57fb653e920493f8873f61c79
+  error_codes:
+  - PYTHON_RUNTIME_ALIAS_UNMOUNTED
+  operations:
+  - reliability.isolation.bubblewrap_argv
+  - reliability.isolation.execute
+  root_cause: Scoped verifier mounts actualsys.prefix/sys.base_prefix but an executable symlink can reference an
+    intermediate UVversion directory alias absent from the namespace.
+  remedy: Boundedly follow actual executable symlinkchain and expose only directoryaliases resolving to the already-mounted
+    interpreterinstallation, read-only togetherwithresolvedruntime. Never mount HOME/cacheparents or unrelatedsymlinktargets;
+    retainvenv identity anddependencyimports.
+- id: RPR-159
+  script: rpr159_order_scope_request_omitted.py
+  sha256: 41f7a99a5fb24f25fcb1f441c1aa0c8c5d325cf76e6a16bb6328d5986894d4ca
+  symptom_signature: order-scoped line grants authorize unlisted work orders
+  observed_in: 2026-11-04 actual local/cloud request builders, cloudchild authorization
+    stage andper-WOcleanup under isolated real TESTEd25519 signedorder-restrictedgrants;
+    primitive authz correctly refusesunlistedWO. Noownerkey/signature, model orproductionaction.
+  baseline_revision: 0de07c62e6e6db67d69b3d9d110e451836da3551
+  error_codes:
+  - ORDER_SCOPE_IDENTITY_OMITTED
+  operations:
+  - afo.line_orders.Placer._requests
+  - afo.line_orders.Placer._cleanup
+  - afo.line_cloud.CloudPlacer._requests
+  - afo.line_cloud._authorized_spec
+  - afo.line_orders.Placer._sync
+  - afo.line_orders.Placer._admit
+  root_cause: Orderrelated authorizationrequest buildersomit order_id; authz.verify
+    correctly checks restricted dimensions only when caller supplies that dimension,
+    so its valid scoped grant is accidentally treated as unbound for order operations.
+    Newmanual-live adoption also calls _admit without an order-scoped authorization
+    check.
+  remedy: Supply actualexternalworkorder identity, driverclass andprofile on local/cloud
+    order andservice requests, cloudchild recheck, M6binding/continuation/stackrequests
+    andper-workordercleanup. Preserve generic authz and independently scoped non-order
+    service behavior; trialdocuments retain separate internalAFOid bindings. Recheck
+    new submit/admission and manual adoption before spec/queue writes; preserve exact
+    already-bound terminal settlement under original dispatch identity and never release
+    unknown leases or initiate unlisted recovery.

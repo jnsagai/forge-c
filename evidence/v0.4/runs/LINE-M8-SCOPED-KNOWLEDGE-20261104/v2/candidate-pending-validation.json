@@ -1,0 +1,50 @@
+{
+  "state": "VERSION2_DRAFT_NOT_VALIDATED_NOT_PUBLISHED",
+  "not_authority": true,
+  "candidate": {
+    "contract_version": "2.0",
+    "source_kind": "NEGATIVE_OBSERVATION",
+    "version": 2,
+    "experience_ref": "experience-4c2b7bd9d3835eff888414cb",
+    "symptoms": "A fabricated register array can prevent a provided-CMSIS-LL HAL from linking.",
+    "root_cause": "A greenfield linker-array assumption does not define the supplied typed CMSIS instance or host mapping.",
+    "remedy": "For provided-LL HAL work, derive interfaces from supplied declarations and check host linkage while preserving the LL interface.",
+    "constraints": "Only the listed CRC input cohort and SWE.2 author. This supplies no addresses or requirement facts. Greenfield contracts are excluded. Linkage success does not replace phase inspections or acceptance gates.",
+    "applicability": {
+      "phases": [
+        "SWE.2"
+      ],
+      "roles": [
+        "swe2-author"
+      ],
+      "targets": [
+        "STM32N657X0 (STM32N6x5/x7 family)"
+      ],
+      "source_versions": [
+        "6be2b13bcbe27da2bee821a4dc408c0d1effba256e767115fff98c0eaf2b1068"
+      ]
+    },
+    "evidence_refs": [
+      "native-run:01M6JY7KXMXAB232QYZMHXTJZR",
+      "native-compile-log:sha256:42af712ec408ba2730cd237a93c762f770cfb0aab485a76fc489528955e542af",
+      "frozen-architecture:sha256:69abe43fd22596b4440745af0ae5c0c302a116d15c91a6202e251938e13bd677",
+      "/mnt/data/forge-c/swe1-fabro-20261031/qualification/line-m8-lesson-v2-20261104/qualification-report.json"
+    ],
+    "tool_versions": {},
+    "validation_tests": [
+      {
+        "id": "provided-LL-and-adverse-greenfield-oracles",
+        "status": "PASS",
+        "evidence_ref": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/line-m8-lesson-v2-20261104/qualification-report.json"
+      },
+      {
+        "id": "real-LL-host-compile-link",
+        "status": "PASS",
+        "evidence_ref": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/line-m8-lesson-v2-20261104/crc-host-link-report.json"
+      }
+    ],
+    "supersedes": "lesson-41f8799b78b5"
+  },
+  "experience_source_hash": "4c2b7bd9d3835eff888414cb4d3d15e86f6456beddf3764c5d7c8940f26a28e3",
+  "scope": "No actual role exposure/application/benefit claim"
+}

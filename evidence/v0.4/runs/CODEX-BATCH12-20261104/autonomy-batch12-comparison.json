@@ -1,0 +1,62 @@
+{
+  "schema": "forge-c/batch12-comparison/1",
+  "reports": {
+    "baseline": {
+      "revision": "9a06266266ac550e5214f231576ce9354fff2b5c",
+      "selected_modules": 202,
+      "summary": "6 failed, 2461 passed, 26 skipped in 2430.72s (0:40:30)",
+      "exit": 1,
+      "counts": {
+        "failed": 6,
+        "passed": 2461,
+        "skipped": 26
+      },
+      "failed_node_ids": [
+        "factory/python/tests/test_afo_paging_limits.py::test_source_limit_is_bounded_and_does_not_enlarge_write_permissions",
+        "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_frozen_v1_fixtures",
+        "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_preserved_baseline_fixtures",
+        "factory/python/tests/test_lrtx_p3.py::test_changed_upstream_requirements_invalidate_dependent_swe2_tasks",
+        "factory/python/tests/test_lrtx_rework_unchanged.py::test_a_valid_checkpoint_without_findings_is_still_reused",
+        "factory/python/tests/test_owner_obligation_coverage.py::test_orders_without_obligations_are_unchanged"
+      ],
+      "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-batch12-base-suite.log",
+      "log_sha256": "ea3d4af0fb392a8785140c3af14358cb9aac2a8d95380ea95207b5a8195a101e"
+    },
+    "candidate": {
+      "revision": "796d662a450b243843f7637c15bba29b57adf2f1",
+      "selected_modules": 234,
+      "summary": "7 failed, 2767 passed, 27 skipped in 2465.28s (0:41:05)",
+      "exit": 1,
+      "counts": {
+        "failed": 7,
+        "passed": 2767,
+        "skipped": 27
+      },
+      "failed_node_ids": [
+        "factory/python/tests/test_afo_paging_limits.py::test_source_limit_is_bounded_and_does_not_enlarge_write_permissions",
+        "factory/python/tests/test_line_store_scope.py::test_fixed_scope_preserves_legacy_and_routes_line_children_to_existing_store",
+        "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_frozen_v1_fixtures",
+        "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_preserved_baseline_fixtures",
+        "factory/python/tests/test_lrtx_p3.py::test_changed_upstream_requirements_invalidate_dependent_swe2_tasks",
+        "factory/python/tests/test_lrtx_rework_unchanged.py::test_a_valid_checkpoint_without_findings_is_still_reused",
+        "factory/python/tests/test_owner_obligation_coverage.py::test_orders_without_obligations_are_unchanged"
+      ],
+      "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-batch12-cand-suite.log",
+      "log_sha256": "9a57b9f7b8bed83429a49f77389f419030cf15db4422fe782eab50d49dc020df"
+    }
+  },
+  "candidate_only_failures": [
+    "factory/python/tests/test_line_store_scope.py::test_fixed_scope_preserves_legacy_and_routes_line_children_to_existing_store"
+  ],
+  "candidate_only_skips": [
+    {
+      "node_id": "factory/python/tests/test_lrtx_review_bundle.py::test_bundle_is_byte_identical_for_the_same_revision",
+      "reason": "feature files have uncommitted changes (the bundle refuses them by design)"
+    }
+  ],
+  "baseline_only_skips": [],
+  "baseline_skip_method": "Exact202-module baseline collect-only node order aligned to2493 retained pytest progress results; counts andall6failednodeIDs checked. No tests rerun; skipreasons unavailable in original log.",
+  "candidate_skip_evidence": "Actual final candidate JUnit XML; skips are never counted as passes.",
+  "scope": "202 baseline modules plus every added/modified normal test module:234 candidate modules. No claim all repository tests ran.",
+  "status": "REQUIRES_REVIEW"
+}

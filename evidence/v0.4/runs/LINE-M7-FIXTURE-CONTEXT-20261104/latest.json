@@ -1,0 +1,36 @@
+{
+  "schema": "forge-c/source-component-validation/1",
+  "component": "M7 fixture compatibility with real shared intent and finite mission guards",
+  "candidate": "61c2fff9c3f499d7164806fd611c65383e7e37fa",
+  "baseline": "f47ed125d6173fc57fb653e920493f8873f61c79",
+  "decision_id": "pd-3839dff743ffecc1f1f8",
+  "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "tests": {
+    "before157": 17,
+    "post157": 29,
+    "static_design": 14
+  },
+  "scope": "ONE_TEST_FILE_ONLY_NO_RUNTIME_WEAKENING",
+  "live_model_calls": 0,
+  "live_qualification": "NOT_RUN",
+  "source_changes": false,
+  "changes": "Explicit temp fixed-line Store fixture bootstrap before implicit readers; private real Intent/path/epoch; full actual signed control mission/source/policy; real shared guard positives and genuine intent/mission negatives; original assertions retained",
+  "log_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m7-fixture-context-r2.log",
+      "sha256": "4925f27521204ff5c844d180036fbb19cf73dda02c6417536b95f4959f0040f4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m7-fixture-context-157.log",
+      "sha256": "e7828e0c45e35ede7678bcab5594c1bd96dea0a4fa84d49c0b76a367f2d87384"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m7-fixture-context-design.log",
+      "sha256": "755c93ce11becfd4e17848fb80cf7f385f6ccd664bf9e2448a2fd583978f3a9d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m7-fixture-context-change.log",
+      "sha256": "76623c2193cbf0696371d94be91f4de6111ae8d3c5f087b0d2f76faedd642271"
+    }
+  ]
+}

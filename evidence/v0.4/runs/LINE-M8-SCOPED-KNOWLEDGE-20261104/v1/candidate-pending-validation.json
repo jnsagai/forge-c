@@ -1,0 +1,49 @@
+{
+  "state": "DRAFT_NOT_VALIDATED_NOT_PUBLISHED",
+  "not_authority": true,
+  "candidate": {
+    "contract_version": "2.0",
+    "source_kind": "NEGATIVE_OBSERVATION",
+    "version": 1,
+    "experience_ref": "experience-4c2b7bd9d3835eff888414cb",
+    "symptoms": "A HAL architecture that invents a register array can fail to link against provided CMSIS LL.",
+    "root_cause": "The supplied LL uses typed CMSIS instances and a separate host mapping; a greenfield linker-array assumption does not establish that mapping.",
+    "remedy": "For provided-LL HAL work, derive the register interface from the supplied declarations and confirm linkage with the host integration compile. Preserve the supplied LL interface.",
+    "constraints": "Only the listed STM32N6 CRC input cohort, supplied CMSIS LL, SWE.2 author. No register addresses or requirement facts are supplied by this observation. Greenfield architectures retain their separate contract. Compile success proves linkage only; independent phase inspections and acceptance gates remain required.",
+    "applicability": {
+      "phases": [
+        "SWE.2"
+      ],
+      "roles": [
+        "swe2-author"
+      ],
+      "targets": [
+        "STM32N657X0 (STM32N6x5/x7 family)"
+      ],
+      "source_versions": [
+        "6be2b13bcbe27da2bee821a4dc408c0d1effba256e767115fff98c0eaf2b1068"
+      ]
+    },
+    "evidence_refs": [
+      "native-run:01M6JY7KXMXAB232QYZMHXTJZR",
+      "native-compile-log:sha256:42af712ec408ba2730cd237a93c762f770cfb0aab485a76fc489528955e542af",
+      "frozen-architecture:sha256:69abe43fd22596b4440745af0ae5c0c302a116d15c91a6202e251938e13bd677",
+      "/mnt/data/forge-c/swe1-fabro-20261031/qualification/line-m8-lesson-20261104/qualification-report.json"
+    ],
+    "tool_versions": {},
+    "validation_tests": [
+      {
+        "id": "provided-LL-and-adverse-greenfield-oracles",
+        "status": "PASS",
+        "evidence_ref": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/line-m8-lesson-20261104/qualification-report.json"
+      },
+      {
+        "id": "real-LL-host-compile-link",
+        "status": "PASS",
+        "evidence_ref": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/line-m8-lesson-20261104/crc-host-link-report.json"
+      }
+    ]
+  },
+  "experience_source_hash": "4c2b7bd9d3835eff888414cb4d3d15e86f6456beddf3764c5d7c8940f26a28e3",
+  "scope": "No actual role exposure/application/benefit claim"
+}

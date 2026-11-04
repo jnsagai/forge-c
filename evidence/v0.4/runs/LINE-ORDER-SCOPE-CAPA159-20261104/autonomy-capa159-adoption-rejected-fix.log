@@ -1,0 +1,10 @@
+REJECTED pd-58de2ba07bc1d0e4d847 candidate 1f32ff646383 baseline 0de07c62e6e6
+  protected_files   PASS     
+  policy_integrity  PASS     
+  reproducer        PASS     
+  prevention        FAIL     RESOLVED_FAILURE_REAPPEARED
+  quality_process   NOT_RUN  SKIPPED_AFTER_HARD_FAIL
+  golden_benchmark  NOT_RUN  SKIPPED_AFTER_HARD_FAIL
+  holdout           NOT_RUN  SKIPPED_AFTER_HARD_FAIL
+  - sandbox: 16472 protected paths read-only (OS) in the candidate/baseline worktrees
+  - previously resolved failures reappear: RPR-151:ERROR

@@ -1,0 +1,189 @@
+{
+  "at": "2026-11-04T16:17:36.129065+00:00",
+  "source_receipts": [
+    "pd-c62dac664fd9282aaab6",
+    "pd-123a51483d88deb74d0f"
+  ],
+  "claim_limit": "Actualrunningauthor/contextbindingproof; no phasePASS or inspectionresultclaimed.",
+  "runs": [
+    {
+      "driver": "CRCHAL",
+      "work_order": "WO-F014-CMP-SWE3-CRCHAL-20261104-T1F",
+      "run_id": "01M6KNFFV3JPJ4FR8AG2GCKBXN",
+      "api_status": "RUNNING",
+      "revision": {
+        "basis": "recorded_at_launch",
+        "branch": "run/cloud-gen25-bound-rework",
+        "commit": "002f4c6ea78906cc2a6e7599c2e9fe74e2a09910",
+        "dirty": false
+      },
+      "resumed_from": "WO-F014-CMP-SWE2-CRCHAL-20261104-T1E",
+      "stable_phases": [
+        "SWE.1",
+        "SWE.2"
+      ],
+      "inspector_calls_per_visit": 64,
+      "context": {
+        "inspection_state": "ABSENT",
+        "path": "inputs/rework-context.json",
+        "phase": "SWE.3",
+        "receipt_path": ".forge-run/rework-context-receipt.json",
+        "receipt_sha256": "0565061f917bf38841981d4d7dfdb8d993f0f8eeb0f10b09c76c74d3402c98ea",
+        "sha256": "9344fc92459b31a39da69447328a663555503b7960f04550f34485b6e7884a79",
+        "source_work_order": "WO-F014-CMP-SWE3-CRCHAL-20261104-T1E"
+      },
+      "inspection_state": "ABSENT",
+      "failed_inspection_items": [],
+      "bound_gate_records": 10,
+      "context_readonly": true,
+      "receipt_readonly": true,
+      "receipt_before_graph": true,
+      "graph_note_nodes": [
+        "swe3_author",
+        "swe3_hal_author",
+        "swe3_fix_author"
+      ],
+      "actual_model_starts": [
+        {
+          "seq": 41,
+          "node": "swe3_hal_author",
+          "requested_model": "gpt-6.1-terra"
+        },
+        {
+          "seq": 47,
+          "node": "swe3_hal_author",
+          "requested_model": "gpt-6.1-terra"
+        },
+        {
+          "seq": 64,
+          "node": "swe3_hal_author",
+          "requested_model": "gpt-6.1-terra"
+        },
+        {
+          "seq": 69,
+          "node": "swe3_hal_author",
+          "requested_model": "gpt-6.1-terra"
+        }
+      ],
+      "actual_context_reads": [
+        {
+          "seq": 50,
+          "node": "swe3_hal_author",
+          "tool": "read_file",
+          "completion": {
+            "seq": 63,
+            "is_error": false
+          }
+        }
+      ],
+      "actual_context_read_ranges": [
+        {
+          "seq": 50,
+          "offset": 0,
+          "effective_line_limit": 2000,
+          "context_lines": 146,
+          "complete_file_selected": true
+        },
+        {
+          "seq": 140,
+          "offset": 0,
+          "effective_line_limit": 2000,
+          "context_lines": 146,
+          "complete_file_selected": true
+        },
+        {
+          "seq": 205,
+          "offset": 0,
+          "effective_line_limit": 2000,
+          "context_lines": 146,
+          "complete_file_selected": true
+        }
+      ]
+    },
+    {
+      "driver": "WWDGHAL",
+      "work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1F",
+      "run_id": "01M6KNFFV49TWDA0K335TNQRTD",
+      "api_status": "RUNNING",
+      "revision": {
+        "basis": "recorded_at_launch",
+        "branch": "run/cloud-gen25-bound-rework",
+        "commit": "002f4c6ea78906cc2a6e7599c2e9fe74e2a09910",
+        "dirty": false
+      },
+      "resumed_from": "WO-F014-CMP-SWE3-WWDGHAL-20261104-T1E",
+      "stable_phases": [
+        "SWE.1",
+        "SWE.2",
+        "SWE.3"
+      ],
+      "inspector_calls_per_visit": 64,
+      "context": {
+        "inspection_state": "BOUND",
+        "path": "inputs/rework-context.json",
+        "phase": "SWE.4",
+        "receipt_path": ".forge-run/rework-context-receipt.json",
+        "receipt_sha256": "fb8ed6166570286fcc93235ac7ad036eee6b297af7061450769978dd32901165",
+        "sha256": "d38f0f460b19c35d561290eb665921bea45d62a71a43dd68b8e3ad1e2af58291",
+        "source_work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1E"
+      },
+      "inspection_state": "BOUND",
+      "failed_inspection_items": [
+        "SWE4-01",
+        "SWE4-02",
+        "SWE4-04",
+        "SWE4-06"
+      ],
+      "bound_gate_records": 7,
+      "context_readonly": true,
+      "receipt_readonly": true,
+      "receipt_before_graph": true,
+      "graph_note_nodes": [
+        "swe4_author",
+        "swe4_test_author"
+      ],
+      "actual_model_starts": [
+        {
+          "seq": 47,
+          "node": "swe4_test_author",
+          "requested_model": "gpt-6.1-terra"
+        },
+        {
+          "seq": 53,
+          "node": "swe4_test_author",
+          "requested_model": "gpt-6.1-terra"
+        },
+        {
+          "seq": 58,
+          "node": "swe4_test_author",
+          "requested_model": "gpt-6.1-terra"
+        },
+        {
+          "seq": 73,
+          "node": "swe4_test_author",
+          "requested_model": "gpt-6.1-terra"
+        }
+      ],
+      "actual_context_reads": [
+        {
+          "seq": 56,
+          "node": "swe4_test_author",
+          "tool": "read_file",
+          "completion": {
+            "seq": 57,
+            "is_error": false
+          }
+        }
+      ],
+      "actual_context_read_ranges": [
+        {
+          "seq": 56,
+          "offset": 0,
+          "effective_line_limit": 2000,
+          "context_lines": 172,
+          "complete_file_selected": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+state REPRODUCER_PENDING
+baseline rr-8377b232b3f4dca8e664 ERROR candidate rr-7970aa4d3ae86683bbf7 SYMPTOM_ABSENT
+verify -> UNRESOLVED
+{"state": "UNRESOLVED", "root_cause_status": "HYPOTHESIS", "reproducer_id": "RPR-156", "affected_versions": []}

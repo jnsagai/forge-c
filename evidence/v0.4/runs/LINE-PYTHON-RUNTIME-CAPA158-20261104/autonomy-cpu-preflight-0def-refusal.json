@@ -1,0 +1,20 @@
+{
+  "schema": "forge-c/omniverse-cpu-preflight/1",
+  "scope": "PROSPECTIVE_NOT_ACTIVATED_NO_ROLE_QUALIFICATION",
+  "source_revision": "0def06430174c4de67c58ef05ca8a6043e1fa4fa",
+  "source_tracked_dirty": false,
+  "model_calls": 0,
+  "production_mutations": false,
+  "data_root": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx",
+  "isolation_backend": "bubblewrap",
+  "bwrap": {
+    "path": "/usr/bin/bwrap",
+    "sha256": "bf6cf3d4456665f5d80c14eb79a76e0ce87b39a0883e614a161658b4ec33492c",
+    "version": "bubblewrap 0.6.1"
+  },
+  "input_compiler_exit": 1,
+  "input_compiler_stderr": "bwrap: execvp /mnt/data/forge-c/swe1-fabro-20261031/lrtx/venv/bin/python: No such file or directory\n",
+  "input_compiler": null,
+  "actual_owned_backend_teardown_exit": 1,
+  "verdict": "REFUSED_OR_NOT_READY"
+}

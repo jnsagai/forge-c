@@ -1,0 +1,21 @@
+{
+  "scope": "BYTE_EXACT_HASH_BOUND_EVIDENCE_ONLY",
+  "warnings": 87,
+  "paths": [
+    "evidence/v0.4/runs/CODEX-AUTHOR-PLANS-20261104/local-author-plan-change-bwrap.log",
+    "evidence/v0.4/runs/CODEX-CAPA156-20261104/codex-capa156-fix.log",
+    "evidence/v0.4/runs/CODEX-CLOUD-REWORK-BINDING-20261104/codex-cloud-rework-binding-change.log",
+    "evidence/v0.4/runs/CODEX-CLOUD-SUPERVISOR-20261104/codex-cloud-supervisor-rework-change.log",
+    "evidence/v0.4/runs/LINE-EXISTING-AUTHORITY-CAPA157-20261104/autonomy-capa157-fix.log",
+    "evidence/v0.4/runs/LINE-EXISTING-AUTHORITY-CAPA157-20261104/capa157-baseline-m7-tests.xml",
+    "evidence/v0.4/runs/LINE-EXISTING-AUTHORITY-CAPA157-20261104/capa157-focused-tests.xml",
+    "evidence/v0.4/runs/LINE-M7-OWNED-TEARDOWN-CAPA155-20261104/autonomy-capa155-fix.log",
+    "evidence/v0.4/runs/LINE-ORDER-SCOPE-CAPA159-20261104/autonomy-capa159-adoption-rejected-fix.log",
+    "evidence/v0.4/runs/LINE-ORDER-SCOPE-CAPA159-20261104/autonomy-capa159-fix.log",
+    "evidence/v0.4/runs/LINE-PYTHON-RUNTIME-CAPA158-20261104/autonomy-capa158-fix.log",
+    "evidence/v0.4/runs/LINE-PYTHON-RUNTIME-CAPA158-20261104/capa158-baseline-d7-tests.xml",
+    "evidence/v0.4/runs/LINE-PYTHON-RUNTIME-CAPA158-20261104/capa158-focused-tests.xml"
+  ],
+  "resolution": "Original log/XML bytes retained to preserve hashes. Strict whitespacecheck passes outsideevidence. No code/oracle changed tohidewarnings.",
+  "non_evidence_check_exit": 0
+}

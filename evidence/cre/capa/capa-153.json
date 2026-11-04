@@ -1,0 +1,101 @@
+{
+ "CAPA-153": {
+  "history": [
+   {
+    "at": "2026-11-04T13:40:55.125701Z",
+    "capa_id": "CAPA-153",
+    "evidence": "[\"handoff-20261103-s9-6-controlled-preflight\"]",
+    "from_state": null,
+    "reason": "Controlled real hook and MCP reproduction of the handoff refused-call allowance item; no production-failure claim",
+    "seq": 1130,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T13:40:55.206231Z",
+    "capa_id": "CAPA-153",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1131,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T13:40:55.363066Z",
+    "capa_id": "CAPA-153",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-153 assigned",
+    "seq": 1132,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T13:40:59.472015Z",
+    "capa_id": "CAPA-153",
+    "evidence": "[\"reproducer-run:rr-bbd294c12d0618262666\", \"reproducer-run:rr-61508a699e66c3bee52d\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1133,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T13:40:59.504550Z",
+    "capa_id": "CAPA-153",
+    "evidence": "[\"git:7c15b0589906..1cb4e48cd8fe\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 1cb4e48cd8fe (patch 15161 bytes)",
+    "seq": 1134,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T13:45:51.990848Z",
+    "capa_id": "CAPA-153",
+    "evidence": "[\"reproducer-run:rr-d3a05eea4e2e9506e91e\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-153 absent at 1cb4e48cd8fe",
+    "seq": 1135,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T13:45:52.059583Z",
+    "capa_id": "CAPA-153",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1136,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-55a80e2da5469e370bf194a6acb1ce7c9c509214",
+   "7c15b0589906310a024c25381cd4b18d44590414",
+   "1cb4e48cd8fe9450d7e35e9dcaa37a4d2a2fbb41",
+   "pd-fcac6bc7195a5e5f5482"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<1cb4e48cd8fe"
+   ],
+   "candidate_patch_sha256": "beb34705e63cc3824dc8107b64e40822dabb87ce3334872c1190330d523eb46b",
+   "capa_id": "CAPA-153",
+   "created_at": "2026-11-04T13:40:55.125701Z",
+   "event_ids": [],
+   "incident_ids": [
+    "handoff-20261103-s9-6-controlled-preflight"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-153",
+   "reproducer_id": "RPR-153",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-bbd294c12d0618262666",
+    "reproducer-run:rr-61508a699e66c3bee52d"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Known unexecuted test preflight refusals are charged as failed verification and prematurely consume the phase repair allowance",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T13:45:52.059583Z"
+  }
+ }
+}

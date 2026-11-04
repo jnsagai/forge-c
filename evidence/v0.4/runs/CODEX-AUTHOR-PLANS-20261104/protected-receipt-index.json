@@ -1,0 +1,1556 @@
+{
+  "created_at": "2026-11-04T15:25:25.384621+00:00",
+  "candidate": "f843b2464aede3f9448f83af718e6875f7d5a410",
+  "baseline": "e014fd86a00233605b2f82c026499aa4e8fbd7b4",
+  "decision_id": "pd-fe996c28543e09462a37",
+  "decision_sha256": "f784befe461ee16674128ac3b7fb28ee5d15437d42d2531b6b3162cdb053a977",
+  "manifest_sha256": "b66d779fe42b05bb34fc57b62345ad45707745c7aa244500d524f8aaabe8db90",
+  "prevention_count": 154,
+  "manifest_last": "RPR-155",
+  "all_receipt_logs_hash_verified": true,
+  "prevention_receipts_in_gate_order": [
+    {
+      "run_id": "rr-ffb9cf96199901fbaec1",
+      "reproducer_id": "RPR-001",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:45.733452Z"
+    },
+    {
+      "run_id": "rr-7681ebb4bd0b8a858b0b",
+      "reproducer_id": "RPR-002",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "793fad6b8223a018546fc069f48fa286322eaffd4494b6ffc3a511184aaa75f0",
+      "at": "2026-11-04T15:19:46.083808Z"
+    },
+    {
+      "run_id": "rr-0e513d8e6e1f59501894",
+      "reproducer_id": "RPR-003",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:46.603178Z"
+    },
+    {
+      "run_id": "rr-94a20e583b645b05d814",
+      "reproducer_id": "RPR-004",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:47.045280Z"
+    },
+    {
+      "run_id": "rr-94af2951991d42022ca7",
+      "reproducer_id": "RPR-005",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:47.458115Z"
+    },
+    {
+      "run_id": "rr-6dd0a7c534537c64f862",
+      "reproducer_id": "RPR-006",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:47.599417Z"
+    },
+    {
+      "run_id": "rr-48993a858002fc5d2a2f",
+      "reproducer_id": "RPR-007",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:47.771751Z"
+    },
+    {
+      "run_id": "rr-7ccf13f4c31baee58166",
+      "reproducer_id": "RPR-008",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:48.046719Z"
+    },
+    {
+      "run_id": "rr-3780521535b0299a6e33",
+      "reproducer_id": "RPR-009",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:48.334387Z"
+    },
+    {
+      "run_id": "rr-23dab9125607593bfcfd",
+      "reproducer_id": "RPR-010",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:48.612258Z"
+    },
+    {
+      "run_id": "rr-16b800406d9bf76b943c",
+      "reproducer_id": "RPR-011",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:48.776869Z"
+    },
+    {
+      "run_id": "rr-be10c02e199152e82d5b",
+      "reproducer_id": "RPR-012",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:48.955898Z"
+    },
+    {
+      "run_id": "rr-c2b7d8c48a5ffb896b16",
+      "reproducer_id": "RPR-013",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:49.232361Z"
+    },
+    {
+      "run_id": "rr-cd0799dd8ae7c1dda14c",
+      "reproducer_id": "RPR-014",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:49.393676Z"
+    },
+    {
+      "run_id": "rr-121b2ab494ca24125cc2",
+      "reproducer_id": "RPR-015",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:49.792648Z"
+    },
+    {
+      "run_id": "rr-dab61cf37d0031c96804",
+      "reproducer_id": "RPR-016",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:50.684880Z"
+    },
+    {
+      "run_id": "rr-a2308c360d692b603543",
+      "reproducer_id": "RPR-017",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:51.004685Z"
+    },
+    {
+      "run_id": "rr-b5e18e0ef5083a777872",
+      "reproducer_id": "RPR-018",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:51.369846Z"
+    },
+    {
+      "run_id": "rr-c7c3f1867ccab4adb734",
+      "reproducer_id": "RPR-019",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:51.874221Z"
+    },
+    {
+      "run_id": "rr-ceafd3fe60b81f5ad3aa",
+      "reproducer_id": "RPR-020",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:52.069491Z"
+    },
+    {
+      "run_id": "rr-2623cfca56a85ff5b40b",
+      "reproducer_id": "RPR-021",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:52.345140Z"
+    },
+    {
+      "run_id": "rr-17ad596c4d370b9d2145",
+      "reproducer_id": "RPR-022",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:52.768323Z"
+    },
+    {
+      "run_id": "rr-cc0ccec899f8c762709d",
+      "reproducer_id": "RPR-023",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:53.347533Z"
+    },
+    {
+      "run_id": "rr-424c5ba11eca7133b29e",
+      "reproducer_id": "RPR-024",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:53.826931Z"
+    },
+    {
+      "run_id": "rr-1e6a828d7dc6b5b8daa2",
+      "reproducer_id": "RPR-025",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:54.103570Z"
+    },
+    {
+      "run_id": "rr-05d3d8f51ae668f319ec",
+      "reproducer_id": "RPR-026",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:54.542861Z"
+    },
+    {
+      "run_id": "rr-47a7c5a0e3969a39ded4",
+      "reproducer_id": "RPR-027",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:54.827051Z"
+    },
+    {
+      "run_id": "rr-13011f22dec334af50ca",
+      "reproducer_id": "RPR-028",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:55.001374Z"
+    },
+    {
+      "run_id": "rr-d678f7444fe5878141a3",
+      "reproducer_id": "RPR-029",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:55.276563Z"
+    },
+    {
+      "run_id": "rr-62a74c16d4421ae4765e",
+      "reproducer_id": "RPR-030",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:55.557451Z"
+    },
+    {
+      "run_id": "rr-c98fa4af7e83eff229bc",
+      "reproducer_id": "RPR-031",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:55.806850Z"
+    },
+    {
+      "run_id": "rr-27ff784cd42df53d8748",
+      "reproducer_id": "RPR-032",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:57.645624Z"
+    },
+    {
+      "run_id": "rr-48198b88e0cbe5539097",
+      "reproducer_id": "RPR-033",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:57.913159Z"
+    },
+    {
+      "run_id": "rr-b9eb464bf5dbc72b0332",
+      "reproducer_id": "RPR-034",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:58.046692Z"
+    },
+    {
+      "run_id": "rr-c61be900c33f61649c31",
+      "reproducer_id": "RPR-035",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:59.538277Z"
+    },
+    {
+      "run_id": "rr-3071b34d1154275a2cce",
+      "reproducer_id": "RPR-036",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:59.757912Z"
+    },
+    {
+      "run_id": "rr-e1ca63cd2c583fb750d6",
+      "reproducer_id": "RPR-037",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:19:59.921586Z"
+    },
+    {
+      "run_id": "rr-a1573572ced036b7947a",
+      "reproducer_id": "RPR-038",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:00.068498Z"
+    },
+    {
+      "run_id": "rr-42d3165e8046f3bd99ea",
+      "reproducer_id": "RPR-039",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:00.186505Z"
+    },
+    {
+      "run_id": "rr-bcaedd8671e1c8d2f9c2",
+      "reproducer_id": "RPR-040",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:00.403496Z"
+    },
+    {
+      "run_id": "rr-53b8137361967142a1ca",
+      "reproducer_id": "RPR-041",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:00.756042Z"
+    },
+    {
+      "run_id": "rr-0baaf83a5ffa5686e22c",
+      "reproducer_id": "RPR-042",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:01.402502Z"
+    },
+    {
+      "run_id": "rr-dd181b73aee88a3c8413",
+      "reproducer_id": "RPR-043",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:02.431468Z"
+    },
+    {
+      "run_id": "rr-12432a60af9f18fa166c",
+      "reproducer_id": "RPR-044",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:02.582680Z"
+    },
+    {
+      "run_id": "rr-cc80d31040352906d0af",
+      "reproducer_id": "RPR-045",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:02.903744Z"
+    },
+    {
+      "run_id": "rr-ec76603e6c0726d29993",
+      "reproducer_id": "RPR-046",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:03.045498Z"
+    },
+    {
+      "run_id": "rr-2df436b0d95149fe2817",
+      "reproducer_id": "RPR-047",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:03.199485Z"
+    },
+    {
+      "run_id": "rr-2563ab2be38e70275997",
+      "reproducer_id": "RPR-048",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:03.636629Z"
+    },
+    {
+      "run_id": "rr-28bff8990ae9ed8829bb",
+      "reproducer_id": "RPR-049",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:03.741925Z"
+    },
+    {
+      "run_id": "rr-d9e32c4025919f730368",
+      "reproducer_id": "RPR-050",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:04.069801Z"
+    },
+    {
+      "run_id": "rr-9a12c01c7cd1b4b0f250",
+      "reproducer_id": "RPR-051",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:04.373313Z"
+    },
+    {
+      "run_id": "rr-79e7fc3c42931bf67da2",
+      "reproducer_id": "RPR-052",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:04.662333Z"
+    },
+    {
+      "run_id": "rr-a2d97f4a343f065e6ca6",
+      "reproducer_id": "RPR-053",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:04.770857Z"
+    },
+    {
+      "run_id": "rr-9367c3d5f13705fc1490",
+      "reproducer_id": "RPR-054",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:04.958396Z"
+    },
+    {
+      "run_id": "rr-0a4b18ed7a6d13de2e1f",
+      "reproducer_id": "RPR-055",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:05.451275Z"
+    },
+    {
+      "run_id": "rr-0cb31f9788313fa5e8fe",
+      "reproducer_id": "RPR-056",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:05.957552Z"
+    },
+    {
+      "run_id": "rr-297616db44891a69a50f",
+      "reproducer_id": "RPR-057",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:06.165647Z"
+    },
+    {
+      "run_id": "rr-1781d44b27309f522452",
+      "reproducer_id": "RPR-058",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:06.379028Z"
+    },
+    {
+      "run_id": "rr-d29c5803af691b07eae0",
+      "reproducer_id": "RPR-059",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:06.630723Z"
+    },
+    {
+      "run_id": "rr-4a93a9a540aae87b0e89",
+      "reproducer_id": "RPR-060",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:06.933717Z"
+    },
+    {
+      "run_id": "rr-cdfcc5394221d0dd3758",
+      "reproducer_id": "RPR-061",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:07.245560Z"
+    },
+    {
+      "run_id": "rr-f73cffccd673b9739e54",
+      "reproducer_id": "RPR-062",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:07.363352Z"
+    },
+    {
+      "run_id": "rr-575f3400d127e63f6828",
+      "reproducer_id": "RPR-063",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:07.599058Z"
+    },
+    {
+      "run_id": "rr-108203c88a9bd50cb87f",
+      "reproducer_id": "RPR-064",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:08.047057Z"
+    },
+    {
+      "run_id": "rr-bd55ddbecbe5d7bc2b2a",
+      "reproducer_id": "RPR-065",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:08.441057Z"
+    },
+    {
+      "run_id": "rr-6d4b02b7c02424ecbb8c",
+      "reproducer_id": "RPR-066",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:08.575681Z"
+    },
+    {
+      "run_id": "rr-596a9c04e81fd92558da",
+      "reproducer_id": "RPR-067",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:08.937303Z"
+    },
+    {
+      "run_id": "rr-73bad70e699e7ae9d7d2",
+      "reproducer_id": "RPR-068",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:09.066443Z"
+    },
+    {
+      "run_id": "rr-344d0b2bfd5a2e533c3f",
+      "reproducer_id": "RPR-069",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:09.155353Z"
+    },
+    {
+      "run_id": "rr-ad98ead8bfeacd682c64",
+      "reproducer_id": "RPR-070",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:09.276006Z"
+    },
+    {
+      "run_id": "rr-6f256c8ae186e2892fff",
+      "reproducer_id": "RPR-071",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:09.401085Z"
+    },
+    {
+      "run_id": "rr-ee640d00ba1607752b0a",
+      "reproducer_id": "RPR-072",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:09.612936Z"
+    },
+    {
+      "run_id": "rr-b3c18ee0629219d84da8",
+      "reproducer_id": "RPR-073",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:09.798623Z"
+    },
+    {
+      "run_id": "rr-09c9d8685c0d9cf2936d",
+      "reproducer_id": "RPR-074",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:10.080615Z"
+    },
+    {
+      "run_id": "rr-35179483231acc6637f7",
+      "reproducer_id": "RPR-075",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "d04f88013df8d5f8e17dfb43dfd8e81a41597468b6043e28c9c786ec875bfa1b",
+      "at": "2026-11-04T15:20:10.244639Z"
+    },
+    {
+      "run_id": "rr-34f3db4035413d47e7b4",
+      "reproducer_id": "RPR-076",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "f3462edd9a7dc1219c83d97acd1d187a2623bcfbeb9016ba2d9309b68d9c3956",
+      "at": "2026-11-04T15:20:11.432403Z"
+    },
+    {
+      "run_id": "rr-cfc9fbbdfb9de882c0f4",
+      "reproducer_id": "RPR-077",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "8ebe3845e3438fafa79925f8abcdd3321ade4640b494bced03fb5874546a0b6a",
+      "at": "2026-11-04T15:20:12.720056Z"
+    },
+    {
+      "run_id": "rr-8f24ff23884478863650",
+      "reproducer_id": "RPR-078",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "aa2d81abb375306868b12cfd197b02bc68bf0e004ca4780367214b305b57b9fa",
+      "at": "2026-11-04T15:20:13.467179Z"
+    },
+    {
+      "run_id": "rr-5f855588a246c2f3e960",
+      "reproducer_id": "RPR-079",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:14.015258Z"
+    },
+    {
+      "run_id": "rr-d4e5568225ceed4a0dd5",
+      "reproducer_id": "RPR-080",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:15.163757Z"
+    },
+    {
+      "run_id": "rr-186b0b2f6df3bb12d391",
+      "reproducer_id": "RPR-081",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:15.738339Z"
+    },
+    {
+      "run_id": "rr-45f30ab02539bac17e9d",
+      "reproducer_id": "RPR-082",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:16.262534Z"
+    },
+    {
+      "run_id": "rr-4d677cc3d0dd33f67ce1",
+      "reproducer_id": "RPR-083",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "8ad0dc25995d70b308457343de1c6f27ad4b9e1fca4b895ba2fc199a8dacedd1",
+      "at": "2026-11-04T15:20:16.839578Z"
+    },
+    {
+      "run_id": "rr-3643ea37dda0039e081b",
+      "reproducer_id": "RPR-084",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:17.506089Z"
+    },
+    {
+      "run_id": "rr-732dad221a6a557e4403",
+      "reproducer_id": "RPR-085",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "8ad0dc25995d70b308457343de1c6f27ad4b9e1fca4b895ba2fc199a8dacedd1",
+      "at": "2026-11-04T15:20:18.074521Z"
+    },
+    {
+      "run_id": "rr-1518eadf0d8493fc2d1e",
+      "reproducer_id": "RPR-086",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:18.416780Z"
+    },
+    {
+      "run_id": "rr-8f46b0aeb3bca203a270",
+      "reproducer_id": "RPR-087",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "cc36fcf119ad1b68df3110b63e423e63925e4b795692909ae733094a2dc5cdf9",
+      "at": "2026-11-04T15:20:18.957497Z"
+    },
+    {
+      "run_id": "rr-dcd75830b9c256d67e95",
+      "reproducer_id": "RPR-088",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:19.150243Z"
+    },
+    {
+      "run_id": "rr-cb54ffc5c31a5a88a642",
+      "reproducer_id": "RPR-089",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "1a2565ab277e41d5a08f5ec11208806e1aab8453725f20a68b037de4fd843101",
+      "at": "2026-11-04T15:20:19.473058Z"
+    },
+    {
+      "run_id": "rr-f0e2489fdbf676cccf15",
+      "reproducer_id": "RPR-090",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:19.773708Z"
+    },
+    {
+      "run_id": "rr-5026645a0e023ee39597",
+      "reproducer_id": "RPR-091",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:19.974965Z"
+    },
+    {
+      "run_id": "rr-f0f90770c4ad772d8003",
+      "reproducer_id": "RPR-092",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:20.165779Z"
+    },
+    {
+      "run_id": "rr-1a5a3e5d8302e4f9054a",
+      "reproducer_id": "RPR-093",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:20.365463Z"
+    },
+    {
+      "run_id": "rr-ca3fb342d7b9b90e322a",
+      "reproducer_id": "RPR-094",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:20.618733Z"
+    },
+    {
+      "run_id": "rr-7011c01e78944d717034",
+      "reproducer_id": "RPR-095",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:20.801597Z"
+    },
+    {
+      "run_id": "rr-2c0edb8cb542d5b41b9d",
+      "reproducer_id": "RPR-096",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:21.066606Z"
+    },
+    {
+      "run_id": "rr-0275f80ac305e28340e8",
+      "reproducer_id": "RPR-097",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:21.234486Z"
+    },
+    {
+      "run_id": "rr-254755092dbea2c2ce9b",
+      "reproducer_id": "RPR-098",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:21.436376Z"
+    },
+    {
+      "run_id": "rr-d24bf960ff19f7e6a74a",
+      "reproducer_id": "RPR-099",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:21.690081Z"
+    },
+    {
+      "run_id": "rr-a4b91492db83424a2f1d",
+      "reproducer_id": "RPR-100",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "44f283418aeca1efb71a2647776605e288909ae6af734e281f50577fed762a82",
+      "at": "2026-11-04T15:20:21.792028Z"
+    },
+    {
+      "run_id": "rr-52172720e1ff2ed936db",
+      "reproducer_id": "RPR-101",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:22.053971Z"
+    },
+    {
+      "run_id": "rr-304d3f82ff9d9516a77b",
+      "reproducer_id": "RPR-102",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:22.236823Z"
+    },
+    {
+      "run_id": "rr-cbc42520c1f71beaad6a",
+      "reproducer_id": "RPR-103",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:22.411603Z"
+    },
+    {
+      "run_id": "rr-233b46fbaa55aab9ef86",
+      "reproducer_id": "RPR-104",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:22.685519Z"
+    },
+    {
+      "run_id": "rr-4c29ef1585641d288d2a",
+      "reproducer_id": "RPR-105",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:22.978597Z"
+    },
+    {
+      "run_id": "rr-18c3f7daf1bc11aface1",
+      "reproducer_id": "RPR-106",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:23.205626Z"
+    },
+    {
+      "run_id": "rr-6d1bfa5c88c2c6f42965",
+      "reproducer_id": "RPR-107",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:23.386748Z"
+    },
+    {
+      "run_id": "rr-c4605c4332e3646e9f77",
+      "reproducer_id": "RPR-108",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "08a204a3c8461595412c2df90cc1ff0bdc2ba4d04e0f26bf2b17d8fb1f80c7c1",
+      "at": "2026-11-04T15:20:24.335253Z"
+    },
+    {
+      "run_id": "rr-255d8bdf444d050ec4c4",
+      "reproducer_id": "RPR-109",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:24.524338Z"
+    },
+    {
+      "run_id": "rr-9cb90ad962a549cd5c97",
+      "reproducer_id": "RPR-110",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:24.794031Z"
+    },
+    {
+      "run_id": "rr-218b2db3d604fd54cc6d",
+      "reproducer_id": "RPR-111",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:25.009109Z"
+    },
+    {
+      "run_id": "rr-4ad010ee602a8786c7ae",
+      "reproducer_id": "RPR-112",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:26.502115Z"
+    },
+    {
+      "run_id": "rr-955989e8495fa1e03310",
+      "reproducer_id": "RPR-113",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:26.687002Z"
+    },
+    {
+      "run_id": "rr-53ab2dd2dedc2498e60c",
+      "reproducer_id": "RPR-114",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:26.865625Z"
+    },
+    {
+      "run_id": "rr-eb877aeb998a8df2b675",
+      "reproducer_id": "RPR-115",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "201741645736effde414b006c74a908d5ab81295020b5c7463202a6233f4cffe",
+      "at": "2026-11-04T15:20:27.807371Z"
+    },
+    {
+      "run_id": "rr-28fa30c2facb22390711",
+      "reproducer_id": "RPR-116",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:28.018725Z"
+    },
+    {
+      "run_id": "rr-fd186702d20f61454ea6",
+      "reproducer_id": "RPR-117",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:28.166037Z"
+    },
+    {
+      "run_id": "rr-d328b3f54fc9992bbeb7",
+      "reproducer_id": "RPR-118",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:28.329843Z"
+    },
+    {
+      "run_id": "rr-c9fa3ab47300728b5cc8",
+      "reproducer_id": "RPR-119",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:28.466440Z"
+    },
+    {
+      "run_id": "rr-5f7aceb6b5b197184fee",
+      "reproducer_id": "RPR-120",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:28.727505Z"
+    },
+    {
+      "run_id": "rr-7d398021f1dac49d3522",
+      "reproducer_id": "RPR-121",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:29.126403Z"
+    },
+    {
+      "run_id": "rr-1f7926a7254ae2284cd7",
+      "reproducer_id": "RPR-122",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:29.406238Z"
+    },
+    {
+      "run_id": "rr-cca6f8a0585b008790dc",
+      "reproducer_id": "RPR-123",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:31.161140Z"
+    },
+    {
+      "run_id": "rr-93dffbb9d2f8630bdff4",
+      "reproducer_id": "RPR-124",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:31.358714Z"
+    },
+    {
+      "run_id": "rr-d12880e8ab77b46e9b9e",
+      "reproducer_id": "RPR-125",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:31.463893Z"
+    },
+    {
+      "run_id": "rr-8b8b1e8345dc6d96b172",
+      "reproducer_id": "RPR-126",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:31.849723Z"
+    },
+    {
+      "run_id": "rr-13d71af7caf2a42dac11",
+      "reproducer_id": "RPR-127",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:32.283807Z"
+    },
+    {
+      "run_id": "rr-8225257f4f05f224d032",
+      "reproducer_id": "RPR-128",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:32.877460Z"
+    },
+    {
+      "run_id": "rr-f29f6b528d1bb82964c9",
+      "reproducer_id": "RPR-129",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:33.106887Z"
+    },
+    {
+      "run_id": "rr-536dd1fa80ed0a3e9ed6",
+      "reproducer_id": "RPR-130",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:34.267111Z"
+    },
+    {
+      "run_id": "rr-80b2d28aa78134302e02",
+      "reproducer_id": "RPR-131",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:34.951715Z"
+    },
+    {
+      "run_id": "rr-c158dfc476b7e1ef4100",
+      "reproducer_id": "RPR-132",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:35.537473Z"
+    },
+    {
+      "run_id": "rr-df4dc893aacdef8c8d5a",
+      "reproducer_id": "RPR-133",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:35.878375Z"
+    },
+    {
+      "run_id": "rr-863afc25ee758d4a7779",
+      "reproducer_id": "RPR-134",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:36.059409Z"
+    },
+    {
+      "run_id": "rr-3142b95b79f76d46364d",
+      "reproducer_id": "RPR-135",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:36.805788Z"
+    },
+    {
+      "run_id": "rr-37855c52861d4dc6d77d",
+      "reproducer_id": "RPR-136",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:36.920841Z"
+    },
+    {
+      "run_id": "rr-57dc373bcd99be52afa2",
+      "reproducer_id": "RPR-137",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "484a33045c1f35b4005eceecc62720d66b9367be5b5a9beb76f66bdc9790c2f3",
+      "at": "2026-11-04T15:20:37.655686Z"
+    },
+    {
+      "run_id": "rr-0ddce8636d57609049a4",
+      "reproducer_id": "RPR-138",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:37.917670Z"
+    },
+    {
+      "run_id": "rr-2887a6c1139c65f3617d",
+      "reproducer_id": "RPR-139",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:40.589015Z"
+    },
+    {
+      "run_id": "rr-6c1156b2138dd0cbfe3c",
+      "reproducer_id": "RPR-140",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:40.776092Z"
+    },
+    {
+      "run_id": "rr-158e75819f13e44d3b89",
+      "reproducer_id": "RPR-141",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:41.065486Z"
+    },
+    {
+      "run_id": "rr-de669c1806ce57384326",
+      "reproducer_id": "RPR-142",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:41.495722Z"
+    },
+    {
+      "run_id": "rr-0c492f5d25b4ca811ab8",
+      "reproducer_id": "RPR-143",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:41.889176Z"
+    },
+    {
+      "run_id": "rr-9a2078913daaaa583f6e",
+      "reproducer_id": "RPR-144",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:42.231352Z"
+    },
+    {
+      "run_id": "rr-449521f4796ef7b10506",
+      "reproducer_id": "RPR-145",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:42.462327Z"
+    },
+    {
+      "run_id": "rr-512c5dbebc83e62d1206",
+      "reproducer_id": "RPR-146",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:42.622912Z"
+    },
+    {
+      "run_id": "rr-41503c6bca5279ae1d24",
+      "reproducer_id": "RPR-147",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:42.887985Z"
+    },
+    {
+      "run_id": "rr-734e121a782469030a8c",
+      "reproducer_id": "RPR-149",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:43.288484Z"
+    },
+    {
+      "run_id": "rr-9f8bd97d5c5500579276",
+      "reproducer_id": "RPR-150",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:43.723544Z"
+    },
+    {
+      "run_id": "rr-43e04ffeb53421f9fbcc",
+      "reproducer_id": "RPR-151",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:44.340447Z"
+    },
+    {
+      "run_id": "rr-79a072e93eff1f663cd2",
+      "reproducer_id": "RPR-152",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:44.854827Z"
+    },
+    {
+      "run_id": "rr-30bea9397f1eaf78e406",
+      "reproducer_id": "RPR-153",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-04T15:20:46.265732Z"
+    },
+    {
+      "run_id": "rr-366ecb352e76778348d0",
+      "reproducer_id": "RPR-154",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "fa786c201bc5eceb3afd58f93807166ae4e06064a86441349872d85079e3e0c9",
+      "at": "2026-11-04T15:20:47.959264Z"
+    },
+    {
+      "run_id": "rr-71a26a94d0efe67d32ca",
+      "reproducer_id": "RPR-155",
+      "revision": "f843b2464aede3f9448f83af718e6875f7d5a410",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "log_sha256": "3dc12bb06f6f24386a10e0e1db62faf177b7217e6f22ba0f90e61642c45730fe",
+      "at": "2026-11-04T15:20:50.294579Z"
+    }
+  ],
+  "manifest_order_index": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-swe6-plan-protected-input-index.json",
+  "prior_rejected_decision": "pd-8feba98255e84028c595",
+  "no_automatic_deployment": true
+}

@@ -1,0 +1,85 @@
+{
+  "schema": "forge-c/native-header-transport-measurement/1",
+  "scope": "TRANSPORT_ONLY_DETERMINISTIC_STUB_NO_ROLE_QUALIFICATION",
+  "started_at": "2026-11-04T14:57:03.471677Z",
+  "binary_sha256": "e9d7b28207d2bb51f4764e7231f08bfe5a5ccc166d335f6bec786b3fed37581a",
+  "profile_sha256": "830da0ee607c66e462f9eabc3c5037fe64c88b5ebf35c05b99d978b7d505536f",
+  "source_revision": "3e6fc5105d4148615d454f615d010b5954c84ac0",
+  "settings_sha256": "5434d68e8379c333aca9e965322155220a87311d191e65535f43f641f30f27b9",
+  "graph_sha256": "e09f58ed8ee8800140fd70fa1ca1f51bdd44fa2d3fef7a8371570087ad01a4b6",
+  "requests": [
+    {
+      "path": "/v1/chat/completions",
+      "x_session_id": "01M6KH0HKX52PB20Q9MR1JNASW",
+      "model": "qwen3.8:27b-q8_0",
+      "stream": true,
+      "max_tokens": 16384,
+      "max_completion_tokens": null,
+      "temperature": null,
+      "top_p": null,
+      "seed": null,
+      "response_format_type": null
+    },
+    {
+      "path": "/v1/chat/completions",
+      "x_session_id": "01M6KH0HKX52PB20Q9MR1JNASW",
+      "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0",
+      "stream": true,
+      "max_tokens": 16384,
+      "max_completion_tokens": null,
+      "temperature": null,
+      "top_p": null,
+      "seed": null,
+      "response_format_type": null
+    }
+  ],
+  "production_mutations": false,
+  "profile": "local-rtx-v2-omniverse2-ornith-think-author-q38-inspector",
+  "source_tracked_dirty": true,
+  "harness_sha256": "5fbf4580e707a95a50ce65a8fd076b16002f19eb2a7c83ff6a75e0ab2a86ed72",
+  "adapter_sha256": {
+    "llm_gateway.py": "f01f4f7fdca991255bb10e076c09394c5fcc657153eb2a1989a7fbb1bab69b77",
+    "afo/product_job.py": "62b74a584792fd384365e2636d8ed51907fdf3f8e2b235b98ee6522bdf6b26c2",
+    "afo/execution_lifecycle.py": "e40861de5dbaf4a364e68363f98b7aae70f348c1c7c8adcf8113c3dcc912e5da",
+    "fabro/client.py": "530cc7d85d29380ddbc726f1a10866cdf90410d211f6e48be9b8359414081608",
+    "lrtx/stack.py": "19e7f6ea4b94436e7e27b66a103541846627a1dc6bd181e9fed8a5216a117d34"
+  },
+  "binary_version": "fabro 0.362.0-nightly.0 (a192bce 2026-09-20)",
+  "launch_returncode": 0,
+  "native_run_id": "01M6KH0HKX52PB20Q9MR1JNASW",
+  "terminal_status": "SUCCEEDED",
+  "labels_match": true,
+  "all_headers_equal_actual_run_id": true,
+  "request_count": 2,
+  "identity_controls": {
+    "actual_header_and_nonce": {
+      "pass": true,
+      "accepted": true,
+      "reason": "CONFIRMED"
+    },
+    "missing_header": {
+      "pass": true,
+      "accepted": false,
+      "reason": "NATIVE_REQUEST_IDENTITY_INVALID:"
+    },
+    "unknown_header": {
+      "pass": true,
+      "accepted": false,
+      "reason": "HTTPStatusError:404"
+    },
+    "foreign_nonce": {
+      "pass": true,
+      "accepted": false,
+      "reason": "NATIVE_REQUEST_IDENTITY_UNCONFIRMED:"
+    },
+    "foreign_job": {
+      "pass": true,
+      "accepted": false,
+      "reason": "NATIVE_REQUEST_IDENTITY_UNCONFIRMED:"
+    }
+  },
+  "verdict": "PASS",
+  "fixture_terminal_confirmed": true,
+  "own_server_stopped": true,
+  "finished_at": "2026-11-04T14:57:05.539929Z"
+}

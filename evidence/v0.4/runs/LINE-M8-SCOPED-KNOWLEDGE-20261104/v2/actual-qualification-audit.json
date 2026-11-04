@@ -1,0 +1,29 @@
+{
+  "schema": "forge-c/line-m8-real-scoped-lesson-qualification/1",
+  "at": "2026-11-04T12:33:26.286321Z",
+  "lesson_id": "lesson-5151da3a3240",
+  "lesson_state": "VALIDATED",
+  "predecessor": "lesson-41f8799b78b5",
+  "predecessor_state": "RETRACTED",
+  "qualification_id": "lesson-qualification-65bb59f333f2beaf5626f7c9",
+  "qualification_manifest_sha256": "1ef22eff836025c6ca0a7b1b33eaf2ebedf334cfb2fa0ce4cb2b9470b7096a98",
+  "qualification_report_sha256": "944c6d3001f8004cef736f3d91e4fb8d334e190bba71f088e6f24cb515d182cf",
+  "checks": {
+    "matching_scope_selected": true,
+    "excluded_phase": true,
+    "excluded_role": true,
+    "excluded_target": true,
+    "excluded_source_version": true,
+    "isolated_actual_mcp_complete_payload": true
+  },
+  "model_calls": 0,
+  "production_exposures_added": 0,
+  "mcp_functional_check": "ISOLATED_CLONED_DB_AND_SCRATCH_MANIFEST_ONLY",
+  "mcp_payload_bytes": 901,
+  "conductor_pid_before": "3939078",
+  "conductor_pid_after": "3939078",
+  "actual_later_role_delivery": "NOT_RUN",
+  "measured_benefit": "NOT_RUN",
+  "full_M8": "INCOMPLETE",
+  "checks_pass": true
+}

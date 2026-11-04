@@ -1,0 +1,36 @@
+{
+  "schema": "forge-c/source-component-validation/1",
+  "component": "M6 explicit signed role inputs",
+  "candidate": "d151943933b609d701ad701fb64532761a57fb48",
+  "baseline": "deaff7f4b0faa8d55967e6d5c2e6b851101e636c",
+  "decision_id": "pd-074a3f63de967a611d1d",
+  "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "tests": {
+    "targeted": 48,
+    "static_design": 14
+  },
+  "scope": "SOURCE_INPUT_SIGNATURE_API_ONLY_NOT_FULL_M6_WORKER_OR_QUALIFICATION",
+  "live_model_calls": 0,
+  "live_dispatch": "NOT_RUN",
+  "actual_role_qualification": "NOT_RUN",
+  "service_activation": "NOT_RUN",
+  "remaining_shared_scope_guard": "Actual signed intent/linked mission/effective limit cross-binding is a later full M6 increment; parent M7 coordinator adds its own check. Source CRE eligibility is not runtime role qualification.",
+  "log_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m6-role-inputs-frozen-tests.log",
+      "sha256": "679c59e43196259ad87c81e75bbeab699bc1bc502d87a43500415849efe659e9"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m6-role-inputs-design.log",
+      "sha256": "f8d8da5467efe30ca8673da3318165f8f5d7b89ce7dfd7a68e38482392c83139"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m6-role-inputs-bwrap-health.log",
+      "sha256": "1cd512232c6393bd0a5b14f402d7957f0e7916fdd4d4d1a7cdd0d10c350aeb5d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m6-role-inputs-change-gate.log",
+      "sha256": "db15f307e1993792572d6f2b4dc9f736f9f7fb34952fcfbf498735a755385cc1"
+    }
+  ]
+}

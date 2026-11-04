@@ -1,0 +1,12 @@
+{
+  "source": "99a44611d793e0092b0f35aeed5d70d0907c4958",
+  "decision": "pd-9efb83338250b20b8402",
+  "tests": "20finalnewcontrolsPASS; broader53PASS1environmentSKIP +newguard/feedPASSseparately; design14PASS; changednewPythonruffPASS",
+  "scope": "Separately signed cloud product scheduling/admission and transport fixture tests. Actual cloud ACT/rework production not yet activated or measured.",
+  "contract_oracle": {
+    "path": "specs/014-durable-local-autonomy/contracts/line-campaign.schema.json",
+    "sha256": "5acc2b403a6acc1cc98527563f053ac1241144db3bcd61e1c6a8072c4b2686ca",
+    "status": "PENDING_SEPARATE_ORACLE; required forCMPcampaign acceptance"
+  },
+  "outstanding": "Bound failed findings handoff +conditionalimmutableorderspec binding/flagforwarding; finalcombinedgates/regression+oracle; cloudPILOTsignature+actualserviceadoption/reworkproof."
+}

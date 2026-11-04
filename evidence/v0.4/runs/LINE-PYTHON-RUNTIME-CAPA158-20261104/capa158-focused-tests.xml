@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="26" time="5.703" timestamp="2026-11-04T15:26:22.559375+00:00" hostname="master"><testcase classname="factory.python.tests.test_isolation_python_alias" name="test_actual_version_alias_preserves_venv_and_readonly_scope" time="0.201" /><testcase classname="factory.python.tests.test_isolation_python_alias" name="test_only_alias_of_already_mounted_python_install_is_added" time="0.001" /><testcase classname="factory.python.tests.test_bubblewrap_confinement" name="test_bubblewrap_scopes_namespace_uid_files_network_and_credentials" time="0.035" /><testcase classname="factory.python.tests.test_bubblewrap_confinement" name="test_bubblewrap_never_mounts_the_factory_state_or_owner_home" time="0.001" /><testcase classname="factory.python.tests.test_cpu_verification_parallel" name="test_omniverse_capacity_keeps_cpu_and_memory_headroom" time="0.000" /><testcase classname="factory.python.tests.test_cpu_verification_parallel" name="test_real_concurrent_execution_keeps_input_order_and_the_worker_bound" time="0.142" /><testcase classname="factory.python.tests.test_cpu_verification_parallel" name="test_worker_exception_is_never_converted_into_a_pass" time="0.001" /><testcase classname="factory.python.tests.test_cpu_verification_parallel" name="test_reproducer_batch_prepares_source_once_and_preserves_every_case" time="0.001" /><testcase classname="factory.python.tests.test_cre_d7_isolation" name="test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[verifier-2001]" time="0.051"><failure message="AssertionError: assert ('OSError' != 'WROTE' and 'WROTE' != 'WROTE')">role = 'verifier', uid = 2001
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-232/test_role_runs_as_separate_os_0')
+
+    @pytest.mark.parametrize("role,uid", [("verifier", 2001), ("repair", 2002)])
+    def test_role_runs_as_separate_os_identity_with_kernel_enforced_limits(role, uid, tmp_path):
+        import json
+    
+        secret = _secret()
+        scratch = isolation.new_dir(f"t049-{role}")
+        try:
+            (scratch / "probe.py").write_text(PROBE)
+            isolation.hand_over(role, scratch)
+            env = {"PATH": os.environ["PATH"], "PYTHONPATH": str(REPO_ROOT / "factory/python"),
+                   "PYTHONDONTWRITEBYTECODE": "1", "FORGE_DEV_TOKEN": "must-not-pass"}
+            p = isolation.execute(role, [sys.executable, str(scratch / "probe.py"), str(REPO_ROOT), str(data_root()),
+                                         str(secret), str(scratch)], cwd=scratch, env=env, writable=[scratch], timeout=120)
+            assert p.returncode == 0, p.stderr.decode()[-400:]
+            r = json.loads(p.stdout.decode().strip().splitlines()[-1])
+            assert r["uid"] == uid and r["home"] == str(scratch)
+&gt;           assert r["write_repo"] != "WROTE" and r["write_data"] != "WROTE"
+E           AssertionError: assert ('OSError' != 'WROTE' and 'WROTE' != 'WROTE')
+
+factory/python/tests/test_cre_d7_isolation.py:63: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_cre_d7_isolation" name="test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[repair-2002]" time="0.033"><failure message="AssertionError: assert ('OSError' != 'WROTE' and 'WROTE' != 'WROTE')">role = 'repair', uid = 2002
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-232/test_role_runs_as_separate_os_1')
+
+    @pytest.mark.parametrize("role,uid", [("verifier", 2001), ("repair", 2002)])
+    def test_role_runs_as_separate_os_identity_with_kernel_enforced_limits(role, uid, tmp_path):
+        import json
+    
+        secret = _secret()
+        scratch = isolation.new_dir(f"t049-{role}")
+        try:
+            (scratch / "probe.py").write_text(PROBE)
+            isolation.hand_over(role, scratch)
+            env = {"PATH": os.environ["PATH"], "PYTHONPATH": str(REPO_ROOT / "factory/python"),
+                   "PYTHONDONTWRITEBYTECODE": "1", "FORGE_DEV_TOKEN": "must-not-pass"}
+            p = isolation.execute(role, [sys.executable, str(scratch / "probe.py"), str(REPO_ROOT), str(data_root()),
+                                         str(secret), str(scratch)], cwd=scratch, env=env, writable=[scratch], timeout=120)
+            assert p.returncode == 0, p.stderr.decode()[-400:]
+            r = json.loads(p.stdout.decode().strip().splitlines()[-1])
+            assert r["uid"] == uid and r["home"] == str(scratch)
+&gt;           assert r["write_repo"] != "WROTE" and r["write_data"] != "WROTE"
+E           AssertionError: assert ('OSError' != 'WROTE' and 'WROTE' != 'WROTE')
+
+factory/python/tests/test_cre_d7_isolation.py:63: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_cre_d7_isolation" name="test_storage_and_worktrees_live_on_the_data_volume" time="0.001"><failure message="AssertionError: assert PosixPath('/tmp/pytest-of-jefferson/pytest-226/test_changed_context_does_not_0/isolated-case-fixture') == PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman')&#10; +  where PosixPath('/tmp/pytest-of-jefferson/pytest-226/test_changed_context_does_not_0/isolated-case-fixture') = resolve()&#10; +    where resolve = PosixPath('/home/jefferson/.forge-podman').resolve&#10; +      where PosixPath('/home/jefferson/.forge-podman') = isolation.SHORT&#10; +  and   PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman') = resolve()&#10; +    where resolve = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman').resolve&#10; +      where PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman') = &lt;function base at 0x717e3f21c0e0&gt;()&#10; +        where &lt;function base at 0x717e3f21c0e0&gt; = isolation.base">def test_storage_and_worktrees_live_on_the_data_volume():
+        assert isolation.base() == data_root() / "podman"
+&gt;       assert isolation.SHORT.resolve() == isolation.base().resolve()
+E       AssertionError: assert PosixPath('/tmp/pytest-of-jefferson/pytest-226/test_changed_context_does_not_0/isolated-case-fixture') == PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman')
+E        +  where PosixPath('/tmp/pytest-of-jefferson/pytest-226/test_changed_context_does_not_0/isolated-case-fixture') = resolve()
+E        +    where resolve = PosixPath('/home/jefferson/.forge-podman').resolve
+E        +      where PosixPath('/home/jefferson/.forge-podman') = isolation.SHORT
+E        +  and   PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman') = resolve()
+E        +    where resolve = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman').resolve
+E        +      where PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman') = &lt;function base at 0x717e3f21c0e0&gt;()
+E        +        where &lt;function base at 0x717e3f21c0e0&gt; = isolation.base
+
+factory/python/tests/test_cre_d7_isolation.py:81: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_cre_d7_isolation" name="test_disable_switch_falls_back_to_plain_subprocess" time="0.015" /><testcase classname="factory.python.tests.test_da014_isolation" name="test_inherited_read_only_tmpdir_cannot_break_independent_compilation[verifier]" time="0.659" /><testcase classname="factory.python.tests.test_da014_isolation" name="test_inherited_read_only_tmpdir_cannot_break_independent_compilation[repair]" time="0.686" /><testcase classname="factory.python.tests.test_da014_isolation" name="test_inherited_read_only_tmpdir_cannot_break_independent_compilation[maintainer]" time="0.700" /><testcase classname="factory.python.tests.test_line_verifier_teardown" name="test_actual_isolated_parallel_children_stop[deadline]" time="1.710" /><testcase classname="factory.python.tests.test_line_verifier_teardown" name="test_actual_isolated_parallel_children_stop[intent]" time="0.506" /><testcase classname="factory.python.tests.test_line_verifier_teardown" name="test_unqualified_backend_and_foreign_group_refuse" time="0.003" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_actual_runtime_consumers_refuse_before_creation" time="0.108" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_explicit_m3_initialization_then_existing_consumer_preserves_records" time="0.098" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_no_migration_or_initialization_of_unavailable_store[missing]" time="0.002" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_no_migration_or_initialization_of_unavailable_store[symlink]" time="0.002" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_no_migration_or_initialization_of_unavailable_store[empty]" time="0.002" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_no_migration_or_initialization_of_unavailable_store[foreign_sqlite]" time="0.024" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_every_connection_refuses_removed_or_replaced_identity" time="0.111" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_loss_between_precheck_and_sqlite_open_cannot_create" time="0.059" /></testsuite></testsuites>

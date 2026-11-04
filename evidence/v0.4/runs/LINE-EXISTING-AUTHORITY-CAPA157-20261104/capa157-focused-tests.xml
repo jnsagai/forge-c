@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="79" time="28.766" timestamp="2026-11-04T15:09:34.573433+00:00" hostname="master"><testcase classname="factory.python.tests.test_line_existing_store" name="test_actual_runtime_consumers_refuse_before_creation" time="0.036" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_explicit_m3_initialization_then_existing_consumer_preserves_records" time="0.102" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_no_migration_or_initialization_of_unavailable_store[missing]" time="0.003" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_no_migration_or_initialization_of_unavailable_store[symlink]" time="0.003" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_no_migration_or_initialization_of_unavailable_store[empty]" time="0.003" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_no_migration_or_initialization_of_unavailable_store[foreign_sqlite]" time="0.026" /><testcase classname="factory.python.tests.test_line_existing_store" name="test_every_connection_refuses_removed_or_replaced_identity" time="0.111" /><testcase classname="factory.python.tests.test_line_recovery_coordination" name="test_explicit_signed_config_is_source_profile_policy_and_finite_mission_bound" time="0.067" /><testcase classname="factory.python.tests.test_line_recovery_coordination" name="test_configuration_refuses_changed_or_expired_controller_authority[source]" time="0.021" /><testcase classname="factory.python.tests.test_line_recovery_coordination" name="test_configuration_refuses_changed_or_expired_controller_authority[dirty]" time="0.020" /><testcase classname="factory.python.tests.test_line_recovery_coordination" name="test_configuration_refuses_changed_or_expired_controller_authority[profile]" time="0.020" /><testcase classname="factory.python.tests.test_line_recovery_coordination" name="test_configuration_refuses_changed_or_expired_controller_authority[policy]" time="0.021" /><testcase classname="factory.python.tests.test_line_recovery_coordination" name="test_configuration_refuses_changed_or_expired_controller_authority[signature]" time="0.022" /><testcase classname="factory.python.tests.test_line_recovery_coordination" name="test_configuration_refuses_changed_or_expired_controller_authority[expiry]" time="0.043" /><testcase classname="factory.python.tests.test_line_recovery_coordination" name="test_signed_finite_config_cannot_infer_role_qualification_or_reset_mission" time="0.044" /><testcase classname="factory.python.tests.test_line_recovery_coordination" name="test_optional_durable_fields_preserve_legacy_digest_and_bind_new_payloads" time="0.002" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_product_uses_original_outbox_mission_and_hash_bound_m2_payload" time="0.818" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_lost_receipt_restart_preserves_nonce_and_never_blindly_relaunches[unreachable]" time="0.555" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_lost_receipt_restart_preserves_nonce_and_never_blindly_relaunches[empty]" time="0.516" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_lost_receipt_restart_preserves_nonce_and_never_blindly_relaunches[one]" time="0.642" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_lost_receipt_restart_preserves_nonce_and_never_blindly_relaunches[two]" time="0.585" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_pre_native_proof_and_possible_native_effect_have_distinct_release_rules[SMOKE_FAIL-False-item_blocked]" time="0.781" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_pre_native_proof_and_possible_native_effect_have_distinct_release_rules[WORKORDER_LAUNCH_FAILED-True-launch_outcome_unknown]" time="0.568" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_initial_mission_cannot_retroactively_import_a_native_execution" time="0.295" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_exhausted_finite_mission_refuses_before_external_model_or_m2_launch" time="0.439" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_fresh_phase_names_cannot_reset_strategy_variants_for_the_same_finite_driver" time="0.433" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_repeated_mission_registration_never_resets_spent_capacity" time="0.294" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_held_product_is_supervised_after_grant_expiry_without_new_placement" time="0.667" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_quiesce_keeps_unknown_provider_lease_even_when_native_is_terminal" time="1.032" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_worker_lock_refusal_cannot_quarantine_another_running_worker" time="0.212" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_unchanged_hard_refusal_does_not_allocate_a_fresh_order_identity" time="0.298" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_external_worker_execs_exact_run_checkout_with_the_actual_fixed_line_configuration" time="0.218" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_bootstrap_never_prepares_a_new_worktree_for_revoked_or_changed_source" time="0.230" /><testcase classname="factory.python.tests.test_line_recovery_product_bridge" name="test_accepted_semantic_receipt_creates_fresh_attempt_then_requires_independent_product_gates" time="1.147" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_success_is_receipted_with_original_job_nonce_under_existing_locks" time="0.012" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_native_runtime_retains_the_already_bound_operator_stop_fence" time="0.012" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_revoked_authority_and_live_driver_never_serve_or_launch" time="0.002" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_real_gpu_lock_prevents_second_launch" time="0.003" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_different_or_dirty_runtime_refuses_before_model_serve" time="0.003" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_wrong_gateway_store_or_revision_refuses_before_model_serve" time="0.003" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_model_identity_mismatch_is_never_native_launch_uncertainty[models0]" time="0.002" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_model_identity_mismatch_is_never_native_launch_uncertainty[models1]" time="0.002" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_model_identity_mismatch_is_never_native_launch_uncertainty[models2]" time="0.002" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_revocation_after_serving_prevents_native_submit" time="0.002" /><testcase classname="factory.python.tests.test_line_recovery_runtime" name="test_unreceipted_native_call_retains_uncertainty" time="0.002" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_foreign_or_nonfactory_source_never_reaches_model" time="0.083" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_failure_evidence_change_never_becomes_an_opaque_repair_job" time="0.079" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_existing_role_job_and_exact_controller_authority_are_used" time="0.082" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_native_success_without_quiescence_does_not_start_cre" time="0.080" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_success_without_nonce_bound_submission_cannot_start_cre" time="0.093" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_complete_offline_review_is_reused_without_publication_or_reexecution" time="0.175" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_unknown_api_or_unreleased_execution_is_never_quiet" time="0.082" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_review_rechecks_fence_and_keeps_existing_independent_pipeline" time="0.218" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[policy]" time="0.553" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[intent]" time="0.624" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[deadline]" time="0.592" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[source]" time="0.522" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[case]" time="0.546" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[signed_intent]" time="0.528"><failure message="forge_factory.afo.durable.Refused: LINE_MAINTENANCE_AUTHORITY_CHANGED:">terminal = ((&lt;forge_factory.afo.queue.Store object at 0x7d72b800a510&gt;, 'afo-8d8ec7d9d84edf67', 'afo-8d8ec7d9d84edf67-a1', PosixPa...artifact_refs': [], 'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'bundle_id': 'afo-fb-1', 'context_truncated': False, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d72b800b070&gt;
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-213/test_independent_review_refuse5')
+change = 'signed_intent'
+
+    @pytest.mark.parametrize('change', ['policy', 'intent', 'deadline', 'source', 'case', 'signed_intent', 'signed_mission'])
+    def test_independent_review_refuses_revoked_or_changed_authority(terminal, monkeypatch, tmp_path, change):
+        from forge_factory.afo.operations import Intent
+        from forge_factory import workorder
+    
+        args, eff, _, _, _ = terminal
+        store = args[0]
+        private = tmp_path / 'private-intent'
+        private.mkdir(mode=0o700)
+        intent = Intent(private / 'operations.json')
+        control = intent.set('RUNNING', actor='qualification-fixture', reason='unit-only authority fixture', initialize=True)
+        monkeypatch.setenv('FORGE_DURABLE_AUTONOMY', '1')
+        case = prepare(terminal)
+        job = prepare_job(terminal, case)
+        job.update(state='SUCCEEDED', operations_epoch=control['epoch'])
+        job['native_context']['FORGE_OPERATIONS_INTENT'] = str(intent.path)
+        C.L.save(store, job)
+        monkeypatch.setattr(C.line_recovery, 'valid_job', lambda *a: True)  # independently covered source binder
+        C._authorized(store, job, eff)
+        if change == 'policy':
+            monkeypatch.setattr(C.L, 'authorized_job', lambda *a: False)
+        elif change == 'intent':
+            intent.set('STOPPED', actor='qualification-fixture', reason='unit-only authenticated stop')
+        elif change == 'deadline':
+            job['deadline_epoch'] = 1
+            C.L.save(store, job)
+        elif change == 'source':
+            monkeypatch.setattr(workorder, 'factory_revision', lambda: {'commit': 'f' * 40, 'dirty': False})
+        elif change == 'case':
+            path = Path(job['case'])
+            path.chmod(0o600)
+            path.write_text(path.read_text() + ' ')
+        else:
+            from forge_factory.afo import line_recovery_control
+            with store.tx() as c:
+                registered = json.loads(c.execute('SELECT record FROM afo_missions WHERE mission_id=?',
+                                                 (job['mission_id'],)).fetchone()[0])
+            control = {'operations_intent': str(intent.path), 'profile': job['profile'],
+                       'profile_sha256': job['profile_sha256'], 'authorization_ref': registered['authorization_ref'],
+                       'mission': {k: registered[k] for k in ('mission_id', 'lineage', 'limits')}}
+            # Signature/expiry checks have their own real parser controls; exercise the exact job/control binding here.
+            monkeypatch.setattr(line_recovery_control, 'configuration', lambda *a, **k: control)
+            job['line_role_authority_ref'] = {'path': str(tmp_path / 'signed-fixture.json'), 'sha256': 'a' * 64}
+            C.L.save(store, job)
+&gt;           C._authorized(store, job, eff)
+
+factory/python/tests/test_line_maintenance_coordinator.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = &lt;forge_factory.afo.queue.Store object at 0x7d72b800a510&gt;
+job = {'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'case': '/tmp/pytest-of-jefferson/pytest-213/test_independent_review_refuse5..._sha256': '556e68072667791449f9d0c1ecd967a67c9d4a8ae8043ed193df7dcc858e4770', 'created_epoch': 1793804992.4102151, ...}
+eff = Effective(mode='PILOT', requested_mode='PILOT', sha256='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...s': 30, 'smoke_hours': 24, 'soak_hours': 168, 'transient_restore_p95_seconds': 600}}, issues=[], authorization_id=None)
+
+    def _authorized(store, job, eff):
+        from .operations import Intent
+        from ..workorder import factory_revision
+    
+        order = store.order(job['order_id'])
+        saved = _saved(store, job['job_id'])
+        revision = factory_revision()
+        if (saved != job or job.get('state') != 'SUCCEEDED'
+                or job.get('role') != ROLE or job.get('durable_native') != 'maintenance-1'
+                or not job.get('line_origin') or not L.enabled(ROLE, eff)
+                or eff.sha256 != job.get('policy_sha256') or not L.authorized_job(order, eff, job)
+                or not line_recovery.valid_job(job, store)
+                or revision.get('dirty') is not False
+                or revision.get('commit') != (job.get('factory_revision') or {}).get('commit')
+                or Path(job['case']).is_symlink() or sha256_file(Path(job['case'])) != job['case_sha256']):
+&gt;           raise Refused('LINE_MAINTENANCE_AUTHORITY_CHANGED')
+E           forge_factory.afo.durable.Refused: LINE_MAINTENANCE_AUTHORITY_CHANGED:
+
+factory/python/forge_factory/afo/line_maintenance_coordinator.py:68: Refused</failure></testcase><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_independent_review_refuses_revoked_or_changed_authority[signed_mission]" time="0.529"><failure message="forge_factory.afo.durable.Refused: LINE_MAINTENANCE_AUTHORITY_CHANGED:">terminal = ((&lt;forge_factory.afo.queue.Store object at 0x7d72b7999ef0&gt;, 'afo-8d8ec7d9d84edf67', 'afo-8d8ec7d9d84edf67-a1', PosixPa...artifact_refs': [], 'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'bundle_id': 'afo-fb-1', 'context_truncated': False, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d72b800aba0&gt;
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-213/test_independent_review_refuse6')
+change = 'signed_mission'
+
+    @pytest.mark.parametrize('change', ['policy', 'intent', 'deadline', 'source', 'case', 'signed_intent', 'signed_mission'])
+    def test_independent_review_refuses_revoked_or_changed_authority(terminal, monkeypatch, tmp_path, change):
+        from forge_factory.afo.operations import Intent
+        from forge_factory import workorder
+    
+        args, eff, _, _, _ = terminal
+        store = args[0]
+        private = tmp_path / 'private-intent'
+        private.mkdir(mode=0o700)
+        intent = Intent(private / 'operations.json')
+        control = intent.set('RUNNING', actor='qualification-fixture', reason='unit-only authority fixture', initialize=True)
+        monkeypatch.setenv('FORGE_DURABLE_AUTONOMY', '1')
+        case = prepare(terminal)
+        job = prepare_job(terminal, case)
+        job.update(state='SUCCEEDED', operations_epoch=control['epoch'])
+        job['native_context']['FORGE_OPERATIONS_INTENT'] = str(intent.path)
+        C.L.save(store, job)
+        monkeypatch.setattr(C.line_recovery, 'valid_job', lambda *a: True)  # independently covered source binder
+        C._authorized(store, job, eff)
+        if change == 'policy':
+            monkeypatch.setattr(C.L, 'authorized_job', lambda *a: False)
+        elif change == 'intent':
+            intent.set('STOPPED', actor='qualification-fixture', reason='unit-only authenticated stop')
+        elif change == 'deadline':
+            job['deadline_epoch'] = 1
+            C.L.save(store, job)
+        elif change == 'source':
+            monkeypatch.setattr(workorder, 'factory_revision', lambda: {'commit': 'f' * 40, 'dirty': False})
+        elif change == 'case':
+            path = Path(job['case'])
+            path.chmod(0o600)
+            path.write_text(path.read_text() + ' ')
+        else:
+            from forge_factory.afo import line_recovery_control
+            with store.tx() as c:
+                registered = json.loads(c.execute('SELECT record FROM afo_missions WHERE mission_id=?',
+                                                 (job['mission_id'],)).fetchone()[0])
+            control = {'operations_intent': str(intent.path), 'profile': job['profile'],
+                       'profile_sha256': job['profile_sha256'], 'authorization_ref': registered['authorization_ref'],
+                       'mission': {k: registered[k] for k in ('mission_id', 'lineage', 'limits')}}
+            # Signature/expiry checks have their own real parser controls; exercise the exact job/control binding here.
+            monkeypatch.setattr(line_recovery_control, 'configuration', lambda *a, **k: control)
+            job['line_role_authority_ref'] = {'path': str(tmp_path / 'signed-fixture.json'), 'sha256': 'a' * 64}
+            C.L.save(store, job)
+&gt;           C._authorized(store, job, eff)
+
+factory/python/tests/test_line_maintenance_coordinator.py:205: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = &lt;forge_factory.afo.queue.Store object at 0x7d72b7999ef0&gt;
+job = {'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'case': '/tmp/pytest-of-jefferson/pytest-213/test_independent_review_refuse6..._sha256': '048df5dfdd67bdbf0bd2d362a2bc15aa9b5aff1a5872a3e42605f5ca1ac67714', 'created_epoch': 1793804992.9833443, ...}
+eff = Effective(mode='PILOT', requested_mode='PILOT', sha256='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...s': 30, 'smoke_hours': 24, 'soak_hours': 168, 'transient_restore_p95_seconds': 600}}, issues=[], authorization_id=None)
+
+    def _authorized(store, job, eff):
+        from .operations import Intent
+        from ..workorder import factory_revision
+    
+        order = store.order(job['order_id'])
+        saved = _saved(store, job['job_id'])
+        revision = factory_revision()
+        if (saved != job or job.get('state') != 'SUCCEEDED'
+                or job.get('role') != ROLE or job.get('durable_native') != 'maintenance-1'
+                or not job.get('line_origin') or not L.enabled(ROLE, eff)
+                or eff.sha256 != job.get('policy_sha256') or not L.authorized_job(order, eff, job)
+                or not line_recovery.valid_job(job, store)
+                or revision.get('dirty') is not False
+                or revision.get('commit') != (job.get('factory_revision') or {}).get('commit')
+                or Path(job['case']).is_symlink() or sha256_file(Path(job['case'])) != job['case_sha256']):
+&gt;           raise Refused('LINE_MAINTENANCE_AUTHORITY_CHANGED')
+E           forge_factory.afo.durable.Refused: LINE_MAINTENANCE_AUTHORITY_CHANGED:
+
+factory/python/forge_factory/afo/line_maintenance_coordinator.py:68: Refused</failure></testcase><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_complete_failure_evidence_is_paged_as_untrusted_data_and_tamper_is_refused" time="0.027" /><testcase classname="factory.python.tests.test_line_maintenance_coordinator" name="test_maintainer_admission_pins_explicit_role_inputs_without_inventing_competence" time="0.499"><failure message="forge_factory.afo.durable.Refused: LINE_ROLE_OPERATIONS_CONTEXT_MISMATCH:">terminal = ((&lt;forge_factory.afo.queue.Store object at 0x7d72b7999e10&gt;, 'afo-8d8ec7d9d84edf67', 'afo-8d8ec7d9d84edf67-a1', PosixPa...artifact_refs': [], 'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'bundle_id': 'afo-fb-1', 'context_truncated': False, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d72b799ab30&gt;
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-213/test_maintainer_admission_pins0')
+
+    def test_maintainer_admission_pins_explicit_role_inputs_without_inventing_competence(terminal, monkeypatch, tmp_path):
+        from forge_factory.afo import authz, line_recovery_control
+        from forge_factory.afo.durable import immutable_json
+        from forge_factory.lrtx.profile import load
+        from forge_factory import workorder
+    
+        args, eff, _, _, _ = terminal
+        store, oid, aid, workspace, origin = args
+        case = prepare(terminal)
+        profile = load('local-rtx-v2-omniverse2')
+        mission = C.MissionLedger(store).snapshot('line-maintenance-fixture')
+        eff.policy['authorization_ref'] = 'fixture-maintenance-control'
+        revision = terminal[3]['source_revision']
+        monkeypatch.setattr(workorder, 'factory_revision', lambda: {'commit': revision, 'dirty': False})
+        value = {'schema': line_recovery_control.SCHEMA, 'source_revision': revision,
+                 'policy_sha256': eff.sha256, 'authorization_ref': eff.get('authorization_ref'),
+                 'profile': profile['id'], 'profile_sha256': profile['_sha256'],
+                 'operations_intent': str(tmp_path / 'private-intent.json'),
+                 'mission': {'mission_id': 'line-maintenance-fixture', 'lineage': 'line-maintenance-fixture',
+                             'limits': mission['limits']}, 'role_capabilities': {}, 'product_role_trial': None}
+        path = tmp_path / (digest(value) + '.json')
+        immutable_json(path, value)
+        ref = {'path': str(path), 'sha256': digest(value)}
+        monkeypatch.setattr(authz, 'AUTH_DIR', tmp_path)
+        allowed = SimpleNamespace(allow=True, code='AUTH_OK')
+        monkeypatch.setattr(authz, 'find', lambda *a, **k: allowed)
+        (tmp_path / 'fixture-maintenance-control.json').write_text(json.dumps({
+            'signed_runbook_ref': 'line-recovery-014:' + digest(value), 'expires_utc': '2099-01-01T00:00:00Z'}))
+        monkeypatch.setenv('FORGE_DURABLE_AUTONOMY', '1')
+&gt;       job = C.L.prepare(store, store.order(oid), aid, C.ROLE, C.M.case_dir(case['proposal_id']) / 'case.json',
+                          workspace, eff, line_origin=origin, line_role_authority_ref=ref)
+
+factory/python/tests/test_line_maintenance_coordinator.py:267: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/local_agent.py:291: in prepare
+    require_job_binding(job, control, store=store)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+job = {'attempt_id': 'afo-8d8ec7d9d84edf67-a1', 'case': '/tmp/pytest-of-jefferson/pytest-213/test_maintainer_admission_pins0..._sha256': 'e470b8a7de04c463031b468296e3ad2ba67b88a3ee2ca5e31f963504891539e1', 'created_epoch': 1793804993.6458056, ...}
+control = {'authorization_ref': 'fixture-maintenance-control', 'mission': {'limits': {'deadline': 1793805593.3990977, 'max_attem...n_pins0/private-intent.json', 'policy_sha256': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', ...}
+
+    def require_job_binding(job, control, *, store=None):
+        """Intersect a signed control with the actual intent and linked effective mission; never refill it."""
+        from ..common import state_dir
+        from . import mission_capacity, mission_deadline
+        from .queue import ReadSnapshot
+    
+        if store is None:
+            with ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=100, timeout_s=3) as reader:
+                return require_job_binding(job, control, store=reader)
+        native = job.get("native_context") or {}
+        if (native.get("FORGE_OPERATIONS_INTENT") != control["operations_intent"]
+                or native.get("FORGE_AFO_QUEUE_SCOPE") != "line-local"):
+&gt;           raise Refused("LINE_ROLE_OPERATIONS_CONTEXT_MISMATCH")
+E           forge_factory.afo.durable.Refused: LINE_ROLE_OPERATIONS_CONTEXT_MISMATCH:
+
+factory/python/forge_factory/afo/line_recovery_control.py:126: Refused</failure></testcase><testcase classname="factory.python.tests.test_durable_gateway_queue" name="test_next_stage_uses_existing_bounded_queue_then_rechecks_authority[complete]" time="0.733" /><testcase classname="factory.python.tests.test_durable_gateway_queue" name="test_next_stage_uses_existing_bounded_queue_then_rechecks_authority[stop]" time="0.830" /><testcase classname="factory.python.tests.test_durable_gateway_queue" name="test_next_stage_uses_existing_bounded_queue_then_rechecks_authority[revoke]" time="0.645" /><testcase classname="factory.python.tests.test_durable_gateway_queue" name="test_next_stage_uses_existing_bounded_queue_then_rechecks_authority[unknown]" time="0.666" /><testcase classname="factory.python.tests.test_durable_gateway_queue" name="test_next_stage_uses_existing_bounded_queue_then_rechecks_authority[wait_timeout]" time="0.707" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_store_migrates_with_wal_full_sync_and_private_file" time="0.060" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_intake_pins_the_manifest_is_idempotent_and_detects_conflicts" time="0.111" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_transitions_follow_the_contract_fsm_with_cas_and_audit" time="0.278" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_leases_fence_a_stale_scheduler" time="0.224" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_scheduler_by_mode_with_authority_preflight_backoff_and_budget" time="0.710" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_local_capacity_wait_stays_short_without_releasing_terminal_execution[False]" time="1.014" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_local_capacity_wait_stays_short_without_releasing_terminal_execution[True]" time="0.695" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_priority_aging_prevents_starvation" time="0.160" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_concurrent_duplicate_submits_make_one_order" time="0.640" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_idle_conductor_makes_no_model_call" time="1.744" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_backup_restore_and_event_forwarding_once" time="0.133" /><testcase classname="factory.python.tests.test_afo_m2_queue" name="test_operator_cli_controls_are_recorded_and_need_a_reason" time="0.275" /></testsuite></testsuites>

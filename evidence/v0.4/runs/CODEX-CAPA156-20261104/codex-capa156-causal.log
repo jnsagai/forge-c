@@ -1,0 +1,5 @@
+state REPRODUCER_PENDING
+baseline rr-c7a3d651ee921705c344 SYMPTOM_PRESENT candidate rr-4a387bcd65379f88432f SYMPTOM_ABSENT
+verify -> CAUSE_VERIFIED
+fix -> FIX_CANDIDATE 6a9a40a4d7ca1fa7adb49ee8dae61de264e14def60d85799901ae43b54ee7268
+{"state": "FIX_CANDIDATE", "root_cause_status": "VERIFIED", "reproducer_id": "RPR-156", "affected_versions": ["forge-c@<36236baef77c"]}

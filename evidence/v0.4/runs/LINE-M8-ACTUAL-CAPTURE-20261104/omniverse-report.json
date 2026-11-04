@@ -1,0 +1,158 @@
+{
+  "schema": "forge-c/line-m8-actual-capture-proof/1",
+  "at": "2026-11-04T12:11:03.819140Z",
+  "source_revision": "21d7717428258e4c81f3c671a3a424a2131e9264",
+  "result": {
+    "schema": "forge-c/line-learning-capture/1",
+    "status": "OBSERVED",
+    "processed_attempts": 8,
+    "experience_refs": [
+      "experience-06900ac914d69960c117938a",
+      "experience-0f9402116da6ab1be0ed9a31",
+      "experience-1a01afea59e4799ff1ee726b",
+      "experience-2326be034475a7160ba09318",
+      "experience-3198690673af0da8b1bdabe5",
+      "experience-32c8d428322d74bc22483244",
+      "experience-443e95aa07d5480315e518b6",
+      "experience-4c2b7bd9d3835eff888414cb",
+      "experience-583c3593d437eaec03983fb5",
+      "experience-66c9660acb9f49271b3cb33a",
+      "experience-75ddd36997754a445cbce4aa",
+      "experience-86ebf50aa6223761900aa450",
+      "experience-870db1e04593e6b72ac45a5f",
+      "experience-aa7dc50db1a4b645f2a9a70c",
+      "experience-ae70f0b99468bf5cc0b11fee",
+      "experience-b0f09a179840a2e20a11cb40",
+      "experience-bbbff4e678e3237ce3329be7",
+      "experience-c5177c8be1f1dc763e531ce6",
+      "experience-cbc6a2e0e451bfe2d8e4805e",
+      "experience-deebbe2f8963b258f3c8b569",
+      "experience-e8fe8df90d00c3f010b26fc9",
+      "experience-f3cc62de21a20d9ac13df26e",
+      "experience-f8ddea15adc1ca8910bbae98",
+      "experience-fcd115641ef7e1a64792808d"
+    ],
+    "gaps": [],
+    "dispositions": [
+      {
+        "state": "NO_NEW_LESSON",
+        "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+        "experience_id": "experience-583c3593d437eaec03983fb5",
+        "at": "2026-11-04T12:11:03.509229Z",
+        "inference_tokens": 0,
+        "pattern": null
+      },
+      {
+        "state": "NO_NEW_LESSON",
+        "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+        "experience_id": "experience-bbbff4e678e3237ce3329be7",
+        "at": "2026-11-04T12:11:03.509298Z",
+        "inference_tokens": 0,
+        "pattern": null
+      },
+      {
+        "state": "NO_NEW_LESSON",
+        "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+        "experience_id": "experience-c5177c8be1f1dc763e531ce6",
+        "at": "2026-11-04T12:11:03.509318Z",
+        "inference_tokens": 0,
+        "pattern": null
+      },
+      {
+        "state": "NO_NEW_LESSON",
+        "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+        "experience_id": "experience-deebbe2f8963b258f3c8b569",
+        "at": "2026-11-04T12:11:03.509333Z",
+        "inference_tokens": 0,
+        "pattern": null
+      },
+      {
+        "state": "NO_NEW_LESSON",
+        "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+        "experience_id": "experience-b0f09a179840a2e20a11cb40",
+        "at": "2026-11-04T12:11:03.509351Z",
+        "inference_tokens": 0,
+        "pattern": null
+      },
+      {
+        "state": "NO_NEW_LESSON",
+        "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+        "experience_id": "experience-e8fe8df90d00c3f010b26fc9",
+        "at": "2026-11-04T12:11:03.509364Z",
+        "inference_tokens": 0,
+        "pattern": null
+      },
+      {
+        "state": "NO_NEW_LESSON",
+        "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+        "experience_id": "experience-66c9660acb9f49271b3cb33a",
+        "at": "2026-11-04T12:11:03.509379Z",
+        "inference_tokens": 0,
+        "pattern": null
+      },
+      {
+        "state": "NO_NEW_LESSON",
+        "reason": "FACTS_RETAINED_NO_UNSUPPORTED_GENERALIZATION",
+        "experience_id": "experience-f8ddea15adc1ca8910bbae98",
+        "at": "2026-11-04T12:11:03.509393Z",
+        "inference_tokens": 0,
+        "pattern": null
+      }
+    ],
+    "model_calls": 0,
+    "new_lessons": 0,
+    "lesson_validation": "EXISTING_INDEPENDENT_KNOWLEDGE_GOVERNANCE_ONLY"
+  },
+  "counts_before": {
+    "experiences": 546,
+    "lessons": 0,
+    "validated": 0
+  },
+  "counts_after": {
+    "experiences": 570,
+    "lessons": 0,
+    "validated": 0
+  },
+  "controller_writes": [
+    {
+      "table": "afo_control",
+      "operation": 18
+    },
+    {
+      "table": "afo_control",
+      "operation": 23
+    },
+    {
+      "table": "afo_control",
+      "operation": 23
+    }
+  ],
+  "denied_controller_writes": [],
+  "selected_terminal_attempts": 8,
+  "selected_terminal_row_hashes_before": {
+    "afo-477cbbe0d1ea87ba-a1": "8db21ff0a514a4c3affb07da67215a56c7a7caf5bb3bbf225c272455ea9b6c71",
+    "afo-117eca7306fe4d49-a1": "1e878f519172795dc1c25b5982b6c49b82a8d516ee4cabc3f75e08ff9338e984",
+    "afo-477cbbe0d1ea87ba-a2": "8c1e9185ddccdea5d3e10c9b5ce02ed3fffc5fe840baeea54866569c081a9e52",
+    "afo-117eca7306fe4d49-a2": "ae39cc2ba5ec58d27e9826501a8ccfbec7366050245028d7c5450dcf29ed67fc",
+    "afo-477cbbe0d1ea87ba-a3": "fa35d6fc1497dd4f9c35b6bee61c7d5348a420a1621d64fd6c3a4a3bc59db070",
+    "afo-3f3f08546c1dc2ee-a1": "ffc006731f95419ca17c13be1603f1e570abae67ca15ca11e0987d3b927beea9",
+    "afo-b10f4de79535987a-a1": "0f34ffb72caa79c1ca34e3652522b00ddd69ee132ee0fa03566aca5cb4f869e4",
+    "afo-2601e81f577235ff-a1": "1836ae9e4cea24387ee756cf00c631c93259539fa9949c17f656033d56df130d"
+  },
+  "selected_terminal_row_hashes_after": {
+    "afo-477cbbe0d1ea87ba-a1": "8db21ff0a514a4c3affb07da67215a56c7a7caf5bb3bbf225c272455ea9b6c71",
+    "afo-117eca7306fe4d49-a1": "1e878f519172795dc1c25b5982b6c49b82a8d516ee4cabc3f75e08ff9338e984",
+    "afo-477cbbe0d1ea87ba-a2": "8c1e9185ddccdea5d3e10c9b5ce02ed3fffc5fe840baeea54866569c081a9e52",
+    "afo-117eca7306fe4d49-a2": "ae39cc2ba5ec58d27e9826501a8ccfbec7366050245028d7c5450dcf29ed67fc",
+    "afo-477cbbe0d1ea87ba-a3": "fa35d6fc1497dd4f9c35b6bee61c7d5348a420a1621d64fd6c3a4a3bc59db070",
+    "afo-3f3f08546c1dc2ee-a1": "ffc006731f95419ca17c13be1603f1e570abae67ca15ca11e0987d3b927beea9",
+    "afo-b10f4de79535987a-a1": "0f34ffb72caa79c1ca34e3652522b00ddd69ee132ee0fa03566aca5cb4f869e4",
+    "afo-2601e81f577235ff-a1": "1836ae9e4cea24387ee756cf00c631c93259539fa9949c17f656033d56df130d"
+  },
+  "selected_terminal_rows_unchanged": true,
+  "conductor_pid_before": "3939078",
+  "conductor_pid_after": "3939078",
+  "conductor_unchanged": true,
+  "milestone_completion": "INCOMPLETE_QUALIFIED_CROSS_WORKFLOW_TRANSFER_NOT_RUN",
+  "checks_pass": true
+}

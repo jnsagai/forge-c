@@ -25,7 +25,7 @@
     },
     "wo_prefix": {
       "type": "string",
-      "pattern": "^WO(-F\\d{1,4})?$",
+      "pattern": "^WO(-F\\d{1,4})?(-CMP)?$",
       "default": "WO-F014"
     },
     "note": {
@@ -333,5 +333,26 @@
         }
       ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "wo_prefix"
+        ],
+        "properties": {
+          "wo_prefix": {
+            "pattern": "-CMP$"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "line": {
+            "const": "cloud"
+          }
+        }
+      }
+    }
+  ]
 }
