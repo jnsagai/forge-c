@@ -329,6 +329,7 @@ class FabroView:
 
     def __init__(self, url: str | None = None, token: str | None = None, snapshot: dict | None = None):
         self.url, self.token, self.snapshot, self._ended = url, token, snapshot, {}
+        self._completed = {}
 
     @classmethod
     def from_env(cls, snapshot_file: str | None = None) -> FabroView:
@@ -349,7 +350,11 @@ class FabroView:
         if not run_id:
             return None
         if self.snapshot is not None:
-            return self.snapshot.get(run_id)
+            value = self.snapshot.get(run_id)
+            if isinstance(value, dict):
+                status = (value.get("lifecycle") or {}).get("status") or {}
+                return f"{status.get('kind')}:{status.get('reason')}"
+            return value
         if run_id in self._ended:
             return self._ended[run_id]
         if not self.url:
@@ -366,6 +371,37 @@ class FabroView:
         if str(kind) in ENDED:
             self._ended[run_id] = out
         return out
+
+    def completed(self, run_id: str, workspace: Path) -> bool:
+        """Actual terminal identity proof; a package or a legacy status-only snapshot proves nothing here."""
+        key = (run_id, str(workspace))
+        if key in self._completed:
+            return self._completed[key]
+        if self.snapshot is not None:
+            run = self.snapshot.get(run_id)
+        elif self.url:
+            from ..fabro.client import FabroClient
+
+            try:
+                with FabroClient(base_url=self.url, token=self.token, timeout=4) as client:
+                    run = client.get_run(run_id)
+            except Exception:  # noqa: BLE001 - unknown liveness never grants product routing
+                return False
+        else:
+            return False
+        if (not isinstance(run, dict) or run.get("id") != run_id
+                or run.get("source_directory") != str(workspace)):
+            return False
+        lifecycle = run.get("lifecycle")
+        if not isinstance(lifecycle, dict):
+            return False
+        status = lifecycle.get("status") or {}
+        if not isinstance(status, dict):
+            return False
+        completed = status.get("kind") == "succeeded" and status.get("reason") == "completed"
+        if status.get("kind") in ENDED:
+            self._completed[key] = completed
+        return completed
 
 
 # ------------------------------------------------------------------------------------------------- the records
@@ -581,7 +617,66 @@ def _codes(rec: dict, phase: str) -> tuple[list[str], int | None, str]:
     return codes[:5], b["_line"], route
 
 
-def classify_order(rec: dict, life: str | None, capa_of: dict) -> dict | None:
+def _current_upstream_review(rec: dict) -> tuple[str, list[dict], str] | None:
+    """Read-only proof of a current independent failure and its normal owning-phase route."""
+    from ..inspection import defects
+    from ..inspection.engine import Store
+    from ..rework_context import MAX_ITEMS, inspection_data, phase_records, read_file
+
+    try:
+        target, ws = rec["phase"], rec["ws"]
+        if target not in PHASES or target in rec["passed"] or not rec.get("rid"):
+            return None
+        gate_bytes = read_file(ws, ".forge-run/gates/gate-log.jsonl")
+        paths = sorted((ws / ".forge-run/defects").glob("DEF-*.json"))
+        if not 0 < len(paths) <= MAX_ITEMS:
+            return None
+        registered = []
+        for path in paths:
+            doc = json.loads(read_file(ws, str(path.relative_to(ws))))
+            if doc.get("status") not in defects.OPEN_STATES:
+                continue
+            phase, owning = doc.get("detected_phase"), doc.get("target_phase")
+            if phase not in PHASES or owning not in PHASES or PHASES.index(owning) >= PHASES.index(phase):
+                continue
+            if (doc.get("schema") != "forge-c/defect/0.5" or defects.KIND_TARGET.get(doc.get("kind")) != owning
+                    or not re.fullmatch(r"DEF-\d{3}", str(doc.get("id", "")))
+                    or path.name != doc["id"] + ".json"
+                    or doc.get("reported_by") not in (f"swe{phase[-1]}-author", f"swe{phase[-1]}-inspector", "route-gate")
+                    or not isinstance(doc.get("history"), list) or not doc["history"]
+                    or doc["history"][-1].get("status") != doc["status"]):
+                return None
+            registered.append(doc)
+        store = Store(ws)
+        for phase in reversed(PHASES[:PHASES.index(target) + 1]):
+            upstream = [doc for doc in registered if doc["detected_phase"] == phase]
+            if not upstream:
+                continue
+            inspections = sorted((ws / "inspection" / phase).glob("INS-*.json"))
+            if not 0 < len(inspections) <= MAX_ITEMS:
+                continue
+            path = inspections[-1]
+            review = inspection_data(json.loads(read_file(ws, str(path.relative_to(ws)))), phase, path.name)
+            baseline, gate = store.latest_baseline(phase), store.gate(phase)
+            if (not baseline or baseline.get("baseline_hash") != review.get("baseline_hash")
+                    or baseline.get("baseline_id") != review.get("baseline_id")
+                    or baseline.get("author_role") != f"swe{phase[-1]}-author"
+                    or review.get("author_role") != f"swe{phase[-1]}-author"
+                    or store.current_hash(phase) != baseline["baseline_hash"]
+                    or gate.get("decision") not in ("REWORK", "BLOCKED")
+                    or gate.get("reason") != review["inspection_id"]):
+                continue
+            records = phase_records(gate_bytes, phase)
+            routes = [row for row in records if row.get("step") == "route"]
+            if not routes or routes[-1].get("gate", {}).get("decision") != "UPSTREAM":
+                continue
+            return phase, upstream, str(path.relative_to(ws))
+    except (OSError, ValueError, TypeError, KeyError, AttributeError):
+        return None
+    return None
+
+
+def classify_order(rec: dict, life: str | None, capa_of: dict, *, completed_run=None) -> dict | None:
     """The issue core of one ended order that did not reach its target phase; None when it passed or still runs."""
     from ..inspection import defects
     from .bundle import blocked_phase, build
@@ -624,11 +719,28 @@ def classify_order(rec: dict, life: str | None, capa_of: dict) -> dict | None:
         ev.append({"kind": "inspection_record", "ref": f"{rec['rel']}/{r.removeprefix('workspace:')}"})
     c = b["failure_class"]
     up = []
-    if c == "PRODUCT_QUALITY":
+    completed_upstream = None
+    if (c == "INFRASTRUCTURE" and b["error_code"] == "RUN_NOT_COMPLETED" and completed_run is not None
+            and life in (None, "succeeded:completed")):
+        completed_upstream = _current_upstream_review(rec)
+        # A successful native lifecycle alone is insufficient: the independent current review above is mandatory.
         try:
-            up = defects.open_from(ws, ph)
-        except Exception:  # noqa: BLE001
-            up = []
+            proven = bool(completed_upstream and completed_run(rec["rid"], ws))
+        except Exception:  # noqa: BLE001 - an unavailable/malformed native observation cannot alter the class
+            proven = False
+        if proven:
+            ph, up, inspection = completed_upstream
+            c = "PRODUCT_QUALITY"
+            codes, route = [], "UPSTREAM"
+            ev.append({"kind": "inspection_record", "ref": f"{rec['rel']}/{inspection}"})
+        else:
+            completed_upstream = None
+    if c == "PRODUCT_QUALITY":
+        if not completed_upstream:
+            try:
+                up = defects.open_from(ws, ph)
+            except Exception:  # noqa: BLE001
+                up = []
         if up:
             ev.append({"kind": "defect_register", "ref": f"{rec['rel']}/.forge-run/defects"})
     cls = ("INFRA" if c in ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY") else "FACTORY_DEFECT" if c == "FACTORY_CODE_DEFECT"
@@ -636,6 +748,8 @@ def classify_order(rec: dict, life: str | None, capa_of: dict) -> dict | None:
            else "MODEL_CONVERGENCE" if c == "PRODUCT_QUALITY" else "UNKNOWN")
     capa = capa_of.get(b["fingerprint"])
     error_code = _code(b["error_code"])
+    if completed_upstream:
+        error_code = "OPEN_UPSTREAM_DEFECT"
     suspected = False
     if codes and cls not in ("FACTORY_DEFECT",):  # the blocking rejection came from the deterministic author gate
         if route == "STUCK" and all(c.split(":")[0] in FACTORY_RULE_CHECKS or c in FACTORY_RULE_CODES for c in codes):
@@ -648,7 +762,10 @@ def classify_order(rec: dict, life: str | None, capa_of: dict) -> dict | None:
         ev.append({"kind": "capa", "ref": f"capa:{capa}"})
     # the issue's identity across runs: the deterministic code set of the blocking rejection (the CRE bundle's dominant
     # observation is tie-broken by an attempt-specific id, so its cfp1 can differ between runs of the same rejection)
-    fp = "sup1-" + _h("CODES", ph, route, *sorted(codes))[:40] if codes else b["fingerprint"]
+    if completed_upstream:
+        fp = "sup1-" + _h("COMPLETED_UPSTREAM", ph, *sorted(d["kind"] + ":" + d["target_phase"] for d in up))[:40]
+    else:
+        fp = "sup1-" + _h("CODES", ph, route, *sorted(codes))[:40] if codes else b["fingerprint"]
     return {"class": cls, "phase": ph, "error_code": error_code, "route": route or "ENDED", "codes": codes,
             "suspected": suspected,
             "fingerprint": fp, "cre_fingerprint": b["fingerprint"], "evidence": ev,
@@ -869,9 +986,11 @@ class Observer:
 
     def _core(self, rec: dict, life: str | None, capa_of: dict) -> dict | None:
         key = (rec["wo"], rec["sig"], life, tuple(sorted(capa_of)))
-        if key not in self._cache:
+        # Unknown native identity must be re-observed; never cache an outage as a permanent product/infra decision.
+        refresh = rec["phase"] not in rec["passed"] and any((rec["ws"] / ".forge-run/defects").glob("DEF-*.json"))
+        if key not in self._cache or refresh:
             self._cache = {k: v for k, v in self._cache.items() if k[0] != rec["wo"]}
-            self._cache[key] = classify_order(rec, life, capa_of)
+            self._cache[key] = classify_order(rec, life, capa_of, completed_run=getattr(self.fabro, "completed", None))
         return self._cache[key]
 
     def issues(self, now: float, keep: frozenset = frozenset()) -> tuple[list[dict], dict]:

@@ -248,6 +248,20 @@ class RealLine:
         return (run.get("id") == run_id and run.get("source_directory") == str(self.workspace(wo))
                 and self.LL._kind(run) in self.LL.ENDED_KINDS)
 
+    def completed_run(self, run_id: str, workspace: Path) -> bool:
+        """Identity-bound native completion for the narrow independent upstream-review classifier."""
+        if not workspace.is_relative_to(self.state_root / "workorders"):
+            return False
+        try:
+            run = self.host.fabro_run(run_id)
+        except self.LL.FabroUnavailable:
+            return False
+        if not isinstance(run, dict) or not isinstance(run.get("lifecycle"), dict):
+            return False
+        status = run["lifecycle"].get("status") or {}
+        return (run.get("id") == run_id and run.get("source_directory") == str(workspace)
+                and isinstance(status, dict) and status.get("kind") == "succeeded" and status.get("reason") == "completed")
+
     def live_runs(self) -> list[str] | None:
         """Live Forge-C runs of this stack root; None when the API does not answer (fail closed: busy)."""
         try:
@@ -502,7 +516,8 @@ class Records:
                 a.ended_at = max(ts) if ts else (max(a.rec["sig"][0]) if a.rec and a.rec["sig"][0] else a.created)
                 if a.verdict == "NO":
                     try:
-                        a.core = classify_order(a.rec, a.life or "succeeded:completed", self.capa_of) if a.rec else None
+                        a.core = classify_order(a.rec, a.life, self.capa_of,
+                                              completed_run=getattr(self.line, "completed_run", None)) if a.rec else None
                     except Exception as exc:  # noqa: BLE001 - an unreadable record is UNKNOWN, never a guessed class
                         a.core = {"class": "UNKNOWN", "error_code": f"CLASSIFIER_ERROR:{type(exc).__name__}",
                                   "fingerprint": _fp("CLASSIFIER_ERROR", wo), "route": "ENDED", "upstream": []}
@@ -1062,9 +1077,10 @@ class Placer:
                 append_jsonl(supervisor_dir() / "placement.jsonl", {"at": _utc(now), "mode": mode, **a})
             self._logged.add(key) if a.get("outcome") not in ("LAUNCHING", "REMOVED", "RUNNING") else None
         if acting:
+            import sqlite3
+
             from .line_lessons import capture
             from .queue import Store
-            import sqlite3
 
             try:
                 learning = capture(Store(self.queue_path, producer=f"line-learning:{self.line_id}"), limit=8)
