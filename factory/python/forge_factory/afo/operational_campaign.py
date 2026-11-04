@@ -35,7 +35,14 @@ def start(manifest, soak_id, authorization_ref, *, observer_plan_ref=None, host_
     if observer_plan_ref is not None:
         from .operational_collection import Collector
 
-        interval = Collector(manifest, soak_id, observer_plan_ref, host_plan_ref).config["interval_seconds"]
+        collector = Collector(manifest, soak_id, observer_plan_ref, host_plan_ref)
+        if "line_runtime" in collector.frozen:
+            from .line_soak import preflight
+
+            result = preflight(manifest, observer_plan_ref, live=True, authorization_ref=authorization_ref)
+            if result["blockers"]:
+                return result
+        interval = collector.config["interval_seconds"]
     immutable_json(soak.path(soak_id).with_suffix(".manifest.json"), manifest)
     head = soak.start(soak_id, hours, interval, authorization_ref)
     return {"status": "STARTED_OBSERVATION_ONLY", "soak_id": soak_id, "head": head, "service_stop_at_end": False}
