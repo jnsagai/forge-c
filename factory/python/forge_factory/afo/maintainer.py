@@ -136,7 +136,8 @@ def case_dir(pid: str) -> Path:
     return state_dir() / "afo/maintainer" / pid
 
 
-def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, retained_rework: dict | None = None) -> dict:
+def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, retained_rework: dict | None = None,
+            line_binding: dict | None = None) -> dict:
     """Detached worktree of `base`; everything the maintainer may not change is read-only (OS); one frozen case."""
     d = case_dir(pid)
     if (d / "case.json").exists():
@@ -158,6 +159,8 @@ def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, reta
     case = {"proposal_id": pid, "base": base_rev, "src": str(src), "root": str(root), "repo": str(repo),
             "incident": {k: str(v)[:400] for k, v in incident.items()}, "allow": ALLOW, "deny": DENY,
             "hardened_files": hardened, "isolation": isolation.level(), "created_utc": utc_now()}
+    if line_binding is not None:
+        case["line_binding"] = line_binding
     if retained_rework is not None:
         case["retained_rework"] = retained_rework
         if len(json.dumps(case).encode()) > 65536:
