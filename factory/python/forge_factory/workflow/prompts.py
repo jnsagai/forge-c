@@ -1382,8 +1382,19 @@ def provided_registers(text: str, api: dict) -> str:
             f"{inst}-><REG> & the device header's {inst}_<REG>_<FIELD>_Msk masks; there is no register-block array and "
             "no <REG>_OFFSET define")
     nodef = f"No printf, no stdlib; never define a register block or the instance {inst} (the device header provides it)."
+    host = (f"the factory force-includes forge_host_device.h and maps {inst} to the RAM {inst}_TypeDef "
+            f"forge_host_{inst.lower()}; observe and preset documented members through {inst}-><REG>, never invent "
+            "or define a register-block array. Integration tests use the real provided LL, not the unit-only LL fake")
     blk = r"(\w+_regs)"
     subs = [
+        # CAPA-149: this generic SWE.2 clause survived the named-array rewrites. Existing architectures then
+        # invented __REG___CRC/WWDG_REGISTER_BLOCK, which the SWE.5 host tests followed and could never link.
+        (r"Register access \(extern volatile uint32_t register-block array placed at the \w+ base by the linker, "
+         r"indexed by offset/4; no integer-to-pointer casts; host tests define the array\)",
+         f"Register access (the HAL calls only the provided LL with the device-header instance {inst}; "
+         f"no HAL-owned register array, base address or integer-to-pointer cast. For host tests {host})"),
+        (r"self-checking host program exercising HAL\+LL together",
+         f"self-checking host program exercising HAL+LL together ({host})"),
         (rf"on HAL return values and {blk}\[LL_\w+_<REG>_OFFSET / 4U\] bits\. No printf, no stdlib, no \1 definition "
          r"\(the linker places it\)\.", f"on HAL return values and {regs}. {nodef}"),
         (rf"with conditions on HAL return values and {blk}\[LL_\w+_<REG>_OFFSET / 4U\] & LL_\w+_<REG>_<FIELD>_MSK bits "
