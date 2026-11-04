@@ -148,28 +148,41 @@ def recent_speed(now: float, window_s: float = 600, calls: int = 5) -> dict | No
     every model the node called (a structured node authors with one model and inspects with another). The line speed
     KPI keeps that average (owner: "could be the average, no problem"); the cell at work shows this speed
     ("lets just have a local gauge in the cell")."""
-    meter = state_root() / "llm-gateway/usage.jsonl"
-    try:
-        with meter.open("rb") as f:
-            f.seek(max(0, meter.stat().st_size - 65536))
-            lines = f.read().decode(errors="replace").splitlines()
-    except OSError:
-        return None
-    rows = []
-    for line in lines:
+    rows, basis = [], "gateway per-call output tokens / latency"
+    for name in ("llm-gateway/usage.jsonl", "cloud-bridge/calls.jsonl"):
+        meter = state_root() / name
         try:
-            r = json.loads(line)
-        except ValueError:
+            with meter.open("rb") as f:
+                f.seek(max(0, meter.stat().st_size - 65536))
+                lines = f.read().decode(errors="replace").splitlines()
+        except OSError:
             continue
-        if r.get("latency_ms") and r.get("tokens_output") is not None and r.get("model"):
-            rows.append(r)
-    if not rows or now - (_ts(rows[-1].get("ts_utc")) or 0) > window_s:
+        for line in lines:
+            try:
+                r = json.loads(line)
+            except ValueError:
+                continue
+            cloud = name.startswith("cloud-bridge")
+            latency = r.get("wall_ms") if cloud else r.get("latency_ms")
+            tokens = (r.get("usage") or {}).get("completion_tokens") if cloud else r.get("tokens_output")
+            at = _ts(r.get("ts") if cloud else r.get("ts_utc")) or 0
+            # Bridge timestamps mark request start; the measurement is available when the call finishes.
+            if cloud and isinstance(latency, (int, float)):
+                at += latency / 1000
+            if (r.get("model") and isinstance(latency, (int, float)) and latency > 0
+                    and isinstance(tokens, (int, float)) and tokens >= 0 and 0 <= now - at <= window_s):
+                rows.append({"model": r["model"], "latency_ms": latency, "tokens_output": tokens, "at": at})
+        if rows:  # avoid counting the same call in both gateway and bridge meters
+            basis = "cloud bridge output tokens / wall time" if name.startswith("cloud-bridge") else basis
+            break
+    if not rows:
         return None
+    rows.sort(key=lambda r: r["at"])
     model = rows[-1]["model"]
     mine = [r for r in rows if r["model"] == model][-calls:]
     lat = sum(float(r["latency_ms"]) for r in mine) / 1000
     return {"model": model, "tok_s": round(sum(int(r["tokens_output"]) for r in mine) / lat) if lat else None,
-            "calls": len(mine), "basis": "gateway per-call output tokens / latency"}
+            "calls": len(mine), "basis": basis}
 
 
 def native(stages: dict | None, now: float) -> dict:
@@ -919,6 +932,8 @@ def floor(now: float | None = None, since: float | None = None, focus: str | Non
         elif o["state"] == "RUNNING" and o["phases"].get(o["at"], {}).get("model_s"):
             p = o["phases"][o["at"]]
             line = round(p["out_tokens"] / p["model_s"])
+    if line is None and any(o["state"] == "RUNNING" for o in orders):
+        line = (recent_speed(now) or {}).get("tok_s")
     ship = ("pending" if sel.get("target") == "SWE.6" else "out") if sel else "idle"
     halls.append({"id": "SHIP", "name": HALL_NAMES["SHIP"], "state": ship, "entered": 0, "passed": 0, "inspected": 0,
                   "first_pass": 0, "reworks": 0, "stopped": 0, "cycle_min": None, "running": [], "cells": [],

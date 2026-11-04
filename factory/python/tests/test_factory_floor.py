@@ -96,6 +96,14 @@ def test_the_working_cell_shows_job_progress_and_speed(plant):
     assert cells["inspector"]["state"] == "waiting" and cells["freeze"]["state"] == "waiting"
 
 
+def test_active_line_uses_recent_rate_before_node_statistics_arrive(plant, monkeypatch):
+    for packet in (plant / "workorders/WO-RUN/workspace/.forge-run/lrtx/SWE.2/packets").glob("*.json"):
+        packet.unlink()
+    monkeypatch.setattr(F, "recent_speed", lambda *_: {"tok_s": 17, "model": "terra"})
+    data = F.floor(now=NOW, since=NOW - 86400)
+    assert data["kpis"]["on_floor"] == 1 and data["kpis"]["line_tok_s"] == 17
+
+
 def test_the_server_serves_the_page_and_the_floor(plant):
     srv = ThreadingHTTPServer(("127.0.0.1", 0), P.Handler)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
