@@ -249,7 +249,8 @@ def _plan_findings(ws) -> tuple[list[str], int]:
             if body is not None:
                 out.append(f"DUPLICATE_TARGET_HOST_TEST:{t['ut']}")
             if target_results.get(t["ut"]) != "PASS" or target["verifies"] != [t["uspec"]]:
-                out.append(f"TARGET_UNIT_NOT_VERIFIED:{t['ut']}:{t['uspec']}")
+                kind = "TIMING" if target["file"] == unit_target_timing.DECLARATION else "OBSERVATION"
+                out.append(f"TARGET_{kind}_NOT_VERIFIED:{t['ut']}:{t['uspec']}")
             continue
         if body is None:
             out.append(f"PLANNED_TEST_MISSING:{t['ut']}:{t['uspec']}")
