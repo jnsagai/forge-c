@@ -44,14 +44,10 @@ def _revision(root: Path, revision: str) -> str:
     return result.stdout.strip()
 
 
-def bind(store, order_id: str, attempt_id: str, *, workspace: Path, campaign_path: Path,
-         policy_path: Path | None = None, auth_base: Path | None = None, allowed_signers: Path | None = None,
-         now: float | None = None) -> dict:
-    """Read the existing M3 records and reverify current campaign, signature and source pins.
-
-    No state transition, new queue, budget reservation, model call or dispatch is performed.
-    The returned context is evidence for admission, never an admission/qualification receipt.
-    """
+def bind_order(store, order_id: str, attempt_id: str, *, campaign_path: Path,
+               policy_path: Path | None = None, auth_base: Path | None = None, allowed_signers: Path | None = None,
+               now: float | None = None) -> dict:
+    """Read-only M3 identity/grant binding, also usable before a fresh product workspace exists."""
     row = store.order(order_id)
     _require(row is not None, "LINE_QUEUE_ORDER_ABSENT")
     attempts = [a for a in store.attempts(order_id) if a["attempt_id"] == attempt_id]
@@ -105,6 +101,20 @@ def bind(store, order_id: str, attempt_id: str, *, workspace: Path, campaign_pat
              "LINE_AUTH_BINDING_MISMATCH")
     permission = grant.permit("recover_workorder", {"driver_class": lin.driver_class, "model": lin.profile})
     _require(permission.allow, f"LINE_AUTH_RECOVERY_REFUSED:{permission.code}")
+    return {"row": row, "spec": spec, "campaign": camp, "lineage": lin, "grant": grant,
+            "order_digest": digest}
+
+
+def bind(store, order_id: str, attempt_id: str, *, workspace: Path, campaign_path: Path,
+         policy_path: Path | None = None, auth_base: Path | None = None, allowed_signers: Path | None = None,
+         now: float | None = None) -> dict:
+    """Read-only source provenance, never an admission or qualification receipt."""
+    data = bind_order(store, order_id, attempt_id, campaign_path=campaign_path, policy_path=policy_path,
+                      auth_base=auth_base, allowed_signers=allowed_signers, now=now)
+    row, spec, camp, lin, grant = (data[k] for k in ("row", "spec", "campaign", "lineage", "grant"))
+    digest = data["order_digest"]
+    wo = row["request_id"]
+    root = state_dir().resolve()
     expected = root / "workorders" / wo / "workspace"
     ws = Path(workspace).resolve()
     _require(ws == expected.resolve() and ws.is_relative_to(root / "workorders") and ws.is_dir(),
@@ -172,8 +182,8 @@ def valid_job(job, store=None):
         return False
 
 
-def make_planner(store, eff, *, origin):
+def make_planner(store, eff, *, origin, line_role_authority_ref=None):
     """Use the existing bounded Fabro planner lifecycle; no queue, scheduler or inferred grant is added."""
     from . import local_agent
 
-    return local_agent.make_planner(store, eff, line_origin=origin)
+    return local_agent.make_planner(store, eff, line_origin=origin, line_role_authority_ref=line_role_authority_ref)

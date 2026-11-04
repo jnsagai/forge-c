@@ -73,7 +73,7 @@ CODES = {
     "WORKTREE_ADD_FAILED": "INFRA", "FABRO_API_UNREACHABLE": "INFRA", "STACK_STOP_INCOMPLETE": "INFRA",
     "STACK_START_FAILED": "INFRA", "STACK_NOT_HEALTHY": "INFRA", "EXPOSE_FAILED": "INFRA", "SMOKE_FAIL": "INFRA",
     "WORKORDER_LAUNCH_FAILED": "WORKORDER", "LAUNCH_NO_RUN_ID": "WORKORDER", "UNEXPECTED_ERROR": "INFRA",
-    "QUALITY_FLAG_UNSUPPORTED": "ORDER",
+    "QUALITY_FLAG_UNSUPPORTED": "ORDER", "DURABLE_EXECUTION_BUSY": "REFUSED",
 }
 _WO_RX = re.compile(r"^WO-[A-Za-z0-9][A-Za-z0-9-]{2,120}$")
 _EX_RX = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,120}$")
@@ -83,7 +83,8 @@ _MODEL_RX = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,200}$")
 # the work-order flags the loop10 ladders pass in their EXTRA string (all others are refused, never forwarded)
 EXTRA_FLAGS = {"--stop-after": "stop_after", "--resume-from": "resume_from", "--provided-from": "provided_from",
                "--resume-upto": "resume_upto", "--timeout-scale": "timeout_scale",
-               "--quality": "quality_file"}  # M3: the campaign's order quality block (owner rule 2026-11-03), a JSON file
+               "--quality": "quality_file", "--durable-launch": "durable_file",
+               "--durable-launch-sha256": "durable_sha256"}
 
 
 class LaunchError(RuntimeError):
@@ -163,6 +164,8 @@ class Order:
     timeout_scale: float | None = None
     purpose: str = "ASPICE_ONLY"
     quality_file: str | None = None  # absolute path of the order's quality block (JSON), outside the run worktree
+    durable_file: str | None = None
+    durable_sha256: str | None = None
 
     def validate(self) -> None:
         bad = [n for n, v, rx in (("wo", self.wo, _WO_RX), ("rev", self.rev, _REV_RX), ("example", self.example, _EX_RX),
@@ -178,6 +181,17 @@ class Order:
             bad.append("example")
         if self.quality_file is not None and (not os.path.isabs(self.quality_file) or not os.path.isfile(self.quality_file)):
             bad.append("quality_file")
+        if self.durable_file is not None or self.durable_sha256 is not None:
+            if (not isinstance(self.durable_file, str) or not os.path.isabs(self.durable_file)
+                    or not isinstance(self.durable_sha256, str) or not re.fullmatch(r"[0-9a-f]{64}", self.durable_sha256)):
+                bad.append("durable_launch")
+            else:
+                from .line_recovery_product import validate_launch_order
+
+                try:
+                    validate_launch_order(self)
+                except (OSError, ValueError, KeyError, TypeError):
+                    bad.append("durable_launch")
         if bad:
             raise LaunchError("ORDER_ARGS_INVALID", ",".join(sorted(set(bad))))
 
@@ -190,6 +204,13 @@ class Order:
             if v is not None:
                 a += [flag, str(v)]
         return a + ["--detach"]
+
+    def view(self):
+        result = asdict(self)
+        for key in ("durable_file", "durable_sha256"):
+            if result[key] is None:
+                result.pop(key)
+        return result
 
 
 def parse_extra(extra: str) -> dict:
@@ -857,11 +878,18 @@ def _reason(run: dict) -> str | None:
     return st.get("reason") if isinstance(st, dict) else None
 
 
-def live_runs(cfg: LineConfig, host, procs=None, ports: dict | None = None) -> dict:
+def live_runs(cfg: LineConfig, host, procs=None, ports: dict | None = None, *, durable_exclusion=None) -> dict:
     """Live Forge-C runs of this stack root (the M0 rule: lifecycle running/submitted/queued/pending/paused and a
     source_directory under <root>/state/). Fails closed: an API that does not answer while a Fabro of the live stack
     is alive is FABRO_API_UNREACHABLE. Fabro servers outside the live stack (orphans) are asked in their own
     namespace; one that does not answer cannot be asked and is left to the sweep."""
+    from .durable import Refused
+    from .line_liveness import clear
+
+    try:
+        clear(cfg, exclusion=durable_exclusion)
+    except Refused as exc:
+        raise LaunchError("DURABLE_EXECUTION_BUSY", exc.code) from None
     procs = procs or ProcFS()
     prefix = str(cfg.stack_root).rstrip("/") + "/state/"
 
@@ -991,7 +1019,7 @@ class Attempt:
         if self.dry_run:
             return None
         doc = {"schema": SCHEMA, "work_order": self.order.wo, "attempt": self.number, "started_at": self.started,
-               "ended_at": utc_now(), "order": asdict(self.order), "revision": self.sha,
+               "ended_at": utc_now(), "order": self.order.view(), "revision": self.sha,
                "worktree": str(self.worktree) if self.worktree else None, "config": self.cfg.describe(),
                "outcome": result["outcome"], "class": result["class"], "detail": result.get("detail", ""),
                "fabro_run_id": result.get("fabro_run_id"), "steps": self.steps, "step_logs": str(self.logdir)}
@@ -1060,12 +1088,23 @@ def launch(order: Order, cfg: LineConfig | None = None, *, host=None, procs=None
         else:
             with gpu_lock(cfg.gpu_lock):
                 att.step("gpu_lock", lock=str(cfg.gpu_lock))
+                if order.durable_file is not None:
+                    from .line_recovery_product import claim_for_launch
+
+                    att.durable_exclusion = claim_for_launch(cfg, order)
                 result = _launch_locked(att, cfg, order, host, procs, say)
     except LaunchError as exc:
         att.step("outcome", exc.code, detail=exc.detail)
         say(legacy_line(exc.code, exc.detail, order))
         result = _result(att, exc.code, exc.detail)
     except Exception as exc:  # noqa: BLE001 - never an untyped end: the transcript records it as infrastructure
+        if order.durable_file is not None:
+            from .local_agent import LaunchNotStarted
+
+            if isinstance(exc, LaunchNotStarted):
+                att.step("outcome", "DURABLE_PRELAUNCH_REFUSED", code=exc.failure_type)
+                att.write(_result(att, "DURABLE_PRELAUNCH_REFUSED", exc.failure_type))
+                raise
         detail = f"{type(exc).__name__}: {str(exc)[:300]}"
         att.step("outcome", "UNEXPECTED_ERROR", detail=detail)
         say(legacy_line("UNEXPECTED_ERROR", detail, order))
@@ -1077,7 +1116,8 @@ def launch(order: Order, cfg: LineConfig | None = None, *, host=None, procs=None
 
 def _launch_locked(att: Attempt, cfg: LineConfig, order: Order, host, procs, say) -> dict:
     # 2 RUN_LIVE: first, before any worktree or stack action
-    lr = live_runs(cfg, host, procs)
+    exclusion = getattr(att, "durable_exclusion", None)
+    lr = live_runs(cfg, host, procs, **({"durable_exclusion": exclusion} if exclusion else {}))
     att.step("run_live", api=lr["api"], orphan_fabro=lr["orphan_fabro"])
     say(f"step run_live ok: no live run on {cfg.stack_root} (api {lr['api'].lower()})")
     sha = resolve_rev(cfg.repo, order.rev)  # read only (git objects of the line repo)
@@ -1102,6 +1142,10 @@ def _launch_locked(att: Attempt, cfg: LineConfig, order: Order, host, procs, say
     if worktree_clean(wt):
         raise LaunchError("WORKTREE_NOT_CLEAN", "after the input copy")
     env = run_env(cfg, wt, order.profile)
+    if order.durable_file is not None:
+        from .line_recovery_product import execution_context
+
+        env.update(execution_context(order))
     cwd = wt / "factory/python"
     _guard(att, host, procs, cfg, say)
     # 4 stack lifecycle under the stack lock
@@ -1369,7 +1413,19 @@ def main(argv: list[str] | None = None, *, host=None, procs=None) -> int:
             return 2
         say(f"line-launcher start wo={order.wo} rev={order.rev} example={order.example} profile={order.profile} "
             f"model={order.model}{' (dry run)' if a.dry_run else ''}")
-        res = launch(order, cfg, host=host, procs=procs, say=say, dry_run=a.dry_run)
+        from .line_liveness import ClaimUncertain
+        from .local_agent import LaunchNotStarted
+
+        try:
+            res = launch(order, cfg, host=host, procs=procs, say=say, dry_run=a.dry_run)
+        except LaunchNotStarted as exc:
+            print(json.dumps({"work_order": order.wo, "outcome": "DURABLE_PRELAUNCH_REFUSED", "class": "REFUSED",
+                              "issues": [exc.failure_type]}))
+            return 3
+        except ClaimUncertain:
+            print(json.dumps({"work_order": order.wo, "outcome": "DURABLE_LAUNCH_UNKNOWN", "class": "REFUSED",
+                              "issues": ["DURABLE_LAUNCH_CLAIM_ALREADY_EXISTS"]}))
+            return 3
         say(f"line-launcher end outcome={res['outcome'].lower()} class={res['class'].lower()} "
             f"attempt={res['attempt']} transcript={res.get('transcript')}")
         if a.json:

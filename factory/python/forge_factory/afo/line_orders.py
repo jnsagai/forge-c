@@ -299,14 +299,33 @@ class RealLine:
                                  stdin=subprocess.DEVNULL, stdout=fh, stderr=subprocess.STDOUT, start_new_session=True)
         return {"pid": p.pid, "start": _proc_start(p.pid)}
 
+    def spawn_recovery_worker(self, command_id: str, wo: str, *, quiesce=False) -> dict:
+        """Only spawn the external bounded worker. Source preparation/serving never runs in the cycle."""
+        out = self.cfg.launch_dir / f"recovery-{wo}.out"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        from .line_recovery_worker import config_environment
+
+        env = {**os.environ, **config_environment(self.cfg), "FORGE_STATE_DIR": str(self.cfg.stack_root / "state")}
+        with out.open("ab") as fh:
+            p = subprocess.Popen([self.python, "-m", "forge_factory.afo.line_recovery_worker", "bootstrap",
+                                  "--command", command_id, *(["--quiesce"] if quiesce else [])], cwd=self.cwd,
+                                 stdin=subprocess.DEVNULL,
+                                 stdout=fh, stderr=subprocess.STDOUT, start_new_session=True, env=env)
+        return {"pid": p.pid, "start": _proc_start(p.pid)}
+
     def alive(self, pid: int, start: str | None) -> bool:
         return pid > 0 and _proc_start(pid) == start and start is not None
 
     def sweep(self) -> dict:
         try:
+            from .line_liveness import clear
+
+            clear(self.cfg)
             return {"ok": True, **self.LL.safe_sweep(self.cfg, self.host if self.snapshot is None else None)}
         except self.LL.LaunchError as exc:
             return {"ok": False, "refused": exc.code, "detail": exc.detail[:200]}
+        except ValueError as exc:
+            return {"ok": False, "refused": getattr(exc, "code", "DURABLE_LIVENESS_UNKNOWN")}
 
     def free_bytes(self) -> int:
         st = os.statvfs(self.state_root if self.state_root.exists() else self.cfg.launch_dir)
@@ -316,6 +335,13 @@ class RealLine:
         return self.cfg.runs_root / wo
 
     def remove_worktree(self, wo: str) -> bool:
+        from .durable import Refused
+        from .line_liveness import clear
+
+        try:
+            clear(self.cfg)
+        except Refused:
+            return False
         wt = self.run_worktree(wo)
         if not wt.is_dir():
             return False
@@ -455,7 +481,8 @@ class Records:
                 "INFRA" if lg["code"] in ("STACK_STOP_INCOMPLETE", "READINESS_FAILURE", "STACK_START_FAILED",
                                           "MODEL_SMOKE_FAILED") else "WORKORDER"
             a.launches.append({"at": lg["created"], "code": lg["code"], "class": cls, "attempt": None})
-        if la and not a.launching and not a.rid and not any(x["at"] >= (_ts(la.get("at")) or 0) for x in a.launches):
+        if la and not la.get("durable_worker") and not a.launching and not a.rid and not any(
+                x["at"] >= (_ts(la.get("at")) or 0) for x in a.launches):
             # the launcher ended without a transcript (killed): a launch that never reached Fabro
             a.launches.append({"at": _ts(la.get("at")) or self.now, "code": "LAUNCHER_INTERRUPTED", "class": "INFRA",
                                "attempt": None})
@@ -616,8 +643,10 @@ def infra_backoff(k: int, policy: LinePolicy) -> float:
 class Planner:
     """Pure planning over one cycle's records: every lineage's state, last good part and next step."""
 
-    def __init__(self, campaigns: list[LCMP.Campaign], recs: Records, line, policy: LinePolicy, now: float):
+    def __init__(self, campaigns: list[LCMP.Campaign], recs: Records, line, policy: LinePolicy, now: float,
+                 *, durable_control=None):
         self.campaigns, self.recs, self.line, self.policy, self.now = campaigns, recs, line, policy, now
+        self.durable_control = durable_control
         self.plans: dict[str, Plan] = {}
 
     def run(self) -> list[Plan]:
@@ -680,12 +709,17 @@ class Planner:
         L = self.plans[P.lineage.key].lineage
         n = max([a.n for a in self.recs.phase_attempts(L, phase)] + [0]) + 1
         ok, via = self._quality_ok(L)
-        return {"schema": ORDER_SCHEMA, "wo": wo or L.wo(phase, n), "phase": phase, "kind": kind,
+        order = {"schema": ORDER_SCHEMA, "wo": wo or L.wo(phase, n), "phase": phase, "kind": kind,
                 "lineage": L.key, "lineage_sha": L.sha256, "campaign_id": L.campaign_id, "example": L.example,
                 "driver_class": L.driver_class, "revision": L.factory_revision, "profile": L.profile,
                 "run_model": L.run_model, "purpose": L.purpose, "resume_from": resume_from,
                 "provided_from": P.provided_from, "resume_upto": resume_upto, "stop_after": phase,
                 "quality": L.quality, "quality_via": (via or None) if ok else None}
+        if self.durable_control is not None:
+            order["durable_control"] = self.durable_control
+            if P.prev and (P.prev.spec or {}).get("durable_recovery"):
+                order["durable_recovery"] = P.prev.spec["durable_recovery"]
+        return order
 
     def decide(self, P: Plan, campaign: LCMP.Campaign) -> None:
         L = P.lineage
@@ -724,6 +758,9 @@ class Planner:
             o = dict(a.spec or {})
             fresh = self._order(P, ph, o.get("kind") or "CHAIN", resume_from=o.get("resume_from"),
                                 resume_upto=o.get("resume_upto"), wo=a.wo)
+            if self.durable_control is not None and o.get("durable_control") == self.durable_control:
+                if o.get("durable_recovery"):
+                    fresh["durable_recovery"] = o["durable_recovery"]
             if a.spec and _digest(fresh) == _digest(a.spec):
                 self._place(P, a.spec, "LAUNCH")
             else:  # the campaign changed under a never-launched order: a new name, the old one is superseded
@@ -827,7 +864,11 @@ ORDER_KEYS = ("schema", "wo", "phase", "kind", "lineage", "lineage_sha", "campai
 
 def _digest(spec: dict) -> str:
     """The order spec's identity (the queue's payload_digest): only the fields that define the launch."""
-    return sha256_bytes(canonical_json({k: spec.get(k) for k in ORDER_KEYS}))
+    identity = {k: spec.get(k) for k in ORDER_KEYS}
+    for key in ("durable_control", "durable_recovery"):
+        if key in spec:
+            identity[key] = spec[key]
+    return sha256_bytes(canonical_json(identity))
 
 
 def quality_gaps(a: Att, L: LCMP.Lineage) -> list[dict]:
@@ -915,9 +956,11 @@ class Placer:
     def __init__(self, line, *, line_id: str = "local", dry_run: bool = False, campaigns_dir: Path | None = None,
                  policy_path: Path | None = None, auth_base: Path | None = None, allowed_signers: Path | None = None,
                  unit: str = "manual", clock=time.time, require_approval: bool = True, capa_of: dict | None = None,
-                 cre_db: Path | None = None):
+                 cre_db: Path | None = None, recovery_config: Path | None = None):
         self.line, self.line_id, self.dry_run = line, line_id, dry_run
         self.cre_db = cre_db
+        self.recovery_config = recovery_config
+        self.durable_control = None
         self.campaigns_dir = campaigns_dir
         self.policy_path, self.auth_base, self.allowed_signers = policy_path, auth_base, allowed_signers
         self.unit, self.clock, self.require_approval, self.capa_of = unit, clock, require_approval, capa_of
@@ -940,8 +983,12 @@ class Placer:
 
             capa_of = read_cre(self.cre_db or supervisor_dir() / "incidents.sqlite3")["capa_of"]
         recs = Records(self.line, self.queue_path, now, capa_of)
-        plans = Planner(campaigns, recs, self.line, policy, now).run()
-        locked = grant.allow and not self.dry_run and not self._take_act_lock()
+        if self.recovery_config is not None:
+            from .line_recovery_coordination import reference
+
+            self.durable_control = reference(self.recovery_config)
+        plans = Planner(campaigns, recs, self.line, policy, now, durable_control=self.durable_control).run()
+        locked = (grant.allow or self.durable_control is not None) and not self.dry_run and not self._take_act_lock()
         acting = grant.allow and not self.dry_run and not locked
         mode = "ACTING" if acting else ("DRY_RUN" if self.dry_run else "OBSERVING")
         actions: list[dict] = []
@@ -953,6 +1000,10 @@ class Placer:
                         dry_run=not acting, now=now)
         if acting:
             actions += self._reconcile(plans, policy, grant, campaigns, now)
+        if self.durable_control is not None:
+            from .line_recovery_coordination import coordinate
+
+            actions += coordinate(self, plans, policy, grant, campaigns, now, execute=not self.dry_run and not locked)
         # owner escalations (decision 5): lineages stopped by the owner retry rule, and the disk guard
         for P in plans:
             if P.state == "ESCALATED":
@@ -977,7 +1028,8 @@ class Placer:
                 "3 days are cleaned.").items() if k in ("status", "deduplicated")}})
         if acting or self.dry_run:
             actions += self._cleanup(policy, grant, now, execute=acting)
-        for chosen in self._ready(plans, now) if placing_ok and not gpu["busy"] else []:
+        recovery_busy = any(a.get("outcome") in ("DURABLE_WORKER_STARTED", "DURABLE_WORKER_ACTIVE") for a in actions)
+        for chosen in self._ready(plans, now) if placing_ok and not gpu["busy"] and not recovery_busy else []:
             res = self._execute(chosen, policy, grant, campaigns, now, execute=acting)
             actions.append(res)
             if res["outcome"] not in ("REFUSED", "WOULD_REFUSE", "PACED"):
@@ -1114,9 +1166,19 @@ class Placer:
         _atomic(spec_path, spec)
         env = self._env(o, P.lineage, camp, grant, now, spec["digest"])
         try:
-            aid, oid = self._admit(store, env, camp, policy, grant, P.kind)
+            if o.get("durable_control"):
+                from .line_recovery_coordination import prepare_continuation
+
+                prepare_continuation(self, store, spec, grant)
+            aid, oid = self._admit(store, env, camp, policy, grant, P.kind,
+                                   recovery_plan_id=(o.get("durable_recovery") or {}).get("plan_id"))
         except QueueError as exc:
             return {**act, "outcome": "QUEUE_REFUSED", "detail": str(exc)[:200]}
+        if o.get("durable_control"):
+            from .line_recovery_coordination import bind_continuation, launch_product
+
+            bind_continuation(store, spec, oid, aid)
+            return {**act, **launch_product(self, store, o, aid, oid, camp, now)}
         started = self.line.spawn_launch(argv, o["wo"])
         _atomic(supervisor_dir() / "launching" / f"{o['wo']}.json", {**started, "at": _utc(now), "attempt_id": aid,
                                                                        "order_id": oid})
@@ -1131,8 +1193,8 @@ class Placer:
                 "submitted_utc": _utc(now).replace("Z", "+00:00"), "priority": "NORMAL",
                 "git_revision": o.get("revision") or "unknown", "payload_digest": digest}
 
-    def _admit(self, store, env: dict, camp: LCMP.Campaign, policy: LinePolicy, grant: Grant, why: str | None
-               ) -> tuple[str, str]:
+    def _admit(self, store, env: dict, camp: LCMP.Campaign, policy: LinePolicy, grant: Grant, why: str | None,
+               *, recovery_plan_id=None) -> tuple[str, str]:
         """(attempt_id, order_id): the queue order of this work order (submitted once, idempotent), a new attempt in
         DISPATCH_PENDING. A paused order (its launch failed) is queued again; an order a crash left ADMITTED reuses
         its pending attempt."""
@@ -1160,7 +1222,8 @@ class Placer:
         if epoch is None:
             raise QueueError("LEASE_HELD")
         aid = store.admit(oid, epoch=epoch, scope=f"line:{self.line_id}", policy_sha256=policy.sha256 or "",
-                          authorization_id=grant.authorization_id, max_concurrent=1)
+                          authorization_id=grant.authorization_id, max_concurrent=1,
+                          **({"recovery_plan_id": recovery_plan_id} if recovery_plan_id is not None else {}))
         store.attempt_transition(aid, "DISPATCH_PENDING")
         return aid, oid
 
@@ -1296,7 +1359,14 @@ class Placer:
                 store.transition(oid, "VALIDATING", reason)
                 store.transition(oid, "READY_FOR_OFFLINE_REVIEW", reason, terminal_reason=reason[:200])
             else:  # a phase-scoped order's package is BLOCKED (later phases are gaps); the phase verdict is the reason
-                store.transition(oid, "BLOCKED", reason, terminal_reason=reason[:200])
+                if (a.verdict != "PASS" and self.durable_control is not None
+                        and (a.spec or {}).get("durable_control") == self.durable_control):
+                    from .line_recovery_coordination import request_replan
+
+                    store.transition(oid, "WAITING_RECOVERY", reason)
+                    request_replan(self, store, P, a, live, campaigns, now)
+                else:
+                    store.transition(oid, "BLOCKED", reason, terminal_reason=reason[:200])
             return {"action": "QUEUE_SYNC", "wo": a.wo, "outcome": f"ENDED_{a.verdict}"}
         return None
 
@@ -1347,6 +1417,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--line", default=os.environ.get("FORGE_LINE_ID", "local"))
     ap.add_argument("--campaigns", type=Path, default=None)
     ap.add_argument("--policy", type=Path, default=None)
+    ap.add_argument("--recovery-config", type=Path, default=None)
     ap.add_argument("--fabro-snapshot", type=Path, default=None)
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
@@ -1354,7 +1425,8 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("the plan CLI runs only as --dry-run; the Line Conductor service acts (--mode ACT)")
     snap = json.loads(a.fabro_snapshot.read_text()) if a.fabro_snapshot else None
     line = RealLine(fabro_snapshot=snap)
-    out = Placer(line, line_id=a.line, dry_run=True, campaigns_dir=a.campaigns, policy_path=a.policy).cycle()
+    out = Placer(line, line_id=a.line, dry_run=True, campaigns_dir=a.campaigns, policy_path=a.policy,
+                 recovery_config=a.recovery_config).cycle()
     if a.json:
         print(json.dumps(out, indent=1, default=str))
         return 0

@@ -79,10 +79,11 @@ def authorized_job(order, eff, job):
     if not authorized(order, eff, job["model"]):
         return False
     if job.get("line_role_authority_ref"):
-        from .line_recovery_control import configuration
+        from .line_recovery_control import configuration, require_job_binding
 
         try:
-            configuration(job["line_role_authority_ref"], eff, request=request_for(order))
+            control = configuration(job["line_role_authority_ref"], eff, request=request_for(order))
+            require_job_binding(job, control)
         except (ValueError, OSError, KeyError, TypeError):
             return False
     if job and "line_origin" in job:
@@ -284,6 +285,10 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         if line_context is not None:
             job["native_context"]["FORGE_AFO_QUEUE_SCOPE"] = "line-local"
         job["factory_revision"] = factory_revision()
+        if line_role_authority_ref is not None:
+            from .line_recovery_control import require_job_binding
+
+            require_job_binding(job, control, store=store)
         from .product_role_trial import bind as bind_trial
 
         launch_path = REPO_ROOT / order["input_manifest_ref"]
@@ -811,7 +816,8 @@ def make_planner(store, eff, *, line_origin=None, line_role_authority_ref=None):
 
             prior = [
                 p["record"].get("material_difference_ref", "").removeprefix("semantic-strategy:")
-                for p in recovery.plans(store, bundle["order_id"])
+                for p in (recovery.strategy_history(store, bundle["order_id"]) if line_origin is not None
+                          else recovery.plans(store, bundle["order_id"]))
                 if p["failure_fingerprint"] == bundle["fingerprint"]
             ]
         else:

@@ -4,11 +4,10 @@ import time
 from types import SimpleNamespace
 
 import pytest
-from forge_factory.afo import local_agent as L
 from forge_factory.afo import line_recovery as R
+from forge_factory.afo import local_agent as L
 from forge_factory.afo.queue import QueueError
-
-from test_afo_local_autonomy import local, order, client  # noqa: F401
+from test_afo_local_autonomy import client, local, order  # noqa: F401
 
 BASE_AUTHORIZED = L.authorized
 
@@ -21,8 +20,8 @@ def bound(local, monkeypatch):  # noqa: F811
     state = {"status": "BOUND_CONTEXT_ONLY_NO_DISPATCH", "generation": 1}
     monkeypatch.setattr(R, "context", lambda *args: dict(state))
     s, o, b, eff, ws, case = local
-    from forge_factory.afo.mission_ledger import MissionLedger
     from forge_factory.afo import planner
+    from forge_factory.afo.mission_ledger import MissionLedger
 
     ledger = MissionLedger(s)
     ledger.register("line-controller-fixture", "line-fixture", {
@@ -132,12 +131,20 @@ def test_explicit_controller_role_inputs_are_bound_without_source_inference(boun
     from forge_factory.afo import line_recovery_control as control
     from forge_factory.lrtx.profile import load
 
-    _, _, _, _, _, _, _, context = bound
+    store, _, _, eff, _, _, _, context = bound
     profile = load("local-rtx-v2-omniverse2")
     context["source_revision"] = "1" * 40
     authority = {"path": "/controller/frozen.json", "sha256": "f" * 64}
     value = {"profile": profile["id"], "profile_sha256": profile["_sha256"], "source_revision": "1" * 40,
              "role_capabilities": {}, "product_role_trial": None}
+    from forge_factory.afo import operations
+    from forge_factory.afo.mission_ledger import MissionLedger
+
+    mission = MissionLedger(store).snapshot("line-controller-fixture")
+    value.update(operations_intent="/controller/frozen-intent.json", policy_sha256=eff.sha256,
+                 mission={key: mission[key] for key in ("mission_id", "lineage", "limits")})
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", value["operations_intent"])
+    monkeypatch.setattr(operations, "configured", lambda: False)  # metadata fixture; no live intent authority inferred
     seen = []
     monkeypatch.setattr(control, "configuration", lambda ref, eff, **kw: seen.append(ref) or value)
     job = prepare(bound, line_role_authority_ref=authority)

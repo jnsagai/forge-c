@@ -93,10 +93,35 @@ def plans(store: Store, order_id: str) -> list[dict]:
         ]
 
 
+def strategy_history(store: Store, order_id: str) -> list[dict]:
+    """Fresh M3 phase names do not erase strategies spent on the same finite driver lineage."""
+    from ..common import state_dir
+    from .durable import Refused
+    from .mission_ledger import MissionLedger
+
+    row = store.order(order_id)
+    if not row or row["tenant_scope"] != "line-local":
+        return plans(store, order_id)
+    try:
+        spec = json.loads((state_dir() / "supervisor/line-orders" / (row["request_id"] + ".json")).read_text())
+        if not spec.get("durable_control"):
+            return plans(store, order_id)
+        mission = MissionLedger(store).for_order(order_id)
+    except (OSError, ValueError, Refused):
+        return plans(store, order_id)
+    env = json.loads(row["envelope"])
+    with store.tx() as c:
+        cohort = [dict(r) for r in c.execute("SELECT w.order_id,w.envelope FROM afo_work_orders w "
+                    "JOIN afo_mission_orders m ON m.order_id=w.order_id WHERE m.mission_id=?", (mission,))]
+    ids = [r["order_id"] for r in cohort if all(json.loads(r["envelope"]).get(k) == env.get(k)
+                                               for k in ("target", "driver_class", "tenant_scope"))]
+    return [p for oid in ids for p in plans(store, oid)]
+
+
 def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) -> dict:
     from .local_agent import records
 
-    ps = plans(store, order["order_id"])
+    ps = strategy_history(store, order["order_id"])
     jobs = records(store, order["order_id"])
     calls = {p["attempt_id"] for p in ps if p["source"] == "PLANNER"} | {
         j["attempt_id"] for j in jobs if j["role"] == "afo-recovery-planner"
@@ -266,7 +291,7 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
         if b["wall_seconds"] >= b["max_wall_seconds"]:
             issues.append("BUDGET_WALL_TIME_EXHAUSTED")
         fp = plan_fingerprint(plan)
-        prior = plans(store, order["order_id"])
+        prior = strategy_history(store, order["order_id"])
         if any(p["plan_fingerprint"] == fp for p in prior):
             issues.append("PLAN_ALREADY_TRIED")  # anti-loop: same plan, same fingerprint, never twice
         if plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY" and b["transient_retries"] >= b["max_transient_retries"]:
@@ -310,6 +335,13 @@ def record_plan(store: Store, plan: dict, *, source: str, status: str, reasons: 
 def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: list[str] | None, planner=None,
            line_origin=None) -> dict:
     """Choose and validate a plan for this blocked attempt. Returns {plan, status, reasons}."""
+    line_context = None
+    if line_origin is not None:
+        from .line_recovery import context
+
+        if bundle.get("order_id") != order["order_id"]:
+            raise QueueError("LINE_RECOVERY_BUNDLE_ORDER_MISMATCH")
+        line_context = context(store, order["order_id"], bundle["attempt_id"], ws, line_origin)
     env = json.loads(order["envelope"])
     atts = store.attempts(order["order_id"])
     tried = {env["model_profile"]} | {
@@ -320,7 +352,11 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
     allowed = [m for m in (eff.get("engineering.allowed_model_profiles") or []) if not auth_models or m in auth_models]
     from .dispatch import _durable_order
 
-    if _durable_order(store, order["order_id"]):
+    if line_context is not None:
+        # The immutable M3 input is campaign YAML. Driver model/profile changes
+        # require a new owner-approved campaign; a diagnosis cannot authorize one.
+        allowed = []
+    elif _durable_order(store, order["order_id"]):
         from ..lrtx.role_capability import local_alternatives
         from ..workorder import factory_revision
         from .scheduler import launch_manifest
@@ -340,13 +376,6 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
     source = "RULE"
     from ..development_execution import selected as development_execution
 
-    line_context = None
-    if line_origin is not None:
-        from .line_recovery import context
-
-        if bundle.get("order_id") != order["order_id"]:
-            raise QueueError("LINE_RECOVERY_BUNDLE_ORDER_MISMATCH")
-        line_context = context(store, order["order_id"], bundle["attempt_id"], ws, line_origin)
     if ws is not None and development_execution(ws) and line_context is None:
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "DEFERRED_BY_DEVELOPMENT_POLICY")
     if plan is not None and plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY":  # retry n+1: its own fingerprint

@@ -367,7 +367,8 @@ def create_app(
         from .workorder import factory_revision
 
         default_path()  # reject an unknown scope at startup; no database is opened
-        line_identity = {"afo_queue_scope": "line-local", "factory_revision": factory_revision()}
+        line_identity = {"afo_queue_scope": "line-local", "factory_revision": factory_revision(),
+                         "durable_native_header": os.environ.get("FORGE_DURABLE_NATIVE_HEADER") == "1"}
 
     @app.get("/health")
     async def health() -> dict:

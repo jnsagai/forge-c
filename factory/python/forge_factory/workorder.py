@@ -1206,13 +1206,25 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="feature 008: prepare the work order (brownfield: intake, fingerprints, build check) and stop",
     )
+    ap.add_argument("--durable-launch", type=Path, help="explicit immutable line product context; no inferred authority")
+    ap.add_argument("--durable-launch-sha256")
     a = ap.parse_args(argv)
     quality = json.loads(a.quality.read_text()) if a.quality else None
+    from .afo.durable import Refused
+    from .afo.line_liveness import ClaimUncertain
     from .brownfield.delivery import DeliveryBlocked
     from .brownfield.resume import ResumeRefused
     from .lrtx.profile import ProfileRefused
 
     try:
+        durable = {}
+        if a.durable_launch is not None or a.durable_launch_sha256 is not None:
+            from .afo.line_recovery_product import native_parameters
+
+            expected = {"wo": a.wo, "model": a.model, "profile": a.profile, "purpose": a.purpose,
+                        "stop_after": a.stop_after, "resume_from": a.resume_from, "provided_from": a.provided_from,
+                        "resume_upto": a.resume_upto, "quality": quality}
+            durable = native_parameters(a.durable_launch, a.durable_launch_sha256, expected)
         res = run(
             a.example.resolve(),
             a.wo,
@@ -1233,7 +1245,15 @@ def main(argv: list[str] | None = None) -> int:
             purpose=a.purpose,
             stop_after=a.stop_after,
             quality=quality,
+            **durable,
         )
+    except Refused as exc:
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "durable_line_product", "issues": [exc.code]}))
+        return 2
+    except ClaimUncertain:
+        print(json.dumps({"work_order": a.wo, "status": "UNKNOWN", "stage": "durable_line_product",
+                          "issues": ["LINE_PRODUCT_NATIVE_PREPARATION_ALREADY_CLAIMED"]}))
+        return 3
     except ResumeRefused as exc:
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "validated_resume", "issues": [str(exc)]}))
         return 2

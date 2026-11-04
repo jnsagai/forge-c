@@ -7,9 +7,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-from pathlib import Path
 import time
+from pathlib import Path
 
 from ..common import REPO_ROOT, state_dir
 from . import line_launcher as LL
@@ -31,8 +30,8 @@ def authorize(job, store=None):
             or job.get("state") != "LAUNCHING" or time.time() >= job.get("deadline_epoch", 0)
             or not L.enabled(job["role"], eff) or not L.authorized_job(order, eff, job)):
         return False
-    from .mission_ledger import MissionLedger
     from .execution_lifecycle import Executions
+    from .mission_ledger import MissionLedger
     from .operations import Intent
 
     intent_path = (job.get("native_context") or {}).get("FORGE_OPERATIONS_INTENT")
@@ -48,10 +47,17 @@ def authorize(job, store=None):
             or execution["authorization_state"] != "VALID" or execution["resource_lease"] != "HELD"
             or execution["mission_id"] != job["mission_id"] or execution["launch_nonce"] != job["nonce"]):
         return False
+    from .line_recovery_control import native_envelope_minimum
+
+    if job.get("durable_native") == "maintenance-1":
+        from .line_recovery_control import require_native_transport
+
+        require_native_transport(job)
+    native_envelope_minimum(job)  # no model serving when even the smallest request cannot fit
     # Source runs do not qualify diagnosis. A measured receipt or an explicitly signed trial is mandatory.
     entry = (job.get("role_capabilities") or {}).get(job["role"])
     if entry:
-        from ..lrtx.role_capability import require, measured_objective
+        from ..lrtx.role_capability import measured_objective, require
 
         identity = entry["identity"]
         if (identity["role"] != job["role"] or identity["model_digest"] != job.get("model_digest")
@@ -101,7 +107,10 @@ def launch(job, *, cfg=None, host=None, procs=None, authorization=None):
         env.update(L.execution_context(job))
         cwd = REPO_ROOT / "factory/python"
         with LL.gpu_lock(cfg.gpu_lock), LL.held_stack_lock(cfg.stack_root):
-            LL.live_runs(cfg, host, procs)
+            from .line_liveness import claim
+
+            exclusion = claim(cfg, job)
+            LL.live_runs(cfg, host, procs, **({"durable_exclusion": exclusion} if exclusion else {}))
             LL._guard(journal, host, procs, cfg, lambda _line: None)
             rc, output = host.stack(["status"], env=env, cwd=cwd, log=logs / "status.log")
             status = LL._last_json(output) or {}
@@ -129,6 +138,8 @@ def launch(job, *, cfg=None, host=None, procs=None, authorization=None):
                     or gateway_revision.get("dirty") is not False
                     or gateway_revision.get("commit") != job["factory_revision"].get("commit")):
                 raise R.BindingRefused("LINE_RECOVERY_GATEWAY_SCOPE_OR_REVISION_MISMATCH")
+            if job.get("durable_native") == "maintenance-1" and gateway.get("durable_native_header") is not True:
+                raise R.BindingRefused("LINE_NATIVE_TRANSPORT_GATEWAY_NOT_ENABLED")
             if not permitted(job):
                 raise R.BindingRefused("LINE_RECOVERY_NOT_AUTHORIZED")
             rc, _ = host.stack(["exec", "--", "python", "-m", "forge_factory.lrtx.stack", "serve", "--model", job["model"]],
@@ -156,6 +167,10 @@ def launch(job, *, cfg=None, host=None, procs=None, authorization=None):
             journal.step("native_launch", "RECEIPTED", run_id=result["run_id"])
             return result["run_id"]
     except Exception as exc:
+        from .line_liveness import ClaimUncertain
+
+        if isinstance(exc, ClaimUncertain):
+            raise  # prior nonce claim is not proof that the job never submitted
         if not native_invoked:
             raise L.LaunchNotStarted(job, exc) from exc
         raise

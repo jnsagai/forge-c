@@ -53,10 +53,30 @@ def prepare(store, order, attempt, nonce, manifest, eff):
     from ..workorder import factory_revision
 
     job["factory_revision"] = factory_revision()
+    if manifest.get("line_role_authority_ref") is not None:
+        import os
+
+        from .line_recovery_control import configuration
+        from .local_agent import NATIVE_CONTEXT, request_for
+
+        control = configuration(manifest["line_role_authority_ref"], eff, request=request_for(order))
+        if (control["profile"] != manifest.get("profile")
+                or control["source_revision"] != job["factory_revision"]["commit"]
+                or job["factory_revision"].get("dirty") is not False
+                or MissionLedger(store).for_order(order["order_id"]) != control["mission"]["mission_id"]):
+            raise Refused("LINE_PRODUCT_CONTROL_BINDING_CHANGED")
+        job.update(line_role_authority_ref=manifest["line_role_authority_ref"],
+                   line_origin=manifest["line_origin"], source_workspace=str(ws),
+                   profile_sha256=control["profile_sha256"],
+                   native_context={key: os.environ[key] for key in NATIVE_CONTEXT if os.environ.get(key)},
+                   product_role_trials=control.get("product_role_trials") or {},
+                   qualified_local_alternatives=control.get("qualified_local_alternatives") or {})
     selected = next(
         (a for a in manifest.get("qualified_local_alternatives") or [] if a.get("model_profile") == job["model"]), None
     )
     job["role_capabilities"] = (selected or manifest).get("role_capabilities") or {}
+    if manifest.get("line_role_authority_ref") is not None:
+        job["role_capabilities"] = control["role_capabilities"]
     job["work_class"] = "PRODUCT"  # per-phase semantic size is not measured yet: admission refuses, never guesses
     job["profile"] = manifest.get("profile")
     if job["profile"]:
@@ -67,7 +87,12 @@ def prepare(store, order, attempt, nonce, manifest, eff):
         job["precision"] = model_identity["quantization"]
     from .product_role_trial import bind as bind_trial
 
-    bind_trial(manifest.get("product_role_trial"), job, eff)
+    bind_trial(control["product_role_trial"] if manifest.get("line_role_authority_ref") is not None
+               else manifest.get("product_role_trial"), job, eff)
+    if manifest.get("line_role_authority_ref") is not None:
+        from .line_recovery_control import require_job_binding
+
+        require_job_binding(job, control, store=store)
     MissionLedger(store).execution(mission, job_id, "PRODUCT", reserved_tokens=job["reserved_tokens"])
     with store.tx() as c:
         old = c.execute("SELECT record FROM afo_product_jobs WHERE job_id=?", (job_id,)).fetchone()
@@ -75,6 +100,10 @@ def prepare(store, order, attempt, nonce, manifest, eff):
             prior = json.loads(old[0])
             if any(prior[k] != job[k] for k in ("nonce", "mission_id", "attempt_id")):
                 raise Refused("PRODUCT_JOB_REBOUND")
+            if manifest.get("line_role_authority_ref") is not None and any(prior.get(k) != job.get(k)
+                    for k in ("line_role_authority_ref", "line_origin", "factory_revision", "model", "profile",
+                              "role_capabilities", "product_role_trials", "qualified_local_alternatives")):
+                raise Refused("LINE_PRODUCT_JOB_REBOUND")
             return prior
         c.execute("INSERT INTO afo_product_jobs VALUES (?,?)", (job_id, canonical(job).decode()))
     Executions(store).reserve(job_id, mission, nonce)
@@ -143,13 +172,17 @@ def from_native(store, native_id, *, client=None):
     return {"job_id": rec["job_id"], "nonce": rec["launch_nonce"]}
 
 
-def reconcile(store, eff, client):
-    from .local_agent import authorized
+def reconcile(store, eff, client, *, job_ids=None):
+    from .local_agent import authorized, authorized_job
 
     ex = Executions(store)
     out = []
     with store.tx() as c:
-        jobs = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_product_jobs")]
+        if job_ids is None:
+            jobs = [json.loads(r[0]) for r in c.execute("SELECT record FROM afo_product_jobs")]
+        else:
+            jobs = [json.loads(r[0]) for jid in job_ids if
+                    (r := c.execute("SELECT record FROM afo_product_jobs WHERE job_id=?", (jid,)).fetchone())]
     for job in jobs:
         rec = ex.get(job["job_id"])
         if not rec:
@@ -162,7 +195,7 @@ def reconcile(store, eff, client):
             order is not None
             and order["state"] in ("ADMITTED", "RUNNING", "WAITING_RECOVERY", "VALIDATING")
             and eff.sha256 == job["policy_sha256"]
-            and authorized(order, eff, job["model"])
+            and (authorized_job(order, eff, job) if job.get("line_role_authority_ref") else authorized(order, eff, job["model"]))
             and time.time() < job["deadline_epoch"]
         )
         if not valid and rec["authorization_state"] == "VALID":

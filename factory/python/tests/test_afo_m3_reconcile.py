@@ -60,6 +60,46 @@ def test_clean_launch_persists_intent_then_receipt(admitted):
     assert s.commands()[0]["state"] == "ACKED" and dispatch.dispatch_pending(s, f.launcher(), decide=ALLOW) == []
 
 
+def test_controller_adapter_keeps_existing_outbox_nonce_and_explicit_phase_name(admitted):
+    s, oid, aid, _ = admitted
+    f = FakeFabro()
+    spec = {"example": "examples/controller-validated", "stop_after": "SWE.3"}
+    result = dispatch.dispatch_pending(s, f.launcher(), decide=ALLOW, commands=s.commands("PENDING"),
+                                       manifest_loader=lambda order, payload: spec,
+                                       name_for=lambda order, attempt: "WO-F014-SWE3-FIXTURE-20261104-L99B")
+    assert result[0]["action"] == "launched" and f.seen_manifest == spec
+    assert f.runs[0]["labels"]["forge"] == "WO-F014-SWE3-FIXTURE-20261104-L99B"
+    assert s.attempts(oid)[0]["record"]["workspace_ref"] == "workorder:WO-F014-SWE3-FIXTURE-20261104-L99B"
+    assert s.commands()[0]["state"] == "ACKED"
+
+
+def test_changed_controller_binding_is_proven_not_launched_before_any_native_intent(admitted):
+    from forge_factory.afo.durable import Refused
+
+    s, oid, _, _ = admitted
+    f = FakeFabro()
+    def changed(*args):
+        raise Refused("LINE_SPEC_DIGEST_MISMATCH")
+    result = dispatch.dispatch_pending(s, f.launcher(), decide=ALLOW, manifest_loader=changed)
+    assert result[0]["code"] == "LINE_SPEC_DIGEST_MISMATCH" and f.launches == 0
+    assert s.commands()[0]["state"] == "QUARANTINED" and s.order(oid)["state"] == "BLOCKED"
+
+
+def test_late_transport_receipt_cannot_resurrect_a_terminal_phase(admitted):
+    from forge_factory.afo.durable import Refused
+
+    s, oid, aid, _ = admitted
+    f = FakeFabro()
+    dispatch.dispatch_pending(s, f.launcher(), decide=ALLOW)
+    cmd = s.commands()[0]
+    s.attempt_transition(aid, "FAILED")
+    s.transition(oid, "BLOCKED", "phase already reconciled", terminal_reason="PHASE_VERDICT:FAIL")
+    dispatch.adopt(s, cmd, "RUN1")
+    assert s.attempts(oid)[0]["state"] == "FAILED" and s.order(oid)["state"] == "BLOCKED"
+    with pytest.raises(Refused, match="TERMINAL_ATTEMPT_NATIVE_BINDING_CHANGED"):
+        dispatch.adopt(s, cmd, "FOREIGN-RUN")
+
+
 def test_crash_after_fabro_accepted_is_adopted_not_relaunched(admitted):
     s, oid, aid, _ = admitted
     f = FakeFabro()

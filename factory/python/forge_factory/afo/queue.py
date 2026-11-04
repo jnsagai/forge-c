@@ -504,6 +504,7 @@ class Store:
         authorization_id: str | None,
         max_concurrent: int,
         qualification_ref: str | None = None,
+        recovery_plan_id: str | None = None,
     ) -> str:
         """QUEUED -> ADMITTED and the FABRO_LAUNCH intent for attempt seq 1+, atomically, under the fencing epoch."""
         if qualification_ref is not None and (
@@ -544,7 +545,7 @@ class Store:
                 "created_utc": utc_now(),
                 "fabro_run_id": None,
                 "fabro_server": None,
-                "recovery_plan_id": None,
+                "recovery_plan_id": recovery_plan_id,
                 "exit_status": None,
                 "terminal_package_status": None,
                 "checkpoint_refs": [],

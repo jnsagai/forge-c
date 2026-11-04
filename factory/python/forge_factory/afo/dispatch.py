@@ -64,13 +64,14 @@ def _set_cmd(store: Store, cid: str, state: str, ack: str | None = None, count: 
 
 
 # -- launch (T028) --------------------------------------------------------------------------------------------------
-def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None = None) -> list[dict]:
+def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None = None,
+                     commands=None, manifest_loader=None, name_for=None) -> list[dict]:
     """PENDING FABRO_LAUNCH commands: persist intent (IN_FLIGHT + nonce) BEFORE the launch, then record the receipt."""
     from . import authority
 
     decide = decide or (lambda req: authority.decide("launch_workorder", req))
     out = []
-    for cmd in store.commands("PENDING"):
+    for cmd in store.commands("PENDING") if commands is None else commands:
         if cmd["kind"] != "FABRO_LAUNCH":
             continue
         from .operations import Intent, configured
@@ -98,12 +99,25 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
         from .durable import Refused
         from .mission_ledger import MissionLedger
 
+        seq = att["seq"]
+        name = wo_name(order["order_id"], seq) if name_for is None else name_for(order, att)
+        prepared_manifest = None
+        if manifest_loader is not None:
+            try:
+                prepared_manifest = manifest_loader(order, payload)
+                if not isinstance(prepared_manifest, dict):
+                    raise Refused("CONTROLLER_LAUNCH_MANIFEST_INVALID")
+            except (Refused, ValueError, OSError, KeyError, TypeError) as exc:
+                _set_cmd(store, cmd["command_id"], "QUARANTINED")
+                out.append(item_failure(store, order["order_id"], exc, "controller_launch_binding"))
+                continue
+        # A controller manifest may register/link the first finite mission. Bind
+        # the nonce after that validation, before CAS and before any native effect.
         try:
             mission = MissionLedger(store).for_order(order["order_id"])
         except Refused:
             mission = None
-        seq, nonce = att["seq"], secrets.token_hex(16 if mission else 8)
-        name = wo_name(order["order_id"], seq)
+        nonce = secrets.token_hex(16 if mission else 8)
         labels = {"afo_attempt": cmd["attempt_id"], "afo_nonce": nonce}
         with store.tx() as c:
             claimed = c.execute(
@@ -118,17 +132,22 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
             workspace_ref=f"workorder:{name}",
             evidence_refs=[f"nonce:{nonce}", f"dispatched_epoch:{now or time.time():.0f}"],
         )
-        manifest_path = REPO_ROOT / order["input_manifest_ref"]
-        if sha256_file(manifest_path) != order["manifest_sha256"]:
-            _set_cmd(store, cmd["command_id"], "QUARANTINED")
-            store.transition(
-                order["order_id"],
-                "BLOCKED",
-                "launch manifest changed after approval",
-                terminal_reason="LAUNCH_MANIFEST_HASH_CHANGED",
-            )
-            continue
-        manifest = json.loads(manifest_path.read_text())
+        if manifest_loader is None:
+            manifest_path = REPO_ROOT / order["input_manifest_ref"]
+            if sha256_file(manifest_path) != order["manifest_sha256"]:
+                _set_cmd(store, cmd["command_id"], "QUARANTINED")
+                store.transition(
+                    order["order_id"],
+                    "BLOCKED",
+                    "launch manifest changed after approval",
+                    terminal_reason="LAUNCH_MANIFEST_HASH_CHANGED",
+                )
+                continue
+            manifest = json.loads(manifest_path.read_text())
+        else:
+            # A controller adapter owns its separately validated immutable format
+            # (M3 campaign YAML + hash-bound phase spec). Never supplied by a model.
+            manifest = prepared_manifest
         if configured():
             manifest = {**manifest, "operations_epoch": payload["operations_epoch"]}
         payload = json.loads(cmd["payload"])
@@ -214,6 +233,14 @@ def _settle_local_refusal(store, cmd, job_id, failure_type):
 
 
 def adopt(store: Store, cmd: dict, run_id: str, revision: str = "unknown") -> None:
+    attempt = _attempt(store, cmd["attempt_id"])
+    if attempt["state"] in ("SUCCEEDED", "FAILED", "CANCELLED"):
+        from .durable import Refused
+
+        if attempt["record"].get("fabro_run_id") != run_id:
+            raise Refused("TERMINAL_ATTEMPT_NATIVE_BINDING_CHANGED")
+        _set_cmd(store, cmd["command_id"], "ACKED", ack=f"fabro_run:{run_id}")
+        return  # M3 already reconciled a fast phase; never resurrect its terminal attempt
     if _durable_order(store, cmd["order_id"]):
         from .execution_lifecycle import Executions
 
@@ -243,10 +270,10 @@ def _nonce(att: dict) -> tuple[str | None, float]:
 
 
 # -- crash reconciliation of in-flight launches (T028) ---------------------------------------------------------------
-def reconcile_inflight(store: Store, view, *, now: float | None = None) -> list[dict]:
+def reconcile_inflight(store: Store, view, *, now: float | None = None, commands=None) -> list[dict]:
     now = now or time.time()
     out = []
-    for cmd in store.commands("IN_FLIGHT") + store.commands("UNKNOWN"):
+    for cmd in store.commands("IN_FLIGHT") + store.commands("UNKNOWN") if commands is None else commands:
         if cmd["kind"] != "FABRO_LAUNCH":
             continue
         if _durable_order(store, cmd["order_id"]):

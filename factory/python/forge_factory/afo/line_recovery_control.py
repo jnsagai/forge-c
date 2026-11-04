@@ -41,7 +41,7 @@ def read(ref):
     value = bound_json(ref)
     required = {"schema", "source_revision", "policy_sha256", "authorization_ref", "profile", "profile_sha256",
                 "operations_intent", "mission", "role_capabilities", "product_role_trial"}
-    optional = {"product_role_trials", "qualified_local_alternatives"}
+    optional = {"product_role_trials", "qualified_local_alternatives", "native_transport_ref"}
     if (not isinstance(value, dict) or not required <= set(value) or set(value) - required - optional
             or value.get("schema") != SCHEMA):
         raise Refused("LINE_RECOVERY_CONTROL_INVALID")
@@ -55,6 +55,8 @@ def read(ref):
     if not all(isinstance(mission[k], str) and re.fullmatch(r"[A-Za-z0-9_.:/-]{1,160}", mission[k])
                for k in ("mission_id", "lineage")):
         raise Refused("LINE_RECOVERY_FINITE_MISSION_REQUIRED")
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{1,127}", mission["mission_id"]):
+        raise Refused("LINE_RECOVERY_MISSION_EXECUTION_ID_INVALID")
     validate_limits(mission["limits"])
     if not isinstance(value["role_capabilities"], dict):
         raise Refused("LINE_RECOVERY_ROLE_INPUTS_INVALID")
@@ -107,3 +109,80 @@ def _configuration(ref, eff, *, request, actual):
 def role_inputs(ref, eff):
     value = configuration(ref, eff)
     return {key: value[key] for key in ("role_capabilities", "product_role_trial")}
+
+
+def require_job_binding(job, control, *, store=None):
+    """Intersect a signed control with the actual intent and linked effective mission; never refill it."""
+    from ..common import state_dir
+    from . import mission_capacity, mission_deadline
+    from .queue import ReadSnapshot
+
+    if store is None:
+        with ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=100, timeout_s=3) as reader:
+            return require_job_binding(job, control, store=reader)
+    native = job.get("native_context") or {}
+    if (native.get("FORGE_OPERATIONS_INTENT") != control["operations_intent"]
+            or native.get("FORGE_AFO_QUEUE_SCOPE") != "line-local"):
+        raise Refused("LINE_ROLE_OPERATIONS_CONTEXT_MISMATCH")
+    if (job.get("mission_id") != control["mission"]["mission_id"] or job.get("profile") != control["profile"]
+            or job.get("profile_sha256") != control["profile_sha256"]
+            or job.get("factory_revision", {}).get("commit") != control["source_revision"]
+            or job.get("factory_revision", {}).get("dirty") is not False
+            or job.get("policy_sha256") != control["policy_sha256"]):
+        raise Refused("LINE_ROLE_MISSION_OR_SOURCE_MISMATCH")
+    with store.tx() as c:
+        link = c.execute("SELECT mission_id FROM afo_mission_orders WHERE order_id=?", (job["order_id"],)).fetchone()
+        row = c.execute("SELECT record FROM afo_missions WHERE mission_id=?", (job["mission_id"],)).fetchone()
+        if not link or link[0] != job["mission_id"] or not row:
+            raise Refused("LINE_ROLE_LINKED_MISSION_REQUIRED")
+        base = json.loads(row[0])
+        current = mission_capacity.effective(c, base, mission_deadline.effective(c, base))
+    if current["lineage"] != control["mission"]["lineage"] or current["limits"] != control["mission"]["limits"]:
+        raise Refused("LINE_ROLE_SIGNED_MISSION_LIMITS_MISMATCH")
+    return True
+
+
+def native_envelope_minimum(job):
+    """Actual sanitizer lower bound, not a guessed native SDK default or capability proof."""
+    from ..llm_gateway import sanitize_request
+    from ..lrtx.profile import load
+
+    profile = load(job["profile"])
+    body = sanitize_request({"model": job["model"], "max_tokens": 1, "messages": []},
+                            policy=(profile.get("gateway") or {}).get("reasoning") or {}, role=job.get("role"))
+    output = body["max_tokens"]
+    # A real serialized input is nonempty. Even this lower bound must fit;
+    # request admission later measures and checks the complete actual body.
+    report = {"status": "LOWER_BOUND_FITS_NOT_QUALIFICATION", "profile_sha256": profile["_sha256"],
+              "minimum_positive_output_cap": output, "minimum_input_tokens": 1,
+              "minimum_total_tokens": output + 1, "reserved_tokens": job["reserved_tokens"],
+              "native_sdk_default": "NOT_MEASURED", "model_calls": 0}
+    if type(job["reserved_tokens"]) is not int or job["reserved_tokens"] < output + 1:
+        raise Refused("RECOVERY_NATIVE_ENVELOPE_EXCEEDS_RESERVATION", f"minimum={output+1},reserved={job['reserved_tokens']}")
+    return report
+
+
+def require_native_transport(job, *, cfg=None, control=None):
+    """Products/native maintenance need measured correlation; planner explicit-body transport is separate."""
+    import os
+
+    from .line_launcher import LineConfig
+    from .policy import load
+
+    if control is None:
+        if not job.get("line_role_authority_ref"):
+            raise Refused("LINE_NATIVE_TRANSPORT_MEASUREMENT_REQUIRED")
+        control = configuration(job["line_role_authority_ref"], load())
+    ref = control.get("native_transport_ref")
+    if not ref:
+        raise Refused("LINE_NATIVE_TRANSPORT_MEASUREMENT_REQUIRED")
+    if os.environ.get("FORGE_DURABLE_NATIVE_HEADER") != "1":
+        raise Refused("LINE_NATIVE_TRANSPORT_OPT_IN_REQUIRED")
+    try:
+        from .line_native_transport import require
+    except ModuleNotFoundError:
+        raise Refused("LINE_NATIVE_TRANSPORT_VALIDATOR_UNAVAILABLE") from None
+    measured = require(ref, job=job, cfg=cfg or LineConfig.from_env())
+    if not isinstance(measured, dict):
+        raise Refused("LINE_NATIVE_TRANSPORT_PROOF_INVALID")
+    return measured

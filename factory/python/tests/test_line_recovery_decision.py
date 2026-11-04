@@ -1,6 +1,7 @@
+# ruff: noqa: F811 - imported pytest fixtures are used by name
 """The existing deterministic decision path cannot short-circuit an authorized line planner to legacy deferral."""
 import pytest
-from forge_factory.afo import recovery, planner, line_recovery
+from forge_factory.afo import line_recovery, planner, recovery
 from forge_factory.afo.queue import QueueError
 from test_afo_local_autonomy import local, order  # noqa: F401
 
@@ -38,4 +39,18 @@ def test_line_context_refusal_never_reaches_model_planner(local, monkeypatch):
                         line_origin={"campaign_path": "/approved/campaign"})
     with pytest.raises(QueueError, match="BUNDLE_ORDER_MISMATCH"):
         recovery.decide(s, o, dict(bundle, order_id="foreign"), ws=ws, eff=eff, auth_models=None,
+                        line_origin={"campaign_path": "/approved/campaign"})
+
+
+def test_durable_line_origin_never_parses_campaign_yaml_as_generic_launch_json(local, monkeypatch):
+    from forge_factory.afo import dispatch, scheduler
+
+    s, o, bundle, eff, ws, _ = local
+    monkeypatch.setattr(dispatch, "_durable_order", lambda *a: True)
+    monkeypatch.setattr(scheduler, "launch_manifest", lambda *a: pytest.fail("M3 campaign is not launch JSON"))
+    monkeypatch.setattr(line_recovery, "context", lambda *a: {"status": "BOUND_CONTEXT_ONLY_NO_DISPATCH"})
+    def pending(*args):
+        raise planner.Pending("one-existing-durable-job")
+    with pytest.raises(planner.Pending, match="existing-durable-job"):
+        recovery.decide(s, o, bundle, ws=ws, eff=eff, auth_models=None, planner=pending,
                         line_origin={"campaign_path": "/approved/campaign"})

@@ -1256,6 +1256,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="ACT (M3): place orders from the approved campaigns, only with a valid signed PILOT grant")
     ap.add_argument("--dry-run", action="store_true", help="with --mode ACT: plan and verify, place nothing")
     ap.add_argument("--campaigns", default=os.environ.get("FORGE_LINE_CAMPAIGNS"))
+    ap.add_argument("--recovery-config", default=os.environ.get("FORGE_LINE_RECOVERY_CONFIG"),
+                    help="optional owner-signed finite durable recovery control; disabled when absent")
     ap.add_argument("--line", default=os.environ.get("FORGE_LINE_ID", "local"))
     ap.add_argument("--launch-dir", default=os.environ.get("FORGE_LINE_LAUNCH_DIR"))
     ap.add_argument("--fabro-snapshot", help="offline replay: a recorded {run_id: status} file instead of the live API")
@@ -1276,7 +1278,8 @@ def main(argv: list[str] | None = None) -> int:
         placer = LO.Placer(LO.RealLine(cfg, fabro_snapshot=snap), line_id=a.line, dry_run=a.dry_run,
                            campaigns_dir=Path(a.campaigns) if a.campaigns else None,
                            unit=os.environ.get("FORGE_LINE_CONDUCTOR_UNIT") or "manual",
-                           cre_db=Path(a.cre_db) if a.cre_db else None)
+                           cre_db=Path(a.cre_db) if a.cre_db else None,
+                           recovery_config=Path(a.recovery_config) if a.recovery_config else None)
     install_guard(ports)
     obs = Observer(a.line, Path(a.launch_dir) if a.launch_dir else None, fabro,
                    Path(a.cre_db) if a.cre_db else None, a.lookback_h * 3600)
