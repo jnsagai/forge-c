@@ -137,8 +137,16 @@ def case_dir(pid: str) -> Path:
 
 
 def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, retained_rework: dict | None = None,
-            line_binding: dict | None = None) -> dict:
+            line_binding: dict | None = None, line_failure_bundle: dict | None = None) -> dict:
     """Detached worktree of `base`; everything the maintainer may not change is read-only (OS); one frozen case."""
+    if line_failure_bundle is not None:
+        from .durable import digest
+
+        if (line_binding is None or len(json.dumps(line_failure_bundle).encode()) > 32768
+                or any(line_failure_bundle.get(k) != incident.get(k)
+                       for k in ('order_id', 'attempt_id', 'bundle_id', 'failure_class'))
+                or line_failure_bundle.get('failure_class') != 'FACTORY_CODE_DEFECT'):
+            raise MaintainerDenied('LINE_MAINTENANCE_FAILURE_BINDING_INVALID')
     d = case_dir(pid)
     if (d / "case.json").exists():
         raise MaintainerDenied("CASE_EXISTS", pid)
@@ -161,6 +169,8 @@ def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, reta
             "hardened_files": hardened, "isolation": isolation.level(), "created_utc": utc_now()}
     if line_binding is not None:
         case["line_binding"] = line_binding
+    if line_failure_bundle is not None:
+        case['line_failure_bundle'] = {'sha256': digest(line_failure_bundle), 'record': line_failure_bundle}
     if retained_rework is not None:
         case["retained_rework"] = retained_rework
         if len(json.dumps(case).encode()) > 65536:
