@@ -265,27 +265,42 @@ print(json.dumps({'mapped_owner_verified':True,'current_uid':os.getuid(),'captur
                 # the exact worker may already be retired, but no replacement can start.
                 before_spawn_count = len(processes)
                 job = P.registered(p.store, P.job_id(p.aid))
-                real_clock, real_sleep = A.time.time, ST.time.sleep
+                real_clock, real_sleep, real_stack_time = A.time.time, ST.time.sleep, ST.time
                 free_calls = [0]
+                targeted_waits = []
 
                 def free_memory():
                     free_calls[0] += 1
                     return 0 if free_calls[0] <= 2 else 100000
 
                 def expire_during_wait(delay):
+                    # Stop polling can sleep too. Expire only at the VRAM wait,
+                    # after both actual free-memory observations.
+                    if free_calls[0] < 2:
+                        real_sleep(min(delay, 0.02))
+                        return
+                    assert ST._EFFECT_GUARD.get() is not None
+                    targeted_waits.append(dict(free_calls=free_calls[0], scoped_effect_guard=True))
                     monkeypatch.setattr(A.time, "time", lambda: job["deadline_epoch"] + 1)
                     real_sleep(0.02)
 
                 profile["runtime"]["llama_server"]["vram_required_mib"] = 5
                 monkeypatch.setattr(ST, "_vram_free_mib", free_memory)
-                monkeypatch.setattr(ST.time, "sleep", expire_during_wait)
+                # Replacing the shared stdlib sleep also affects Popen.wait
+                # during initial authority reads. Isolate the stack clock only.
+                monkeypatch.setattr(ST, "time", SimpleNamespace(
+                    monotonic=real_stack_time.monotonic, sleep=expire_during_wait,
+                    time=real_clock, clock_gettime=real_stack_time.clock_gettime,
+                    CLOCK_BOOTTIME=real_stack_time.CLOCK_BOOTTIME,
+                ))
                 try:
                     with pytest.raises(Refused, match="EFFECT_AUTHORITY_EXPIRED_OR_CHANGED"):
                         ST.serve(p.s, first)
                     assert len(processes) == before_spawn_count
                 finally:
                     monkeypatch.setattr(A.time, "time", real_clock)
-                    monkeypatch.setattr(ST.time, "sleep", real_sleep)
+                    monkeypatch.setattr(ST, "time", real_stack_time)
+                assert targeted_waits and all(v["free_calls"] >= 2 and v["scoped_effect_guard"] for v in targeted_waits)
                 assert ST._EFFECT_GUARD.get() is None
             assert p.intent.path.read_bytes() == before
             assert Executions(p.store).get(P.job_id(p.aid))["resource_lease"] == "HELD"
