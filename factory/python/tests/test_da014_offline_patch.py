@@ -238,3 +238,15 @@ def test_release_content_identity_matches_git_listing_for_paths_modes_and_links(
     with tarfile.open(fileobj=io.BytesIO(subprocess.check_output(["git", "archive", "HEAD"], cwd=repo))) as archive:
         archive.extractall(installed, filter="data")
     assert P._release_sha256(installed) == _tree(repo, "HEAD")
+
+
+def test_development_build_can_supply_a_portable_reviewed_runner(env):
+    runner = env["tmp"] / "transfer" / "apply-update.py"
+    result = P.build(env["repo"], env["base"], env["target"], ["tests/test_rule.py"], env["dec"],
+                     "Jefferson", env["tmp"] / "patch.zip", runner_out=runner)
+    assert result["runner"] == str(runner)
+    assert result["runner_sha256"] == hashlib.sha256(runner.read_bytes()).hexdigest()
+    assert "forge_factory.offline.patch" in runner.read_text()
+    assert "pip install" not in runner.read_text() and "curl" not in runner.read_text()
+    help_result = subprocess.run([__import__("sys").executable, str(runner), "--help"], capture_output=True, text=True)
+    assert help_result.returncode == 0 and "rollback" in help_result.stdout

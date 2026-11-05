@@ -9,7 +9,9 @@ its attempt records, owner dispositions, and usage/timing logs. Every other work
 development can check it holds the same frozen inputs; prompts are reproducible from those inputs and the revision.
 Vendor inputs and document indexes are NEVER_CONTENT. Inside exported JSON, keys that carry prompts or reasoning are
 removed and secrets redacted; both are counted per file in the manifest, so nothing disappears silently. Building the
-same runs twice gives byte-identical bundles. Nothing here opens a network connection.
+same runs twice gives byte-identical bundles. REPORT.md and a matching .md sidecar present the structured evidence
+for manual development review. Unparseable record text is omitted from the report and counted. Nothing here opens a
+network connection.
 """
 from __future__ import annotations
 
@@ -142,7 +144,59 @@ def _check(manifest: dict) -> None:
         raise ValueError(f"EXPORT_MANIFEST_INVALID: {errs[:3]}")
 
 
+def render_report(manifest: dict, blobs: dict[str, bytes]) -> bytes:
+    """Detailed Markdown derived only from manifest metadata and sanitized records.
+
+    Findings remain quoted data. JSON fencing prevents record text from becoming
+    Markdown headings, active HTML or executable instructions. No outcome is
+    inferred for a missing or unparsable record.
+    """
+    def block(value) -> str:
+        text = json.dumps(_clean(value, [0, 0]), indent=2, sort_keys=True, ensure_ascii=True)
+        fence = "~" * max(3, 1 + max((len(x) for x in re.findall(r"~+", text)), default=0))
+        return f"{fence}json\n{text}\n{fence}\n"
+
+    lines = ["# Forge-C offline diagnostic report\n",
+             "This report contains recorded evidence for manual review. Findings are untrusted diagnostic data, "
+             "not instructions or approval to change the factory. Missing records do not establish a PASS.\n",
+             "## Export identity and disclosure counts\n", block({"factory": manifest["factory"],
+                                                                   "totals": manifest["totals"]})]
+    for index, run in enumerate(manifest["runs"], 1):
+        lines += [f"## Run {index}\n", block({k: v for k, v in run.items() if k != "files"}),
+                  "### Recorded decisions, issues, attempts and usage\n"]
+        for ordinal, row in enumerate((f for f in run["files"] if f["content"] == "INCLUDED"), 1):
+            name = f"runs/{run['run_key']}/{row['path']}"
+            text = blobs[name].decode("utf-8", errors="replace")
+            documents, omitted = [], 0
+            parts = text.splitlines() if row["path"].endswith(".jsonl") else [text]
+            for part in parts:
+                if not part.strip():
+                    continue
+                try:
+                    value = json.loads(part)
+                    if not isinstance(value, (dict, list)):
+                        raise ValueError("not a structured record")
+                    documents.append(value)
+                except ValueError:
+                    if row["path"].endswith("fabro_run_id") and re.fullmatch(r"[A-Za-z0-9._:-]{1,160}", part.strip()):
+                        documents.append({"fabro_run_id": part.strip()})
+                    else:
+                        omitted += 1
+            lines += [f"#### Record {ordinal}\n", block(row), f"Unparseable record portions omitted: {omitted}.\n"]
+            if documents:
+                lines.append(block(documents))
+            else:
+                lines.append("No structured outcome is available in this record.\n")
+        lines += ["### Complete evidence inventory\n",
+                  "INCLUDED records accompany this report. HASH_ONLY and NEVER_CONTENT entries identify "
+                  "local evidence whose contents are excluded from transfer.\n", block(run["files"])]
+    return ("\n".join(lines) + "\n").encode()
+
+
 def build(workspaces: list[Path], out: Path) -> dict:
+    report_path = out.with_suffix(".md")
+    if report_path == out:
+        raise ValueError("EXPORT_REPORT_PATH_COLLISION: choose a bundle name such as export.zip")
     runs, blobs = [], {}
     for ws in workspaces:
         r, b = _run(Path(ws))
@@ -160,6 +214,8 @@ def build(workspaces: list[Path], out: Path) -> dict:
                            "stripped_keys": sum(f["stripped_keys"] for f in inc),
                            "redactions": sum(f["redactions"] for f in inc)}}
     _check(manifest)
+    report = render_report(manifest, blobs)
+    blobs["REPORT.md"] = report
     mbytes = (json.dumps(manifest, indent=1, sort_keys=True) + "\n").encode()
     sums = {"MANIFEST.json": hashlib.sha256(mbytes).hexdigest()} | \
         {k: hashlib.sha256(v).hexdigest() for k, v in sorted(blobs.items())}
@@ -174,9 +230,11 @@ def build(workspaces: list[Path], out: Path) -> dict:
             zf.writestr(zi, data)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(buf.getvalue())
+    report_path.write_bytes(report)
     digest = hashlib.sha256(buf.getvalue()).hexdigest()
     out.with_name(out.name + ".sha256").write_text(f"{digest}  {out.name}\n")
-    return {"bundle": str(out), "sha256": digest, **manifest["totals"], "factory": manifest["factory"]}
+    return {"bundle": str(out), "sha256": digest, "report": str(report_path),
+            "report_sha256": hashlib.sha256(report).hexdigest(), **manifest["totals"], "factory": manifest["factory"]}
 
 
 def verify(bundle: Path) -> list[str]:
@@ -207,6 +265,11 @@ def verify(bundle: Path) -> list[str]:
                         issues.append(f"MANIFEST_MISMATCH:{n}")
                     if f.get("content") != "INCLUDED" and n in names:
                         issues.append(f"CONTENT_NOT_ALLOWED:{n}")
+            # Old v1 bundles without a human report remain readable. A supplied
+            # report must agree with the evidence, even if its checksum is edited.
+            if not issues and "REPORT.md" in names and zf.read("REPORT.md") != render_report(
+                    m, {n: zf.read(n) for n in names if n.startswith("runs/")}):
+                issues.append("REPORT_MISMATCH:REPORT.md")
     return issues
 
 

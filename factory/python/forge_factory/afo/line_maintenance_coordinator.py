@@ -9,15 +9,18 @@ import argparse
 import json
 import math
 import os
-from pathlib import Path
 import signal
 import subprocess
 import sys
 import time
 from contextlib import nullcontext
+from pathlib import Path
 
 from ..common import REPO_ROOT, sha256_file, state_dir
-from . import line_maintenance as binding, line_recovery, local_agent as L, maintainer as M
+from . import line_maintenance as binding
+from . import line_recovery
+from . import local_agent as L
+from . import maintainer as M
 from .durable import Refused, digest
 from .execution_lifecycle import Executions
 from .mission_ledger import MissionLedger
@@ -51,8 +54,8 @@ def _review_deadline(store, job, *, mission=None):
 
 
 def _authorized(store, job, eff):
-    from .operations import Intent
     from ..workorder import factory_revision
+    from .operations import Intent
 
     order = store.order(job['order_id'])
     saved = _saved(store, job['job_id'])
@@ -84,7 +87,9 @@ def _authorized(store, job, eff):
                 or control['profile_sha256'] != job['profile_sha256']
                 or job['mission_id'] != control['mission']['mission_id']
                 or registered.get('lineage') != control['mission']['lineage']
-                or registered.get('limits') != control['mission']['limits']
+                # The snapshot replays validated amendments. The raw registration
+                # continues to bind the original authority and lineage below.
+                or mission.get('limits') != control['mission']['limits']
                 or registered.get('authorization_ref') != control['authorization_ref']):
             raise Refused('LINE_MAINTENANCE_CONTROL_MISSION_OR_INTENT_CHANGED')
     if time.time() >= _review_deadline(store, job, mission=mission):
@@ -180,9 +185,9 @@ def step(store, order, attempt, bundle, workspace, eff, *, line_origin, line_rol
 
 def review(store, job, eff, *, fence, client, evaluator=None):
     """Existing CRE process only; no broker publication or automatic source activation."""
+    from ..reliability import promotion
     from ..reliability.policy import load as cre_policy
     from ..reliability.store import CREStore
-    from ..reliability import promotion
     from .completion_receipt import Context
 
     _authorized(store, job, eff)

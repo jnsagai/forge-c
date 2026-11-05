@@ -123,7 +123,7 @@ def schema_errors(patch: dict) -> list[str]:
 
 # ---------------------------------------------------------------- development side
 def build(repo: Path, base: str, target: str, regression: list[str], cre_decision: Path, approver: str,
-          out: Path) -> dict:
+          out: Path, *, runner_out: Path | None = None) -> dict:
     def git(*a: str) -> bytes:
         return subprocess.run(["git", *a], cwd=repo, capture_output=True, check=True, timeout=120).stdout
 
@@ -147,6 +147,13 @@ def build(repo: Path, base: str, target: str, regression: list[str], cre_decisio
     errs = schema_errors(patch)
     if errs:
         raise ValueError(f"PATCH_SCHEMA_INVALID: {errs[:3]}")
+    runner = None
+    if runner_out is not None:
+        runner = (REPO_ROOT / "scripts/forge-offline-update.py").read_bytes()
+        if runner_out.resolve() == out.resolve():
+            raise ValueError("PATCH_RUNNER_PATH_COLLISION")
+        if runner_out.exists() and runner_out.read_bytes() != runner:
+            raise FileExistsError("PATCH_RUNNER_EXISTS: refusing to overwrite a different file")
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as zf:
         for name, data in [("PATCH.json", json.dumps(patch, indent=1, sort_keys=True).encode() + b"\n"),
@@ -157,7 +164,14 @@ def build(repo: Path, base: str, target: str, regression: list[str], cre_decisio
             zf.writestr(zi, data)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(buf.getvalue())
-    return {"bundle": str(out), "sha256": _sha(buf.getvalue()), "patch_id": patch["patch_id"], "files": len(files)}
+    result = {"bundle": str(out), "sha256": _sha(buf.getvalue()), "patch_id": patch["patch_id"], "files": len(files)}
+    if runner_out is not None:
+        runner_out.parent.mkdir(parents=True, exist_ok=True)
+        if not runner_out.exists():
+            with runner_out.open("xb") as stream:
+                stream.write(runner)
+        result.update(runner=str(runner_out), runner_sha256=_sha(runner))
+    return result
 
 
 def sign(bundle: Path, key: Path, agent: bool = False) -> Path:
@@ -363,6 +377,7 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--cre-decision", type=Path, required=True)
     b.add_argument("--approver", required=True)
     b.add_argument("--out", type=Path, required=True)
+    b.add_argument("--runner-out", type=Path, help="copy the reviewed portable operator runner alongside the bundle")
     s = sub.add_parser("sign")
     s.add_argument("bundle", type=Path)
     s.add_argument("--key", type=Path, required=True)
@@ -376,7 +391,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--install-root", type=Path, required=True)
     a = ap.parse_args(argv)
     if a.cmd == "build":
-        res = build(a.repo, a.base, a.target, a.regression, a.cre_decision, a.approver, a.out)
+        res = build(a.repo, a.base, a.target, a.regression, a.cre_decision, a.approver, a.out, runner_out=a.runner_out)
     elif a.cmd == "sign":
         res = {"signature": str(sign(a.bundle, a.key, a.agent))}
     elif a.cmd == "import":
