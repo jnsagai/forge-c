@@ -42,8 +42,9 @@ HTTPServer(('127.0.0.1',port),Health).serve_forever()
 def managed_cpu(boot, monkeypatch):  # noqa:F811
     root = boot["root"]
     (root / "logs").mkdir()
-    (root / "venv/bin").mkdir(parents=True)
-    (root / "venv/bin/python").symlink_to(sys.executable)
+    # Reuse the actual pinned TEST venv, including pyvenv.cfg/site-packages.
+    # A lone Python symlink resolves to the base interpreter and loses httpx.
+    (root / "venv").symlink_to(Path(sys.prefix), target_is_directory=True)
     (root / "ollama-0.34.0/bin").mkdir(parents=True)
     fabro = root / "private-fabro-health"
     ollama = root / "ollama-0.34.0/bin/ollama"
@@ -135,23 +136,40 @@ def test_real_cold_control_then_full_managed_nested_namespace_cpu_health(managed
     cfg = root / "private-start-settings.json"
     cfg.write_text(json.dumps({**settings, "root": str(root)}))
     script = root / "private-outer-model-swap.py"
-    script.write_text('''import json,sys,os
+    script.write_text('''import json,sys,os,copy
 from pathlib import Path
 from forge_factory.lrtx import stack,provider_process as P
+from forge_factory.afo.durable import Refused
 from forge_factory.common import REPO_ROOT
 assert str(REPO_ROOT)==sys.argv[2]
 s=json.loads(Path(sys.argv[1]).read_text());s['root']=Path(s['root']);r=s['root'];ports=s['ports']
 instance=stack.serving_instance(s);P.require_live_instance(instance)
+negative=[]
+for field in ['pid','start_ticks','mapping','user_namespace','net_namespace','missing_outer']:
+ bad=copy.deepcopy(instance)
+ if field=='pid':bad['outer_holder']['pid']=os.getpid()
+ elif field=='start_ticks':bad['outer_holder']['identity']['start_ticks']='1'
+ elif field=='mapping':bad['outer_holder']['owner_view']['uid_map']=[[0,instance['init']['uid']+1,1]]
+ elif field=='user_namespace':bad['outer_holder']['owner_view']['user_namespace']='user:[1]'
+ elif field=='net_namespace':bad['outer_holder']['net_namespace']='net:[1]'
+ else:
+  bad['schema']='forge-c/managed-provider-instance/1';del bad['outer_holder']
+ try:P.require_live_instance(bad)
+ except Refused:negative.append(field)
+ else:raise AssertionError('FOREIGN_OUTER_VIEW_ACCEPTED:'+field)
+assert len(negative)==6
 stack._vram_free_mib=lambda:999999 # explicit private CPU resource-measurement leaf
 stack.llama_server_spec=lambda root,prof,p,env,model=None:([sys.executable,str(root/'private-llama-server-health.py'),str(p['llama']),'--alias',model],env,'http://127.0.0.1:'+str(p['llama'])+'/health',[model])
 out=stack._serve_model(s,'qwen3.8:27b-q8_0',serving=instance)
 assert out['result']=='SWAPPED',out
 Path(r/'private-outer-swap-result.json').write_text(json.dumps(out))
+Path(r/'private-outer-provenance-negatives.json').write_text(json.dumps(negative))
 ''')
     env = stack.envmap(settings)
     process = subprocess.run(stack._nsenter(holder) + [sys.executable, str(script), str(cfg), str(stack.REPO_ROOT)],
                              env=env, capture_output=True, text=True, timeout=25)
     assert process.returncode == 0, process.stderr[-3000:]
+    assert len(json.loads((root / "private-outer-provenance-negatives.json").read_text())) == 6
     latest = json.loads((root / "run/services.json").read_text())
     mapped = latest["processes"]["llama_server"]
     assert mapped["worker"]["identity"]["uid"] == 0
