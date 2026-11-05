@@ -3,6 +3,7 @@
 Uses the existing canonical line Store and managed stack. No synthetic job,
 production grant, global Conductor DB, CRE policy edit or model inference.
 """
+
 from __future__ import annotations
 
 import fcntl
@@ -31,18 +32,21 @@ def census(client):
     """Bounded complete native inventory, including archives/removal; unknown is busy."""
     rows, offset, total = [], 0, None
     for _ in range(100):
-        page = client._get("/api/v1/runs", **{"page[limit]": 100, "page[offset]": offset,
-                          "sort": "created_at", "direction": "asc", "include_archived": "true"})
+        page = client._get(
+            "/api/v1/runs",
+            **{"page[limit]": 100, "page[offset]": offset, "sort": "created_at", "direction": "asc", "include_archived": "true"},
+        )
         meta, part = page["meta"], page["data"]
-        require(type(meta.get("total")) is int and type(meta.get("has_more")) is bool and isinstance(part, list),
-                "NATIVE_INVENTORY_UNKNOWN")
+        require(
+            type(meta.get("total")) is int and type(meta.get("has_more")) is bool and isinstance(part, list),
+            "NATIVE_INVENTORY_UNKNOWN",
+        )
         if total is None:
             total = meta["total"]
         require(total == meta["total"] and 0 <= total <= 10000, "NATIVE_INVENTORY_CHANGED")
         for row in part:
             kind = ((row.get("lifecycle") or {}).get("status") or {}).get("kind")
-            require(kind in ("succeeded", "failed", "cancelled", "canceled"),
-                    "NATIVE_NOT_TERMINAL")
+            require(kind in ("succeeded", "failed", "cancelled", "canceled"), "NATIVE_NOT_TERMINAL")
             rows.append({"id": row["id"], "status": kind})
         if not meta["has_more"]:
             break
@@ -52,8 +56,10 @@ def census(client):
         require(False, "NATIVE_INVENTORY_BOUND")
     require(len(rows) == total and len({r["id"] for r in rows}) == total, "NATIVE_INVENTORY_INCOMPLETE")
     removing = client._get("/api/v1/runs", **{"page[limit]": 100, "status": "removing", "include_archived": "true"})
-    require(removing["data"] == [] and removing["meta"]["total"] == 0
-            and removing["meta"]["has_more"] is False, "NATIVE_REMOVAL_UNKNOWN")
+    require(
+        removing["data"] == [] and removing["meta"]["total"] == 0 and removing["meta"]["has_more"] is False,
+        "NATIVE_REMOVAL_UNKNOWN",
+    )
     return {"count": total, "identity_status_sha256": digest(sorted(rows, key=lambda r: r["id"]))}
 
 
@@ -64,10 +70,13 @@ def quiet_ledger(c):
     for row in c.execute("SELECT record FROM afo_execution_liveness"):
         rec = json.loads(row[0])
         require(rec.get("resource_lease") == "RELEASED", "EXECUTION_LEASE_NOT_RELEASED")
-    require(not c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone(),
-            "REQUEST_NOT_QUIESCENT")
-    require(not c.execute("SELECT 1 FROM afo_commands_outbox WHERE state NOT IN ('ACKED','FAILED','QUARANTINED') LIMIT 1").fetchone(),
-            "COMMAND_OUTCOME_UNRESOLVED")
+    require(
+        not c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone(), "REQUEST_NOT_QUIESCENT"
+    )
+    require(
+        not c.execute("SELECT 1 FROM afo_commands_outbox WHERE state NOT IN ('ACKED','FAILED','QUARANTINED') LIMIT 1").fetchone(),
+        "COMMAND_OUTCOME_UNRESOLVED",
+    )
 
 
 @contextmanager
@@ -78,8 +87,12 @@ def gpu_lock(path):
     fd = os.open(path, os.O_RDWR | os.O_CLOEXEC | os.O_NOFOLLOW)
     try:
         have, want = os.fstat(fd), path.stat()
-        require((have.st_dev, have.st_ino) == (want.st_dev, want.st_ino) and have.st_uid == os.getuid()
-                and not stat.S_IMODE(have.st_mode) & 0o002, "GPU_LOCK_REBOUND")
+        require(
+            (have.st_dev, have.st_ino) == (want.st_dev, want.st_ino)
+            and have.st_uid == os.getuid()
+            and not stat.S_IMODE(have.st_mode) & 0o002,
+            "GPU_LOCK_REBOUND",
+        )
         try:
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
@@ -106,8 +119,7 @@ def _services_quiet(settings):
     require(path.stat().st_uid == os.getuid() and not path.stat().st_mode & 0o022, "SERVICES_UNKNOWN")
     rec = json.loads(path.read_text())
     require(rec.get("root") == str(settings["root"]), "SERVICES_ROOT_CHANGED")
-    require(rec.get("profile_sha256") in (settings["profile"]["_sha256"], LEGACY_PROFILE_SHA),
-            "SERVICES_PROFILE_CHANGED")
+    require(rec.get("profile_sha256") in (settings["profile"]["_sha256"], LEGACY_PROFILE_SHA), "SERVICES_PROFILE_CHANGED")
     if rec.get("serving_instance"):
         require(provider.quiet(stack.serving_instance(settings)), "PROVIDER_NOT_QUIET")
     pids = [rec.get("holder_pid")]
@@ -139,31 +151,62 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
     from .policy import load
     from .owner_bootstrap_history import native_checkpoint, native_status
 
-    require(type(timeout_s) in (int, float) and math.isfinite(timeout_s) and 1 <= timeout_s <= 600,
-            "BOUNDED_DEADLINE_REQUIRED")
-    require(not any(os.environ.get(k) for k in ("FORGE_AGENT_ROLE", "FORGE_WORKSPACE", "FORGE_POLICY_BINDING",
-                "FORGE_LINE_STACK_PAYLOAD", "FORGE_LINE_STACK_PAYLOAD_SHA256", "FORGE_STACK_LOCK_FD")),
-            "EXTERNAL_ISSUER_REQUIRED")
-    require([list(map(int, x.split())) for x in Path("/proc/self/uid_map").read_text().splitlines()]
-            == [[0, 0, 4294967295]], "INITIAL_USER_NAMESPACE_REQUIRED")
+    require(type(timeout_s) in (int, float) and math.isfinite(timeout_s) and 1 <= timeout_s <= 600, "BOUNDED_DEADLINE_REQUIRED")
+    require(
+        not any(
+            os.environ.get(k)
+            for k in (
+                "FORGE_AGENT_ROLE",
+                "FORGE_WORKSPACE",
+                "FORGE_POLICY_BINDING",
+                "FORGE_LINE_STACK_PAYLOAD",
+                "FORGE_LINE_STACK_PAYLOAD_SHA256",
+                "FORGE_STACK_LOCK_FD",
+            )
+        ),
+        "EXTERNAL_ISSUER_REQUIRED",
+    )
+    require(
+        [list(map(int, x.split())) for x in Path("/proc/self/uid_map").read_text().splitlines()] == [[0, 0, 4294967295]],
+        "INITIAL_USER_NAMESPACE_REQUIRED",
+    )
     record = D.current()
     require(record["guardian_pid"] == os.getpid(), "ISSUING_PROCESS_REQUIRED")
     root = Path(record["store_path"]).parents[2]
-    require(store.path.resolve() == Path(record["store_path"]) == state_dir() / "supervisor/line-queue.sqlite3",
-            "CANONICAL_STORE_REQUIRED")
-    require(placer.queue_path.resolve() == store.path.resolve() and placer._act_lock is None,
-            "FRESH_CANONICAL_PLACER_REQUIRED")
+    require(
+        store.path.resolve() == Path(record["store_path"]) == state_dir() / "supervisor/line-queue.sqlite3",
+        "CANONICAL_STORE_REQUIRED",
+    )
+    require(placer.queue_path.resolve() == store.path.resolve() and placer._act_lock is None, "FRESH_CANONICAL_PLACER_REQUIRED")
     cfg = LineConfig.from_env()
-    require(cfg.stack_root.resolve() == root and cfg.gpu_lock.resolve() == GPU_LOCK,
-            "LINE_ROOT_OR_GPU_LOCK_CHANGED")
+    require(cfg.stack_root.resolve() == root and cfg.gpu_lock.resolve() == GPU_LOCK, "LINE_ROOT_OR_GPU_LOCK_CHANGED")
     settings = stack.settings(record["profile"])
-    require(settings["root"].resolve() == root and settings["profile"]["_sha256"] == record["profile_sha256"]
-            and stack.managed_serving(), "MANAGED_PROFILE_REQUIRED")
-    request = dict(order_id=order_wo or D.ORDERS[0], driver_class=D.DRIVER, model=record["profile"],
-                   service_action="line_stack_restart")
+    stack._managed_scope(settings)
+    require(
+        settings["root"].resolve() == root
+        and settings["profile"]["_sha256"] == record["profile_sha256"]
+        and stack.managed_serving(),
+        "MANAGED_PROFILE_REQUIRED",
+    )
+    request = dict(
+        order_id=order_wo or D.ORDERS[0], driver_class=D.DRIVER, model=record["profile"], service_action="line_stack_restart"
+    )
+    from .line_native_transport import require_context
+
+    eff = load()
+    require(decide("launch_workorder", request, afo=eff, log=False).allow, "BCD_SERVICE_ACTION_REFUSED")
+    control = C.configuration(record["control_ref"], eff, request=request)
+    native_ref = control.get("native_transport_ref")
+    require(os.environ.get("FORGE_DURABLE_NATIVE_HEADER") == "1", "NATIVE_HEADER_OPT_IN_REQUIRED")
+    require(stack.envmap(settings)["FORGE_FABRO_BIN"] == cfg.fabro_bin, "STACK_NATIVE_BINARY_REBOUND")
+    measured = require_context(native_ref, profile_id=record["profile"], expected_revision=C.revision(), cfg=cfg)
+    binary = Path(cfg.fabro_bin)
+    binary_stat = binary.stat()
+    binary_identity = (binary_stat.st_dev, binary_stat.st_ino, binary_stat.st_size, binary_stat.st_mtime_ns)
     intent, stop_at = Intent(), time.monotonic() + timeout_s
     boot_stop = time.clock_gettime(time.CLOCK_BOOTTIME) + timeout_s
     native_path = root / "fabro/storage/db/fabro.sqlite3"
+    selected_ref = {D.FILE: os.environ[D.FILE], D.SHA: os.environ[D.SHA]}
     anchor = {k: record[k] for k in ("control_ref", "control_sha256", "mission", "intent_epoch", "store_identity")}
     key = "owner-profile-bootstrap-" + digest(record)
     acquired, attempted, result = False, False, None
@@ -172,30 +215,47 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
     def guard():
         require(not cancelled(), "CANCELLED")
         current = D.current()  # ReadSnapshot, never re-enter this writer transaction.
-        require(current == record and all(current[k] == v for k, v in anchor.items())
-                and time.monotonic() < stop_at, "AUTHORITY_OR_DEADLINE_CHANGED")
+        require(
+            current == record and all(current[k] == v for k, v in anchor.items()) and time.monotonic() < stop_at,
+            "AUTHORITY_OR_DEADLINE_CHANGED",
+        )
         state = intent.read()
         require(state["mode"] == "RUNNING" and state["epoch"] == record["intent_epoch"], "INTENT_CHANGED")
         eff = load()
         require(decide("launch_workorder", request, afo=eff, log=False).allow, "BCD_SERVICE_ACTION_REFUSED")
-        require(C.configuration(record["control_ref"], eff, request=request)["mission"] == record["mission"],
-                "CONTROL_CHANGED")
+        require(C.configuration(record["control_ref"], eff, request=request)["mission"] == record["mission"], "CONTROL_CHANGED")
         require(placer._act_lock is not None, "ACT_FENCE_LOST")
         native_status(native_path)
         # Heavy authorization/SQL/file work cannot spend a historical time check.
         # Same issuer challenge and pinned inputs precede a final small effect tail.
         D._attest(record, record["guardian_socket"])
-        for ref in (record["control_ref"], record["runtime_policy_ref"], record["line_policy_ref"]):
+        for ref in (record["control_ref"], record["runtime_policy_ref"], record["line_policy_ref"], native_ref):
             require(sha256_file(Path(ref["path"])) == ref["sha256"], "INPUT_CHANGED_AT_EFFECT")
         state = intent.read()
-        require(state["mode"] == "RUNNING" and state["epoch"] == record["intent_epoch"]
-                and os.getpid() == record["guardian_pid"] and not cancelled(), "FINAL_EFFECT_FENCE_CHANGED")
-        require(time.monotonic() < min(stop_at, record["expiry_ticket"]["deadline_monotonic"])
-                and time.clock_gettime(time.CLOCK_BOOTTIME) < min(boot_stop, record["expiry_boottime_deadline"]),
-                "FINAL_EFFECT_DEADLINE_EXHAUSTED")
+        bs = binary.stat()
+        require(
+            (bs.st_dev, bs.st_ino, bs.st_size, bs.st_mtime_ns) == binary_identity
+            and stack.envmap(settings)["FORGE_FABRO_BIN"] == cfg.fabro_bin,
+            "NATIVE_BINARY_CHANGED_AT_EFFECT",
+        )
+        require(
+            state["mode"] == "RUNNING"
+            and state["epoch"] == record["intent_epoch"]
+            and all(os.environ.get(k) == v for k, v in selected_ref.items())
+            and os.environ.get("FORGE_OPERATIONS_PROFILE") == record["profile"]
+            and os.environ.get("FORGE_LRTX_ROOT") == str(root)
+            and stack.managed_serving()
+            and os.getpid() == record["guardian_pid"]
+            and not cancelled(),
+            "FINAL_EFFECT_FENCE_CHANGED",
+        )
+        require(
+            time.monotonic() < min(stop_at, record["expiry_ticket"]["deadline_monotonic"])
+            and time.clock_gettime(time.CLOCK_BOOTTIME) < min(boot_stop, record["expiry_boottime_deadline"]),
+            "FINAL_EFFECT_DEADLINE_EXHAUSTED",
+        )
 
-    guard.bootstrap_binding = {"intent_id": key, "record_sha256": digest(record),
-                               "control_ref": record["control_ref"]}
+    guard.bootstrap_binding = {"intent_id": key, "record_sha256": digest(record), "control_ref": record["control_ref"]}
 
     try:
         # Do not retain Intent while issuing a guardian; issuance happened already.
@@ -211,16 +271,29 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
                 native_before = native_checkpoint(root)
                 guard()
                 for row in c.execute("SELECT decision_id FROM afo_independent_decisions WHERE kind=?", (INTENT_KIND,)):
-                    old = c.execute("SELECT record FROM afo_independent_decisions WHERE decision_id=? AND kind=?",
-                                    (row[0] + "-result", RESULT_KIND)).fetchone()
+                    old = c.execute(
+                        "SELECT record FROM afo_independent_decisions WHERE decision_id=? AND kind=?",
+                        (row[0] + "-result", RESULT_KIND),
+                    ).fetchone()
                     require(old is not None and json.loads(old[0]).get("status") == "READY", "PRIOR_ATTEMPT_UNRESOLVED")
-                require(not c.execute("SELECT 1 FROM afo_independent_decisions WHERE decision_id=?", (key,)).fetchone(),
-                        "ALREADY_ATTEMPTED")
-                value = dict(schema="forge-c/owner-profile-bootstrap-intent/1", record_sha256=digest(record),
-                             control_ref=record["control_ref"], root=str(root), request=request,
-                             qualification_only=True, acceptance="UNACCEPTED", model_calls=0)
-                c.execute("INSERT INTO afo_independent_decisions VALUES (?,?,?,?)",
-                          (key, INTENT_KIND, canonical(value).decode(), digest(value)))
+                require(
+                    not c.execute("SELECT 1 FROM afo_independent_decisions WHERE decision_id=?", (key,)).fetchone(),
+                    "ALREADY_ATTEMPTED",
+                )
+                value = dict(
+                    schema="forge-c/owner-profile-bootstrap-intent/1",
+                    record_sha256=digest(record),
+                    control_ref=record["control_ref"],
+                    root=str(root),
+                    request=request,
+                    qualification_only=True,
+                    acceptance="UNACCEPTED",
+                    model_calls=0,
+                )
+                c.execute(
+                    "INSERT INTO afo_independent_decisions VALUES (?,?,?,?)",
+                    (key, INTENT_KIND, canonical(value).decode(), digest(value)),
+                )
             attempted = True  # Committed intent before any process effect; never replay unknown.
             with store.tx() as c, stack.line_effect_guard(guard):
                 quiet_ledger(c)
@@ -252,22 +325,42 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
                     after = census(client)
                 require(before == after and native_checkpoint(root) == native_before, "NATIVE_HISTORY_CHANGED")
                 quiet_ledger(c)
-                result = dict(schema="forge-c/owner-profile-bootstrap-result/1", status="READY",
-                              record_sha256=digest(record), native=after, native_history=native_before, model_calls=0,
-                              qualification_only=True, acceptance="UNACCEPTED", placed_jobs=0)
+                result = dict(
+                    schema="forge-c/owner-profile-bootstrap-result/1",
+                    status="READY",
+                    record_sha256=digest(record),
+                    native=after,
+                    native_history=native_before,
+                    native_transport=measured,
+                    model_calls=0,
+                    qualification_only=True,
+                    acceptance="UNACCEPTED",
+                    placed_jobs=0,
+                )
                 guard()
-                c.execute("INSERT INTO afo_independent_decisions VALUES (?,?,?,?)",
-                          (key + "-result", RESULT_KIND, canonical(result).decode(), digest(result)))
+                c.execute(
+                    "INSERT INTO afo_independent_decisions VALUES (?,?,?,?)",
+                    (key + "-result", RESULT_KIND, canonical(result).decode(), digest(result)),
+                )
         return result
     except BaseException as exc:
         if attempted:
-            result = dict(schema="forge-c/owner-profile-bootstrap-result/1", status="UNKNOWN_REQUIRES_RECONCILIATION",
-                          record_sha256=digest(record), error_type=type(exc).__name__, model_calls=0,
-                          qualification_only=True, acceptance="UNACCEPTED", no_retry=True)
+            result = dict(
+                schema="forge-c/owner-profile-bootstrap-result/1",
+                status="UNKNOWN_REQUIRES_RECONCILIATION",
+                record_sha256=digest(record),
+                error_type=type(exc).__name__,
+                model_calls=0,
+                qualification_only=True,
+                acceptance="UNACCEPTED",
+                no_retry=True,
+            )
             try:
                 with store.tx() as c:
-                    c.execute("INSERT INTO afo_independent_decisions VALUES (?,?,?,?)",
-                              (key + "-result", RESULT_KIND, canonical(result).decode(), digest(result)))
+                    c.execute(
+                        "INSERT INTO afo_independent_decisions VALUES (?,?,?,?)",
+                        (key + "-result", RESULT_KIND, canonical(result).decode(), digest(result)),
+                    )
             finally:
                 D.close_guardian({"path": os.environ[D.FILE]})
         if acquired:

@@ -3,21 +3,26 @@
 Framing follows the independently reviewed owner-retirementv5 source; this module
 contains only the pure SQLite fingerprint functions, not that OPS harness.
 """
+
 from pathlib import Path
 import hashlib
 import sqlite3
 import struct
 from .durable import Refused
+
 HASH_CHUNK_BYTES = 65536
 TEXT_CHUNK_CHARS = 16384
 TERMINAL = frozenset(("succeeded", "failed", "cancelled", "canceled"))
+
 
 def require(ok, code):
     if not ok:
         raise Refused("OWNER_BOOTSTRAP_" + code)
 
+
 def _quote(name):
     return '"' + name.replace('"', '""') + '"'
+
 
 def _field(value):
     """Typed length + repeatable <=64KiB chunks; no JSON/BLOB type collision."""
@@ -47,6 +52,7 @@ def _field(value):
         return b"B", len(value), chunks
     raise RuntimeError("SQLITE_STORAGE_TYPE_UNSUPPORTED")
 
+
 def _hash_row(hasher, row):
     fields = [_field(value) for value in row]
     size = 4 + sum(9 + length for _, length, _ in fields)
@@ -59,6 +65,7 @@ def _hash_row(hasher, row):
             require(len(part) <= HASH_CHUNK_BYTES, "HASH_CHUNK_BOUND")
             hasher.update(part)
     return size + 8
+
 
 def table_hashes(path, names=None):
     """Complete snapshot, typed framed rows, schema/count, no total-row cutoff.
@@ -138,21 +145,76 @@ def table_hashes(path, names=None):
     require(identity == (path.stat().st_dev, path.stat().st_ino), "HISTORY_DB_IDENTITY_REBOUND")
     return out
 
-TABLE_COLUMNS = {'runs': [('id', 'TEXT', 1), ('source_last_seq', 'INTEGER', 0), ('created_at_ms', 'INTEGER', 0), ('started_at_ms', 'INTEGER', 0), ('last_event_at_ms', 'INTEGER', 0), ('completed_at_ms', 'INTEGER', 0), ('status', 'TEXT', 0), ('archived_at_ms', 'INTEGER', 0), ('parent_id', 'TEXT', 0), ('title', 'TEXT', 0), ('workflow_slug', 'TEXT', 0), ('workflow_name', 'TEXT', 0), ('repository_name', 'TEXT', 0), ('automation_id', 'TEXT', 0), ('diff_files_changed', 'INTEGER', 0), ('diff_additions', 'INTEGER', 0), ('diff_deletions', 'INTEGER', 0), ('input_tokens', 'INTEGER', 0), ('output_tokens', 'INTEGER', 0), ('reasoning_tokens', 'INTEGER', 0), ('cache_read_tokens', 'INTEGER', 0), ('cache_write_tokens', 'INTEGER', 0), ('total_usd_micros', 'INTEGER', 0), ('summary_json', 'TEXT', 0)], 'run_events': [('run_id', 'TEXT', 1), ('seq', 'INTEGER', 2), ('event_name', 'TEXT', 0), ('node_id', 'TEXT', 0), ('stage_id', 'TEXT', 0), ('session_id', 'TEXT', 0), ('event_json', 'TEXT', 0)], 'run_session_records': [('session_id', 'TEXT', 1), ('run_id', 'TEXT', 0), ('record_json', 'TEXT', 0), ('updated_at_ms', 'INTEGER', 0)], 'legacy_run_history_activation': [('singleton', 'INTEGER', 1), ('source_fingerprint', 'BLOB', 0), ('source_runs', 'INTEGER', 0), ('source_events', 'INTEGER', 0), ('activated_at_ms', 'INTEGER', 0)], 'legacy_run_history_deletions': [('run_id', 'TEXT', 1), ('deleted_at_ms', 'INTEGER', 0)]}
+
+TABLE_COLUMNS = {
+    "runs": [
+        ("id", "TEXT", 1),
+        ("source_last_seq", "INTEGER", 0),
+        ("created_at_ms", "INTEGER", 0),
+        ("started_at_ms", "INTEGER", 0),
+        ("last_event_at_ms", "INTEGER", 0),
+        ("completed_at_ms", "INTEGER", 0),
+        ("status", "TEXT", 0),
+        ("archived_at_ms", "INTEGER", 0),
+        ("parent_id", "TEXT", 0),
+        ("title", "TEXT", 0),
+        ("workflow_slug", "TEXT", 0),
+        ("workflow_name", "TEXT", 0),
+        ("repository_name", "TEXT", 0),
+        ("automation_id", "TEXT", 0),
+        ("diff_files_changed", "INTEGER", 0),
+        ("diff_additions", "INTEGER", 0),
+        ("diff_deletions", "INTEGER", 0),
+        ("input_tokens", "INTEGER", 0),
+        ("output_tokens", "INTEGER", 0),
+        ("reasoning_tokens", "INTEGER", 0),
+        ("cache_read_tokens", "INTEGER", 0),
+        ("cache_write_tokens", "INTEGER", 0),
+        ("total_usd_micros", "INTEGER", 0),
+        ("summary_json", "TEXT", 0),
+    ],
+    "run_events": [
+        ("run_id", "TEXT", 1),
+        ("seq", "INTEGER", 2),
+        ("event_name", "TEXT", 0),
+        ("node_id", "TEXT", 0),
+        ("stage_id", "TEXT", 0),
+        ("session_id", "TEXT", 0),
+        ("event_json", "TEXT", 0),
+    ],
+    "run_session_records": [
+        ("session_id", "TEXT", 1),
+        ("run_id", "TEXT", 0),
+        ("record_json", "TEXT", 0),
+        ("updated_at_ms", "INTEGER", 0),
+    ],
+    "legacy_run_history_activation": [
+        ("singleton", "INTEGER", 1),
+        ("source_fingerprint", "BLOB", 0),
+        ("source_runs", "INTEGER", 0),
+        ("source_events", "INTEGER", 0),
+        ("activated_at_ms", "INTEGER", 0),
+    ],
+    "legacy_run_history_deletions": [("run_id", "TEXT", 1), ("deleted_at_ms", "INTEGER", 0)],
+}
+
 
 def native_status(path):
     require(path.is_file() and not path.is_symlink(), "NATIVE_DB_MISSING")
     before = (path.stat().st_dev, path.stat().st_ino)
-    with sqlite3.connect(path.as_uri()+"?mode=ro", uri=True, timeout=3) as db:
+    with sqlite3.connect(path.as_uri() + "?mode=ro", uri=True, timeout=3) as db:
         db.execute("PRAGMA query_only=ON")
         db.execute("BEGIN")
         for table, columns in TABLE_COLUMNS.items():
-            require([(r[1], r[2], r[5]) for r in db.execute("PRAGMA table_info("+_quote(table)+")")] == columns,
-                    "NATIVE_SCHEMA_UNKNOWN")
+            require(
+                [(r[1], r[2], r[5]) for r in db.execute("PRAGMA table_info(" + _quote(table) + ")")] == columns,
+                "NATIVE_SCHEMA_UNKNOWN",
+            )
         statuses = dict(db.execute("SELECT status,COUNT(*) FROM runs GROUP BY status"))
         require(all(k in TERMINAL for k in statuses), "NATIVE_NOT_TERMINAL")
-        require(db.execute("SELECT COUNT(*) FROM legacy_run_history_activation").fetchone()[0] == 1,
-                "NATIVE_HISTORY_NOT_INITIALIZED")
+        require(
+            db.execute("SELECT COUNT(*) FROM legacy_run_history_activation").fetchone()[0] == 1, "NATIVE_HISTORY_NOT_INITIALIZED"
+        )
         inventory = [{"id": r[0], "status": r[1]} for r in db.execute("SELECT id,status FROM runs ORDER BY id COLLATE BINARY")]
     require(before == (path.stat().st_dev, path.stat().st_ino), "NATIVE_DB_REBOUND")
     from .durable import digest
@@ -160,8 +222,9 @@ def native_status(path):
     require(len(inventory) <= 10000, "NATIVE_INVENTORY_BOUND")
     return {"count": len(inventory), "identity_status_sha256": digest(inventory)}
 
+
 def native_checkpoint(root):
-    path = Path(root)/"fabro/storage/db/fabro.sqlite3"
+    path = Path(root) / "fabro/storage/db/fabro.sqlite3"
     native_status(path)
     snapshot = table_hashes(path, tuple(TABLE_COLUMNS))
     snapshot["inventory"] = native_status(path)

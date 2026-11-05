@@ -23,6 +23,19 @@ def _sha(path):
 
 
 def require(ref, *, job, cfg):
+    """Existing job-bound boundary; unbound callers use the explicit context API."""
+    try:
+        return require_context(ref, profile_id=job["profile"], expected_revision=job.get("factory_revision"), cfg=cfg)
+    except (KeyError, TypeError) as exc:
+        raise Refused("LINE_NATIVE_TRANSPORT_PROOF_INVALID", str(exc)) from exc
+
+
+def require_context(ref, *, profile_id, expected_revision, cfg):
+    """Validate measured source/profile/binary facts, without fabricating a job.
+
+    This is evidence only. The OS-owner bootstrap separately intersects live
+    guardian, canonical Store, service scope, Intent and physical locks.
+    """
     from ..common import REPO_ROOT
     from ..lrtx.profile import load
     from ..workorder import factory_revision
@@ -34,14 +47,14 @@ def require(ref, *, job, cfg):
                 or not re.fullmatch(r"[a-f0-9]{64}", str(ref["sha256"]))):
             raise ValueError("REFERENCE_INVALID")
         proof = bound_json(ref)
-        profile = load(job["profile"])
+        profile = load(profile_id)
         revision = factory_revision()
         if (proof.get("schema") != SCHEMA or proof.get("scope") != SCOPE
                 or proof.get("verdict") != "PASS" or proof.get("production_mutations") is not False
                 or proof.get("source_tracked_dirty") is not False
                 or proof.get("source_revision") != revision.get("commit")
                 or revision.get("dirty") is not False
-                or job.get("factory_revision") != revision
+                or expected_revision != revision
                 or proof.get("profile") != profile["id"]
                 or proof.get("profile_sha256") != profile["_sha256"]
                 or proof.get("binary_sha256") != _sha(cfg.fabro_bin)
