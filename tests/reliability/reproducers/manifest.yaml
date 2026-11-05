@@ -3043,3 +3043,16 @@ reproducers:
   - afo.line_maintenance_coordinator._authorized
   root_cause: Review compares amended signed control limits to immutable raw initial registration instead of validated effective mission snapshot.
   remedy: Compare exact effective limits while retaining immutable original authority and lineage, all current signed source/profile/intent guards, cumulative spend and existing per-job review wall.
+
+- id: RPR-175
+  script: rpr175_registered_learning_rejected.py
+  sha256: 4ea6b9e926f69d831ab69bd551b5067cd17df95b1b1b4b576c72af3e9184a6d1
+  symptom_signature: review intake rejects explicitly registered post-calibration learning baselines as held out
+  observed_in: Public default review router still excludes all22 F011 frozen workorders although9 completed calibration and were explicitly registered as learning set2. F015 testset2 was already retired to learning set4, not an unspent holdout leak.
+  baseline_revision: 18814617abb98491abb5c03adb0802553634f14f
+  error_codes:
+  - DSP_HELDOUT_REFUSED
+  operations:
+  - offline.disposition.route
+  root_cause: Membership reads the original F011 selection without replaying protected source-bound post-calibration learning registrations.
+  remedy: Respect completed calibration and immutable source-bound learning registrations while keeping unspent set members isolated. Record reviews as evidence and independently validate corrective lessons.
