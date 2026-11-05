@@ -173,12 +173,32 @@ def _auxiliary(job, eff, profile):
     return roles
 
 
+def bound_mission(store, control, *, code="LINE_SOAK_PENDING_MISSION_CHANGED"):
+    """Bind original mission authority and independently replay ALL effective amendments.
+
+    A time grant may legitimately become snapshot.authorization_ref. It cannot
+    replace the immutable registration identity bound by the signed control.
+    Both identities come from the real store, not a caller-supplied projection.
+    Current control cryptography is still checked by configuration() at callers.
+    """
+    from .mission_ledger import MissionLedger
+
+    expected = control["mission"]
+    with store.tx() as c:
+        current = MissionLedger._snapshot(c, expected["mission_id"])
+        base = json.loads(c.execute("SELECT record FROM afo_missions WHERE mission_id=?",
+                                    (expected["mission_id"],)).fetchone()[0])
+        if (base["authorization_ref"] != control["authorization_ref"]
+                or any(current[k] != expected[k] for k in ("mission_id", "lineage", "limits"))):
+            raise Refused(code)
+    return current
+
+
 def _job(manifest, plan, binding, ref, store, eff):
     from ..lrtx.profile import load
     from . import line_recovery_control as C
     from . import local_agent
     from .line_recovery_product import registered
-    from .mission_ledger import MissionLedger
 
     job = reference(ref)
     if not isinstance(job, dict):
@@ -225,9 +245,7 @@ def _job(manifest, plan, binding, ref, store, eff):
             raise Refused("LINE_SOAK_INTAKE_IDENTITY_CHANGED")
     if job.get("operations_epoch") != plan["_intent_epoch"]:
         raise Refused("LINE_SOAK_JOB_INTENT_CHANGED")
-    mission = MissionLedger(store).snapshot(job["mission_id"])
-    if mission["authorization_ref"] != control["authorization_ref"]:
-        raise Refused("LINE_SOAK_JOB_MISSION_AUTHORITY_CHANGED")
+    mission = bound_mission(store, control, code="LINE_SOAK_JOB_MISSION_AUTHORITY_CHANGED")
     if time.time() >= min(mission["limits"]["deadline"], job["deadline_epoch"]):
         raise Refused("LINE_SOAK_JOB_AUTHORITY_EXPIRED")
     spent = {"max_attempts": "attempts", "max_jobs": "jobs", "max_requests": "requests", "max_tokens": "charged_tokens",
@@ -323,7 +341,6 @@ def _pending(manifest, plan, binding, descriptor, store, eff):
     from . import line_recovery_control as C
     from . import local_agent as L
     from .line_recovery_product import job_id
-    from .mission_ledger import MissionLedger
 
     _shape(descriptor, {"schema", "order_id", "attempt_seq", "spec_ref", "control_ref", "line_origin"},
            "LINE_SOAK_PENDING_ORDER_INVALID")
@@ -370,11 +387,7 @@ def _pending(manifest, plan, binding, descriptor, store, eff):
     expected = {"job_id": job_id(aid), "order_id": oid, "attempt_id": aid, "mission_id": ctl["mission"]["mission_id"]}
     if {k: v for k, v in binding.items() if k != "line_intake_identity"} != expected:
         raise Refused("LINE_SOAK_PENDING_BINDING_CHANGED")
-    ledger = MissionLedger(store)
-    snap = ledger.snapshot(expected["mission_id"])
-    if (snap["authorization_ref"] != ctl["authorization_ref"]
-            or any(snap[k] != ctl["mission"][k] for k in ("mission_id", "lineage", "limits"))):
-        raise Refused("LINE_SOAK_PENDING_MISSION_CHANGED")
+    snap = bound_mission(store, ctl)
     # A retry must retain the actual original mission/history, never a new lineage.
     with store.tx() as c:
         link = c.execute("SELECT mission_id FROM afo_mission_orders WHERE order_id=?", (oid,)).fetchone()

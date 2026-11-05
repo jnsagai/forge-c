@@ -166,7 +166,6 @@ def check(manifest, plan, binding, descriptor, store, eff):
     from . import line_soak_prerequisites as P
     from .line_recovery_product import job_id
     from .line_soak_snapshot import authority
-    from .mission_ledger import MissionLedger
 
     spec, env, bound, oid = prepare_inputs(descriptor, plan)
     predicted = {"order_id": oid, "attempt_id": oid + "-a1", "job_id": job_id(oid + "-a1"),
@@ -191,10 +190,7 @@ def check(manifest, plan, binding, descriptor, store, eff):
             or ctl["profile"] != spec["profile"] or ctl["profile_sha256"] != plan["line_runtime"]["profile_sha256"]
             or spec["run_model"] != manifest["model_profile"]):
         raise Refused("LINE_SOAK_PLANNED_CONTROL_CHANGED")
-    snap = MissionLedger(store).snapshot(expected["mission_id"])
-    if (snap["authorization_ref"] != ctl["authorization_ref"]
-            or any(snap[k] != ctl["mission"][k] for k in ("mission_id", "lineage", "limits"))):
-        raise Refused("LINE_SOAK_PENDING_MISSION_CHANGED")
+    snap = P.bound_mission(store, ctl)
     tokens = int(eff.get("budgets.max_model_tokens_per_order"))
     if (time.time() >= snap["limits"]["deadline"] or snap["unbounded_historical_usage"]
             or snap["attempts"] >= snap["limits"]["max_attempts"]

@@ -60,6 +60,22 @@ def link_mission(store, row, control, spec):
         attempts = store.attempts(row["order_id"])
         if any(a["record"].get("fabro_run_id") or a["state"] not in ("PREPARED", "DISPATCH_PENDING") for a in attempts):
             raise Refused("LINE_PRODUCT_HISTORICAL_ACCOUNTING_REQUIRED")
+    # An owner-signed deadline/capacity amendment changes the effective envelope,
+    # never the initial registration. Re-registering that envelope would either
+    # refuse a valid continuation or rewrite/reset its original authority.
+    with store.tx() as c:
+        base_row = c.execute("SELECT record FROM afo_missions WHERE mission_id=?",
+                             (control["mission"]["mission_id"],)).fetchone()
+        if base_row:
+            base = json.loads(base_row[0])
+            snapshot = MissionLedger._snapshot(c, control["mission"]["mission_id"])
+            if base["authorization_ref"] != control["authorization_ref"]:
+                raise Refused("LINE_PRODUCT_MISSION_AUTHORITY_CHANGED")
+            if any(snapshot[k] != control["mission"][k] for k in ("mission_id", "lineage", "limits")):
+                raise Refused("LINE_ROLE_SIGNED_MISSION_LIMITS_MISMATCH")
+    if not base_row:
+        if existing:
+            raise Refused("MISSION_NOT_REGISTERED")
         ledger.register(
             **control["mission"],
             authorization_ref=control["authorization_ref"],
@@ -67,10 +83,11 @@ def link_mission(store, row, control, spec):
                 authority == control["authorization_ref"] and limits == control["mission"]["limits"]
             ),
         )
+    if not existing:
         ledger.link(control["mission"]["mission_id"], row["order_id"], continuation_of=parent["order_id"] if parent else None)
     # Effective amendments are checked; initial registration cannot refill a ledger.
     snapshot = ledger.snapshot(control["mission"]["mission_id"])
-    if snapshot["limits"] != control["mission"]["limits"] or snapshot["lineage"] != control["mission"]["lineage"]:
+    if any(snapshot[k] != control["mission"][k] for k in ("mission_id", "lineage", "limits")):
         raise Refused("LINE_ROLE_SIGNED_MISSION_LIMITS_MISMATCH")
     return snapshot
 
