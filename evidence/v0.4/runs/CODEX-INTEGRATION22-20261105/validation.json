@@ -1,0 +1,51 @@
+{
+  "schema": "forge-c/integration22-validation/1",
+  "status": "READ_ONLY_MONITOR_DEPLOYED_BROWSER_VERIFIED",
+  "source": "1247d26793b27cf7d4f71385925e3cc191c2d22b",
+  "prior": "d5024d62842b276c4a81fd51ed399704c7fc43cb",
+  "components": [
+    {
+      "component": "monitor",
+      "candidate": "7f55de5c10a413bb251e91d8c6b9f4d61481df47",
+      "baseline": "d5024d62842b276c4a81fd51ed399704c7fc43cb",
+      "decision_id": "pd-4b59475597a0ce939448",
+      "tests": 49,
+      "prevention": 175,
+      "causal": "NOT_RUN_CHANGE"
+    },
+    {
+      "component": "caption",
+      "candidate": "1247d26793b27cf7d4f71385925e3cc191c2d22b",
+      "baseline": "7f55de5c10a413bb251e91d8c6b9f4d61481df47",
+      "decision_id": "pd-5f508baa32b681c9c36a",
+      "tests": 31,
+      "prevention": 175,
+      "causal": "NOT_RUN_CHANGE"
+    }
+  ],
+  "functional_source_python_byte_identical_between_components": true,
+  "test_denominator": "49 main monitor cases and31 frontend/API follow-up cases overlap; do not sum as80 distinct cases.",
+  "actual_browser_verified": true,
+  "actual_monitor_url": "http://localhost:8788/?line=local",
+  "actual_conductor_requested": "OBSERVE",
+  "actual_conductor_observed": "OBSERVE",
+  "actual_intent": "RUNNING",
+  "intent_epoch": 1,
+  "actual_driver_activity": "NO_CURRENT_DRIVER_OBSERVED",
+  "actual_throughput": "UNKNOWN_NOT_ZERO",
+  "actual_loaded_model": "NOT_PROVIDER_VERIFIED_LAST_REPORTED_ONLY",
+  "role_qualification": "NOT_RUN",
+  "native_factory_ACT": false,
+  "actual_mission_amendment": false,
+  "new_model_calls": 0,
+  "no_conductor_or_native_or_mission_or_history_changes": true,
+  "source_stage_scope": "Two read-only floor units only",
+  "new_task_checkboxes": 0,
+  "limitations": [
+    "The monitor observes runtime, not product acceptance or native role competence.",
+    "The controller remains OBSERVE. No model job or autonomy trial was started by the monitor rollout.",
+    "Historical job outcomes, native liveness/leases and operations intent remain separate.",
+    "Owner requested no new signatures for now; signature-free supervised development requires its own bounded, qualified accounting/authority implementation. No production signature guard was relaxed.",
+    "No main merge, safety signoff or production release."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "schema": "forge-c/integration22-packaging-error/1",
+  "failed_script_sha256": "11651761f87d6c29752b6b6a6e631f48d43feb1b1025ae04a17f0fa93488a4e7",
+  "partial_export_preserved": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration22-exports",
+  "reason": "Packaging assumed both real rollout receipts shared one status/key layout. Caption uses DEPLOYED_VERIFIED + invariants, while first monitor uses DEPLOYED_READ_ONLY_MONITOR_VERIFIED + service_and_state_invariants. Actual statuses and complete true check maps independently inspected before normalization.",
+  "source_and_qualification_changed": false
+}
