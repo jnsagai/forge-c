@@ -1,0 +1,46 @@
+{
+  "actual_remaining": "Installed timer/CRE recovery/Omniverse boot-mount-dependency faults and endurance NOT_RUN; DA-T046/050 remain open.",
+  "applicable_hard_gates": "ALL_PASS",
+  "baseline": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "candidate": "8edd6a5657ff9c5f67b1c40c243532cb71d5bc69",
+  "decision_id": "pd-f8860ecfd2e7a25ff728",
+  "evaluator": "74e44a1f23b01f3200350436df1691249b441292",
+  "exports_directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-v3-exports",
+  "frozen_runner": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/normal-change-runner-v1.py",
+    "sha256": "2db00b81f127ebf29c87caeb13ffa38a82cf2b628368e680d65f40e4ddca96e8"
+  },
+  "kind": "CHANGE",
+  "legacy16": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/v3-legacy16.log",
+    "sha256": "b0a08a295b0eb95350538bdd949c7b42d30e4d0416988b205e6ac6c20a4a26b5"
+  },
+  "normal_gate_log": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/normal-change-v1.log",
+    "sha256": "4b7e6d884c0db3b6961dccfe828ac5124bdea0803c42e9ae354fe275c7a5ca87"
+  },
+  "packager7": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/v3-packager7.log",
+    "sha256": "32530a01f9c08a4a138d32af43b2a75edeec9c857d7e2a4e3ab966155a4634a0"
+  },
+  "pooled12_inputs_before_tests": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-v3-normal-change-20261105-worktrees-before-tests.json",
+    "sha256": "578ddc2dc11250f21ddabe826ea32932c39b991641c18fcdcfd48f5ff059ab69"
+  },
+  "prevention": "175/175 SYMPTOM_ABSENT",
+  "production_install_publication_task_closure": false,
+  "protected_receipt_index": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-v3-exports/evidence/cre/protected-receipt-index.json",
+    "sha256": "70751a363f69e44af7f2790dd9143dcf2084cf2b784aff8589e02156c711530d"
+  },
+  "reproducer": "NOT_APPLICABLE_FOR_CHANGE",
+  "source_bundle": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/source.bundle",
+    "sha256": "9aef8a40eb26845b2f1271eed6301799129f9291c94d8d46515b08f3408c902a"
+  },
+  "source_index": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-service-boot-fencing-20261105/source-index.json",
+    "sha256": "c925b663b41a01d623d2aefb77d4a1e01f2fdc903b1139e650e7bcfff9618044"
+  },
+  "status": "ELIGIBLE_FOR_OFFLINE_REVIEW"
+}

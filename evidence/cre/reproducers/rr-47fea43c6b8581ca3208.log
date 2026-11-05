@@ -1,0 +1,4 @@
+{"rejected": "MISSING_REQUIRED_OUTPUTS", "issues": ["MISSING_REQUIRED_OUTPUT:workproducts/SWE.2/software_architecture.md", "MISSING_REQUIRED_OUTPUT:workproducts/SWE.2/architecture_static.puml", "MISSING_REQUIRED_OUTPUT:workproducts/SWE.2/architecture_dynamic.puml", "CONTRACT_FUNCTION_NOT_ALLOCATED:workproducts/SWE.2/api_calls.json:CRC_IDR_IDR_WRITE:LL_CRC_Write_IDR is not allocated to SWR-001", "CONTRACT_FUNCTION_NOT_ALLOCATED:workproducts/SWE.2/api_calls.json:CRC_IDR_IDR_READ:LL_CRC_Read_IDR is not allocated to SWR-002", "CONTRACT_CALL_DOES_NOT_COMPILE:workproducts/SWE.2/api_calls.json:'CRC_Instance' undeclared (first use in this function)"]}
+SYMPTOM_ABSENT
+
+--- stderr ---
