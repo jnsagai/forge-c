@@ -3025,3 +3025,16 @@ reproducers:
   - offline.patch.import
   root_cause: Import verifies only changed paths then copies the entire deployed release, so unrelated bytes or modes are never bound to the signed CRE baseline and candidate tree identities.
   remedy: Verify whole clean release identities against the signed CRE tree digests before loading deployed policy and before and after local checks; serialize local imports and rollback, preserve previous release and all signature and policy checks.
+
+- id: RPR-174
+  script: rpr174_maintenance_effective_mission.py
+  sha256: b3cc74d38bca7484f310c3a0bbea2c890428e503cadf9f5e89050dad76793e27
+  symptom_signature: maintenance review rejects an owner-signed effective mission deadline amendment
+  observed_in: Private real signed-control and mission-extension contrast on qualified GEN35; normal effective job binding passes but maintenance review compares raw initial limits.
+  baseline_revision: 03f968603369f7934fde478ae8fd107c40ecec8b
+  error_codes:
+  - LINE_MAINTENANCE_CONTROL_MISSION_OR_INTENT_CHANGED
+  operations:
+  - afo.line_maintenance_coordinator._authorized
+  root_cause: Review compares amended signed control limits to immutable raw initial registration instead of validated effective mission snapshot.
+  remedy: Compare exact effective limits while retaining immutable original authority and lineage, all current signed source/profile/intent guards, cumulative spend and existing per-job review wall.
