@@ -624,6 +624,8 @@ def serving_instance(s: dict) -> dict:
 
 
 def _start(s: dict, *, recovery=False, control_only=False) -> dict:
+    from . import provider_process as provider
+
     guard = _guard_effect
     guard()
     r, p, prof = s["root"], s["ports"], s["profile"]
@@ -684,7 +686,6 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
     known_serving = serving is not None
     if managed_serving() and not control_only:
         from ..afo.durable import Refused, digest, immutable_json
-        from . import provider_process as provider
 
         if serving is not None:
             serving = serving_instance(s)
@@ -858,8 +859,6 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
             time.sleep(1)
         procs[name]["identity"] = process_identity(proc.pid)
         if managed_serving():
-            from . import provider_process as provider
-
             procs[name]["owner_view"] = provider.owner_view(proc.pid)
         if managed_serving() and serving is not None and name == "llama_server":
             procs[name]["worker"] = provider.capture_worker(serving, proc.pid, argv)
