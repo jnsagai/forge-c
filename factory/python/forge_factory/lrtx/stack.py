@@ -368,6 +368,7 @@ def _in_ns(holder: int, argv: list[str], env: dict, log: Path, cwd: Path, *, ser
     if serving is not None:
         enter = ["nsenter", "-t", str(serving["init_pid"]), "-U", "-n", "-m", "-p", "--preserve-credentials"]
     with log.open("ab") as fh:
+        _guard_effect()
         return subprocess.Popen(
             enter + argv,
             env=env,
@@ -841,10 +842,13 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
             proc = _in_ns(holder, argv, penv, r / f"logs/{name}.log", r)
         procs[name] = {"pid": proc.pid, "argv": argv, "health": health}
         startup_binding = getattr(_EFFECT_GUARD.get(), "startup_binding", None)
-        if startup_binding is not None:
+        bootstrap_binding = getattr(_EFFECT_GUARD.get(), "bootstrap_binding", None)
+        if startup_binding is not None or bootstrap_binding is not None:
             procs[name]["identity"] = process_identity(proc.pid)
             procs[name]["owner_view"] = provider.owner_view(proc.pid)
-            _save_services(r, {**rec, "processes": procs, "startup_binding": startup_binding,
+            _save_services(r, {**rec, "processes": procs,
+                               **({"startup_binding": startup_binding} if startup_binding is not None else {}),
+                               **({"owner_bootstrap_binding": bootstrap_binding} if bootstrap_binding is not None else {}),
                                "holder_pid": holder, "holder_identity": process_identity(holder),
                                "profile": prof["id"], "profile_sha256": prof["_sha256"], "root": str(r),
                                "netns": os.readlink(f"/proc/{holder}/ns/net"), "ports": p})
@@ -880,10 +884,13 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         "shared_readonly": prof["deployment"]["shared_readonly"],
         **({"serving_instance": serving} if serving else {}),
         **({"serving_holder": rec["serving_holder"]} if rec.get("serving_holder") else {}),
+        **({"owner_bootstrap_binding": rec["owner_bootstrap_binding"]} if rec.get("owner_bootstrap_binding") else {}),
         # Recovery refreshes service health frequently. Keep the relay ownership
         # record so a later managed stop can retire its exact processes.
         **({"api_bridge": rec["api_bridge"]} if rec.get("api_bridge") else {}),
     }
+    if bootstrap_binding := getattr(_EFFECT_GUARD.get(), "bootstrap_binding", None):
+        rec["owner_bootstrap_binding"] = bootstrap_binding
     _save_services(r, rec)
     return rec
 
@@ -1238,11 +1245,14 @@ def expose_api(s: dict, host_port: int | None = None) -> dict:
     if not _host_port_free(port):
         raise SystemExit(f"HOST_PORT_IN_USE:127.0.0.1:{port} (never shared with another server)")
     log = s["root"] / "logs/api-bridge.log"
+    _guard_effect()
     pi = _in_ns(holder, inner, envmap(s), log, s["root"])
     deadline = time.monotonic() + 10
     while not sock.exists() and time.monotonic() < deadline:
         time.sleep(0.2)
+    _guard_effect()
     with log.open("ab") as fh:
+        _guard_effect()
         po = subprocess.Popen(
             outer,
             stdout=fh,

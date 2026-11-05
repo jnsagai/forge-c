@@ -841,6 +841,8 @@ def main(argv=None):
     ap.add_argument("--expiry-ticket", required=True, type=Path)
     ap.add_argument("--interval", type=float, default=30)
     ap.add_argument("--max-cycles", type=int)
+    ap.add_argument("--bootstrap-managed-profile", action="store_true",
+                    help="external issuer only: scoped canonical managed startup before any placement")
     a = ap.parse_args(argv)
     if (
         os.environ.get("FORGE_AFO_QUEUE_SCOPE") != "line-local"
@@ -884,6 +886,10 @@ def main(argv=None):
     heartbeat = Path(ref["path"]).with_suffix(".heartbeat.json")
     n = 0
     try:
+        if a.bootstrap_managed_profile:
+            from .owner_profile_bootstrap import bootstrap
+
+            bootstrap(store, placer, cancelled=stop.is_set)
         while not stop.is_set() and (a.max_cycles is None or n < a.max_cycles):
             current(store=store)
             readiness = provider_preflight(cfg.stack_root)

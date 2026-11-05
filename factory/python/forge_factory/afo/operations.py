@@ -47,7 +47,9 @@ class Intent:
         self.path = Path(location) if location else path()
 
     @contextmanager
-    def lock(self):
+    def lock(self, *, blocking=True):
+        if type(blocking) is not bool:
+            raise Refused("OPERATIONS_LOCK_SELECTION_INVALID")
         parent = self.path.parent
         if not parent.is_dir() or parent.stat().st_uid != os.getuid() or parent.stat().st_mode & 0o022:
             raise Refused("OPERATIONS_DIRECTORY_NOT_PRIVATE_OR_OWNED")
@@ -56,7 +58,10 @@ class Intent:
             raise Refused("OPERATIONS_SYMLINK_DENIED")
         fd = os.open(lock, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
         with os.fdopen(fd, "r+") as stream:
-            fcntl.flock(stream, fcntl.LOCK_EX)
+            try:
+                fcntl.flock(stream, fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB))
+            except BlockingIOError:
+                raise Refused("OPERATIONS_INTENT_BUSY") from None
             yield
 
     def read(self):
