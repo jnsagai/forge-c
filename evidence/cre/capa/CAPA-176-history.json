@@ -1,0 +1,65 @@
+[
+  {
+    "seq": 1325,
+    "capa_id": "CAPA-176",
+    "from_state": null,
+    "to_state": "OPEN",
+    "at": "2026-11-05T11:47:02.842599Z",
+    "reason": "Diagnosis serializes AAA-DEPENDENT before unresolved ZZZ-PREREQUISITE despite a complete sealed dependency graph. Actual prepare and pending broker boundaries also permit the inconsistent scope.",
+    "evidence": "[\"AUDIT-DEPENDENT-OBJECTIVE-BEFORE-PREREQUISITE\"]"
+  },
+  {
+    "seq": 1326,
+    "capa_id": "CAPA-176",
+    "from_state": "OPEN",
+    "to_state": "TRIAGED",
+    "at": "2026-11-05T11:47:02.864928Z",
+    "reason": "triage by RULE",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1327,
+    "capa_id": "CAPA-176",
+    "from_state": "TRIAGED",
+    "to_state": "REPRODUCER_PENDING",
+    "at": "2026-11-05T11:47:03.057403Z",
+    "reason": "reproducer RPR-176 assigned",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1328,
+    "capa_id": "CAPA-176",
+    "from_state": "REPRODUCER_PENDING",
+    "to_state": "CAUSE_VERIFIED",
+    "at": "2026-11-05T11:48:28.766596Z",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "evidence": "[\"reproducer-run:rr-561413511ddee9fdf399\", \"reproducer-run:rr-7644ba5ec296a8b0e86e\"]"
+  },
+  {
+    "seq": 1329,
+    "capa_id": "CAPA-176",
+    "from_state": "CAUSE_VERIFIED",
+    "to_state": "FIX_CANDIDATE",
+    "at": "2026-11-05T11:48:28.796969Z",
+    "reason": "fix 740858e65117 (patch 21603 bytes)",
+    "evidence": "[\"git:3e8936a27f84..740858e65117\"]"
+  },
+  {
+    "seq": 1330,
+    "capa_id": "CAPA-176",
+    "from_state": "FIX_CANDIDATE",
+    "to_state": "PREVENTION_TESTED",
+    "at": "2026-11-05T11:50:32.865975Z",
+    "reason": "prevention test prevention:RPR-176 absent at 740858e65117",
+    "evidence": "[\"reproducer-run:rr-02ad3111fbd88bfa7d3b\"]"
+  },
+  {
+    "seq": 1331,
+    "capa_id": "CAPA-176",
+    "from_state": "PREVENTION_TESTED",
+    "to_state": "EFFECTIVENESS_OBSERVING",
+    "at": "2026-11-05T11:50:32.881660Z",
+    "reason": "observation window opened",
+    "evidence": "[]"
+  }
+]

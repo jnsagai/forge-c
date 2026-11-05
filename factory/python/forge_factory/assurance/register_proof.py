@@ -82,6 +82,11 @@ def prove(ws: Path, include_dirs: list[Path], api_header: str) -> dict:
     ws = Path(ws)
     if layer_of(ws) != "LL" or not SO.present(ws):
         return {"status": "NOT_APPLICABLE", "reason": "only LL work orders with a frozen SafeC register contract"}
+    from ..layer import ll_instance
+
+    if ll_instance(ws) is not None:
+        return {"status": "NOT_APPLICABLE", "reason": "INSTANCE_MODE: the proof harness models the register-block "
+                                                      "array, not the caller's typed instance"}
     if tool("cbmc") is None:
         return {"status": "UNSUPPORTED", "reason": "CBMC is not installed on this host"}
     rec, issues = SO.verified(ws)

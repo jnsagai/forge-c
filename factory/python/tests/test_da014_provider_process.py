@@ -102,7 +102,9 @@ def test_pid_reuse_observation_never_signals_the_newer_process(tmp_path, monkeyp
         real = P.identity
         newer = {**real(instance["init_pid"]), "start_ticks": "different"}
         monkeypatch.setattr(P, "identity", lambda pid: newer)
-        monkeypatch.setattr(os, "pidfd_open", lambda pid: pytest.fail("reused PID was opened for signaling"))
+        # Some Python builds omit os.pidfd_open; the real wrapper retains its
+        # syscall fallback. Exercise the actual public effect API on every host.
+        monkeypatch.setattr(P.pidfd, "open_pid", lambda pid: pytest.fail("reused PID was opened for signaling"))
         proof = P.stop(instance, fenced_effect=lambda effect: pytest.fail("newer process reached effect"))
         assert proof["kind"] == "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED"
 

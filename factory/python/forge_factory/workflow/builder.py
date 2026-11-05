@@ -110,17 +110,25 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
           isolation: bool = False, brownfield: str | None = None, peripheral: str | None = None,
           delivery_style: str | None = None, structured: dict | None = None,
           recovery_plan: dict | None = None, operation_scope: dict | None = None,
-          execution_policy: dict | None = None, assessment_manifest: dict | None = None) -> tuple[str, dict]:
+          execution_policy: dict | None = None, assessment_manifest: dict | None = None,
+          stop_after: str | None = None, uspec_gtest: bool = False,
+          provided_api: dict | None = None, provided_code_handoff: bool = False) -> tuple[str, dict]:
     """`code_model`: optional local model for the C code/test author nodes only (trial profile, ADR-0005 #15).
     `chunk_lines`: max lines per write/edit call (40 for local models whose long tool calls are dropped).
     `structured` (feature 010, explicit local profile only): {"phases": [...], "model": ...} - those phases' authors
-    run as structured-task command nodes; None leaves the graph byte-identical (frozen compatibility fixtures)."""
+    run as structured-task command nodes; None leaves the graph byte-identical (frozen compatibility fixtures).
+    `stop_after` (owner 2026-10-31, phase-scoped runs: "we must test just the SWE.1"): the graph holds only the phases
+    up to that one (nodes, upstream/return chains, structured rewiring); after its inspection gate the run goes to the
+    Release Manager and the finalizer. None leaves the graph byte-identical."""
     from . import prompts
 
     prompts.CHUNK["lines"] = chunk_lines
     prompts.LAYER["layer"] = layer  # ADR-0009: LL | HAL | LL+HAL
     prompts.TRACE["on"] = trace  # owner addendum 2026-10-17: trace rules for work orders with the trace profile
     prompts.ISOLATION["on"] = isolation and layer == "HAL"  # CAPA-038: HAL unit tests on the generated LL test double
+    prompts.UNIT_VERIFICATION["gtest"] = uspec_gtest  # owner 2026-11-03: per-USPEC GoogleTest unit tests (SWE.4 UT ids)
+    prompts.PROVIDED_API["api"] = provided_api if layer == "HAL" else None  # CAPA-131: ST LL instance API
+    prompts.PROVIDED_CODE_HANDOFF["enabled"] = provided_code_handoff and layer == "HAL" and uspec_gtest and not brownfield
     prompts.BROWNFIELD["mode"] = brownfield  # feature 008: delivered code (FROZEN | FIX_ALLOWED), None = greenfield
     prompts.BROWNFIELD["style"] = delivery_style if brownfield else None  # ST pilot: "cmsis" test prompts
     from ..operation_scope import scoped
@@ -132,7 +140,14 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
     prompts.ASSESSMENT["manifest"] = assessment_manifest
     if execution_policy and execution_policy.get("purpose") == "QM" and not assessment_manifest:
         raise ValueError("QM_ASSESSMENT_MANIFEST_REQUIRED")
-    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest)
+    if stop_after is not None and assessment_manifest and assessment_manifest.get("delivery_first"):
+        raise ValueError("STOP_AFTER_DELIVERY_FIRST_UNSUPPORTED")  # delivery-first prepends SWE.3 code authoring
+    dot, nodes = _build(work_order, phases, goal, sections, assessment_manifest, stop_after,
+                        provided_code_handoff and layer == "HAL" and uspec_gtest and not brownfield)
+    if structured and stop_after is not None:  # rewire only the phases the scoped graph contains
+        kept = PHASES[:PHASES.index(stop_after) + 1]
+        structured = {**structured, **{k: [p for p in structured.get(k) or [] if p in kept]
+                                       for k in ("phases", "inspect_phases") if k in structured}}
     if structured and structured.get("c_parameter_list_note") is True:
         import re
 
@@ -158,7 +173,7 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
                 pattern = rf'(  {re.escape(node)} \[.*?prompt=")((?:\\.|[^"\\])*)"'
                 dot = re.sub(pattern, lambda m: m.group(1) + m.group(2) + extra + '"', dot, flags=re.S)
     if structured:
-        dot = structured_authors(dot, structured)
+        dot = structured_authors(dot, structured, nodes)
     from ..development_execution import DEMO, DEMO_REPAIR
 
     if execution_policy and execution_policy.get("name") in (DEMO, DEMO_REPAIR):
@@ -255,7 +270,8 @@ def continuation(dot: str, node: str, gate_node: str, step: str, phase: str, str
         return dot
     run, t, box = runner_cmd(), structured.get("timeout_s", 3600), int(structured.get("visit_time_s", 1200))
     chk, more = f"{node}_cont", f"{node}_more"
-    cmd = f"{run} {step} --phase {phase} --workspace . --model {structured['model']} --time-budget {box} --resume"
+    model = structured.get("inspector_model" if step == "inspect" else "author_model") or structured["model"]
+    cmd = f"{run} {step} --phase {phase} --workspace . --model {model} --time-budget {box} --resume"
     edge = f"  {node} -> {gate_node}\n"
     if edge not in dot:
         raise ValueError(f"STRUCTURED_EDGE_MISSING:{node}->{gate_node}")
@@ -268,7 +284,7 @@ def continuation(dot: str, node: str, gate_node: str, step: str, phase: str, str
         f"  {more} -> {chk}"]) + "\n", 1)
 
 
-def structured_authors(dot: str, structured: dict) -> str:
+def structured_authors(dot: str, structured: dict, nodes: dict | None = None) -> str:
     """Feature 010 (explicit local profile only; ADR-0014): replace agent nodes of the listed phases with the profile's
     structured-task runner (a command node with the same id, edges, role binding and visit limit):
       phases          the author node (`lrtx.runner author`)
@@ -280,6 +296,8 @@ def structured_authors(dot: str, structured: dict) -> str:
     import re
 
     run = runner_cmd()
+    am = structured.get("author_model") or structured["model"]  # in-run model swap: per-role models (owner 2026-10-31)
+    im = structured.get("inspector_model") or structured["model"]
     t = structured.get("timeout_s", 3600)
     box = int(structured.get("visit_time_s", 1200))
 
@@ -295,7 +313,7 @@ def structured_authors(dot: str, structured: dict) -> str:
     for phase in structured.get("phases", []):
         n = phase[-1]
         if phase == "SWE.3":  # code tasks in the LL author / fix author nodes, then the deterministic design author
-            code = f"{run} code --phase SWE.3 --workspace . --model {structured['model']} --time-budget {box}"
+            code = f"{run} code --phase SWE.3 --workspace . --model {am} --time-budget {box}"
             dot = swap(dot, "swe3_ll_author", "SWE.3 structured unit code (local profile)", code, t)
             dot = swap(dot, "swe3_fix_author", "SWE.3 structured unit code: resume or rework (local profile)",
                        code + " --resume", t)
@@ -303,18 +321,18 @@ def structured_authors(dot: str, structured: dict) -> str:
             dot = cont(dot, "swe3_fix_author", nxt, "code", phase)
         if phase in ("SWE.4", "SWE.5", "SWE.6"):  # test tasks in the test author node; the author node resumes + report
             node = {"SWE.4": "swe4_test_author", "SWE.5": "swe5_target_author", "SWE.6": "swe6_test_author"}[phase]
-            tests = f"{run} tests --phase {phase} --workspace . --model {structured['model']} --time-budget {box}"
+            tests = f"{run} tests --phase {phase} --workspace . --model {am} --time-budget {box}"
             dot = swap(dot, node, f"{phase} structured tests (local profile)", tests, t)
             dot = cont(dot, node, f"swe{n}_author", "tests", phase)
         dot = swap(dot, f"swe{n}_author", f"{phase} structured author (local profile)",
-                   f"{run} author --phase {phase} --workspace . --model {structured['model']} --time-budget {box}", t)
+                   f"{run} author --phase {phase} --workspace . --model {am} --time-budget {box}", t)
         dot = pipe(dot, f"swe{n}_author_gate", f"swe{n}_author", f"{phase} freeze gate",
                    f".forge-run/lrtx/{phase}/reply.json", phase, "author")
         dot = cont(dot, f"swe{n}_author", f"swe{n}_author_gate", "author", phase)
     for phase in structured.get("inspect_phases", []):
         n = phase[-1]
         dot = swap(dot, f"swe{n}_inspector", f"{phase} structured inspector (local profile)",
-                   f"{run} inspect --phase {phase} --workspace . --model {structured['model']} --time-budget {box}", t)
+                   f"{run} inspect --phase {phase} --workspace . --model {im} --time-budget {box}", t)
         dot = pipe(dot, f"swe{n}_inspect_gate", f"swe{n}_inspector", f"{phase} inspection gate",
                    f".forge-run/lrtx/{phase}/inspect-reply.json", phase, "inspect")
         dot = cont(dot, f"swe{n}_inspector", f"swe{n}_inspect_gate", "inspect", phase)
@@ -322,6 +340,8 @@ def structured_authors(dot: str, structured: dict) -> str:
         for phase in PHASES:
             n = phase[-1]
             rt, ri, ins = f"swe{n}_route", f"swe{n}_reinspect", f"swe{n}_inspector"
+            if f"  {rt} [" not in dot:
+                continue  # a phase outside a phase-scoped graph (--stop-after)
             m = re.search(rf'^  {rt} -> (\w+) \[condition="outcome=succeeded"\]$', dot, re.M)
             if not m:
                 raise ValueError(f"STRUCTURED_ROUTE_MISSING:{rt}")
@@ -348,11 +368,75 @@ def structured_authors(dot: str, structured: dict) -> str:
                 f'  {adv} [shape=parallelogram, label="{phase} advisory continue check (gap registered)", '
                 f'max_visits={MAX_VISITS}, script="{_q(gate_cmd(phase, "advisory"))}"]',
                 f'  {adv} -> {nxt.group(1)} [condition="outcome=succeeded"]', f"  {adv} -> upstream_swe1"]) + "\n", 1)
+    if structured.get("author_model") or structured.get("inspector_model"):
+        dot = serve_swaps(dot, structured, nodes)
     return dot
 
 
+def serve_swaps(dot: str, structured: dict, nodes: dict | None = None) -> str:
+    """Owner 2026-10-31 ("go ahead with the swap"): before every node that calls a model, a deterministic node makes the
+    stack's llama-server serve that node's model (`lrtx.stack serve`, a no-op when it already does). Structured author
+    nodes use the author model, inspector nodes the inspector model (including native inspectors), other native nodes
+    the run model. A failed
+    swap goes to the finalizer: the run ends closed, never on another model."""
+    import os
+    import re
+    import shlex
+
+    from ..acp import _split_attrs, native_agent_nodes, statements
+
+    root = os.environ.get("FORGE_LRTX_ROOT")
+    if not root:
+        raise ValueError("MODEL_SWAP_REQUIRES_LRTX_ROOT")
+    am = structured.get("author_model") or structured["model"]
+    im = structured.get("inspector_model") or structured["model"]
+    native_inspectors = {name for name in native_agent_nodes(dot)
+                         if structured.get("inspector_model") and
+                         (nodes or {}).get(name, {}).get("role", "").endswith("-inspector")}
+    edits = []
+    for start, end, indent, name, attrs in statements(dot):
+        if name in native_inspectors:
+            kept = ", ".join(a for a in _split_attrs(attrs) if not a.startswith(MODEL_ATTR + "="))
+            edits.append((start, end, f'{indent}{name} [{MODEL_ATTR}="{_q(im)}", {kept}]'))
+            nodes[name]["model"] = im
+    for start, end, text in reversed(edits):
+        dot = dot[:start] + text + dot[end:]
+    models: dict[str, str] = {}
+    for _st, _en, _i, name, attrs in statements(dot):
+        if "forge_factory.lrtx.runner inspect " in attrs:
+            models[name] = im
+        elif re.search(r"forge_factory\.lrtx\.runner (?:author|code|tests) ", attrs):
+            models[name] = am
+    for name in native_agent_nodes(dot):
+        models.setdefault(name, im if name in native_inspectors else structured["model"])
+    if not dot.endswith("}\n"):
+        raise ValueError("MODEL_SWAP_GRAPH_END_MISSING")
+    added = []
+    for node, model in sorted(models.items()):
+        sv = f"{node}_serve"
+        dot = re.sub(rf'^  (\w+) -> {node}( \[condition="[^"]*"\])?$',
+                     lambda m, sv=sv: m.group(0) if m.group(1) == sv else f"  {m.group(1)} -> {sv}{m.group(2) or ''}",
+                     dot, flags=re.M)
+        line_context = ""
+        if os.environ.get("FORGE_LINE_STACK_PAYLOAD") or os.environ.get("FORGE_LINE_STACK_PAYLOAD_SHA256"):
+            for key in ("FORGE_LINE_STACK_PAYLOAD", "FORGE_LINE_STACK_PAYLOAD_SHA256", "FORGE_OPERATIONS_PROFILE",
+                        "FORGE_OPERATIONS_INTENT", "FORGE_DURABLE_AUTONOMY", "FORGE_AFO_QUEUE_SCOPE",
+                        "FORGE_OWNER_DEVELOPMENT_RECORD", "FORGE_OWNER_DEVELOPMENT_SHA256",
+            "FORGE_AFO_POLICY", "FORGE_AFO_AUTH_DIR", "FORGE_AFO_ALLOWED_SIGNERS", "FORGE_DURABLE_NATIVE_HEADER",
+                        "FORGE_LINE_STACK_ROOT", "FORGE_LINE_GPU_LOCK", "FORGE_LINE_FABRO_PORT", "FORGE_LINE_LAUNCH_DIR"):
+                if key in os.environ:
+                    line_context += f" {key}={shlex.quote(os.environ[key])}"
+        cmd = (f"{_env()}{line_context} FORGE_LRTX_ROOT={shlex.quote(root)} {sys.executable} -m forge_factory.lrtx.stack serve "
+               f"--model {shlex.quote(model)} --workspace .")
+        added += [f'  {sv} [shape=parallelogram, label="Serve {_q(model)} for {node} (in-run model swap)", '
+                  f'max_visits={8 * MAX_VISITS}, timeout="900s", script="{_q(cmd)}"]',
+                  f'  {sv} -> {node} [condition="outcome=succeeded"]', f"  {sv} -> finalize"]
+    return dot[:-2] + "\n".join(added) + "\n}\n"
+
+
 def _build(work_order: str, phases: list[str] | None = None, goal: str | None = None,
-           sections: dict[str, str] | None = None, assessment_manifest: dict | None = None) -> tuple[str, dict]:
+           sections: dict[str, str] | None = None, assessment_manifest: dict | None = None,
+           stop_after: str | None = None, provided_code_handoff: bool = False) -> tuple[str, dict]:
     from . import prompts
 
     prompts.SECTIONS.clear()
@@ -368,8 +452,11 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
     # All six phases are always in the graph so that upstream loops (ADR-0008) can reach phases a resumed run
     # carried over; `start` enters at the first phase still to run.
     restart = phases[0]
+    if stop_after is not None and (stop_after not in PHASES or PHASES.index(stop_after) < PHASES.index(restart)):
+        raise ValueError(f"STOP_AFTER_INVALID:{stop_after}")
     prev = "start"
-    for phase in PHASES:
+    kept = PHASES if stop_after is None else PHASES[:PHASES.index(stop_after) + 1]
+    for phase in kept:  # a phase-scoped graph holds no node of a later phase
         n = int(phase[-1])
         a, ag, ins, ig, rt = (f"swe{n}_author", f"swe{n}_author_gate", f"swe{n}_inspector", f"swe{n}_inspect_gate",
                               f"swe{n}_route")
@@ -453,6 +540,12 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
                   f'script="{_q(robot_scaffold_cmd())}"]',
                   f'  {ta} [label="SWE.6 Robot test author (Renode)", max_visits={ONCE}, timeout="1500s", '
                   f'prompt="{_q(robot_test_author_prompt())}"]', f"  {entry} -> {ta}", f"  {ta} -> {a}"]
+        if phase == "SWE.3" and provided_code_handoff:
+            claim = "swe3_provided_code_claim"
+            L += [f'  {claim} [shape=parallelogram, label="Claim pending provided LL CODE (deterministic)", '
+                  f'script="{_q(gate_cmd(phase, "verify", "provided_code_claim"))}"]',
+                  f'  {claim} -> {entry} [condition="outcome=succeeded"]', f"  {claim} -> finalize"]
+            entry = claim
         if prev != "start" and prompts.BROWNFIELD["mode"] and phase == "SWE.2":
             # feature 008 (FR-007): the delivered code enters only after SWE.1 is frozen and inspected
             inj = "delivery_inject"
@@ -478,13 +571,27 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
               f'  {rt} -> {"swe3_fix_author" if phase == "SWE.3" else a} [condition="outcome=succeeded"]',
               f'  {rt} -> upstream_swe1']
         prev = ig
+    if prompts.BROWNFIELD["mode"] and kept[-1] == "SWE.1":
+        # CAPA-104 (run WO-F014-SWE1-CRCK-20261101-L9): a brownfield graph scoped to SWE.1 dropped the delivery_inject
+        # node (it was built with SWE.2), so the SWE.1 order ended without injection.json and the SWE.2 resume was
+        # refused (RESUME_RECORD_UNREADABLE:injection.json). The injection completes SWE.1 (FR-007): it runs here too.
+        inj = "delivery_inject"
+        L += [f'  {inj} [shape=parallelogram, label="Delivered code injected after SWE.1 (deterministic)", '
+              f'script="{_q(gate_cmd("SWE.1", "verify", "delivery_inject"))}"]',
+              f'  {prev} -> {inj} [condition="outcome=succeeded"]', f"  {inj} -> finalize"]
+        prev = inj
     # ADR-0008 shared upstream chain (probe P1: outcome-only routing): earliest owner first, then the finalizer.
     # L12: the owner triages first (accept / reject_defect, no edits); a fully rejected loop returns to the phase
     # that reported it through the return chain, so nothing upstream is re-frozen (r70 cascade).
     from .prompts import triage_prompt
 
+    ups = [k for k in (1, 2, 3) if f"SWE.{k}" in kept]
+    rets = [n for n in range(2, 7) if f"SWE.{n}" in kept]
+    first_return = f"return_swe{rets[0]}" if rets else "finalize"
     for k, owner in ((1, "swe1_author"), (2, "swe2_author"), (3, "swe3_fix_author")):
-        up, nxt = f"upstream_swe{k}", (f"upstream_swe{k + 1}" if k < 3 else "finalize")
+        if k not in ups:
+            continue
+        up, nxt = f"upstream_swe{k}", (f"upstream_swe{k + 1}" if k + 1 in ups else "finalize")
         tri, tg = f"swe{k}_triage", f"swe{k}_triage_gate"
         nodes[tri] = {"role": f"swe{k}-author", "phase": f"SWE.{k}"}
         L += [f'  {up} [shape=parallelogram, label="Upstream loop to SWE.{k} (open defect, loop budget)", '
@@ -494,9 +601,9 @@ def _build(work_order: str, phases: list[str] | None = None, goal: str | None = 
               f'  {tg} [shape=parallelogram, label="SWE.{k} triage gate (fix | return)", '
               f'script="{_q(gate_cmd(f"SWE.{k}", "triage"))}"]',
               f'  {up} -> {tri} [condition="outcome=succeeded"]', f"  {up} -> {nxt}", f"  {tri} -> {tg}",
-              f'  {tg} -> {owner} [condition="outcome=succeeded"]', f"  {tg} -> return_swe2"]
-    for n in range(2, 7):
-        ret, nxt = f"return_swe{n}", (f"return_swe{n + 1}" if n < 6 else "finalize")
+              f'  {tg} -> {owner} [condition="outcome=succeeded"]', f"  {tg} -> {first_return}"]
+    for n in rets:
+        ret, nxt = f"return_swe{n}", (f"return_swe{n + 1}" if n + 1 in rets else "finalize")
         entry = "swe3_fix_author" if n == 3 else f"swe{n}_author"
         L += [f'  {ret} [shape=parallelogram, label="Return to SWE.{n} (its defects were rejected)", '
               f'script="{_q(gate_cmd(f"SWE.{n}", "return"))}"]',

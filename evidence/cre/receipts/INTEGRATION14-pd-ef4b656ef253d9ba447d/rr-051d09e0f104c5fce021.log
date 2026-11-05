@@ -1,0 +1,5 @@
+{"lrtx_progress": "inspect:rpr075:SWE1-01", "attempt": 0, "errors": 1, "wall_ms": 0}
+{"lrtx_progress": "inspect:rpr075:SWE1-01", "attempt": 1, "errors": 0, "wall_ms": 0}
+SYMPTOM_ABSENT
+
+--- stderr ---

@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-561413511ddee9fdf399",
+  "reproducer_id": "RPR-176",
+  "revision": "3e8936a27f847b32bb76eef4a24bc83cc2daad20",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "SYMPTOM_PRESENT",
+  "signature": "diagnosis serializes a dependent objective before its unresolved prerequisite",
+  "log_sha256": "b9d08d72a8dde33ddf62b6a3108b826686a9edb1ad7611047fe2fd9663ee853c",
+  "at": "2026-11-05T11:48:28.235013Z"
+}

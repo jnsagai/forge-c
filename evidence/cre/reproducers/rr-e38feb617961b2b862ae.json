@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-e38feb617961b2b862ae",
+  "reproducer_id": "AFO-REVIEW-CPU-CONTROL",
+  "revision": "18814617abb98491abb5c03adb0802553634f14f",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "SYMPTOM_PRESENT",
+  "signature": "review intake rejects explicitly registered post-calibration learning baselines as held out",
+  "log_sha256": "8dffd3eb281c7b759a9c26eb91a9db786acc5682023e9a9c12936097492efc8a",
+  "at": "2026-11-05T11:20:19.141856Z"
+}

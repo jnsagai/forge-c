@@ -81,7 +81,9 @@ def main(argv: list[str] | None = None) -> int:
     from importlib import import_module
 
     if a.step == "continue-check":  # exit 0 = the visit continues in the next node, 1 = the gate reads the reply
-        f = ws / ".forge-run/lrtx" / a.phase / ("reply.json" if a.of == "author" else "inspect-reply.json")
+        # CAPA-100 (run WO-F014-SWE3-IWDG-20261101-L3): the code (SWE.3) and tests (SWE.4-6) steps write the author
+        # reply too; reading the inspector's reply for them found nothing, so a continued visit went on unfinished
+        f = ws / ".forge-run/lrtx" / a.phase / ("inspect-reply.json" if a.of == "inspect" else "reply.json")
         status = json.loads(f.read_text()).get("status") if f.is_file() else "MISSING"
         log = ws / ".forge-run/lrtx" / a.phase / "continue-checks.log"
         n = len(log.read_text().splitlines()) + 1 if log.is_file() else 1

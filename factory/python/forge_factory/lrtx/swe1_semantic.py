@@ -356,7 +356,7 @@ def crosscut_rendered(ws: Path, doc: dict, inv: dict, sysname: str) -> dict:
     for k in doc["rules"]:
         r = CROSS_RULES[k]
         reqs.append({"key": k, "source_page": page, "effects": [], "statement": r["statement"].format(sys=sysname),
-                     "verification": r["verification"], "verified_by": r["verified_by"]})
+                     "verification": r["verification"], **({"verified_by": r["verified_by"]} if "verified_by" in r else {})})
     return {"requirements": reqs, "not_covered": [], "open_points": doc["open_points"]}
 
 
@@ -444,6 +444,8 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
     amap = json.loads(amap_p.read_text()) if amap_p.is_file() else None
     budget, findings = V.open_visit(ws, "SWE.1", resume, lambda: V1.rework_findings(ws, since) if since else [],
                                     max_calls or role.max_turns, time_budget_s)
+    if findings:
+        V.attach_keep_fixed(ws, "SWE.1", budget, lambda fs: V1.route_findings(fs, amap))
     try:
         return _visit(ws, model, budget, V1.route_findings(findings, amap) if findings else {})
     except V.Continue as c:

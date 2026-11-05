@@ -4,6 +4,7 @@ ADR-0008 rule that a failing correct test becomes a CODE defect instead of a ben
 from __future__ import annotations
 
 import json
+import re
 
 import pytest
 from forge_factory.inspection import unit_scaffold
@@ -17,9 +18,12 @@ from test_lrtx_swe3 import CODE, TOOLS, _gate, ws2  # noqa: F401 - fixture
 pytestmark = [pytestmark, pytest.mark.skipif(not TOOLS, reason="build tools not installed")]
 
 
-def _t(ut, spec, body):
-    name = "ut_" + ut.lower().replace("-", "_")
-    return {"code": f"/** @test {ut} @verifies {spec} */\nstatic void {name}(void)\n{{\n    ut_reset_regs();\n{body}\n}}"}
+def _t(ut, spec, body, kinds=("positive",)):
+    """Owner 2026-11-03: the structured SWE.4 answer is one GoogleTest TEST(<unit>, UT_nnn) per USPEC item."""
+    suite = "SWU_LL_" + spec.split("-")[2]
+    body = re.sub(r'CHECK\("UT-\d+",\s*', "EXPECT_TRUE(", body)
+    return {"code": f"/** @test {ut} @verifies {spec} */\nTEST({suite}, {ut.replace('-', '_')})\n{{\n"
+                    f"    ut_reset_regs();\n{body}\n}}", "kinds": list(kinds)}
 
 
 TESTS = {
@@ -32,21 +36,27 @@ TESTS = {
     "test:UT-004": _t("UT-004", "USPEC-LL-04-01", '    ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = 0x5555U;\n'
                       '    LL_IWDG_DisableWriteAccess();\n    CHECK("UT-004", (ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] & '
                       'LL_IWDG_KR_KEY_MSK) == 0U);'),
-    "test:UT-005": _t("UT-005", "USPEC-LL-05-01", '    ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] = 0xFFFFFFF0U;\n'
-                      '    LL_IWDG_SetPrescaler(5U);\n    CHECK("UT-005", ((ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] & '
+    "test:UT-005": _t("UT-005", "USPEC-LL-05-01", '    uint32_t lo;\n    ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] = 0xFFFFFFF0U;\n'
+                      '    LL_IWDG_SetPrescaler(0U);\n    lo = ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U];\n'
+                      '    LL_IWDG_SetPrescaler(5U);\n    CHECK("UT-005", ((lo & LL_IWDG_PR_PR_MSK) == 0U) && '
+                      '((ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] & '
                       'LL_IWDG_PR_PR_MSK) == 5U) && ((ll_iwdg_regs[LL_IWDG_PR_OFFSET / 4U] & '
-                      '~LL_IWDG_PR_PR_MSK) == 0xFFFFFFF0U));'),
-    "test:UT-006": _t("UT-006", "USPEC-LL-06-01", '    LL_IWDG_SetReloadCounter(0xFFFU);\n    CHECK("UT-006", ('
-                      'll_iwdg_regs[LL_IWDG_RLR_OFFSET / 4U] & LL_IWDG_RLR_RL_MSK) == 0xFFFU);'),
+                      '~LL_IWDG_PR_PR_MSK) == 0xFFFFFFF0U));', ("positive", "negative", "boundary")),
+    "test:UT-006": _t("UT-006", "USPEC-LL-06-01", '    uint32_t lo;\n    ll_iwdg_regs[LL_IWDG_RLR_OFFSET / 4U] = 0xFFFFF000U;\n'
+                      '    LL_IWDG_SetReloadCounter(0U);\n'
+                      '    lo = ll_iwdg_regs[LL_IWDG_RLR_OFFSET / 4U];\n    LL_IWDG_SetReloadCounter(0xFFFU);\n'
+                      '    CHECK("UT-006", ((lo & LL_IWDG_RLR_RL_MSK) == 0U) && ((lo & ~LL_IWDG_RLR_RL_MSK) == 0xFFFFF000U)'
+                      ' && (ll_iwdg_regs[LL_IWDG_RLR_OFFSET / 4U] & LL_IWDG_RLR_RL_MSK) == 0xFFFU);',
+                      ("positive", "boundary", "negative")),
     "test:UT-007": _t("UT-007", "USPEC-LL-07-01", '    uint32_t clear = LL_IWDG_IsActive();\n    uint32_t set;\n    '
                       'll_iwdg_regs[LL_IWDG_SR_OFFSET / 4U] = LL_IWDG_SR_ONF_MSK;\n    set = LL_IWDG_IsActive();\n    '
-                      'CHECK("UT-007", (clear == 0U) && (set == 1U));'),
+                      'CHECK("UT-007", (clear == 0U) && (set == 1U));', ("positive", "negative")),
     "test:UT-008": _t("UT-008", "USPEC-LL-08-01", '    uint32_t clear = LL_IWDG_IsActiveFlag_PVU();\n    uint32_t set;\n    '
                       'll_iwdg_regs[LL_IWDG_SR_OFFSET / 4U] = LL_IWDG_SR_PVU_MSK;\n    set = LL_IWDG_IsActiveFlag_PVU();\n    '
-                      'CHECK("UT-008", (clear == 0U) && (set == 1U));'),
+                      'CHECK("UT-008", (clear == 0U) && (set == 1U));', ("positive", "negative")),
     "test:UT-009": _t("UT-009", "USPEC-LL-09-01", '    uint32_t clear = LL_IWDG_IsActiveFlag_RVU();\n    uint32_t set;\n    '
                       'll_iwdg_regs[LL_IWDG_SR_OFFSET / 4U] = LL_IWDG_SR_RVU_MSK;\n    set = LL_IWDG_IsActiveFlag_RVU();\n    '
-                      'CHECK("UT-009", (clear == 0U) && (set == 1U));')}
+                      'CHECK("UT-009", (clear == 0U) && (set == 1U));', ("positive", "negative"))}
 
 
 @pytest.fixture()
@@ -67,7 +77,7 @@ def test_oracle_tests_pass_run_unit_and_the_unchanged_swe4_gate(ws3, monkeypatch
     assert all("ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = 0x0000CCCCU" not in json.dumps(p["_messages"]) for p in calls)
     assert swe4.visit_report(ws3)["status"] == "PASS"
     rpt = (ws3 / "workproducts/SWE.4/unit_verification_report.md").read_text()
-    assert "## Coverage" in rpt and "| UT-005 | LL_IWDG_SetPrescaler | SWR-005 |" in rpt
+    assert "## Coverage" in rpt and "| UT-005 | USPEC-LL-05-01 | LL_IWDG_SetPrescaler | SWR-005 |" in rpt
     assert _gate(ws3, "SWE.4", monkeypatch) == 0
 
 
@@ -82,4 +92,4 @@ def test_a_correct_failing_test_files_a_code_defect_not_a_bent_test(ws3, monkeyp
     assert rep["status"] == "FAILED" and any("defect filed: DEF-" in i for i in rep["issues"])
     d = json.loads(sorted((ws3 / ".forge-run/defects").glob("DEF-*.json"))[-1].read_text())
     assert d["kind"] == "CODE" and d["target_phase"] == "SWE.3" and d["requirement_ids"] == ["SWR-002"]
-    assert "0x0000AAAAU" in (ws3 / "software/tests/unit/test_iwdg.c").read_text()  # the test was not bent
+    assert "0x0000AAAAU" in (ws3 / "software/tests/unit/test_iwdg.cpp").read_text()  # the test was not bent

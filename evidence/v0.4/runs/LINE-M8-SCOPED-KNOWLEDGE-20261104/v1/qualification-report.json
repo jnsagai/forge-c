@@ -1,0 +1,64 @@
+{
+  "manifest_sha256": "eff704f5d15649b5a8bbf201aad5b0292f414a9cf2607eff8c6d7890da192ac8",
+  "rows": [
+    {
+      "id": "old-provided-contract-mandate",
+      "producer": "CRE",
+      "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+      "observed": "SYMPTOM_PRESENT",
+      "regressions": []
+    },
+    {
+      "id": "corrected-provided-contract",
+      "producer": "CRE",
+      "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+      "observed": "SYMPTOM_ABSENT",
+      "regressions": []
+    },
+    {
+      "id": "greenfield-contract-is-excluded",
+      "producer": "reference",
+      "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+      "observed": "c39528d3ce72965d96c70928d980575bf332d1d71eba3e5e274cfe0848150c5a",
+      "regressions": []
+    },
+    {
+      "id": "real-cmsis-host-link",
+      "producer": "gate",
+      "oracle_sha256": "70b92cf7328558d737c71c40372c5b9ddfdf20ed489be170cb3a4e267ac1b429",
+      "observed": "COMPILE_LINK_OK",
+      "regressions": []
+    }
+  ],
+  "actual_observations": [
+    {
+      "case_id": "old-provided-contract-mandate",
+      "revision": "6dd3f516b368a13c9b5b2f3f098838b65949c72f",
+      "returncode": 1,
+      "stdout": "SYMPTOM_PRESENT:the provided CMSIS HAL architecture prompt mandates a fabricated register-block array\n",
+      "stderr": ""
+    },
+    {
+      "case_id": "corrected-provided-contract",
+      "revision": "45e86f24bc9cd2172e653f3d8fece953494c3ef7",
+      "returncode": 0,
+      "stdout": "SYMPTOM_ABSENT\n",
+      "stderr": ""
+    },
+    {
+      "case_id": "greenfield-contract-is-excluded",
+      "worktree": "forge-c-014-capa144",
+      "returncode": 0,
+      "stdout": "c39528d3ce72965d96c70928d980575bf332d1d71eba3e5e274cfe0848150c5a\n",
+      "stderr": ""
+    },
+    {
+      "case_id": "greenfield-contract-is-excluded",
+      "worktree": "forge-c-014-capa149",
+      "returncode": 0,
+      "stdout": "c39528d3ce72965d96c70928d980575bf332d1d71eba3e5e274cfe0848150c5a\n",
+      "stderr": ""
+    }
+  ],
+  "claim_limit": "Independent narrow contract/linkage qualification; zero model calls, no phase acceptance or improvement assertion."
+}

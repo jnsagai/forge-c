@@ -39,6 +39,16 @@ def reserve(store, binding, body, *, eff=None, measurement=None):
         job = json.loads(row[0])
     if ctx.launch_nonce != binding["nonce"]:
         raise Refused("GENERATION_NONCE_MISMATCH")
+    line_role = None
+    if product and job.get("line_role_authority_ref"):
+        from ..llm_gateway import detect_role
+        from .line_product_context import request_job
+
+        detected = detect_role(body.get("messages") or [])
+        line_role = binding.get("role") or detected
+        if detected and detected != line_role:
+            raise Refused("LINE_PRODUCT_ROLE_BINDING_MISMATCH")
+        job = request_job(job, line_role, body.get("model"), eff)
     with store.tx() as c:
         live = c.execute("SELECT record FROM afo_execution_liveness WHERE job_id=?", (ctx.job_id,)).fetchone()
     execution = json.loads(live[0]) if live else {}
@@ -56,7 +66,7 @@ def reserve(store, binding, body, *, eff=None, measurement=None):
             time.time() < job["deadline_epoch"]
             and eff.sha256 == job["policy_sha256"]
             and (product or local_agent.enabled(job["role"], eff))
-            and local_agent.authorized(order, eff, job["model"])
+            and local_agent.authorized_job(order, eff, job)
         )
 
     measured = measurement if measurement is not None else measure_request(body)
@@ -76,7 +86,7 @@ def reserve(store, binding, body, *, eff=None, measurement=None):
     cap = caps[0]
     if type(cap) is not int or cap < 1:
         raise Refused("PROVIDER_OUTPUT_CAP_REQUIRED")
-    role = binding.get("role") or job.get("role")
+    role = line_role or binding.get("role") or job.get("role")
     if product or job.get("durable_protocol") or job.get("durable_native"):
         from ..llm_gateway import detect_role
         from ..lrtx.role_capability import admit_job
@@ -177,6 +187,18 @@ def start(store, rec, body):
             row = c.execute("SELECT record FROM afo_local_agent_jobs WHERE job_id=?", (rec["job_id"],)).fetchone()
     job = json.loads(row[0]) if row else {}
     order = store.order(job["order_id"]) if job else None
+    line_product = rec["job_id"].startswith("afo-product-") and job.get("line_role_authority_ref")
+    if line_product:
+        from ..llm_gateway import detect_role
+        from .execution_lifecycle import Executions
+        from .line_product_context import request_job
+
+        metadata = Executions(store)._evidence(job["job_id"], "REQUEST_METADATA:" + rec["request_id"]) or {}
+        role = metadata.get("role")
+        detected = detect_role(body.get("messages") or [])
+        if detected and detected != role:
+            raise Refused("LINE_PRODUCT_ROLE_BINDING_MISMATCH")
+        job = request_job(job, role, body.get("model"), eff)
 
     def authorized():
         from .operations import Intent, configured
@@ -195,7 +217,8 @@ def start(store, rec, body):
             and time.time() < job["deadline_epoch"]
             and eff.sha256 == job["policy_sha256"]
             and digest(body) == rec["body_sha256"]
-            and local_agent.authorized(order, eff, job["model"])
+            and (local_agent.authorized_job(order, eff, job) if line_product
+                 else local_agent.authorized(order, eff, job["model"]))
         )
 
     return MissionLedger(store).start_request(rec["request_id"], authorize=authorized)

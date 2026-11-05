@@ -1,0 +1,11 @@
+{
+  "candidate": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+  "baseline": "edff27525b8331af7ce943de0490172c9fc180c5",
+  "all8refs_both_verified": true,
+  "170prefix_byte_exact": true,
+  "caller_manifest_sha256": "e12fd44033ec0d945ea900bfa6d5e57a8edc5c3c5837263d49534da71bee820d",
+  "rpr171_sha256": "8822d13a60663c91dafc4b8e54f1e729e8e303c21cf59081ed27d0123fbb2184",
+  "asset_sha256": "fd754dde3c2c209253fe7a65e61b22e7f242a1e633ceb8f015b0df9e4c75c776",
+  "initial_orchestration_error_preserved": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa171-causal-and-fix-original-open-argument-error.py",
+  "production_actions": false
+}

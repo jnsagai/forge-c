@@ -1,0 +1,27 @@
+{
+  "after": {
+    "HEAD": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+    "files": {
+      "bootstrap-affected-controls.stdout.log": "eb81164c32fe4ae31dae90a19b461f828929751f6c981d82fc3f95797fb964f5",
+      "bootstrap-affected-controls.xml": "f552125737038e30e180230113cfd60dc82135fa50ce4f44ea1b4f1992fc519a",
+      "probe-intent.json": "652777131198b98ebf91238c5b8cee1103da18be3ff8e0a55f2f9a58da83cc52",
+      "probe-summary.json": "6e5df3a0a27ac0855e60cd4c8ca76793a87765a2d41da93f06b1bb361c920d4a",
+      "stage-intent.json": "ea5a3f1faebbca7ac423d02ceea2dbd9b5c0313ec98f43a4454a208aee1d4f1f",
+      "staging-receipt.json": "1f3e302d6ac8df6e2a13fe6cbc092bdcdf411b585b999cb0b6dc882d4c0cac5d"
+    },
+    "status": ""
+  },
+  "before": {
+    "HEAD": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+    "files": {
+      "bootstrap-affected-controls.stdout.log": "eb81164c32fe4ae31dae90a19b461f828929751f6c981d82fc3f95797fb964f5",
+      "bootstrap-affected-controls.xml": "f552125737038e30e180230113cfd60dc82135fa50ce4f44ea1b4f1992fc519a",
+      "probe-intent.json": "652777131198b98ebf91238c5b8cee1103da18be3ff8e0a55f2f9a58da83cc52",
+      "probe-summary.json": "6e5df3a0a27ac0855e60cd4c8ca76793a87765a2d41da93f06b1bb361c920d4a",
+      "stage-intent.json": "ea5a3f1faebbca7ac423d02ceea2dbd9b5c0313ec98f43a4454a208aee1d4f1f",
+      "staging-receipt.json": "1f3e302d6ac8df6e2a13fe6cbc092bdcdf411b585b999cb0b6dc882d4c0cac5d"
+    },
+    "status": ""
+  },
+  "exactly_unchanged": true
+}

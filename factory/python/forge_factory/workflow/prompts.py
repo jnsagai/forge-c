@@ -24,6 +24,38 @@ def sec(*nums: str) -> str:
 REPLY = ('Finish with ONLY this JSON (no other text): {"status":"PASS","artifacts":["<paths you wrote>"],'
          '"issues":[],"next_action":"next"}. next_action is one literal enum value: next, rework, halt, package, '
          'escalate, none or retry; put any explanation in issues.')
+# Prospective planning clarification after CRC SWE.6 L34D: the test author repaired 14 -> 22/24 cases, but
+# the report author spent its bounded visits on discovery before it could edit the remaining scenarios.
+# This is not a larger tool budget or evidence of improved model performance; the live escalation is retained.
+PROVIDED_HAL_SWE6_PLAN = (
+    "SWE.6 DELIVERABLE PLAN: the previous test-author step already supplied the Robot suite and C scenarios. "
+    "Use the first run_robot result to choose the next action, before discovery. Read the cited SWE.1 requirement "
+    "once and read each implicated scenario at most once; use the exact paths and check IDs in the result and "
+    "the existing Robot suite. Do not repeatedly glob the workspace or search its parents, the factory, model "
+    "configuration, other skills or tool implementations. Reserve remaining tool calls for the actual edits, "
+    "their TEST declaration when required, a fresh run_robot, validate_trace and the required report. "
+    "Do not create C/Python verification helpers: file tools do not execute them. Edit the actual scn_*.c and "
+    "test_rcc_requirements.robot files directly through your approved file tools. Undefined TCHECK IDs, "
+    "NOT IMPLEMENTED placeholders and missing access-log/phase evidence are test-evidence gaps to diagnose "
+    "against the requirement, not proof of a driver defect. Preserve every required test, tag and functional "
+    "predicate; never turn absent observations into PASS. Use the defect rule for a genuine driver or API "
+    "violation, with requirement_ids, requirement_quote and test_files. When run_robot PASSes, complete "
+    "validate_trace and write workproducts/SWE.6/software_verification_report.md from the real results before "
+    "replying PASS. If the tool budget is exhausted, stop and reply status BLOCKED with the remaining gaps; "
+    "do not change skill, policy, budget, prior baselines or gate records.")
+
+
+def _rework_steps(phase: str, steps: list[str]) -> list[str]:
+    from ..rework_context import prompt_note
+
+    note = prompt_note(ASSESSMENT["manifest"], phase)
+    if not note:
+        return steps
+    # Retain SWE.6 evidence-first ordering while loading the data before author edits.
+    index = 3 if len(steps) > 2 and steps[2].startswith("Call mcp__forge_tests_mcp__run_robot FIRST") else 2
+    return steps[:index] + note + steps[index:]
+
+
 FIX = "If inspection/{p}/ has INS-*.json files or .forge-run/gates/gate-log.jsonl has {p} entries, read the newest and fix every listed finding first."
 # ADR-0008 loopbacks. Upstream owners (SWE.1-3) fix defects routed to them; downstream roles report instead of bending.
 FIX_DEFECTS = ("glob .forge-run/defects/DEF-*.json and read every defect with target_phase {p} and status IN_FIX: "
@@ -68,6 +100,34 @@ REGISTER_BLOCK_NOTE = ("Register access is fixed by the SWE.2 architecture (ADR-
                        "volatile uint32_t ll_rcc_regs array, which the linker places at the RCC base on target and the "
                        "test harness defines on host. No base address, no defining unit and no integer-to-pointer "
                        "cast in the driver code is the required design, not a finding: never ask for them.")
+# CAPA-111 (run WO-F014-CMP-SWE2-OBL-20261102-06): in instance mode the note above told the SWE.2 inspector that the
+# extern register-block array is mandatory, so every correct caller-instance architecture failed SWE2-02/04/06 three
+# times. A work order that declares a caller-supplied instance gets this note instead.
+INSTANCE_REGISTER_NOTE = ("Register access is fixed by the work order's caller-supplied instance (operation_scope."
+                          "instance): every LL function takes the {type_name} *{parameter} parameter and reaches the "
+                          "registers only through its members, declared by the pinned device header {device_header}; "
+                          "the caller passes the instance macro {macro} (the peripheral base on target, a RAM object in "
+                          "host tests). No register-block array, no extern register symbol, no base address and no "
+                          "integer-to-pointer cast in the driver code is the required design, not a finding: never ask "
+                          "for them.")
+
+
+def register_note(ws=None) -> str:
+    """The register-access note of the SWE.2/SWE.3 inspectors: the declared caller instance (instance mode), else the
+    ADR-0009 register-block array."""
+    if ws is not None:
+        from ..layer import ll_instance
+
+        try:
+            inst = ll_instance(ws)
+        except ValueError:
+            inst = None
+        if inst:
+            return INSTANCE_REGISTER_NOTE.format(**{k: inst[k] for k in ("type_name", "parameter", "device_header",
+                                                                         "macro")})
+    return REGISTER_BLOCK_NOTE
+
+
 OWNER_SCOPE_NOTE = ("SWE1-01: if .forge-run/manifest.json target.hsi_contract / target.safety_allocation record an owner "
                     "decision (e.g. HSI = RM0486 chapter, safety allocation OUT_OF_SCOPE or PENDING owner allocation review), "
                     "judge SWE1-01 against that "
@@ -390,7 +450,7 @@ def robot_test_author_prompt() -> str:
     robot = LL_ROBOT_STEPS if _layer() == "LL" else ROBOT_STEPS
     steps = ["Call use_skill with skill_name swe6-author.", READ, small()] + robot + trace_step("vt") + [DEFECT_RULE] + \
         [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.6", steps), 1))
 
 
 def target_test_author_prompt() -> str:
@@ -398,13 +458,17 @@ def target_test_author_prompt() -> str:
     target = LL_TARGET_STEPS if _layer() == "LL" else TARGET_STEPS
     steps = ["Call use_skill with skill_name swe5-author.", READ, small()] + target + trace_step("tt") + [DEFECT_RULE] + \
         [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.5", steps), 1))
 
 
 def unit_test_author_prompt() -> str:
     """SWE.4 step 1 (fresh context): unit tests inserted into the generated harness in small edits."""
     from .scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
 
+    if UNIT_VERIFICATION["gtest"]:  # owner 2026-11-03: one GoogleTest TEST per USPEC item of the SWE.4 plan
+        steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
+            gtest_unit_test_steps(TEST_CASES_MARKER) + trace_step("ut") + [DEFECT_RULE, REPLY]
+        return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.4", steps), 1))
     ut, example = (LL_UT_STEPS, LL_UT_EXAMPLE) if _layer() == "LL" else (UT_STEPS, UT_EXAMPLE)
     if ISOLATION["on"] and _layer() == "HAL":  # CAPA-038
         ut, example = [FAKE_UT_FIRST] + [x.replace("adapt names, registers and UT ids; use ONLY LL_RCC_<REG>_OFFSET / "
@@ -415,7 +479,7 @@ def unit_test_author_prompt() -> str:
     steps = ["Call use_skill with skill_name swe4-author.", READ, small()] + \
         [x.replace("{cases}", TEST_CASES_MARKER).replace("{calls}", TEST_CALLS_MARKER).replace("{example}", example)
          for x in ut] + trace_step("ut") + [DEFECT_RULE, REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.4", steps), 1))
 
 
 FIX3_STEPS = [
@@ -654,6 +718,19 @@ def trace_step(kind: str) -> list[str]:
         "vt": "OWNER TRACE RULES: every Robot test keeps its SWR tag; every SWR needs a passing test (VT:* issues; "
               "matrix 6).",
     }
+    if kind == "it" and _layer() == "HAL" and UNIT_VERIFICATION["gtest"] and PROVIDED_API["api"]:
+        rules[kind] += (
+            " HOST RESULT PROTOCOL: every executed host check prints its id followed immediately by PASS or FAIL "
+            "on its own line, for example 'IT-001-NOMINAL PASS' or 'IT-001-INVALID FAIL'. Inside the function tagged "
+            "@test IT-001 use IT-001 or unique IT-001-<suffix> ids; IT-101 does not verify IT-001. Host C uses "
+            "<stdio.h>; forge_target_test.h and TCHECK belong to the Renode target tests, not this host program. "
+            "A CHECK(id, "
+            "condition) helper evaluates condition once into ok, emits printf(\"%s %s\\n\", id, ok ? \"PASS\" : "
+            "\"FAIL\"); and counts a failure when ok is false; main returns nonzero for any failure. Do not put "
+            "CHECK, descriptions or an arrow before the id or between the id and its result. Keep descriptions on "
+            "separate lines. Preserve every functional predicate and assertion, and print its evaluated result; "
+            "never replace checks with fixed PASS text. The trace gate requires observed per-test results as well "
+            "as the host process exit code.")
     return [rules[kind]]
 
 
@@ -678,11 +755,11 @@ def fix3_author_prompt() -> str:
     if BROWNFIELD["mode"]:  # feature 008: work products first; delivered code only for an IN_FIX CODE defect
         steps = ["Call use_skill with skill_name swe3-author.", READ, small(), delivered_note(), FIX.format(p="SWE.3"),
                  FIX_DEFECTS.format(p="SWE.3")] + brownfield_fix3_steps() + [REPLY]
-        return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+        return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
     steps = ["Call use_skill with skill_name swe3-author.", READ, small(), FIX.format(p="SWE.3"),
              FIX_DEFECTS.format(p="SWE.3")] + (LL_FIX3_STEPS if _layer() == "LL" else FIX3_STEPS) + \
-        ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("keep") + [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+        ([hal_on_provided_ll()] if _layer() == "HAL" else []) + trace_step("keep") + [REPLY]
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
 
 
 def ll_author_prompt() -> str:
@@ -692,17 +769,17 @@ def ll_author_prompt() -> str:
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", FUNCTIONS_MARKER) for x in (LL_LL_STEPS if _layer() == "LL" else LL_STEPS)] + \
         (trace_step("code") + [CONTRACT_SWE3] if _layer() == "LL" else []) + [REENTRY] + [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
 
 
 def hal_author_prompt() -> str:
     """SWE.3 step 2 (fresh context): HAL header/source built incrementally in small edits against the LL header."""
     steps = ["Call use_skill with skill_name swe3-author.", READ, small()] + \
         [x.replace("{marker}", HAL_MARKER).replace("{hmarker}", HAL_H_MARKER).replace("{hal_example}", HAL_EXAMPLE)
-         for x in HAL_STEPS] + ([HAL_ON_PROVIDED_LL] if _layer() == "HAL" else []) + trace_step("code") + \
+         for x in HAL_STEPS] + ([hal_on_provided_ll()] if _layer() == "HAL" else []) + trace_step("code") + \
         [CONTRACT_SWE3, REENTRY] + \
         [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps("SWE.3", steps), 1))
 
 
 # owner decision 2026-10-19 (option B): the independent EASA oracle reads this contract, never the code
@@ -746,9 +823,12 @@ def contract_step(phase: str) -> list[str]:
                 pr = PERIPHERAL["profile"]
                 if pr and pr["id"] != "rcc":
                     extra += " " + (pr.get("prompt") or {}).get("swe1_effect_rule", "")
-            extra += (" Include every read/query requirement too: use op no_write WITH the exact named register and "
-                      "field. That case checks preservation of register state; return values require the separate "
-                      "requirement-based tests. Each case must name a register/field present in its own SWR text.")
+            extra += (" Include every read/query requirement too. For a call that preserves the queried register, "
+                      "use op no_write WITH the exact named register and field; that case checks preservation of "
+                      "register state. A calculation or update call can write and then read the same register: "
+                      "declare its actual write effects, never assert no_write on a register that call changes. "
+                      "Specify returned data and verify it in the separate requirement-based tests. Each case "
+                      "must name a register/field present in its own SWR text.")
         return [CONTRACT_SWE1.format(example=ex, extra=extra)]
     if phase == "SWE.2":
         ex = (', e.g. \"&(const hal_rcc_osc_config_t){ .oscillator = HAL_RCC_OSC_HSE }\" and \"{timeout}\" where '
@@ -875,6 +955,11 @@ def assessment_scope_note() -> str:
             "example requirement counts do not narrow it. Account for every requested source section and field; "
             "record justified exclusions against the actual out-of-scope text, never an omitted catalog entry. "
             "Missing coverage is a finding, not a completed reduced product. ")
+    if "semantic_required_operations" in manifest:
+        note += ("semantic_required_operations lists source-bound engine capability preflight forms. Preserve "
+                 "that frozen catalog; it does not allocate additional driver APIs or query requirements. "
+                 "Derive required behavior from the literal work-order scope and its declared layer, including "
+                 "every requested read/query. Do not invent getter functions from the preflight catalog. ")
     from ..simulation_performance import FIELD, validate
 
     if FIELD in manifest:
@@ -891,6 +976,56 @@ def assessment_scope_note() -> str:
                    "do not claim its verification passed.")
 
 
+def native_swe3_timing_note() -> str:
+    """Explain the existing factory-owned measurement only for an explicitly budgeted provided-CMSIS HAL."""
+    from ..simulation_performance import FIELD, validate
+
+    manifest = ASSESSMENT["manifest"] or {}
+    if not (_layer() == "HAL" and PROVIDED_API["api"] and manifest.get("provided")
+            and (manifest.get("provided_build") or {}).get("style") == "cmsis" and FIELD in manifest):
+        return ""
+    validate(manifest[FIELD])
+    return ("SWE.3 FACTORY TIMING GATE: after this author reply, the deterministic factory author gate runs "
+            "static_timing.gate before it honors the author status. It computes the bound and, for paths needing "
+            "measurement, attempts the pinned Renode measurement on the frozen SWE.2 api_calls.json cases. "
+            "The factory generates or refreshes workproducts/SWE.3/static_timing_bound.json and the timing "
+            "section of detailed_design.md. A separate author timing MCP operation is not required. Complete "
+            "your assigned source, design and current call-contract obligations first; when those author outputs "
+            "are complete, truthfully reply PASS for that author work instead of self-BLOCKED solely because no "
+            "timing tool is exposed. The independent gate can still reject missing, unbounded or over-budget "
+            "timing; author PASS does not mean SWE.3 inspection or full software verification passed. Never "
+            "fabricate measurements, edit the factory timing record, or claim a measurement ran before its "
+            "record exists. Cite only the actual measured cases, arguments and conditions; do not infer coverage "
+            "for other input lengths, timeout paths or hardware WCET. SWE.6 still performs its separate "
+            "requirement verification and instrumented performance test.")
+
+
+def provided_code_ownership_note(phase: str) -> str:
+    if not (PROVIDED_CODE_HANDOFF["enabled"] and phase in ("SWE.1", "SWE.2", "SWE.3")
+            and _layer() == "HAL" and UNIT_VERIFICATION["gtest"]
+            and PROVIDED_API["api"] and not BROWNFIELD["mode"]):
+        return ""
+    return ("PROVIDED LL CODE OWNERSHIP: the versioned provided-input correction policy permits a linked, "
+            "workspace-only correction of the supplied software/ll header in SWE.3. If its implementation "
+            "contradicts a declared SWR, report kind CODE with that exact requirement quote and the supplied "
+            "header file:line as evidence. In SWE.1/SWE.2 keep the header unchanged: this pending CODE is "
+            "deferred to its normal SWE.3 owner, not a forward upstream loop. Complete and independently "
+            "review your own requirements/architecture honestly; a pending CODE finding does not excuse "
+            "incorrect architecture or imply any phase PASS. Normal SWE.3 entry claims the pending record "
+            "IN_FIX; preserve its original snapshot and public LL API, and produce the linked diff, reasons "
+            "and required human-review record. Do not edit vendor inputs or bypass the provided LL through "
+            "LL_WriteReg/LL_ReadReg or raw register access. Later real tests and independent inspection must "
+            "verify the correction; INPUT remains appropriate for genuinely missing or wrong approved inputs.")
+
+
+def hal_on_provided_ll() -> str:
+    if not provided_code_ownership_note("SWE.3"):
+        return HAL_ON_PROVIDED_LL
+    return HAL_ON_PROVIDED_LL.replace("never write or edit it", "keep it unchanged except for a normal linked "
+                                    "IN_FIX CODE correction in this SWE.3 workspace") + " " + \
+        FIX_DEFECTS.format(p="SWE.3") + " " + provided_code_ownership_note("SWE.3")
+
+
 def author_prompt(phase: str) -> str:
     n = phase[-1]
     pr = PERIPHERAL["profile"]  # feature 009 (i001): the work order's key RM sections (RCC: 14.10.1/2/79/64)
@@ -900,6 +1035,21 @@ def author_prompt(phase: str) -> str:
     table = LL_AUTHOR_STEPS if _layer() == "LL" else AUTHOR_STEPS
     body = [x.format(**fills) if "{s" in x else x for x in table[phase]]
     scope_note = assessment_scope_note()
+    if phase == "SWE.4" and provided_ll_unit_note():
+        scope_note += (" " if scope_note else "") + provided_ll_unit_note()
+    if phase == "SWE.4" and unit_target_timing_note():
+        scope_note += (" " if scope_note else "") + unit_target_timing_note()
+    if phase == "SWE.4" and unit_target_wwdg_timing_note():
+        scope_note += (" " if scope_note else "") + unit_target_wwdg_timing_note()
+    if phase == "SWE.4" and unit_target_observation_note():
+        scope_note += (" " if scope_note else "") + unit_target_observation_note()
+    if phase == "SWE.4" and ll_call_arguments_note():
+        scope_note += (" " if scope_note else "") + ll_call_arguments_note()
+    timing_note = native_swe3_timing_note() if phase == "SWE.3" else ""
+    if timing_note:
+        scope_note += (" " if scope_note else "") + timing_note
+    if provided_code_ownership_note(phase):
+        scope_note += (" " if scope_note else "") + provided_code_ownership_note(phase)
     if scope_note and phase == "SWE.1":
         body = [x.replace("then 12-26 requirements", "then enough atomic requirements to cover the full scope")
                 .replace("then 8-15 requirements", "then enough atomic requirements to cover the full scope")
@@ -931,9 +1081,17 @@ def author_prompt(phase: str) -> str:
         body = body[:-1] + trace_step(tr) + body[-1:]
     if contract_step(phase):  # owner decision 2026-10-19 (B), also before the final step
         body = body[:-1] + contract_step(phase) + body[-1:]
+    if UNIT_VERIFICATION["gtest"] and phase in NEGATIVE_RULES:  # owner 2026-11-03: negative paths and corner cases
+        body = body[:-1] + [NEGATIVE_RULES[phase]] + body[-1:]
     steps = [f"Call use_skill with skill_name swe{n}-author.", READ] + ([scope_note] if scope_note else []) + manifest + [FIX.format(p=phase)] + extra + body \
         + [REPLY]
-    return " ".join(f"{i}) {s}" for i, s in enumerate(steps, 1))
+    if (phase == "SWE.6" and _layer() == "HAL" and TRACE["on"] and UNIT_VERIFICATION["gtest"]
+            and PROVIDED_API["api"] and not BROWNFIELD["mode"]):
+        # Keep the exact legacy graph in every other scope. Evidence first is an ordering clarification of
+        # the existing FIRST instruction; all deterministic gates, budgets and defect/report rules remain.
+        steps = [f"Call use_skill with skill_name swe{n}-author.", READ, body[0], PROVIDED_HAL_SWE6_PLAN] + \
+            ([scope_note] if scope_note else []) + manifest + [FIX.format(p=phase)] + extra + body[1:] + [REPLY]
+    return " ".join(f"{i}) {s}" for i, s in enumerate(_rework_steps(phase, steps), 1))
 
 
 def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
@@ -944,17 +1102,24 @@ def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",
              f"glob configuration/baselines/{phase}/BL-*.json and read the newest one: note its baseline_id and files.",
              "read_file each listed workproduct (use offset/limit for long files). Never edit any file. Use the active "
-             "role policy's tool-call allowance, reserving calls to submit the complete inspection. Reuse recorded "
+             "role policy's tool-call allowance, reserving calls to submit the complete inspection: read the evidence "
+             "each item needs first, one read per file, never the same file twice. Reuse recorded "
              "analyzer/validator results: items with a deterministic_check are recomputed automatically; their reports "
-             "are in verification/static/ and inspection/<phase>/deterministic/. Call check_inspection after examining "
-             "the required evidence; retain an explicit finding for evidence you could not examine.",
+             "are in verification/static/ and inspection/<phase>/deterministic/. An empty grep or glob result is no "
+             "evidence that text is absent: read_file the file. Call check_inspection after examining the required "
+             "evidence. A FAIL states a defect you found in the evidence; never FAIL or PASS an item on evidence you "
+             "did not examine: give it ID=FAIL:NOT_EXAMINED:<file or section not examined> (the factory records an "
+             "INCOMPLETE inspection and re-inspects; it is no finding for the author).",
              f"read_file .forge-run/checklists/{phase}.json once (the full checklist; it is NOT elsewhere, do not "
              f"search for it). Judge each checklist item: {items}.",
              *([INSPECT_DEFECT] if phase != "SWE.1" else [OWNER_SCOPE_NOTE]),
+             *([provided_code_ownership_note(phase)] if provided_code_ownership_note(phase) else []),
              *([INSPECT_DELIVERED] if BROWNFIELD["mode"] and phase != "SWE.1" else []),
              *([REGISTER_BLOCK_NOTE] if phase in ("SWE.2", "SWE.3") else []),
              *([GATE_DECLARED_CHECK.format(p=phase)] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
              *([WORK_ORDER_SCOPE_NOTE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []),
+             *([PROVIDED_CHANGES_NOTE] if UNIT_VERIFICATION["gtest"] and phase in ("SWE.3", "SWE.4", "SWE.5", "SWE.6")
+               else []),
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
              f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
              "Items decided by deterministic tools are recomputed automatically.",
@@ -972,6 +1137,8 @@ PERIPHERAL = {"profile": None}  # set by the builder: the work order's periphera
 def peripheralize(text: str) -> str:
     """The RCC prompt with the work order's peripheral: RCC domain fragments are replaced by the profile's prompt texts,
     then RCC identifiers by the profile's names. RCC (or no profile) returns the text unchanged."""
+    from ..layer import hal_waits_of
+
     pr = PERIPHERAL["profile"]
     if not pr or pr["id"] == "rcc":
         return text
@@ -1059,6 +1226,21 @@ def peripheralize(text: str) -> str:
                 ("(group requirements by topic, several checks per file) in the same form as the target tests:",
                  f"(group requirements by topic, several checks per file; each file defines 'uint32_t {tb}(void)' as a "
                  "counter that advances 1 per call - the HAL's time base) in the same form as the target tests:")]
+    elif not hal_waits_of(pr):  # CAPA-126: a no-wait HAL (CRC) gets no timeout requirement, define or example
+        hal += [("e.g. 'at most HAL_RCC_TIMEOUT_VALUE polling iterations', ", ""),
+                (", and one measurable timing requirement (every wait is bounded by HAL_RCC_TIMEOUT_VALUE = 1000 polling "
+                 "iterations)", ""),
+                ("'#define HAL_RCC_TIMEOUT_VALUE 1000U', ", ""),
+                ("Timeouts and error handling, ", "Error handling and timing, ")]
+        if LAYER["layer"] != "LL":  # CAPA-127: SWE.5/SWE.6 of the HAL - no timeout target file, scenario or path
+            hal += [
+                ("write software/tests/target/test_rcc_target.c and test_rcc_target_timeout.c yourself as described for "
+                 "the target-test step (TCHECK checks on the API return values and register bits, scenario never_ready "
+                 "for the timeout file)",
+                 "write the software/tests/target/test_*.c files of the target-test step yourself as described there "
+                 "(TCHECK checks on the API return values and register bits)"),
+                ("(timeout paths, measured sizes)", "(error paths, measured sizes)"),
+                ("(add '    scenario=never_ready' for timeout behaviour; use ", "(use ")]
     if "hal_api" in t:  # NULL checks of the configuration pointer need <stddef.h> (the LL includes <stdint.h> only)
         hal.append(("'#include \"stm32n6xx_ll_rcc.h\"', 'typedef enum",
                     "'#include <stddef.h>', '#include \"stm32n6xx_ll_rcc.h\"', 'typedef enum"))
@@ -1140,6 +1322,385 @@ def cmsisize(text: str) -> str:
     return text
 
 
+UNIT_VERIFICATION = {"gtest": False}  # owner 2026-11-03: set by the builder for work orders with unit_verification
+PROVIDED_CHANGES_NOTE = (
+    "If workproducts/SWE.3/provided_code_changes.md exists, read it: provided code (a provided LL or FROZEN delivered "
+    "code) was changed in this work order for linked CODE defects. Judge each change against its reasons (defect, "
+    "failing test, SWR/USPEC); a change without a linked reason is a finding.")
+NEGATIVE_RULES = {
+    "SWE.1": ("NEGATIVE PATHS AND CORNER CASES (owner 2026-11-03): besides the positive path, every functional "
+              "requirement set states the software's behaviour in its negative paths and corner cases as far as the "
+              "inputs support them - an argument outside its field width or valid range (kept to the field bits or "
+              "rejected), a NULL or invalid instance or pointer where the API takes one, a repeated or idempotent call, "
+              "a call in the wrong state or order, timeout and not-ready paths of a waiting function, and the register "
+              "bits that must stay unchanged. Ground each in the provided RM/datasheet/guideline/owner obligations or "
+              "state it as the driver's defined behaviour ('as the driver's defined behaviour, ...'); never invent a "
+              "hardware fact."),
+    "SWE.3": ("NEGATIVE AND CORNER-CASE USPEC ITEMS (owner 2026-11-03): besides the nominal behaviour, give each unit "
+              "its negative and corner-case behaviours as their own '- **USPEC-...**' items where the requirements "
+              "state them (invalid or out-of-range argument, NULL or invalid instance, timeout and not-ready paths, a "
+              "repeated call, register bits left unchanged, the flag-clear result). Each USPEC item gets its own "
+              "requirement-based SWE.4 test. Never invent a behaviour the requirements do not state."),
+}
+PLAN_MD = "workproducts/SWE.4/unit_test_plan.md"
+USPEC_FRAGMENTS = [
+    # SWE.1 keeps the verification criteria and the SWR -> SWE.6 qualification-test allocation only
+    ("one row per SWR: "
+     "test_id UT-001.. and test_file software/tests/unit/test_rcc.c for requirements a host unit test verifies; for "
+     "flash, static RAM, stack, target-only and reset/startup ('While no ... after reset') requirements test_id = the SWR "
+     "id and test_file = "
+     "software/tests/software/test_rcc_requirements.robot (verified by the SWE.6 Robot suite).",
+     "one row per SWR: test_id = the SWR id and test_file = software/tests/software/test_rcc_requirements.robot (every "
+     "requirement is qualified by the SWE.6 Robot suite). Never write UT ids: SWE.4 derives the unit tests from the "
+     "SWE.3 unit specification and assigns their UT ids."),
+    ("traceability/requirements_to_tests.csv (the UT ids per SWR).",
+     PLAN_MD + " (GENERATED from the frozen SWE.3 unit specification: one row per USPEC item with its UT id - write "
+     "exactly one test per row)."),
+    ("software/hal/stm32n6xx_hal_rcc.h and traceability/requirements_to_tests.csv. HAL unit tests",
+     "software/hal/stm32n6xx_hal_rcc.h and " + PLAN_MD + " (GENERATED: one row per USPEC item with its UT id - write "
+     "exactly one test per row). HAL unit tests"),
+    ("read_file software/tests/unit/test_rcc.c (written by the unit-test step) and traceability/requirements_to_tests.csv.",
+     "read_file software/tests/unit/test_rcc.c (written by the unit-test step) and " + PLAN_MD + "."),
+    ("'## Test cases' table | UT id | function | SWR ids |", "'## Test cases' table | UT id | USPEC | function | SWR ids |"),
+    ("read_file traceability/requirements_to_tests.csv (owned by SWE.1; you cannot edit it): every UT id it cites "
+     "for software/tests/unit/test_rcc.c must appear in a CHECK of that file - add or rename your tests to match "
+     "it (never cite or invent other ids).",
+     "read_file " + PLAN_MD + " (GENERATED from the frozen SWE.3 unit specification; you cannot edit it): every UT id "
+     "it lists must be the @test of exactly one test that @verifies that row's USPEC id - add or rename your tests to "
+     "match it (never cite or invent other ids)."),
+    ("with the UT id its CHECKs print and the unit specification items (workproducts/SWE.3/unit_"
+     "specifications.md) it verifies.",
+     "with the UT id of its row in " + PLAN_MD + " and that row's USPEC id."),
+]
+
+
+def uspecize(text: str) -> str:
+    """Owner 2026-11-03 (V-model): SWE.1 allocates only SWE.6 qualification tests and SWE.4 writes one GoogleTest test
+    per USPEC item of the generated plan (test_<id>.cpp); identity for work orders without unit_verification."""
+    if not UNIT_VERIFICATION["gtest"]:
+        return text
+    for old, new in USPEC_FRAGMENTS:
+        text = text.replace(old, new)
+    text = text.replace("'## Measures, environment, entry/exit criteria and regression' (host clang build,",
+                        "'## Measures, environment, entry/exit criteria and regression' (host GoogleTest/GoogleMock "
+                        "1.11.0 build with clang++,")
+    text = text.replace("must appear in a CHECK of that file", "must be the @test of one TEST of that file")
+    text = text.replace(
+        " Call mcp__forge_tests_mcp__llvm_coverage. ",
+        " Call mcp__forge_tests_mcp__llvm_coverage. Coverage closure (owner 2026-11-03): each COVERAGE_GAP issue names "
+        "an uncovered decision (kind, file:line, function, missing outcome, decision text). For each, add ONE TEST "
+        "tagged '/** @test <next free UT id> @verifies <the USPEC ids of that function's unit whose behaviour takes "
+        "the missing outcome> */' that reaches it through the unit's API, with expected values ONLY from those USPEC "
+        "items and their requirements; when no USPEC item or requirement states a behaviour that reaches it (code "
+        "without a requirement behind it), call report_defect kind CODE with evidence_refs '<file>:<line>' instead - "
+        "never invent a requirement or an expectation. Then run_unit and llvm_coverage again. ")
+    text = text.replace("'## Coverage' (goal: 100% statement/branch of driver code; the llvm_coverage numbers exactly as "
+                        "reported; any shortfall listed as a deviation with reason)",
+                        "'## Coverage' (BLOCKING gate, owner 2026-11-03: 100% line and 100% branch coverage of the "
+                        "driver code, plus 100% MC/DC when the work-order purpose is a safety purpose; not applicable "
+                        "only where llvm-cov counts no branch points or decisions; the llvm_coverage numbers exactly as "
+                        "reported; a shortfall is never a deviation - write the coverage-closure tests the factory "
+                        "names, or report_defect kind CODE for a decision no requirement or USPEC can reach)")
+    import re as _re
+
+    return _re.sub(r"software/tests/unit/test_rcc\.c\b(?!pp)", "software/tests/unit/test_rcc.cpp", text)
+
+
+GTEST_LL_EXAMPLE = ("/** @test UT-001 @verifies USPEC-LL-01-01 */\nTEST(SWU_LL_01, UT_001)\n{\n    ut_reset_regs();\n"
+                    "    ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] = LL_RCC_CR_HSEON_MSK;\n    LL_RCC_HSI_Enable();\n"
+                    "    EXPECT_NE(ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSION_MSK, 0U);\n"
+                    "    EXPECT_NE(ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSEON_MSK, 0U);  /* preserved */\n}")
+GTEST_HAL_EXAMPLE = ("/** @test UT-001 @verifies USPEC-HAL-01-01 */\nTEST(SWU_HAL_01, UT_001)\n{\n    ut_reset_regs();\n"
+                     "    ll_rcc_regs[LL_RCC_SR_OFFSET / 4U] = LL_RCC_SR_HSIRDY_MSK;\n"
+                     "    EXPECT_EQ(HAL_RCC_HSI_Enable(), HAL_OK);\n"
+                     "    EXPECT_NE(ll_rcc_regs[LL_RCC_CR_OFFSET / 4U] & LL_RCC_CR_HSION_MSK, 0U);\n}")
+GTEST_FAKE_EXAMPLE = ("/** @test UT-001 @verifies USPEC-HAL-02-01 */\nTEST(SWU_HAL_02, UT_001)\n{\n    ut_reset();\n"
+                      "    ll_fake_return_from(LL_FAKE_LL_RCC_HSE_IsReady, 3U, 1U);  /* ready from the 3rd poll on */\n"
+                      "    EXPECT_EQ(HAL_RCC_HSE_Enable(10U), HAL_OK);\n"
+                      "    EXPECT_EQ(ll_fake_calls(LL_FAKE_LL_RCC_HSE_Enable), 1U);\n"
+                      "    EXPECT_LT(ll_fake_index_of(LL_FAKE_LL_RCC_HSE_Enable, 1U), "
+                      "ll_fake_index_of(LL_FAKE_LL_RCC_HSE_IsReady, 1U));\n}")
+GTEST_MOCK_RULE = (
+    "The HAL time base is a GoogleMock seam: without a mock each call of the tick advances 1 ms; a test whose expected "
+    "result depends on elapsed time scripts it, e.g. 'UtTimeBaseMock tb; EXPECT_CALL(tb.mock, Tick())"
+    ".WillOnce(::testing::Return(0U)).WillRepeatedly(::testing::Return(11U));' before the call (timeout path).")
+
+
+def gtest_unit_test_steps(marker: str) -> list[str]:
+    """Owner 2026-11-03: the native SWE.4 unit-test author writes one GoogleTest TEST per row of the plan."""
+    fake = ISOLATION["on"] and _layer() == "HAL"
+    code = ("software/ll/stm32n6xx_ll_rcc.h (the LL_RCC_ functions to test)" if _layer() == "LL" else
+            "software/hal/stm32n6xx_hal_rcc.h (the HAL_RCC_ functions to test)")
+    example = GTEST_LL_EXAMPLE if _layer() == "LL" else GTEST_FAKE_EXAMPLE if fake else GTEST_HAL_EXAMPLE
+    pr = PERIPHERAL["profile"]
+    mock = _layer() != "LL" and fake and bool(((pr or {}).get("hal") or {}).get("time_base") or not pr)
+    example_rule = ("Follow this example exactly (adapt names, registers and ids; use ONLY defines that exist in the driver "
+                    f"headers): ```{example}``` " + (GTEST_MOCK_RULE if mock else ""))
+    from ..brownfield.cmsis import gtest_linkage
+
+    if (_layer() == "LL" and BROWNFIELD.get("style") == "cmsis"
+            and gtest_linkage(ASSESSMENT.get("manifest") or {})):
+        example_rule = (
+            "CMSIS C-ABI HOST TESTS: the generated harness includes the delivered headers with C linkage and shares "
+            "the generated forge_host_rcc RAM object with C code. Begin each TEST with ut_reset_regs(); call only the "
+            "function allocated to this plan row, using its exact delivered prototype (including a peripheral instance "
+            "argument when that prototype requires it). Assert the specified return value or actual vendor register "
+            "field with EXPECT_EQ/EXPECT_NE and the vendor masks. Use the register fields exposed by the harness; "
+            "there is no ll_rcc_regs array and no generated *_OFFSET register interface. Every TEST must contain an "
+            "executed assertion whose expected value comes from its USPEC and requirement. Keep the generated C-ABI "
+            "shim, vendor headers and harness unchanged.")
+    first = (FAKE_UT_FIRST.replace("software/tests/unit/test_rcc.c (GENERATED harness: CHECK(id, cond), ut_reset(), "
+                                   "markers; never change it)",
+                                   "software/tests/unit/test_rcc.cpp (GENERATED GoogleTest harness: ut_reset(), the time "
+                                   "base seam, the marker; never change it)")
+             .replace(" Name every check of a test with that test's id: 'UT-007' or 'UT-007-<suffix>' inside the "
+                      "function tagged @test UT-007.", "") if fake else
+             "read_file software/tests/unit/test_rcc.cpp (GENERATED GoogleTest harness: the host register store, "
+             f"ut_reset_regs(), the marker; never change it), {code} and {PLAN_MD} (GENERATED from the frozen SWE.3 "
+             "unit specification: one row per USPEC item with its UT id, unit, function and requirement ids).")
+    steps = [first,
+            "read_file workproducts/SWE.3/unit_specifications.md (the behaviour of each USPEC item) and "
+            "workproducts/SWE.1/software_requirements.md (the expected values of the requirements a USPEC traces). The "
+            "expected values come ONLY from them, never from the implementation.",
+            f"For EACH row of {PLAN_MD} make ONE edit_file call on software/tests/unit/test_rcc.cpp with old_string "
+            f"exactly '{marker}' and new_string = the block '/** @test <UT id> @verifies <USPEC id of the row> */', ONE "
+            "complete TEST(<unit id with _>, <UT id with _>) with its body (e.g. TEST(SWU_LL_01, UT_001) for UT-001 of "
+            "SWU-LL-01), a blank line, then the marker again. Check results with EXPECT_EQ, EXPECT_NE, EXPECT_TRUE, "
+            "EXPECT_FALSE (unsigned constants with U). Never add #include, #define, prototypes or fixtures (TEST_F). "
+            + example_rule,
+            "Every UT id of the plan is exactly one TEST; never add a test without a plan row and never reuse an id. "
+            "Call mcp__forge_tests_mcp__run_unit once and report its summary (GTEST_FAIL lines name the failed TEST "
+            "and its expected and actual values).",
+            "Reply with the list of UT ids you wrote."]
+    note = provided_ll_unit_note()
+    if note:
+        steps.insert(0, note)
+        steps[3] = steps[3].replace("For EACH row", "For each LL call-contract row")
+    backend_note = " ".join(n for n in (unit_target_timing_note(), unit_target_wwdg_timing_note(), unit_target_observation_note()) if n)
+    if backend_note:
+        steps.insert(0, backend_note)
+        steps = [s.replace("For EACH row", "For each host-observed row").replace(
+            "Every UT id of the plan is exactly one TEST;",
+            "Every UT id of the plan has exactly one executed verification backend; each host-observed row is "
+            "exactly one TEST;") for s in steps]
+    if ll_call_arguments_note():
+        steps.insert(0, ll_call_arguments_note())
+    return steps
+
+
+def provided_ll_unit_note() -> str:
+    from .provided_ll_unit import MARKER, supported
+
+    if not supported(ASSESSMENT.get("manifest") or {}):
+        return ""
+    return (
+        "PROVIDED LL REGISTER TESTS: choose the observation required by each frozen USPEC row. "
+        "Keep call-count/order and scripted-query rows in the existing generated mock harness. "
+        "For a row requiring actual register preservation/effects, create a separate "
+        "software/tests/unit/test_rcc_registers.cpp whose first line is exactly '" + MARKER + "'. "
+        "Only that additional file may add #include <gtest/gtest.h> and, inside extern \"C\" { }, "
+        "#include \"stm32n6xx_hal_rcc.h\". The factory compiles the HAL C source against the immutable "
+        "provided LL and shares the real vendor register layout in host RAM through RCC. Preset only "
+        "the registers required by the specified precondition, call the HAL API, and assert the "
+        "specified return/register values with vendor masks. Use the exact planned UT/USPEC tag "
+        "once across both files; a register row belongs in this additional file instead of the mock "
+        "file. No LL calls, ll_fake_* helpers, replacement driver implementations, fabricated "
+        "register effects or edits to generated/vendor inputs. run_unit executes both backends and "
+        "llvm_coverage merges their real driver coverage. This is HOST RAM evidence, without "
+        "peripheral side effects or target timing. Target-simulation timing requires its actual "
+        "measured case with the specified arguments and buffer length; a host test cannot supply it.")
+
+
+def unit_target_timing_note() -> str:
+    from .provided_ll_unit import supported
+
+    manifest = ASSESSMENT.get("manifest") or {}
+    if not (supported(manifest) and manifest.get("peripheral") == "crc" and manifest.get("simulation_performance")):
+        return ""
+    return (
+        "SWE.4 TARGET TIMING: for the frozen CRC rows specifying instrumented target simulation "
+        "(Init with the valid configuration; Calculate and Accumulate with 64-word buffers), write "
+        "software/tests/unit/target_timing.json with exactly schema='forge-c/swe4-crc-target-timing/1', "
+        "config={polynomial,polynomial_size,init_value,input_reverse,output_reverse} as unsigned JSON "
+        "integers matching a valid HAL_CRC_Init initializer in frozen SWE.2 api_calls.json, and cases "
+        "containing exactly the three matching plan rows. Each case has ut,uspec,function,word_count,"
+        "expected_status; use its exact planned UT/USPEC/function, word_count=0 for HAL_CRC_Init or "
+        "64 for HAL_CRC_Calculate and HAL_CRC_Accumulate, expected_status='HAL_OK'. run_unit generates "
+        "a bounded target harness and measures the original HAL through Renode, including the actual "
+        "returned status. These three rows belong in that declaration instead of host TESTs; keep every "
+        "other row as an executed host TEST. Never use GTEST_SKIP, duplicate a UT across backends, "
+        "print a measured result, substitute a one-word measurement or reduce a frozen criterion. "
+        "The declaration alone supplies no passing evidence. run_unit and validate_planned_units "
+        "must pass, and Matrix 4 recomputes the sealed source, arguments, binary and measurement. "
+        "Report host register effects and simulated timing as their actual environments, without "
+        "claiming hardware WCET or silicon verification.")
+
+
+def unit_target_wwdg_timing_note() -> str:
+    from .provided_ll_unit import supported
+
+    manifest = ASSESSMENT.get("manifest") or {}
+    if not (supported(manifest) and manifest.get("peripheral") == "wwdg" and manifest.get("simulation_performance")):
+        return ""
+    return (
+        "SWE.4 WWDG TARGET TIMING: the frozen per-call target instruction/virtual-time rows for "
+        "HAL_WWDG_Init, HAL_WWDG_Refresh, HAL_WWDG_GetEarlyWakeupFlag and HAL_WWDG_ClearEarlyWakeupFlag "
+        "require actual typed Renode measurements through run_unit. Host clocks, host disassembly and "
+        "constant assertions cannot verify them, even if no declaration exists. Write "
+        "software/tests/unit/target_wwdg_timing.json with schema='forge-c/swe4-wwdg-target-timing/1', "
+        "scenario='wwdg-declared-per-call-v1', config={prescaler,window,counter,ewi_enable}, "
+        "refresh_counter and query_initial as unsigned JSON integers matching the exact valid frozen "
+        "SWE.2 api_calls.json arguments, and cases containing exactly those four frozen timing rows. "
+        "Each case has ut,uspec,function,expected_status='HAL_OK'. Preserve their exact planned identifiers "
+        "and predicates; do not move them to SWE.6 or rewrite the plan. run_unit builds four direct calls "
+        "privately and observes their actual returned HAL status, executed instructions and virtual time "
+        "at the declared MIPS. Only those four timing rows belong in this declaration. The independent "
+        "reserved-write row uses target_observations.json; all remaining host rows still require executed "
+        "TESTs. Do not duplicate UT IDs across backends, use GTEST_SKIP, fabricate samples/status, change "
+        "arguments or lower a criterion. A declaration alone is never evidence. run_unit, "
+        "validate_planned_units and Matrix4 recompute current sealed target proofs. This verifies only "
+        "the explicit simulated calls, without silicon timing or hardware WCET claims.")
+
+
+def unit_target_observation_note() -> str:
+    from .provided_ll_unit import supported
+
+    manifest = ASSESSMENT.get("manifest") or {}
+    if not (supported(manifest) and manifest.get("peripheral") == "wwdg"):
+        return ""
+    return (
+        "SWE.4 WWDG FLAG OBSERVATION: plain host RAM cannot implement the status register's "
+        "write-zero-to-clear semantics. Find the unique frozen plan row for HAL_WWDG_ClearEarlyWakeupFlag "
+        "that preserves other writable fields and reserved bits at reset values during writes (or when "
+        "clearing the flag), traced to SWR-033 and SWR-034. Use its exact planned UT and USPEC identifiers, "
+        "not a guessed numeric offset or the separate nominal clear/return-status row. Write "
+        "software/tests/unit/target_observations.json with exactly schema='forge-c/swe4-wwdg-target-observation/1', "
+        "ut=<that planned UT>, uspec=<that frozen USPEC>, function='HAL_WWDG_ClearEarlyWakeupFlag', "
+        "scenario='wwdg-ewif-clear-v1'. "
+        "That row belongs in this target declaration instead of either host TEST file. "
+        "run_unit executes the original HAL and provided LL on the existing WWDG Renode model; "
+        "the factory observes the real flag precondition, HAL return, register write and status "
+        "readback. Every actual call write must preserve reserved reset bits (SR mask 0xFFFFFFFE); "
+        "zero readback alone cannot establish correct reserved-bit writes or a silicon RAZ/WI guarantee. "
+        "Keep all other rows as executed host TESTs using their appropriate mock or "
+        "real-LL RAM backend. Never use GTEST_SKIP, duplicate a UT, mask away the reserved-bit "
+        "criterion, or alter HAL/LL code solely to make plain RAM look like the peripheral. "
+        "A declaration alone supplies no passing evidence. run_unit, validate_planned_units "
+        "and Matrix 4 require the current sealed execution proof. If this exact frozen row "
+        "does not match, report the unsupported verification scope rather than changing it. "
+        "This is evidence in the existing simulator model, without a silicon-verification claim.")
+
+
+def ll_call_arguments_note() -> str:
+    from .ll_call_arguments import MARKER
+    from .provided_ll_unit import supported
+
+    manifest = ASSESSMENT.get("manifest") or {}
+    if not (supported(manifest) and manifest.get("peripheral") == "crc"):
+        return ""
+    return (
+        "LL CALL ARGUMENT HISTORY: for tests requiring every Calculate/Accumulate feed value and order, "
+        "make the FIRST LINE of the existing software/tests/unit/test_crc.cpp exactly '" + MARKER + "'. "
+        "Keep the generated harness body. The factory generates a private build-only extension from the "
+        "same provided LL; the original generated fake and vendor inputs remain unchanged. The extended "
+        "backend offers uint32_t ll_fake_call_arg(fn,k,j,&observed): k is the function occurrence starting "
+        "at1; j is a scalar argument index starting at0, excluding the CMSIS instance pointer. At most two "
+        "scalar parameters per call are recorded. The query returns1 only for an actually recorded, "
+        "in-range argument; assert that return before comparing observed with the specified input value. "
+        "A missing occurrence, invalid function/index, pointer/no-argument slot, NULL output or history "
+        "overflow returns0 and changes no output value. Reset invalidates old history. For EACH input word "
+        "i, ASSERT_EQ(ll_fake_call_arg(LL_FAKE_LL_CRC_FeedData32,i+1U,0U,&observed),1U), then "
+        "EXPECT_EQ(observed,data[i]); use ll_fake_index_of for the specified inter-call order and retain "
+        "the count/initialisation/result assertions. Check actual size/reversal configuration values too; "
+        "a last-argument assertion alone cannot verify all words. Choose LL function IDs and expected "
+        "values from the provided API and frozen USPEC/requirements. This is call observation only, "
+        "without register effects or target-timing evidence; keep those rows in their proper backends.")
+
+
+# CAPA-131: the instance API of a HAL's provided CMSIS LL (brownfield/cmsis.provided_api), set by the builder for a
+# HAL work order on ST's LL; None (every other work order) leaves every prompt byte-identical
+PROVIDED_API = {"api": None}
+PROVIDED_CODE_HANDOFF = {"enabled": False}  # W.run derives this from the actual existing provided-correction scope.
+
+
+def providedize(text: str) -> str:
+    """CAPA-131: on a provided ST (CMSIS) LL every LL function takes the instance first: the LL calls the prompt shows
+    (profile examples written for the greenfield LL, e.g. LL_CRC_FeedData32(p_data[i])) get the instance macro
+    (LL_CRC_FeedData32(CRC, p_data[i])) and the provided-LL rule names the instance and a real signature."""
+    import re as _re
+
+    api = PROVIDED_API["api"]
+    if not api or LAYER["layer"] != "HAL":
+        return text
+    inst, fns = api["instance"], set(api["functions"])
+
+    def call(m: _re.Match) -> str:
+        if m.group(1) not in fns:
+            return m.group(0)
+        return f"{m.group(1)}({inst}" + ("" if m.group(2) else ", ")
+
+    text = _re.sub(r"\b(LL_\w+)\((?=(\s*\))?)", call, text)
+    shown = [n for n in api["functions"] if f"{n}({inst}" in text]
+    ex = (shown or api["functions"])[0]
+    rule = (f" It is the delivered vendor (CMSIS) code: each of its LL functions takes the peripheral instance as its "
+            f"first argument - pass the instance macro {inst} of the device header, e.g. {api['calls'][ex]}, never a "
+            f"register address or a local copy; the exact signatures are in the provided header, e.g. "
+            f"{api['signatures'][ex]}.")
+    text = _re.sub(r"(use only the LL_\w+ functions it already declares\.)", lambda m: m.group(1) + rule, text, count=1)
+    return provided_registers(text, api)
+
+
+def provided_registers(text: str, api: dict) -> str:
+    """CAPA-143 (WO-F014-SWE5-CRCHAL-20261103-L31B): a HAL on a provided ST (CMSIS) LL has no register-block array and
+    no <REG>_OFFSET defines - its registers are the CMSIS instance's, reached through the provided LL (CAPA-134) - but
+    the peripheralized HAL texts told the SWE.5/SWE.6 test authors to check '<block>[LL_<P>_<REG>_OFFSET / 4U]' bits and
+    the SWE.2/SWE.3 notes that the driver uses that extern array, so a target test did not build ('ll_crc_regs'
+    undeclared). Each greenfield register sentence becomes the provided-LL one; a text without one is unchanged."""
+    import re as _re
+
+    inst = api["instance"]
+    get = next((n for n in api["functions"] if _re.search(r"_(?:Read|Get|Is)", n)), None)
+    via = f" (e.g. {api['calls'][get]})" if get else ""
+    regs = (f"the {inst} registers, read through the provided LL functions with the instance {inst}{via} or as "
+            f"{inst}-><REG> & the device header's {inst}_<REG>_<FIELD>_Msk masks; there is no register-block array and "
+            "no <REG>_OFFSET define")
+    nodef = f"No printf, no stdlib; never define a register block or the instance {inst} (the device header provides it)."
+    host = (f"the factory force-includes forge_host_device.h and maps {inst} to the RAM {inst}_TypeDef "
+            f"forge_host_{inst.lower()}; observe and preset documented members through {inst}-><REG>, never invent "
+            "or define a register-block array. Integration tests use the real provided LL, not the unit-only LL fake")
+    blk = r"(\w+_regs)"
+    subs = [
+        # CAPA-149: this generic SWE.2 clause survived the named-array rewrites. Existing architectures then
+        # invented __REG___CRC/WWDG_REGISTER_BLOCK, which the SWE.5 host tests followed and could never link.
+        (r"Register access \(extern volatile uint32_t register-block array placed at the \w+ base by the linker, "
+         r"indexed by offset/4; no integer-to-pointer casts; host tests define the array\)",
+         f"Register access (the HAL calls only the provided LL with the device-header instance {inst}; "
+         f"no HAL-owned register array, base address or integer-to-pointer cast. For host tests {host})"),
+        (r"self-checking host program exercising HAL\+LL together",
+         f"self-checking host program exercising HAL+LL together ({host})"),
+        (rf"on HAL return values and {blk}\[LL_\w+_<REG>_OFFSET / 4U\] bits\. No printf, no stdlib, no \1 definition "
+         r"\(the linker places it\)\.", f"on HAL return values and {regs}. {nodef}"),
+        (rf"with conditions on HAL return values and {blk}\[LL_\w+_<REG>_OFFSET / 4U\] & LL_\w+_<REG>_<FIELD>_MSK bits "
+         r"\([^)]*\)\. No printf, no stdlib, no \1 definition\.", f"with conditions on HAL return values and {regs}. {nodef}"),
+        (rf"Register access is fixed by the SWE\.2 architecture \(ADR-0009\): the driver uses only the extern volatile "
+         rf"uint32_t {blk} array, which the linker places at the \w+ base on target and the test harness defines on host\. "
+         r"No base address, no defining unit and no integer-to-pointer cast in the driver code is the required design, "
+         r"not a finding: never ask for them\.",
+         f"Register access is fixed by the provided (CMSIS) LL: the HAL reaches the {inst} registers only through the "
+         f"provided LL functions with the instance {inst} (never directly, through a register-block array or an "
+         f"address); the device header provides {inst} (on host tests the factory maps it to a RAM struct, "
+         "forge_host_device.h). No base address, no register defines and no integer-to-pointer cast in the HAL code is "
+         "the required design, not a finding: never ask for them."),
+        (rf"Never define {blk} or add other source files: the register block is placed by the linker on target and "
+         r"defined by the test harness on host; only the extern declaration in the LL header exists\.",
+         f"Never define a register block or the instance {inst} or add other source files: the provided LL header and "
+         "the device header declare everything the HAL uses."),
+    ]
+    for pat, new in subs:
+        text = _re.sub(pat, lambda m, new=new: new, text)
+    return text
+
+
 def _peripheral_prompts() -> None:
     """Every prompt builder returns its text through peripheralize() (identity for RCC)."""
     import functools
@@ -1147,7 +1708,8 @@ def _peripheral_prompts() -> None:
     for name in ("author_prompt", "inspector_prompt", "ll_author_prompt", "hal_author_prompt", "fix3_author_prompt",
                  "unit_test_author_prompt", "target_test_author_prompt", "robot_test_author_prompt", "triage_prompt"):
         f = globals()[name]
-        globals()[name] = functools.wraps(f)(lambda *a, _f=f, **k: peripheralize(cmsisize(_f(*a, **k))))
+        globals()[name] = functools.wraps(f)(
+            lambda *a, _f=f, **k: providedize(peripheralize(uspecize(cmsisize(_f(*a, **k))))))
 
 
 _peripheral_prompts()

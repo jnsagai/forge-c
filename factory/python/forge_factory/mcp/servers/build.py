@@ -88,8 +88,11 @@ def includes(ctx: ToolContext, profile: str = "target-cm55-gcc") -> list[str]:
     from ...delivery_first import include_flags
 
     # feature 008 (ST pilot): a CMSIS delivery needs the vendor device headers (target) or the host device map (host)
+    from ...layer import instance_flags
+
     vendor = target_flags(ctx.workspace) if profile.startswith("target") else host_flags(ctx.workspace)
-    return (vendor + include_flags(ctx.workspace)
+    # instance mode: the pinned device header as a system header (the host profiles already define FORGE_HOST_BUILD)
+    return (vendor + include_flags(ctx.workspace) + instance_flags(ctx.workspace, host=False)
             + [f"-I{ctx.workspace / d}" for d in INCLUDE_DIRS if (ctx.workspace / d).is_dir()])
 
 
@@ -113,12 +116,13 @@ def compile_(ctx: ToolContext, a: CompileIn) -> dict:
             raise ToolDenied("DEFINE_NOT_ALLOWED", m[:40])
     if not shutil.which(prof["cc"]):
         return result(ctx, "UNAVAILABLE", f"{prof['cc']} not installed", issues=[f"TOOL_MISSING:{prof['cc']}"],
-                      tool=prof["cc"], version="unavailable")
+                      tool=prof["cc"], version="unavailable", metrics={"verification_executed": False})
     od = out_dir(ctx, a.profile)
     log, issues, failed, total_ms = b"", [], 0, 0.0
     srcs = sources(ctx)
     if not srcs:
-        return result(ctx, "BLOCKED", "no sources to compile", issues=["NO_SOURCES"], tool=prof["cc"])
+        return result(ctx, "BLOCKED", "no sources to compile", issues=["NO_SOURCES"], tool=prof["cc"],
+                      metrics={"verification_executed": False})
     from ...layer import layer_of
 
     if layer_of(ctx.workspace) == "LL":
@@ -139,9 +143,15 @@ def compile_(ctx: ToolContext, a: CompileIn) -> dict:
         log += b"$ " + " ".join(argv).encode() + b"\n" + r.stdout + r.stderr + b"\n"
         if r.exit_code != 0 or delivered:
             failed += r.exit_code != 0
+            found = 0
             for line in (r.stderr.decode(errors="replace")).splitlines():
-                if ": error:" in line or ": warning:" in line:
+                if ": error:" in line or ": fatal error:" in line or ": warning:" in line:  # CAPA-132: fatal too
                     issues.append(line.split(str(ctx.workspace) + "/")[-1][:120])
+                    found += 1
+            if r.exit_code != 0 and not found:  # CAPA-132: a failed unit is never an empty issue list
+                last = [x for x in r.stderr.decode(errors="replace").splitlines() if x.strip()][-1:] or ["no output"]
+                issues.append(f"COMPILE_FAILED:{src.name}:exit {r.exit_code}:"
+                              + last[0].split(str(ctx.workspace) + "/")[-1][:100])
     metrics: dict = {"units": len(srcs), "failed_units": failed}
     if not failed and a.profile == "target-cm55-gcc":
         # Relocatable driver image + link map for footprint evidence (NOT a firmware image: no startup/linker script).
@@ -187,7 +197,8 @@ def measure_elf(ctx: ToolContext, a: ProfileIn) -> dict:
     prof = PROFILES[a.profile]
     objs = objects(ctx, a.profile)
     if not objs:
-        return result(ctx, "BLOCKED", "no objects; compile first", issues=["NO_OBJECTS"], tool=prof["size"])
+        return result(ctx, "BLOCKED", "no objects; compile first", issues=["NO_OBJECTS"], tool=prof["size"],
+                      metrics={"verification_executed": False})
     r = run_argv([prof["size"], *[str(o) for o in objs]], ctx.workspace, 60, ALLOW)
     text = data = bss = 0
     for line in r.stdout.decode().splitlines()[1:]:

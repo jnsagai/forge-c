@@ -1,0 +1,21 @@
+id: RPR-164
+script: rpr164_cloud_upstream_findings_dropped.py
+sha256: a151ee4b391e48e514ebb5a0008350f3b365f9e8a178a873a094431725775b25
+symptom_signature: cloud upstream route drops the failed inspection and owning defect
+  context
+observed_in: Independent CloudPlacer pre-admission boundary CONTROL with explicit
+  host/admission fixtures; real TEST-signed placement/native transport separately
+  tested; actual WWDG4G applicability privately verified using normal resume and real
+  native status.
+baseline_revision: 0965d474aff8e1fbb4ea683d0b4f934bd74462fe
+error_codes:
+- CLOUD_UPSTREAM_FINDINGS_MISSING
+operations:
+- cloud-line.recover_workorder
+root_cause: Only RETRY attaches bound failed findings; normal UPSTREAM placement drops
+  them and original four-field same-phase binding cannot represent source stop4/current
+  failed3/owning2.
+remedy: Attach bounded six-field upstream reference; seal current owning defect and
+  complete failed independent reviews/current baseline, bind exact source terminal
+  identity and fresh leading prefix, route to owning phase without importing verdict
+  or defect state. Consumer capability preflight precedes native dispatch.

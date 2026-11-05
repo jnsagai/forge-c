@@ -54,6 +54,32 @@ def backend() -> str:
     return "none"
 
 
+def python_runtime_aliases() -> set[Path]:
+    """Only directory aliases of the already mounted interpreter installation.
+
+    UV venvs can point through a minor-version alias while sys.base_prefix names
+    the resolved patch-version install. Preserve that exact read-only alias,
+    never its HOME/cache parent or unrelated symlink targets.
+    """
+    install = Path(sys.base_prefix).resolve()
+    executable = Path(sys.executable)
+    found, seen = set(), set()
+    for _ in range(32):
+        if executable in seen:
+            raise ValueError("PYTHON_EXECUTABLE_SYMLINK_CYCLE")
+        seen.add(executable)
+        for parent in executable.parents:
+            if parent.is_symlink() and parent.is_dir() and parent.resolve() == install:
+                found.update((parent, install))
+        if not executable.is_symlink():
+            break
+        target = Path(os.readlink(executable))
+        executable = Path(os.path.normpath(target if target.is_absolute() else executable.parent / target))
+    else:
+        raise ValueError("PYTHON_EXECUTABLE_SYMLINK_DEPTH")
+    return found
+
+
 def bubblewrap_argv(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str], writable: list[Path],
                     readable: list[Path] = (), network: bool = False) -> list[str]:
     """Scoped mount/PID/network/user namespaces; never mount owner HOME, state, credentials or GPU devices.
@@ -71,7 +97,14 @@ def bubblewrap_argv(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str]
     roots.add(Path(env.get("FORGE_REPO_ROOT") or REPO_ROOT))
     roots.add(Path(sys.prefix))
     roots.add(Path(sys.base_prefix))
+    roots.update(python_runtime_aliases())
     dr = data_root()
+    # Pinned vendor dependencies are required by independent reproductions and
+    # compilation. Expose this subtree only; state and owner credentials stay
+    # outside the namespace. Runtime roots may link to shared input storage.
+    inputs = dr / "inputs"
+    if inputs.is_dir():
+        roots.update((inputs, inputs.resolve()))
     for parent in (dr, dr.parent if dr.name.startswith("lrtx-") else dr):
         for name in ("venv", "toolchains", "engines"):
             p = parent / name
@@ -201,6 +234,10 @@ def execute(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str], writab
             readable: list[Path] = (), timeout: int = 1800) -> subprocess.CompletedProcess:
     """Run `cmd` as the role's OS identity when the sandbox is available, otherwise as a plain subprocess."""
     if not available():
+        if os.environ.get("FORGE_OWNER_DEVELOPMENT_RECORD") or os.environ.get("FORGE_OWNER_DEVELOPMENT_SHA256"):
+            from ..afo.durable import Refused
+
+            raise Refused("OWNER_DEVELOPMENT_SCOPED_EXECUTION_UNAVAILABLE")
         return subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, timeout=timeout)
     env = {**env, "HOME": str(writable[0]) if writable else "/tmp",
            "TMPDIR": str(writable[0]) if writable else "/tmp"}

@@ -1,0 +1,101 @@
+{
+ "CAPA-101": {
+  "history": [
+   {
+    "at": "2026-11-02T01:40:20.404177Z",
+    "capa_id": "CAPA-101",
+    "evidence": "[\"fabro-swe4-iwdg-l4-kind-applicability\"]",
+    "from_state": null,
+    "reason": "Run SWE4-IWDG-L4: SWE4-02 failed on 'none declared: error'; cancelled",
+    "seq": 757,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T01:40:20.487378Z",
+    "capa_id": "CAPA-101",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 758,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T01:40:20.623334Z",
+    "capa_id": "CAPA-101",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-101 assigned",
+    "seq": 759,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T01:40:25.871382Z",
+    "capa_id": "CAPA-101",
+    "evidence": "[\"reproducer-run:rr-900b023bf7edb9f7ac55\", \"reproducer-run:rr-eda96b151e09679bfb95\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 760,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T01:40:25.911770Z",
+    "capa_id": "CAPA-101",
+    "evidence": "[\"git:af2d2b8ac740..61ec22e21042\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 61ec22e21042 (patch 4846 bytes)",
+    "seq": 761,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T01:43:50.248445Z",
+    "capa_id": "CAPA-101",
+    "evidence": "[\"reproducer-run:rr-6c850e352d2684fda44c\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-101 absent at 61ec22e21042",
+    "seq": 762,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T01:43:50.265746Z",
+    "capa_id": "CAPA-101",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 763,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-7054a4b2c1392ce29087394a3ada2e62f154b23b",
+   "af2d2b8ac74062645881c87474f5e1958875c500",
+   "61ec22e2104228693b5e6ba9176a7c98559bc8a1",
+   "pd-1ee1d1b873aaff9adf3e"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<61ec22e21042"
+   ],
+   "candidate_patch_sha256": "275bb31bfc4c0292fd576bd17857205752cef4c591438fa832d02ce7acd52690",
+   "capa_id": "CAPA-101",
+   "created_at": "2026-11-02T01:40:20.404177Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe4-iwdg-l4-kind-applicability"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-101",
+   "reproducer_id": "RPR-101",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-900b023bf7edb9f7ac55",
+    "reproducer-run:rr-eda96b151e09679bfb95"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "The report lists missing kinds without applicability",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T01:43:50.265746Z"
+  }
+ }
+}

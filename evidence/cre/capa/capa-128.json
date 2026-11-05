@@ -1,0 +1,101 @@
+{
+ "CAPA-128": {
+  "history": [
+   {
+    "at": "2026-11-03T13:18:39.025248Z",
+    "capa_id": "CAPA-128",
+    "evidence": "[\"crchal-l27-st-ll-not-buildable\"]",
+    "from_state": null,
+    "reason": "Local CRC HAL L27: native HAL on an ST-delivered LL not buildable (no __STATIC_INLINE fake, no vendor include)",
+    "seq": 945,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T13:18:39.086804Z",
+    "capa_id": "CAPA-128",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 946,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T13:18:39.236630Z",
+    "capa_id": "CAPA-128",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-128 assigned",
+    "seq": 947,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T13:18:44.351655Z",
+    "capa_id": "CAPA-128",
+    "evidence": "[\"reproducer-run:rr-633fc719176a2e7fbc1d\", \"reproducer-run:rr-bf842d01f208108b0062\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 948,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T13:18:44.379735Z",
+    "capa_id": "CAPA-128",
+    "evidence": "[\"git:a88b61a5efc0..5f19d046ee64\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 5f19d046ee64 (patch 35113 bytes)",
+    "seq": 949,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T13:22:48.597793Z",
+    "capa_id": "CAPA-128",
+    "evidence": "[\"reproducer-run:rr-15354505b7c2f873b21b\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-128 absent at 5f19d046ee64",
+    "seq": 950,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T13:22:48.619049Z",
+    "capa_id": "CAPA-128",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 951,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-c885f1401b7a51e74d016098e83ff587b7e05f4a",
+   "a88b61a5efc0a49d6d7f52d88c0b7c47f75caa96",
+   "5f19d046ee64df1698caed3a8b2c5e146b408cbf",
+   "pd-0bd8c6d76855ef3fa31a"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<5f19d046ee64"
+   ],
+   "candidate_patch_sha256": "541fdc7e7cd432443bf8c8cbf0f580fb571b1e99152239c41509ce9252c53644",
+   "capa_id": "CAPA-128",
+   "created_at": "2026-11-03T13:18:39.025248Z",
+   "event_ids": [],
+   "incident_ids": [
+    "crchal-l27-st-ll-not-buildable"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-128",
+   "reproducer_id": "RPR-128",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-633fc719176a2e7fbc1d",
+    "reproducer-run:rr-bf842d01f208108b0062"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T13:22:48.619049Z"
+  }
+ }
+}

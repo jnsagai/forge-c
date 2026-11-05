@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-05T19:31:41.227569Z",
+  "exit_code": 1,
+  "log_sha256": "138433eb11ad4e44c1eaf93796896661ebb7ade25eb924423816f688c0415300",
+  "reproducer_id": "AFO-OWNER-BOOTSTRAP-COLD-20261105",
+  "revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "role": "BASELINE",
+  "run_id": "rr-9f0f8e03ca1f97ded47c",
+  "signature": "owner bootstrap cold control process cannot persist provider identity",
+  "verdict": "SYMPTOM_PRESENT"
+}

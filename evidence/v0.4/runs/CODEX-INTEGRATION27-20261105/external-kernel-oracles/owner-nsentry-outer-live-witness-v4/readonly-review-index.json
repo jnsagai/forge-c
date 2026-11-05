@@ -1,0 +1,200 @@
+{
+  "schema": "forge-c/namespace-normalization-independent-review/1",
+  "at": "2026-11-05T21:03:17.996465+00:00",
+  "source_base": "6eeac5962a45e40ba39414eafa5dd612bd669d56",
+  "moving_worktree": true,
+  "source": [
+    {
+      "path": "factory/python/forge_factory/lrtx/provider_process.py",
+      "sha256": "b42d6a5238cb0ad257c07c993a8dbeed2659c199f7d6eff36b4c2d082b4b2a04"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "d18b6c01a26cd8b699ef5bf56d9f64d7290fe8d0ad545267c2b4a1cc96059957"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_stack_lifecycle.py",
+      "sha256": "55b2844341a390d4b4bce6f5d5a81f06c58e3904649c3540345d43e60ec7bde6"
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/builder.py",
+      "sha256": "a71e49d11a0239997fa6bff35d337d28f25d28d001f787200c6d00d1914f2eab"
+    },
+    {
+      "path": "factory/python/forge_factory/llm_gateway.py",
+      "sha256": "afb2d8904d252c7d8194e88b926950442c65c5e16e2f4ea11c27b8b9090ada92"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_development_view.py",
+      "sha256": "80e5ad3c31f9e1993e924d4d02ceb4ef2d4b7d3f50f3c7b3e03d3710102b01c3"
+    }
+  ],
+  "findings": [],
+  "assessment": "Read-only WIP snapshot only, not final approval or source qualification.",
+  "observations": [
+    "Version2 outer holder provenance pins host captured lifetime, USER/full one-UID map and inherited NET. require_live_instance stable lifetime fields remain exact.",
+    "capture_worker recaptures worker under current observer; signal_worker requires same observer plus immutable proof, exact parent/argv/privatePID identity. HOST stop uses entire captured provider namespace under HOST-only quiet; no cross-view worker proof reuse is needed.",
+    "workflow/builder.py serve_swaps emits stack serve script executed by outer Fabro; stack._start launches Fabro without serving, gateway/Ollama/llama with serving. No stack lifecycle invocation found from llm_gateway. Exact nested-providerUSER ancestor holder access can remain failclosed for this inventory; this does not declare general support."
+  ],
+  "kernel_no_new_privs": true,
+  "kernel_observations": "Actual6ee require_live_instance nested-from-outer REFUSED OWNER_VIEW_UNPROVEN, sameUSER-from-outer PASS; both _in_ns fail INIT_CHANGED. These are prior-source findings addressed by current moving delta, not yet retested.",
+  "kernel_files": [
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/nested-user-provider-setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/ordered-nested-control.json",
+      "sha256": "c310269394b95c059773b26e72658fa1e4c23ffce627e7bf5e23dd9b17aa8aa9"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/ordered-nested-control.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/ordered-same-user-reentry-negative.log",
+      "sha256": "ae32c851541aaf0ae008cb79ccc4a43478fa670088de2d69d85702332d4a5038"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/ordered-same-user-skip-control.json",
+      "sha256": "122dd064c7775a7997507208de73276114fcacc0792411e3b5fe72a83da28cd2"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/ordered-same-user-skip-control.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/outer-holder.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/report.json",
+      "sha256": "179564036b3c16978b97582f36a9656c49b2f1b7c6ff2f7db6e7c95d7b01c55c"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/report_namespaces.py",
+      "sha256": "83e1cded4f1d1e8defa3af3848770d4c8ada085ea26f2afa568137ea63a299f5"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/same-user-provider-setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/same_current_user_source.py",
+      "sha256": "4be6a4746363407441e696a9eb19326c1a154d123be2860d879d4f9d389a786e"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/serving_observer.py",
+      "sha256": "6f008a6ace4b619582e0563cef18485208070b897d43aef0338fc3287199cf70"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-from-outer-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-from-outer-user-observer.json",
+      "sha256": "f30770e5a205c27b5856980c4ec5a62c4ed5e2dc34e16713de639b2d7845cefb"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-from-outer-user-record.json",
+      "sha256": "4273f1c584a84516083ee88d5374d2142c0f7f1f1cfeba52ecbfca8ea982be66"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-from-outer-user.log",
+      "sha256": "394704ecee1d0829ae2b34ec725ee687c5824228fc6568c74116b8c5117933c2"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-from-provider-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-from-provider-user-observer.json",
+      "sha256": "cdb44879820e05c0cc28223a9ec43ef6876c769f7faa31fe357499c29e5fee80"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-from-provider-user-record.json",
+      "sha256": "4273f1c584a84516083ee88d5374d2142c0f7f1f1cfeba52ecbfca8ea982be66"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-from-provider-user.log",
+      "sha256": "2123214443237a388c4fffa107f9b711715c528757f667453369f2e696219371"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-provider.json",
+      "sha256": "2d14dec2fdd32a80b62ea170f516a3f76293a32467a3d90252f0da61e4cc1030"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-nested-provider.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-normal-outer.json",
+      "sha256": "599e8385a1f6e554966d80f15add94face63afea8c3ab979a3c9a11c41857de9"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-normal-outer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-normal-same-current-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-normal-same-current-user.json",
+      "sha256": "dc4c5f142f889ebf47f5fb017077c0bd42be0ae39c4a59bf105bcdf7baf6fd0d"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-normal-same-current-user.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-from-outer-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-from-outer-user-observer.json",
+      "sha256": "2e8279380024489dfab16e9e9cbeaeb342c9fd2d1a4e313972a195746c8e716f"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-from-outer-user-record.json",
+      "sha256": "7738567668237b705c52aff98b1100f44fe6a2c79d76e7302fcadad3aab5c1b1"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-from-outer-user.log",
+      "sha256": "394704ecee1d0829ae2b34ec725ee687c5824228fc6568c74116b8c5117933c2"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-from-provider-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-from-provider-user-observer.json",
+      "sha256": "419e15388f863f89d62b36081d06d2384dae37881dbc01a91d96b48019e93b7b"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-from-provider-user-record.json",
+      "sha256": "7738567668237b705c52aff98b1100f44fe6a2c79d76e7302fcadad3aab5c1b1"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-from-provider-user.log",
+      "sha256": "394704ecee1d0829ae2b34ec725ee687c5824228fc6568c74116b8c5117933c2"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-user-provider.json",
+      "sha256": "4e4849fcca8cfbfeedf94984d0b1f3bc037d34eac0ac802adc02c9c849ec7b9b"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/candidate6ee-nnp-r1/source-same-user-provider.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ops/scratch/owner-nsentry-outer-live-witness-v4/kernel_probe.py",
+      "sha256": "526602a322ca7f723f5db26f3e93a7e5696fabad9d40fe32b50413508e3b4b0c"
+    }
+  ],
+  "limits": [
+    "Current v2 source not executed; await frozen candidate.",
+    "No heavy tests, models, GPU, remote or canonical state effects.",
+    "No requirement inferred for unneeded provider-privateUSER lifecycle branch."
+  ]
+}

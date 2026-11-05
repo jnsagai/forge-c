@@ -1,0 +1,57 @@
+[
+  {
+    "at": "2026-11-05T00:02:39.323416Z",
+    "exit_code": 1,
+    "log_sha256": "4414140aedeccc6e1ae4dbd78cdcbf0ebe6fcf164eb4dd4c8544549b0981f2ce",
+    "reproducer_id": "RPR-171",
+    "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+    "role": "BASELINE",
+    "run_id": "rr-fabf9a7d53289559f80c",
+    "signature": "WWDG frozen target instruction and virtual-time requirement receives host-only verified credit",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-05T00:02:41.725525Z",
+    "exit_code": 0,
+    "log_sha256": "75892297920d4fd69dda1d08b70bb4583f9368eea715d1f76c940c7e353728e1",
+    "reproducer_id": "RPR-171",
+    "revision": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+    "role": "CANDIDATE",
+    "run_id": "rr-0a663d998586b97f0fb3",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-05T00:02:44.371786Z",
+    "exit_code": 1,
+    "log_sha256": "4414140aedeccc6e1ae4dbd78cdcbf0ebe6fcf164eb4dd4c8544549b0981f2ce",
+    "reproducer_id": "RPR-171",
+    "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+    "role": "BASELINE",
+    "run_id": "rr-66d62b73f7512f6cace7",
+    "signature": "WWDG frozen target instruction and virtual-time requirement receives host-only verified credit",
+    "verdict": "SYMPTOM_PRESENT"
+  },
+  {
+    "at": "2026-11-05T00:02:46.186697Z",
+    "exit_code": 0,
+    "log_sha256": "75892297920d4fd69dda1d08b70bb4583f9368eea715d1f76c940c7e353728e1",
+    "reproducer_id": "RPR-171",
+    "revision": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+    "role": "CANDIDATE",
+    "run_id": "rr-20d60c5930e72ee6d06a",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  },
+  {
+    "at": "2026-11-05T00:04:05.074847Z",
+    "exit_code": 0,
+    "log_sha256": "75892297920d4fd69dda1d08b70bb4583f9368eea715d1f76c940c7e353728e1",
+    "reproducer_id": "RPR-171",
+    "revision": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+    "role": "PREVENTION",
+    "run_id": "rr-89e9593acc5f40c28a0d",
+    "signature": null,
+    "verdict": "SYMPTOM_ABSENT"
+  }
+]

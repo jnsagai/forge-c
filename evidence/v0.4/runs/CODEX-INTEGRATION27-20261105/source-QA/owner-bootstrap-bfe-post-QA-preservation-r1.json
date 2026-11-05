@@ -1,0 +1,196 @@
+{
+  "all5_old_partial_lifetimes_preserved": true,
+  "all_recorded_private_original_lifetimes_ended": true,
+  "canonical_invariant_exactly_equal_stage_before": true,
+  "current_source_revision": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+  "effects": false,
+  "limitations": [
+    "No broad signal/cleanup. Unreadable unrelated host processes are reported, not presumed absent.",
+    "Private process scan and original recorded provider lifetimes only; no live model/role acceptance."
+  ],
+  "native_stub_started": false,
+  "own_private_live_process_matches": [],
+  "probe_summary": {
+    "actual_model_calls": 0,
+    "actual_owner_authority": "NO_NEW_CANONICAL_ISSUER_CREATED_HISTORICAL_DEAD_642_AND_214_ACK_PRESERVED",
+    "error_type": "CalledProcessError",
+    "fixture_state": "Inspect own private fixture evidence before any retry; no live-service cleanup authorized here",
+    "production_mutations": false,
+    "role_competence": "NOT_RUN",
+    "schema": "forge-c/owner-development-prospective/1",
+    "scope": "CPU_KERNEL_AND_TRANSPORT_STUB_ONLY",
+    "source": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+    "status": "UNKNOWN_OR_REFUSED_NO_AUTOMATIC_RETRY"
+  },
+  "recorded_private_instances": [
+    {
+      "expected_start_ticks": "366618063",
+      "file_sha256": "34de9407875ece84f294e3333a6c344d20eb7873fc43bf6614632bd7aa2a0294",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3539033
+    },
+    {
+      "expected_start_ticks": "366618063",
+      "file_sha256": "34de9407875ece84f294e3333a6c344d20eb7873fc43bf6614632bd7aa2a0294",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3539032
+    },
+    {
+      "expected_start_ticks": "366618216",
+      "file_sha256": "e7c7f19f2144b7624d045ce85db5b1250ceaa946b690f119d8403312b2f47d73",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3539066
+    },
+    {
+      "expected_start_ticks": "366618216",
+      "file_sha256": "e7c7f19f2144b7624d045ce85db5b1250ceaa946b690f119d8403312b2f47d73",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3539065
+    },
+    {
+      "expected_start_ticks": "366618231",
+      "file_sha256": "7b2215fe489a005fa814c72623c9a6d4625848d246b50b91cee93a835d358286",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3539071
+    },
+    {
+      "expected_start_ticks": "366618231",
+      "file_sha256": "7b2215fe489a005fa814c72623c9a6d4625848d246b50b91cee93a835d358286",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3539070
+    },
+    {
+      "expected_start_ticks": "366613935",
+      "file_sha256": "84256b5c7f7a750c3ff0809d776e9f01d18c947786b2d090513e52710e9fcef3",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3538435
+    },
+    {
+      "expected_start_ticks": "366613935",
+      "file_sha256": "84256b5c7f7a750c3ff0809d776e9f01d18c947786b2d090513e52710e9fcef3",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3538434
+    },
+    {
+      "expected_start_ticks": "366618008",
+      "file_sha256": "8d376331b82fa2ce43854ab4dbb23173aac7ada124bdfca77902f71ea5a38c74",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3539021
+    },
+    {
+      "expected_start_ticks": "366618008",
+      "file_sha256": "8d376331b82fa2ce43854ab4dbb23173aac7ada124bdfca77902f71ea5a38c74",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3539020
+    },
+    {
+      "expected_start_ticks": "366618110",
+      "file_sha256": "3cd9ba75bb2a585f44bda124d6542690568d28ee873c0700bb4d839aa019a1f4",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3539041
+    },
+    {
+      "expected_start_ticks": "366618110",
+      "file_sha256": "3cd9ba75bb2a585f44bda124d6542690568d28ee873c0700bb4d839aa019a1f4",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3539040
+    },
+    {
+      "expected_start_ticks": "366618040",
+      "file_sha256": "db951b9698565c960e3df9ffbe45d9928b8f08aa2a4e7fde14507ff3ccef858f",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3539027
+    },
+    {
+      "expected_start_ticks": "366618039",
+      "file_sha256": "db951b9698565c960e3df9ffbe45d9928b8f08aa2a4e7fde14507ff3ccef858f",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3539026
+    },
+    {
+      "expected_start_ticks": "366618401",
+      "file_sha256": "f479386e03e57631c3f20a50962ec60f4a59ae24bf3f8290a049556823f40cca",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3539164
+    },
+    {
+      "expected_start_ticks": "366618401",
+      "file_sha256": "f479386e03e57631c3f20a50962ec60f4a59ae24bf3f8290a049556823f40cca",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3539163
+    },
+    {
+      "expected_start_ticks": "366618609",
+      "file_sha256": "c444fcaadd7822574ab8ffe3b2ac5c19b12ded1ba5b3acf9ce4d9568b5ca6180",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3539226
+    },
+    {
+      "expected_start_ticks": "366618609",
+      "file_sha256": "c444fcaadd7822574ab8ffe3b2ac5c19b12ded1ba5b3acf9ce4d9568b5ca6180",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3539225
+    },
+    {
+      "expected_start_ticks": "366618403",
+      "file_sha256": "4a320c94065364c0328d77218738edc2bb309cb58b46c21d8712031ff441c404",
+      "kind": "init",
+      "original_lifetime_ended": true,
+      "pid": 3539167
+    },
+    {
+      "expected_start_ticks": "366618403",
+      "file_sha256": "4a320c94065364c0328d77218738edc2bb309cb58b46c21d8712031ff441c404",
+      "kind": "parent",
+      "original_lifetime_ended": true,
+      "pid": 3539166
+    }
+  ],
+  "schema": "forge-c/owner-private-QA-postfailure-preservation/1",
+  "signals": false,
+  "source_tracked_clean": true,
+  "unreadable_existing_uid1000_processes": [
+    {
+      "errno": 13,
+      "pid": 637201
+    },
+    {
+      "errno": 13,
+      "pid": 641148
+    },
+    {
+      "errno": 13,
+      "pid": 2826884
+    },
+    {
+      "errno": 13,
+      "pid": 2826885
+    },
+    {
+      "errno": 13,
+      "pid": 2826926
+    },
+    {
+      "errno": 13,
+      "pid": 3544021
+    }
+  ]
+}

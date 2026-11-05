@@ -1,0 +1,13 @@
+{
+  "status": "PASS_PAYLOAD_ONLY_UNSIGNED",
+  "direct_validate": [],
+  "direct_parse_require_approval": true,
+  "campaign_id": "CMP-OMNI2-AFOQUAL-20261104",
+  "lineages": 1,
+  "native_revision": "38acc88c549e3713665542474385999822cdd3d4",
+  "note_lengths": [
+    237,
+    237
+  ],
+  "prior_development_refusal": "CAMPAIGN_NOT_COMMITTED before draft was committed; unchanged payload passes normal committed-source check"
+}

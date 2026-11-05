@@ -1,0 +1,155 @@
+{
+ "CAPA-108": {
+  "history": [
+   {
+    "at": "2026-11-02T09:51:14.535922Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[\"cmp-swe1-rcc-rework-reauthors-all\"]",
+    "from_state": null,
+    "reason": "Run CMP-SWE1-RCC-03: rework re-authored unflagged tasks, near call budget",
+    "seq": 806,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T09:51:14.625639Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 807,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T09:51:14.776433Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-108 assigned",
+    "seq": 808,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T09:51:20.593122Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[\"reproducer-run:rr-f756a3c4c0d80ab1b2b5\", \"reproducer-run:rr-10ba1795518dd12b80a3\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "BASELINE_NOT_REPRODUCED:ERROR",
+    "seq": 809,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-02T10:16:19.968732Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 810,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T10:16:20.126576Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-108 assigned",
+    "seq": 811,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T10:16:24.384947Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[\"reproducer-run:rr-008e7799959666b1789c\", \"reproducer-run:rr-8ab08023cce63e18c73b\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "BASELINE_NOT_REPRODUCED:ERROR",
+    "seq": 812,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-02T10:45:34.069794Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 813,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T10:45:34.220448Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-108 assigned",
+    "seq": 814,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T10:45:40.641343Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[\"reproducer-run:rr-da6a122420cd9b5ac731\", \"reproducer-run:rr-407676f1d76a7e1344c2\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 815,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T10:45:40.661651Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[\"git:297d033cfb19..5db3e7cdd998\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 5db3e7cdd998 (patch 25151 bytes)",
+    "seq": 816,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T10:48:41.861718Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[\"reproducer-run:rr-1eabab8526224fed4959\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-108 absent at 5db3e7cdd998",
+    "seq": 817,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T10:48:41.886683Z",
+    "capa_id": "CAPA-108",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 818,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-efd52c00070eb20729383bf54aa645510d6f183a",
+   "297d033cfb193d5e633741d8a0d33ec892b97639",
+   "5db3e7cdd99804630b9a07c420059ad4bdb9351f",
+   "pd-81499816a8bf626ec9c6"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<5db3e7cdd998"
+   ],
+   "candidate_patch_sha256": "f2fd9080eb8cf5ce7ba43a3c5a1d1a06b0391f0fa3ba8a3f7e1cb2fd7ecd83be",
+   "capa_id": "CAPA-108",
+   "created_at": "2026-11-02T09:51:14.535922Z",
+   "event_ids": [],
+   "incident_ids": [
+    "cmp-swe1-rcc-rework-reauthors-all"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-108",
+   "reproducer_id": "RPR-108",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-da6a122420cd9b5ac731",
+    "reproducer-run:rr-407676f1d76a7e1344c2"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Findings routed to every task and re-sent after each time box (see RPR-108)",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T10:48:41.886683Z"
+  }
+ }
+}

@@ -1,0 +1,101 @@
+{
+ "CAPA-149": {
+  "history": [
+   {
+    "at": "2026-11-04T09:50:45.001156Z",
+    "capa_id": "CAPA-149",
+    "evidence": "[\"INC-CRC-HAL-ARCH-ARRAY-20261104\"]",
+    "from_state": null,
+    "reason": "The SWE2 prompt for a provided CMSIS HAL still mandates a generic register-block array, creating frozen architecture __REG___CRC and WWDG_REGISTER_BLOCK that host integration cannot link",
+    "seq": 1095,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T09:50:45.031353Z",
+    "capa_id": "CAPA-149",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1096,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T09:50:45.190142Z",
+    "capa_id": "CAPA-149",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-149 assigned",
+    "seq": 1097,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T09:50:49.566711Z",
+    "capa_id": "CAPA-149",
+    "evidence": "[\"reproducer-run:rr-a3f50e53f9b8cd434542\", \"reproducer-run:rr-7992119804bcd16f0067\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1098,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T09:50:49.586638Z",
+    "capa_id": "CAPA-149",
+    "evidence": "[\"git:6dd3f516b368..45e86f24bc9c\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 45e86f24bc9c (patch 4006 bytes)",
+    "seq": 1099,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T09:58:58.648083Z",
+    "capa_id": "CAPA-149",
+    "evidence": "[\"reproducer-run:rr-0afa6d29e8d961e3a912\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-149 absent at 45e86f24bc9c",
+    "seq": 1100,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T09:58:58.668606Z",
+    "capa_id": "CAPA-149",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1101,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-ce67bd6e891e71809db553fbfa448871b0739d84",
+   "6dd3f516b368a13c9b5b2f3f098838b65949c72f",
+   "45e86f24bc9cd2172e653f3d8fece953494c3ef7",
+   "pd-86c80166d1ced48a7ba6"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<45e86f24bc9c"
+   ],
+   "candidate_patch_sha256": "3d624bbac267f924be0d90a1228c64c21cd34f0cb43d2f3237852a0af395da83",
+   "capa_id": "CAPA-149",
+   "created_at": "2026-11-04T09:50:45.001156Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-CRC-HAL-ARCH-ARRAY-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-149",
+   "reproducer_id": "RPR-149",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-a3f50e53f9b8cd434542",
+    "reproducer-run:rr-7992119804bcd16f0067"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "provided_registers must rewrite the generic architecture clause and show the actual host RAM mapping; preserve greenfield graphs",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T09:58:58.668606Z"
+  }
+ }
+}

@@ -527,3 +527,60 @@ def test_capa042_unit_function_list_follows_the_code_tags(ws):
     assert not any("UNIT_FUNCTION_NOT_IN_CODE" in x
                    for x in swtrace.build_all(ws, render=False, doxygen=False, upto="SWE.3")["findings"]["SWE.3"])
     assert (ws / unit_scaffold.SYNC_LOG).is_file() and unit_scaffold.sync_trace(ws)["functions"] == []   # idempotent
+
+
+def test_capa117_as_built_activity_renders_every_statement_whole(tmp_path):
+    """CAPA-117 (run WO-F014-CMP-SWE3-IWDG-20261102-08): the as-built unit design cut a statement at 110 characters
+    mid-identifier ('... & (uint32_t)LL_IWDG_KR_K') and dropped statements after the 20th; SWE3-06 failed on it."""
+    from forge_factory.inspection import unit_scaffold
+
+    stmt = ("ll_iwdg_regs[LL_IWDG_KR_OFFSET / 4U] = (((uint32_t)0x0000CCCCU << LL_IWDG_KR_KEY_POS) & "
+            "(uint32_t)LL_IWDG_KR_KEY_MSK);")
+    code = ("static inline void LL_IWDG_Enable(void)\n{\n    " + stmt + "\n}\n\nstatic inline void LL_IWDG_Many(void)\n{\n"
+            + "".join(f"    ll_iwdg_regs[{i}U] = {i}U;\n" for i in range(24)) + "}\n")
+    puml = unit_scaffold._activity("SWU-LL-01", "", ["LL_IWDG_Enable", "LL_IWDG_Many"], unit_scaffold._bodies(code))
+    assert f":{stmt[:-1]};" in puml
+    assert all(f":ll_iwdg_regs[{i}U] = {i}U;" in puml for i in range(24))
+    p = tmp_path / "SWU-LL-01.puml"
+    p.write_text(puml)
+    ok, why = swtrace.render_ok(p)
+    if why == "PLANTUML_NOT_AVAILABLE":
+        pytest.skip("PlantUML not installed")
+    assert ok, why
+
+
+def test_capa119_as_built_activity_renders_control_flow_as_branches(tmp_path):
+    """CAPA-119 (run WO-F014-CMP-SWE3-IWDG-20261102-08): 'if' was drawn as an action followed by the unconditional
+    branch body. if/else if/else, switch, while, for and do-while are PlantUML branches/loops, conditions whole."""
+    from forge_factory.inspection import unit_scaffold
+
+    cond = "(sr & LL_IWDG_SR_PVU_MSK) == LL_IWDG_SR_PVU_MSK"
+    body = (f"    uint32_t result = 0U; /* default ; ( */\n    const uint32_t sr = ll_iwdg_regs[LL_IWDG_SR_OFFSET / 4U];\n"
+            f"    if ({cond})\n    {{\n        result = 1U;\n    }}\n"
+            "    else if ((sr & LL_IWDG_SR_RVU_MSK) != 0U) { result = 2U; }\n    else\n        result = 3U;\n"
+            "    switch (result)\n    {\n        case 1U:\n        case (2U):\n            n = 1U;\n            break;\n"
+            "        default:\n            break;\n    }\n"
+            "    for (i = 0U; (i < 4U) && (n != 0U); i++)\n    {\n        if (i == 2U) { return result; }\n    }\n"
+            "    do { n--; } while (n > 0U);\n    while ((ll_iwdg_regs[0U] & 1U) != 0U) { }\n    return result;\n")
+    code = f"static inline uint32_t LL_IWDG_Flag(void)\n{{\n{body}}}\n"
+    puml = unit_scaffold._activity("SWU-LL-07", "", ["LL_IWDG_Flag"], unit_scaffold._bodies(code))
+    lines = [x.strip() for x in puml.splitlines()]
+    i = lines.index(f"if ({cond}) then (yes)")
+    assert lines[i - 2:i] == [":uint32_t result = 0U;", ":const uint32_t sr = ll_iwdg_regs[LL_IWDG_SR_OFFSET / 4U];"]
+    assert lines[i + 1:i + 7] == [":result = 1U;", "elseif ((sr & LL_IWDG_SR_RVU_MSK) != 0U) then (yes)",
+                                  ":result = 2U;", "else (no)", ":result = 3U;", "endif"]
+    for want in ("switch (result)", "case (1U)", "case ((2U))", ":n = 1U;", "case (default)", "endswitch",
+                 "while (for (i = 0U; (i < 4U) && (n != 0U); i++)) is (next)", "if (i == 2U) then (yes)",
+                 ":return result;", "endwhile (done)", "repeat", ":n--;", "repeat while (n > 0U) is (yes) not (no)",
+                 "while ((ll_iwdg_regs[0U] & 1U) != 0U) is (yes)", "endwhile (no)"):
+        assert want in lines, want
+    assert ":break;" not in lines and not any("(control)" in x or "/*" in x for x in lines)
+    broken = unit_scaffold._activity("SWU-LL-08", "", ["F"], {"F": "    if (a\n    x = 1U;\n"})
+    assert "control flow not parsed" in broken and ":if (a;" in broken  # never a partial diagram
+    for k, text in enumerate((puml, broken)):
+        p = tmp_path / f"SWU-LL-0{k}.puml"
+        p.write_text(text)
+        ok, why = swtrace.render_ok(p)
+        if why == "PLANTUML_NOT_AVAILABLE":
+            pytest.skip("PlantUML not installed")
+        assert ok, why

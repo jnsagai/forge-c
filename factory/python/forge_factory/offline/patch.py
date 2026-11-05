@@ -13,25 +13,32 @@ contents; the owner's detached signature `<patch.zip>.sig` (namespace `forge-pat
 PATCH.json, which hashes everything else. Import activates a patch only when ALL hold, in this order:
   schema; signature by the approver; `current` is the base revision; every content and the CRE decision match their
   hashes; the decision is ELIGIBLE_FOR_OFFLINE_REVIEW for this base and target; no path is protected by the DEPLOYED
-  reliability policy; every file to change or delete still has its base content (no local drift) and every new file
-  is new; then, in a staged copy, the locally configured truthful preflight and the declared regression pass.
+  reliability policy; the whole deployed release matches the decision's baseline_sha256 before its policy is read;
+  every file to change or delete still has its base content and every new file is new; the whole staged release
+  matches candidate_sha256 both before and after truthful local preflight and the declared regression pass.
+Releases are clean code-only archives. Dependencies, state and generated outputs live outside releases; local checks
+must leave the code tree unchanged. Imported bundles need both CRE tree identities. Changed symlinks and gitlinks are
+not supported by this bundle format and fail the exact candidate check. Unchanged symlinks retain their Git identity.
 Activation is one atomic `current` switch; the previous release stays for `rollback`. Every outcome, refusals
 included, is an import record. Nothing here opens a network connection or promotes anything by itself.
 """
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import io
 import json
 import os
 import shlex
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 import zipfile
 from collections.abc import Callable
+from contextlib import contextmanager
 from pathlib import Path
 
 import yaml
@@ -56,6 +63,53 @@ def _sha(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
 
 
+def _release_sha256(root: Path) -> str:
+    """Reproduce CRE's Git tree-listing digest from a clean, code-only release.
+
+    No ignore rules apply: extra files, executable-bit drift and changed symlink
+    text all change the identity. State, dependencies and caches belong outside
+    the release. Git metadata and filesystem special files are never admitted.
+    """
+    escapes = {7: b"\\a", 8: b"\\b", 9: b"\\t", 10: b"\\n", 11: b"\\v", 12: b"\\f", 13: b"\\r",
+               34: b'\\"', 92: b"\\\\"}
+
+    def quote(path: bytes) -> bytes:
+        if all(32 <= c < 127 and c not in escapes for c in path):
+            return path
+        return b'"' + b"".join(escapes.get(c, bytes([c]) if 32 <= c < 127 else f"\\{c:03o}".encode())
+                                for c in path) + b'"'
+
+    if root.is_symlink() or not root.is_dir():
+        raise Refused("PATCH_RELEASE_UNSAFE", "release must be a real directory")
+    listing = hashlib.sha256()
+
+    def walk(directory: Path, prefix: bytes = b"") -> None:
+        with os.scandir(directory) as scan:
+            entries = sorted(scan, key=lambda e: os.fsencode(e.name) +
+                             (b"/" if e.is_dir(follow_symlinks=False) else b""))
+        for entry in entries:
+            path = prefix + os.fsencode(entry.name)
+            if entry.name == ".git":
+                raise Refused("PATCH_RELEASE_UNSAFE", "Git metadata is not a release artifact")
+            st = entry.stat(follow_symlinks=False)
+            if stat.S_ISDIR(st.st_mode):
+                walk(Path(entry.path), path + b"/")
+                continue
+            if stat.S_ISLNK(st.st_mode):
+                mode, data = b"120000", os.fsencode(os.readlink(entry.path))
+            elif stat.S_ISREG(st.st_mode):
+                mode = b"100755" if st.st_mode & stat.S_IXUSR else b"100644"
+                data = Path(entry.path).read_bytes()
+            else:
+                raise Refused("PATCH_RELEASE_UNSAFE", "unsupported filesystem object")
+            # Git uses SHA-1 blob object IDs inside its SHA-256-authenticated tree listing.
+            blob = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data, usedforsecurity=False).hexdigest()
+            listing.update(mode + b" blob " + blob.encode() + b"\t" + quote(path) + b"\n")
+
+    walk(root)
+    return listing.hexdigest()
+
+
 def message(patch: dict) -> bytes:
     return canonical_json(patch)
 
@@ -69,7 +123,7 @@ def schema_errors(patch: dict) -> list[str]:
 
 # ---------------------------------------------------------------- development side
 def build(repo: Path, base: str, target: str, regression: list[str], cre_decision: Path, approver: str,
-          out: Path) -> dict:
+          out: Path, *, runner_out: Path | None = None) -> dict:
     def git(*a: str) -> bytes:
         return subprocess.run(["git", *a], cwd=repo, capture_output=True, check=True, timeout=120).stdout
 
@@ -93,6 +147,13 @@ def build(repo: Path, base: str, target: str, regression: list[str], cre_decisio
     errs = schema_errors(patch)
     if errs:
         raise ValueError(f"PATCH_SCHEMA_INVALID: {errs[:3]}")
+    runner = None
+    if runner_out is not None:
+        runner = (REPO_ROOT / "scripts/forge-offline-update.py").read_bytes()
+        if runner_out.resolve() == out.resolve():
+            raise ValueError("PATCH_RUNNER_PATH_COLLISION")
+        if runner_out.exists() and runner_out.read_bytes() != runner:
+            raise FileExistsError("PATCH_RUNNER_EXISTS: refusing to overwrite a different file")
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as zf:
         for name, data in [("PATCH.json", json.dumps(patch, indent=1, sort_keys=True).encode() + b"\n"),
@@ -103,7 +164,14 @@ def build(repo: Path, base: str, target: str, regression: list[str], cre_decisio
             zf.writestr(zi, data)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(buf.getvalue())
-    return {"bundle": str(out), "sha256": _sha(buf.getvalue()), "patch_id": patch["patch_id"], "files": len(files)}
+    result = {"bundle": str(out), "sha256": _sha(buf.getvalue()), "patch_id": patch["patch_id"], "files": len(files)}
+    if runner_out is not None:
+        runner_out.parent.mkdir(parents=True, exist_ok=True)
+        if not runner_out.exists():
+            with runner_out.open("xb") as stream:
+                stream.write(runner)
+        result.update(runner=str(runner_out), runner_sha256=_sha(runner))
+    return result
 
 
 def sign(bundle: Path, key: Path, agent: bool = False) -> Path:
@@ -122,7 +190,10 @@ def sign(bundle: Path, key: Path, agent: bool = False) -> Path:
 # ---------------------------------------------------------------- deployment side
 def _current(root: Path) -> str | None:
     cur = root / "current"
-    return Path(os.readlink(cur)).name if cur.is_symlink() else None
+    if not cur.is_symlink():
+        return None
+    revision = Path(os.readlink(cur)).name
+    return revision if cur.resolve() == (root / "releases" / revision).resolve() else None
 
 
 def _switch(root: Path, revision: str) -> None:
@@ -141,6 +212,15 @@ def _record(root: Path, rec: dict) -> dict:
     return rec
 
 
+@contextmanager
+def _import_lock(root: Path):
+    """Serialize the local import and rollback entry points across processes."""
+    (root / "imports").mkdir(exist_ok=True)
+    with (root / "imports/.lock").open("a") as stream:
+        fcntl.flock(stream, fcntl.LOCK_EX)
+        yield
+
+
 def _inside(base: Path, rel: str) -> Path:
     p = base / rel
     for parent in [*reversed(p.relative_to(base).parents), p.relative_to(base)]:
@@ -153,7 +233,7 @@ def _inside(base: Path, rel: str) -> Path:
 
 def _checks_default(staged: Path, regression: list[str], preflight_cmd: str) -> list[dict]:
     env = {**os.environ, "PYTHONPATH": str(staged / "factory/python"), "FORGE_REPO_ROOT": str(staged),
-           "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"}
+           "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONDONTWRITEBYTECODE": "1"}
     out = []
     for name, cmd in [("preflight", shlex.split(preflight_cmd)),
                       ("regression", [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", *regression])]:
@@ -164,6 +244,13 @@ def _checks_default(staged: Path, regression: list[str], preflight_cmd: str) -> 
 
 def import_patch(bundle: Path, *, install_root: Path, allowed_signers: Path, preflight_cmd: str | None = None,
                  checks: Callable[[Path, list[str]], list[dict]] | None = None, sig: Path | None = None) -> dict:
+    with _import_lock(Path(install_root)):
+        return _import_patch(bundle, install_root=install_root, allowed_signers=allowed_signers,
+                             preflight_cmd=preflight_cmd, checks=checks, sig=sig)
+
+
+def _import_patch(bundle: Path, *, install_root: Path, allowed_signers: Path, preflight_cmd: str | None,
+                  checks: Callable[[Path, list[str]], list[dict]] | None, sig: Path | None) -> dict:
     root, sig = Path(install_root), sig or bundle.with_name(bundle.name + ".sig")
     rec = {"bundle_sha256": _sha(bundle.read_bytes()), "at": utc_now(), "previous": _current(root)}
     staged = None
@@ -200,6 +287,12 @@ def import_patch(bundle: Path, *, install_root: Path, allowed_signers: Path, pre
             raise Refused("PATCH_CRE_DECISION", f"{dec.get('decision_id')}: {dec.get('decision')} for "
                                                 f"{str(dec.get('baseline_revision'))[:12]}..{str(dec.get('candidate_revision'))[:12]}")
         live = root / "releases" / base
+        for name in ("baseline_sha256", "candidate_sha256"):
+            value = dec.get(name)
+            if not isinstance(value, str) or len(value) != 64 or any(c not in "0123456789abcdef" for c in value):
+                raise Refused("PATCH_CRE_TREE_IDENTITY", f"missing or invalid {name}")
+        if _release_sha256(live) != dec["baseline_sha256"]:
+            raise Refused("PATCH_BASE_DRIFT", "whole release differs from the reviewed baseline")
         pol = yaml.safe_load((live / "config/factory/reliability-policy.yaml").read_text())
         globs = pol["security"]["protected_path_globs"]
         prot = [f["path"] for f in patch["files"] if _match(f["path"], globs)]
@@ -224,6 +317,8 @@ def import_patch(bundle: Path, *, install_root: Path, allowed_signers: Path, pre
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_bytes(zf.read(f"files/{f['path']}"))
             p.chmod(0o755 if f["mode"] == "755" else 0o644)
+        if _release_sha256(staged) != dec["candidate_sha256"]:
+            raise Refused("PATCH_TARGET_DRIFT", "staged release differs from the reviewed candidate")
         if checks is None and not preflight_cmd:
             raise Refused("PATCH_NO_PREFLIGHT", "the local truthful preflight command is not configured")
         results = checks(staged, patch["regression"]) if checks else \
@@ -231,6 +326,10 @@ def import_patch(bundle: Path, *, install_root: Path, allowed_signers: Path, pre
         rec["checks"] = results
         if not results or any(r["exit_code"] != 0 for r in results):
             raise Refused("PATCH_CHECKS_FAILED", ", ".join(r["check"] for r in results if r["exit_code"] != 0))
+        if _release_sha256(staged) != dec["candidate_sha256"]:
+            raise Refused("PATCH_TARGET_DRIFT", "local checks changed the reviewed candidate")
+        if _current(root) != base or _release_sha256(live) != dec["baseline_sha256"]:
+            raise Refused("PATCH_BASE_DRIFT", "current release changed during local checks")
         staged.rename(root / "releases" / target)
         staged = None
         _switch(root, target)
@@ -248,6 +347,11 @@ def import_patch(bundle: Path, *, install_root: Path, allowed_signers: Path, pre
 
 def rollback(install_root: Path) -> dict:
     """Point `current` back to the release that was current before the last activation still in effect."""
+    with _import_lock(Path(install_root)):
+        return _rollback(install_root)
+
+
+def _rollback(install_root: Path) -> dict:
     root = Path(install_root)
     log = root / "imports/log.jsonl"
     acts = [json.loads(x) for x in log.read_text().splitlines() if x.strip()] if log.is_file() else []
@@ -273,6 +377,7 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--cre-decision", type=Path, required=True)
     b.add_argument("--approver", required=True)
     b.add_argument("--out", type=Path, required=True)
+    b.add_argument("--runner-out", type=Path, help="copy the reviewed portable operator runner alongside the bundle")
     s = sub.add_parser("sign")
     s.add_argument("bundle", type=Path)
     s.add_argument("--key", type=Path, required=True)
@@ -286,7 +391,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--install-root", type=Path, required=True)
     a = ap.parse_args(argv)
     if a.cmd == "build":
-        res = build(a.repo, a.base, a.target, a.regression, a.cre_decision, a.approver, a.out)
+        res = build(a.repo, a.base, a.target, a.regression, a.cre_decision, a.approver, a.out, runner_out=a.runner_out)
     elif a.cmd == "sign":
         res = {"signature": str(sign(a.bundle, a.key, a.agent))}
     elif a.cmd == "import":

@@ -1,0 +1,101 @@
+{
+ "CAPA-147": {
+  "history": [
+   {
+    "at": "2026-11-04T09:33:15.488210Z",
+    "capa_id": "CAPA-147",
+    "evidence": "[\"INC-CAPA147-20261104\"]",
+    "from_state": null,
+    "reason": "Repeated empty deterministic unit inventories are incorrectly routed to another model retry",
+    "seq": 1084,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T09:33:15.669299Z",
+    "capa_id": "CAPA-147",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1085,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T09:33:15.813838Z",
+    "capa_id": "CAPA-147",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-147 assigned",
+    "seq": 1086,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T09:33:19.816218Z",
+    "capa_id": "CAPA-147",
+    "evidence": "[\"reproducer-run:rr-225de50d39459bb265fa\", \"reproducer-run:rr-14205e7a2b947ee8a05c\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1087,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T09:33:19.843019Z",
+    "capa_id": "CAPA-147",
+    "evidence": "[\"git:211f1162f081..1adcf1bb7937\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 1adcf1bb7937 (patch 7390 bytes)",
+    "seq": 1088,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T09:39:49.721367Z",
+    "capa_id": "CAPA-147",
+    "evidence": "[\"reproducer-run:rr-e8e7c72a2fb6d17b9944\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-147 absent at 1adcf1bb7937",
+    "seq": 1091,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T09:39:49.768741Z",
+    "capa_id": "CAPA-147",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1092,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-56ecb7cf6fbd294a02e4036622379e8e8ac7d833",
+   "211f1162f0815ba244015292a911f6ce1cb09bdc",
+   "1adcf1bb7937a519efcd08da9a389b69f524de7b",
+   "pd-d875236ad9ed80722b7f"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<1adcf1bb7937"
+   ],
+   "candidate_patch_sha256": "2e1ef54b50cad2adca90e130cd349a305828bd258be0d0b232871979b63597dc",
+   "capa_id": "CAPA-147",
+   "created_at": "2026-11-04T09:33:15.488210Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-CAPA147-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-147",
+   "reproducer_id": "RPR-147",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-225de50d39459bb265fa",
+    "reproducer-run:rr-14205e7a2b947ee8a05c"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Known empty-unit factory-rule signature is absent from suspected factory rejection rules",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T09:39:49.768741Z"
+  }
+ }
+}

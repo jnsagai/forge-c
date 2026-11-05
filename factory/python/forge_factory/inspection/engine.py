@@ -40,7 +40,7 @@ REQUIRED_OUTPUTS = {
     "SWE.2": ["workproducts/SWE.2/software_architecture.md", "workproducts/SWE.2/architecture_static.puml",
               "workproducts/SWE.2/architecture_dynamic.puml"],
     "SWE.3": ["workproducts/SWE.3/detailed_design.md", "software/hal/*.c", "software/hal/*.h", "software/ll/*.h"],
-    "SWE.4": ["workproducts/SWE.4/unit_verification_report.md", "software/tests/unit/test_*.c"],
+    "SWE.4": ["workproducts/SWE.4/unit_verification_report.md", "software/tests/unit/test_*.c*"],  # .c or GoogleTest .cpp
     "SWE.5": ["workproducts/SWE.5/integration_verification_report.md", "software/tests/integration/test_*.c"],
     "SWE.6": ["workproducts/SWE.6/software_verification_report.md", "software/tests/software/*.robot"],
 }
@@ -279,9 +279,14 @@ class Store:
             raise InspectionError(f"UNKNOWN_BASELINE:{baseline_id}")
         if bl["author_role"] == inspector_role:
             raise InspectionError("AUTHOR_EQUALS_INSPECTOR")
+        from .item_binding import binding as item_binding
+
         checklist = self.applicable(self.checklist(phase))
         stale = self.stale_reason(phase, bl)
         det = self.deterministic_items(phase, checklist)
+        from . import completeness
+
+        unexamined = completeness.unexamined(verdicts, det)  # CAPA-123: the inspector's own limitation, no finding
         items, open_findings = {}, list(findings or [])
         for c in checklist["checks"]:
             v = det.get(c["id"]) or verdicts.get(c["id"])
@@ -291,17 +296,28 @@ class Store:
                 v = {**v, "verdict": "FAIL", "findings": list(v.get("findings", [])) + ["NO_EVIDENCE_REF"]}
             if v["verdict"] == "NOT_APPLICABLE" and c.get("required"):
                 v = {**v, "verdict": "FAIL", "findings": list(v.get("findings", [])) + ["REQUIRED_ITEM_NA"]}
+            if c["id"] in unexamined and v.get("verdict") == "FAIL":
+                items[c["id"]] = {**v, "not_examined": True}
+                continue  # never a PASS, never an author finding
             items[c["id"]] = v
             if v["verdict"] == "FAIL" and c.get("required"):
                 open_findings.append({"id": f"{c['id']}", "severity": c["severity_if_failed"],
                                       "detail": "; ".join(map(str, v.get("findings", [])))[:200]})
         major = [f for f in open_findings if f.get("severity") in ("major", "critical")]
-        verdict = "PASS" if not stale and not major else "FAIL"
+        if unexamined and not major and not stale:
+            # CAPA-123: nothing the inspector examined failed, but it did not examine everything: INCOMPLETE (no INS
+            # record, no PASS); the gate re-inspects the baseline, bounded
+            rec = completeness.record(self.workspace, phase, inspector_role, bl, checklist, items, unexamined)
+            emit("workflow", "WARN", f"{phase} {rec['inspection_id']} INCOMPLETE not examined: "
+                 f"{', '.join(sorted(unexamined))}", phase=phase, agent_id=inspector_role)
+            return {**rec, "findings": []}
+        verdict = "PASS" if not stale and not major and not unexamined else "FAIL"
         n = len(list((self.insp / phase).glob("INS-*.json"))) + 1 if (self.insp / phase).is_dir() else 1
         rec = {"schema": "forge-c/inspection/0.4", "inspection_id": f"INS-{phase}-{n:03d}", "phase": phase,
                "author_role": bl["author_role"], "inspector_role": inspector_role, "baseline_id": baseline_id,
                "baseline_hash": bl["baseline_hash"], "checklist_version": checklist["version"],
-               "checklist_sha256": checklist["sha256"], "stale_reason": stale, "items": items,
+               "checklist_sha256": checklist["sha256"], "item_binding": item_binding(self.workspace, checklist),
+               "stale_reason": stale, "items": items,
                "findings": open_findings, "verdict": verdict, "recorded_at": utc_now()}
         (self.insp / phase).mkdir(parents=True, exist_ok=True)
         with open(self.insp / phase / f"{rec['inspection_id']}.json", "x", encoding="utf-8") as f:
@@ -343,12 +359,32 @@ class Store:
         return checklist(manifest, load_checklist(phase, brownfield=is_brownfield(manifest)))
 
     def applicable(self, checklist: dict) -> dict:
-        """Owner addendum checks (`applies_when: owner_trace_profile`) apply only to work orders that opted in."""
-        from ..layer import swtrace_enabled
+        """Owner addendum checks (`applies_when: owner_trace_profile`) apply only to work orders that opted in; an item
+        with an `applies_to` selector only to the work orders it selects (item_binding.applies)."""
+        from .item_binding import applies  # CAPA-133: also an optional `applies_to` layer/purpose selector
 
-        on = swtrace_enabled(self.workspace)
-        return {**checklist, "checks": [c for c in checklist["checks"]
-                                        if c.get("applies_when") != "owner_trace_profile" or on]}
+        return {**checklist, "checks": [c for c in checklist["checks"] if applies(c, self.workspace)]}
+
+    REFUSAL_LIMIT = 3
+
+    def inspector_refusal(self, phase: str, bl: dict) -> str | None:
+        """CAPA-085 (run WO-F014-SWE1-IWDG-20261101-02): the structured inspector refused the current baseline before
+        any model call (calls 0) with the same issues on its last REFUSAL_LIMIT replies. Such a refusal is
+        deterministic, records no inspection and so never counts as a rework cycle; re-inspecting repeats it without
+        bound (166 cycles in 4 min). Returns the first issue, else None. Failures after a model call (timeouts,
+        incomplete answers) keep the existing re-inspection path."""
+        p = self.workspace / ".forge-run/lrtx" / phase / "inspections.jsonl"
+        if not p.is_file():
+            return None
+        since = str(bl.get("frozen_at") or "")
+        rows = [json.loads(x) for x in p.read_text().splitlines() if x.strip()]
+        rows = [r for r in rows if str(r.get("at") or "") >= since]
+        tail = rows[-self.REFUSAL_LIMIT:]
+        if len(tail) < self.REFUSAL_LIMIT or any(r.get("status") != "FAILED" or r.get("calls") != 0 for r in tail):
+            return None
+        if len({json.dumps(r.get("issues") or [], sort_keys=True) for r in tail}) != 1 or not tail[0].get("issues"):
+            return None
+        return str(tail[0]["issues"][0])[:200]
 
     def gate(self, phase: str) -> dict:
         checklist = self.checklist(phase)
@@ -364,11 +400,21 @@ class Store:
         else:
             stale = self.stale_reason(phase, bl)
             last = ins[-1] if ins else None
+            from . import item_binding
+            from .completeness import gate_outcome
+
+            incomplete = None if stale else gate_outcome(self.workspace, phase, bl, last, started)  # CAPA-123
             if stale:
                 decision, reason = ("REWORK" if failed < max_cycles else "BLOCKED"), stale
+            elif incomplete:
+                decision, reason = incomplete
             elif last is None or last["baseline_hash"] != bl["baseline_hash"]:
                 decision, reason = "REINSPECT", "NO_INSPECTION_FOR_CURRENT_BASELINE"
-            elif "assessment_context" in checklist and last.get("checklist_sha256") != checklist["sha256"]:
+                refused = self.inspector_refusal(phase, bl)
+                if refused:
+                    decision, reason = "BLOCKED", f"INSPECTOR_REFUSED_REPEATEDLY:{refused}"
+            elif "assessment_context" in checklist and not item_binding.unchanged(self.workspace, last, checklist):
+                # CAPA-133: bound to the items that apply to this order, not to the whole checklist file
                 decision, reason = "REINSPECT", "INSPECTION_ASSESSMENT_CONTEXT_CHANGED"
             elif last["verdict"] == "PASS":
                 decision, reason = "PASS", last["inspection_id"]

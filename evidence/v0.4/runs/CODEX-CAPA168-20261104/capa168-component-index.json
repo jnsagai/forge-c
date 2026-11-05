@@ -1,0 +1,88 @@
+{
+  "schema": "forge-c/capa168-source-component/1",
+  "status": "SOURCE_FROZEN_FORMAL_CAUSAL_AND_FIX_OWNED_BY_PARENT",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa168-observation-binding",
+  "candidate": "27eef6a010f239b302d96c55609da02fe345982d",
+  "baseline": "3e6c3d944b4aaf6260ab4cf18f6f6399d6cecfd8",
+  "source_files": {
+    "factory/python/forge_factory/workflow/prompts.py": "b932665e6d24fe58d894fed750484f604c60a75ce3df1744c795d3d14fa9f5dd",
+    "factory/python/forge_factory/workflow/unit_target_observation.py": "c250c9c5cd70a518448bda9a69eb8cc7adeb56c8d1f1dd6d16f8ab4ebbd2df36",
+    "factory/python/tests/test_unit_target_observation.py": "a2431b9db58cb5e14e19095b46f2d318b76267eb96f4efc3cfc21b20a22125f5",
+    "factory/python/tests/test_unit_target_observation_binding.py": "4d18d761ed3a086b63e918a6b062a4ccda27fadec60e28c01b3ac1722250e9dd"
+  },
+  "tests": {
+    "capa168-observation-final.xml": {
+      "sha256": "a3d8ba3363fe744d3b55697a8e2c56b5b454472e50dbae92e789604e3d01bdad",
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "56",
+      "time": "38.146",
+      "timestamp": "2026-11-04T22:44:57.054518+00:00",
+      "hostname": "master"
+    },
+    "capa168-alternate-domain.xml": {
+      "sha256": "b5d8da864a3811a751214438f8fc8d66a3cd8c605c36533173a2810016405701",
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "1",
+      "time": "0.253",
+      "timestamp": "2026-11-04T22:46:21.770777+00:00",
+      "hostname": "master"
+    },
+    "capa168-approved-carry-regression.xml": {
+      "sha256": "c5150010e1bac36a1317b6e7f445ea93f40b06251cf69c13e8547eabd3f98cc3",
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "29",
+      "time": "102.281",
+      "timestamp": "2026-11-04T22:42:53.159916+00:00",
+      "hostname": "master"
+    }
+  },
+  "static_design": "14PASS",
+  "ruff": "PASS",
+  "actual_control": {
+    "legacy_frozen_RPR163": "unchanged external script; actual originalcomplementFAIL and freshzerooriginPASS; exactSYMPTOM_ABSENT",
+    "rpr163_log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa168-rpr163-direct.log",
+    "rpr163_log_sha256": "cc7b9f6517cdab91527f44bc58ba60a732cf53df451e681139560d1a0d24c5a3",
+    "independent_parent_RPR168": "unchanged external script exactSYMPTOM_ABSENT oncandidate",
+    "parent_rpr_log_sha256": "b395859e2d28863ec7ea9ce6d8b58a0c78a83df91272dad5a525bf84ea429ab1"
+  },
+  "actual_retained_fullcopy": {
+    "report": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa168-actual-20261104T224645Z/measurement.json",
+    "sha256": "082f8a3eb408d6b52d8e1d60dce28f18afeed9b28a8f2c7fe8ffc6b46f5dc2d0",
+    "source_plan_sha256": "1e021a845aecfd3fc9270d8296521be2b47a5449830dabd8b19d8bc0042c7aac",
+    "source_units_sha256": "871e9978c007846806b5738ddef76e7c6f494b679c38e1da9cb5a9a160fbbd5a",
+    "normal_SWE1_3_gates": "PASS",
+    "provided_effective_identity": "PASS",
+    "current_plan_matches_retained": true,
+    "original_unchanged": true,
+    "old021": "REFUSED",
+    "actual023": "ACCEPTED",
+    "execution_credit": false
+  },
+  "contract": [
+    "Dynamiccase exactkeyshape, uniqueUT/USPEC, parsedfrozenunit/function/USPECtext+traces, exactSWR033and034 clauses, twofullauthoredsemanticforms only; no fuzzy synonyms/symbolicnegation erasure.",
+    "ExactoldCASE+oldBEHAVIOUR+SWR034legacycontract retained only forhistoricallysupportedcase/frozenprevention; no newidentifier/behaviour fallback.",
+    "Proof4 fresh, includescase/fullplanrow/domain/privatecheckmap, currentadapter/input/assets/ELF/rawMMIO/invocation identities; no oldproofrelabelling.",
+    "CurrentreservedmaskFFFFFFFE, actualHAL_OK, pre1/post0, allactualwritesonlySR/reservedzero, nonemptywrites remainmandatory.",
+    "Privateharnesschecks1001..1003 do notalias publicplannedUT001..999.",
+    "Publicrun_unit CONTROL retains nominalUT021host+preservationUT023target/fullplan2of2, no declaration-onlycredit."
+  ],
+  "mutations": {
+    "protected_oracle_or_evidence": false,
+    "original_workspaces": false,
+    "production_or_services": false,
+    "models_or_GPU": false
+  },
+  "limits": [
+    "Componenttests are isolated CONTROLs, not realphasePASS/rolequalification/siliconverification.",
+    "No formalCAPA168registry/promotion bychild; parent owns independentreproducer/FIX gate and sourceintegration."
+  ]
+}

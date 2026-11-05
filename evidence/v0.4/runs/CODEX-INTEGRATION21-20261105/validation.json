@@ -1,0 +1,49 @@
+{
+  "schema": "forge-c/integration21-validation/1",
+  "source": "740858e65117993bf2341186f23c86b91b57b068",
+  "baseline": "3e8936a27f847b32bb76eef4a24bc83cc2daad20",
+  "status": "ELIGIBLE_FOR_OFFLINE_REVIEW_ONLY",
+  "decision_id": "pd-5d9d69ce1999662f87ad",
+  "all7_hard_gates_pass": true,
+  "tests": [
+    {
+      "name": "diagnosis-dependencies-combined-v2",
+      "tests": 208,
+      "skipped": 0
+    },
+    {
+      "name": "diagnosis-dependencies-adjacent-v1",
+      "tests": 109,
+      "skipped": 0
+    }
+  ],
+  "passed": 317,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "design_checks": 14,
+  "ruff_python_files": 6,
+  "frozen_prevention": 175,
+  "original_manifest_prefix_unchanged": true,
+  "source_equivalence_checked": true,
+  "causal_baseline": "SYMPTOM_PRESENT",
+  "causal_candidate": "SYMPTOM_ABSENT",
+  "actual_prepare_request_and_pending_broker_controls": true,
+  "original_allowance_and_duplicate_reservation_preserved": true,
+  "fixture_correction": "Signed reservation controls now include their declared blocked gate rather than an empty diagnosis inventory. Negative grant/expiry/reservation controls remain; empty request/prepare refusal is tested separately.",
+  "original_failures_preserved": true,
+  "original_witness_v1_format_ERROR_preserved": true,
+  "packaging_v1_marker_literal_false_positive_preserved": true,
+  "native_DA_AT_032": "NOT_RUN",
+  "new_task_checkboxes": 0,
+  "mission_amendment": false,
+  "model_calls": 0,
+  "live_source_activation": false,
+  "limitations": [
+    "No model competence, native sequential task execution, global integration-fault campaign or larger-task comparison established.",
+    "Independent re-verification and new sealed packets must remove resolved dependencies. Planning or model claims do not complete prerequisites.",
+    "Existing approved receipt history and mission history are not rewritten.",
+    "GEN35 authority/source/runbooks remain unchanged; native campaign adoption requires its applicable reviewed binding.",
+    "No main merge, safety signoff, certification or production release."
+  ]
+}

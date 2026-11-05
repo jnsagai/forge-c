@@ -1,0 +1,19 @@
+{
+  "schema": "forge-c/owner-development-prospective/1",
+  "source": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "scope": "CPU_KERNEL_AND_TRANSPORT_STUB_ONLY",
+  "actual_model_calls": 0,
+  "production_mutations": false,
+  "role_competence": "NOT_RUN",
+  "actual_owner_authority": "NO_NEW_CANONICAL_ISSUER_CREATED_HISTORICAL_DEAD_EBF_PRESERVED",
+  "prior_repository_guardian_intent_unchanged": true,
+  "private_affected_controls": {
+    "tests": 185,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "status": "PASS_PROSPECTIVE_ONLY",
+  "native_id": "01M6PKR21GZG3Y4WK1QG362MM1",
+  "measurement_sha256": "de7a39c7c637ee3717410fbb0933a16d1aae8c3c5ef4e1ecc25dd2c3da39a9da"
+}

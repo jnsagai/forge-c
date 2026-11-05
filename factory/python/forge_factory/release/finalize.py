@@ -86,8 +86,16 @@ def trace_check(ws: Path) -> tuple[bool, list[str]]:
     traced = {r.get("requirement_id", "").strip() for r in rows if (r.get("test_id") or "").strip()}
     missing = sorted(reqs - traced)
     phantom = []  # a cited test id must exist in its test file (no false traceability, r41)
+    from ..inspection import uspec_plan
+    from ..layer import uspec_gtest
+
+    # owner 2026-11-03: UT rows of an older frozen SWE.1 baseline are superseded by the SWE.4 per-USPEC plan
+    superseded = {(r["requirement_id"], r["test_id"]) for r in uspec_plan.legacy_unit_rows(ws)} if uspec_gtest(ws) \
+        else set()
     for r in rows:
         tid, tf = (r.get("test_id") or "").strip(), (r.get("test_file") or "").strip()
+        if ((r.get("requirement_id") or "").strip(), tid) in superseded:
+            continue
         f = ws / tf if tf else None
         if tid and f is not None and f.is_file() and not re.search(rf"\b{re.escape(tid)}\b", f.read_text(errors="replace")):
             phantom.append(f"TEST_ID_NOT_IN_FILE:{tid}")
@@ -161,6 +169,9 @@ def derive_gates(ws: Path, budgets: dict) -> tuple[dict, list[dict], dict]:
             ]
         if gates[p]["decision"] != "PASS":
             findings.append({"id": f"{p}:GATE_{gates[p]['decision']}", "severity": "major", "detail": gates[p]["reason"][:160]})
+    from ..inspection.outage import package_findings as outage_findings  # CAPA-122: a phase ended by a call outage
+
+    findings += outage_findings(ws)
     findings += [{"id": i, "severity": "major", "detail": "traceability"} for i in tr_issues]
     gl = ws / "verification/static/hal_guideline_conformance.json"
     if gl.is_file():
@@ -620,6 +631,12 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         _w(stage, "configuration/target_baseline.json", pretty_json(wo.get("target", {"status": "UNSPECIFIED"})))
     stage_tool_records(ws, stage)  # CAPA-064 (TAA-RCC FND-04): this run's tools and models, not a stale inventory
     operational_inventory(ws, stage, run_id, fabro_run_id)
+    from ..inspection import provided_changes as PC
+
+    provided = PC.stage_into(ws, stage)  # owner 2026-11-03 (revised): changes to provided code, for human inspection
+    from ..quality import stage_into as quality_into
+
+    achieved = quality_into(ws, stage)  # owner rule 2026-11-03: quality achieved vs the order's target
     all_phases_pass = all(detail["gates"][p]["decision"] == "PASS" for p in PHASES)
     advisory = advisory_register(ws)
     if advisory:  # owner decision 2026-10-26: the gap register travels in the package for the end-of-run human review
@@ -634,6 +651,12 @@ def build_staging(ws: Path, stage: Path, run_id: str, fabro_run_id: str | None) 
         "generated_at": utc_now(),
         "safety_approval": "NOT_APPLICABLE_OFFLINE_HUMAN_DECISION",
         "work_order_purpose": wo.get("purpose", "LEGACY"),
+        **({"quality_target_met": achieved["target_met"], "quality_below_minimum": achieved["below_minimum"],
+            "quality_source": achieved["source"]} if achieved is not None else {}),
+        **({"provided_code_modified": provided["human_review_required"],
+            "provided_code_changes": provided["changes"],
+            "human_review_required": ["quality/provided-code-changes.md"] if provided["human_review_required"] else []}
+           if provided is not None else {}),
     }
     _w(stage, "quality/final-gates.json", pretty_json(quality))
     return quality
@@ -726,6 +749,8 @@ def finalize(ws: Path, run_id: str, fabro_run_id: str | None = None) -> dict:
             "quality_run_status": quality["run_status"],
             "scope": NOT_SAFETY,
             "work_order_purpose": quality.get("work_order_purpose", "LEGACY"),
+            **({k: quality[k] for k in ("provided_code_modified", "provided_code_changes", "human_review_required")}
+               if "provided_code_modified" in quality else {}),
             "policy": str(POLICY_V05.relative_to(REPO_ROOT)) if selected_policy == POLICY_V05
             else "archive:evidence/" + selected_policy.relative_to(stage).as_posix(),
             "policy_sha256": sha256_file(selected_policy),

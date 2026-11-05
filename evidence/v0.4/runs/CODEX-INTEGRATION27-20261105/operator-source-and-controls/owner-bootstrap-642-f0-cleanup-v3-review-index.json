@@ -1,0 +1,139 @@
+{
+  "actual_metadata": {
+    "bytes": 43114,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-stop-metadata-readonly-r1.json",
+    "sha256": "d7c5daaf3a0f77aff0781a1b6fcfa66922eb5e46de8f581b7489e9b86bb639e3"
+  },
+  "all_own_private_handles_closed": true,
+  "audit_root": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-88782030-review-20261105/partial-reconciliation-642-f0-r1",
+  "clear_agent_env": [
+    "FORGE_AGENT_ROLE",
+    "FORGE_WORKSPACE",
+    "FORGE_POLICY_BINDING"
+  ],
+  "control_log": {
+    "bytes": 6153,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-review-20261105/private-controls-r1.log",
+    "sha256": "281d19065edc91b15d09fb2791aff20c4dc23a1cf6e5810b2240e6217fc17cba"
+  },
+  "control_result": {
+    "bytes": 4563,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-review-20261105/private-controls-r1.json",
+    "sha256": "aa80bbd816e25b4ca2db78894818452775ed4e50894b07c766d54241b6eac93f"
+  },
+  "controls": {
+    "bytes": 19664,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-review-20261105/check-private-controls-r1.py",
+    "sha256": "e763e063eb9fc4d81be3f37143a6bd410f7fecabc4e505d203176aec0c06f1e9"
+  },
+  "default_plan": {
+    "bytes": 331,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-review-20261105/default-plan.json",
+    "sha256": "0148e4f6cfb9ea3a7ab0b442d046ffc57a6ccae6c30662d71764bff9eeb7ee81"
+  },
+  "expectation": {
+    "bytes": 43856,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-review-20261105/exact-642-expectation-v2.json",
+    "sha256": "95ad72cc87510751a6f64304cfa809c2872001d2520b63f0abe9faf3ae1b3c6f"
+  },
+  "failed_UNKNOWN_sha256": "2e03aeffdc18f7c6de25408af94fab8b31f4b57ee093e73b0eb9a84a3e01e384",
+  "failed_intent_sha256": "b432d51de1413ed18aa70d84501d8260efa8ed9870ccb8c928562f00f42fb16a",
+  "failed_record": "642087d2cfe25034eb54cfc96185b9703d8da1f5314666911eba3f42567aa04f",
+  "future_apply_command": [
+    "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/venv/bin/python",
+    "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-f0c8fc5c-review-20261105/owner-main-ops/cleanup-exact-failed642-v3.py",
+    "--apply-reviewed",
+    "--next-source-revision",
+    "f0c8fc5c8ae83952a05cea578d41e0ff06324afd"
+  ],
+  "future_readonly_command": [
+    "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/venv/bin/python",
+    "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-f0c8fc5c-review-20261105/owner-main-ops/cleanup-exact-failed642-v3.py",
+    "--inspect-reviewed",
+    "--next-source-revision",
+    "f0c8fc5c8ae83952a05cea578d41e0ff06324afd"
+  ],
+  "future_remote_operator_environment": {
+    "FORGE_LINE_GPU_LOCK": "/mnt/data/forge-c/line/gpu.lock",
+    "FORGE_LINE_LAUNCH_DIR": "/mnt/data/forge-c/swe1-fabro-20261031",
+    "FORGE_LINE_STACK_ROOT": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx",
+    "FORGE_LRTX_ROOT": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx",
+    "FORGE_OPERATIONS_INTENT": "/home/omniverse2/.config/forge-c/line-local/operations-intent.json",
+    "FORGE_OPERATIONS_PROFILE": "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104",
+    "FORGE_REPO_ROOT": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-88782030-review-20261105/newS",
+    "PYTHONPATH": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-88782030-review-20261105/newS/factory/python"
+  },
+  "helper": {
+    "bytes": 23215,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-review-20261105/cleanup-exact-failed642-v3.py",
+    "sha256": "ed6c1cdb08c1fff6fe75f86763e6aac31fbe11cb55790bcaaf969bc064848c8f"
+  },
+  "independent_review": {
+    "bytes": 3052,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v3-independent-review.json",
+    "sha256": "4927f2e5537d26ec85d51cf6f92ee6b9b80cd343b9b869daf5720e6c5856fbf2"
+  },
+  "limitations": [
+    "Default plan only executed locally; actualremotecleanupNOT_RUN.",
+    "Private authority/history/Intent leaves overlaid; no complete live admission or newworkauthority claim.",
+    "No old214/887/bfe/f0 markers/UNKNOWN/evidence modified; no retry after any attempt/UNKNOWN.",
+    "Actualapply requires rootreview, sourcequalification/remoteQA, readynewmetadata/starter and fresh checks; thisindex doesnotauthorize unattendedexecution."
+  ],
+  "preserved_versions": [
+    {
+      "bytes": 3867,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-review-20261105/private-controls-r1.json",
+      "sha256": "764534b4df2cc53a0d48b6d8517af26afbc5ce029a6442e4db8adb8cbea4ec9a"
+    },
+    {
+      "bytes": 4246,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-642-f0-cleanup-v2-review-20261105/private-controls-r1.json",
+      "sha256": "c8e5f100c3cc629d65b94d9f1301da817f9f17c25688b4008695346904ca3574"
+    }
+  ],
+  "private_controls": {
+    "FAIL": 0,
+    "PASS": 42,
+    "actual_model_GPU": 0
+  },
+  "private_evidence": "/home/omniverse2/.config/forge-c/line-local/owner-bootstrap-reconciliation/cleanup-642087d2cfe25034eb54cfc96185b9703d8da1f5314666911eba3f42567aa04f-f0c8fc5c8ae83952a05cea578d41e0ff06324afd.json",
+  "proofs": [
+    "Initial OS-owner1000/fullinitialUSERns/no agent flags; authenticated olddead642 canonicalissuer/context/UNKNOWN hashes.",
+    "Full native5table/ledger28table +ALL independent_decisions unchanged, including214canonicalissuer/UNKNOWN/ack and642issuer/UNKNOWN.",
+    "Exact5process PID/start/boot/argv/exe/user/net/PID/mount/UIDmap/context/holderparent+FD9/serverlock.",
+    "IntentGPUstackACTlocks; no active/unknown canonical native/inference/request lease; exact pinned inactivehistory+OBSERVEproducer.",
+    "OuterbridgeTERM\u2192innerbridgeTERM\u2192FabroTERM kernel/FDquiet before planned holderKILL; actualTERMignored required; waiternatural.",
+    "No oldservices rewrite; remove ONLY exactholder.pid afterall5quiet; freshprivateevidence+finalDhash equality/monoboottime tail beforeverified."
+  ],
+  "schema": "forge-c/exact642-stop-only-cleanup-review-index/1",
+  "signal_plan": [
+    {
+      "name": "bridge_outer",
+      "pid": 3501813,
+      "signal": "SIGTERM"
+    },
+    {
+      "name": "bridge_inner",
+      "pid": 3501529,
+      "signal": "SIGTERM"
+    },
+    {
+      "name": "fabro",
+      "pid": 3500186,
+      "signal": "SIGTERM"
+    },
+    {
+      "name": "holder",
+      "pid": 3499908,
+      "signal": "SIGKILL"
+    }
+  ],
+  "source_next": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "source_old": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "status": "FROZEN_ROOT_REVIEW_REQUIRED_NOT_EXECUTED",
+  "verified_result": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-88782030-review-20261105/partial-reconciliation-642-f0-r1/verified-result.json",
+  "waiter": {
+    "action": "NATURAL_EXIT_ONLY_NEVER_SIGNAL",
+    "pid": 3499907
+  }
+}

@@ -1,0 +1,101 @@
+{
+ "CAPA-136": {
+  "history": [
+   {
+    "at": "2026-11-03T19:31:29.294065Z",
+    "capa_id": "CAPA-136",
+    "evidence": "[\"wwdghal-l32-swe1-ears-commas\"]",
+    "from_state": null,
+    "reason": "Local WWDG HAL L32 SWE.1: EARS checker rejected conditions containing commas (negative-path argument lists), BLOCKED after 3 cycles",
+    "seq": 1001,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T19:31:29.324448Z",
+    "capa_id": "CAPA-136",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1002,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T19:31:29.469286Z",
+    "capa_id": "CAPA-136",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-136 assigned",
+    "seq": 1003,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T19:31:33.538655Z",
+    "capa_id": "CAPA-136",
+    "evidence": "[\"reproducer-run:rr-5f63c0ebdb2379d345cf\", \"reproducer-run:rr-27fd13fadeaa357bda15\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1004,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T19:31:33.564517Z",
+    "capa_id": "CAPA-136",
+    "evidence": "[\"git:82e3291c9036..59ccaeaa5d7e\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 59ccaeaa5d7e (patch 7521 bytes)",
+    "seq": 1005,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T19:35:21.030152Z",
+    "capa_id": "CAPA-136",
+    "evidence": "[\"reproducer-run:rr-960b09551625665803a3\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-136 absent at 59ccaeaa5d7e",
+    "seq": 1006,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T19:35:21.042030Z",
+    "capa_id": "CAPA-136",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1007,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-e7a9432b2efe89c080173cfe714fcb434cf25c03",
+   "82e3291c903624fd5e8f9016462a26a51c126d77",
+   "59ccaeaa5d7e36f40d9d1c923927ac0f6eefd2a8",
+   "pd-f01bb735969f32700ac9"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<59ccaeaa5d7e"
+   ],
+   "candidate_patch_sha256": "5c1cefb32f2666eda8fb9bd59b2c97e5b5391d445a3d9cae9b9eaf052ba7d095",
+   "capa_id": "CAPA-136",
+   "created_at": "2026-11-03T19:31:29.294065Z",
+   "event_ids": [],
+   "incident_ids": [
+    "wwdghal-l32-swe1-ears-commas"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-136",
+   "reproducer_id": "RPR-136",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-5f63c0ebdb2379d345cf",
+    "reproducer-run:rr-27fd13fadeaa357bda15"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T19:35:21.042030Z"
+  }
+ }
+}

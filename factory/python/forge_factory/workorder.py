@@ -18,7 +18,7 @@ from pathlib import Path
 from .common import REPO_ROOT, canonical_json, pretty_json, sha256_bytes, sha256_file, state_dir, utc_now
 from .events.emit import emit
 from .fabro.runconfig import create_workspace, fabro_env, write_run
-from .layer import HAL_UNIT_ISOLATION, REGISTER_CONTRACT, TRACE_PROFILE
+from .layer import HAL_UNIT_ISOLATION, REGISTER_CONTRACT, TRACE_PROFILE, UNIT_VERIFICATION
 from .mcp.preflight import fabro_mcp_config
 from .mcp.preflight import preflight as mcp_preflight
 from .registry.agents import preflight as agent_preflight
@@ -159,6 +159,9 @@ def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, d
         raise ValueError(f"PROVIDED_LL_NOT_VERIFIED:{source_wo}:{','.join(failed)}")
     data = (src / LL_HEADER).read_bytes()
     pkg = src / ".forge-run/package.json"
+    from .brownfield import code_mode, manifest_of
+
+    delivered = code_mode(manifest_of(src))  # CAPA-130: a delivered LL (ST code) keeps its code mode for the HAL
     return data, {
         "path": LL_HEADER,
         "role": "provided_ll_driver",
@@ -166,6 +169,7 @@ def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, d
         "source_work_order": source_wo,
         "source_package": json.loads(pkg.read_text()).get("archive_ref") if pkg.is_file() else None,
         "rule": "read-only: the HAL work order must not change it (SWE.3 implementation check)",
+        **({"delivered_code_mode": delivered} if delivered else {}),
     }
 
 
@@ -188,9 +192,13 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
 
 
 def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
-            *, purpose: str = "DEVELOPMENT", execution_policy: str | None = None) -> tuple[Path, dict]:
+            *, purpose: str = "DEVELOPMENT", execution_policy: str | None = None,
+            quality: dict | None = None, cmsis_gtest: bool = True) -> tuple[Path, dict]:
     from .release import aspice, qm
     from .release.development import binding
+
+    if type(cmsis_gtest) is not bool:
+        raise ValueError("CMSIS_HOST_TEST_LINKAGE_SELECTION_INVALID")
 
     aspice_scope = aspice.binding() if purpose == aspice.PURPOSE else None
     qm_scope = qm.binding() if purpose == qm.PURPOSE else None
@@ -214,6 +222,12 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         dst = f"inputs/{src.name}"
         inputs[dst] = src.read_bytes()
         listed.append({"path": dst, "role": item["role"], "sha256": sha256_file(src), "bytes": src.stat().st_size})
+    if "instance" in (spec.get("operation_scope") or {}):  # instance mode: pinned typed interface + LL layer only
+        from .operation_scope import validate_instance_inputs
+
+        if layer != "LL" or spec.get("delivery_first") is not None or spec.get("delivery"):
+            raise ValueError("OPERATION_SCOPE_INSTANCE_REQUIRES_GREENFIELD_LL")
+        validate_instance_inputs(spec["operation_scope"]["instance"], listed)
     assisted = None
     if spec.get("provided_requirements"):
         src = (example / spec["provided_requirements"]).resolve()
@@ -260,7 +274,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             }
         )
         budgets = {k: d["budgets"][k] for k in ("flash_bytes", "static_ram_bytes", "stack_bytes")} | {"status": who}
-    provided = []
+    provided, provided_build = [], None
     if layer == "HAL":
         if not provided_from:
             raise ValueError("HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>")
@@ -270,6 +284,15 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             data, rec = demonstration_ll(provided_from, spec.get("peripheral") or "rcc")
         else:
             data, rec = provided_ll(provided_from, spec.get("peripheral") or "rcc")
+            from .brownfield.cmsis import provided_inputs
+
+            # CAPA-128: a provided CMSIS LL (ST code) needs its work order's vendor includes, hash-bound to its manifest
+            # (a delivered HAL brings its own build inputs with its delivery)
+            vendor = None if spec.get("delivery") else provided_inputs(
+                state_dir() / "workorders" / provided_from / "workspace")
+            if vendor is not None:
+                inputs.update(vendor[0])
+                provided_build = vendor[1]
         inputs[rec["path"]] = data
         provided.append(rec)
     intake = None
@@ -277,13 +300,33 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         from .brownfield import delivery as BD
 
         intake = BD.intake(spec, example, wo, {r["path"]: inputs[r["path"]] for r in provided})
+        from .brownfield import interface as BI  # CAPA-112: the frozen API's argument constants, not the code
+
+        api = BI.extract(BD.stored(wo), intake["files"], spec["delivery"]["scope"]["functions"])
+        if api is not None:  # bound like any declared input (hashed into the scope binding and the resume identity)
+            data = BI.render(api)
+            inputs[BI.OUT] = data
+            listed.append({"path": BI.OUT, "role": BI.ROLE, "sha256": sha256_bytes(data), "bytes": len(data)})
+    from .quality import resolve as resolve_quality
+
+    if quality is not None:  # autonomous line M3: the campaign's order quality block replaces the example's
+        spec = {**spec, "quality": quality}
+    quality_block, quality_source = resolve_quality(spec, purpose)  # refused before the workspace is used
+    if quality is not None:
+        quality_source = "campaign"
     head = create_workspace(ws, inputs)
+    from .inspection.provided_changes import save_original
+
     for rec in provided:
         (ws / rec["path"]).chmod(0o444)
+        save_original(ws, rec["path"], inputs[rec["path"]])  # owner 2026-11-03: the hash-bound original for diffs
+    for f in (provided_build or {}).get("files") or []:  # CAPA-128: read-only vendor build inputs of the provided LL
+        (ws / f["path"]).chmod(0o444)
     idx = {}
     for item in listed:
         if item["path"].endswith(".md"):
             idx[item["path"]] = register_index(ws / item["path"])
+    revision = factory_revision()
     manifest = {
         "schema": "forge-c/work-order/0.4",
         "purpose": purpose,
@@ -297,13 +340,17 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         "work_order": wo,
         "created_at": utc_now(),
         "input_baseline_commit": head,
-        "factory_revision": factory_revision(),
+        "factory_revision": revision,
+        "tool_versions": {"forge-factory": revision["commit"]},
         "driver": spec["driver"],
         "layer": layer,
         "provided": provided,
+        **({"provided_build": provided_build} if provided_build else {}),  # CAPA-128 (brownfield/cmsis.py)
         "target": target,
         "trace_profile": TRACE_PROFILE,
         "register_contract": REGISTER_CONTRACT,
+        "unit_verification": UNIT_VERIFICATION,
+        "quality": quality_block, "quality_source": quality_source,  # owner rule 2026-11-03: the order's quality
         **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
         "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
         "scope": spec["scope"],
@@ -399,6 +446,12 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             "build_check": intake["build_check"]["status"],
             "store": str(BD.store_dir(wo)),
         }
+        if cmsis_gtest and (spec["delivery"].get("build") or {}).get("style") == "cmsis":
+            from .brownfield.cmsis import GTEST_LINKAGE, GTEST_LINKAGE_FIELD
+
+            manifest[GTEST_LINKAGE_FIELD] = GTEST_LINKAGE
+            manifest["outputs"]["SWE.4"] = (
+                "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.cpp")
     from .inspection import assessment_context
 
     if aspice_scope or qm_scope:
@@ -457,16 +510,74 @@ RESUME_EXTRA = ["configuration/baselines", "inspection", "verification", "eviden
 TARGET_BUILD = "build/target-cm55-gcc"
 
 
-def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = None) -> list[str]:
+# CAPA-090 (run WO-F014-SWE3-IWDG-20261101-01): later structured phases read the validated checkpoints of earlier ones
+# (SWE.3 the SWE.2 interface task, SWE.6 the SWE.1 requirement map). A resume carries them for the passed phases; the
+# run state of the source (visit state, repair budget, locks, visit logs) stays behind.
+CHECKPOINT_FILES = ("assembly.json", "inventory.json", "generated-header.h", "code-assembly.json", "tests-assembly.json",
+                    "generated-harness.c")
+
+
+def carry_test_snapshots(src: Path, ws: Path) -> int:
+    """CAPA-105 (packages of WO-F014-SWE6-OBL-20261101-L6 and WO-F014-SWE6-IWDG-20261101-L6): a greenfield resume
+    carried evidence/test-integrity.jsonl (in `evidence`) but not the content-addressed test snapshots it references,
+    so every package of a resumed lineage was BLOCKED (TEST_HISTORY_INTEGRITY: TEST_SNAPSHOT_MISSING_OR_UNREADABLE).
+    The snapshots are collected from the source and its resume ancestors (manifest resumed_from); a file is copied only
+    if its content hashes to its name, and existing files are never overwritten."""
+    from .brownfield.resume import source_workspace
+    from .inspection.defects import SNAPSHOTS
+
+    dst, n, seen, cur = ws / SNAPSHOTS, 0, set(), Path(src)
+    while cur is not None and cur.resolve() not in seen:
+        seen.add(cur.resolve())
+        d = cur / SNAPSHOTS
+        for f in sorted(d.iterdir()) if d.is_dir() else []:
+            if f.is_file() and not f.is_symlink() and not (dst / f.name).exists() and sha256_file(f) == f.name:
+                dst.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(f, dst / f.name)
+                n += 1
+        try:
+            parent = (json.loads((cur / ".forge-run/manifest.json").read_text()).get("resumed_from") or {})
+        except (OSError, ValueError):
+            parent = {}
+        wo = parent.get("source_work_order")
+        cur = source_workspace(wo) if wo else None
+    return n
+
+
+def carry_checkpoints(src: Path, ws: Path, phases: list[str]) -> list[str]:
+    copied = []
+    for ph in phases:
+        s, d = Path(src) / ".forge-run/lrtx" / ph, Path(ws) / ".forge-run/lrtx" / ph
+        for f in sorted((s / "packets").glob("*.json")) if (s / "packets").is_dir() else []:
+            try:
+                if json.loads(f.read_text()).get("status") != "VALID":
+                    continue  # only validated task answers are carried
+            except (OSError, ValueError):
+                continue
+            (d / "packets").mkdir(parents=True, exist_ok=True)
+            shutil.copy2(f, d / "packets" / f.name)
+            copied.append(f"{ph}/packets/{f.name}")
+        for name in CHECKPOINT_FILES:
+            if (s / name).is_file():
+                d.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(s / name, d / name)
+                copied.append(f"{ph}/{name}")
+    return copied
+
+
+def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = None, *,
+                target_proof_carry_promotion: dict | None = None) -> list[str]:
     """Carry over the leading phases of an earlier work order that genuinely PASSED (gate PASS on an intact,
     non-stale baseline with its recorded inspection), stopping at the first phase that did not - or at `upto`
     (AFO-T040: a return to the owning upstream phase reruns that phase and everything after it). Returns the phases
     still to run. Files are copied byte-identical, so gates recompute PASS from the same evidence."""
     from .brownfield.resume import ResumeRefused, resume, source_workspace
     from .inspection.engine import PHASE_PATHS, PHASES, Store
+    from .workflow.unit_target_carry import bind_resume
 
     if manifest.get("delivery"):
         remaining = resume(ws, manifest, source_wo, upto)
+        bind_resume(source_workspace(source_wo), ws, PHASES[:len(PHASES) - len(remaining)], target_proof_carry_promotion)
         subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
         subprocess.run(
             [
@@ -487,6 +598,11 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     source_manifest = source_workspace(source_wo) / ".forge-run/manifest.json"
     if source_manifest.is_file() and json.loads(source_manifest.read_text()).get("delivery"):
         raise ResumeRefused("RESUME_BROWNFIELD_TO_GREENFIELD_REFUSED")
+    # instance mode: carried phases were made for one register access (register-block array or caller-supplied
+    # instance); a resume across modes, or onto a different instance declaration, would mix the two
+    src_scope = (json.loads(source_manifest.read_text()).get("operation_scope") or {}) if source_manifest.is_file() else {}
+    if src_scope.get("instance") != (manifest.get("operation_scope") or {}).get("instance"):
+        raise ResumeRefused("RESUME_INSTANCE_DECLARATION_MISMATCH")
 
     src = state_dir() / "workorders" / source_wo / "workspace"
     if not src.is_dir():
@@ -501,8 +617,11 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     # CAPA-040 (r132/r133): provided read-only inputs (HAL: the LL header) are this work order's own verified copy;
     # they are never overwritten, and the source's copy must be byte-identical or its carried phases do not apply
     provided = {r["path"]: r["sha256"] for r in manifest.get("provided") or []}
+    from .workflow.provided_input_identity import prepare_resume, validate_resumed
+
+    corrected_provided = prepare_resume(src, ws, manifest, stable)
     for rel, sha in provided.items():
-        if (src / rel).is_file() and sha256_file(src / rel) != sha:
+        if rel not in corrected_provided and (src / rel).is_file() and sha256_file(src / rel) != sha:
             raise ValueError(f"RESUME_PROVIDED_MISMATCH:{rel}:{source_wo} built on a different provided file")
     copied = []
     for ph in stable:
@@ -523,9 +642,11 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
                     shutil.copy2(src / rel, ws / rel)
                 copied.append(rel)
     if stable:
+        carry_checkpoints(src, ws, stable)
         for rel in RESUME_EXTRA:  # baselines/inspections/verification reports/tool evidence of the stable phases
             if (src / rel).is_dir():
                 shutil.copytree(src / rel, ws / rel, dirs_exist_ok=True)
+        carry_test_snapshots(src, ws)
         # r57: the target ELF/map are the build of the carried-over SWE.3 sources (byte-identical) and are referenced by
         # the carried tool evidence; without them the package lacks software/build/*.elf|*.map
         if "SWE.3" in stable and (src / TARGET_BUILD).is_dir():
@@ -538,6 +659,7 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
     for ph in stable:  # carried-over phases must still pass in the new workspace (integrity check)
         if d.gate(ph)["decision"] != "PASS":
             raise ValueError(f"carried-over {ph} does not pass in the new workspace: {d.gate(ph)}")
+    validate_resumed(ws, corrected_provided)
     remaining = PHASES[len(stable) :]
     rid = src / ".forge-run" / "fabro_run_id"
     manifest["resumed_from"] = {
@@ -549,6 +671,10 @@ def resume_from(ws: Path, manifest: dict, source_wo: str, upto: str | None = Non
         "restarts at the first phase that did not pass",
     }
     (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    bind_resume(src, ws, stable, target_proof_carry_promotion)
+    from .inspection.provided_early_code import carry as carry_early_provided_code
+
+    carry_early_provided_code(src, ws, stable)
     subprocess.run(["git", "add", "-A"], cwd=ws, check=True)
     subprocess.run(
         [
@@ -631,6 +757,13 @@ def suspension(provider: str, path: Path | None = None) -> dict | None:
     return None
 
 
+# CAPA-086 (run WO-F014-SWE1-RCC-20261101-02): Fabro ends a node that reports no activity for 1800 s, and a command
+# node reports activity only when it exits. The structured time box ends a node after the call in progress and the
+# continuation node resumes it, so the box plus the longest measured call (448 s, Ornith thinking) must stay below
+# 1800 s. Profiles asking for more (21600) are capped; the requested value is recorded.
+MAX_VISIT_TIME_S = 1200
+
+
 def local_profile_structured(local: dict | None, manifest: dict, model: str) -> dict | None:
     """Feature 010: the structured-author phases the selected local profile defines for this layer (None without a
     profile, which keeps the existing graph unchanged)."""
@@ -661,8 +794,13 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         "reinspect": bool(st.get("reinspect_direct")),
         "model": model,
         "timeout_s": st.get("timeout_s", 3600),
-        "visit_time_s": st.get("visit_time_s", 1200),
+        "visit_time_s": min(int(st.get("visit_time_s", 1200)), MAX_VISIT_TIME_S),
     }
+    if int(st.get("visit_time_s", 1200)) > MAX_VISIT_TIME_S:
+        out["visit_time_requested_s"] = int(st["visit_time_s"])
+    if st.get("role_models"):  # in-run model swap (owner 2026-10-31): author and inspector models per role
+        out["author_model"] = st["role_models"]["author"]
+        out["inspector_model"] = st["role_models"]["inspector"]
     from .lrtx.c_language_context import selected as c_language_selected
 
     if c_language_selected({"structured": st}):
@@ -675,6 +813,14 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         out["advisory"] = True
     return out if (out["phases"] or out["inspect_phases"] or out["reinspect"] or out.get("advisory")
                    or out.get("c_parameter_list_note")) else None
+
+
+def _provided_api_arg(ws: Path) -> dict:
+    """CAPA-131: the provided ST LL's instance API for the HAL prompts; no argument otherwise (graph byte-identical)."""
+    from .brownfield.cmsis import provided_api
+
+    api = provided_api(ws)
+    return {"provided_api": api} if api else {}
 
 
 def run(
@@ -704,11 +850,19 @@ def run(
     recovery_exhausted: dict | None = None,
     purpose: str = "DEVELOPMENT",
     evaluation_holdout: bool = False,
+    stop_after: str | None = None,
+    quality: dict | None = None,
+    rework_context: dict | None = None,
+    target_proof_carry_promotion: dict | None = None,
 ) -> dict:
     from .release import qm
     from .release.aspice import PURPOSE as ASPICE_PURPOSE
     from .release.aspice import validate_profile
     from .release.development import PURPOSES
+    if rework_context is not None:
+        from .rework_context import request
+
+        rework_context = request(rework_context, stop_after, resume)
 
     if purpose not in (*PURPOSES, ASPICE_PURPOSE, qm.PURPOSE):
         raise ValueError("WORK_ORDER_PURPOSE_INVALID")
@@ -828,8 +982,16 @@ def run(
         source_scope = json.loads((source_workspace(resume) / ".forge-run/manifest.json").read_text())
         evaluation_holdout = evaluation_holdout or bool(source_scope.get("evaluation_holdout"))
     purpose_args = {"purpose": purpose} if purpose != "DEVELOPMENT" else {}
+    if resume and ((source_scope.get("delivery") or {}).get("build") or {}).get("style") == "cmsis":
+        from .brownfield.cmsis import gtest_linkage
+
+        # A resume inherits its source's ABI. Fresh intake alone acquires the new
+        # binding, so a passed legacy C baseline is never reinterpreted as C++.
+        purpose_args["cmsis_gtest"] = gtest_linkage(source_scope)
     if profile and selected_profile.get("development_execution_policy"):
         purpose_args["execution_policy"] = selected_profile["development_execution_policy"]
+    if quality is not None:
+        purpose_args["quality"] = quality
     ws, manifest = (
         prepare(example, wo, provided_from, resume_limits=resume_limits, **purpose_args)
         if spec.get("delivery")
@@ -842,6 +1004,11 @@ def run(
         from .afo.product_job import install
 
         install(ws, durable_binding)
+        if __import__("os").environ.get("FORGE_OWNER_DEVELOPMENT_RECORD"):
+            manifest["execution_scope"] = "OWNER_SUPERVISED_DEVELOPMENT"
+            manifest["qualification_only"] = True
+            manifest["qualification_acceptance"] = "UNACCEPTED"
+            (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if (labels or {}).get("afo_attempt") or recovery_exhausted:
         # DA-FR-054: the route gate reads here that the run executes under AFO (so a phase BLOCKs for AFO recovery
         # first) and for which phases AFO recovery was already exhausted (advisory continuation allowed)
@@ -850,12 +1017,23 @@ def run(
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if local:  # LRTX-T007: the selected profile identifies the work order, its checkpoints and its package
         manifest["local_profile"] = {k: local[k] for k in ("id", "version", "config", "config_sha256", "status")}
+        from .policy.governor import profile_inspector_capacity_binding
+
+        inspector_budget = profile_inspector_capacity_binding(selected_profile)
+        if inspector_budget is not None:
+            manifest["profile_inspector_budget"] = inspector_budget
         if "semantic_profile" in local:
             manifest["local_profile"]["semantic_profile"] = local["semantic_profile"]
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if intake_only:  # feature 008: stop after brownfield intake (or a greenfield prepare)
         return {"work_order": wo, "workspace": str(ws), "intake": manifest.get("delivery_intake")}
-    phases = resume_from(ws, manifest, resume, resume_upto) if resume else None
+    phases = resume_from(ws, manifest, resume, resume_upto,
+                         **({"target_proof_carry_promotion": target_proof_carry_promotion}
+                            if target_proof_carry_promotion is not None else {})) if resume else None
+    if rework_context is not None and (not phases or phases[0] != stop_after):
+        from .rework_context import ReworkRefused
+
+        raise ReworkRefused("REWORK_CONTEXT_RESTART_PHASE_MISMATCH")
     if phases == []:
         return {"work_order": wo, "workspace": str(ws), "package": finalize(ws, wo), "resumed_from": resume}
     secmap = section_map(ws)
@@ -868,6 +1046,16 @@ def run(
     if fresh_origin is not None:
         manifest["fresh_recovery_from"] = fresh_origin
         (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if stop_after is not None:  # owner 2026-10-31: phase-scoped run, recorded in the manifest
+        manifest["phase_scope"] = {"stop_after": stop_after, "rule": "later phases are not run; the finalizer "
+                                   "reports them as gaps (no READY package from a phase-scoped run)"}
+        (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    if rework_context is not None:
+        from .rework_context import install
+
+        install(ws, manifest, rework_context, stop_after)
+    from .inspection.provided_early_code import enabled as early_provided_code_enabled
+
     graph, nodes = build(
         wo,
         goal=f"{manifest['driver']} for {manifest['target'].get('part_number')} (offline review)",
@@ -878,6 +1066,8 @@ def run(
         layer=manifest.get("layer", "LL+HAL"),
         trace=manifest.get("trace_profile") == TRACE_PROFILE,
         isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
+        uspec_gtest=manifest.get("unit_verification") == UNIT_VERIFICATION,
+        provided_code_handoff=early_provided_code_enabled(ws),
         brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,
         peripheral=manifest.get("peripheral"),
         operation_scope=manifest.get("operation_scope"),
@@ -886,6 +1076,8 @@ def run(
         delivery_style=((manifest.get("delivery") or {}).get("build") or {}).get("style"),
         structured=local_profile_structured(local, manifest, model),
         recovery_plan=recovery_plan,
+        stop_after=stop_after,
+        **_provided_api_arg(ws),
     )
     if timeout_scale != 1:  # opt-in slower-model trial: node timeouts scaled, recorded in manifest and model profile
         from .workflow.builder import scale_timeouts
@@ -944,6 +1136,9 @@ def run(
                                                  "native_model_agent_nodes": [], "local_inference_requests": 0,
                                                  "tool_budget": native_capacity_binding()}
             (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
+    from .workflow.unit_target_carry import seal_after_setup
+
+    seal_after_setup(ws)
     (ws / ".forge-run/model-profile.json").write_text(pretty_json(prof))
     roles = sorted({n["role"] for n in nodes.values()})
     ap = agent_preflight(roles)
@@ -994,6 +1189,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="development defers SSA/TAA signatures; QM selects owner-classified quality management; ASPICE_ONLY excludes safety assurance; "
                          "formal review retains strict policy")
     ap.add_argument("--wo", required=True)
+    ap.add_argument("--stop-after", choices=("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"), default=None,
+                    help="owner 2026-10-31: phase-scoped run; after this phase the run is finalized (later phases = gaps)")
     ap.add_argument("--detach", action="store_true")
     ap.add_argument("--code-model", default=None, help="local model for the C code/test author nodes (trial profile)")
     ap.add_argument("--model", default="qwen3:8b", help="run-level model (default local qwen3:8b)")
@@ -1038,16 +1235,64 @@ def main(argv: list[str] | None = None) -> int:
         "runtime roots/endpoints shared with the existing deployment",
     )
     ap.add_argument(
+        "--quality",
+        type=Path,
+        default=None,
+        help="autonomous line M3: the order's quality block (JSON, owner rule 2026-11-03) from the approved campaign; "
+        "it replaces the example's block and is validated like it (an invalid block is refused, never repaired)",
+    )
+    ap.add_argument(
         "--intake-only",
         action="store_true",
         help="feature 008: prepare the work order (brownfield: intake, fingerprints, build check) and stop",
     )
+    ap.add_argument("--durable-launch", type=Path, help="explicit immutable line product context; no inferred authority")
+    ap.add_argument("--durable-launch-sha256")
+    ap.add_argument("--rework-from", help="failed work order whose bound findings are untrusted retry input")
+    ap.add_argument("--rework-inspection-sha256", help="full latest failed inspection SHA-256, or explicit ABSENT")
+    ap.add_argument("--rework-gates-sha256", help="full source gate-log SHA-256; requires --resume-from and --stop-after")
+    ap.add_argument("--rework-source-phase", choices=("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"),
+                    help="terminal detecting order phase for a bound upstream rework")
+    ap.add_argument("--rework-upstream-sha256",
+                    help="full canonical upstream defect/review snapshot hash; requires --rework-source-phase")
+    ap.add_argument("--target-proof-carry-promotion", type=Path,
+                    help="explicit bounded JSON reference to an exact eligible creator-to-consumer CRE registry row; not a decision document")
     a = ap.parse_args(argv)
+    quality = json.loads(a.quality.read_text()) if a.quality else None
+    from .afo.durable import Refused
+    from .afo.line_liveness import ClaimUncertain
     from .brownfield.delivery import DeliveryBlocked
     from .brownfield.resume import ResumeRefused
     from .lrtx.profile import ProfileRefused
+    from .rework_context import ReworkRefused
+    from .workflow.unit_target_carry import CarryRefused
 
     try:
+        carry_promotion = None
+        if a.target_proof_carry_promotion is not None:
+            from .workflow.unit_target_carry import promotion_reference
+
+            carry_promotion = promotion_reference(a.target_proof_carry_promotion)
+        rework = None
+        if any(x is not None for x in (a.rework_from, a.rework_inspection_sha256, a.rework_gates_sha256,
+                                        a.rework_source_phase, a.rework_upstream_sha256)):
+            from .rework_context import request
+
+            value = {"source_work_order": a.rework_from, "phase": a.stop_after,
+                     "inspection_sha256": a.rework_inspection_sha256, "gate_log_sha256": a.rework_gates_sha256}
+            if a.rework_source_phase is not None or a.rework_upstream_sha256 is not None:
+                value.update(source_phase=a.rework_source_phase, upstream_sha256=a.rework_upstream_sha256)
+            rework = request(value, a.stop_after, a.resume_from)
+        durable = {}
+        if a.durable_launch is not None or a.durable_launch_sha256 is not None:
+            from .afo.line_recovery_product import native_parameters
+
+            expected = {"wo": a.wo, "model": a.model, "profile": a.profile, "purpose": a.purpose,
+                        "stop_after": a.stop_after, "resume_from": a.resume_from, "provided_from": a.provided_from,
+                        "resume_upto": a.resume_upto, "quality": quality}
+            if rework is not None:
+                expected["rework_context"] = rework
+            durable = native_parameters(a.durable_launch, a.durable_launch_sha256, expected)
         res = run(
             a.example.resolve(),
             a.wo,
@@ -1066,7 +1311,26 @@ def main(argv: list[str] | None = None) -> int:
             resume_max_attempts=a.resume_max_attempts,
             resume_max_wall_seconds=a.resume_max_wall_seconds,
             purpose=a.purpose,
+            stop_after=a.stop_after,
+            quality=quality,
+            **({"rework_context": rework} if rework is not None else {}),
+            **({"target_proof_carry_promotion": carry_promotion} if carry_promotion is not None else {}),
+            **durable,
         )
+    except CarryRefused as exc:
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "target_proof_carry", "issues": [str(exc)]}))
+        return 2
+    except ReworkRefused as exc:
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "bound_rework_context",
+                          "issues": [str(exc)]}))
+        return 2
+    except Refused as exc:
+        print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "durable_line_product", "issues": [exc.code]}))
+        return 2
+    except ClaimUncertain:
+        print(json.dumps({"work_order": a.wo, "status": "UNKNOWN", "stage": "durable_line_product",
+                          "issues": ["LINE_PRODUCT_NATIVE_PREPARATION_ALREADY_CLAIMED"]}))
+        return 3
     except ResumeRefused as exc:
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "validated_resume", "issues": [str(exc)]}))
         return 2

@@ -101,6 +101,15 @@ def read_case(ctx: ToolContext, a: NoIn) -> dict:
     c = _case()
     body = {"proposal_id": c["proposal_id"], "base": c["base"], "incident": c["incident"],
             "allow": ALLOW, "deny": DENY, "candidate_tests": CANDIDATE_TESTS, "source_inventory_roots": list(SOURCE_ROOTS)}
+    if c.get('line_failure_bundle'):
+        from ...afo.durable import digest
+
+        failure = c['line_failure_bundle']
+        if (digest(failure['record']) != failure['sha256']
+                or any(failure['record'].get(k) != c['incident'].get(k)
+                       for k in ('order_id', 'attempt_id', 'bundle_id', 'failure_class'))):
+            raise ToolDenied('LINE_MAINTENANCE_FAILURE_CHANGED', 'frozen source evidence hash mismatch')
+        body['line_failure_bundle'] = failure
     if c.get("retained_rework"):
         from ...afo.durable import digest
 

@@ -1,0 +1,10 @@
+REJECTED pd-8b31b3aa32da292e3599 candidate 7d7b3ffa3464 baseline a7171bd5ee4f
+  protected_files   PASS     
+  policy_integrity  PASS     
+  reproducer        NOT_RUN  NOT_APPLICABLE_FOR_CHANGE
+  prevention        FAIL     RESOLVED_FAILURE_REAPPEARED
+  quality_process   NOT_RUN  SKIPPED_AFTER_HARD_FAIL
+  golden_benchmark  NOT_RUN  SKIPPED_AFTER_HARD_FAIL
+  holdout           NOT_RUN  SKIPPED_AFTER_HARD_FAIL
+  - sandbox: 16894 protected paths read-only (OS) in the candidate/baseline worktrees
+  - previously resolved failures reappear: MANIFEST:RPR-167:SCRIPT_MISSING

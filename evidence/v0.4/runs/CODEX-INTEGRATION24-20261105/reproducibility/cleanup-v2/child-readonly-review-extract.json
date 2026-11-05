@@ -1,0 +1,9 @@
+{
+  "component_index_sha256": "a0e0fa93e3cf8ab20da29de56edef636bba2db4ef61a5ebb88518857bf3bdf6e",
+  "independent_readonly_review": {
+    "blocking_findings": 0,
+    "child_tests_or_effects": false,
+    "helper_sha256": "6062de07287087f669ae52064f84ba7ddda4ed433e56b57db67d74912ca5df33"
+  },
+  "provenance": "Exact extract from frozen component index; no separate child test run or standalone report is fabricated."
+}

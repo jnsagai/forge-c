@@ -1,0 +1,17 @@
+# External model-free Line Conductor watchdog. Template only; does not activate CRE policy or initialize intent.
+# Recovery is fail-closed until the existing restart_conductor recipe is preauthorized by the owner.
+# @WATCHDOG_CODE@, @WATCHDOG_DEPENDENCIES@ and @WATCHDOG_PYTHON@ are pinned, operator-owned host paths outside @DATA@.
+# No RequiresMountsFor here: a missing application volume must still produce a host-side refusal.
+[Unit]
+Description=Forge-C local line external heartbeat and fenced recovery check
+
+[Service]
+Type=oneshot
+Environment=FORGE_REPO_ROOT=@REPO@
+Environment=PYTHONPATH=@WATCHDOG_CODE@:@WATCHDOG_DEPENDENCIES@
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=FORGE_DATA_ROOT=@DATA@
+Environment=FORGE_STATE_DIR=@STATE@
+ExecStart=@WATCHDOG_PYTHON@ -m forge_factory.afo.line_watchdog recover --intent @INTENT@ --max-age 180
+NoNewPrivileges=yes
+UMask=0077

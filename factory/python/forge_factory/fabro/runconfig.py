@@ -55,6 +55,9 @@ def render_run_toml(graph_file: str, goal: str, binding_path: Path, mcp_servers:
     py = sys.executable
     pp = str(REPO_ROOT / "factory" / "python")
     context_env = {"PYTHONPATH": pp, "FORGE_DATA_ROOT": str(data_root()), "FORGE_STATE_DIR": str(state_dir())}
+    for key in ("FORGE_OWNER_DEVELOPMENT_RECORD", "FORGE_OWNER_DEVELOPMENT_SHA256"):
+        if os.environ.get(key):
+            context_env[key] = os.environ[key]
     lines = ["_version = 1", "[workflow]", f"graph = {toml_str(graph_file)}", "[run]", f"goal = {toml_str(goal)}",
              "[run.model]", f"name = {toml_str(model)}", f"provider = {toml_str(provider)}"]
     for name, spec in sorted((mcp_servers or {}).items()):

@@ -1,0 +1,88 @@
+{
+  "schema": "forge-c/owner-development-offline-staging/1",
+  "source": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "source_path": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-214c9668-review-20261105/newS",
+  "manifest_sha256": "ed4e1bea86bf6a8a0a19d3777ca028ef7a78e722880dd799dda36fa6d2634ea4",
+  "all12_inputs_before_any_tests": true,
+  "files": [
+    {
+      "path": "examples/0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/inputs-manifest.json",
+      "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+    },
+    {
+      "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+      "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+      "sha256": "f3e02884a5692b9779b3f409322ae4425324daeecab41f5df18d5b4b6d5dd273"
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md",
+      "sha256": "c1ab2f86a424135941ba8ff5da9c22c6899c3021f37c4430dfbf4d228952f9b8"
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/inputs-manifest.json",
+      "sha256": "0e681a279eaffa0695d72e08722adedb0b1277ad9becd5ebc4f878fd83d20095"
+    }
+  ],
+  "preserved": {
+    "repositories": {
+      "/mnt/data/forge-c/swe1-fabro-20261031/repo": {
+        "head": "df5239ab6f9c03f3704eeb7d7d63293f1b8aab32",
+        "refs": "refs/heads/change/local-finite-campaign-20261104 d77709f4a5995eb0469fcd37776baa52a57386bd\nrefs/heads/change/m1-line-conductor-observe b3daa1044a35c3fd5396201c31245aae5ccb8dae\nrefs/heads/codex/capa149-campaign-candidate 067264e7e9d32c3cf803f5db343cf5d9c010c1f4\nrefs/heads/codex/capa151-orphan-queue 65127bdc15c77a1caaa18ed0553b01beccf67259\nrefs/heads/codex/cloud-guard-landed 211f1162f0815ba244015292a911f6ce1cb09bdc\nrefs/heads/codex/cutover-candidate 4354cc2ae196fea1cf1e25c8c84bb748c6689484\nrefs/heads/codex/cutover-landed a89d57682727f5016ed81b8596cb67a656833bdb\nrefs/heads/codex/local-149150-recovery 964daadef72ce8671b56fec748bb9961eff9cb0b\nrefs/heads/codex/local-gen21-native152 6147e771619ed9fad20f999f52463b3ce51a7164\nrefs/heads/codex/local-gen22-native152 9239fdcf147f379a3bc8ca77abb47576607111b6\nrefs/heads/codex/m6-binding-qualified 3d0cf8bfe1b7b536410742a0507b8ca08b6acd50\nrefs/heads/codex/m8-capture-qualified 21d7717428258e4c81f3c671a3a424a2131e9264\nrefs/heads/fix/capa158-python-runtime-alias-20261104 4028292307bd44b206acf3ece81c14fa7dc7ae1d\nrefs/heads/floor/claude-mode 250de387e7bdf3f4c582db3d0f924dc78202b024\nrefs/heads/floor/omniverse2-native-visible 84a0951230c389d98bb2729200b4d1452b5d75f6\nrefs/heads/pr46-head 01bd80dce11dca245ab1cadf0275d2ec7309cfe3\nrefs/heads/qualification/b12-accepted-7cde7931 7cde7931b1f7b4fc1e94b58ae2278b6c8b3e1564\nrefs/heads/qualification/gen24-3c89a51e 3c89a51ee4d89d50e8a7dbf71c9ef2a942ff4553\nrefs/heads/qualification/local-capa162-826a8724 826a8724e94229c7b8d3bde45909fa6f008251c6\nrefs/heads/qualification/local-capa162-campaign-96340e26 96340e267bbc228df1d70304a42c6f1fbc1d3414\nrefs/heads/review/local-finite-controller-c62c393d c62c393d2781500350d9b96273100ec3f71fa38e\nrefs/heads/review/local-gen32-1e6a229b 1e6a229bb85bfb5a03260deebeab241a7b6b1368\nrefs/heads/run/autonomy-preflight-0def0643 0def06430174c4de67c58ef05ca8a6043e1fa4fa\nrefs/heads/run/conductor-capa144 6dd3f516b368a13c9b5b2f3f098838b65949c72f\nrefs/heads/run/floor-capa146 174c0b86a3804815648a96d51a1c6c3cee5f6f50\nrefs/heads/run/gen10 dc0291692c8e336935794921d18cd312ad589a59\nrefs/heads/run/gen11 82fabdb9b8cbecd807ad44e45f29f300478545ff\nrefs/heads/run/gen12 347e9381c4a5c9604a059c8a24fda7e1e21dc595\nrefs/heads/run/gen13 f02766d91e3eb980ac7daebf3d3728998ffe97df\nrefs/heads/run/gen14 6365c8436642df927d9e7a7fc66361e366c8c439\nrefs/heads/run/gen15 9ddc1b92d85cea4e27fdb451bb212f4fe31b3ca2\nrefs/heads/run/gen16 df5239ab6f9c03f3704eeb7d7d63293f1b8aab32\nrefs/heads/run/gen17 71e44937746661b3767004bd100f1fb93d6b0592\nrefs/heads/run/gen19 9f55eb5266f7f9f410bc515de37967a99253f93a\nrefs/heads/run/gen20 6cc0abca4e65240e02cdf29630815c32ec030ae2\nrefs/heads/run/gen3-capa106-107 37ab8c21746d7cc1ed02c4047dcef1f280cd988c\nrefs/heads/run/gen5 24a8ccf938ed1a02964ba60ed4b1bc6f1976ed0e\nrefs/heads/run/gen6 52185a9d710c1558d1119b20f5116d9b6ea705d2\nrefs/heads/run/gen8 dcfec5b03269faee7b3b4d2a5756edac4e23b122\nrefs/heads/run/gen8d 6a4ff80b6eb02baad082ffa54d356435d8357a7a\nrefs/heads/run/gen9 378aa68a4d5c540a4ddca601cfe499f2ac796188\nrefs/heads/run/line-m5-qualification-20261104 10a67d3a3fd19d76617cf8380a709b09b2e16ce9\nrefs/heads/run/local-coherent152-gen21 a00c6697bade973765a4933063f3e2351ca3e7de\nrefs/heads/run/local-coherent152-gen22 b20be8c1f0d17692112c5ff663558e180bda2523\nrefs/qualification/gen35-38acc-review 38acc88c549e3713665542474385999822cdd3d4\nrefs/remotes/bundle/cand080 4622905dac769ee34af171e958625241e7d90144\nrefs/remotes/bundle/cand080b 87e96ac308233e4de584935d374186cebcf0752e\nrefs/remotes/bundle/cloud 85a43b4dc8dfbb04b8cb2bfd8ad3a55f2e19af61\nrefs/remotes/bundle/feat 75fc4f05ae57acfb2af0827a479e37d1dceb9ed8\nrefs/remotes/bundle/floor-lifecycle a739d2db877b883b798cfaa364cc5d8779d80fd7\nrefs/remotes/bundle/floor-native f9b20cc5bce1d266702f7dfe11e9c403c730431c\nrefs/remotes/bundle/obl b4b84933f8f8a130407edd20d98eac863a1537a8\nrefs/remotes/bundle/obl10 efb15d55b59ab992b0a3c1933aaf0b9ea0d97205\nrefs/remotes/bundle/obl3 26e7ba2bb82dcafed737b451083f857fca034e9d\nrefs/remotes/bundle/obl4 a28ee142aeb6719815b84b1f598300d55a4871a8\nrefs/remotes/bundle/obl5 4fcfa3a9038ffb98a35373913a8babfed13594ba\nrefs/remotes/bundle/obl8 f0c026637ae890fb1f006871095d168ef03f99fa\nrefs/remotes/bundle/obl9 953699e979050d01b60d863d5d04672902160f22\nrefs/remotes/bundle/run0009h 1a6eb0bf8fd378d630dfa7c598228f93aa29f114\nrefs/remotes/bundle/rungen 97e19c22349914dd4c99bc4eb3aaec29dc048269\nrefs/remotes/bundle/rungen2 335e283bfc6bcf1888e41f765eb125aff00dcded\nrefs/remotes/bundle/rungen3 f4df0934559a39b75b26e9509d4e27784ca4da7d\nrefs/remotes/bundle/testbar 29887564cbe80472e68cd644f053b87c910eaf27\nrefs/remotes/origin/feat/014-owner-obligations bbec7eb840a1e5c749525eabdcf9bce27a2a3cd0",
+        "status": ""
+      },
+      "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-development-dc27abba-review-20261105/source": {
+        "head": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+        "refs": "",
+        "status": ""
+      },
+      "/mnt/data/forge-c/swe1-fabro-20261031/qualification/local-gen36-74e44a1f-review-20261105/source": {
+        "head": "74e44a1f23b01f3200350436df1691249b441292",
+        "refs": "",
+        "status": ""
+      }
+    },
+    "guardian": {
+      "MainPID": "3358631",
+      "ExecMainStartTimestampMonotonic": "3649485554325",
+      "ActiveState": "active",
+      "InvocationID": "d14f4bbc40f44ca38f0918e118a359d9"
+    },
+    "intent_sha256": "b969ca45271b1e642c3fb29835812e392879988f8cc0da29bb5be76f8c2ccd28"
+  },
+  "prior_repository_guardian_intent_unchanged": true,
+  "actual_models": 0,
+  "native_runs": 0,
+  "services_or_mission_or_policy_changed": false,
+  "scope": "NEW_IMMUTABLE_SOURCE_NAMESPACE_ONLY_NOT_ACTIVATED"
+}

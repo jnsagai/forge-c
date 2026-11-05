@@ -9,6 +9,7 @@ See https://man7.org/linux/man-pages/man7/pid_namespaces.7.html.
 
 from __future__ import annotations
 
+import hashlib
 import os
 import re
 import signal
@@ -50,7 +51,33 @@ def identity(pid: int) -> dict | None:
     return record
 
 
-def capture(root: Path, *, profile: str, profile_sha256: str, parent_pid: int) -> dict:
+def owner_view(pid: int) -> dict:
+    """Capture the kernel UID mapping and user namespaces in this observer's view."""
+    return {"user_namespace": os.readlink(f"/proc/{pid}/ns/user"),
+            "uid_map": [list(map(int, line.split())) for line in Path(f"/proc/{pid}/uid_map").read_text().splitlines()],
+            "observer_user_namespace": os.readlink("/proc/self/ns/user"), "observer_uid": os.getuid()}
+
+
+def require_owner_view(pid: int, expected_uid: int, captured: dict) -> None:
+    """Require the original observer, or the exact captured one-level mapped owner view."""
+    actual = identity(pid)
+    if not actual or actual.get("uid") != os.getuid() or not isinstance(captured, dict):
+        raise Refused("PROVIDER_OWNER_VIEW_UNPROVEN")
+    current = os.readlink("/proc/self/ns/user")
+    if current == captured.get("observer_user_namespace"):
+        if actual["uid"] != expected_uid or os.getuid() != captured.get("observer_uid"):
+            raise Refused("PROVIDER_OWNER_VIEW_UNPROVEN")
+        return
+    mapping = captured.get("uid_map")
+    if (current != captured.get("user_namespace") or not isinstance(mapping, list) or len(mapping) != 1
+            or len(mapping[0]) != 3 or mapping[0][2] != 1
+            or owner_view(pid)["uid_map"] != mapping
+            or os.readlink(f"/proc/{pid}/ns/user") != current
+            or actual["uid"] != mapping[0][0] or expected_uid != mapping[0][1]):
+        raise Refused("PROVIDER_OWNER_VIEW_UNPROVEN")
+
+
+def capture(root: Path, *, profile: str, profile_sha256: str, parent_pid: int, outer_pid: int | None = None) -> dict:
     """Discover the private namespace init directly below our pinned unshare process."""
     parent = identity(parent_pid)
     if not parent or parent.get("state") == "Z" or parent["uid"] != os.getuid():
@@ -79,18 +106,35 @@ def capture(root: Path, *, profile: str, profile_sha256: str, parent_pid: int) -
     ):
         raise Refused("PROVIDER_PARENT_CHANGED_DURING_CAPTURE")
     pid, init = candidates[0]
-    return {
+    result = {
         "schema": "forge-c/managed-provider-instance/1",
         "root": str(root.resolve()),
         "profile": profile,
         "profile_sha256": profile_sha256,
         "observer_user_namespace": os.readlink("/proc/self/ns/user"),
+        "init_owner_view": owner_view(pid),
         "parent_pid": parent_pid,
         "parent": {k: v for k, v in parent.items() if k != "state"},
         "init_pid": pid,
         "init": {k: v for k, v in init.items() if k != "state"},
         "captured_at": utc_now(),
     }
+    if outer_pid is not None:
+        outer = identity(outer_pid)
+        view = owner_view(outer_pid)
+        net = os.readlink(f"/proc/{outer_pid}/ns/net")
+        if (
+            not outer or outer.get("state") == "Z" or outer["uid"] != init["uid"]
+            or view["uid_map"] != [[0, outer["uid"], 1]]
+            or os.readlink(f"/proc/{pid}/ns/net") != net
+            or identity(outer_pid) != outer
+        ):
+            raise Refused("PROVIDER_OUTER_HOLDER_UNPROVEN")
+        result.update(schema="forge-c/managed-provider-instance/2", outer_holder=dict(
+            pid=outer_pid, identity={k: v for k, v in outer.items() if k != "state"},
+            owner_view=view, net_namespace=net,
+        ))
+    return result
 
 
 def validate(instance: dict) -> None:
@@ -115,7 +159,7 @@ def validate(instance: dict) -> None:
         ):
             raise Refused("MANAGED_PROVIDER_IDENTITY_INVALID")
     if (
-        instance.get("schema") != "forge-c/managed-provider-instance/1"
+        instance.get("schema") not in ("forge-c/managed-provider-instance/1", "forge-c/managed-provider-instance/2")
         or type(instance.get("init_pid")) is not int
         or instance["init_pid"] <= 1
         or type(instance.get("parent_pid")) is not int
@@ -139,6 +183,50 @@ def validate(instance: dict) -> None:
         or init.get("boot_id") != parent.get("boot_id")
     ):
         raise Refused("MANAGED_PROVIDER_IDENTITY_INVALID")
+    if instance["schema"] == "forge-c/managed-provider-instance/2":
+        outer = instance.get("outer_holder") or {}
+        view = outer.get("owner_view") or {}
+        rec = outer.get("identity") or {}
+        if (
+            type(outer.get("pid")) is not int or outer["pid"] <= 1
+            or rec.get("boot_id") != init["boot_id"] or rec.get("uid") != init["uid"]
+            or not isinstance(rec.get("start_ticks"), str) or not rec["start_ticks"].isdigit()
+            or not re.fullmatch(r"pid:\[\d+\]", str(rec.get("pid_namespace")))
+            or type(rec.get("namespace_pid")) is not int or rec["namespace_pid"] < 1
+            or not re.fullmatch(r"user:\[\d+\]", str(view.get("user_namespace")))
+            or view.get("observer_user_namespace") != instance["observer_user_namespace"]
+            or view.get("observer_uid") != init["uid"] or view.get("uid_map") != [[0, init["uid"], 1]]
+            or not re.fullmatch(r"net:\[\d+\]", str(outer.get("net_namespace")))
+        ):
+            raise Refused("PROVIDER_OUTER_HOLDER_BINDING_INVALID")
+
+
+def require_instance_owner_view(instance: dict) -> None:
+    """Version2 also pins the outer mapped native caller, never arbitrary UID0."""
+    validate(instance)
+    outer = instance.get("outer_holder") if instance["schema"] == "forge-c/managed-provider-instance/2" else None
+    current_user = os.readlink("/proc/self/ns/user")
+    if not outer or current_user != outer["owner_view"]["user_namespace"]:
+        require_owner_view(instance["init_pid"], instance["init"]["uid"], instance.get("init_owner_view"))
+        return
+    expected = outer["identity"]
+    actual = identity(outer["pid"])
+    init = identity(instance["init_pid"])
+    mapping = owner_view(os.getpid())["uid_map"]
+    if (
+        not actual or actual.get("state") == "Z" or not init or init.get("state") == "Z"
+        or any(actual.get(k) != v for k, v in expected.items() if k != "uid")
+        or os.getuid() != 0 or actual["uid"] != 0 or init["uid"] != 0
+        or mapping != outer["owner_view"]["uid_map"]
+        or mapping != [[0, expected["uid"], 1]]
+        or os.readlink(f"/proc/{outer['pid']}/ns/user") != current_user
+        or os.readlink(f"/proc/{outer['pid']}/ns/net") != outer["net_namespace"]
+        or os.readlink("/proc/self/ns/net") != outer["net_namespace"]
+        or os.readlink("/proc/self/ns/pid") != expected["pid_namespace"]
+        or os.readlink(f"/proc/{instance['init_pid']}/ns/user") != instance["init_owner_view"]["user_namespace"]
+        or os.readlink(f"/proc/{instance['init_pid']}/ns/net") != outer["net_namespace"]
+    ):
+        raise Refused("PROVIDER_OUTER_OWNER_VIEW_UNPROVEN")
 
 
 def quiet(instance: dict) -> dict | None:
@@ -199,3 +287,123 @@ def stop(instance: dict, *, fenced_effect) -> dict | None:
         if proof or time.monotonic() >= deadline:
             return proof
         time.sleep(0.05)
+
+
+def require_live_instance(instance: dict) -> None:
+    """Observe a still-identical provider from host or its own mapped user namespace.
+
+    Numeric UIDs are relative to the observer: require the current observer's own
+    UID and its namespace to be either the captured observer or this exact init's
+    user namespace. Boot/start/private PID identity must match in both cases.
+    This proves liveness only; it never supplies a quiescence/release receipt.
+    """
+    validate(instance)
+    actual = identity(instance["init_pid"])
+    require_instance_owner_view(instance)
+    if (not actual or actual.get("state") == "Z"
+            or any(actual.get(k) != instance["init"].get(k)
+                   for k in ("boot_id", "start_ticks", "pid_namespace", "namespace_pid"))):
+        raise Refused("PROVIDER_LIVE_INSTANCE_UNCONFIRMED")
+
+
+def capture_worker(instance: dict, parent_pid: int, argv: list[str], *, timeout=3, startup_binding=None) -> dict:
+    """Find the exact executable under an nsenter waiter, never treat that waiter as its private-PID child."""
+    from ..afo.durable import immutable_json
+
+    require_live_instance(instance)
+    expected = b"\0".join(os.fsencode(arg) for arg in argv) + b"\0"
+    deadline = time.monotonic() + timeout
+    while True:
+        parent = identity(parent_pid)
+        if not parent or parent.get("state") == "Z" or parent["uid"] != os.getuid():
+            raise Refused("PROVIDER_WORKER_PARENT_UNPROVEN")
+        pending, seen, matches = [parent_pid], set(), []
+        while pending:
+            pid = pending.pop()
+            if pid in seen:
+                continue
+            seen.add(pid)
+            if len(seen) > 128:
+                raise Refused("PROVIDER_WORKER_OBSERVATION_BOUND")
+            actual = identity(pid)
+            if actual and actual.get("state") != "Z":
+                try:
+                    command = Path(f"/proc/{pid}/cmdline").read_bytes()
+                    if (actual["uid"] == os.getuid() and actual["pid_namespace"] == instance["init"]["pid_namespace"]
+                            and command == expected):
+                        matches.append((pid, actual))
+                    pending.extend(int(p) for p in Path(f"/proc/{pid}/task/{pid}/children").read_text().split())
+                except FileNotFoundError:
+                    continue
+                except (OSError, ValueError) as exc:
+                    raise Refused("PROVIDER_WORKER_OBSERVATION_UNAVAILABLE") from exc
+        if len(matches) > 1:
+            raise Refused("PROVIDER_WORKER_IDENTITY_AMBIGUOUS")
+        if matches:
+            pid, actual = matches[0]
+            record = {"schema": "forge-c/managed-provider-worker/1", "instance_sha256": digest(instance),
+                      "pid": pid, "identity": {k: v for k, v in actual.items() if k != "state"},
+                      "parent_pid": parent_pid, "parent": {k: v for k, v in parent.items() if k != "state"},
+                      "argv_sha256": hashlib.sha256(expected).hexdigest(),
+                      "observer_user_namespace": os.readlink("/proc/self/ns/user"),
+                      **({"startup_binding": startup_binding} if startup_binding is not None else {})}
+            immutable_json(Path(instance["root"]) / "run/provider-workers" / (digest(record) + ".json"), record)
+            return record
+        if time.monotonic() >= deadline:
+            raise Refused("PROVIDER_WORKER_IDENTITY_UNPROVEN")
+        time.sleep(0.02)
+
+
+def _bound_worker(instance, worker, argv):
+    from ..afo.durable import strict_json
+
+    validate(instance)
+    if (not isinstance(worker, dict) or worker.get("schema") != "forge-c/managed-provider-worker/1"
+            or worker.get("instance_sha256") != digest(instance)
+            or worker.get("observer_user_namespace") != os.readlink("/proc/self/ns/user")
+            or worker.get("argv_sha256") != hashlib.sha256(b"\0".join(os.fsencode(a) for a in argv) + b"\0").hexdigest()):
+        raise Refused("PROVIDER_WORKER_BINDING_CHANGED")
+    proof = Path(instance["root"]) / "run/provider-workers" / (digest(worker) + ".json")
+    if (proof.is_symlink() or proof.stat().st_uid != os.getuid()
+            or strict_json(proof.read_bytes(), 16384) != worker):
+        raise Refused("PROVIDER_WORKER_EVIDENCE_CHANGED")
+
+
+def signal_worker(instance: dict, worker: dict, argv: list[str], sig: int, *, fenced_effect) -> None:
+    """Signal only the still-identical captured private namespace worker through a pidfd."""
+    _bound_worker(instance, worker, argv)
+    pid = worker["pid"]
+    descriptor = pidfd.open_pid(pid)
+    try:
+        def effect():
+            actual = identity(pid)
+            if (not actual or actual.get("state") == "Z"
+                    or {k: v for k, v in actual.items() if k != "state"} != worker["identity"]
+                    or actual["pid_namespace"] != instance["init"]["pid_namespace"]
+                    or Path(f"/proc/{pid}/cmdline").read_bytes() != b"\0".join(os.fsencode(a) for a in argv) + b"\0"):
+                raise Refused("PROVIDER_WORKER_IDENTITY_CHANGED")
+            pidfd.send_signal(descriptor, sig)
+        fenced_effect(effect)
+    finally:
+        os.close(descriptor)
+
+
+def retire_startup_worker(instance, worker, argv, *, binding, parent_pid):
+    """Monotonic teardown of this call's failed startup, never a new start or lease-release proof."""
+    _bound_worker(instance, worker, argv)
+    if (not isinstance(binding, dict) or not binding or not worker or worker.get("startup_binding") != binding
+            or worker.get("parent_pid") != parent_pid):
+        raise Refused("LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN")
+    actual = identity(worker["pid"])
+    if actual and actual.get("state") != "Z" and actual.get("start_ticks") == worker["identity"]["start_ticks"]:
+        signal_worker(instance, worker, argv, signal.SIGKILL, fenced_effect=lambda effect: effect())
+    until = time.monotonic() + 3
+    while True:
+        actual = identity(worker["pid"])
+        if (actual is None or actual.get("state") == "Z"
+                or actual.get("boot_id") != worker["identity"]["boot_id"]
+                or actual.get("start_ticks") != worker["identity"]["start_ticks"]):
+            return {"kind": "OWN_FAILED_STARTUP_WORKER_ENDED", "worker_sha256": digest(worker)}
+        if time.monotonic() >= until:
+            raise Refused("LINE_STACK_FAILED_STARTUP_CLEANUP_UNKNOWN")
+        time.sleep(0.02)

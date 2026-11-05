@@ -1,0 +1,16 @@
+
+--- stderr ---
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-maintenance-renewal-oracle/tests/reliability/reproducers/rpr174v2_maintenance_effective_mission.py", line 110, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-maintenance-renewal-oracle/tests/reliability/reproducers/rpr174v2_maintenance_effective_mission.py", line 107, in main
+    return scenario()
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-maintenance-renewal-oracle/tests/reliability/reproducers/rpr174v2_maintenance_effective_mission.py", line 54, in scenario
+    assert CONTROL.configuration(ref,eff,request=env and M.L.request_for(store.order(oid)))==first
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-wt-7f92348d544f/d244e2dfbf01/factory/python/forge_factory/afo/line_recovery_control.py", line 70, in configuration
+    return _configuration(ref, eff, request=request, actual=revision())
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-wt-7f92348d544f/d244e2dfbf01/factory/python/forge_factory/afo/line_recovery_control.py", line 89, in _configuration
+    raise Refused("LINE_RECOVERY_EXECUTING_REVISION_MISMATCH")
+forge_factory.afo.durable.Refused: LINE_RECOVERY_EXECUTING_REVISION_MISMATCH:

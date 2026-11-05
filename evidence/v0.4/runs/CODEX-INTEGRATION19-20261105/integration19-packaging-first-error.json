@@ -1,0 +1,8 @@
+{
+  "error": "First export named new CAPA174 records capa-173.*; destination-exists guard stopped before any existing evidence write. Four new benchmark files copied, no tracked evidence altered.",
+  "source_head_pushed_before_evidence": "9ce6ef9127a13a0c9b63d86b4cce747cffe323f7",
+  "reason_for_early_push": "Shell commands continued after Python assertion; corrected sequence requires successful preflight and commit before push.",
+  "old_export_preserved": true,
+  "no_force_push": true,
+  "old_evidence_unchanged": true
+}

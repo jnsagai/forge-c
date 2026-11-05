@@ -1,0 +1,7 @@
+{"lrtx_progress": "inspect:413e7103f3d08975:SWE1-01", "attempt": 0, "errors": 0, "wall_ms": 20887.4}
+{"lrtx_progress": "inspect:413e7103f3d08975:SWE1-02", "attempt": 0, "errors": 0, "wall_ms": 41753.0}
+{"lrtx_progress": "inspect:413e7103f3d08975:SWE1-03", "attempt": 0, "errors": 0, "wall_ms": 16398.7}
+{"lrtx_progress": "inspect:413e7103f3d08975:SWE1-04", "attempt": 0, "errors": 0, "wall_ms": 16898.9}
+{"lrtx_progress": "inspect:413e7103f3d08975:SWE1-05", "attempt": 0, "errors": 0, "wall_ms": 18845.2}
+{"lrtx_progress": "inspect:413e7103f3d08975:SWE1-06", "attempt": 0, "errors": 0, "wall_ms": 15088.7}
+{"status": "PASS", "artifacts": ["inspection/SWE.1/INS-SWE.1-001.json"], "issues": [], "next_action": "next"}

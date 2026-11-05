@@ -11,8 +11,9 @@ import socket
 import subprocess
 import time
 import uuid
+import sys
 from pathlib import Path
-from ..common import utc_now
+from ..common import REPO_ROOT, data_root, utc_now
 from .durable import immutable_json
 
 
@@ -159,12 +160,122 @@ def run(out):
     return report
 
 
+def line_command(state: Path, snapshot: Path) -> list[str]:
+    """The actual model-free Line Conductor, forced to private state and a recorded empty Fabro view."""
+    return [sys.executable, "-m", "forge_factory.afo.line_conductor", "--mode", "OBSERVE", "--line", "drill",
+            "--interval", "0.25", "--fabro-snapshot", str(snapshot), "--launch-dir", str(state / "launch")]
+
+
+def line_run(out):
+    """Qualify real Line Conductor readiness/restart semantics in a unique transient unit. No production action.
+
+    The slow-start case is an explicitly exercised recovery recipe, not evidence of an installed independent
+    recovery timer. Operational fault/model recovery and long-run availability require separate qualification.
+    """
+    out = Path(out).resolve()
+    out.mkdir(parents=True, exist_ok=True)
+    state = out / "state"
+    state.mkdir()
+    snapshot = out / "fabro-snapshot.json"
+    snapshot.write_text("{}\n")
+    name = f"forge-c-014-qual-{uuid.uuid4().hex[:12]}-line.service"
+    hb = state / "supervisor/line-conductor.heartbeat"
+    feed = state / "supervisor/issues.json"
+    rows = []
+
+    def record(case, passed, **facts):
+        rows.append({"case": case, "pass": bool(passed), **facts})
+
+    def heartbeat(pid):
+        try:
+            h = json.loads(hb.read_text())
+            f = json.loads(feed.read_text())
+        except (OSError, ValueError):
+            return False
+        return (h.get("pid") == int(pid) and h.get("ok") is True and h.get("mode") == "OBSERVE"
+                and 0 <= time.time() - h.get("epoch", 0) <= 5
+                and f.get("supervisor", {}).get("model_calls_healthy") == 0 and "placement" not in f)
+
+    properties = ["Type=notify", "NotifyAccess=main", "Restart=always", "RestartSec=100ms", "KillMode=process",
+                  "WatchdogSec=2", "TimeoutStartSec=10", "StartLimitIntervalSec=10", "StartLimitBurst=3", "LimitCORE=0"]
+    argv = ["systemd-run", "--user", "--quiet", "--unit", name]
+    for prop in properties:
+        argv += ["--property", prop]
+    for key, value in {"PYTHONPATH": str(REPO_ROOT / "factory/python"), "FORGE_REPO_ROOT": str(REPO_ROOT),
+                       "FORGE_DATA_ROOT": str(data_root()), "FORGE_STATE_DIR": str(state),
+                       "FORGE_LINE_CONDUCTOR_UNIT": name}.items():
+        argv += ["--setenv", f"{key}={value}"]
+    version = call(["systemctl", "--version"]).stdout.splitlines()[0]
+    try:
+        result = call([*argv, *line_command(state, snapshot)])
+        if result.returncode:
+            raise RuntimeError("TRANSIENT_LINE_UNIT_START_FAILED:" + result.stderr[-200:])
+        ready, obs = wait_for(name, lambda s: s.get("ActiveState") == "active" and heartbeat(s.get("MainPID", "0")), 10)
+        record("actual-line-ready-model-free", ready, observations=obs)
+        for label, sig in (("unexpected-kill-restarts", "KILL"), ("unexpected-clean-exit-restarts", "TERM"),
+                           ("hung-line-watchdog-restarts", "STOP")):
+            call(["systemctl", "--user", "reset-failed", name], check=True)  # isolate this drill's next injection
+            before = show(name)
+            pid = before.get("MainPID")
+            killed = call(["systemctl", "--user", "kill", "--kill-who=main", "--signal=" + sig, name])
+            restored, obs = wait_for(name, lambda s: s.get("ActiveState") == "active"
+                                    and s.get("MainPID") not in ("0", pid) and heartbeat(s.get("MainPID", "0")), 10)
+            record(label, killed.returncode == 0 and restored, before=before, observations=obs)
+        # Exhaust a bounded burst with deliberate main-process kills, then demonstrate a slow explicit restore.
+        call(["systemctl", "--user", "reset-failed", name], check=True)
+        for _ in range(6):
+            s = show(name)
+            if s.get("ActiveState") == "failed":
+                break
+            call(["systemctl", "--user", "kill", "--kill-who=main", "--signal=KILL", name])
+            wait_for(name, lambda v: v.get("ActiveState") in ("active", "failed")
+                     and (v.get("MainPID") != s.get("MainPID") or v.get("ActiveState") == "failed"), 3)
+        limited, obs = wait_for(name, lambda s: s.get("ActiveState") == "failed", 5)
+        # Some systemd versions retain Result=signal from the last killed process after limiting its next start.
+        # Require the manager's explicit rate-limit message as well as a failed unit and bounded restart count.
+        journal = call(["journalctl", "--user", "-u", name, "--no-pager", "-o", "json"]).stdout
+        limit_messages = []
+        for line in journal.splitlines():
+            try:
+                message = json.loads(line).get("MESSAGE", "")
+            except ValueError:
+                continue
+            if message == name + ": Start request repeated too quickly.":
+                limit_messages.append(message)
+        bounded = bool(obs) and int(obs[-1]["state"].get("NRestarts", "99")) <= 4
+        record("restart-storm-is-rate-limited", limited and limit_messages and bounded,
+               observations=obs, manager_rate_limit_messages=limit_messages)
+        time.sleep(10.2)
+        before = show(name)
+        started = call(["systemctl", "--user", "start", name])
+        restored, obs = wait_for(name, lambda s: s.get("ActiveState") == "active" and heartbeat(s.get("MainPID", "0")), 10)
+        record("bounded-slow-start-restores-real-line", before.get("ActiveState") == "failed"
+               and started.returncode == 0 and restored, before=before, observations=obs)
+        call(["systemctl", "--user", "stop", name], check=True)
+        time.sleep(0.5)
+        stopped = show(name)
+        record("operator-service-stop-is-respected", stopped.get("ActiveState") == "inactive", observed=stopped)
+    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
+        record("drill-error", False, error=type(exc).__name__ + ":" + str(exc)[:240])
+    finally:
+        call(["systemctl", "--user", "stop", name])
+        call(["systemctl", "--user", "reset-failed", name])
+    report = {"scope": "ISOLATED_ACTUAL_LINE_CONDUCTOR_NO_MODEL_NO_PRODUCTION_ACTION", "host": socket.gethostname(),
+              "at": utc_now(), "version": version, "unit": name, "command": line_command(state, snapshot),
+              "properties": properties, "rows": rows, "status": "PASS" if rows and all(r["pass"] for r in rows) else "FAIL",
+              "production_line_state": "NOT_TOUCHED", "independent_line_recovery_timer": "NOT_QUALIFIED",
+              "operational_model_recovery": "NOT_QUALIFIED", "24_72_hour_soak": "NOT_RUN"}
+    immutable_json(out / "line-report.json", report)
+    return report
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--line-conductor", action="store_true", help="Exercise the actual OBSERVE Line Conductor in private state")
     a = ap.parse_args(argv)
-    report = run(a.out)
-    print(json.dumps({"status": report["status"], "report": str(a.out / "report.json")}))
+    report = line_run(a.out) if a.line_conductor else run(a.out)
+    print(json.dumps({"status": report["status"], "report": str(a.out / ("line-report.json" if a.line_conductor else "report.json"))}))
     return 0 if report["status"] == "PASS" else 1
 
 

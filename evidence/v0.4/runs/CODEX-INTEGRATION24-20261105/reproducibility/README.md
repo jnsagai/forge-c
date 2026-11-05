@@ -1,0 +1,9 @@
+# Reproducibility addendum
+
+This append-only addendum preserves the first 814-file I24 export unchanged. It adds the exact frozen independent full-FIX driver, its required command/environment, and the cleanup V2 helper, 32-case raw report/log, control script, child-review extract, root review, preservation proof and metadata-only companion. V1 controls, the original failed case and its blocking review are preserved separately.
+
+The companion is exported byte-for-byte under its original SHA256. It contains process/environment/argv hashes, kernel and Intent metadata and history fingerprints; no raw environment, credential, vendor text or model request/response payload is present. The helper/control script hashes are not rewritten to claim portability. Their original absolute source/dependency paths are recorded, and the exact v9 pure-function source dependency is included. Reproduction needs those reviewed paths restored or a separately reviewed launcher adaptation; no new run is claimed here.
+
+Owner-supplied private reference inputs are represented only by hashes. Real cleanup additionally depends on private original VM/issuer/control/database facts that are intentionally absent from this publication. The public private-fixture controls do not replace those facts or grant permission to execute the cleanup helper. The independent child review is an exact extract from its supplied frozen component index, not an invented separate test report.
+
+The root-confirmed FIX process completed with all seven gates passing. This remains source eligibility for offline review. The 32 cleanup controls and 185 affected source tests have separate scopes; do not sum overlapping or different evidence populations into a product-acceptance total. No deployment, actual cleanup, model-role competence, production ACT, human review, certification or endurance acceptance is inferred.

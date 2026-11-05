@@ -1,0 +1,330 @@
+{
+ "copy_of": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+ "copy": "/mnt/data/forge-c/operations/swe1-qwen-20261031/start-ws",
+ "edits": [
+  {
+   "file": ".forge-run/binding.json",
+   "op": "replace_path",
+   "old": [
+    "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace"
+   ],
+   "new": "/mnt/data/forge-c/operations/swe1-qwen-20261031/start-ws",
+   "occurrences": 1,
+   "sha256_before": "45026c3910ed8f87de4400388b07b03ac069eb0deeec0cf4131dc6aaaf42f679",
+   "sha256_after": "0cb197de653729a264792ba2e501f83dc3c30ed75bee231ac5f60f5ec0e0c1cb"
+  },
+  {
+   "file": ".forge-run/workflow.toml",
+   "op": "replace_path",
+   "old": [
+    "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace"
+   ],
+   "new": "/mnt/data/forge-c/operations/swe1-qwen-20261031/start-ws",
+   "occurrences": 2,
+   "sha256_before": "17ea1c8ea4af746e7df1932c701c1930cdaac16c77c4e4232dae194d8e43f43a",
+   "sha256_after": "04891076290c651e32fe51f7bf7bb75b84fda7ac426bd8b37173a1f984890db4"
+  },
+  {
+   "file": ".forge-run/durable-binding.json",
+   "op": "moved_out_of_copy",
+   "to": "/mnt/data/forge-c/operations/swe1-qwen-20261031/work/isolated-start/durable-binding.json",
+   "sha256": "4a853d4214ce207ad3c8936a20c17a0b03619c8a5e1dd67f3eaab16a1c132dfd",
+   "keys": [
+    "attempt_id",
+    "job_id",
+    "mission_id",
+    "nonce",
+    "operations_epoch",
+    "order_id"
+   ],
+   "reason": "binds the copy to the trial-06 AFO product job; structured.call would send it as forge_execution when RECOVERY_WORKSPACE is set, and the gateway would route the call through the AFO durable reservation of a job that does not exist in the scratch state"
+  }
+ ],
+ "left_unchanged": [
+  {
+   "file": ".forge-run/delivery-first/latest.json",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 9
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/oracle",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 4
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/result.json",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 9
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/build/renode/platform_default.repl",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/build/renode/run_test_performance.resc",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/build/renode/.config/renode/config",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/build/renode/.config/renode/history",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/build/target-cm55-gcc/forge_ll_measure.su",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/build/target-cm55-gcc/idr_target_probe.su",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/build/target-cm55-gcc/driver.map",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 17
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/evidence/raw/02370839b890a4d42ec997c80ade09e10e0113e4fede6ed8aefb170cb8df1a58.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 14
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/evidence/raw/9b51f4c8e8e437e929a3673ffdec0df37ad5fef5286e21900dc068b950564e3a.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 4
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/evidence/raw/a18784f68ad22458cd912b465652547e2c425f48e8c55a62ef4c1d8bb3d9afd3.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-final/independent-target/workspace/evidence/raw/622c18b955cc061747bfcead7d2d58d331e3efb7ad00b36dab3d33cd1fb15350.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/oracle",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 4
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/result.json",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 9
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/build/renode/platform_default.repl",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/build/renode/run_test_performance.resc",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/build/renode/.config/renode/config",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/build/renode/.config/renode/history",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/build/target-cm55-gcc/forge_ll_measure.su",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/build/target-cm55-gcc/idr_target_probe.su",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/build/target-cm55-gcc/driver.map",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 17
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/evidence/raw/53cff326081905a560a84010da680f84b069c1fe44ebc3defe672295ed651a26.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/evidence/raw/acef1d7a58ae69f134512f62bbf17c30e6e17138e263b10bf2db50e5979bf92b.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/evidence/raw/cc3b0129bc248d849cf2233fe42d20d231e4575282e603b7cc018f90848f15b5.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 14
+  },
+  {
+   "file": ".forge-run/delivery-first/attempt-0/independent-target/workspace/evidence/raw/510dacc7ed30e02250b189fbf3a051c83ee8cf0130332afac723dc714db5e5de.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 4
+  },
+  {
+   "file": "build/tests-integration/test_crc_integration",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 5
+  },
+  {
+   "file": "build/tests-integration/test_crc_idr",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 5
+  },
+  {
+   "file": "build/robot/report.html",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "build/robot/log.html",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "build/robot/output.xml",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "build/renode/platform_default.repl",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "build/renode/run_test_performance.resc",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": "build/renode/run_test_idr.resc",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": "build/renode/.config/renode/config",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "build/renode/.config/renode/history",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": "build/tests-unit/test_crc",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 5
+  },
+  {
+   "file": "build/robot-target/run_scn_write_default.resc",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": "build/robot-target/platform_default.repl",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "build/robot-target/run_scn_read_default.resc",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": "build/robot-target/run_test_performance_default.resc",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 2
+  },
+  {
+   "file": "build/robot-target/.config/renode/config",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "build/robot-target/.config/renode/history",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 10
+  },
+  {
+   "file": "build/robot-target/stack/forge_ll_measure.ci",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 3
+  },
+  {
+   "file": "evidence/raw/2fbc028fe84249083017fcc83cf6afcd8230835e38355a9875a159e73c6b867d.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 6
+  },
+  {
+   "file": "evidence/raw/c06f9e2e054864b5536a59ea14012ac5804612dc37bf66f823521e4b0bd85cce.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 6
+  },
+  {
+   "file": "evidence/raw/1ee098a759a78d32fcf931c512c168308de0bfcfe2a7265737d237127b43d1f7.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 4
+  },
+  {
+   "file": "evidence/raw/309ef2b1ca581bdd250f6d65b3a075090e3885bac50cb3e18313a54e896d7844.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "evidence/raw/75d1245b3278879de4564a9952a532e5117309877330b643725ebf4092d912c6.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 6
+  },
+  {
+   "file": "evidence/raw/3a1c7eb72912bcd6a86ca454ba38407a3842fd27e3baf5e83916fc2e0596975d.json",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "evidence/raw/b9d456e1cd2c5a2d8632935eecaca1c733ad07fbbae38011a3ff3631eb092f7b.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 4
+  },
+  {
+   "file": "evidence/raw/c9df5eaa398538b696949ec7da24d9616ff7e1059a50f7f514424fbeb01fe35a.xml",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "evidence/raw/aafd35688b092183d646e3a9a5cea3299205dd93f0bcb8e7ed5a85b2c386ce5d.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 12
+  },
+  {
+   "file": "evidence/raw/547c66ddaaa09288ed212d4357434c53f4ca4f5ecec7919e371ea41a7eaf8114.xml",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "evidence/raw/c17d82d3afa759d4b5269ee18651defdf73773074528af8f472d8ab968620e22.xml",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 1
+  },
+  {
+   "file": "evidence/raw/264a1dcb5b796c1be6640927bf4f3c3dbec5ac04d637629f6a83819dc07e798c.log",
+   "path": "/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace",
+   "count": 6
+  }
+ ]
+}

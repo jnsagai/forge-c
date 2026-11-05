@@ -1,0 +1,36 @@
+{
+  "schema": "forge-c/frozen-external-namespace-oracle/1",
+  "status": "BASELINE887_REAL_KERNEL_PRESENT_CANDIDATE_PENDING",
+  "reproducer_id": "AFO-PROVIDER-NSENTRY-20261105",
+  "baseline": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "script": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-nsentry-causal-oracle-v1/reproduce_nsentry.py",
+    "sha256": "65793e4ded97dba26eb36eecca4dbd54b2aef3ee54055626181fcd4f22387af0"
+  },
+  "manifest": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-nsentry-causal-oracle-v1/manifest.yaml",
+    "sha256": "ad6ab1254210021dbd93f70d930a040b01e7b85ed076689971e0b49d11cce0a1"
+  },
+  "kernel_helper": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-nsentry-causal-oracle-v1/kernel_probe.py",
+    "sha256": "1a12b0b8761511ea219a9dd69c26dbf0bd6cb5d633982a2de6d868cda7082762"
+  },
+  "kernel_proof_index": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-nsentry-causal-oracle-v1/kernel-proof-index.json",
+    "sha256": "ef51227804c86eeb48f2873dffc01bc14c2dcfa58baacde9efc29133b85129ba"
+  },
+  "baseline_exit_code": 1,
+  "baseline_log": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-nsentry-causal-oracle-v1/staged-baseline887-r1.log",
+    "sha256": "8db29343bbdd39e0407c71910186c8effbc1147127c27a6b3703c30c6561d417"
+  },
+  "source_functions_mocked": false,
+  "whole_start_used_or_mocked": false,
+  "setup": "Own outerUSER+NET sleep; actualsource_in_ns creates realbwrapnestedUSER/MNT/PID and realunshare sameUSERprovider, provider.capture gives actualkernelrecords. Backendargv harmlessPython writesactualnamespace facts only.",
+  "controls": "Independent orderedentry bothtopologies rc0; invalidsameUSERreentry EINVAL; baseline source nestedEPERM + samecurrentUSERnormalEINVAL; sourceinitialhostnormal+sameUSERprovider PASS.",
+  "lifetime_cleanup": "Exact own providerinit stop with actual sourceprovider.stop; returned privatePIDnamespaceended proofs; ownholder/worker/sessionhandlesclosed.",
+  "candidate": "NOT_RUN_PENDING_SOURCE_RELEASE",
+  "model_GPU_canonical_remote_effects": false,
+  "permanent_registry_or_CAPA_changes": false,
+  "all_raw_kernel_setup_case_logs_and_namespace_results_retained_under": "baseline887-r1"
+}

@@ -1,0 +1,8 @@
+{
+  "oracle_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa149/tests/reliability/reproducers/rpr149_provided_architecture_invents_register_array.py",
+  "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+  "host_report_sha256": "70b92cf7328558d737c71c40372c5b9ddfdf20ed489be170cb3a4e267ac1b429",
+  "baseline_revision": "6dd3f516b368a13c9b5b2f3f098838b65949c72f",
+  "candidate_revision": "45e86f24bc9cd2172e653f3d8fece953494c3ef7",
+  "manifest_sha256": "1ef22eff836025c6ca0a7b1b33eaf2ebedf334cfb2fa0ce4cb2b9470b7096a98"
+}

@@ -48,6 +48,38 @@ def source_char_limit(ws: Path) -> int:
     return limit
 
 
+SAFE_STATE_NOTE = ("This work order is ASPICE-only: the allocated safety safe state is outside the owner scope "
+                   "(inspection-assessment-context outside_owner_scope). The safe-state part of SWE1-03 is satisfied "
+                   "when the baseline states that no software safe state is allocated; do not fail SWE1-03 for a "
+                   "missing safe state. Failure handling and reset/startup behaviour are still judged.")
+
+
+def _assessment_view(ws: Path) -> dict:
+    """The order's bound inspection assessment view ({} for an order without one or with a changed binding)."""
+    from ..inspection.assessment_context import view
+
+    p = Path(ws) / ".forge-run/manifest.json"
+    if not p.is_file():
+        return {}
+    try:
+        return view(json.loads(p.read_text())) or {}
+    except ValueError:
+        return {}
+
+
+def safe_state_outside_scope(ws: Path) -> bool:
+    """CAPA-083: the order's assessment view puts the allocated safety safe state outside the owner scope."""
+    return "allocated safety safe state" in (_assessment_view(ws).get("outside_owner_scope") or [])
+
+
+def missing_constraint_not_satisfied(ws: Path) -> bool:
+    """CAPA-113: the bound view requires explicit measurable flash/RAM/stack/CPU/timing constraints and rules that a
+    missing required constraint is an open input gap that does NOT satisfy the criterion."""
+    v = _assessment_view(ws)
+    return v.get("missing_required_constraint") == "OPEN_INPUT_GAP_NOT_SATISFIED" and \
+        any("constraint" in str(e) for e in v.get("required_engineering_evidence") or [])
+
+
 def _notes(ws: Path, phase: str, item: str) -> list[str]:
     from ..layer import profile
     from ..workflow import prompts
@@ -59,12 +91,15 @@ def _notes(ws: Path, phase: str, item: str) -> list[str]:
 
         if note := for_workspace(ws):
             out.append(note)
+        if item == "SWE1-03" and safe_state_outside_scope(ws):  # CAPA-083 (run -11)
+            out.append(SAFE_STATE_NOTE)
     if phase in ("SWE.2", "SWE.3"):  # the work order's peripheral (feature 009), as the builder sets it for agents
         prof = profile(ws)
         saved = prompts.PERIPHERAL["profile"]
         prompts.PERIPHERAL["profile"] = prof if prof["id"] != "rcc" else None
         try:
-            out.append(prompts.peripheralize(prompts.REGISTER_BLOCK_NOTE))
+            note = prompts.register_note(ws)
+            out.append(prompts.peripheralize(note) if note is prompts.REGISTER_BLOCK_NOTE else note)
         finally:
             prompts.PERIPHERAL["profile"] = saved
     if phase in ("SWE.4", "SWE.5", "SWE.6"):
@@ -80,6 +115,40 @@ ENGINE_NOTE = ("SafeC engine output (register obligations / register oracle), ch
                "listed by hash only, not inspected text: judge the requirements, effects and traceability")
 
 
+# CAPA-116 (run WO-F014-CMP-SWE3-OBL-20261102-08): the frozen work products of the previous phase each checklist judges
+# the phase against (SWE3-01/03 "match the software architecture"; SWE4-02/06 the units, unit specifications and design
+# the tests verify; SWE5-02/05 "match the architecture"). SWE.6 judges against SWE.1, which every phase already gets.
+CHECKLIST_UPSTREAM = {"SWE.3": ("SWE.2",), "SWE.4": ("SWE.3",), "SWE.5": ("SWE.2",)}
+
+
+def upstream_sources(ws: Path, phase: str, bl: dict) -> list[str]:
+    """CAPA-116: the frozen baseline records (files, hashes, upstream baselines: the change/trace provenance of SWE3-06),
+    the files of the exact upstream baseline the phase was frozen on, and in instance mode the pinned device header and
+    API contract the code is written to. An upstream baseline that is missing or changed raises (never omitted)."""
+    from ..common import sha256_file
+    from ..inspection.engine import Store
+    from ..layer import ll_instance
+
+    if phase not in CHECKLIST_UPSTREAM:
+        return []
+    ws = Path(ws)
+    out = [f"configuration/baselines/{phase}/{bl['baseline_id']}.json"]
+    for up in CHECKLIST_UPSTREAM[phase]:
+        want = (bl.get("upstream") or {}).get(up)
+        ub = next((b for b in reversed(Store(ws).baselines(up)) if want and b["baseline_hash"] == want), None)
+        if ub is None:
+            raise ValueError(f"UPSTREAM_BASELINE_NOT_FOUND:{phase}:{up}")
+        if any(not (ws / f).is_file() or sha256_file(ws / f) != h for f, h in ub["files"].items()):
+            raise ValueError(f"UPSTREAM_CHANGED:{up}")
+        out.append(f"configuration/baselines/{up}/{ub['baseline_id']}.json")
+        out += [f for f in ub["files"] if not f.endswith((".svg", ".reqif"))]
+    if ll_instance(ws) is not None:  # validated: a declared but changed input raises
+        iface = json.loads((ws / ".forge-run/manifest.json").read_text())["operation_scope"]["instance"][
+            "register_interface"]
+        out += [iface["device_header"], iface["api_contract"]]
+    return out
+
+
 def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     """The newest frozen baseline of the phase and its files (plus the upstream SWE.1 requirements for SWE.2+)."""
     from ..inspection.engine import Store
@@ -92,6 +161,19 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     if phase != "SWE.1":
         files += [f for f in ("workproducts/SWE.1/software_requirements.md", "workproducts/SWE.1/register_effects.json")
                   if f not in files]
+        files += [f for f in upstream_sources(ws, phase, bl) if f not in files]  # CAPA-116
+    from ..inspection.provided_changes import REPORT_MD
+
+    if phase in ("SWE.3", "SWE.4", "SWE.5", "SWE.6") and (Path(ws) / REPORT_MD).is_file() and REPORT_MD not in files:
+        files.append(REPORT_MD)  # owner 2026-11-03 (revised): changes to provided code are reviewable
+    if phase == "SWE.1":  # owner 2026-10-31 (option 1): the declared owner obligations and the inputs they cite
+        from ..assurance.owner_obligations import source_paths
+
+        files += [f for f in source_paths(ws) if f not in files]
+        from .swe1 import delivered_interface  # CAPA-112: the FROZEN API's argument constants the author was given
+
+        if (api := delivered_interface(ws)) and api not in files:
+            files.append(api)
     limit = source_char_limit(ws)
     srcs = [S.source(ws, f, max_chars=limit) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
     for f in [f for f in files if f in ENGINE_FILES and (Path(ws) / f).is_file()]:
@@ -113,18 +195,47 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
     return bl, srcs
 
 
+# Inspection lessons (knowledge/inspection.py) for every phase of this inspector: VALIDATED lessons only, selected
+# deterministically by phase, item, layer and the work products in the packet, as one reference source after the frozen
+# work products, never as instructions; ids and hashes are recorded with the inspection. A promotion trial
+# (knowledge/detection_trial.py, lrtx/seeded.py --lessons) sets a lesson directory, PROPOSED retrieval or no lessons.
+LESSONS: dict = {"dir": None, "include_proposed": False, "off": False}
+LESSON_SOURCE = "reference/inspection-lessons.md"
+INSPECTOR: dict = {"sampling": None}  # a paired trial's recorded sampling (seed); production: the gateway default
+
+
+def item_lessons(ws: Path, phase: str, item_id: str, srcs: list[dict]) -> list[dict]:
+    from ..knowledge import inspection as IL
+    from ..layer import layer_of
+
+    if LESSONS["off"]:
+        return []
+    return IL.select(phase, item_id, layer_of(ws), {s["path"] for s in srcs}, Path(LESSONS["dir"] or IL.LESSON_DIR),
+                     include_proposed=bool(LESSONS["dir"] and LESSONS["include_proposed"]))
+
+
+def lesson_source(lessons: list[dict]) -> dict | None:
+    from ..knowledge import inspection as IL
+
+    text = IL.render(lessons)
+    return {"path": LESSON_SOURCE, "sha256": sha256_bytes(text.encode()), "text": text} if text else None
+
+
 def item_packet(ws: Path, phase: str, item: dict, bl: dict, srcs: list[dict], model: str, findings=None,
-                previous=None) -> dict:
+                previous=None, lessons: list[dict] | None = None) -> dict:
     instr = (f"Inspect checklist item {item['id']} of {phase} on the frozen baseline {bl['baseline_id']} (hash "
              f"{bl['baseline_hash'][:16]}). Criterion (full text): {' '.join(str(item['criterion']).split())} "
              "Judge ONLY this criterion, ONLY from the SOURCES below (the frozen work products and the work-order "
              "context). verdict PASS only when the evidence satisfies the whole criterion; otherwise FAIL with one "
              "concrete finding per problem that names the requirement, section or file it concerns. Do not judge other "
              "criteria. evidence_checked lists the source paths you used. " + " ".join(_notes(ws, phase, item["id"])))
+    ref = lesson_source(lessons or [])
+    if ref:  # reference data with provenance, after the frozen work products; without lessons the packet is unchanged
+        srcs = [*srcs, ref]
     return S.packet(phase=phase, task=f"inspect:{item['id']}", role=f"swe{phase[-1]}-inspector", instructions=instr,
                     sources=srcs, criteria=[f"{item['id']}: {' '.join(str(item['criterion']).split())}"],
                     output_schema=VERDICT_SCHEMA, model=model, findings=findings, previous=previous,
-                    output_reserve=2048, assessment_workspace=Path(ws))
+                    output_reserve=2048, assessment_workspace=Path(ws), sampling=INSPECTOR["sampling"])
 
 
 PENDING_RX = re.compile(r"pending|not (?:yet )?allocated|allocation review|no software safety requirement", re.I)
@@ -135,6 +246,15 @@ GAP_RX = re.compile(r"NOT_PROVIDED|not (?:been |yet )?provided|upstream (?:cover
 # ... and only about an upstream input (lrtx9: "depends on an upstream budget that has not been provided"); a missing
 # verification criterion or test is never an upstream gap
 UPSTREAM_RX = re.compile(r"\bHSI\b|\bbudget|\bupstream\b|interface contract|safety allocation", re.I)
+# CAPA-113: a finding that a measurable resource or timing constraint (the view's required engineering evidence) is
+# missing; an objection to the status of a constraint the document states is not one, nor a finding about the HSI
+# contract or the safety allocation (a recorded interface gap or outside the owner scope): those stay refuted
+_CONSTRAINT = (r"(?:CPU|processor[- ]time|cycles?|cycle[- ]count|instruction[- ]count|timing|execution[- ]time|"
+               r"response[- ]time|latency|deadline|flash|RAM|stack)")
+CONSTRAINT_RX = re.compile(r"\b(?:no|missing|lacks?|without|nor?)\b[^.;]{0,60}?\b" + _CONSTRAINT + r"\b|\b" + _CONSTRAINT +
+                           r"\b[^.;]{0,40}?\b(?:missing|unspecified|absent|undefined|not (?:stated|specified|defined|"
+                           r"provided|given|allocated))\b", re.I)
+NOT_CONSTRAINT_RX = re.compile(r"\bHSI\b|interface contract|safety allocation", re.I)
 LATER_RX = re.compile(r"no test (?:file|procedure|case|script)|test (?:file|procedure)s? (?:is|are)? ?(?:not )?"
                       r"(?:provided|present|available)|no (?:test )?evidence .{0,80}(?:measured|verified)|not "
                       r"(?:explicitly )?measured", re.I)
@@ -162,10 +282,14 @@ def fact_conflicts(ws: Path, phase: str, item: str, findings: list[str]) -> list
     gaps_p = ws / "traceability/upstream_gaps.md"
     recorded_gap = gaps_p.is_file() and "NOT_PROVIDED" in gaps_p.read_text()
     startup = re.search(r"\*\*(SWR-\d{3})\*\*\s+(" + STARTUP_NO_CALL + r"[^\n]*)\n", text, re.I)
+    open_gap = phase == "SWE.1" and recorded_gap and missing_constraint_not_satisfied(ws)
     for f in findings:
         # lrtx7 (2026-10-21): the Claude inspector passed SWE1-01..06 of rc1 with the same recorded gaps; the Qwen
-        # inspector failed them for the gap itself, for later-phase evidence and for a startup rule the document has
-        if phase == "SWE.1" and recorded_gap and GAP_RX.search(f) and UPSTREAM_RX.search(f):
+        # inspector failed them for the gap itself, for later-phase evidence and for a startup rule the document has.
+        # CAPA-113: under a bound assessment view a recorded NOT_PROVIDED required constraint is an open input gap that
+        # does not satisfy the item, so a finding about that missing constraint is not refuted by the record
+        kept = open_gap and CONSTRAINT_RX.search(f) and not NOT_CONSTRAINT_RX.search(f)
+        if phase == "SWE.1" and recorded_gap and GAP_RX.search(f) and UPSTREAM_RX.search(f) and not kept:
             out.append(f"finding '{f[:80]}...' judges an input the owner recorded as NOT_PROVIDED as a failure: the "
                        "document records the gap in traceability/upstream_gaps.md, which is what the factory requires "
                        "for missing upstream inputs - re-judge the item on the other evidence")
@@ -235,12 +359,16 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
     items = [c for c in st.applicable(st.checklist(phase))["checks"]
              if c.get("required") and not c.get("deterministic_check")]
     paths = {s["path"] for s in srcs}
-    verdicts, issues, contested = {}, [], {}
+    verdicts, issues, contested, withdrawn, lessons = {}, [], {}, {}, {}
     for it in items:
         # the checkpoint key binds the verdict to the baseline it judged: a new baseline is a new task
         task = f"inspect:{bl['baseline_hash'][:16]}:{it['id']}"
-        rec = V.run_task(ws, phase, task, lambda fi, pr, it=it: item_packet(ws, phase, it, bl, srcs, model, fi, pr),
-                         lambda d, it=it: validate_verdict(d, paths, ws, phase, it["id"]), budget)
+        les = item_lessons(ws, phase, it["id"], srcs)
+        ipaths = paths | ({LESSON_SOURCE} if les else set())
+        lessons[it["id"]] = [{k: x[k] for k in ("id", "version", "sha256", "purpose")} for x in les]
+        rec = V.run_task(ws, phase, task,
+                         lambda fi, pr, it=it, les=les: item_packet(ws, phase, it, bl, srcs, model, fi, pr, les),
+                         lambda d, it=it, ipaths=ipaths: validate_verdict(d, ipaths, ws, phase, it["id"]), budget)
         d = rec["doc"]
         if rec["status"] != "VALID":
             # lrtx8 (2026-10-21): an inspector that keeps a finding the evidence refutes after its repairs. The verdict
@@ -249,13 +377,22 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
             conf = fact_conflicts(ws, phase, it["id"], d["findings"]) if isinstance(d, dict) and \
                 isinstance(d.get("findings"), list) else []
             if not (conf and set(rec["errors"]) <= set(conf) and not S.validate(d, VERDICT_SCHEMA)
-                    and not validate_verdict(d, paths)):
+                    and not validate_verdict(d, ipaths)):
                 issues += [f"{it['id']}: {e}" for e in rec["errors"][:3]]
                 continue
             contested[it["id"]] = conf
         verdicts[it["id"]] = {"verdict": d["verdict"], "findings": list(d["findings"]),
                               "evidence_refs": [f"configuration/baselines/{phase}/{bl['baseline_id']}.json",
-                                                *d["evidence_checked"][:8]]}
+                                                *[e for e in d["evidence_checked"]  # lessons are no work product
+                                                  if _norm_path(e) != LESSON_SOURCE][:8]]}
+        # CAPA-076 (owner option A, 2026-10-31): findings a rejected answer stated and the accepted answer no longer
+        # carries are reported, not silently lost. Verdict and gate are unchanged.
+        kept = set(d["findings"])
+        dropped = []
+        for att in rec.get("attempts") or []:
+            dropped += [f for f in att.get("rejected_findings") or [] if f not in kept and f not in dropped]
+        if dropped:
+            withdrawn[it["id"]] = dropped
     if issues:  # incomplete: nothing is recorded (an aggregate never invents a verdict)
         return _reply(ws, phase, "FAILED", issues, budget)
     if st.latest_baseline(phase)["baseline_hash"] != bl["baseline_hash"]:
@@ -268,18 +405,23 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
                       budget)
     S.record(ws, f"{phase}/inspection-record.json", {"at": utc_now(), "baseline_id": bl["baseline_id"],
                                                      "result": res, "items": sorted(verdicts),
-                                                     "contested_findings": contested})
+                                                     "contested_findings": contested,
+                                                     "withdrawn_in_repair": withdrawn,
+                                                     **({"inspection_lessons": lessons}
+                                                        if any(lessons.values()) else {})})
     status = "PASS" if res["status"] == "PASS" else "REWORK"
     notes = [f"LRTX_INSPECTOR_FINDING_CONTESTED:{i}: {c}" for i, cs in contested.items() for c in cs]
+    notes += [f"LRTX_INSPECTOR_FINDING_WITHDRAWN_IN_REPAIR:{i}: {f}" for i, fs in withdrawn.items() for f in fs]
     return _reply(ws, phase, status, list(res.get("issues") or []) + notes, budget,
                   list(res.get("artifact_refs") or []))
 
 
 def _reply(ws: Path, phase: str, status: str, issues: list[str], budget: dict | None = None,
            artifacts: list[str] | None = None) -> dict:
-    doc = {"status": status, "artifacts": artifacts or [], "issues": [i[:300] for i in issues[:20]],
-           "next_action": "next" if status == "PASS" else "rework"}
+    doc = {"status": status, "artifacts": artifacts or [], "issues": [i[:V.ISSUE_MAX] for i in issues[:20]],
+           "next_action": "next" if status == "PASS" else "rework"}  # CAPA-098: the agent-output contract bound
     S.record(ws, f"{phase}/inspect-reply.json", doc)
+    S.record(ws, f"{phase}/inspect-reply-issues.json", {"issues": [i[:2000] for i in issues[:20]]})
     if status != "CONTINUE":
         V.close_visit(budget)
     p = Path(ws) / ".forge-run/lrtx" / phase / "inspections.jsonl"

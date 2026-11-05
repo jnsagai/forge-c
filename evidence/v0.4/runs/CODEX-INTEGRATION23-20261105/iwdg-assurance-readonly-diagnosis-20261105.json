@@ -1,0 +1,167 @@
+{
+  "schema": "forge-c/readonly-iwdg-assurance-fixture-diagnosis/1",
+  "recorded_local_wall_time": "2026-11-05T15:15:11.575146+00:00",
+  "baseline_revision": "74e44a1f23b01f3200350436df1691249b441292",
+  "candidate_revision": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+  "mode": "READ_ONLY_SOURCE_AND_EXISTING_ARTIFACT_REVIEW_NO_TEST_RUN",
+  "finding": "HISTORICAL_C_HARNESS_FIXTURE_NOT_DECLARED_LEGACY_AFTER_GTEST_DEFAULT",
+  "facts": [
+    {
+      "source": "factory/python/tests/test_peripheral_assurance.py:60",
+      "detail": "Normal WO.prepare(EX) from examples/0009a-iwdg-ll. Fixture asserts peripheral=iwdg; then manually writes I003 legacy header, software/src/stm32n6xx_ll_iwdg.c and only software/tests/unit/test_iwdg.c at lines63-67."
+    },
+    {
+      "source": "examples/0009a-iwdg-ll/workorder.json:55",
+      "detail": "LL/iwdg greenfield register-block example; no delivery, CMSIS build or operation_scope fields."
+    },
+    {
+      "source": "factory/python/forge_factory/workorder.py:352",
+      "detail": "prepare unconditionally records unit_verification=UNIT_VERIFICATION (uspec-gtest-v1). cmsis_gtest parameter affects only delivery+CMSIS branch449-452 and cannot select legacy for this greenfield example."
+    },
+    {
+      "source": "factory/python/forge_factory/workflow/scaffold.py:65",
+      "detail": "Manifest with uspec-gtest and no declared target harness or CMSIS delivery selects test_iwdg.cpp. This fixture supplies only test_iwdg.c."
+    },
+    {
+      "source": "factory/python/forge_factory/assurance/verifiers.py:191",
+      "detail": "_unit_test follows scaffold.unit_test; missing selected test returns NOT_RUN/no unit test before compile-unit selection."
+    },
+    {
+      "source": "factory/python/forge_factory/layer.py:108",
+      "detail": "ll_tu returns software/src/<profile.ll.compile_unit>; iwdg profile line17 is stm32n6xx_ll_iwdg.c, exactly matching fixture line65. No static compile-path mismatch found."
+    }
+  ],
+  "raw_failure_limit": {
+    "proven_by_log": "Baseline test assertion sees NOT_RUN; same baseline/candidate failure recorded. Log/XML omit findings list.",
+    "claimed_reason_in_review_index": "NOT_RUN:no compile unit for code under test",
+    "claimed_reason_verified": false,
+    "reason": "No saved raw v_api_execution result or remaining pytest127/128 fixture workspace. Exact source/fixture chain predicts earlier no-unit-test return. Do not promote summary reason to proven causal evidence."
+  },
+  "future_narrow_correction": {
+    "scope": "Only historical C-harness fixture, in a fresh separate source worktree after current gate closes. Production verifier unchanged.",
+    "proposal": "Explicitly represent pre-uspec legacy manifest in test fixture: after WO.prepare, remove unit_verification from the returned manifest and save matching .forge-run/manifest.json before installing existing historical C main/header/TU. This preserves original intended Feature009 PG-T018 assurance semantics; alternatively migrate entire fixture to genuine GoogleTest with actual equivalent cases.",
+    "not_sufficient": "cmsis_gtest=False alone: code only gates delivered-CMSIS linkage and does not remove greenfield unit_verification marker.",
+    "avoid": [
+      "No NOT_RUN allowance/skip or weakened missing-TU verifier.",
+      "No production fallback from missing cpp to arbitrary C file.",
+      "No change to global peripheral profile, inputs, layer or production GoogleTest default."
+    ],
+    "verification_after_root_gate": "Run exact baseline fixture with preserved raw result and manifest/selected path inventory, then corrected historical fixture actual v_api_execution coverage + non-vacuous mutation campaign; retain failure and pass evidence. Not executed here."
+  },
+  "source_files": [
+    {
+      "path": "factory/python/tests/test_peripheral_assurance.py",
+      "baseline_sha256": "0254bd711f38ea1fbdf7e57245c6ffdd4dec84ad57a7fd8a79398e117cd29451",
+      "candidate_sha256": "0254bd711f38ea1fbdf7e57245c6ffdd4dec84ad57a7fd8a79398e117cd29451",
+      "same_whole_file": true
+    },
+    {
+      "path": "examples/0009a-iwdg-ll/workorder.json",
+      "baseline_sha256": "9c4ef0aafe60345e19cddd26f0b184fa6f28ef49772dcc1f078f33d87f7cb2ab",
+      "candidate_sha256": "9c4ef0aafe60345e19cddd26f0b184fa6f28ef49772dcc1f078f33d87f7cb2ab",
+      "same_whole_file": true
+    },
+    {
+      "path": "config/factory/peripherals/iwdg.yaml",
+      "baseline_sha256": "55c4e83cf271cc941ad2cff6fef23580e02a0a25e078c4b6e813a12c74f74f79",
+      "candidate_sha256": "55c4e83cf271cc941ad2cff6fef23580e02a0a25e078c4b6e813a12c74f74f79",
+      "same_whole_file": true
+    },
+    {
+      "path": "factory/python/forge_factory/assurance/verifiers.py",
+      "baseline_sha256": "b4f7bdce24b9d3c0a054f463ef8df79c6d995c474cb75e74d8aa415d20cd8c91",
+      "candidate_sha256": "b4f7bdce24b9d3c0a054f463ef8df79c6d995c474cb75e74d8aa415d20cd8c91",
+      "same_whole_file": true
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/scaffold.py",
+      "baseline_sha256": "6f0c02be5d33ae7c6391b143279b09634afc13f481d85f74602ec474e4269fba",
+      "candidate_sha256": "6f0c02be5d33ae7c6391b143279b09634afc13f481d85f74602ec474e4269fba",
+      "same_whole_file": true
+    },
+    {
+      "path": "factory/python/forge_factory/layer.py",
+      "baseline_sha256": "987508e21d0e1840aec8a8680abb80a96412b15f056f11f6721825c97d26b786",
+      "candidate_sha256": "987508e21d0e1840aec8a8680abb80a96412b15f056f11f6721825c97d26b786",
+      "same_whole_file": true
+    },
+    {
+      "path": "factory/python/forge_factory/peripheral.py",
+      "baseline_sha256": "37004dfbe7f134d4640d8ca21af7821caee57aae748a53c91cd110cdc08d3318",
+      "candidate_sha256": "37004dfbe7f134d4640d8ca21af7821caee57aae748a53c91cd110cdc08d3318",
+      "same_whole_file": true
+    },
+    {
+      "path": "factory/python/forge_factory/operation_scope.py",
+      "baseline_sha256": "cc93169e4686a578a804c40f203ce57befc444ed5470ac92283447a5513657e0",
+      "candidate_sha256": "cc93169e4686a578a804c40f203ce57befc444ed5470ac92283447a5513657e0",
+      "same_whole_file": true
+    },
+    {
+      "path": "factory/python/forge_factory/workorder.py",
+      "baseline_sha256": "ab330e8ec26c55b458e81712c352f2f163542592e8cba592060d40ac5669b84d",
+      "candidate_sha256": "ad1834d0497369c76b760441e9d64e52668111af263a4cabc560c710694fe23c",
+      "same_whole_file": false
+    }
+  ],
+  "critical_functions_same_baseline_candidate": [
+    {
+      "path": "factory/python/forge_factory/workorder.py",
+      "function": "prepare",
+      "line": 194,
+      "end_line": 506,
+      "source_sha256": "c008012f12c0ecf2d9d18f82c04cfdb14952cb0f015f319291fcd879e0420935",
+      "candidate_source_sha256": "c008012f12c0ecf2d9d18f82c04cfdb14952cb0f015f319291fcd879e0420935",
+      "same_function_source": true
+    },
+    {
+      "path": "factory/python/forge_factory/assurance/verifiers.py",
+      "function": "v_api_execution",
+      "line": 189,
+      "end_line": 221,
+      "source_sha256": "1811a6adc772da63fc78457ecf3db62ea7841d1e63353c4a0226e4cb78b48212",
+      "candidate_source_sha256": "1811a6adc772da63fc78457ecf3db62ea7841d1e63353c4a0226e4cb78b48212",
+      "same_function_source": true
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/scaffold.py",
+      "function": "unit_test",
+      "line": 57,
+      "end_line": 67,
+      "source_sha256": "b5a597b6f8fa68990ef13b9c0fd2f2c4d3189864306cc6efcee8bfabd9155472",
+      "candidate_source_sha256": "b5a597b6f8fa68990ef13b9c0fd2f2c4d3189864306cc6efcee8bfabd9155472",
+      "same_function_source": true
+    },
+    {
+      "path": "factory/python/forge_factory/layer.py",
+      "function": "ll_tu",
+      "line": 108,
+      "end_line": 109,
+      "source_sha256": "ccaba9ff0eacf5f88ba9d2cc27544559be9a5cb570855f3591591d6829f48760",
+      "candidate_source_sha256": "ccaba9ff0eacf5f88ba9d2cc27544559be9a5cb570855f3591591d6829f48760",
+      "same_function_source": true
+    }
+  ],
+  "existing_evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-baseline-iwdg.log",
+      "sha256": "0464e5ec1037f9e2ab8d1557a05585f64d76419bf9e14a4a06420c24b1f5ce50"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-baseline-iwdg.xml",
+      "sha256": "377ec4d01611270d43cf3cd3dcd17d3935c819d711bb02f3e6c4b6bf88e31b96"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-supervised-development-source-review-index.json",
+      "sha256": "ea1328f14202156ff1078b3a156444ca11dd6e36802e77c4f7f86768437c222d"
+    }
+  ],
+  "temporary_artifact_check": {
+    "pytest127_128_workspaces_present": false,
+    "searched_only_known_iwdg_fixture_paths_in_retained_pytest_roots": true,
+    "matching_remaining_fixture_found": false
+  },
+  "tests_run": 0,
+  "source_edits": false,
+  "runtime_effects": false
+}

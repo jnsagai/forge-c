@@ -1,0 +1,10 @@
+{
+  "status": "REFUSED",
+  "code": "RESUME_PROVIDED_MISMATCH:software/ll/stm32n6xx_ll_wwdg.h:WO-CONTROL-SOURCE built on a different provided file",
+  "scope": "PRIVATE_NORMAL_APPROVAL_FIXTURE_NO_NATIVE_SUBMIT",
+  "source_revision": "9dcc5c4e3774e0657619133a130c4b198fcc2a6d",
+  "source_unchanged": true,
+  "model_calls": 0,
+  "production_mutations": false,
+  "approved_effective_LL": true
+}

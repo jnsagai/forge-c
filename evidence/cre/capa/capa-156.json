@@ -1,0 +1,128 @@
+{
+ "CAPA-156": {
+  "history": [
+   {
+    "at": "2026-11-04T15:01:14.618473Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[\"cloud-gen23-pd-8390fad485130320aa55-pinned-inputs\"]",
+    "from_state": null,
+    "reason": "Independent scoped CRE execution lacks its required pinned ST vendor inputs",
+    "seq": 1151,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T15:01:14.682725Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1152,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T15:01:14.895202Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-156 assigned",
+    "seq": 1153,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T15:01:16.994101Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[\"reproducer-run:rr-8377b232b3f4dca8e664\", \"reproducer-run:rr-7970aa4d3ae86683bbf7\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "BASELINE_NOT_REPRODUCED:ERROR",
+    "seq": 1154,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T15:02:32.809765Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1155,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T15:02:33.008361Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-156 assigned",
+    "seq": 1156,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T15:02:35.050020Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[\"reproducer-run:rr-c7a3d651ee921705c344\", \"reproducer-run:rr-4a387bcd65379f88432f\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1157,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T15:02:35.090719Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[\"git:e014fd86a002..36236baef77c\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 36236baef77c (patch 3927 bytes)",
+    "seq": 1158,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T15:05:04.466939Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[\"reproducer-run:rr-fa7bade5e81a04a7110d\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-156 absent at 36236baef77c",
+    "seq": 1159,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T15:05:04.526193Z",
+    "capa_id": "CAPA-156",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1160,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-153579638af55914ab308f8a8fdfdb474e518a00",
+   "e014fd86a00233605b2f82c026499aa4e8fbd7b4",
+   "36236baef77c8a3efa311596a0d0ac4251ee5c50",
+   "pd-2e344c629b4985026e17"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<36236baef77c"
+   ],
+   "candidate_patch_sha256": "6a9a40a4d7ca1fa7adb49ee8dae61de264e14def60d85799901ae43b54ee7268",
+   "capa_id": "CAPA-156",
+   "created_at": "2026-11-04T15:01:14.618473Z",
+   "event_ids": [],
+   "incident_ids": [
+    "cloud-gen23-pd-8390fad485130320aa55-pinned-inputs"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-156",
+   "reproducer_id": "RPR-156",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-c7a3d651ee921705c344",
+    "reproducer-run:rr-4a387bcd65379f88432f"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Correct independent observer exit code to1 for the already measured symptom; original ERROR and logs retained. No source or expected signature changes.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T15:05:04.526193Z"
+  }
+ }
+}

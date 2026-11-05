@@ -1,0 +1,155 @@
+{
+ "CAPA-164": {
+  "history": [
+   {
+    "at": "2026-11-04T20:02:57.918571Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[\"qualification:cloud-upstream-context-control-20261104\"]",
+    "from_state": null,
+    "reason": "Normal cloud UPSTREAM placement omits bound failed-review and defect data required by owning-phase recovery; independent CONTROL, not a fabricated production verdict.",
+    "seq": 1226,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T20:02:57.962047Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by CODEX implementation engineer",
+    "seq": 1227,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T20:02:58.122843Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-164 assigned",
+    "seq": 1228,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T20:03:01.797002Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[\"reproducer-run:rr-90d7928ccd21b6445bc2\", \"reproducer-run:rr-fe95c78034391d82da34\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "BASELINE_NOT_REPRODUCED:ERROR",
+    "seq": 1229,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T20:06:29.830352Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by CODEX implementation engineer; oracle fixture correction after independent-runner setup ERROR",
+    "seq": 1230,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T20:06:29.995691Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-164 assigned",
+    "seq": 1231,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T20:06:33.671707Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[\"reproducer-run:rr-b1fcda2585ea3b951395\", \"reproducer-run:rr-25ff2a00517301ec4cae\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CANDIDATE_NOT_FIXED:ERROR",
+    "seq": 1232,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T20:07:52.132247Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by CODEX; oracle output-format correction preserving both prior UNRESOLVED cycles",
+    "seq": 1233,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T20:07:52.344687Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-164 assigned",
+    "seq": 1234,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T20:07:57.461906Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[\"reproducer-run:rr-b280d1186ca85bbf2ac7\", \"reproducer-run:rr-46f6965ccac9c982edb0\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1235,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T20:07:57.482679Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[\"git:0965d474aff8..7ad0f763ca0b\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 7ad0f763ca0b (patch 34474 bytes)",
+    "seq": 1236,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T20:15:53.851586Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[\"reproducer-run:rr-a6d6ff08e55519981986\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-164 absent at 7ad0f763ca0b",
+    "seq": 1237,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T20:15:53.865587Z",
+    "capa_id": "CAPA-164",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1238,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-589752a8c5407d7690c1936a3f047cff87fc3864",
+   "0965d474aff8e1fbb4ea683d0b4f934bd74462fe",
+   "7ad0f763ca0bedc81651f1d5b8dc91a52200b974",
+   "pd-8f8658dc5d0f713b1fa1"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<7ad0f763ca0b"
+   ],
+   "candidate_patch_sha256": "a86a0e2abf52caf2f265de3f63b896422ab2be6a5d27dc5dedfa08bb6288b85e",
+   "capa_id": "CAPA-164",
+   "created_at": "2026-11-04T20:02:57.918571Z",
+   "event_ids": [],
+   "incident_ids": [
+    "qualification:cloud-upstream-context-control-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-164",
+   "reproducer_id": "RPR-164",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-b280d1186ca85bbf2ac7",
+    "reproducer-run:rr-46f6965ccac9c982edb0"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Only RETRY attaches bound findings; UPSTREAM drops them. Last candidate correctly exited0/SYMPTOM_ABSENT:<signature>; runner requires exact SYMPTOM_ABSENT. Preserve prior ERROR and correct oracle output protocol only, with unchanged source/evaluator.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T20:15:53.865587Z"
+  }
+ }
+}

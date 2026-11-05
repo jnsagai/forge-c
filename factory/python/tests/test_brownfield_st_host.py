@@ -19,6 +19,20 @@ from forge_factory.workflow.scaffold import TEST_CALLS_MARKER, TEST_CASES_MARKER
 from test_brownfield_pilot import _contract, ws  # noqa: F401 - pytest fixture
 from test_brownfield_pilot import pytestmark as pilot_mark
 
+UT_GTEST = """TEST(SWU_LL_01, UT_001)
+{
+    ut_reset_regs();
+    LL_RCC_HSI_Enable();
+    EXPECT_EQ(forge_host_rcc.CSR, RCC_CSR_HSIONS);
+    LL_RCC_HSI_Disable();
+    EXPECT_EQ(forge_host_rcc.CCR, RCC_CCR_HSIONC);
+    forge_host_rcc.SR = RCC_SR_HSIRDY;
+    EXPECT_EQ(LL_RCC_HSI_IsReady(), 1U);
+    ut_reset_regs();
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPDMA1);
+    EXPECT_NE(forge_host_rcc.AHB1ENSR & LL_AHB1_GRP1_PERIPH_GPDMA1, 0U);
+}
+"""
 UT = """static void ut_hsi(void)
 {
     ut_reset_regs();
@@ -84,10 +98,13 @@ def test_st_code_unit_tests_run_on_the_host_device_map(ws):  # noqa: F811
     assert {"stm32n6xx.h", "stm32n657xx.h", "core_cm55.h", "forge_host_device.h"} <= {p.name for p in hd.iterdir()}
     assert not (hd / "cmsis_gcc.h").exists()  # the Arm-only compiler header stays out of the host build
     p = ws / unit_test(ws)
-    p.write_text(p.read_text().replace(TEST_CASES_MARKER, UT + TEST_CASES_MARKER)
-                 .replace(TEST_CALLS_MARKER, "ut_hsi();\n    " + TEST_CALLS_MARKER))
+    if p.suffix == ".cpp":  # owner 2026-11-03: the GoogleTest form of the same host-device harness
+        p.write_text(p.read_text().replace(TEST_CASES_MARKER, UT_GTEST + TEST_CASES_MARKER))
+    else:
+        p.write_text(p.read_text().replace(TEST_CASES_MARKER, UT + TEST_CASES_MARKER)
+                     .replace(TEST_CALLS_MARKER, "ut_hsi();\n    " + TEST_CALLS_MARKER))
     r = T.run_unit(sdk.ToolContext("forge-tests-mcp", "run_unit", "swe4-author", "SWE.4", ws, "r"), T.RunIn())
-    assert r["status"] == "PASS", r
+    assert r["status"] == "PASS", r["issues"]
 
 
 @pilot_mark

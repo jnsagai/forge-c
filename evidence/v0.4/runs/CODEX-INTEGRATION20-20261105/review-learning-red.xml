@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="12" time="1.075" timestamp="2026-11-05T10:19:35.331019+00:00" hostname="master"><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_a_signed_disposition_of_a_registered_gap_or_finding_is_accepted" time="0.136" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_an_edited_disposition_is_refused[&lt;lambda&gt;-DSP_SIGNATURE_INVALID0]" time="0.046" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_an_edited_disposition_is_refused[&lt;lambda&gt;-DSP_SIGNATURE_INVALID1]" time="0.042" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_an_edited_disposition_is_refused[&lt;lambda&gt;-DSP_SCHEMA_INVALID]" time="0.042" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_forged_unsigned_wrong_namespace_wrong_bundle_and_unknown_subjects_are_refused" time="0.109" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_routing_feeds_the_learning_set_once_refuses_held_out_work_and_never_changes_the_bundle" time="0.092" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_active_frozen_baselines_remain_held_out_and_registered_spent_sets_are_learning" time="0.001"><failure message="AssertionError: assert 'WO-0009B-STM32N6-IWDG-HAL-rc3' not in {'WO-0002A-STM32N6-RCC-LL-r168', 'WO-0002A-STM32N6-RCC-LL-r170', 'WO-0008A-STM32N6-RCC-LL-b001', 'WO-0008A-STM32N6-RCC-LL-rc1', 'WO-0008B-STM32N6-RCC-HAL-b002', 'WO-0008B-STM32N6-RCC-HAL-b004', ...}">def test_active_frozen_baselines_remain_held_out_and_registered_spent_sets_are_learning():
+        active = D.heldout_workorders()
+        assert "WO-0002A-STM32N6-RCC-LL-r168" in active
+&gt;       assert "WO-0009B-STM32N6-IWDG-HAL-rc3" not in active
+E       AssertionError: assert 'WO-0009B-STM32N6-IWDG-HAL-rc3' not in {'WO-0002A-STM32N6-RCC-LL-r168', 'WO-0002A-STM32N6-RCC-LL-r170', 'WO-0008A-STM32N6-RCC-LL-b001', 'WO-0008A-STM32N6-RCC-LL-rc1', 'WO-0008B-STM32N6-RCC-HAL-b002', 'WO-0008B-STM32N6-RCC-HAL-b004', ...}
+
+factory/python/tests/test_da014_offline_disposition.py:107: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_confirmed_human_review_opens_one_evidence_linked_capa_without_trusting_rationale" time="0.176"><failure message="assert 0 == 1&#10; +  where 0 = len([])">env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_confirmed_human_review_op0/export.zip'), 'key': PosixPat.../pytest-85/test_confirmed_human_review_op0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+
+    def test_confirmed_human_review_opens_one_evidence_linked_capa_without_trusting_rationale(env):
+        from forge_factory.reliability.capa import CapaRegistry
+        from forge_factory.reliability.policy import load
+        from forge_factory.reliability.store import CREStore
+    
+        _rec(env)
+        kw = dict(bundle=env["bundle"], out=env["tmp"] / "intake.jsonl", allowed_signers=env["signers"])
+        first = D.route(env["recs"], **kw)
+        registry = CapaRegistry(CREStore(), load())
+        records = registry.all()
+&gt;       assert len(records) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+factory/python/tests/test_da014_offline_disposition.py:122: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_other_review_verdicts_are_kept_without_fabricating_defect_capas[FALSE_FINDING]" time="0.059"><failure message="KeyError: 'capa_ids'">env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_other_review_verdicts_are0/export.zip'), 'key': PosixPat.../pytest-85/test_other_review_verdicts_are0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+verdict = 'FALSE_FINDING'
+
+    @pytest.mark.parametrize("verdict", ["FALSE_FINDING", "MISSING_INPUT", "OUT_OF_SCOPE"])
+    def test_other_review_verdicts_are_kept_without_fabricating_defect_capas(env, verdict):
+        from forge_factory.reliability.capa import CapaRegistry
+        from forge_factory.reliability.policy import load
+        from forge_factory.reliability.store import CREStore
+    
+        _rec(env, verdict=verdict)
+        result = D.route(env["recs"], bundle=env["bundle"], out=env["tmp"] / "intake.jsonl",
+                         allowed_signers=env["signers"])
+&gt;       assert result["routed"] == 1 and result["capa_ids"] == []
+                                         ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'capa_ids'
+
+factory/python/tests/test_da014_offline_disposition.py:143: KeyError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_other_review_verdicts_are_kept_without_fabricating_defect_capas[MISSING_INPUT]" time="0.051"><failure message="KeyError: 'capa_ids'">env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_other_review_verdicts_are1/export.zip'), 'key': PosixPat.../pytest-85/test_other_review_verdicts_are1/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+verdict = 'MISSING_INPUT'
+
+    @pytest.mark.parametrize("verdict", ["FALSE_FINDING", "MISSING_INPUT", "OUT_OF_SCOPE"])
+    def test_other_review_verdicts_are_kept_without_fabricating_defect_capas(env, verdict):
+        from forge_factory.reliability.capa import CapaRegistry
+        from forge_factory.reliability.policy import load
+        from forge_factory.reliability.store import CREStore
+    
+        _rec(env, verdict=verdict)
+        result = D.route(env["recs"], bundle=env["bundle"], out=env["tmp"] / "intake.jsonl",
+                         allowed_signers=env["signers"])
+&gt;       assert result["routed"] == 1 and result["capa_ids"] == []
+                                         ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'capa_ids'
+
+factory/python/tests/test_da014_offline_disposition.py:143: KeyError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_other_review_verdicts_are_kept_without_fabricating_defect_capas[OUT_OF_SCOPE]" time="0.056"><failure message="KeyError: 'capa_ids'">env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_other_review_verdicts_are2/export.zip'), 'key': PosixPat.../pytest-85/test_other_review_verdicts_are2/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+verdict = 'OUT_OF_SCOPE'
+
+    @pytest.mark.parametrize("verdict", ["FALSE_FINDING", "MISSING_INPUT", "OUT_OF_SCOPE"])
+    def test_other_review_verdicts_are_kept_without_fabricating_defect_capas(env, verdict):
+        from forge_factory.reliability.capa import CapaRegistry
+        from forge_factory.reliability.policy import load
+        from forge_factory.reliability.store import CREStore
+    
+        _rec(env, verdict=verdict)
+        result = D.route(env["recs"], bundle=env["bundle"], out=env["tmp"] / "intake.jsonl",
+                         allowed_signers=env["signers"])
+&gt;       assert result["routed"] == 1 and result["capa_ids"] == []
+                                         ^^^^^^^^^^^^^^^^^^
+E       KeyError: 'capa_ids'
+
+factory/python/tests/test_da014_offline_disposition.py:143: KeyError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_reusing_a_review_id_with_different_signed_content_is_a_conflict" time="0.079"><failure message="IndexError: list index out of range">env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-85/test_reusing_a_review_id_with_0/export.zip'), 'key': PosixPat.../pytest-85/test_reusing_a_review_id_with_0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+
+    def test_reusing_a_review_id_with_different_signed_content_is_a_conflict(env):
+        _rec(env)
+        kw = dict(bundle=env["bundle"], out=env["tmp"] / "intake.jsonl", allowed_signers=env["signers"])
+        D.route(env["recs"], **kw)
+        before = kw["out"].read_bytes()
+        _rec(env, verdict="FALSE_FINDING")
+        result = D.route(env["recs"], **kw)
+&gt;       assert result["routed"] == 0 and result["refused"][0]["code"] == "DSP_ID_CONFLICT"
+                                         ^^^^^^^^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+factory/python/tests/test_da014_offline_disposition.py:154: IndexError</failure></testcase></testsuite></testsuites>

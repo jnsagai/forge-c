@@ -165,9 +165,13 @@ def learning_cycle(store):
     from .runtime import workspace_of
 
     lessons = LessonStore()
+    from ..offline.feedback import reconcile, registry
+
+    reviewed_capas = registry()
     capture_afo(store, lessons, workspace_of, limit=32)
     with FabroClient(token=load_token(), timeout=3) as client:
-        capture_workorders(store, lessons, client=client, limit=8)
+        capture_workorders(store, lessons, client=client, limit=8,
+                           on_workspace=lambda ws: reconcile(reviewed_capas, [ws], lessons=lessons, cursor_store=store))
     consolidate(lessons, limit=32)
     from ..reliability.capa import CapaRegistry
     from ..reliability.policy import load as cre_policy

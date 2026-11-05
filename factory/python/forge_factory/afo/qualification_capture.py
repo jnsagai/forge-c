@@ -128,6 +128,13 @@ def product_observation(store, manifest, trial, binding):
         "structured_calls": sum(m.get("schema_mode") in ("json_schema", "json_object") for m in metadata) if complete else None,
         "usage_unknown": not requests or any(r.get("reported_tokens") is None for r in requests),
     }
+    if "line_intake_identity" in binding:
+        from .line_soak_intake import actual_identity
+
+        actual = actual_identity(order, job)
+        if actual != binding["line_intake_identity"]:
+            raise Refused("QUALIFICATION_LINE_INTAKE_CHANGED")
+        observation["line_intake_identity"] = actual
     return observation, ws
 
 
@@ -185,6 +192,13 @@ def replay_product_row(manifest, row):
         or (observation.get("execution") or {}).get("job_id") != binding["job_id"]
     ):
         raise Refused("PRODUCT_OBSERVATION_BINDING_CHANGED")
+    if "line_intake_identity" in binding:
+        from .line_soak_intake import validate_identity
+
+        validate_identity(binding["line_intake_identity"])
+    if ("line_intake_identity" in binding or "line_intake_identity" in observation) and (
+            "line_intake_identity" not in binding or observation.get("line_intake_identity") != binding["line_intake_identity"]):
+        raise Refused("QUALIFICATION_LINE_INTAKE_CHANGED")
     actual = audited_product_row(manifest, observation, row.get("independent_audit"))
     if actual != row:
         raise Refused("PRODUCT_AUDIT_VERDICT_CHANGED")

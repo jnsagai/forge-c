@@ -1,0 +1,45 @@
+{
+  "AST_identical_names": [
+    "require",
+    "canonical",
+    "digest",
+    "sha",
+    "private",
+    "write_new",
+    "identity",
+    "check_lifetime",
+    "quiet",
+    "reap",
+    "Runtime.__init__",
+    "Runtime.ledger",
+    "Runtime.db",
+    "Runtime.act_lock",
+    "Runtime.unit",
+    "Runtime.resources",
+    "Runtime.processes",
+    "Runtime.fd_context",
+    "Runtime.census",
+    "Runtime.guard",
+    "Runtime.signal",
+    "Runtime.wait_quiet",
+    "Runtime.remove_holder_file",
+    "main"
+  ],
+  "all_old_AST_identical_except": [
+    "Runtime.authenticated_dead_origin",
+    "Runtime.tail",
+    "Runtime.verify_and_emit"
+  ],
+  "candidate": {
+    "bytes": 20950,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/cleanup-exact-partial-bootstrap.py",
+    "sha256": "6062de07287087f669ae52064f84ba7ddda4ed433e56b57db67d74912ca5df33"
+  },
+  "new_function": "require_original_issuer_ended",
+  "physical_reap_signal_and_unlink_sequence_AST_identical": true,
+  "predecessor": {
+    "bytes": 20321,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-review-20261105/cleanup-exact-partial-bootstrap.py",
+    "sha256": "9618939cbbce1d121324c18d4219f6897ebd0a14667bbddba3e04bad61bfbedf"
+  }
+}

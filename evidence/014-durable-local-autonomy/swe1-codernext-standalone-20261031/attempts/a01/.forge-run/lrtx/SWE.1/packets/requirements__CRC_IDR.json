@@ -1,0 +1,116 @@
+{
+  "at": "2026-10-31T17:01:00.822740Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 9088,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 8960,
+          "sha256": "c919d9952bb0943bbab881bc1aab1a906296ab91cd937d05b1c4e170ad8a115b"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2690,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7222
+      },
+      "errors": [
+        "[crc_idr_write_idr] verification has no pass criterion ('passes when ...')",
+        "[crc_idr_write_idr] effect WRITE_IDR_VALUE: value '0xXXXXXXXX' must be a number that fits CRC_IDR.IDR (32 bits)",
+        "[crc_idr_read_idr] verification has no pass criterion ('passes when ...')"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "b80810ce6b99901ff8363bd2ed0d213c44ef0d363db1c2393d5c6805bf3372e0",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 396,
+        "prompt_tokens": 1817,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 2213
+      },
+      "wall_ms": 6161.0
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 11019,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 10891,
+          "sha256": "3dd9169ee1bf2b1a4b6bfeffd4e87145579571a60830dfec538f90d711b824c5"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3344,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 9022
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "0d140670ceb47dc48586acf361f7cc4d356bb0c97d9a5e2ba19ec5e0a94cb733",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 387,
+        "prompt_tokens": 2317,
+        "prompt_tokens_details": {
+          "cached_tokens": 237
+        },
+        "total_tokens": 2704
+      },
+      "wall_ms": 5668.6
+    }
+  ],
+  "base_hash": "b80810ce6b99901ff8363bd2ed0d213c44ef0d363db1c2393d5c6805bf3372e0",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "WRITE_IDR_VALUE",
+            "field": "IDR",
+            "op": "write",
+            "register": "CRC_IDR",
+            "value": "0xFFFFFFFF"
+          }
+        ],
+        "key": "crc_idr_write_idr",
+        "source_page": 1172,
+        "statement": "The CRC LL driver shall write the supplied 32-bit value to the CRC_IDR.IDR register when LL_CRC_Write_IDR is called with a valid CRC peripheral instance and the register interface is accessible.",
+        "verification": "The test writes a known 32-bit value via LL_CRC_Write_IDR and reads back via LL_CRC_Read_IDR; the test passes when the read value equals the written value.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_IDR_VALUE",
+            "field": "IDR",
+            "op": "no_write",
+            "register": "CRC_IDR",
+            "value": ""
+          }
+        ],
+        "key": "crc_idr_read_idr",
+        "source_page": 1172,
+        "statement": "The CRC LL driver shall return the current 32-bit value stored in CRC_IDR.IDR when LL_CRC_Read_IDR is called with a valid CRC peripheral instance and the register interface is accessible.",
+        "verification": "The test writes a known 32-bit value to CRC_IDR.IDR using direct register access or a verified method, then calls LL_CRC_Read_IDR; the test passes when the returned value equals the value written.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:CRC_IDR"
+}

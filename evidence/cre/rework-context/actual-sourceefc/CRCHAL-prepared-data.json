@@ -1,0 +1,146 @@
+{
+  "schema": "forge-c/rework-context/1",
+  "authority": "UNTRUSTED_REFERENCE_DATA_ONLY",
+  "phase": "SWE.3",
+  "source_work_order": "WO-F014-CMP-SWE3-CRCHAL-20261104-T1E",
+  "source_run_id": "01M6KCKS9HS4C4DS37S5R63KMQ",
+  "source_terminal_status": "SUCCEEDED",
+  "source_manifest_sha256": "37846ca158150f164ddbc8881937465ad9e754de0982cb31778b7563b1d9e6a6",
+  "source_factory_revision": {
+    "basis": "recorded_at_launch",
+    "branch": "run/cloud-gen23-inspector-capacity",
+    "commit": "c3aa129d74377f94467b6027f4f5c8c758ddd9e9",
+    "dirty": false
+  },
+  "source_gate_sha256": "6f0182f816001497caa6cb0a41d99f9f723f7eb83f0bfd5336c8da684f7af520",
+  "inspection_state": "ABSENT",
+  "source_inspection_sha256": "ABSENT",
+  "inspection": null,
+  "gate_records": [
+    {
+      "ts": "2026-11-04T13:53:12.499593Z",
+      "phase": "SWE.3",
+      "step": "author",
+      "result": "REJECTED",
+      "status": "INCOMPLETE",
+      "issues": [
+        "UNIT:SWR_NOT_REFINED:SWR-028 (allocated to SWC_HAL but no unit-spec item traces it: add 'Traces: SWR-028' to the USPEC item(s) of the unit that implements it)",
+        "UNIT:SWR_NOT_REFINED:SWR-029 (allocated to SWC_HAL but no unit-spec item traces it: add 'Traces: SWR-029' to the USPEC item(s) of the unit that implements it)",
+        "CODE:DOXYGEN_WARNING:software/hal/stm32n6xx_hal_crc.h:6: warning: Compound hal_crc_config_t is not documented.",
+        "CODE:DOXYGEN_WARNING:software/hal/stm32n6xx_hal_crc.h:7: warning: Member polynomial (variable) of struct hal_crc_config_t is not documented.",
+        "CODE:DOXYGEN_WARNING:software/hal/stm32n6xx_hal_crc.h:8: warning: Member polynomial_size (variable) of struct hal_crc_config_t is not documen",
+        "CODE:DOXYGEN_WARNING:software/hal/stm32n6xx_hal_crc.h:9: warning: Member init_value (variable) of struct hal_crc_config_t is not documented.",
+        "CODE:DOXYGEN_WARNING:software/hal/stm32n6xx_hal_crc.h:10: warning: Member input_reverse (variable) of struct hal_crc_config_t is not document",
+        "CODE:DOXYGEN_WARNING:software/hal/stm32n6xx_hal_crc.h:11: warning: Member output_reverse (variable) of struct hal_crc_config_t is not documen"
+      ]
+    },
+    {
+      "ts": "2026-11-04T13:53:12.861972Z",
+      "phase": "SWE.3",
+      "step": "route",
+      "gate": {
+        "decision": "REWORK",
+        "reason": "NO_BASELINE",
+        "phase": "SWE.3"
+      }
+    },
+    {
+      "ts": "2026-11-04T14:02:08.432984Z",
+      "phase": "SWE.3",
+      "step": "author",
+      "result": "REJECTED",
+      "status": "BLOCKED",
+      "issues": [
+        "Independent 64-word simulation measurements for Calculate and Accumulate are missing.",
+        "No exposed tool can run the declared instrumented target performance test or the SWE.3 author gate.",
+        "The recorded timing evidence predates the source annotation changes."
+      ]
+    },
+    {
+      "ts": "2026-11-04T14:02:08.795391Z",
+      "phase": "SWE.3",
+      "step": "route",
+      "gate": {
+        "decision": "REWORK",
+        "reason": "NO_BASELINE",
+        "phase": "SWE.3"
+      }
+    },
+    {
+      "ts": "2026-11-04T14:10:47.510791Z",
+      "phase": "SWE.3",
+      "step": "author",
+      "result": "REJECTED",
+      "status": "BLOCKED",
+      "issues": [
+        "Independent current simulation measurements for all scoped APIs are missing.",
+        "No exposed tool can run the instrumented target performance test or SWE.3 author gate."
+      ]
+    },
+    {
+      "ts": "2026-11-04T14:10:47.885759Z",
+      "phase": "SWE.3",
+      "step": "route",
+      "gate": {
+        "decision": "REWORK",
+        "reason": "NO_BASELINE",
+        "phase": "SWE.3"
+      }
+    },
+    {
+      "ts": "2026-11-04T14:14:22.472130Z",
+      "phase": "SWE.3",
+      "step": "author",
+      "result": "REJECTED",
+      "status": "BLOCKED",
+      "issues": [
+        "Current independent simulation measurements for all scoped APIs are missing.",
+        "No exposed tool runs the declared instrumented target test or the SWE.3 author gate."
+      ]
+    },
+    {
+      "ts": "2026-11-04T14:14:22.842874Z",
+      "phase": "SWE.3",
+      "step": "route",
+      "gate": {
+        "decision": "REWORK",
+        "reason": "NO_BASELINE",
+        "phase": "SWE.3"
+      }
+    },
+    {
+      "ts": "2026-11-04T14:17:06.095513Z",
+      "phase": "SWE.3",
+      "step": "author",
+      "result": "REJECTED",
+      "status": "BLOCKED",
+      "issues": [
+        "Current independent simulation measurements for all scoped APIs are missing.",
+        "No exposed tool runs the instrumented target test or SWE.3 author gate."
+      ]
+    },
+    {
+      "ts": "2026-11-04T14:17:06.467291Z",
+      "phase": "SWE.3",
+      "step": "route",
+      "gate": {
+        "decision": "BLOCKED",
+        "reason": "rework budget exhausted (5 failed cycles)",
+        "phase": "SWE.3"
+      }
+    }
+  ],
+  "carried_upstream_baselines": {
+    "SWE.1": "c0d9de29c4e4fce99ccef213d2de2f3d7ddee86cfaa05c3a383579cd26b72451",
+    "SWE.2": "f7c1bb228162fe5af1da271b9eabd65d99f39de018746863b4dc96e0434c1928"
+  },
+  "provided_headers": {
+    "software/ll/stm32n6xx_ll_crc.h": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+  },
+  "failed_phase_current_unit_sources": {
+    "software/hal/stm32n6xx_hal_crc.c": "13e79a0db34124d39ecedb28f1a7e9142ca5937032ad4c458eff20679949ab72",
+    "software/hal/stm32n6xx_hal_crc.h": "ac01218381a3e5461df3c618be821ec7f83360bd251436b1a508f854e5edb9ab",
+    "software/ll/stm32n6xx_ll_crc.h": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+  },
+  "acceptance": "NEW_NATIVE_GATES_AND_INDEPENDENT_INSPECTION_REQUIRED"
+}

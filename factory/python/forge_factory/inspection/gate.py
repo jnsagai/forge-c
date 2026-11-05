@@ -25,6 +25,7 @@ from pathlib import Path
 from ..common import pretty_json, utc_now
 from ..contracts.agent_output import parse
 from ..events.emit import emit
+from . import completeness, outage
 from .engine import InspectionError, Store
 
 
@@ -104,6 +105,11 @@ def _structured_task_issues(store: Store, res) -> list[str]:
     return [f"LRTX_TASK_INVALID:{str(i)[:200]}" for i in res.issues]
 
 
+UPSTREAM_CALLS_HINT = (" - the call contract workproducts/SWE.2/api_calls.json belongs to SWE.2: if its call is wrong, "
+                       "record it with mcp__forge_evidence_mcp__report_defect kind ARCHITECTURE (target SWE.2) instead of "
+                       "editing it; if your code is wrong, fix the code")  # CAPA-089
+
+
 def step_author(store: Store, phase: str, text: str) -> int:
     res = parse(text)
     prose_violation = None
@@ -120,6 +126,9 @@ def step_author(store: Store, phase: str, text: str) -> int:
         from .test_mapping import startup_on_host  # CAPA-059: startup invariants are target-observed (Robot)
 
         generated += startup_on_host(store.workspace)
+        from ..assurance.owner_obligations import coverage_findings  # owner 2026-10-31: any author path, opt-in input
+
+        generated += coverage_findings(store.workspace)
     if phase == "SWE.2" and (store.workspace / "workproducts/SWE.2/architecture_static.puml").is_file():
         from .views import check_views  # PlantUML views: syntax/content checked and SVGs rendered before freeze
 
@@ -129,7 +138,13 @@ def step_author(store: Store, phase: str, text: str) -> int:
     if phase != "SWE.1" and swtrace_enabled(store.workspace):  # owner addendum 2026-10-17: trace relations of this phase
         from .swtrace import check_phase
 
-        generated += check_phase(store.workspace, phase)["major_findings"]
+        from ..quality import accept_requirement_findings
+
+        kept, accepted = accept_requirement_findings(store.workspace, phase, check_phase(store.workspace, phase)[
+            "major_findings"])  # owner rule 2026-11-03: requirement coverage at or above the order's minimum
+        generated += kept
+        if accepted:
+            _state(store.workspace, phase, {"step": "quality", "result": "BELOW_TARGET_ACCEPTED", "shortfall": accepted})
     from ..layer import layer_of, register_contract_enabled
 
     if register_contract_enabled(store.workspace):  # owner decision 2026-10-19 (B): the oracle's register contract
@@ -139,19 +154,36 @@ def step_author(store: Store, phase: str, text: str) -> int:
         if phase == "SWE.1":
             generated += RC.check_effects(store.workspace, "LL" if lay == "LL" else "HAL")
         elif phase == "SWE.2":
-            generated += RC.check_calls(store.workspace)
+            # instance mode: compiled against the declared API contract; CAPA-089 (run WO-F014-SWE3-CRCK-20261101-01):
+            # a brownfield delivery's headers exist from the SWE.1 freeze on, so the contract is compiled where it is
+            # made; CAPA-137 (WO-F014-SWE3-CRCHAL-20261103-L31B): any other work order (its interface header is written
+            # at SWE.3) gets the identifier check - an argument nothing declares never compiles at SWE.3
+            generated += RC.swe2_contract_findings(store.workspace, lay)
         elif phase == "SWE.3":
             from ..layer import hal_h, ll_header
 
             hdr = Path(ll_header(store.workspace) if lay == "LL" else hal_h(store.workspace)).name  # feature 009
-            generated += RC.check_compiles(store.workspace, [store.workspace / "software/hal",
-                                                             store.workspace / "software/ll"], hdr)
+            generated += [f + UPSTREAM_CALLS_HINT for f in RC.check_compiles(
+                store.workspace, [store.workspace / "software/hal", store.workspace / "software/ll"], hdr)]
+    if phase == "SWE.3":  # CAPA-121 + owner 2026-11-03: every SWE.3 path gets the factory-rendered static timing bound;
+        from ..static_timing import gate as timing_gate  # an over-budget or unbounded result is a rework finding
+
+        generated += timing_gate(store.workspace)
+    if phase == "SWE.3":  # owner 2026-11-03 (revised): provided-code changes only with a linked defect; diff report
+        from .provided_changes import findings as provided_change_findings
+
+        generated += provided_change_findings(store.workspace)
+    if phase == "SWE.4":  # owner 2026-11-03 (C): structural coverage is a blocking gate by work-order purpose
+        from .coverage_gate import findings as coverage_gate_findings
+
+        generated += coverage_gate_findings(store.workspace)
     from ..assurance.scope import workspace_scope_findings  # CAPA-044: stated safety level = owner scope
 
     generated += workspace_scope_findings(store.workspace, phase)
     missing = store.missing_outputs(phase) if os.environ.get("FORGE_GATE_PRESENCE", "1") == "1" else []
     missing += generated
-    missing += _structured_task_issues(store, res)
+    task_issues = _structured_task_issues(store, res)
+    missing += task_issues
     from . import defects  # ADR-0008: a fixed upstream defect is verified with the SAME, unchanged tests
 
     missing += defects.verify_on_freeze(store.workspace, phase)
@@ -165,6 +197,15 @@ def step_author(store: Store, phase: str, text: str) -> int:
             _state(store.workspace, phase, {"step": "test_declaration", "result": "REFUSED", "error": str(exc)[:200]})
         missing += [f"{i} (restore the test and report_defect the upstream fault, or declare the correction with "
                     "report_defect kind TEST)" for i in defects.bent_tests(store.workspace, phase)]
+    if task_issues and outage.any_outage(task_issues):
+        # CAPA-122 (run WO-F014-CMP-SWE1-CRCL-20261102-10): the visit's model calls were refused after its bounded
+        # wait-and-retry. No author attempt happened: an infrastructure outcome, never a REJECTED attempt (rework
+        # budget, STUCK and progress rules count REJECTED records only). The route ends the phase retryably.
+        _state(store.workspace, phase, {"step": "author", "result": outage.INFRA, "status": outage.CODE,
+                                        "issues": missing[:20]})
+        print(json.dumps({"infra_unavailable": outage.CODE, "issues": [i for i in task_issues
+                                                                        if outage.is_outage_issue(i)][:5]}))
+        return fail_code(store.workspace, phase, "author")
     if missing:  # deterministic presence gate: nothing is frozen while required outputs/tool passes are missing
         _state(store.workspace, phase, {"step": "author", "result": "REJECTED", "status": "INCOMPLETE",
                                         "issues": missing[:20]})
@@ -217,7 +258,15 @@ def step_author(store: Store, phase: str, text: str) -> int:
 
 def step_inspect(store: Store, phase: str, text: str) -> int:
     res = parse(text)
-    g = store.gate(phase)
+    if res.ok and res.status == "FAILED" and outage.any_outage(res.issues):
+        # CAPA-122: the structured inspector's model calls were refused (bounded wait used up): nothing was judged or
+        # recorded; an infrastructure outcome for the route, never a re-use of an earlier verdict
+        _state(store.workspace, phase, {"step": "inspect", "result": outage.INFRA, "status": outage.CODE,
+                                        "issues": list(res.issues)[:10]})
+        print(json.dumps({"infra_unavailable": outage.CODE, "phase": phase}))
+        return fail_code(store.workspace, phase, "inspect")
+    # CAPA-123: a visit that recorded no inspection never re-uses the baseline's earlier verdict as a failed cycle
+    g = completeness.not_performed(store, phase, store.gate(phase))
     _state(store.workspace, phase, {"step": "inspect", "agent_status": res.status, "agent_ok": res.ok,
                                     "gate": g})
     print(json.dumps(g))
@@ -246,7 +295,10 @@ def _epoch_lines(ws: Path, phase: str, since: str) -> list[str]:
 
 
 def _count(ws: Path, phase: str, step: str, since: str = "") -> int:
-    return sum(1 for x in _epoch_lines(ws, phase, since) if f'"step": "{step}"' in x)
+    # CAPA-122: a route that ended on an infrastructure outcome was no failed production cycle
+    # CAPA-123: nor did a re-inspection of an incomplete/not performed inspection
+    return sum(1 for x in _epoch_lines(ws, phase, since) if f'"step": "{step}"' in x and '"infra_outcome"' not in x
+               and '"inspection_outcome"' not in x)
 
 
 def author_rejections(ws: Path, phase: str, since: str = "") -> int:
@@ -265,7 +317,8 @@ def stuck_signature(ws: Path, phase: str, since: str = "") -> tuple | None:
     """CAPA-014: the last two author attempts of this epoch were rejected with the identical deterministic codes.
     Over all recorded runs (r10-r82) this never recovered on the next cycle (0 of 14), so the remaining cycle is
     not spent: the phase stops early (the L11 safety net still runs) and the failure goes to the CAPA process."""
-    rows = [x for x in _epoch_lines(ws, phase, since) if '"step": "author"' in x]
+    rows = [x for x in _epoch_lines(ws, phase, since) if '"step": "author"' in x
+            and f'"result": "{outage.INFRA}"' not in x]  # CAPA-122: an outage visit is no author attempt
     if len(rows) < 2 or '"REJECTED"' not in rows[-1] or '"REJECTED"' not in rows[-2]:
         return None
     a, b = _rejection_signature(rows[-2]), _rejection_signature(rows[-1])
@@ -432,6 +485,72 @@ def _ladder(store: Store, phase: str, cycles: int, budget: int, extension, stuck
     ]
 
 
+SAME_ITEM_LIMIT = 3  # owner 2026-11-01 ("N can be 3")
+# Hard cap (2026-11-02, with the same-finding rule): an item failing this many consecutive inspections stops the
+# high-allowance route whatever its findings say (a moving target is progress, but loops stay bounded well below
+# max_phase_repair_passes on the paid/slow cloud line). Twice the old item-only bound; a code constant, not config.
+MOVING_TARGET_LIMIT = 2 * SAME_ITEM_LIMIT
+
+
+ITEM_STUCK = ("SAME_ITEM", "ITEM_FAILED")  # stuck codes the route reason names verbatim
+
+
+def _failed_items(rec: dict) -> set[str]:
+    # CAPA-123: an item the inspector did not examine is no failed product item (same-item/moving-target rules)
+    return {k for k, v in (rec.get("items") or {}).items() if (v or {}).get("verdict") not in ("PASS", None)
+            and not (v or {}).get("not_examined")}
+
+
+def repeated_failed_findings(store: Store, phase: str, n: int = SAME_ITEM_LIMIT) -> dict[str, str]:
+    """Item -> the finding that persisted through the last `n` inspections of the phase in this budget epoch.
+
+    CAPA-087 (run WO-F014-SWE2-IWDG-20261101-01) stopped an item failing in the last `n` inspections. Owner change
+    2026-11-02 (cloud runs WO-F014-CMP-SWE1-RCC-20261102-06, -IWDG-20261102-05, -CRCL-20261102-06): an item counts as
+    stuck only when the SAME finding repeats on it in all `n` rounds (finding_identity: near-verbatim, or the same
+    cited requirements with the same defect wording); a different finding on the same item each round is progress.
+    A round without finding text keeps the item-only rule for that round (fail closed)."""
+    from . import finding_identity
+
+    since = store.budget_start()
+    rows = [r for r in store.inspections(phase) if str(r.get("recorded_at") or "") >= since]
+    if len(rows) < n:
+        return {}
+    failed = [_failed_items(r) for r in rows[-n:]]
+    common = set.intersection(*failed) if all(failed) else set()
+    out = {}
+    for item in sorted(common):
+        alive = finding_identity.persisting([finding_identity.item_findings(r, item) for r in rows[-n:]])
+        if alive:
+            out[item] = alive[0]
+    return out
+
+
+def moving_target_items(store: Store, phase: str, n: int = MOVING_TARGET_LIMIT) -> dict[str, list[dict]]:
+    """Item -> per-round summary, for each item that failed the last `n` inspections of the phase in this budget epoch,
+    regardless of finding identity (the hard cap behind the same-finding rule)."""
+    from . import finding_identity
+
+    since = store.budget_start()
+    rows = [r for r in store.inspections(phase) if str(r.get("recorded_at") or "") >= since]
+    if len(rows) < n:
+        return {}
+    failed = [_failed_items(r) for r in rows[-n:]]
+    common = set.intersection(*failed) if all(failed) else set()
+    out = {}
+    for item in sorted(common):
+        out[item] = []
+        for r in rows[-n:]:
+            texts = finding_identity.item_findings(r, item)
+            out[item].append({"inspection_id": r.get("inspection_id"), "findings": len(texts),
+                              "first": (texts[0] if texts else "")[:200]})
+    return out
+
+
+def repeated_failed_item(store: Store, phase: str, n: int = SAME_ITEM_LIMIT) -> str | None:
+    """The item id(s) whose same finding failed the last `n` inspections (repeated_failed_findings), else None."""
+    return ",".join(repeated_failed_findings(store, phase, n)) or None
+
+
 def unchanged_failed_inspection(store: Store, phase: str) -> bool:
     """A cached failed verdict on the same frozen baseline is not another engineering attempt."""
     rows = store.inspections(phase)
@@ -453,6 +572,25 @@ def unchanged_failed_inspection(store: Store, phase: str) -> bool:
 
 def step_route(store: Store, phase: str) -> int:
     g = store.gate(phase)
+    infra = outage.pending(store.workspace, phase, store.budget_start())
+    if infra is not None:
+        # CAPA-122: the last author/inspector visit ended on a model-call outage after its bounded wait-and-retry.
+        # Explicit retryable infrastructure outcome: no rework cycle, no development reservation, no STUCK/same-item
+        # rule, no auto-filed defect and no advisory gap record.
+        g = outage.route_decision(g, infra)
+        _state(store.workspace, phase, {"step": "route", "gate": g})
+        emit("workflow", "WARN", f"{phase} {outage.INFRA}: {outage.CODE} -> BLOCKED (retryable)", phase=phase)
+        print(json.dumps(g))
+        return 1
+    over = completeness.route_outcome(store.workspace, phase)
+    if over is not None:
+        # CAPA-123: the inspection was INCOMPLETE (evidence not examined) or NOT PERFORMED (the visit recorded nothing):
+        # re-inspect the same baseline (bounded by the inspect gate) - no rework cycle, no development reservation,
+        # no author finding; BLOCKED once the bound is reached
+        _state(store.workspace, phase, {"step": "route", "gate": over, "inspection_outcome": over["reason"][:120]})
+        emit("workflow", "WARN", f"{phase} {over['reason'][:120]} -> {over['decision']}", phase=phase)
+        print(json.dumps(over))
+        return 0 if over["decision"] == "REINSPECT" else 1
     from .. import development_execution as development
 
     if development.selected(store.workspace):
@@ -465,12 +603,23 @@ def step_route(store: Store, phase: str) -> int:
         stuck = stuck_signature(store.workspace, phase, store.budget_start()) if high else None
         if high and unchanged_failed_inspection(store, phase):
             stuck = ("UNCHANGED_FAILED_INSPECTION",)
-        if stuck:
+        repeated = repeated_failed_findings(store, phase) if high and not stuck else {}
+        if repeated:
+            stuck = (f"SAME_ITEM_FAILED_{SAME_ITEM_LIMIT}X:{','.join(repeated)}",)
+        moving = moving_target_items(store, phase) if high and not stuck else {}
+        if moving:
+            stuck = (f"ITEM_FAILED_{MOVING_TARGET_LIMIT}X_MOVING_TARGET:{','.join(moving)}",)
+        refused = g["decision"] == "BLOCKED" and str(g.get("reason", "")).startswith("INSPECTOR_REFUSED_REPEATEDLY:")
+        if stuck or refused:
             allowed = False  # Owner's stop-and-rethink direction: quota does not excuse a deterministic stall.
         result = {**g, "decision": "REWORK" if allowed else "BLOCKED",
                   "development_ladder": development.ladder(store.workspace, phase),
+                  **({"repeated_finding": {k: v[:300] for k, v in repeated.items()}} if repeated else {}),
+                  **({"moving_target_rounds": moving} if moving else {}),
                   "reason": ("high-allowance development repair" if high else "one bounded development repair")
-                  if allowed else "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
+                  if allowed else f"STUCK: {g['reason']}; external diagnosis required" if refused else
+                  f"STUCK: {stuck[0]}; external diagnosis required" if stuck and str(stuck[0]).startswith(ITEM_STUCK)
+                  else "STUCK: repeated rejection without changed evidence; external diagnosis required" if stuck else
                   "development repair exhausted; dependent continuation requires independently valid inputs"}
         _state(store.workspace, phase, {"step": "route", "gate": result})
         print(json.dumps(result))
@@ -572,12 +721,22 @@ def step_triage(store: Store, target: str) -> int:
     the owner's baseline changed); exit 1 -> return chain: every defect was rejected, nothing is re-frozen."""
     from . import defects
 
+    overruled = []
+    if target == "SWE.2":  # CAPA-137: the owner's own compile check decides before a rejection is accepted (the
+        # contract structure checks already gate every SWE.2 freeze; the compile was the check SWE.2 did not apply)
+        from ..assurance import register_contract as RC
+        from ..layer import layer_of, register_contract_enabled
+
+        if register_contract_enabled(store.workspace):
+            overruled = defects.overrule_rejections(store.workspace, target, RC.swe2_compile_findings(
+                store.workspace, layer_of(store.workspace)))
     back = defects.rejected_loop_return(store.workspace)
     bl = store.latest_baseline(target)
     intact = bl is not None and store.stale_reason(target, bl) is None
     decision = "RETURN" if back and intact else "FIX"
     _state(store.workspace, target, {"step": "triage", "result": decision, "return_to": back if decision == "RETURN"
-                                     else None, "baseline_intact": intact})
+                                     else None, "baseline_intact": intact}
+           | ({"overruled": [d["id"] for d in overruled]} if overruled else {}))
     if decision == "RETURN":
         emit("workflow", "WARN", f"{target} rejected every routed defect: returning to {back} without a cascade",
              phase=target)
@@ -598,6 +757,15 @@ def step_return(store: Store, phase: str) -> int:
 
 
 def step_verify(store: Store, phase: str, check: str) -> int:
+    if check == "provided_code_claim":
+        from .provided_early_code import claim
+
+        if phase != "SWE.3":
+            raise ValueError("EARLY_PROVIDED_CODE_OWNER_INVALID")
+        ids = claim(store.workspace)
+        _state(store.workspace, phase, {"step": "verify", "check": check, "claimed": ids})
+        print(json.dumps({"claimed": ids, "owner": phase, "inherited_verdict": False}))
+        return 0
     if check in ("delivery_inject", "delivery_check", "delivery"):  # feature 008 brownfield nodes
         from ..brownfield import gates as BG
 

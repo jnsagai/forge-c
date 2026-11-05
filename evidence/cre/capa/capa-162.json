@@ -1,0 +1,128 @@
+{
+ "CAPA-162": {
+  "history": [
+   {
+    "at": "2026-11-04T18:34:54.668481Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[\"INC-LOCAL-WWDG6-GOVERNOR-CORRUPT-20261104\"]",
+    "from_state": null,
+    "reason": "Actual terminal WWDG L35 governor file contains two concatenated JSON snapshots; allowed native tools then return HOOK_ERROR JSONDecodeError. No live counter changes.",
+    "seq": 1209,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T18:34:54.747556Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1210,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T18:34:54.942258Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-162 assigned",
+    "seq": 1211,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T18:34:57.049201Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[\"reproducer-run:rr-4ccbabdf74c9928055e3\", \"reproducer-run:rr-5f9dfdd7189bf3dc855c\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "BASELINE_NOT_REPRODUCED:ERROR",
+    "seq": 1212,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T18:42:08.327448Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1213,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T18:42:08.493175Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-162 assigned",
+    "seq": 1214,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T18:42:10.951866Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[\"reproducer-run:rr-ec677fbf70e58c57fa55\", \"reproducer-run:rr-66a08a1e2499623e8c92\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1215,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T18:42:10.969715Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[\"git:d2eb6d0e540b..17d45f229c98\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 17d45f229c98 (patch 7957 bytes)",
+    "seq": 1216,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T18:44:55.209913Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[\"reproducer-run:rr-a82f0235cfa3cf22cc87\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-162 absent at 17d45f229c98",
+    "seq": 1217,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T18:44:55.227543Z",
+    "capa_id": "CAPA-162",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1218,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-1a1f75a7e912a86ff3c913a982d83e49ea52ee91",
+   "d2eb6d0e540ba873d32852bf0a36ae61c53337e6",
+   "17d45f229c98a2c09e2b4acfaa0c599ebaed0237",
+   "pd-725ce95ff7b486071dcf"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<17d45f229c98"
+   ],
+   "candidate_patch_sha256": "fbbb54a143585e123bd00df31e9e75349cd0958d2962f734f932f5bb406b6abd",
+   "capa_id": "CAPA-162",
+   "created_at": "2026-11-04T18:34:54.668481Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-LOCAL-WWDG6-GOVERNOR-CORRUPT-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-162",
+   "reproducer_id": "RPR-162",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-ec677fbf70e58c57fa55",
+    "reproducer-run:rr-66a08a1e2499623e8c92"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Actualbuffered-unlock governorcorruption hypothesis unchanged; correct onlymanifest exactsymptom text afterretainedinitialsignatureERROR, frozen7b scriptunchanged.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T18:44:55.227543Z"
+  }
+ }
+}

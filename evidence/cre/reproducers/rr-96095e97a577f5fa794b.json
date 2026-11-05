@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-05T19:32:20.949110Z",
+  "exit_code": 0,
+  "log_sha256": "08a204a3c8461595412c2df90cc1ff0bdc2ba4d04e0f26bf2b17d8fb1f80c7c1",
+  "reproducer_id": "RPR-108",
+  "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "role": "PREVENTION",
+  "run_id": "rr-96095e97a577f5fa794b",
+  "signature": null,
+  "verdict": "SYMPTOM_ABSENT"
+}

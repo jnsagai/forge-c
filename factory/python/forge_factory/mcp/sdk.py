@@ -89,6 +89,20 @@ def normalize_args(tool_name: str, args: dict) -> dict:
         if k not in model.model_fields:
             del args[k]
     for k, f in model.model_fields.items():
+        # CAPA-115 (WO-F014-SWE5-CRCL-20261102-L12/L12B, WO-F014-CMP-SWE6-CRCL-20261102-07): Fabro passes list
+        # arguments as JSON text ('["software/tests/x.c"]'); the MCP SDK JSON-decodes such a string for every
+        # non-str field before the server sees it (ArgModelBase.pre_parse_json), so the hook hashed the text and
+        # the server the list and every report_defect declaration was refused NO_AUTHORIZATION_TICKET. The same
+        # rule is applied here, identically for hook and server, so both bind the same logical call.
+        v = args.get(k)
+        if isinstance(v, str) and f.annotation is not str:
+            try:
+                parsed = json.loads(v)
+            except (ValueError, RecursionError):
+                parsed = v
+            if not isinstance(parsed, str | int | float):
+                args[k] = parsed
+    for k, f in model.model_fields.items():
         # MCP materializes builtin container factories before calling the
         # wrapper. FieldInfo.default is Undefined for these, so comparing only
         # that value makes a valid hook ticket differ from defines=[] (or an
@@ -214,9 +228,14 @@ def run_argv(argv: list[str], cwd: Path, timeout_s: int, allow: set[str], env_ex
         raise ToolDenied("EXECUTABLE_NOT_ALLOWED", argv[0][:60])
     env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
            "HOME": str(cwd), "TZ": "UTC", "SOURCE_DATE_EPOCH": "0", **(env_extra or {})}
+    execution_argv = [exe, *argv[1:]]
+    if os.environ.get("FORGE_OWNER_DEVELOPMENT_RECORD") or os.environ.get("FORGE_OWNER_DEVELOPMENT_SHA256"):
+        from ..afo.owner_supervised_development import contained_argv
+
+        execution_argv = contained_argv(execution_argv, cwd=cwd, env=env)
     t0 = time.monotonic()
     try:
-        p = subprocess.run([exe, *argv[1:]], cwd=cwd, env=env, capture_output=True, timeout=timeout_s,
+        p = subprocess.run(execution_argv, cwd=cwd, env=env, capture_output=True, timeout=timeout_s,
                            preexec_fn=_limits(mem_mb, timeout_s + 5, fsize_mb), check=False, stdin=subprocess.DEVNULL)
         return ProcResult(argv, p.returncode, p.stdout, p.stderr, (time.monotonic() - t0) * 1000, False)
     except subprocess.TimeoutExpired as exc:
@@ -297,6 +316,16 @@ def _authorize(server: str, op: str, args: dict) -> tuple[str, str | None, Path,
     return role, phase, ws, run
 
 
+def verification_executed(out: dict) -> bool:
+    """Only a trusted, explicit preflight refusal proves that verification did not run.
+
+    Real failures, missing provenance and uncertain exceptions retain their debit.
+    This does not change request, tool, token or cumulative mission accounting.
+    """
+    return not (out.get("status") in ("BLOCKED", "UNAVAILABLE", "UNSUPPORTED")
+                and (out.get("metrics") or {}).get("verification_executed") is False)
+
+
 def invoke(server: str, operation: Operation, args: dict) -> dict:
     t0 = time.monotonic()
     try:
@@ -319,7 +348,7 @@ def invoke(server: str, operation: Operation, args: dict) -> dict:
             if verify:
                 verification(ws, phase, role, key, "UNKNOWN")
             raise
-        if verify:
+        if verify and verification_executed(out):
             verification(ws, phase, role, key, out["status"])
         try:  # durable, append-only record of every tool result for deterministic gates/finalizer
             rec = {"ts_utc": utc_now(), "server": server, "op": operation.name, "role": role, "phase": phase,

@@ -1,0 +1,101 @@
+{
+ "CAPA-083": {
+  "history": [
+   {
+    "at": "2026-11-01T01:58:10.243952Z",
+    "capa_id": "CAPA-083",
+    "evidence": "[\"fabro-swe1-obl-11-safe-state\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE1-OBL-20261031-11: Qwen inspector failed SWE1-03 for a missing safe state on an ASPICE-only order (safe state outside owner scope); one-repair policy blocked",
+    "seq": 628,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T01:58:10.268946Z",
+    "capa_id": "CAPA-083",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 629,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T01:58:10.362952Z",
+    "capa_id": "CAPA-083",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-082 assigned",
+    "seq": 630,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T01:58:14.678593Z",
+    "capa_id": "CAPA-083",
+    "evidence": "[\"reproducer-run:rr-2a0fe71aa6a75684ec17\", \"reproducer-run:rr-e2080114f970b236d45f\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 631,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T01:58:14.707855Z",
+    "capa_id": "CAPA-083",
+    "evidence": "[\"git:89c4a2a986e3..0651912ba1d1\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 0651912ba1d1 (patch 4771 bytes)",
+    "seq": 632,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T02:00:41.653804Z",
+    "capa_id": "CAPA-083",
+    "evidence": "[\"reproducer-run:rr-f1538b151a7a177a2b28\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-082 absent at 0651912ba1d1",
+    "seq": 633,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T02:00:41.668010Z",
+    "capa_id": "CAPA-083",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 634,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-2329683a4ef2f43fdd88c3308a25e9050ccf96ef",
+   "89c4a2a986e3e2095f0a87a7074f72a6c24bc4aa",
+   "0651912ba1d19cc3028e941e3c276edd8ebbeb4b",
+   "pd-611df54a4927dd6d309e"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<0651912ba1d1"
+   ],
+   "candidate_patch_sha256": "74dc1c23a797c780d024f5d6be165136e9ff684c834c27248bd342b9433d7fe4",
+   "capa_id": "CAPA-083",
+   "created_at": "2026-11-01T01:58:10.243952Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe1-obl-11-safe-state"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-082",
+   "reproducer_id": "RPR-082",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-2a0fe71aa6a75684ec17",
+    "reproducer-run:rr-e2080114f970b236d45f"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "The safe-state exclusion reached the inspector only as raw assessment-context JSON and the baseline stated nothing about it",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T02:00:41.668010Z"
+  }
+ }
+}

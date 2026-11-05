@@ -1,0 +1,128 @@
+{
+ "CAPA-145": {
+  "history": [
+   {
+    "at": "2026-11-04T09:26:41.025626Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[\"INC-CLOUD-ENVELOPE-20261104\"]",
+    "from_state": null,
+    "reason": "Cloud native Terra account calls inherit an incompatible ACP status-only response contract",
+    "seq": 1067,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T09:26:41.051983Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1068,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T09:26:41.228624Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-145 assigned",
+    "seq": 1069,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T09:26:45.308036Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[\"reproducer-run:rr-ca1e66b1efb2bc1f52a0\", \"reproducer-run:rr-ef949df0573331e3db0f\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "BASELINE_NOT_REPRODUCED:ERROR",
+    "seq": 1070,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T09:28:54.428176Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by Codex",
+    "seq": 1071,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T09:28:54.578755Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-145 assigned",
+    "seq": 1072,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T09:28:58.537482Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[\"reproducer-run:rr-650b04cfc03715708e29\", \"reproducer-run:rr-79e014ff854a01cf97f4\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1073,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T09:28:58.563850Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[\"git:211f1162f081..5279c1160341\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 5279c1160341 (patch 8211 bytes)",
+    "seq": 1074,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T09:36:26.696091Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[\"reproducer-run:rr-200e6b774053b413947c\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-145 absent at 5279c1160341",
+    "seq": 1089,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T09:36:26.710741Z",
+    "capa_id": "CAPA-145",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1090,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-442e7eacca58e1aff65b779b67c4ec72c01b7dad",
+   "211f1162f0815ba244015292a911f6ce1cb09bdc",
+   "5279c11603411ec22ea52852d2a493a54d551c7c",
+   "pd-f8a0f2de81415e56e01e"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<5279c1160341"
+   ],
+   "candidate_patch_sha256": "e8326b1ed6b54439f1d6e854d4dcea1604200fadc81a93391d2c9f504e902e90",
+   "capa_id": "CAPA-145",
+   "created_at": "2026-11-04T09:26:41.025626Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-CLOUD-ENVELOPE-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-145",
+   "reproducer_id": "RPR-145",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-650b04cfc03715708e29",
+    "reproducer-run:rr-79e014ff854a01cf97f4"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Scoped bridge instructions fix the incompatible inheritedreply contract; corrected reproducer exit code1 for SYMPTOM_PRESENT, preserving both initial ERROR records and rejected gate",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T09:36:26.710741Z"
+  }
+ }
+}

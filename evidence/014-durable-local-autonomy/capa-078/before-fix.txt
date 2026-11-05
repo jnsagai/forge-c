@@ -1,0 +1,3 @@
+{"baseline_id": "BL-SWE.1-001", "baseline_hash": "d4dd0daa220d2ab582e976935b546937c6b144a3106784135b33bc1f90f68a6c"}
+SYMPTOM_PRESENT:SWE.1 baseline that records a critical owner obligation as a gap is frozen by the author gate
+exit 1

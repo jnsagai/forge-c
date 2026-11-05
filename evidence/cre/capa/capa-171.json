@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<12dbbed2d674"
+  ],
+  "candidate_patch_sha256": "0f23801e3898c6f5c1764f14069539a27c1024671c2374f4fac33df3129c22df",
+  "capa_id": "CAPA-171",
+  "created_at": "2026-11-05T00:02:37.130910Z",
+  "event_ids": [],
+  "incident_ids": [
+    "CAPA-171"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-171",
+  "reproducer_id": "RPR-171",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-fabf9a7d53289559f80c",
+    "reproducer-run:rr-0a663d998586b97f0fb3"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Frozen target-instruction and virtual-time WWDG rows fall through to host-only test annotation because existing per-call target timing producer is CRC-only; require current approved WWDG target proofs even without declaration.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-05T00:04:41.468506Z"
+}

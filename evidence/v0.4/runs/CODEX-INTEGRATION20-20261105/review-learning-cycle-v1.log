@@ -1,0 +1,167 @@
+...................FF..................                                  [100%]
+=================================== FAILURES ===================================
+_ test_curated_lesson_reaches_matching_future_author_once_and_rejects_other_scopes _
+
+env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-87/test_curated_lesson_reaches_ma0/export.zip'), 'key': PosixPat.../pytest-87/test_curated_lesson_reaches_ma0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+
+    def test_curated_lesson_reaches_matching_future_author_once_and_rejects_other_scopes(env):
+        reg, cid, ws, _ = ready(env)
+>       first = F.publish(reg, cid, workspace=ws, role="swe1-author")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_review_feedback.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+reg = <forge_factory.reliability.capa.CapaRegistry object at 0x7d9dcd864c90>
+cid = 'CAPA-HR-cab00b905489d7294978d1bd'
+
+    def publish(reg: CapaRegistry, cid: str, *, workspace: Path | None = None, role: str | None = None) -> dict:
+        """Curate a frozen remedy only after causal/prevention proof AND an eligible CRE decision."""
+        from ..knowledge.store import LessonStore
+        from ..reliability import reproduce as RR
+    
+        record = reg.must(cid)
+        phases = reg.links(cid, "REVIEW_PHASE")
+        if not reg.links(cid, "HUMAN_REVIEW") or len(phases) != 1:
+            raise Refused("DSP_REVIEW_CAPA_REQUIRED")
+        if record["state"] not in ("PREVENTION_TESTED", "EFFECTIVENESS_OBSERVING", "EFFECTIVE"):
+            raise Refused("DSP_CAPA_NOT_VALIDATED")
+        manifests, issues = RR.load_manifest()
+        entry = manifests.get(record.get("reproducer_id"))
+        if issues or not entry or not record.get("prevention_test_id") or record["root_cause_status"] != "VERIFIED":
+            raise Refused("DSP_PREVENTION_REQUIRED")
+        fix, baseline = reg.links(cid, "FIX_REVISION"), reg.links(cid, "BASELINE_REVISION")
+        eligible = False
+        with reg.s.conn() as connection:
+            for did in reg.links(cid, "PROMOTION_DECISION"):
+                row = connection.execute("SELECT * FROM cre_promotion_decisions WHERE decision_id=?", (did,)).fetchone()
+                if row and fix and baseline and row["candidate"] == fix[-1] and row["baseline"] == baseline[-1]:
+                    decision = json.loads(row["record"])
+                    gates = decision.get("hard_gates") or []
+                    expected = {"protected_files", "policy_integrity", "reproducer", "prevention", "quality_process",
+                                "golden_benchmark", "holdout"}
+                    eligible |= (decision.get("decision") == "ELIGIBLE_FOR_OFFLINE_REVIEW"
+                                 and decision.get("evaluator_kind") == "INDEPENDENT_DETERMINISTIC_RUNNER"
+                                 and decision.get("policy_sha256") == reg.p.sha256
+                                 and len(gates) == len(expected) and {g["name"] for g in gates} == expected
+                                 and all(g["result"] == "PASS" for g in decision["hard_gates"]))
+        if not eligible:
+            raise Refused("DSP_ELIGIBLE_CRE_REQUIRED")
+        from ..knowledge.context import applicability
+        from .review_sets import active_workorders
+        from ..common import REPO_ROOT
+    
+        if workspace is None or role not in ("afo-factory-maintainer", "afo-recovery-planner", f"swe{phases[0][-1]}-author"):
+            raise Refused("DSP_LESSON_SCOPE_REQUIRED")
+        manifest = json.loads((workspace / ".forge-run/manifest.json").read_text())
+        scope = applicability(workspace)
+        if scope["holdout"] or manifest.get("work_order") in active_workorders(REPO_ROOT):
+            raise Refused("DSP_HELDOUT_REFUSED")
+        if not scope["target"] or not scope["source_version"] or not scope["tool_versions"]:
+            raise Refused("DSP_LESSON_SCOPE_REQUIRED")
+        for entry in manifest.get("inputs", []):
+            path = workspace / entry["path"]
+            if (path.is_symlink() or not path.resolve().is_relative_to(workspace.resolve()) or not path.is_file()
+                    or hashlib.sha256(path.read_bytes()).hexdigest() != entry.get("sha256")):
+                raise Refused("DSP_SCOPE_INPUTS_CHANGED")
+        destination = dict(phases=phases, roles=[role], targets=[scope["target"]], source_versions=[scope["source_version"]])
+        lessons = LessonStore(incidents=reg.lesson_source())
+        reg.lessons = lessons
+        for lid in reg.links(cid, "LESSON"):
+            lesson = lessons.get(lid)
+            same_scope = lesson and lesson.get("applicability") == destination and lesson.get("tool_versions") == scope["tool_versions"]
+            if same_scope and lesson["state"] == "VALIDATED":
+                return {"capa_id": cid, "lesson_id": lid, "state": "VALIDATED", "created": False}
+            if same_scope:
+                raise Refused("DSP_LESSON_REQUIRES_REVIEW")
+        try:
+>           lesson = reg.propose_lesson(cid, lessons, entry["symptom_signature"], entry["remedy"], phase=phases[0],
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                        applicability=destination, tool_versions=scope["tool_versions"])
+E                                       KeyError: 'symptom_signature'
+
+factory/python/forge_factory/offline/feedback.py:171: KeyError
+___ test_actual_gate_recurrence_reopens_review_capa_and_retracts_its_lesson ____
+
+env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-87/test_actual_gate_recurrence_re0/export.zip'), 'key': PosixPat.../pytest-87/test_actual_gate_recurrence_re0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+
+    def test_actual_gate_recurrence_reopens_review_capa_and_retracts_its_lesson(env):
+        reg, cid, ws, fix = ready(env)
+>       lesson = F.publish(reg, cid, workspace=ws, role="swe1-author")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_review_feedback.py:122: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+reg = <forge_factory.reliability.capa.CapaRegistry object at 0x7d9dcd9b7690>
+cid = 'CAPA-HR-cab00b905489d7294978d1bd'
+
+    def publish(reg: CapaRegistry, cid: str, *, workspace: Path | None = None, role: str | None = None) -> dict:
+        """Curate a frozen remedy only after causal/prevention proof AND an eligible CRE decision."""
+        from ..knowledge.store import LessonStore
+        from ..reliability import reproduce as RR
+    
+        record = reg.must(cid)
+        phases = reg.links(cid, "REVIEW_PHASE")
+        if not reg.links(cid, "HUMAN_REVIEW") or len(phases) != 1:
+            raise Refused("DSP_REVIEW_CAPA_REQUIRED")
+        if record["state"] not in ("PREVENTION_TESTED", "EFFECTIVENESS_OBSERVING", "EFFECTIVE"):
+            raise Refused("DSP_CAPA_NOT_VALIDATED")
+        manifests, issues = RR.load_manifest()
+        entry = manifests.get(record.get("reproducer_id"))
+        if issues or not entry or not record.get("prevention_test_id") or record["root_cause_status"] != "VERIFIED":
+            raise Refused("DSP_PREVENTION_REQUIRED")
+        fix, baseline = reg.links(cid, "FIX_REVISION"), reg.links(cid, "BASELINE_REVISION")
+        eligible = False
+        with reg.s.conn() as connection:
+            for did in reg.links(cid, "PROMOTION_DECISION"):
+                row = connection.execute("SELECT * FROM cre_promotion_decisions WHERE decision_id=?", (did,)).fetchone()
+                if row and fix and baseline and row["candidate"] == fix[-1] and row["baseline"] == baseline[-1]:
+                    decision = json.loads(row["record"])
+                    gates = decision.get("hard_gates") or []
+                    expected = {"protected_files", "policy_integrity", "reproducer", "prevention", "quality_process",
+                                "golden_benchmark", "holdout"}
+                    eligible |= (decision.get("decision") == "ELIGIBLE_FOR_OFFLINE_REVIEW"
+                                 and decision.get("evaluator_kind") == "INDEPENDENT_DETERMINISTIC_RUNNER"
+                                 and decision.get("policy_sha256") == reg.p.sha256
+                                 and len(gates) == len(expected) and {g["name"] for g in gates} == expected
+                                 and all(g["result"] == "PASS" for g in decision["hard_gates"]))
+        if not eligible:
+            raise Refused("DSP_ELIGIBLE_CRE_REQUIRED")
+        from ..knowledge.context import applicability
+        from .review_sets import active_workorders
+        from ..common import REPO_ROOT
+    
+        if workspace is None or role not in ("afo-factory-maintainer", "afo-recovery-planner", f"swe{phases[0][-1]}-author"):
+            raise Refused("DSP_LESSON_SCOPE_REQUIRED")
+        manifest = json.loads((workspace / ".forge-run/manifest.json").read_text())
+        scope = applicability(workspace)
+        if scope["holdout"] or manifest.get("work_order") in active_workorders(REPO_ROOT):
+            raise Refused("DSP_HELDOUT_REFUSED")
+        if not scope["target"] or not scope["source_version"] or not scope["tool_versions"]:
+            raise Refused("DSP_LESSON_SCOPE_REQUIRED")
+        for entry in manifest.get("inputs", []):
+            path = workspace / entry["path"]
+            if (path.is_symlink() or not path.resolve().is_relative_to(workspace.resolve()) or not path.is_file()
+                    or hashlib.sha256(path.read_bytes()).hexdigest() != entry.get("sha256")):
+                raise Refused("DSP_SCOPE_INPUTS_CHANGED")
+        destination = dict(phases=phases, roles=[role], targets=[scope["target"]], source_versions=[scope["source_version"]])
+        lessons = LessonStore(incidents=reg.lesson_source())
+        reg.lessons = lessons
+        for lid in reg.links(cid, "LESSON"):
+            lesson = lessons.get(lid)
+            same_scope = lesson and lesson.get("applicability") == destination and lesson.get("tool_versions") == scope["tool_versions"]
+            if same_scope and lesson["state"] == "VALIDATED":
+                return {"capa_id": cid, "lesson_id": lid, "state": "VALIDATED", "created": False}
+            if same_scope:
+                raise Refused("DSP_LESSON_REQUIRES_REVIEW")
+        try:
+>           lesson = reg.propose_lesson(cid, lessons, entry["symptom_signature"], entry["remedy"], phase=phases[0],
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                        applicability=destination, tool_versions=scope["tool_versions"])
+E                                       KeyError: 'symptom_signature'
+
+factory/python/forge_factory/offline/feedback.py:171: KeyError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_review_feedback.py::test_curated_lesson_reaches_matching_future_author_once_and_rejects_other_scopes
+FAILED factory/python/tests/test_review_feedback.py::test_actual_gate_recurrence_reopens_review_capa_and_retracts_its_lesson

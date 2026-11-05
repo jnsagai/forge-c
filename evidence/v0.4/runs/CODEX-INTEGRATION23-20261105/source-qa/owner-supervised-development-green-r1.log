@@ -1,0 +1,7 @@
+
+==================================== ERRORS ====================================
+__ ERROR collecting factory/python/tests/test_owner_supervised_development.py __
+factory/python/tests/test_owner_supervised_development.py::test_empty_old_foreign_and_fifth_scope_refused: 'request' is a reserved name and cannot be used in @pytest.mark.parametrize
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_owner_supervised_development.py - Failed: fac...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!

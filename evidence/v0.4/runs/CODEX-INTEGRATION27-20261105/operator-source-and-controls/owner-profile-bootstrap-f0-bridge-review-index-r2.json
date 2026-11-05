@@ -1,0 +1,84 @@
+{
+  "schema": "forge-c/f0-cleanup-start-bridge-review/1",
+  "at": "2026-11-05T22:18:16.726470+00:00",
+  "status": "PREPARED_REVIEW_REQUIRED_NOT_APPLIED",
+  "helper": {
+    "path": "owner-profile-bootstrap-f0-cleanup-start-r2.py",
+    "sha256": "2810cc9ac430676f72e0b7634bd63497193838bd1a601b86d08ca4cc16e8d667"
+  },
+  "source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "bindings": {
+    "cleanup": "ed6c1cdb08c1fff6fe75f86763e6aac31fbe11cb55790bcaaf969bc064848c8f",
+    "expectation": "95ad72cc87510751a6f64304cfa809c2872001d2520b63f0abe9faf3ae1b3c6f",
+    "starter": "fa044e4edcf492940289f2cea98995527839cdcdc097418fc60ea9892155c118",
+    "binding": "576c8af67548e57efb1363c8f80f117600ac4c067ffa9dbe6d60782237ef9733",
+    "actual_metadata": "f5bd26320b909969b0fea194ea5018da57ff69868f1d81c5d65df1289ccde14c"
+  },
+  "controls": {
+    "PASS": 17,
+    "FAIL": 0,
+    "scope": "Actual public entries/defaults plus wholebridge in private filesystem with explicitly substituted expiry-ticket validation, historicalaudit digest and subprocess effect leaves; no real authority, cleanup, systemd, remote or ticket issuance.",
+    "all_private_handles_closed": true
+  },
+  "preserved_first_fixture_failure": "R1 16PASS/1fixtureTimeoutExpired uncaught by test; bridge itself correctly emitted UNKNOWN. R2 changes only exactactualMETA hash pin plus fixture catchesTimeoutExpired and assertsUNKNOWN; source/helperR1 and rawreports preserved.",
+  "readiness": "Cleanupresult fixed OLD_R887/partial-reconciliation-642-f0-r1; start sameSSH/newf0env; pinnedstarter verifies actualcurrent642 ACK/CONSUMED/successorINTENT+READY. Noold214 authority replay.",
+  "clock": "Normalf0D.validate_expiry_ticket before marker and immediatelyprecleanup; same fixedNov19. Starter retains final ticket/fresh60sM+B and Intentfence. No ticket creation, NTP orre-aging.",
+  "userbus": "ActualSSH existing XDG_RUNTIME_DIR and DBUS_SESSION_BUS_ADDRESS retained; all FORGE context removed then exactold887/newf0 scope. Caller8forbiddenvalues refuse BEFORE filtering.",
+  "timeouts": {
+    "cleanup": 110,
+    "starter": 700,
+    "readiness": 660
+  },
+  "unknown": "Any attempted sequence failure/timeout records freshUNKNOWN; no auto-stop/rollback/retry. Oneattempt marker remains.",
+  "actual_apply": "NOT_RUN",
+  "actual_UTC_ticket": "NOT_CREATED",
+  "actual_cleanup": "NOT_RUN",
+  "actual_start": "NOT_RUN",
+  "files": [
+    {
+      "path": "owner-profile-bootstrap-f0-cleanup-start-r2.py",
+      "sha256": "2810cc9ac430676f72e0b7634bd63497193838bd1a601b86d08ca4cc16e8d667",
+      "bytes": 8930
+    },
+    {
+      "path": "check-owner-profile-bootstrap-f0-bridge-r2.py",
+      "sha256": "f150c8e79d95707e9d7d8cd81fdad18ca0672c79aac5465730ca1e0af7cb8073",
+      "bytes": 8132
+    },
+    {
+      "path": "owner-profile-bootstrap-f0-bridge-private-controls-r2.json",
+      "sha256": "0cf051269668c0c4d519f455c3b46ff4c4c7da77a7613677ce28561f539608fd",
+      "bytes": 2120
+    },
+    {
+      "path": "owner-profile-bootstrap-f0-bridge-private-controls-r2.log",
+      "sha256": "39a7f3ac89c80024161a5d180edb0c5e1b729c4022111f58a253d5e0abf92373",
+      "bytes": 2287
+    },
+    {
+      "path": "owner-profile-bootstrap-f0-cleanup-start-r1.py",
+      "sha256": "92b4bbb9c91f36f63ab20ca9d37ee49d1c470bcb45e7cf126785a3e916a01198",
+      "bytes": 8760
+    },
+    {
+      "path": "check-owner-profile-bootstrap-f0-bridge-r1.py",
+      "sha256": "63b2984f6da9c93dc8f8298b708719b8f66fa316164a200ebfbeaf94f6192983",
+      "bytes": 7889
+    },
+    {
+      "path": "owner-profile-bootstrap-f0-bridge-private-controls-r1.json",
+      "sha256": "1b3c51d491285110e1b6f0b25143d6992c8d78496800ea43e339e6be0b2538cd",
+      "bytes": 2239
+    },
+    {
+      "path": "owner-profile-bootstrap-f0-bridge-private-controls-r1.log",
+      "sha256": "beabae1b23f87ade87b6d93bf33a2826f2f82d7a870bdf3cda8d52347c0a1b31",
+      "bytes": 2394
+    },
+    {
+      "path": "owner-profile-bootstrap-f0c8fc5c-actual-metadata-result-r1.json",
+      "sha256": "f5bd26320b909969b0fea194ea5018da57ff69868f1d81c5d65df1289ccde14c",
+      "bytes": 11072
+    }
+  ]
+}

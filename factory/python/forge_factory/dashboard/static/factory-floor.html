@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Forge-C Plant Floor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+.stale { background: color-mix(in srgb, var(--stop) 18%, var(--panel)); border: 1px solid var(--stop); color: var(--ink); border-radius: 6px; padding: 8px 12px; font-size: 13px; }
+
+/* Layout: a plant control board - KPI strip, a floor map of halls joined by conveyors, then the selected hall's cells. */
+:root {
+  --floor: #e6e9eb; --panel: #f7f8f9; --panel-2: #eef1f3; --ink: #27323b; --muted: #66737e; --line: #c7cfd5;
+  --safety: #e0a100; --safety-ink: #1d1a12;
+  --go: #23955a; --warn: #d48500; --stop: #c63a30; --idle: #9aa4ad; --lamp-off: #c9cfd4;
+  --steel: #7c8a96; --steel-dark: #4d5a65; --belt: #545f69; --visor: #2f6fb0; --visor-glow: #6fb6ff;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --floor: #12171c; --panel: #1b2229; --panel-2: #222b33; --ink: #dce4ea; --muted: #8f9ba5; --line: #2e3943;
+  --safety: #f2b705; --safety-ink: #15130b;
+  --go: #3fc37b; --warn: #f0a62c; --stop: #f05a4e; --idle: #5d6974; --lamp-off: #333e48;
+  --steel: #8b99a5; --steel-dark: #5b6874; --belt: #3a444e; --visor: #3d86d1; --visor-glow: #8cc8ff; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --floor: #12171c; --panel: #1b2229; --panel-2: #222b33; --ink: #dce4ea; --muted: #8f9ba5; --line: #2e3943;
+  --safety: #f2b705; --safety-ink: #15130b;
+  --go: #3fc37b; --warn: #f0a62c; --stop: #f05a4e; --idle: #5d6974; --lamp-off: #333e48;
+  --steel: #8b99a5; --steel-dark: #5b6874; --belt: #3a444e; --visor: #3d86d1; --visor-glow: #8cc8ff; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--floor); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px 40px; }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: .02em; margin: 0; text-wrap: balance; }
+h1 { font-size: 30px; text-transform: uppercase; }
+h2 { font-size: 21px; text-transform: uppercase; }
+h3 { font-size: 17px; text-transform: uppercase; letter-spacing: .04em; }
+.num, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.muted { color: var(--muted); }
+
+/* header plate */
+.plate { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px;
+  border-bottom: 3px solid var(--safety); padding-bottom: 12px; }
+.plate .sub { color: var(--muted); font-size: 13px; }
+.plant-status { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 18px; font-weight: 600; text-transform: uppercase; }
+
+/* KPI strip */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: grid; gap: 2px; align-content: start; }
+.kpi .v { font-family: var(--display); font-size: 34px; font-weight: 700; line-height: 1.05; }
+.kpi .v small { font-size: 17px; color: var(--muted); font-weight: 600; }
+.kpi .n { font-size: 12px; color: var(--muted); }
+.kpi.gauge-kpi { grid-template-columns: auto 1fr; align-items: center; gap: 10px; }
+.kpi.station-kpi .gauges { gap: 2px; }
+
+/* Existing factory runtime, distinct from product acceptance and shift KPIs. */
+.runtime .v { font-size: 20px; overflow-wrap: anywhere; }
+.runtime .runtime-jobs { overflow-x: auto; }
+.runtime table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.runtime th, .runtime td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--line); }
+.telemetry-stale .conveyor, .telemetry-stale .s-working * { animation-play-state: paused !important; }
+
+/* floor map */
+.floor { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 12px; }
+.floor-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.lineup { overflow-x: auto; padding-bottom: 6px; }
+.halls { display: grid; grid-template-columns: repeat(7, minmax(150px, 1fr)); gap: 0; min-width: 1050px; align-items: stretch; }
+.hall-slot { display: grid; grid-template-columns: 1fr 22px; align-items: center; }
+.hall-slot:last-child { grid-template-columns: 1fr; }
+.hall { appearance: none; text-align: left; font: inherit; color: inherit; cursor: pointer; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 6px; padding: 10px 10px 12px; display: grid; gap: 8px; min-height: 182px; position: relative; }
+.hall:hover { border-color: var(--steel); }
+.hall:focus-visible, .cell:focus-visible, .tab:focus-visible { outline: 3px solid var(--safety); outline-offset: 2px; }
+.hall[aria-pressed="true"] { border-color: var(--safety); box-shadow: inset 0 0 0 1px var(--safety); }
+.hall .top { display: flex; justify-content: space-between; align-items: start; gap: 6px; }
+.hall .code { font-family: var(--display); font-weight: 700; font-size: 20px; }
+.hall .name { font-size: 12px; color: var(--muted); }
+.hall .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; font-size: 12px; }
+.hall .facts b { font-family: var(--mono); font-weight: 500; display: block; font-size: 15px; }
+.hall .crates { display: flex; flex-wrap: wrap; gap: 4px; min-height: 18px; }
+.crate { font-family: var(--mono); font-size: 10px; padding: 1px 5px; border-radius: 3px; background: var(--safety); color: var(--safety-ink); }
+.crate.idle { background: var(--lamp-off); color: var(--muted); }
+.crate[data-wo] { cursor: pointer; }
+.crate[data-wo]:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.picker { display: inline-flex; align-items: center; gap: 6px; }
+.picker select { font: inherit; font-size: 13px; padding: 3px 6px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); max-width: 70vw; }
+.hall.h-history .facts b { color: var(--muted); }
+.hall.h-out { opacity: .45; background-image: repeating-linear-gradient(135deg, transparent 0 8px, color-mix(in srgb, var(--line) 60%, transparent) 8px 10px); }
+.conveyor { height: 10px; border-radius: 5px; background: var(--belt); margin: 0 3px;
+  background-image: repeating-linear-gradient(90deg, transparent 0 6px, rgba(255,255,255,.18) 6px 9px); }
+.conveyor.moving { animation: belt 0.9s linear infinite; }
+@keyframes belt { to { background-position: 18px 0; } }
+
+/* stack light */
+.stack { display: inline-grid; gap: 2px; padding: 3px; background: var(--steel-dark); border-radius: 3px; flex: none; }
+.stack i { display: block; width: 10px; height: 8px; border-radius: 2px; background: var(--lamp-off); }
+.stack.big i { width: 14px; height: 11px; }
+.s-working .stack i.g { background: var(--go); box-shadow: 0 0 6px var(--go); animation: pulse 1.6s ease-in-out infinite; }
+.s-rework  .stack i.a { background: var(--warn); box-shadow: 0 0 6px var(--warn); animation: blink .7s steps(2, start) infinite; }
+.s-stopped .stack i.r { background: var(--stop); box-shadow: 0 0 6px var(--stop); animation: blink 1.4s steps(2, start) infinite; }
+.s-done    .stack i.g { background: var(--go); }
+@keyframes pulse { 50% { opacity: .55; } }
+@keyframes blink { to { visibility: hidden; } }
+
+/* hall detail */
+.hall-detail { display: grid; gap: 14px; }
+.hall-detail-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px 20px; }
+.hall-kpis { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.hall-kpis div { display: grid; }
+.hall-kpis b { font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.1; }
+.cells { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 12px; }
+.cell { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; display: grid; grid-template-rows: auto auto 1fr; overflow: hidden; }
+.cell-head { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
+.cell-head .t { display: grid; min-width: 0; }
+.cell-head .t span { font-size: 11px; color: var(--muted); }
+.state-tag { margin-left: auto; font-family: var(--display); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; padding: 1px 7px; border-radius: 3px; border: 1px solid currentColor; }
+.s-working .state-tag { color: var(--go); }
+.s-rework .state-tag { color: var(--warn); }
+.s-stopped .state-tag { color: var(--stop); }
+.s-idle .state-tag, .s-waiting .state-tag { color: var(--muted); }
+.s-stopped .cell-head { background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--stop) 22%, transparent) 0 10px, transparent 10px 20px); }
+.machine { display: grid; grid-template-columns: 112px 1fr; gap: 10px; padding: 10px 11px 4px; align-items: center; }
+.machine svg { width: 112px; height: 86px; display: block; }
+.readout { display: grid; gap: 6px; min-width: 0; }
+.job { font-size: 12px; }
+.job b { font-family: var(--mono); font-weight: 500; }
+.cell-foot { padding: 6px 11px 11px; display: grid; gap: 8px; align-content: start; }
+.counters { display: flex; gap: 14px; font-size: 12px; color: var(--muted); }
+.counters b { font-family: var(--mono); color: var(--ink); font-weight: 500; }
+.tool-detail { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; display: grid; gap: 4px; }
+.tool-detail .step { font-size: 11px; }
+.what { font-size: 12px; color: var(--muted); }
+.why { font-size: 12px; color: var(--stop); }
+
+/* progress counter */
+.prog { display: grid; gap: 3px; }
+.segs { display: grid; grid-template-columns: repeat(20, 1fr); gap: 2px; height: 12px; }
+.segs i { background: var(--lamp-off); border-radius: 1px; }
+.segs i.on { background: var(--go); }
+.s-rework .segs i.on { background: var(--warn); }
+.segs i.head { animation: pulse 1.2s ease-in-out infinite; background: var(--go); }
+.prog .row { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+.prog .row b { color: var(--ink); font-family: var(--mono); font-weight: 500; }
+.bar-kind { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; padding: 0 4px; border-radius: 2px; border: 1px solid currentColor; margin-right: 4px; }
+.bar-kind.measured { color: var(--go); }
+.bar-kind.estimate { color: var(--muted); }
+.est-track { height: 12px; border-radius: 2px; background: var(--lamp-off); overflow: hidden; }
+.est-track span { display: block; height: 100%; background: repeating-linear-gradient(135deg, var(--go) 0 6px, color-mix(in srgb, var(--go) 60%, transparent) 6px 12px); transition: width 1s ease; }
+.est-track.over span { background: repeating-linear-gradient(135deg, var(--warn) 0 6px, color-mix(in srgb, var(--warn) 60%, transparent) 6px 12px); }
+.s-working .est-track span { animation: slide 1.2s linear infinite; background-size: 17px 17px; }
+@keyframes slide { to { background-position: 17px 0; } }
+.late { color: var(--warn); font-weight: 600; }
+.steps { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.step { font-family: var(--display); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 1px 8px; border-radius: 3px; background: var(--lamp-off); color: var(--muted); }
+.step.done, .step.passed { background: color-mix(in srgb, var(--go) 22%, transparent); color: var(--go); }
+.step.rejected { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
+.step.stopped { background: color-mix(in srgb, var(--stop) 22%, transparent); color: var(--stop); }
+.step.now { background: color-mix(in srgb, var(--safety) 35%, transparent); color: var(--ink); animation: pulse 1s ease-in-out infinite; }
+.step-sep { color: var(--muted); font-size: 11px; }
+
+/* gauge */
+.gauge { width: 92px; flex: none; }
+.gauge svg { width: 92px; height: 56px; display: block; }
+.gauge .g-val { font-family: var(--mono); font-size: 12px; text-align: center; margin-top: -4px; }
+.gauge .g-lab { font-size: 10px; text-align: center; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.needle { transition: transform 1.2s cubic-bezier(.2,.8,.2,1); transform-origin: 46px 50px; }
+.gauges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* robot arm */
+.arm-lower { transform-origin: 40px 66px; }
+.arm-upper { transform-origin: 60px 38px; }
+.grip { transform-origin: 82px 44px; }
+.s-working .arm-lower { animation: lower 2.6s ease-in-out infinite alternate; }
+.s-working .arm-upper { animation: upper 2.6s ease-in-out infinite alternate; }
+.s-working .grip { animation: grip 1.3s ease-in-out infinite alternate; }
+.s-rework .arm-lower { animation: lower 4.2s ease-in-out infinite alternate-reverse; }
+.s-rework .arm-upper { animation: upper 4.2s ease-in-out infinite alternate-reverse; }
+.s-stopped .arm-lower { transform: rotate(28deg); }
+.s-stopped .arm-upper { transform: rotate(42deg); }
+.s-stopped .grip { transform: rotate(-18deg); }
+.s-idle .arm-lower, .s-waiting .arm-lower { transform: rotate(-12deg); }
+.s-idle .arm-upper, .s-waiting .arm-upper { transform: rotate(-38deg); }
+@keyframes lower { from { transform: rotate(-16deg); } to { transform: rotate(14deg); } }
+@keyframes upper { from { transform: rotate(-30deg); } to { transform: rotate(22deg); } }
+@keyframes grip { from { transform: rotate(0); } to { transform: rotate(-14deg); } }
+.spark { opacity: 0; }
+.s-working .spark { animation: spark 1.3s ease-in-out infinite alternate; }
+@keyframes spark { to { opacity: 1; } }
+.redo { opacity: 0; }
+.s-rework .redo { opacity: 1; animation: spin 2.4s linear infinite; transform-origin: 94px 16px; }
+@keyframes spin { to { transform: rotate(-360deg); } }
+.machine .part { fill: var(--safety); }
+.s-idle .part, .s-waiting .part { fill: var(--lamp-off); }
+
+/* legend + orders */
+.legend { display: flex; flex-wrap: wrap; gap: 10px; }
+.legend .mini { display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px 6px 6px; }
+.legend svg { width: 64px; height: 50px; }
+.legend .mini div { display: grid; font-size: 12px; }
+.legend .mini b { font-family: var(--display); text-transform: uppercase; font-size: 14px; letter-spacing: .04em; }
+.orders { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 13px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+.pill { display: inline-block; font-family: var(--display); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; font-size: 12px; padding: 0 7px; border-radius: 3px; border: 1px solid currentColor; }
+.pill.DONE { color: var(--go); } .pill.RUNNING { color: var(--safety); } .pill.STOPPED { color: var(--stop); }
+.route { display: flex; gap: 4px; flex-wrap: wrap; }
+.route span { font-family: var(--mono); font-size: 11px; padding: 0 5px; border-radius: 3px; background: var(--panel-2); border: 1px solid var(--line); }
+.route span.ok { border-color: var(--go); color: var(--go); }
+.route span.run { border-color: var(--safety); color: var(--ink); background: color-mix(in srgb, var(--safety) 25%, transparent); }
+.route span.no { border-color: var(--stop); color: var(--stop); }
+.note { font-size: 12px; color: var(--muted); max-width: 80ch; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 560px) { .machine { grid-template-columns: 90px 1fr; } .machine svg { width: 90px; height: 70px; } h1 { font-size: 25px; } }
+</style>
+<style>
+.line-tabs { display: flex; gap: 6px; margin: 8px 0 4px; flex-wrap: wrap; }
+.line-tab { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line, #888); background: transparent; color: inherit; cursor: pointer; }
+.line-tab.on { background: var(--go, #2a7); color: #fff; border-color: transparent; }
+</style>
+<style>
+/* Supervisor station (autonomous line M1, owner-approved mockup 2026-11-03): the humanoid Line Conductor at its desk,
+   its board (KPIs, budget lanes), the issue board and the supervisor log. Read-only; scoped under .sup. */
+.sup { display: grid; gap: 14px; }
+.sup .station { display: grid; grid-template-columns: minmax(250px, 330px) 1fr; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+@media (max-width: 760px) { .sup .station { grid-template-columns: 1fr; } }
+.sup .bay { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; display: grid; justify-items: center; padding: 10px 10px 12px; gap: 6px; overflow: hidden; }
+.sup .bay svg.sup-bot { width: 100%; max-width: 280px; height: auto; display: block; }
+.sup .bay .caption { font-family: var(--display); font-size: 19px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.sup .bay .doing { font-size: 12px; color: var(--muted); text-align: center; max-width: 34ch; min-height: 3em; }
+.sup .board { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.sup .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.sup .kpi { background: var(--panel-2); padding: 10px 12px; }
+.sup .kpi .v { font-size: 30px; }
+.sup .lanes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media (max-width: 560px) { .sup .lanes { grid-template-columns: repeat(2, 1fr); } }
+.sup .lane { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; display: grid; gap: 4px; background: var(--panel); }
+.sup .lane b { font-family: var(--display); font-size: 15px; text-transform: uppercase; letter-spacing: .04em; }
+.sup .lane .bar { height: 6px; border-radius: 3px; background: var(--lamp-off); overflow: hidden; }
+.sup .lane .bar i { display: block; height: 100%; background: var(--steel); }
+.sup .lane span { font-size: 12px; color: var(--muted); }
+.sup .rules { font-size: 12px; color: var(--muted); display: grid; gap: 3px; }
+.sup .rules b { color: var(--ink); font-weight: 600; }
+.sup .issues-wrap { display: grid; grid-template-columns: minmax(280px, 400px) 1fr; gap: 14px; align-items: start; }
+@media (max-width: 860px) { .sup .issues-wrap { grid-template-columns: 1fr; } }
+.sup .issue-list { display: grid; gap: 8px; }
+.sup .issue { appearance: none; text-align: left; font: inherit; color: inherit; cursor: pointer; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 9px 11px 9px 14px; display: grid; gap: 4px; position: relative; }
+.sup .issue::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 6px 0 0 6px; background: var(--idle); }
+.sup .issue.sev-stop::before { background: var(--stop); } .sup .issue.sev-warn::before { background: var(--warn); } .sup .issue.sev-ok::before { background: var(--go); }
+.sup .issue[aria-pressed="true"] { border-color: var(--safety); box-shadow: inset 0 0 0 1px var(--safety); }
+.sup .issue:focus-visible { outline: 3px solid var(--safety); outline-offset: 2px; }
+.sup .issue .top { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.sup .issue .id { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.sup .issue .t { font-weight: 600; font-size: 13px; overflow-wrap: anywhere; }
+.sup .issue .meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 11px; color: var(--muted); }
+.sup .chip { font-family: var(--display); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; font-size: 12px; padding: 0 6px; border-radius: 3px; border: 1px solid currentColor; white-space: nowrap; }
+.sup .c-infra { color: var(--visor); } .sup .c-factory { color: var(--warn); } .sup .c-product { color: var(--stop); } .sup .c-model { color: var(--steel-dark); } .sup .c-unknown { color: var(--muted); }
+.sup .st { font-family: var(--display); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; font-size: 12px; padding: 0 6px; border-radius: 3px; white-space: nowrap; }
+.sup .st-open { background: color-mix(in srgb, var(--visor) 18%, transparent); color: var(--ink); }
+.sup .st-waiting { background: color-mix(in srgb, var(--safety) 30%, transparent); color: var(--ink); }
+.sup .st-recovering { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--ink); }
+.sup .st-parked { background: var(--lamp-off); color: var(--ink); }
+.sup .st-owner { background: var(--stop); color: #fff; }
+.sup .st-resolved { background: color-mix(in srgb, var(--go) 22%, transparent); color: var(--ink); }
+.sup .detail { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 12px; min-width: 0; }
+.sup .detail .d-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between; }
+.sup .detail h3 { overflow-wrap: anywhere; }
+.sup .dfacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px 14px; font-size: 13px; }
+.sup .dfacts b { display: block; font-family: var(--mono); font-weight: 500; font-size: 13px; overflow-wrap: anywhere; }
+.sup .evidence { font-family: var(--mono); font-size: 12px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; overflow-x: auto; white-space: pre; }
+.sup .sols { display: grid; gap: 8px; }
+.sup .sol { border: 1px solid var(--line); border-radius: 6px; padding: 9px 11px; display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; align-items: start; background: var(--panel-2); }
+.sup .sol.first { border-color: var(--go); }
+.sup .sol .rank { font-family: var(--display); font-weight: 700; font-size: 20px; line-height: 1; color: var(--muted); }
+.sup .sol.first .rank { color: var(--go); }
+.sup .sol .s-what { font-size: 13px; min-width: 0; overflow-wrap: anywhere; }
+.sup .sol .s-what b { font-weight: 600; }
+.sup .sol .s-how { font-size: 12px; color: var(--muted); grid-column: 2 / 4; overflow-wrap: anywhere; }
+.sup .sol .s-state { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; color: var(--muted); }
+.sup .owner-box { border: 2px solid var(--stop); border-radius: 6px; padding: 9px 11px; display: grid; gap: 6px; }
+.sup .owner-box.acked { border-color: var(--go); }
+.sup .owner-box .q { font-weight: 600; }
+.sup .owner-box code { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+.sup .log { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
+.sup .log table { min-width: 640px; }
+.sup .off { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+/* the humanoid supervisor */
+.sup-bot .visor { fill: var(--visor); }
+.sup-bot .eye { fill: var(--visor-glow); }
+.sup-bot .shell { fill: var(--steel); } .sup-bot .joint { fill: var(--steel-dark); } .sup-bot .plate-c { fill: var(--panel); stroke: var(--steel-dark); stroke-width: 1.5; }
+.sup-bot .chest { fill: var(--lamp-off); }
+.sup-bot .eyes { transform-origin: 140px 62px; }
+.sup-bot .b-head { transform-origin: 140px 92px; transition: transform .8s ease; }
+.sup-bot .arm-l { transform-origin: 104px 112px; transition: transform .8s ease; }
+.sup-bot .arm-r { transform-origin: 176px 112px; transition: transform .8s ease; }
+.sup-bot .fore-r { transform-origin: 188px 158px; transition: transform .8s ease; }
+.sup-bot .tool { opacity: 0; transition: opacity .4s; }
+.sup-bot .b-spark { opacity: 0; }
+.sup-bot.m-patrol .eyes { animation: sup-scan 4s ease-in-out infinite; }
+.sup-bot.m-patrol .chest { fill: var(--go); animation: pulse 2s ease-in-out infinite; }
+.sup-bot.m-patrol .arm-l { transform: rotate(4deg); } .sup-bot.m-patrol .arm-r { transform: rotate(-4deg); }
+.sup-bot.m-patrol .torso { animation: sup-breathe 3.2s ease-in-out infinite; transform-origin: 140px 190px; }
+.sup-bot.m-diagnose .b-head { transform: rotate(10deg) translateY(2px); }
+.sup-bot.m-diagnose .chest { fill: var(--visor-glow); animation: pulse 1.1s ease-in-out infinite; }
+.sup-bot.m-diagnose .arm-r { transform: rotate(-58deg); } .sup-bot.m-diagnose .fore-r { transform: rotate(-40deg); }
+.sup-bot.m-diagnose .t-glass { opacity: 1; }
+.sup-bot.m-diagnose .eyes { animation: sup-blinkeye 3s steps(1) infinite; }
+.sup-bot.m-repair .b-head { transform: rotate(6deg); }
+.sup-bot.m-repair .chest { fill: var(--warn); animation: pulse .8s ease-in-out infinite; }
+.sup-bot.m-repair .arm-r { animation: sup-wrench 1.1s ease-in-out infinite alternate; } .sup-bot.m-repair .fore-r { transform: rotate(-70deg); }
+.sup-bot.m-repair .arm-l { transform: rotate(-30deg); }
+.sup-bot.m-repair .t-wrench { opacity: 1; }
+.sup-bot.m-repair .b-spark { animation: spark .55s ease-in-out infinite alternate; }
+.sup-bot.m-owner .b-head { transform: rotate(-6deg); }
+.sup-bot.m-owner .chest { fill: var(--stop); animation: blink 1s steps(2, start) infinite; }
+.sup-bot.m-owner .arm-r { transform: rotate(-150deg); } .sup-bot.m-owner .fore-r { animation: sup-wave .7s ease-in-out infinite alternate; }
+.sup-bot.m-owner .t-flag { opacity: 1; }
+.sup-bot.m-off { opacity: .55; } .sup-bot.m-off .visor { fill: var(--steel-dark); } .sup-bot.m-off .eye { fill: var(--lamp-off); }
+.sup-bot.m-off .arm-l { transform: rotate(6deg); } .sup-bot.m-off .arm-r { transform: rotate(-6deg); } .sup-bot.m-off .b-head { transform: rotate(4deg) translateY(3px); }
+@keyframes sup-scan { 0%, 100% { transform: translateX(-7px); } 50% { transform: translateX(7px); } }
+@keyframes sup-blinkeye { 0%, 92% { transform: scaleY(1); } 94% { transform: scaleY(.1); } }
+@keyframes sup-breathe { 50% { transform: translateY(-1.5px); } }
+@keyframes sup-wrench { from { transform: rotate(-50deg); } to { transform: rotate(-78deg); } }
+@keyframes sup-wave { from { transform: rotate(-20deg); } to { transform: rotate(18deg); } }
+@media (prefers-reduced-motion: reduce) { .sup-bot *, .sup-bot { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="plate">
+    <div>
+      <h1>Forge-C Plant · Omniverse2 line</h1>
+      <div class="sub" id="sub">ASPICE QM · one GPU station (RTX 6000 Ada)</div>
+    </div>
+    <div class="plant-status" id="plant-status"></div>
+  </header>
+  <nav class="line-tabs" id="line-tabs" role="tablist" aria-label="Production line" hidden></nav>
+  <div class="stale" id="stale" hidden></div>
+  <section class="floor runtime" id="runtime-monitor" aria-label="Factory runtime monitoring" aria-live="polite"></section>
+  <section class="kpis" id="kpis" aria-label="Shift KPIs"></section>
+  <section class="floor" aria-labelledby="floor-title">
+    <div class="floor-head">
+      <h2 id="floor-title">Shop floor</h2>
+      <label class="picker"><span class="label">Show</span> <select id="focus" aria-label="Show the whole shift or one order"><option value="">Whole shift</option></select></label>
+      <span class="note" id="floor-note">Halls light up only while an order is in them; the numbers are today's. Click a crate to follow that order.</span>
+    </div>
+    <div class="lineup"><div class="halls" id="halls"></div></div>
+  </section>
+  <section class="hall-detail" id="hall-detail" aria-live="polite"></section>
+  <section class="sup" id="sup" aria-labelledby="sup-title">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 id="sup-title">Supervisor station</h2>
+      <span class="note" id="sup-sub">Line Conductor · OBSERVE</span>
+    </div>
+    <div class="station">
+      <div class="bay">
+        <svg class="sup-bot m-off" id="sup-bot" viewBox="0 0 280 300" role="img" aria-labelledby="sup-bot-title">
+          <title id="sup-bot-title">Supervisor robot</title>
+          <rect x="20" y="276" width="240" height="10" rx="3" fill="var(--belt)"/>
+          <rect x="196" y="214" width="70" height="62" rx="4" fill="var(--steel-dark)"/>
+          <rect x="204" y="222" width="54" height="30" rx="2" fill="var(--panel)"/>
+          <rect x="208" y="227" width="26" height="4" rx="1" fill="var(--go)"/><rect x="208" y="235" width="40" height="4" rx="1" fill="var(--lamp-off)"/><rect x="208" y="243" width="18" height="4" rx="1" fill="var(--warn)"/>
+          <rect class="shell" x="118" y="214" width="17" height="56" rx="7"/><rect class="shell" x="145" y="214" width="17" height="56" rx="7"/>
+          <rect class="joint" x="112" y="264" width="28" height="12" rx="5"/><rect class="joint" x="140" y="264" width="28" height="12" rx="5"/>
+          <g class="torso">
+            <g class="arm-l">
+              <rect class="shell" x="92" y="108" width="16" height="50" rx="8"/>
+              <circle class="joint" cx="100" cy="112" r="9"/>
+              <rect class="shell" x="90" y="150" width="15" height="40" rx="7"/>
+              <rect x="74" y="168" width="26" height="34" rx="2" fill="var(--panel)" stroke="var(--steel-dark)" stroke-width="2"/>
+              <rect x="79" y="175" width="16" height="2.5" fill="var(--muted)"/><rect x="79" y="181" width="12" height="2.5" fill="var(--muted)"/><rect x="79" y="187" width="15" height="2.5" fill="var(--muted)"/>
+            </g>
+            <rect class="shell" x="106" y="100" width="68" height="94" rx="16"/>
+            <rect class="plate-c" x="118" y="114" width="44" height="40" rx="6"/>
+            <circle class="chest" cx="140" cy="134" r="9"/>
+            <rect class="joint" x="114" y="186" width="52" height="30" rx="10"/>
+            <g class="arm-r">
+              <circle class="joint" cx="180" cy="112" r="9"/>
+              <rect class="shell" x="172" y="108" width="16" height="52" rx="8"/>
+              <g class="fore-r">
+                <rect class="shell" x="174" y="152" width="15" height="40" rx="7"/>
+                <circle class="joint" cx="181.5" cy="194" r="7"/>
+                <g class="tool t-glass"><circle cx="181" cy="214" r="11" fill="none" stroke="var(--visor)" stroke-width="4"/><circle cx="181" cy="214" r="7" fill="var(--visor-glow)" opacity=".35"/><rect x="179" y="198" width="4" height="7" fill="var(--steel-dark)"/></g>
+                <g class="tool t-wrench"><rect x="178.5" y="196" width="6" height="26" rx="2" fill="var(--steel-dark)"/><path d="M174 222 h16 v6 h-5 v-3 h-6 v3 h-5 z" fill="var(--steel-dark)"/>
+                  <g class="b-spark"><circle cx="190" cy="232" r="2.6" fill="var(--safety)"/><circle cx="196" cy="226" r="1.6" fill="var(--safety)"/><circle cx="185" cy="236" r="1.4" fill="var(--safety)"/></g></g>
+                <g class="tool t-flag"><rect x="180" y="190" width="3" height="34" fill="var(--steel-dark)"/><path d="M183 192 h20 l-5 6 l5 6 h-20 z" fill="var(--stop)"/></g>
+              </g>
+            </g>
+            <g class="b-head">
+              <rect class="joint" x="132" y="86" width="16" height="16" rx="4"/>
+              <rect class="shell" x="108" y="34" width="64" height="56" rx="20"/>
+              <rect x="130" y="22" width="20" height="14" rx="5" fill="var(--steel-dark)"/>
+              <circle cx="140" cy="18" r="5" fill="var(--safety)"/>
+              <rect class="visor" x="116" y="50" width="48" height="24" rx="11"/>
+              <g class="eyes"><rect class="eye" x="126" y="57" width="9" height="10" rx="4"/><rect class="eye" x="145" y="57" width="9" height="10" rx="4"/></g>
+            </g>
+          </g>
+        </svg>
+        <div class="caption" id="sup-caption">—</div>
+        <div class="doing" id="sup-doing"></div>
+      </div>
+      <div class="board" id="sup-board"></div>
+    </div>
+    <div class="issues-wrap" id="sup-issues"></div>
+    <div style="display:grid;gap:8px">
+      <h3>Supervisor log</h3>
+      <div class="log"><table><thead><tr><th>Time (UTC)</th><th>Issue</th><th>Event</th><th>Result</th></tr></thead><tbody id="sup-log"></tbody></table></div>
+    </div>
+  </section>
+  <section aria-labelledby="legend-title" style="display:grid;gap:8px">
+    <h3 id="legend-title">Cell states</h3>
+    <div class="legend" id="legend"></div>
+  </section>
+  <section aria-labelledby="orders-title" style="display:grid;gap:8px">
+    <h2 id="orders-title">Orders this shift</h2>
+    <div class="orders"><table><thead><tr><th>Order</th><th>Part</th><th>Route</th><th>State</th><th>Note</th></tr></thead><tbody id="orders"></tbody></table></div>
+  </section>
+  <p class="note">Read-only view of the recorded runs: gate decisions, task packets and visit states, refreshed every 5 s. No model is called; model reasoning is never shown. Offline review candidates only, never a release.</p>
+</div>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const fmt = (n) => n == null ? "—" : n >= 1e6 ? (n / 1e6).toFixed(2) + " M" : n >= 1e3 ? (n / 1e3).toFixed(0) + " k" : String(n);
+const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "—";
+const stack = (big) => `<span class="stack${big ? " big" : ""}" aria-hidden="true"><i class="r"></i><i class="a"></i><i class="g"></i></span>`;
+const STATE_TEXT = {working: "Working", rework: "Rework", stopped: "Stopped", idle: "Idle", waiting: "Waiting", ready: "Ready", done: "Done"};
+let DATA = null, lastOk = 0, selected = null;
+let focus = new URLSearchParams(location.search).get("order") || "";
+// owner 2026-11-02 ("when i change between lines i want that the right active run and floor be selected"): after a line
+// switch (and on a first load that names no order or hall) follow that line's running order and open its hall
+let pickActive = !focus && !location.hash;
+let LINES = [], line = new URLSearchParams(location.search).get("line") || "";
+
+function arm() {
+  return `<svg viewBox="0 0 112 86" aria-hidden="true">
+    <rect x="4" y="74" width="104" height="7" rx="2" fill="var(--belt)"/>
+    <rect class="part" x="78" y="64" width="18" height="10" rx="1.5"/>
+    <rect x="26" y="64" width="28" height="10" rx="2" fill="var(--steel-dark)"/>
+    <g class="arm-lower">
+      <rect x="35" y="36" width="10" height="32" rx="4" fill="var(--steel)"/>
+      <circle cx="40" cy="66" r="6" fill="var(--steel-dark)"/>
+      <g class="arm-upper" style="transform-origin:40px 38px">
+        <rect x="38" y="33" width="44" height="9" rx="4" fill="var(--steel)"/>
+        <circle cx="40" cy="38" r="5" fill="var(--steel-dark)"/>
+        <g class="grip" style="transform-origin:82px 38px">
+          <rect x="80" y="36" width="5" height="14" rx="1.5" fill="var(--steel-dark)"/>
+          <rect x="85" y="44" width="6" height="3" rx="1" fill="var(--steel-dark)"/>
+          <rect x="77" y="44" width="5" height="3" rx="1" fill="var(--steel-dark)"/>
+        </g>
+      </g>
+    </g>
+    <g class="spark"><circle cx="87" cy="60" r="2.2" fill="var(--safety)"/><circle cx="92" cy="56" r="1.4" fill="var(--safety)"/><circle cx="83" cy="55" r="1.2" fill="var(--safety)"/></g>
+    <g class="redo"><path d="M94 9a7 7 0 1 1-6.6 4.7" fill="none" stroke="var(--warn)" stroke-width="2.4" stroke-linecap="round"/><path d="M85 10l2.6 4.4 4.1-2.9" fill="none" stroke="var(--warn)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+  </svg>`;
+}
+function gauge(value, max, label, unit) {
+  const v = value == null ? 0 : value, f = Math.max(0, Math.min(1, v / max)), ang = -90 + f * 180;
+  const arc = (a0, a1, color) => {
+    const p = (a) => [46 + 38 * Math.cos((a - 90) * Math.PI / 180), 50 + 38 * Math.sin((a - 90) * Math.PI / 180)];
+    const [x0, y0] = p(a0), [x1, y1] = p(a1);
+    return `<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} A38 38 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="none" stroke="${color}" stroke-width="7"/>`;
+  };
+  return `<div class="gauge" role="img" aria-label="${esc(label)}: ${value ?? "unknown"} ${esc(unit)}">
+    <svg viewBox="0 0 92 56">${arc(-90, 90, "var(--lamp-off)")}${f > 0 ? arc(-90, ang, "var(--go)") : ""}
+      <g class="needle" style="transform: rotate(${ang}deg)"><line x1="46" y1="50" x2="46" y2="18" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/></g>
+      <circle cx="46" cy="50" r="4" fill="var(--ink)"/></svg>
+    <div class="g-val">${value == null ? "—" : esc(value)} <span class="muted">${esc(unit)}</span></div><div class="g-lab">${esc(label)}</div></div>`;
+}
+function segs(done, total) {
+  const on = total ? Math.round(done / total * 20) : 0;
+  return `<div class="segs" aria-hidden="true">${Array.from({length: 20}, (_, i) => `<i class="${i < on ? "on" : i === on && done < total ? "head" : ""}"></i>`).join("")}</div>`;
+}
+const mins = (s) => s == null ? "—" : s < 90 ? `${Math.round(s)} s` : `${Math.round(s / 60)} min`;
+function testsBar(t) {  // owner 2026-11-01: tests to run and tests already run, live while the tool runs
+  if (!t) return "";
+  const u = esc(t.unit || "tests");
+  if (t.total == null) return `<div class="row"><span>${esc(t.label)}: counting ${u}…</span></div>`;
+  return `${segs(t.done, t.total)}<div class="row"><span>${esc(t.label)}: <b>${t.done}</b> / ${t.total} ${u} ${t.running ? "run" : "ran"}</span><span>${t.passed || 0} passed${t.failed ? `, <span class="late">${t.failed} failed</span>` : ""}</span></div>`;
+}
+function barHtml(b, c) {
+  if (!b) return "";
+  const tag = (k) => `<span class="bar-kind ${k}">${k}</span>`;
+  if (b.kind === "measured") {
+    return `<div class="prog">${segs(b.done, b.total)}<div class="row"><span>${tag("measured")} <b>${b.done}</b> / ${b.total} ${esc(b.unit)}</span><span>${b.eta ? `ETA <b>${esc(b.eta)}</b>` : ""}</span></div>${b.sub ? `<div class="row"><span class="steps"><span class="step now">${esc(b.sub)}</span></span></div>` : ""}</div>`;
+  }
+  if (b.kind === "estimate") {
+    const known = b.pct != null;
+    const wp = b.work_products ? `<div class="row"><span>work products <b>${b.work_products.have}</b>${b.work_products.expect ? ` of ~${b.work_products.expect}` : ""}</span><span class="muted">${b.work_products.expect ? "from an earlier run" : "no earlier run to compare"}</span></div>` : "";
+    return `<div class="prog"><div class="est-track${b.over ? " over" : ""}"><span style="width:${known ? b.pct : 0}%"></span></div>
+      <div class="row"><span>${tag("estimate")} ${known ? `<b>${mins(b.elapsed_s)}</b> of ~${mins(b.typical_s)} typical (${b.n} run${b.n === 1 ? "" : "s"})` : `<b>${mins(b.elapsed_s)}</b> in this node · no earlier run of it`}</span><span>${b.over ? '<span class="late">longer than usual</span>' : known ? `${b.pct}%` : ""}</span></div>${wp}</div>`;
+  }
+  if (b.kind === "step") {
+    const steps = [["checking", "checking"], [b.step === "rejected" || b.step === "rework" ? "rejected" : b.step === "stopped" ? "stopped" : "passed", b.step === "checking" ? "result" : b.step]];
+    return `<div class="prog"><div class="steps">${steps.map(([cls, label], i) => `<span class="step ${i === 0 ? (b.step === "checking" ? "now" : "done") : (b.step === "checking" ? "" : cls)}">${esc(label)}</span>`).join('<span class="step-sep">▸</span>')}</div>
+      <div class="row"><span>${tag("measured")} ${b.step === "checking" ? "check running" : `last decision <b>${esc(b.decision || b.step)}</b>`}</span></div></div>`;
+  }
+  if (b.kind === "tools") {
+    const cls = {passed: "passed", failed: "rejected", pending: ""};
+    return `<div class="prog"><div class="steps">${b.steps.map((t) => `<span class="step ${cls[t.status] || ""}${t.status === "pending" && c.state === "working" ? " now" : ""}" title="${esc(t.status)}">${esc(t.label)}</span>`).join("")}</div>
+      <div class="row"><span>${tag("measured")} ${b.round ? `round <b>${b.round}</b>` : "no tool run yet"}</span><span>${b.steps.filter((t) => t.status === "passed").length}/${b.steps.length} passed</span></div>${testsBar(b.tests)}</div>`;
+  }
+  if (b.kind === "waiting") return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">${b.for ? `waiting for ${esc(b.for)}` : "ready"}</span></div></div>`;
+  return `<div class="prog"><div class="est-track"><span style="width:0"></span></div><div class="row"><span class="muted">idle</span></div></div>`;
+}
+// owner 2026-11-02: every tool this phase ran for the order - runs, last result and its own one-line summary
+function toolDetail(d) {
+  if (!d || !d.length) return "";
+  const st = (t) => t.status === "PASS" ? "passed" : t.status ? "rejected" : "";
+  return `<ul class="tool-detail">${d.map((t) => `<li><span class="step ${st(t)}">${esc(t.tool)}</span> <b>${t.runs}</b> run${t.runs === 1 ? "" : "s"}${t.failed ? `, <span class="late">${t.failed} not passed</span>` : ""}${t.tests ? ` · ${t.tests.done}/${t.tests.total} ${esc(t.tests.unit || "tests")}${t.tests.failed ? `, <span class="late">${t.tests.failed} failed</span>` : ""}` : ""}<br><span class="muted">${esc(t.status || "")}: ${esc(t.summary || "")}</span></li>`).join("")}</ul>`;
+}
+function cellCard(c) {
+  const st = c.state === "ready" ? "idle" : c.state, p = c.progress, s = c.speed;
+  return `<article class="cell s-${st}" tabindex="0" aria-label="${esc(c.name)}: ${STATE_TEXT[c.state] || c.state}">
+    <div class="cell-head">${stack()}<div class="t"><h3>${esc(c.name)}</h3><span>${esc(c.tag)}</span></div><span class="state-tag">${STATE_TEXT[c.state] || esc(c.state)}</span></div>
+    <div class="machine">${arm()}<div class="readout">
+      ${c.job ? `<div class="job">${esc(c.job)}</div>` : `<div class="job muted">No job</div>`}
+      ${barHtml(c.bar, c)}
+    </div></div>
+    <div class="cell-foot">
+      ${s ? `<div class="gauges"${s.model ? ` title="${esc(s.model)} now: output tokens / call time of its latest calls (gateway)"` : ""}>${gauge(s.tok_s, 200, s.model ? "speed · " + modelShort(s.model) : "speed", "tok/s")}${s.per_h != null ? gauge(s.per_h, 30, "output", "per h") : ""}</div>` : ""}
+      <div class="counters">${(c.counters || []).map(([k, v]) => `<span>${esc(k)} <b>${esc(typeof v === "number" && v >= 1000 ? fmt(v) : v)}</b></span>`).join("")}</div>
+      ${toolDetail(c.detail)}
+      ${c.why ? `<div class="why">${esc(c.why)}</div>` : ""}
+      <div class="what">${esc(c.what)}</div>
+    </div></article>`;
+}
+function renderKpis(d) {
+  const k = d.kpis;
+  if (d.focus) {
+    const f = d.focus;
+    $("#kpis").innerHTML = [
+      `<div class="kpi"><span class="label">Order</span><span class="v" style="font-size:22px">${esc(f.wo.replace("WO-F014-", ""))}</span><span class="n">${esc((f.part || "").replace("STM32N6 ", ""))}</span></div>`,
+      `<div class="kpi"><span class="label">State</span><span class="v" style="font-size:26px">${esc(f.state.toLowerCase())}</span><span class="n">${esc(f.state === "RUNNING" ? "now in " + f.at : "target " + f.target)}${f.elapsed_min != null ? ` · ${f.elapsed_min} min since release` : ""}</span></div>`,
+      `<div class="kpi"><span class="label">Phases passed</span><span class="v">${f.phases_passed}<small> / ${f.phases_in_route}</small></span><span class="n">route SWE.1 → ${esc(f.target)}${f.resumed_from ? " · resumed" : ""}</span></div>`,
+      `<div class="kpi"><span class="label">Rework cycles</span><span class="v">${f.reworks}</span><span class="n">failed inspections sent back</span></div>`,
+      `<div class="kpi gauge-kpi">${gauge(k.line_tok_s, 200, "line speed", "tok/s")}<div><span class="label">Model work, this order</span><div class="v" style="font-size:24px">${f.model_hours}<small> h</small></div><span class="n">${fmt(f.out_tokens)} output tokens</span></div></div>`,
+      stationTile(k.station),
+    ].join("");
+    const st = f.state === "RUNNING" ? "working" : f.state === "STOPPED" ? "stopped" : "done";
+    $("#plant-status").className = "plant-status s-" + st;
+    $("#plant-status").innerHTML = `${stack(true)}<span>Following ${esc(f.wo.replace("WO-F014-", ""))}</span>`;
+    $("#sub").textContent = `ASPICE QM · one order · updated ${d.updated_at.slice(11, 19)} UTC`;
+    return;
+  }
+  $("#kpis").innerHTML = [
+    `<div class="kpi"><span class="label">On the floor now</span><span class="v">${k.on_floor}</span><span class="n">${esc(d.orders.filter((o) => o.state === "RUNNING").map((o) => o.wo.replace("WO-F014-", "") + " in " + o.at).join(", ") || "no order running")}</span></div>`,
+    `<div class="kpi"><span class="label">Orders completed</span><span class="v">${k.completed}<small> / ${k.orders}</small></span><span class="n">reached their target phase</span></div>`,
+    `<div class="kpi"><span class="label">First-pass yield SWE.1</span><span class="v">${pct(k.fpy_swe1[0], k.fpy_swe1[1]).replace("%", "")}<small>${k.fpy_swe1[1] ? "%" : ""}</small></span><span class="n">${k.fpy_swe1[0]} of ${k.fpy_swe1[1]} inspected orders</span></div>`,
+    `<div class="kpi"><span class="label">Rework cycles</span><span class="v">${k.reworks}</span><span class="n">failed inspections sent back</span></div>`,
+    `<div class="kpi"><span class="label">Stopped orders</span><span class="v" style="color:${k.stopped ? "var(--stop)" : "inherit"}">${k.stopped}</span><span class="n">see the notes below</span></div>`,
+    `<div class="kpi gauge-kpi">${gauge(k.line_tok_s, 200, "line speed", "tok/s")}<div><span class="label">Model work this shift</span><div class="v" style="font-size:24px">${k.model_hours}<small> h</small></div><span class="n">${fmt(k.out_tokens)} output tokens</span></div></div>`,
+    stationTile(k.station),
+  ].join("");
+  const status = k.on_floor ? "working" : "idle";
+  $("#plant-status").className = "plant-status s-" + status;
+  $("#plant-status").innerHTML = `${stack(true)}<span>${k.on_floor ? "Line running" : "Line idle"}</span>`;
+  const where = k.station && k.station.kind === "cloud_api" ? `${Object.keys(k.station.account_models || {}).length ? "cloud models · ChatGPT account" : "cloud APIs (Anthropic, OpenAI)"} · API cost today $${(k.station.cost_today_usd || 0).toFixed(2)}` : "one GPU station (RTX 6000 Ada)";
+  $("#sub").textContent = `ASPICE QM · shift since ${d.shift_start.slice(0, 16).replace("T", " ")} UTC · ${where} · updated ${d.updated_at.slice(11, 19)} UTC`;
+}
+// owner 2026-11-02: the cloud line shows a tokens and API cost monitor per model instead of the GPU station
+const API_NAME = {anthropic: "Anthropic API", openai: "OpenAI API", codex: "Codex CLI"};
+function modelShort(m) { const x = (m || "").toLowerCase(); return x.includes("ornith") ? "Ornith" : x.startsWith("qwen") ? "Qwen" + (x.match(/qwen([0-9.]+)/) || ["", ""])[1] : x.startsWith("claude") ? "Claude" : m.split(":")[0]; }
+function apiName(m) { return m.model.startsWith("claude") ? "Claude · " + (API_NAME[m.backend] || m.backend) : m.model + " · " + (API_NAME[m.backend] || m.backend); }
+function apiTile(m) {
+  const t = m.today, h = m.hour;
+  const est = m.price_source ? `<span class="n" title="${esc(m.price_source)}">≈ estimated from ${esc(m.price_source)}</span>` : "";
+  const cost = m.priced ? `<div class="v" style="font-size:26px">${m.price_source ? "≈" : ""}$${t.cost_usd.toFixed(2)}<small> today</small></div>${est}` :
+    `<div class="v" style="font-size:20px">price not set</div>`;
+  return `<div class="kpi api-kpi"><span class="label">${esc(apiName(m))}</span>${cost}
+    <span class="n">${fmt(t.calls)} calls${t.failed ? `, <span class="late">${t.failed} failed</span>` : ""} · in ${fmt(t.prompt)}${t.cached ? ` (${fmt(t.cached)} cached)` : ""} · out ${fmt(t.completion)}${t.reasoning ? ` (${fmt(t.reasoning)} reasoning)` : ""} tokens</span>
+    ${t.account_calls ? `<span class="n">${fmt(t.account_calls)} via the ${m.backend === "codex" ? "ChatGPT" : "Claude"} account (no API charge${t.list_cost_usd ? `; list-price equivalent $${t.list_cost_usd.toFixed(2)}` : ""})</span>` : ""}
+    <span class="n">last hour: ${fmt(h.calls)} calls · ${fmt(h.prompt + h.completion)} tokens${m.priced ? ` · $${h.cost_usd.toFixed(2)}` : ""}${m.last_s != null ? ` · last call ${m.last_s < 90 ? m.last_s + " s" : Math.round(m.last_s / 60) + " min"} ago` : ""}</span></div>`;
+}
+// owner 2026-11-02 ("Claude API/Account mode"): the floor's only control - where the cloud line's Claude calls go
+let modeArm = null, modeMsg = {};  // two taps confirm a switch (some phone browsers silently block confirm())
+const MODE_ROWS = [
+  {target: "claude", key: "claude_mode", label: "Claude (author)", acct: "the owner's Claude account", api: "Anthropic API"},
+  {target: "inspector", key: "inspector_mode", label: "gpt-6.1-sol (inspector)", acct: "the owner's ChatGPT login (Codex CLI)", api: "OpenAI API"}];
+function modeTile(st) {
+  if (Object.keys(st.account_models || {}).length) return `<div class="kpi"><span class="label">Model access · ChatGPT account</span>${Object.entries(st.account_models).map(([role, model]) => `<span class="n">${esc(model)} (${esc(role)}) · account</span>`).join("")}<span class="n">All calls use the configured account backend.</span></div>`;
+  const rows = MODE_ROWS.filter((r) => st[r.key]);
+  if (!rows.length) return "";
+  const armed = modeArm && modeArm.until > Date.now() ? modeArm : null;
+  const row = (r) => {
+    const cm = st[r.key];
+    const b = (m, label) => `<button class="line-tab${cm.mode === m ? " on" : ""}" aria-pressed="${cm.mode === m}" data-mode-target="${r.target}" data-mode="${m}">${armed && armed.target === r.target && armed.mode === m ? "Tap again: " + label : label}</button>`;
+    return `<span class="n" style="margin-top:6px">${r.label}</span><div style="display:flex;gap:6px;margin:4px 0">${b("api", "API")}${b("account", "Account")}</div>
+      <span class="n">${cm.mode === "account" ? `structured calls use ${r.acct} (no API charge); tool calls stay on the API` : `all calls use the ${r.api} (billed)`}${cm.since ? ` · since ${esc(cm.since.slice(11, 16))} UTC` : ""}</span>${modeMsg[r.target] ? `<span class="n late">${esc(modeMsg[r.target])}</span>` : ""}`;
+  };
+  return `<div class="kpi"><span class="label">Model access</span>${rows.map(row).join("")}</div>`;
+}
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("[data-mode-target]");
+  if (!t) return;
+  e.stopPropagation();
+  const target = t.dataset.modeTarget, mode = t.dataset.mode;
+  const r0 = MODE_ROWS.find((r) => r.target === target);
+  const cur = DATA && DATA.kpis && DATA.kpis.station && DATA.kpis.station[r0.key];
+  if (cur && cur.mode === mode) return;
+  if (!modeArm || modeArm.target !== target || modeArm.mode !== mode || modeArm.until < Date.now()) {
+    modeArm = {target, mode, until: Date.now() + 10000}; modeMsg[target] = ""; render(); setTimeout(() => { modeArm = null; render(); }, 10500); return;
+  }
+  modeArm = null;
+  const path = target + "-mode";
+  try {
+    const r = await fetch(path, {method: "POST", headers: {"Content-Type": "application/json", "X-Forge-Control": path}, body: JSON.stringify({mode})});
+    modeMsg[target] = r.ok ? "" : `not changed (HTTP ${r.status})`;
+  } catch (err) { modeMsg[target] = "not changed (" + err.message + ")"; }
+  load();
+}, true);
+function stationTile(st) {
+  if (!st) return "";
+  if (st.kind === "cloud_api") return modeTile(st) + ((st.models || []).map(apiTile).join("") ||
+    `<div class="kpi"><span class="label">Cloud APIs</span><span class="v" style="font-size:22px">no call today</span></div>`);
+  const model = st.model ? (st.model.toLowerCase().includes("ornith") ? "Ornith 35B" : st.model.split(":")[0].replace("qwen", "Qwen")) : "—";
+  if (!st.available) return `<div class="kpi"><span class="label">GPU station</span><span class="v" style="font-size:22px">no reading</span><span class="n">last reported: ${esc(model)}${st.age_s != null ? ` · last sample ${Math.round(st.age_s / 60)} min ago` : ""}</span></div>`;
+  return `<div class="kpi station-kpi"><span class="label">GPU station · RTX 6000 Ada</span><div class="gauges">${gauge(Math.round(st.util_pct), 100, "load", "%")}${gauge(Math.round(st.power_w), 300, "power", "W")}</div><span class="n">${st.temp_c} °C · ${(st.mem_used_mib / 1024).toFixed(1)} of ${(st.mem_total_mib / 1024).toFixed(0)} GB · last reported: ${esc(model)}</span></div>`;
+}
+function renderHalls(d) {
+  const HALL_STATE = {working: "working", history: "history", idle: "idle", out: "out", pending: "waiting", carried: "done",
+    done: "done", stopped: "stopped"};
+  const FOCUS_TEXT = {working: "in work now", done: "passed", stopped: "stopped here", pending: "not reached yet",
+    carried: "carried over (resumed)", out: "not in this order"};
+  $("#halls").innerHTML = d.halls.map((h, i) => {
+    const facts = d.focus ? `<div style="grid-column:1/-1"><span class="label">this order</span><b>${esc(FOCUS_TEXT[h.state] || h.state)}</b></div>` +
+        (h.state !== "out" && h.id !== "SHIP" ? `<div><span class="label">reworks</span><b>${h.reworks}</b></div><div><span class="label">time</span><b>${h.cycle_min != null ? h.cycle_min + " min" : "—"}</b></div>` : "")
+      : h.id === "SHIP" ? `<div><span class="label">released</span><b>0</b></div><div><span class="label">mode</span><b>review</b></div>`
+      : `<div><span class="label">done</span><b>${h.passed}/${h.entered}</b></div><div><span class="label">first pass</span><b>${pct(h.first_pass, h.inspected)}</b></div><div><span class="label">avg time</span><b>${h.cycle_min != null ? h.cycle_min + " min" : "—"}</b></div><div><span class="label">reworks</span><b>${h.reworks}</b></div>`;
+    const crates = h.running.map((w) => `<span class="crate" role="button" tabindex="0" data-wo="${esc(w)}" title="Follow ${esc(w)}">${esc(w.split("-")[1] || w)}</span>`).join("") || '<span class="crate idle">empty</span>';
+    const next = d.halls[i + 1];
+    const belt = next ? `<div class="conveyor${h.running.length ? " moving" : ""}" aria-hidden="true"></div>` : "";
+    return `<div class="hall-slot"><button class="hall s-${HALL_STATE[h.state] || h.state} h-${h.state}" data-hall="${h.id}" aria-pressed="${h.id === selected}">
+      <div class="top"><div><div class="code">${h.id}</div><div class="name">${esc(h.name)}</div></div>${stack(true)}</div>
+      <div class="facts">${facts}</div><div class="crates">${crates}</div></button>${belt}</div>`;
+  }).join("");
+}
+function renderHall(d) {
+  const h = d.halls.find((x) => x.id === selected) || d.halls[0];
+  const kpis = h.id === "SHIP" ? "" : `<div class="hall-kpis"><div><span class="label">entered</span><b>${h.entered}</b></div><div><span class="label">passed</span><b>${h.passed}</b></div><div><span class="label">first-pass yield</span><b>${pct(h.first_pass, h.inspected)}</b></div><div><span class="label">avg time to pass</span><b>${h.cycle_min != null ? h.cycle_min + " min" : "—"}</b></div><div><span class="label">stopped</span><b>${h.stopped}</b></div></div>`;
+  $("#hall-detail").innerHTML = `<div class="hall-detail-head"><div><span class="label">Hall</span><h2>${h.id} · ${esc(h.name)}</h2></div>${kpis}</div>` +
+    (h.cells.length ? `<div class="cells">${h.cells.map(cellCard).join("")}</div>` : `<p class="note">${esc(h.state === "out" ? "This hall is not in the route of the order you are following." : h.note || "No orders have reached this hall in this shift. Its cells appear here when the first order arrives.")}</p>`);
+}
+function renderOrders(d) {
+  $("#orders").innerHTML = d.orders.slice().reverse().map((o) => `<tr><td class="mono">${esc(o.wo.replace("WO-F014-", ""))}</td><td>${esc((o.part || "").replace("STM32N6 ", ""))}</td>
+    <td><div class="route">${Object.entries(o.route).map(([ph, r]) => `<span class="${r === "carried" ? "ok" : r}" title="${r === "carried" ? "carried over from " + esc(o.resumed_from) : ""}">${ph}${r === "carried" ? " ↺" : ""}</span>`).join("")}</div></td>
+    <td><span class="pill ${esc(o.state)}">${esc(o.state.toLowerCase())}</span></td><td>${esc(o.note || "")}</td></tr>`).join("");
+}
+function renderLegend() {
+  const items = [["working", "Working", "arm moves, green light pulses"], ["rework", "Rework", "slow reverse motion, amber blinks"],
+    ["stopped", "Stopped", "arm drops, red blinks, hazard band"], ["idle", "Idle", "arm parked, lights off"]];
+  $("#legend").innerHTML = items.map(([s, t, x]) => `<div class="mini s-${s}">${stack()}${arm()}<div><b>${t}</b><span class="muted">${x}</span></div></div>`).join("");
+}
+// Supervisor station (autonomous line M1): read-only view of the Line Conductor's feed forge-c/supervisor-issues/1.
+// Acknowledgement is CLI-only on the host (owner decision 10); this page has no control for it.
+const SUP_MODES = {
+  patrol: ["Patrolling", "No open issue. Observing the line's records every cycle; healthy patrol makes no model calls."],
+  diagnose: ["Diagnosing", "Open issues classified from the recorded evidence; rule proposals are listed, none is executed (OBSERVE)."],
+  repair: ["Recovery under way", "A later order is working on an open issue's phase."],
+  owner: ["Needs you", "An issue needs an owner decision. Acknowledge it on the host with the factory CLI."],
+  off: ["Offline", ""],
+};
+const SUP_OFF = {
+  NO_SUPERVISOR_ON_THIS_LINE: "No supervisor on this line.",
+  FEED_MISSING: "The Line Conductor has not written its issues feed yet.",
+  FEED_STALE: "The supervisor feed is not updating: the Line Conductor is stopped or stuck.",
+  FEED_MALFORMED: "The supervisor feed does not match forge-c/supervisor-issues/1 and is not shown.",
+  SCHEMA_UNAVAILABLE: "The supervisor-issues contract is not installed with this floor, so the feed is not shown.",
+  NOT_REPORTED: "This line's floor does not report a supervisor station.",
+};
+const SUP_CLS = {INFRA: ["infra", "Infra"], FACTORY_DEFECT: ["factory", "Factory defect"], PRODUCT: ["product", "Product"],
+  MODEL_CONVERGENCE: ["model", "Model convergence"], UNKNOWN: ["unknown", "Unknown"]};
+const SUP_ST = {OPEN: ["open", "Open"], RECOVERING: ["recovering", "Recovering"], WAITING_EXTERNAL_CHANGE: ["waiting", "Waiting for a fix"],
+  PARKED: ["parked", "Parked"], ESCALATED: ["owner", "Needs you"], RESOLVED: ["resolved", "Resolved"]};
+const SUP_SEV = {OPEN: "warn", RECOVERING: "warn", WAITING_EXTERNAL_CHANGE: "warn", PARKED: "idle", ESCALATED: "stop", RESOLVED: "ok"};
+let supSel = null;
+const supNeedsYou = (i) => i.status !== "RESOLVED" && i.escalation && i.escalation.level !== "FLOOR" && !i.escalation.acknowledged;
+function supMode(S) {  // feed status -> robot pose, as the mockup's modeFor()
+  const live = S.issues.filter((i) => i.status !== "RESOLVED");
+  if (live.some(supNeedsYou)) return "owner";
+  if (live.some((i) => i.status === "RECOVERING")) return "repair";
+  if (live.some((i) => ["OPEN", "WAITING_EXTERNAL_CHANGE", "ESCALATED"].includes(i.status))) return "diagnose";
+  return "patrol";
+}
+function supPose(m, doing) {
+  $("#sup-bot").setAttribute("class", "sup-bot m-" + m);
+  $("#sup-caption").textContent = SUP_MODES[m][0];
+  $("#sup-doing").textContent = doing != null ? doing : SUP_MODES[m][1];
+}
+const supTime = (s) => s ? String(s).slice(11, 16) : "—";
+const supDay = (s) => s ? String(s).slice(5, 10) + " " + String(s).slice(11, 16) : "—";
+function supStatus(i) {
+  if (i.status === "ESCALATED" && i.escalation && i.escalation.acknowledged) return ["resolved", "Acknowledged"];
+  return SUP_ST[i.status] || ["parked", String(i.status)];
+}
+function supStrike(i) {  // owner rule 2026-11-03: n of 3 same-issue strikes; the 4th stops the line
+  const used = Number(i.attempts.used) || 0, lim = Number(i.attempts.limit) || 3, over = used > lim;
+  const [cc, ct] = SUP_CLS[i.class] || SUP_CLS.UNKNOWN;
+  return `<div class="lane"><b>${esc((i.wo || i.lineage || "").replace("WO-F014-", ""))}</b><div class="bar"><i style="width:${Math.min(100, Math.round(used / lim * 100))}%;background:${over ? "var(--stop)" : used === lim ? "var(--warn)" : "var(--steel)"}"></i></div><span>${esc(used)} of ${esc(lim)} strikes · ${esc(ct)}${over ? " · line stops" : ""}</span></div>`;
+}
+const SUP_PL = {QUEUED: "Queued", CHAINED: "Chained", LAUNCHING: "Launching", RUNNING: "Running", WAITING: "Waiting",
+  ESCALATED: "Needs you", PARKED: "Parked", ON_HOLD: "On hold", DONE: "Done"};
+function supPlacement(PL) {  // autonomous line M3: the placement block of the feed (read-only)
+  if (!PL) return `<div><div class="label">Orders (placement)</div><div class="note">This feed reports no placement: the conductor only observes.</div></div>`;
+  const rows = (PL.lineages || []).map((l) => {
+    const n = l.next, lg = l.last_good;
+    const what = l.state === "RUNNING" || l.state === "LAUNCHING" ? esc((l.wo || "").replace("WO-F014-", "")) :
+      n ? `${esc(n.action.toLowerCase())} ${esc((n.wo || "").replace("WO-F014-", ""))}${n.resume_from ? " from " + esc(n.resume_from.replace("WO-F014-", "")) : ""}${n.provided_from ? " on " + esc(n.provided_from.replace("WO-F014-", "")) : ""}` : esc(l.reason || "");
+    return `<div class="lane"><b>${esc(l.lineage.split("/").pop())}</b><span class="mono">${esc(SUP_PL[l.state] || l.state)} · ${esc(l.phase || "-")}</span><span>${what}${lg && lg.wo ? " · last good " + esc(lg.wo.replace("WO-F014-", "")) : ""}${l.strikes && l.strikes.count ? " · " + Number(l.strikes.count) + " of " + Number(l.strikes.limit) + " strikes" : ""}</span></div>`;
+  }).join("");
+  const gaps = (PL.quality_gaps || []).map((g) => `${esc(g.metric)} ${Number(g.achieved)}% (target ${Number(g.target)}%, min ${Number(g.minimum)}%) ${esc((g.wo || "").replace("WO-F014-", ""))}`).join(" · ");
+  return `<div><div class="label" style="margin-bottom:6px">Orders (placement · ${PL.mode === "ACTING" ? "acting" : PL.mode === "DRY_RUN" ? "dry run" : "observing"} · GPU ${PL.gpu && PL.gpu.busy ? "busy" : "free"} · disk ${Number((PL.disk || {}).free_gb)} GB free, min ${Number((PL.disk || {}).min_gb)})</div><div class="lanes">${rows || `<div class="lane"><span>no approved campaign</span></div>`}</div>${gaps ? `<div class="note" style="margin-top:6px">Quality below target, at or above the order minimum (accepted, reported): ${gaps}</div>` : ""}</div>`;
+}
+function renderSupervisor(d) {
+  const S = d.supervisor || {available: false, reason: "NOT_REPORTED"};
+  if (!S.available) {
+    supPose("off", "");
+    const why = SUP_OFF[S.reason] || "The supervisor station is unavailable.";
+    const age = S.age_s != null ? ` Last feed ${Math.round(Number(S.age_s) / 60)} min ago.` : "";
+    $("#sup-sub").textContent = S.reason === "NO_SUPERVISOR_ON_THIS_LINE" ? "no supervisor on this line" : "supervisor offline";
+    $("#sup-board").innerHTML = `<div class="off"><b>${esc(why)}</b><div class="note">${esc(age)} The rest of the floor is unaffected.</div></div>`;
+    $("#sup-issues").innerHTML = ""; $("#sup-log").innerHTML = "";
+    return;
+  }
+  const sv = S.supervisor, issues = S.issues || [], live = issues.filter((i) => i.status !== "RESOLVED");
+  const mode = supMode(S);
+  const PL = S.placement || null, acting = !!(PL && PL.mode === "ACTING");
+  const doingWord = acting ? "Acting" : (PL && PL.mode === "DRY_RUN" ? "Planning (dry run)" : "Observing");
+  supPose(mode, mode === "patrol" ? (acting ? `No open issue. Cycle ${Number(sv.cycle)}, ${Number(sv.model_calls_healthy)} model calls; it places the campaign's orders under the owner's PILOT grant.` : `No open issue. Cycle ${Number(sv.cycle)}, ${Number(sv.model_calls_healthy)} model calls; it places no order while observing.`) : null);
+  $("#sup-sub").textContent = `Line Conductor · ${doingWord} (${sv.mode}) · cycle ${Number(sv.cycle)} · feed ${supTime(S.generated_at)} UTC (${Number(S.age_s)} s ago)`;
+  const owner = live.filter(supNeedsYou).length, stopping = live.filter((i) => i.status === "ESCALATED").length;
+  const B = S.budgets || {};
+  $("#sup-board").innerHTML = `<div class="kpis">
+      <div class="kpi"><span class="label">Open issues</span><span class="v">${live.length}</span><span class="n">${stopping ? esc(stopping + " escalated") : "none escalated"}</span></div>
+      <div class="kpi"><span class="label">Resolved</span><span class="v">${issues.length - live.length}</span><span class="n">by later orders, last 7 days</span></div>
+      <div class="kpi"><span class="label">Waiting on you</span><span class="v" style="color:${owner ? "var(--stop)" : "inherit"}">${owner}</span><span class="n">${owner ? "acknowledge on the host (CLI)" : "nothing to decide"}</span></div>
+      <div class="kpi"><span class="label">Model calls</span><span class="v">${Number(sv.model_calls_healthy)}</span><span class="n">healthy patrol, measured by the socket guard</span></div>
+    </div>
+    <div><div class="label" style="margin-bottom:6px">Same-issue strikes (owner rule: the same issue more than 3 times stops the line)</div><div class="lanes">
+      ${live.length ? live.slice(0, 8).map(supStrike).join("") : `<div class="lane"><b>No open issue</b><div class="bar"><i style="width:0%"></i></div><span>every new run progressed</span></div>`}
+    </div></div>
+    <div><div class="label" style="margin-bottom:6px">Last good part (quality-checked; every retry resumes here)</div><div class="lanes">
+      ${(S.progress || []).length ? S.progress.map((g) => `<div class="lane"><b>${esc(g.lineage)}</b><span class="mono">${esc(g.phase)} · ${esc((g.wo || "").replace("WO-F014-", ""))}</span><span>passed ${esc(supDay(g.at))} UTC</span></div>`).join("") : `<div class="lane"><span>${S.progress ? "no phase passed yet" : "not reported by this feed"}</span></div>`}
+    </div><div class="note" style="margin-top:6px">Guards (pacing and cost, never a stop reason): planner ${esc((B.guard_planner_calls_per_order || {}).used ?? 0)} of ${esc((B.guard_planner_calls_per_order || {}).limit ?? 4)} calls and ${fmt((B.guard_planner_tokens_per_order || {}).used ?? 0)} of ${fmt((B.guard_planner_tokens_per_order || {}).limit ?? 200000)} tokens per order · infra recoveries ${esc((B.guard_infra_recoveries_per_hour_host || {}).used ?? 0)} of ${esc((B.guard_infra_recoveries_per_hour_host || {}).limit ?? 6)} per hour, ${Math.round(((B.guard_infra_cooldown_s || {}).limit || 600) / 60)} min cooldown · longest running phase order ${Math.round(((B.guard_phase_order_wall_s || {}).used || 0) / 60)} min (check at ${Math.round(((B.guard_phase_order_wall_s || {}).limit || 21600) / 3600)} h)</div></div>
+    ${supPlacement(PL)}
+    <div class="rules">
+      <div><b>Healthy patrol makes no model calls.</b> It reads gate logs, launch records, CRE incidents and CAPAs, the AFO queue and Fabro's run status.</div>
+      ${acting ? `<div><b>Acting under the owner's PILOT grant.</b> It places the approved campaign's phase orders one GPU run at a time and chains each passed phase; it never merges, promotes or weakens a gate.</div>` : `<div><b>Observing: proposals only.</b> ${PL ? "ACT is refused (" + esc(PL.authorization.code) + "): " : ""}no order is placed or changed.</div>`}
+      <div><b>Retries until the line progresses.</b> Each retry resumes from the last good, quality-checked part; the same issue more than 3 times stops the line.</div>
+      <div><b>Never weakens a gate, a requirement or a baseline.</b> Anything that would needs you.</div>
+    </div>`;
+  if (!issues.length) {
+    $("#sup-issues").innerHTML = `<p class="note">No issue in the feed. The line's recorded orders reached their target phases or are still running.</p>`;
+  } else {
+    if (!supSel || !issues.some((i) => i.issue_id === supSel)) supSel = (live[0] || issues[0]).issue_id;
+    const list = issues.map((i) => {
+      const [cc, ct] = SUP_CLS[i.class] || SUP_CLS.UNKNOWN, [sc, st] = supStatus(i);
+      return `<button type="button" class="issue sev-${SUP_SEV[i.status] || "idle"}" data-sup-issue="${esc(i.issue_id)}" aria-pressed="${i.issue_id === supSel}">
+        <div class="top"><span class="id">${esc(i.issue_id)}</span><span class="t">${esc(i.summary)}</span></div>
+        <div class="meta"><span class="chip c-${cc}">${esc(ct)}</span><span class="st st-${sc}">${esc(st)}</span><span>${esc(i.phase)}</span><span class="mono">${esc((i.wo || i.lineage || "").replace("WO-F014-", ""))}</span><span>since ${esc(supDay(i.opened_at))}</span></div></button>`;
+    }).join("");
+    const i = issues.find((x) => x.issue_id === supSel);
+    const [cc, ct] = SUP_CLS[i.class] || SUP_CLS.UNKNOWN, [sc, st] = supStatus(i);
+    const ev = (i.evidence || []).map((e) => `${e.kind.padEnd(17)} ${e.ref}`).join("\n");
+    const sols = (i.proposals || []).slice().sort((a, b) => (a.rank || 9) - (b.rank || 9)).map((p, n) => `<div class="sol${n === 0 && p.status === "PROPOSED" ? " first" : ""}">
+        <span class="rank">${Number(p.rank || n + 1)}</span><div class="s-what"><b>${esc(p.summary || p.strategy)}</b></div><span class="s-state">${esc(p.status.toLowerCase())}</span>
+        <div class="s-how">${esc(p.source.toLowerCase())} · ${esc(p.strategy)}${(p.reason_codes || []).length ? " · " + esc(p.reason_codes.join(", ")) : ""}${p.cre_decision_ref ? " · " + esc(p.cre_decision_ref) : ""}</div></div>`).join("") ||
+      `<p class="note">No proposal for this issue.</p>`;
+    const e = i.escalation || {};
+    const box = i.status !== "RESOLVED" && e.level && e.level !== "FLOOR" ? (e.acknowledged ?
+      `<div class="owner-box acked"><span class="label">Needs you · acknowledged</span><div class="q">Acknowledged by ${esc(e.acknowledged_by)} at ${esc(supDay(e.acknowledged_at))} UTC</div><div class="note">audit ${esc(e.ack_ref || "")}</div></div>` :
+      `<div class="owner-box"><span class="label">Needs you · ${esc(e.level.replace("_", " ").toLowerCase())} since ${esc(supDay(e.at))} UTC</span><div class="q">The supervisor stops here and waits for you${e.reason ? " (" + esc(e.reason) + ")" : ""}.</div><div class="note">Acknowledge on the host (the floor is read-only):</div><code>python -m forge_factory.afo.cli supervisor ack ${esc(i.issue_id)} --by owner --note "..."</code></div>`) : "";
+    $("#sup-issues").innerHTML = `<div class="issue-list">${list}</div><article class="detail" aria-live="polite">
+      <div class="d-head"><div><span class="label">${esc(i.issue_id)} · ${esc(ct)}</span><h3>${esc(i.summary)}</h3></div><span class="st st-${sc}">${esc(st)}</span></div>
+      <div class="dfacts"><div><span class="label">Order</span><b>${esc(i.wo || "—")}</b></div><div><span class="label">Phase</span><b>${esc(i.phase)}</b></div>
+        <div><span class="label">Lineage</span><b>${esc(i.lineage)}</b></div><div><span class="label">Fabro run</span><b>${esc(i.fabro_run_id || "—")}</b></div>
+        <div><span class="label">Error code</span><b>${esc(i.error_code)}</b></div><div><span class="label">Attempts</span><b>${Number(i.attempts.used)} of ${Number(i.attempts.limit)}</b></div>
+        <div><span class="label">Opened</span><b>${esc(supDay(i.opened_at))} UTC</b></div><div><span class="label">${i.resolved_at ? "Resolved" : "Updated"}</span><b>${esc(supDay(i.resolved_at || i.updated_at))} UTC</b></div></div>
+      <div><div class="label" style="margin-bottom:4px">Evidence (recorded)</div><div class="evidence">${esc(ev) || "—"}</div></div>
+      <div><div class="label" style="margin-bottom:6px">Proposed fixes (ranked)</div><div class="sols">${sols}</div></div>${box}</article>`;
+  }
+  $("#sup-log").innerHTML = (S.log || []).map((r) => `<tr><td class="mono">${esc(supDay(r.at))}</td><td class="mono">${esc(r.issue_id)}</td><td>${esc((r.event || "").toLowerCase())}${r.wo ? " · " + esc(r.wo.replace("WO-F014-", "")) : ""}</td><td>${esc([r.class, r.status, r.error_code].filter(Boolean).join(" · "))}</td></tr>`).join("") ||
+    `<tr><td colspan="4" class="muted">No supervisor event yet.</td></tr>`;
+}
+document.addEventListener("click", (e) => {
+  const s = e.target.closest("[data-sup-issue]");
+  if (s) { supSel = s.dataset.supIssue; if (DATA) renderSupervisor(DATA); }
+});
+function renderRuntime(d) {
+  const target = $("#runtime-monitor"), m = d.monitor || {};
+  const c = m.connection || {}, conductor = m.conductor || {}, ops = m.operations || {};
+  const work = m.work || {}, jobs = work.jobs || {}, speed = m.throughput || {}, model = m.model || {};
+  const known = (v) => v == null ? "UNKNOWN" : String(v);
+  const age = (v) => Number.isFinite(v) && v >= 0 ? `${Math.round(v)} s ago` : "age unknown";
+  const tile = (name, value, note, id = "") => `<div class="kpi"><span class="label">${esc(name)}</span><span class="v"${id ? ` id="${id}"` : ""}>${esc(known(value))}</span><span class="n">${esc(note)}</span></div>`;
+  const current = work.drivers || [];
+  const source = c.source_state || "UNKNOWN";
+  const connection = c.reachable ? `Connected · source ${source}` : `Reading source · ${source}`;
+  const readiness = conductor.readiness || "UNKNOWN";
+  const readinessNote = readiness === "OBSERVING" ? "Observing only; no orders are placed." :
+    readiness === "ACTING" ? "Conductor manages admission; product acceptance stays independent." : "No current admission-readiness claim.";
+  const measurement = speed.tok_s == null ? "UNKNOWN" : `${speed.tok_s} tok/s`;
+  const codes = (m.recovery || {}).issues || [];
+  target.innerHTML = `<div class="floor-head"><h2>Factory runtime</h2><span class="note">Observed service and execution state · read only</span></div>
+    <div class="kpis">${tile("Connection", connection, `Conductor feed ${age(c.feed_age_s)}`, "runtime-connection")}
+      ${tile("Operations intent", ops.desired, ops.epoch == null ? "Intent is not observed." : `Desired state · epoch ${ops.epoch}`)}
+      ${tile("Conductor requested / observed", `${conductor.requested_mode || "UNKNOWN"} / ${conductor.observed_mode || "UNKNOWN"}`, `Process ${(conductor.process || {}).state || "UNKNOWN"} · heartbeat ${conductor.heartbeat && conductor.heartbeat.fresh ? "fresh" : "not current"}`)}
+      ${tile("Admission", readiness, readinessNote)}
+      ${tile("Last reported model", model.last_reported_loaded, `${model.fresh ? "Recent successful swap" : "Current loaded model not verified"} · ${age(model.age_s)}`)}
+      ${tile("Recent throughput", measurement, speed.model ? `${speed.model} · completed-call measurement · ${age(speed.age_s)}` : "No recent completed-call measurement; not zero.")}
+      ${tile("Driver activity", work.driver_activity === "OBSERVED" ? `${current.length} observed` : work.driver_activity === "NO_CURRENT_DRIVER_OBSERVED" ? "No current driver observed" : "UNKNOWN", "Operations RUNNING does not imply a running job.")}
+      ${tile("Healthy model calls", conductor.model_calls_healthy, "Conductor monitoring; no model calls are made for health.")}</div>
+    <div>${current.map((j) => `<div><b>${esc(j.work_order || "UNKNOWN")}</b> · ${esc(j.phase || "UNKNOWN")} · ${esc(j.agent || "agent UNKNOWN")} · ${esc(j.observed_model || "actual model UNKNOWN")} · ${Number(j.reworks || 0)} recorded reworks</div>`).join("")}</div>
+    <div class="runtime-jobs"><div class="label">Durable product / repair jobs · ${jobs.available ? "observed records" : "UNKNOWN: queue not observed"}</div>
+      ${(jobs.items || []).length ? `<table><thead><tr><th>Job / phase</th><th>Role / requested model</th><th>Task outcome</th><th>Native liveness / lease</th></tr></thead><tbody>${jobs.items.map((j) =>
+        `<tr><td>${esc(j.work_order || j.job_id || "UNKNOWN")}<br>${esc(j.phase || "phase UNKNOWN")}</td><td>${esc(j.role || "PRODUCT")}<br>${esc(j.requested_model || "UNKNOWN")}</td><td>${esc(j.task_outcome || "UNKNOWN")}</td><td>${esc(j.execution_liveness || "UNKNOWN")} / ${esc(j.resource_lease || "UNKNOWN")}<br>${j.execution_fresh ? "fresh observation" : "last record; current liveness UNKNOWN"}</td></tr>`).join("")}</tbody></table>` : `<div class="note">${jobs.available ? "No durable job record in this observation." : "Missing observations never mean zero active executions."}</div>`}
+      ${jobs.inventory_complete === false ? `<div class="note">Bounded recent inventory; additional historical records are omitted.</div>` : ""}</div>
+    <div class="note">Recovery: ${codes.length ? codes.map((i) => `${esc(i.phase || "")} ${esc(i.status || "UNKNOWN")} · ${esc(i.error_code || i.class || "UNKNOWN")}`).join("; ") : source === "CURRENT" ? "No open issue in the current supervisor feed." : "UNKNOWN; supervisor feed is not current."}</div>`;
+}
+function disconnectedRuntime() {
+  document.body.classList.add("telemetry-stale");
+  if (!$("#runtime-connection")) renderRuntime({});
+  const connection = $("#runtime-connection");
+  if (connection) connection.textContent = "DISCONNECTED · last observation only";
+}
+
+function render() {
+  if (!DATA) return;
+  if (!selected) {
+    const h = (location.hash || "").slice(1).toUpperCase().replace("-", ".");
+    selected = DATA.halls.some((x) => x.id === h) ? h : (DATA.halls.find((x) => x.running.length) || DATA.halls[0]).id;
+  }
+  renderRuntime(DATA);
+  renderPicker(DATA); renderKpis(DATA); renderHalls(DATA); renderHall(DATA); renderOrders(DATA);
+  try { renderSupervisor(DATA); } catch (err) { $("#sup-board").textContent = "The supervisor station could not be drawn (" + err.message + ")."; }
+}
+function renderPicker(d) {
+  const sel = $("#focus"), short = (w) => w.replace("WO-F014-", "");
+  const opts = [["", "Whole shift"], ...d.orders.slice().reverse().sort((a, b) => (b.state === "RUNNING") - (a.state === "RUNNING"))
+    .map((o) => [short(o.wo), `${short(o.wo)} · ${o.state.toLowerCase()}`])];
+  const html = opts.map(([v, t]) => `<option value="${esc(v)}"${v === focus ? " selected" : ""}>${esc(t)}</option>`).join("");
+  if (sel.innerHTML !== html) sel.innerHTML = html;
+  $("#floor-note").textContent = d.focus ? "Following one order: only the halls of its route are lit." :
+    "Halls light up only while an order is in them; the numbers are today's. Click a crate to follow that order.";
+}
+function setFocus(v) {
+  focus = v || "";
+  const u = new URL(location.href);
+  if (focus) u.searchParams.set("order", focus); else u.searchParams.delete("order");
+  history.replaceState(null, "", u);
+  selected = null;
+  load();
+}
+async function load() {
+  try {
+    const q = new URLSearchParams();
+    if (line) q.set("line", line);
+    if (focus) q.set("order", focus);
+    const r = await fetch("floor.json" + (q.toString() ? "?" + q : ""), {cache: "no-store"});
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    DATA = await r.json(); lastOk = Date.now();
+    if (pickActive) {
+      pickActive = false;
+      const running = (DATA.orders || []).filter((o) => o.state === "RUNNING");
+      if (running.length && !focus) {
+        const o = running[running.length - 1];  // the latest running order of this line
+        focus = o.wo.replace("WO-F014-", "");
+        const u = new URL(location.href);
+        u.searchParams.set("order", focus); u.hash = "";
+        history.replaceState(null, "", u);
+        selected = null;
+        return load();
+      }
+    }
+    $("#stale").hidden = true;
+    document.body.classList.remove("telemetry-stale");
+    render();
+  } catch (e) {
+    disconnectedRuntime();
+    if (DATA) {
+      $("#stale").hidden = false;
+      $("#stale").textContent = `The floor data is not updating (${e.message}); last update ${Math.round((Date.now() - lastOk) / 1000)} s ago. The values below are not live.`;
+    } else {
+      $("#hall-detail").innerHTML = `<p class="note">The floor data could not be loaded (${esc(e.message)}). It retries every 5 s.</p>`;
+    }
+  }
+}
+document.addEventListener("change", (e) => { if (e.target.id === "focus") setFocus(e.target.value); });
+document.addEventListener("keydown", (e) => {
+  const c = e.target.closest && e.target.closest("[data-wo]");
+  if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setFocus(c.dataset.wo); }
+});
+document.addEventListener("click", (e) => {
+  const c = e.target.closest("[data-wo]");
+  if (c) { e.stopPropagation(); setFocus(c.dataset.wo); return; }
+  const b = e.target.closest("[data-hall]");
+  if (b) { selected = b.dataset.hall; location.hash = selected.replace(".", "-").toLowerCase(); render(); }
+});
+window.addEventListener("hashchange", () => { const h = location.hash.slice(1).toUpperCase().replace("-", "."); if (DATA && DATA.halls.some((x) => x.id === h)) { selected = h; render(); } });
+// owner 2026-11-02 ("why not in the very same port?"): one page, one tab per production line
+function renderLines() {
+  const nav = $("#line-tabs");
+  if (LINES.length < 2) { nav.hidden = true; return; }
+  nav.hidden = false;
+  nav.innerHTML = LINES.map((l) => `<button role="tab" class="line-tab${l.id === line ? " on" : ""}" aria-selected="${l.id === line}" data-line="${esc(l.id)}">${esc(l.label)}</button>`).join("");
+  const cur = LINES.find((l) => l.id === line);
+  if (cur) { document.querySelector("header.plate h1").textContent = "Forge-C Plant · " + cur.label; if (cur.sub) $("#sub").textContent = cur.sub; }
+}
+function setLine(v) {
+  line = v; focus = ""; selected = null; DATA = null; pickActive = true;
+  const u = new URL(location.href);
+  u.searchParams.set("line", line); u.searchParams.delete("order"); u.hash = "";
+  history.replaceState(null, "", u);
+  renderLines(); load();
+}
+document.addEventListener("click", (e) => { const t = e.target.closest("[data-line]"); if (t) { e.stopPropagation(); setLine(t.dataset.line); } }, true);
+async function start() {
+  try {
+    const r = await fetch("lines.json", {cache: "no-store"});
+    if (r.ok) LINES = (await r.json()).lines || [];
+  } catch (e) { LINES = []; }
+  if (LINES.length >= 2 && !LINES.some((l) => l.id === line)) line = LINES[0].id;
+  if (LINES.length < 2) line = "";
+  renderLines();
+  renderLegend(); load(); setInterval(load, 5000);
+}
+start();
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+SYMPTOM_PRESENT:line-local product launch cannot prepare its owned provider without global shutdown
+
+--- stderr ---

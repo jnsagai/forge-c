@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<84a35ccb3533"
+  ],
+  "candidate_patch_sha256": "7497a569ccf56a8ea32ed4a301753725fdcba5a60d6a009985920025da826c44",
+  "capa_id": "CAPA-172",
+  "created_at": "2026-11-05T05:53:38.736354Z",
+  "event_ids": [],
+  "incident_ids": [
+    "CAPA-172"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-172",
+  "reproducer_id": "RPR-172",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-4cb198250899a4411a20",
+    "reproducer-run:rr-7c38a94df2c41e0f39af"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "LINE next-order binding re-registers effective amended limits against the immutable original mission. M9 equates a separately signed effective deadline grant with the original CONTROL identity. Validate raw original authority and replayed exact effective mission, then link without re-registration.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-05T06:02:15.635311Z"
+}

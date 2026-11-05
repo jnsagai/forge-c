@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-b566069818af97080812",
+  "reproducer_id": "AFO-PROVIDER-NSENTRY-20261105",
+  "revision": "b66c018b18cca81732f14d04af384f2bf9984b07",
+  "role": "CANDIDATE",
+  "exit_code": 0,
+  "verdict": "SYMPTOM_ABSENT",
+  "signature": null,
+  "log_sha256": "1d4ea77055a2f63cff664384991d1fd5e6cb0942f0ac0da5638e96e23e1fb264",
+  "at": "2026-11-05T22:26:51.284506Z"
+}

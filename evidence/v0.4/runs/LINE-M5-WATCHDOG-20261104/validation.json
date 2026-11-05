@@ -1,0 +1,19 @@
+{
+  "candidate": "c1aebb79dff9fb59c1b33a79aaf47492528a29a5",
+  "decision_id": "pd-22e3331b335892fb0a6d",
+  "source_state": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "production_state": "NOT_INSTALLED_AUTHORITY_GAP",
+  "tests": {
+    "existing_operations_regression": "59 PASS",
+    "watchdog_final": "14 PASS",
+    "design": "14 PASS",
+    "rendered_systemd_units": "PASS"
+  },
+  "authority_gap": "Current protected CRE policy is OBSERVE_ONLY, automatic operational actions empty. No protected or signed policy changed; restart authority not inferred.",
+  "automatic_external_watchdog": "NOT_QUALIFIED",
+  "production_fault_injection": "NOT_RUN",
+  "evidence_logs": {
+    "autonomy-line-watchdog-change-gate.log": "e61e07c051e8505302f2bbbad8f1a1e5975ba54df9827b3cbc8b3b78fbb32a3a",
+    "autonomy-line-watchdog-tests.log": "a14372e2887e7b1499a343a5a0923f776b5e6c265c265f43aea5f711d8fda7e2"
+  }
+}

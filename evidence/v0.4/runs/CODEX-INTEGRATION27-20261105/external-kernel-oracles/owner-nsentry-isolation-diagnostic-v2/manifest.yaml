@@ -1,0 +1,20 @@
+schema_version: '1.0'
+reproducers:
+- id: AFO-PROVIDER-NSENTRY-20261105
+  script: reproduce_nsentry.py
+  sha256: 6db9e9d6585f746d83f2f6af6d3b706e793ae7923d612cfa4e73a0c10e6522b1
+  symptom_signature: provider entry rejects inherited ancestor network or already-current
+    user namespace
+  observed_in: Actualsource887 workers reported ns/net EPERM; realprivatebwrapUSER/MNT/PID+ancestorNET
+    witness recreates exactfailure and orderedentry succeeds. Same-currentUSER normalmode
+    also measuredEINVAL.
+  baseline_revision: 887820300340dcc31a03f3dc46c31107e9aef9f3
+  error_codes:
+  - EPERM
+  - EINVAL
+  operations:
+  - lrtx.stack._in_ns
+  root_cause: SingleUSER+NET+MNT+PID setns joins childUSER before ancestor-ownedNET;
+    reentering currentUSER is independently invalid.
+  remedy: Retain liveidentity and sameNET binding; enter outerUSER/NET in correct
+    owner context before providerUSER/MNT/PID, omitting sameUSER setns.

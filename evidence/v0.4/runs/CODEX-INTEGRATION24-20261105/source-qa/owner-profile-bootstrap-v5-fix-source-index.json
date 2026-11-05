@@ -1,0 +1,122 @@
+{
+  "schema": "forge-c/owner-bootstrap-fix-source-index/1",
+  "state": "FROZEN_PRIVATE_QA_PASS_ROOT_NORMAL_CRE_PENDING",
+  "source": "c757eef02db2c51faa3d4a65ab02aaf95ddc0bbd",
+  "base": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v5",
+  "files": [
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "4ab58c96d8d6c1b482ad87f4260189986f4365b686898f7cf655df4f142c1076"
+    },
+    {
+      "path": "factory/python/tests/test_owner_bootstrap_cold_start.py",
+      "sha256": "8d36deafa72db5a54b071582d1bd36026ea3186a64ca69e04080c1f342bf46d6"
+    }
+  ],
+  "affected": {
+    "tests": "151",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "96.634"
+  },
+  "design": "14 PASS",
+  "legacy": "16 PASS",
+  "packager": "7 PASS",
+  "ruff": "PASS",
+  "causal_witness": "Explicit pre-pytest source import pinned214 FAIL exact stack.py848 UnboundLocalError; fixed real-control cold regression2PASS; source-pinned witness engineering only, independent root formal CRE remains pending",
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-affected.log",
+      "sha256": "152357c937e7265ad5056c8532bf507830700d66044a8e40295c536e812a011d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-affected.xml",
+      "sha256": "805a6ebc8829a4eaad19aa0f83a56a86e93d2ee0ef84292ccd68e0c88c9e7524"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-baseline214-pinned-r2.log",
+      "sha256": "29da6626a20d8f9de714753ada32d7e4adda2a3ef0c8cfa3842f38f060126192"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-baseline214-pinned-r2.xml",
+      "sha256": "836c478f51c2f95b1fa46da7c8d4f76de85562f1d5eb6c0e6a53a15194c79c4f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-baseline214-pinned.log",
+      "sha256": "4063457ed542f33064517b33b5915aa65e28e10ac5be3778b228c7613b7bd982"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-baseline214.log",
+      "sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-baseline214.xml",
+      "sha256": "fd3964b8092bb00f82894ee79ec92a0510065dc33a42b2cefaa2afca2831ce14"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-cold-r2.log",
+      "sha256": "bbfe5b1cab3f66c1a1e78ce878fc4453b0c5e1da2e5f95a78c056e622b5364aa"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-cold-r2.xml",
+      "sha256": "bb11a9d87e0a3d441915d4f0a6c3f35b53d939beb7ce9eb10158429d6525087e"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-cold-r3.log",
+      "sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-cold-r3.xml",
+      "sha256": "bad632fe70a2e9e1b26df1c29d11863b64d1316b3cfaf60ab0f1e78301de4db5"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-cold-snapshot.json",
+      "sha256": "495022a6acf9a1fde73a32195c4e965389c5ac4b0118ba5d71bdbd1818d76df8"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-cold.log",
+      "sha256": "ba5c8735e3bc114313ae1d59fca1d2d6e7cd6f246a956adbf369723ad3873c49"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-cold.xml",
+      "sha256": "8698c432fea963a311ea66daa4ad37683966f7fa884ea08674a6bed252a81f46"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-design.log",
+      "sha256": "ac51eb04d1faa21d0760e378197cc160aeedb2383760b38a65ce95eb205a87b4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-inputs-before-tests.json",
+      "sha256": "500e9c745bd2a890c79f4c56e03b0b6462017cd0b9bc257d1d940cb4e8fec586"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-legacy.log",
+      "sha256": "3befd505481044371e9c0178b2f214b58badd3fdfe8740b18492fd16f74393c2"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-v03-packager.log",
+      "sha256": "62ba8e24fbc15cf324c7fd3adec0a90420232534deb8dfdca484fce2205031b4"
+    }
+  ],
+  "source_pinned_runner": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-cold-source-pinned.py",
+    "sha256": "c947994cc3977dd90d5a49ac9e8d46b26bd66ad711513707f756b8e5bb81f738"
+  },
+  "failures_preserved": {
+    "cold.log": "Fixture transitive dependency missing; before correction",
+    "cold-r2.log": "Private holder wrongly precreated, strict startup correctly refused; before correction",
+    "baseline214.log": "INCONCLUSIVE, pytest imported candidate despite PYTHONPATH; not baseline proof",
+    "baseline214-pinned.log": "Plugin environment ERROR before oracle, retained",
+    "baseline214-pinned-r2.log": "Valid exact baseline source witness PRESENT"
+  },
+  "current_actual_unknown": "Existing ebf/214 UNKNOWN remains unchanged and blocks future bootstrap; no reconciliation transition/waiver in this narrow fix",
+  "remote_mutations": false,
+  "model_calls": 0,
+  "private_leaf_scope": "Namespace/backend leaves simulated with own harmless CPU sleep+HTTP; actual _start/_in_ns/Popen/probe/owner_view/partial-disk path; no role/native competence claim"
+}

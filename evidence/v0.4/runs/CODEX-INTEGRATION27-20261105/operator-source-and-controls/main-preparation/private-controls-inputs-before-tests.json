@@ -1,0 +1,111 @@
+{
+  "source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "all12_inputs_verified_before_any_tests": [
+    {
+      "path": "examples/0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4"
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/inputs-manifest.json",
+      "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2"
+    },
+    {
+      "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506"
+    },
+    {
+      "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+      "sha256": "f3e02884a5692b9779b3f409322ae4425324daeecab41f5df18d5b4b6d5dd273"
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md",
+      "sha256": "c1ab2f86a424135941ba8ff5da9c22c6899c3021f37c4430dfbf4d228952f9b8"
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/inputs-manifest.json",
+      "sha256": "0e681a279eaffa0695d72e08722adedb0b1277ad9becd5ebc4f878fd83d20095"
+    }
+  ],
+  "source14": [
+    {
+      "path": "docs/adr/ADR-DA-013-line-service-boot-fencing.md",
+      "sha256": "cf3c33a37c77fed771e6de9021898ce98ea36e884347611823c4e607ffe297f3"
+    },
+    {
+      "path": "docs/adr/ADR-DA-015-nested-provider-entry-and-bootstrap-history.md",
+      "sha256": "dacaef2361b8a4da6a38ed7fdda9ad3249c9053591f196385283da8f46ff1892"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_conductor.py",
+      "sha256": "4cca2c939552fb2474a20bd2eabfd7ab88d72ae78913bbcf7c2ddb4a07b65dc9"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_reconciliation.py",
+      "sha256": "130d431fd77bf0d01ae7feae260ed5811f55e5eed874b4722b0d30622473c8a5"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "c4a6be646514d597413d005f3feb5289ccfd8fc9a591c22c79cd24dce2cd9ac7"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/services.py",
+      "sha256": "7b33c0cda7f491bddf4effd331158eda1cb03b08d5849e93e2a09a5aee973d75"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/provider_process.py",
+      "sha256": "b42d6a5238cb0ad257c07c993a8dbeed2659c199f7d6eff36b4c2d082b4b2a04"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "d18b6c01a26cd8b699ef5bf56d9f64d7290fe8d0ad545267c2b4a1cc96059957"
+    },
+    {
+      "path": "factory/python/tests/test_da014_provider_process.py",
+      "sha256": "591db86d176c748cc0f32083d327b649f594525527d39d0c5da557f1ded50ea3"
+    },
+    {
+      "path": "factory/python/tests/test_line_service_boot.py",
+      "sha256": "67dff872360aee73b02f9421e05a9fd928d7868e5138fc9698c01784d925d5fc"
+    },
+    {
+      "path": "factory/python/tests/test_line_service_boot_systemd.py",
+      "sha256": "eb211e93861c4b386bd6f30fce8198fd74b6423606f51085d4a61987819dd7c5"
+    },
+    {
+      "path": "factory/python/tests/test_line_stack_lifecycle.py",
+      "sha256": "a3d0ecf76a594316b9f42f00ef553512fd604b3b6da2507b0441d81d81ecae7b"
+    },
+    {
+      "path": "factory/python/tests/test_owner_bootstrap_reconciliation.py",
+      "sha256": "903bdbd5e67efa7ffc7345041a58d4f16e01a9e1ce9023fc73f806da1e54a799"
+    },
+    {
+      "path": "factory/python/tests/test_owner_managed_namespace_start.py",
+      "sha256": "8a90465d9e4d674c0d06474dfd636ac48b1ab6e4db2f881f531aec7b35b2ba70"
+    }
+  ]
+}

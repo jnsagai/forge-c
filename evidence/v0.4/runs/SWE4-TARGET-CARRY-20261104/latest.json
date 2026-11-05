@@ -1,0 +1,60 @@
+{
+  "schema": "forge-c/swe4-target-evidence-carry-component/1",
+  "status": "PASS_SOURCE_COMPONENT_ONLY",
+  "scope": "CONTROL_INSPECTIONS_AND_ACTUAL_CPU_TARGET_EVIDENCE_NOT_LIVE_PHASE_OR_MODEL_ROLE_QUALIFICATION",
+  "candidate_revision": "d24c80d4609cacdca4d91c554b151338b6cbb6c8",
+  "baseline_revision": "b0d8ef13998291a3e16d65d5158a63eaf7bfdadf",
+  "carry_commits": [
+    "f80e6c45cc330eb9817988739d6f468eea90b85b",
+    "9c79d2598b14ad67602f41f15183092096a2b60e"
+  ],
+  "dependencies": [
+    "c3ca59fa414d1a6aa015c14b76044a286411c15c",
+    "a9ab89b24d22c23b31c4d74f7d509d1d29926e0b",
+    "17d45f229c98a2c09e2b4acfaa0c599ebaed0237"
+  ],
+  "decision": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-target-proof-carry-current/evidence/cre/decisions/pd-f65f849e4ed5c805068d.json",
+    "sha256": "16efbcc91cbdd213ed2da832465da57cd3269d5971508a8196a0a31b3ff8f361"
+  },
+  "caller_prefix": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/target-proof-carry-current-caller-prefix.json",
+    "sha256": "a488c13cc701c40831c3dff1397c5c9880d33e617fcb18535a05625108ea1b9c"
+  },
+  "focused": {
+    "tests": 76,
+    "result": "PASS",
+    "evidence": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/target-proof-carry-current-focused.xml",
+      "sha256": "010275c1b0ee743b1d5e5390d3c7a09ebca9179c811a4916fba2074601bdf1d1"
+    }
+  },
+  "brownfield_resume": {
+    "tests": 48,
+    "result": "PASS",
+    "evidence": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/target-proof-carry-brownfield.xml",
+      "sha256": "b5f20080b5cf4f6da5365edf1e35aaaed4882b3d1c82942ee4c235296c8ff210"
+    }
+  },
+  "design": {
+    "tests": 14,
+    "result": "PASS",
+    "command": "python3 tests/spec/validate_design.py"
+  },
+  "actual_qualified_migration_control": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/target-proof-carry-qualified-migration/measurement.json",
+    "sha256": "6dc3e88a417ea54ae2594989c9f5e23db34b3b367d16ee57a8d41ae8bb44dddc"
+  },
+  "producer_modules_byte_unchanged": true,
+  "policy_or_grant_changes": false,
+  "production_changes": false,
+  "model_calls": 0,
+  "automatic_deployment_allowed": false,
+  "remaining": [
+    "root shared trace integration and exact final GEN qualification",
+    "explicit qualified creator-to-consumer migration reference in normal launch path",
+    "real production phase continuation verification"
+  ],
+  "recorded_at": "2026-11-04T18:50:09.243806+00:00"
+}

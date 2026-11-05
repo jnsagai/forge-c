@@ -1,0 +1,101 @@
+{
+ "CAPA-106": {
+  "history": [
+   {
+    "at": "2026-11-02T05:13:52.302787Z",
+    "capa_id": "CAPA-106",
+    "evidence": "[\"cmp-swe2-obl-allocation-truncation\"]",
+    "from_state": null,
+    "reason": "Run CMP-SWE2-OBL-01 BLOCKED STUCK: allocation table truncated SWR text",
+    "seq": 792,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T05:13:52.403362Z",
+    "capa_id": "CAPA-106",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 793,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T05:13:52.573208Z",
+    "capa_id": "CAPA-106",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-106 assigned",
+    "seq": 794,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T05:13:58.168115Z",
+    "capa_id": "CAPA-106",
+    "evidence": "[\"reproducer-run:rr-b54780b2d3441dd6e019\", \"reproducer-run:rr-ab842f6a34b9b95fca79\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 795,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T05:13:58.189544Z",
+    "capa_id": "CAPA-106",
+    "evidence": "[\"git:c1b059423c17..a6071f87034a\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix a6071f87034a (patch 2613 bytes)",
+    "seq": 796,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T05:16:56.819178Z",
+    "capa_id": "CAPA-106",
+    "evidence": "[\"reproducer-run:rr-db3be8097a30f4bcd2eb\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-106 absent at a6071f87034a",
+    "seq": 797,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T05:16:56.832233Z",
+    "capa_id": "CAPA-106",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 798,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-c1bf6161f04d91bfc970505b493a1a913174fe0b",
+   "c1b059423c177c3668cb7a155244f9d523d610b2",
+   "a6071f87034ada0a6dfd76a3ce3b0100ea4771f0",
+   "pd-af218281a08f770dcd8f"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<a6071f87034a"
+   ],
+   "candidate_patch_sha256": "2c2e35dfd36fd7bdaf08ab8fbc18e06bec17c9cc8d3d6eecaf837ce3882c5840",
+   "capa_id": "CAPA-106",
+   "created_at": "2026-11-02T05:13:52.302787Z",
+   "event_ids": [],
+   "incident_ids": [
+    "cmp-swe2-obl-allocation-truncation"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-106",
+   "reproducer_id": "RPR-106",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-b54780b2d3441dd6e019",
+    "reproducer-run:rr-ab842f6a34b9b95fca79"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T05:16:56.832233Z"
+  }
+ }
+}

@@ -2,8 +2,9 @@
 
 The SWE.2 author writes `architecture_static.puml` (component view) and `architecture_dynamic.puml` (sequence
 view). This module checks them with the pinned PlantUML (Apache-2.0 build, `-checkonly` syntax check), checks
-their content against the architecture (driver components and allocated HAL APIs appear; the dynamic view covers a
-timeout path), and renders SVGs next to them (before the baseline is frozen). Backs checklist item SWE2-08.
+their content against the architecture (driver components and allocated HAL APIs appear; the dynamic view of a HAL
+that waits covers a timeout path, CAPA-124), and renders SVGs next to them (before the baseline is frozen).
+Backs checklist item SWE2-08.
 """
 from __future__ import annotations
 
@@ -12,7 +13,7 @@ import re
 import subprocess
 from pathlib import Path
 
-from ..layer import components, layer_of
+from ..layer import components, hal_waits, layer_of
 from .implementation import allocated_functions
 
 STATIC = "workproducts/SWE.2/architecture_static.puml"
@@ -63,7 +64,9 @@ def check_views(ws: Path, render: bool = False) -> dict:
     shown = [f for f in apis if f in dy]
     if apis and not shown:
         findings.append("VIEWS:DYNAMIC_SHOWS_NO_ALLOCATED_API")
-    if layer != "LL" and "HAL_TIMEOUT" not in dy:
+    # CAPA-124: only a HAL with a bounded wait has a timeout path (a no-wait HAL such as CRC returns no HAL_TIMEOUT)
+    timeout_required = layer != "LL" and hal_waits(ws)
+    if timeout_required and "HAL_TIMEOUT" not in dy:
         findings.append("VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH")
     syntax = "NOT_RUN"
     syntax_by_view = {name: "NOT_RUN" for name in files}
@@ -98,5 +101,6 @@ def check_views(ws: Path, render: bool = False) -> dict:
                 findings.append("VIEWS:RENDER_FAILED")
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"syntax": syntax, "allocated_apis": len(apis), "apis_in_dynamic_view": len(shown),
+                      "timeout_path_required": timeout_required,
                       "checked_static": STATIC, "checked_dynamic": DYNAMIC,
                       **{"syntax_" + name: status for name, status in syntax_by_view.items()}}}

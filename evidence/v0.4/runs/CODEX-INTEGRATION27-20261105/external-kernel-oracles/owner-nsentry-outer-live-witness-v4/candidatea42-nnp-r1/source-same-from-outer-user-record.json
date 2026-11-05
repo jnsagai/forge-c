@@ -1,0 +1,59 @@
+{
+  "schema": "forge-c/managed-provider-instance/2",
+  "root": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-nsentry-outer-live-witness-v4/candidatea42-nnp-r1",
+  "profile": "private-kernel-entry-only",
+  "profile_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "observer_user_namespace": "user:[4026531837]",
+  "init_owner_view": {
+    "user_namespace": "user:[4026533247]",
+    "uid_map": [
+      [
+        0,
+        1000,
+        1
+      ]
+    ],
+    "observer_user_namespace": "user:[4026531837]",
+    "observer_uid": 1000
+  },
+  "parent_pid": 855701,
+  "parent": {
+    "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+    "start_ticks": "8219042",
+    "uid": 1000,
+    "pid_namespace": "pid:[4026531836]",
+    "namespace_pid": 855701
+  },
+  "init_pid": 855702,
+  "init": {
+    "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+    "start_ticks": "8219043",
+    "uid": 1000,
+    "pid_namespace": "pid:[4026534087]",
+    "namespace_pid": 1
+  },
+  "captured_at": "2026-11-05T21:18:40.687571Z",
+  "outer_holder": {
+    "pid": 855698,
+    "identity": {
+      "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+      "start_ticks": "8219038",
+      "uid": 1000,
+      "pid_namespace": "pid:[4026531836]",
+      "namespace_pid": 855698
+    },
+    "owner_view": {
+      "user_namespace": "user:[4026533247]",
+      "uid_map": [
+        [
+          0,
+          1000,
+          1
+        ]
+      ],
+      "observer_user_namespace": "user:[4026531837]",
+      "observer_uid": 1000
+    },
+    "net_namespace": "net:[4026533379]"
+  }
+}

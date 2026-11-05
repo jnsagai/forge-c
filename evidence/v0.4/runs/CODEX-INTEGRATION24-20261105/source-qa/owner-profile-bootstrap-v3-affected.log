@@ -1,0 +1,87 @@
+FF
+=================================== FAILURES ===================================
+__ test_supported_bootstrap_canonical_store_real_locks_guardian_and_processes __
+
+boot = {'binary': PosixPath('/tmp/pytest-of-jefferson/pytest-135/test_supported_bootstrap_canon0/PRIVATE-TEST-fabro'), 'cfg':...ch.log'), health_timeout_s=600.0, health_poll_s=5.0, sweep_grace_s=10.0, uid=1000), 'children': [], 'effects': [], ...}
+
+    def test_supported_bootstrap_canonical_store_real_locks_guardian_and_processes(boot):
+        store, placer = boot["store"], boot["placer"]
+        before = MissionLedger(store).snapshot(D.MISSION)
+>       result = B.bootstrap(store, placer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_profile_bootstrap.py:202: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:197: in bootstrap
+    require(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ok = False, code = 'STACK_RUN_DIRECTORY_UNKNOWN'
+
+    def require(ok, code):
+        if not ok:
+>           raise Refused("OWNER_BOOTSTRAP_" + code)
+E           forge_factory.afo.durable.Refused: OWNER_BOOTSTRAP_STACK_RUN_DIRECTORY_UNKNOWN:
+
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:28: Refused
+______ test_all_uncertain_command_states_refuse_without_effects[UNKNOWN] _______
+
+boot = {'binary': PosixPath('/tmp/pytest-of-jefferson/pytest-135/test_all_uncertain_command_sta0/PRIVATE-TEST-fabro'), 'cfg':...ch.log'), health_timeout_s=600.0, health_poll_s=5.0, sweep_grace_s=10.0, uid=1000), 'children': [], 'effects': [], ...}
+status = 'UNKNOWN'
+
+    @pytest.mark.parametrize("status", ["UNKNOWN", "PENDING", "IN_FLIGHT", "UNRECOGNIZED"])
+    def test_all_uncertain_command_states_refuse_without_effects(boot, status):
+        with boot["store"].tx() as c:
+            # Exact outbox columns use a copied normal row shape (no execution fabricated).
+            columns = [r[1] for r in c.execute("PRAGMA table_info(afo_commands_outbox)")]
+            row = {k: "" for k in columns}
+            row.update(command_id="private-uncertain", order_id="historical", attempt_id="old", kind="OTHER_KIND", state=status)
+            c.execute(
+                "INSERT INTO afo_commands_outbox(" + ",".join(columns) + ") VALUES(" + ",".join("?" for _ in columns) + ")",
+                [row[k] for k in columns],
+            )
+        with pytest.raises(Refused, match="COMMAND_OUTCOME_UNRESOLVED"):
+>           B.bootstrap(boot["store"], boot["placer"])
+
+factory/python/tests/test_owner_profile_bootstrap.py:230: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:197: in bootstrap
+    require(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ok = False, code = 'STACK_RUN_DIRECTORY_UNKNOWN'
+
+    def require(ok, code):
+        if not ok:
+>           raise Refused("OWNER_BOOTSTRAP_" + code)
+E           forge_factory.afo.durable.Refused: OWNER_BOOTSTRAP_STACK_RUN_DIRECTORY_UNKNOWN:
+
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:28: Refused
+
+During handling of the above exception, another exception occurred:
+
+boot = {'binary': PosixPath('/tmp/pytest-of-jefferson/pytest-135/test_all_uncertain_command_sta0/PRIVATE-TEST-fabro'), 'cfg':...ch.log'), health_timeout_s=600.0, health_poll_s=5.0, sweep_grace_s=10.0, uid=1000), 'children': [], 'effects': [], ...}
+status = 'UNKNOWN'
+
+    @pytest.mark.parametrize("status", ["UNKNOWN", "PENDING", "IN_FLIGHT", "UNRECOGNIZED"])
+    def test_all_uncertain_command_states_refuse_without_effects(boot, status):
+        with boot["store"].tx() as c:
+            # Exact outbox columns use a copied normal row shape (no execution fabricated).
+            columns = [r[1] for r in c.execute("PRAGMA table_info(afo_commands_outbox)")]
+            row = {k: "" for k in columns}
+            row.update(command_id="private-uncertain", order_id="historical", attempt_id="old", kind="OTHER_KIND", state=status)
+            c.execute(
+                "INSERT INTO afo_commands_outbox(" + ",".join(columns) + ") VALUES(" + ",".join("?" for _ in columns) + ")",
+                [row[k] for k in columns],
+            )
+>       with pytest.raises(Refused, match="COMMAND_OUTCOME_UNRESOLVED"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'COMMAND_OUTCOME_UNRESOLVED'
+E         Actual message: 'OWNER_BOOTSTRAP_STACK_RUN_DIRECTORY_UNKNOWN:'
+
+factory/python/tests/test_owner_profile_bootstrap.py:229: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_owner_profile_bootstrap.py::test_supported_bootstrap_canonical_store_real_locks_guardian_and_processes
+FAILED factory/python/tests/test_owner_profile_bootstrap.py::test_all_uncertain_command_states_refuse_without_effects[UNKNOWN]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 2 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!

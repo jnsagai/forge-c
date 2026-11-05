@@ -7,6 +7,7 @@ fences PID reuse; completed verification is reusable, publication remains draft-
 from __future__ import annotations
 
 import json
+import math
 import os
 import signal
 import threading
@@ -32,13 +33,24 @@ class VerificationJobs:
     def __init__(self, store):
         self.store = store
 
-    def ensure(self, job_id, case_sha256, *, deadline_epoch=None):
+    def ensure(self, job_id, case_sha256, *, deadline_epoch=None, cap_deadline=False):
+        if type(cap_deadline) is not bool or cap_deadline and (
+                type(deadline_epoch) not in (int, float) or not math.isfinite(deadline_epoch)):
+            raise Refused('VERIFIER_DEADLINE_INVALID')
         with self.store.tx() as c:
-            row = c.execute("SELECT record FROM afo_verification_jobs WHERE job_id=?", (job_id,)).fetchone()
+            row = c.execute("SELECT state,record FROM afo_verification_jobs WHERE job_id=?", (job_id,)).fetchone()
             if row:
-                rec = json.loads(row[0])
+                rec = json.loads(row['record'])
                 if rec["case_sha256"] != case_sha256:
                     raise Refused("VERIFIER_CASE_REBOUND")
+                if cap_deadline and row['state'] not in ('COMPLETE', 'BLOCKED'):
+                    old = rec.get('deadline_epoch')
+                    if old is not None and (type(old) not in (int, float) or not math.isfinite(old)):
+                        raise Refused('VERIFIER_DEADLINE_INVALID')
+                    if old is None or deadline_epoch < old:
+                        rec['deadline_epoch'] = deadline_epoch
+                        c.execute('UPDATE afo_verification_jobs SET record=? WHERE job_id=?',
+                                  (canonical(rec).decode(), job_id))
                 return rec
             rec = {
                 "job_id": job_id,

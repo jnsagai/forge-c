@@ -1,0 +1,27 @@
+{
+  "schema": "forge-c/integration27-evidence-inventory-addendum/1",
+  "status": "PLAN_ONLY_NO_EXPORT",
+  "prior_inventory": {
+    "path": "codex-integration27-evidence-plan.json",
+    "sha256": "e404e6fb9786c49dde95ddd8d3b92296361b9a4fd71e24b384c8bc2cec7ae5e7",
+    "unchanged": true
+  },
+  "new_records": [
+    {
+      "path": "codex-integration27-normal-change-runner-v1.py",
+      "sha256": "f78b74ca5d4b38ebf7e436139e61969bfa7af481164ede82e3554fa7ff757a47"
+    },
+    {
+      "path": "codex-integration27-normal-change-runner-v1-review.json",
+      "sha256": "80931edfe64067f7c47345452c1d362907c7e36c67b0ef155f86ffea2534ff71"
+    }
+  ],
+  "claims": {
+    "V4": "Original261case ENVfailure plus unchanged1case pinnedtool rerun preserved; no singleGREENretroclaim.",
+    "bfe": "Actualremote270tests/268PASS/2FAIL/0skip, UNKNOWN_OR_REFUSED and noSTUB afterfailure; immutable.",
+    "f0": "Local targeted2PASS and fullFIXrootpd821 all7/175; actualremote270+STUB LIVE5676/PENDING terminal proof.",
+    "integration27": "Frozenb66source byteeqf0; no tests onintegration tree, noCHANGEexecution yet."
+  },
+  "next": "Root review runner and CPU release before invoking; keep priority realcleanup/starthelper review.",
+  "excluded_effects": "No export/push/source changes/runtime/remote operations"
+}

@@ -334,13 +334,23 @@ def create_app(
 
     app = FastAPI(title="forge-llm-gateway", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     meter = Meter(meter_path or state_dir() / "llm-gateway" / "usage.jsonl")
+    from .live_tap import LiveTap
+
+    tap = LiveTap.from_env()  # display-only answer tokens (owner 2026-11-01); a no-op without FORGE_GATEWAY_LIVE_TAP
     timeout = httpx.Timeout(float(request_timeout_s), connect=min(10.0, request_timeout_s))
     client = httpx.AsyncClient(base_url=upstream, timeout=timeout, transport=transport)
     # F014 (owner 2026-10-26: a runtime that serves parallel requests): a local profile may serve a model from its own
     # llama.cpp server with several request slots; that model's chat requests go there, every other model to Ollama
     routes = json.loads(os.environ.get("FORGE_GATEWAY_ROUTES") or "{}")
-    routed = {m: httpx.AsyncClient(base_url=u.rstrip("/"), timeout=timeout, transport=transport)
-              for m, u in routes.items()}
+    def route_client(u: str) -> httpx.AsyncClient:
+        # owner 2026-11-02 (cloud comparison line): 'unix:<path>' reaches the cloud bridge through a socket file on the
+        # shared filesystem; the profile's network namespace stays loopback-only
+        if u.startswith("unix:"):
+            return httpx.AsyncClient(base_url="http://cloud-bridge", timeout=timeout,
+                                     transport=httpx.AsyncHTTPTransport(uds=u[len("unix:"):]))
+        return httpx.AsyncClient(base_url=u.rstrip("/"), timeout=timeout, transport=transport)
+
+    routed = {m: route_client(u) for m, u in routes.items()}
     from .lrtx.request_measurement import METHOD as native_measurement_method
 
     measurement_policy = json.loads(os.environ.get("FORGE_GATEWAY_REQUEST_MEASUREMENT") or "{}")
@@ -351,11 +361,20 @@ def create_app(
     def cl(body: dict | None) -> httpx.AsyncClient:
         return routed.get((body or {}).get("model"), client)
 
+    line_identity = {}
+    if os.environ.get("FORGE_AFO_QUEUE_SCOPE"):
+        from .afo.queue import default_path
+        from .workorder import factory_revision
+
+        default_path()  # reject an unknown scope at startup; no database is opened
+        line_identity = {"afo_queue_scope": "line-local", "factory_revision": factory_revision(),
+                         "durable_native_header": os.environ.get("FORGE_DURABLE_NATIVE_HEADER") == "1"}
+
     @app.get("/health")
     async def health() -> dict:
         if adm is not None:
-            return {"status": "ok", "upstream": upstream, "admission": adm.snapshot()}
-        return {"status": "ok", "upstream": upstream}
+            return {"status": "ok", "upstream": upstream, "admission": adm.snapshot(), **line_identity}
+        return {"status": "ok", "upstream": upstream, **line_identity}
 
     def refused(model: str | None) -> JSONResponse | None:
         s = suspended(upstream)
@@ -425,6 +444,20 @@ def create_app(
 
             if not unbound_allowed(Store()):
                 return JSONResponse({"error": {"type": "durable_execution_busy_or_unbound"}}, status_code=429)
+        if os.environ.get("FORGE_GATEWAY_VERIFY_SERVED") == "1" and body.get("model") in routed:
+            # in-run model swap (owner 2026-10-31): the llama-server answers whatever it serves, so a request is
+            # forwarded only while it serves exactly the requested model - never silently another one
+            try:
+                listed = (await routed[body["model"]].get("/v1/models", timeout=10)).json()
+                ids = [m.get("id") for m in listed.get("data") or []]
+            except (httpx.HTTPError, ValueError, AttributeError):
+                ids = None
+            if ids != [body["model"]]:
+                meter.refusal(body.get("model"), f"SERVED_MODEL_MISMATCH:{ids}")
+                return JSONResponse({"error": {"type": "served_model_mismatch", "message":
+                                               f"SERVED_MODEL_MISMATCH: {body['model']} is not the served model "
+                                               f"({ids}); the forge gateway did not forward the request"}},
+                                    status_code=503)
         if os.environ.get("FORGE_GATEWAY_MEASURE_UNBOUND") == "1" and body.get("model") in measurement_policy:
             # Standalone native development still measures its entire effective
             # request. This is metadata, not a durable mission reservation or
@@ -473,6 +506,7 @@ def create_app(
                 lines: list[str] = []
                 usage, stripped = None, False
                 shape: dict[str, Any] = {"content_chars": 0, "tool_calls": 0, "finish_reason": None}
+                live = await tap.begin(body.get("model"), detect_role(body.get("messages") or []))
                 try:
                     async for line in upstream_resp.aiter_lines():
                         if line.startswith("data: ") and line[6:].strip() not in ("", "[DONE]"):
@@ -486,6 +520,7 @@ def create_app(
                             usage = chunk.get("usage") or usage
                             for ch in chunk.get("choices") or []:
                                 delta = ch.get("delta") or {}
+                                tap.delta(live, delta)  # after strip_reasoning: answer text only
                                 shape["content_chars"] += len(delta.get("content") or "")
                                 shape["tool_calls"] += len(delta.get("tool_calls") or [])
                                 shape["finish_reason"] = ch.get("finish_reason") or shape["finish_reason"]
@@ -494,6 +529,7 @@ def create_app(
                             lines.append(line + "\n")
                 finally:
                     await upstream_resp.aclose()
+                    tap.end(live, shape["finish_reason"], usage)
                 return upstream_resp.status_code, lines, usage, stripped, shape
 
             for n in range(DROP_RETRIES + 1):  # buffered so an empty (dropped) upstream answer can be retried
@@ -520,6 +556,9 @@ def create_app(
             if isinstance(data, dict) and data.get("choices"):
                 ch = data["choices"][0]
                 msg = ch.get("message") or {}
+                live = await tap.begin(body.get("model"), detect_role(body.get("messages") or []))
+                tap.delta(live, msg)  # the whole stripped answer at once
+                tap.end(live, ch.get("finish_reason"), data.get("usage"))
                 nshape = {
                     "content_chars": len(msg.get("content") or ""),
                     "tool_calls": len(msg.get("tool_calls") or []),
@@ -699,6 +738,9 @@ def create_app(
             if isinstance(data, dict) and data.get("choices"):
                 ch = data["choices"][0]
                 msg = ch.get("message") or {}
+                live = await tap.begin(body.get("model"), detect_role(body.get("messages") or []))
+                tap.delta(live, msg)  # the whole stripped answer at once
+                tap.end(live, ch.get("finish_reason"), data.get("usage"))
                 shape = {
                     "content_chars": len(msg.get("content") or ""),
                     "tool_calls": len(msg.get("tool_calls") or []),
@@ -717,6 +759,7 @@ def create_app(
         resp = await up.send(up.build_request("POST", "/v1/chat/completions", json=body, headers=headers), stream=True)
         lines: list[str] = []
         usage, stripped, first, last, deltas = None, False, None, None, 0
+        live = await tap.begin(body.get("model"), detect_role(body.get("messages") or []))
         try:
             async for line in resp.aiter_lines():
                 if line.startswith("data: ") and line[6:].strip() not in ("", "[DONE]"):
@@ -730,6 +773,7 @@ def create_app(
                     usage = chunk.get("usage") or usage
                     for ch in chunk.get("choices") or []:
                         delta = ch.get("delta") or {}
+                        tap.delta(live, delta)  # after strip_reasoning: answer text only
                         if delta.get("content") or delta.get("tool_calls"):
                             now = time.monotonic()
                             first = first or now
@@ -743,6 +787,7 @@ def create_app(
                     lines.append(line + "\n")
         finally:
             await resp.aclose()
+            tap.end(live, shape["finish_reason"], usage)
         end = time.monotonic()
         ms = lambda a, b: round((b - a) * 1000, 1)  # noqa: E731
         timing = {

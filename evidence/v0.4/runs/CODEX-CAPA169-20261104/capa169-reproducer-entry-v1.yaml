@@ -1,0 +1,22 @@
+id: RPR-169
+script: rpr169_watchdog_artifact_recovery_dependencies.py
+sha256: 0da4c518389acab4df8ca32115a2d008760cab1648aee6da9a376deee0a3742a
+symptom_signature: standalone host watchdog recovery cannot load its normal policy
+  dependencies
+observed_in: '2026-11-04 actual Omniverse standalone M5 host archive recovery: ModuleNotFoundError
+  yaml before any conductor action/model call. Independent byte-identical committed-source
+  fixture and bare -S default-policy recovery reproduce the missing dependency.'
+baseline_revision: 27eef6a010f239b302d96c55609da02fe345982d
+error_codes:
+- ModuleNotFoundError
+operations:
+- afo.line_watchdog_package.build
+- afo.line_watchdog.recover
+- afo.operations.operational_authorized
+root_cause: The standalone archive includes committed factory Python sources but omits
+  the runtime dependency closure needed by normal reliability-policy loading and schema
+  validation. check/missing-volume probes do not exercise this import path.
+remedy: Bundle and integrity-check the locked host dependency closure outside the
+  application volume, including native ABI and resources, while retaining normal intent,
+  volume, policy authorization, unit-state and cooldown fences; qualify new artifacts
+  before activation.

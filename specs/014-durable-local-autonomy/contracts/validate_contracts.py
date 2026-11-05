@@ -21,6 +21,8 @@ SCHEMAS = {
     "offline-export-manifest.schema.json",
     "review-disposition.schema.json",
     "patch-bundle.schema.json",
+    "supervisor-issues.schema.json",  # owner 2026-11-03 decision 6: autonomous line supervisor issues feed
+    "line-campaign.schema.json",  # owner 2026-11-03 decision 3: autonomous line M3 production campaign files
 }
 # Process-first lab (design rev 4 §8-§9): loaded at runtime by forge_factory.process_lab.contracts; checked here too.
 RUNTIME_SCHEMAS = {
@@ -30,6 +32,7 @@ RUNTIME_SCHEMAS = {
     "process-lab-experiment.schema.json",
     "model-swap.schema.json",
     "process-lab-disposition.schema.json",
+    "owner-obligations.schema.json",
 }
 CHECKER = FormatChecker()
 

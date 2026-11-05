@@ -1,0 +1,1 @@
+{"reason":"STOP_REQUESTED","pid":2793648,"signal":"TERM","exit_status":0,"process_gone":"yes","stop_seconds":2.08,"vram_peak_MiB":43632,"host_rss_peak_kB":57909672,"gpu_memory_used_MiB_after":936,"gpu_compute_apps_after":"","port_open_after":"no","at":"2026-10-31T17:02:34Z"}

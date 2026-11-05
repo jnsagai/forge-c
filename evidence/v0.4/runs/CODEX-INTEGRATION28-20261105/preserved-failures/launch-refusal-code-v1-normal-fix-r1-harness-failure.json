@@ -1,0 +1,14 @@
+{
+  "schema": "forge-c/qualification-harness-failure/1",
+  "decision_id": "pd-f0867e34e0081b55de97",
+  "decision": "REJECTED",
+  "reason": "Staged oracle output did not follow unchanged CRE SYMPTOM_PRESENT:/SYMPTOM_ABSENT contract. Raw observed cause contrast was correct; runner correctly rejected unrecognized output.",
+  "source_unchanged": "11dd97481907057174812ad26e109a506dfa3435",
+  "raw_rows": [
+    "rr-f099759b1065d83380b2",
+    "rr-72bae1143955f261c43b"
+  ],
+  "prevention_quality_benchmarks": "NOT_RUN",
+  "decision_sha256": "bc6afe8a474a0656a22886c6f8d274a86ca037c6c1d0ceef066be35955a0da61",
+  "correction": "Fresh oracle-v2 output adapter only; retain immutable r1 failure, no candidate edit, no policy/runner waiver."
+}

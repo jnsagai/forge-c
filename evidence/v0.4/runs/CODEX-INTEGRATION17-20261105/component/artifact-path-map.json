@@ -1,0 +1,137 @@
+[
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-related.xml",
+    "path": "component/capa172-line-related.xml",
+    "sha256": "326b0070acb8eea7e119e89ca090158cf8006f8a2f1de9efab3603c573b73f86"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-related.log",
+    "path": "component/capa172-line-related.log",
+    "sha256": "ac495f87c93297f7a6b6576302f0c026457a444008c68b065caf82d3eed780d0"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-identity-final.xml",
+    "path": "component/capa172-line-identity-final.xml",
+    "sha256": "81cef3eec667efe56335c6cfa2c7c884f271c6181bad2c054b53d032ae38682c"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-identity-final.log",
+    "path": "component/capa172-line-identity-final.log",
+    "sha256": "a82a0b51cd86fa0131904e08c34ef556963104f0e3677f688117e093ebf2d3fe"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-final.xml",
+    "path": "component/capa172-line-final.xml",
+    "sha256": "f221531062e862a58b7d103c1ec644a817c0a7d91185e94e95b7e9c8c685275a"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-final.log",
+    "path": "component/capa172-line-final.log",
+    "sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-design.log",
+    "path": "component/capa172-line-design.log",
+    "sha256": "f8d8da5467efe30ca8673da3318165f8f5d7b89ce7dfd7a68e38482392c83139"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-identity-ruff.log",
+    "path": "component/capa172-line-identity-ruff.log",
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-input-provision.json",
+    "path": "component/capa172-input-provision.json",
+    "sha256": "a9f6d4921484c3c832dde75827ec5b03ed7e5c42314a26f924681fb9b20ec817"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-component-index.json",
+    "path": "component/capa172-m9-component-index.json",
+    "sha256": "be56dda0ed3773495ab8295ce06f380805aeee800bfe3994bf6b36e7eac588d8"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-joint-source.bundle",
+    "path": "component/capa172-joint-source.bundle",
+    "sha256": "71b1e4725053bf2e1b1c3ba826b3b4364a962db4a1c2449c69b98feaf406eb41"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-baseline.log",
+    "path": "component/capa172-line-baseline.log",
+    "sha256": "603dba7ecd3fbf7bffa6b55a724368f3cf114b18abd1f51a6e557f7550f47a4e"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-baseline.xml",
+    "path": "component/capa172-line-baseline.xml",
+    "sha256": "7e579849338b39d8a2cbabfc13f82c2a78ca6806f203715b83c4e4bb5546585a"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rpr172-development-v1-broad-auth-leaf.py",
+    "path": "component/rpr172-development-v1-broad-auth-leaf.py",
+    "sha256": "9ce35d90b835b7eab4cfc6144b1839252ba9ef8801feeffe14582a320153c58d"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-rpr-draft-candidate-v3.log",
+    "path": "component/capa172-rpr-draft-candidate-v3.log",
+    "sha256": "b395859e2d28863ec7ea9ce6d8b58a0c78a83df91272dad5a525bf84ea429ab1"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-rpr-draft-baseline-v3.log",
+    "path": "component/capa172-rpr-draft-baseline-v3.log",
+    "sha256": "1545f1f4dd04f96b9816aea41742a10d8c1d8417023c76adbc7a12a09e40dc2f"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-rpr-final-candidate.log",
+    "path": "component/capa172-rpr-final-candidate.log",
+    "sha256": "b395859e2d28863ec7ea9ce6d8b58a0c78a83df91272dad5a525bf84ea429ab1"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rpr172_mission_deadline_continuation.py",
+    "path": "component/rpr172_mission_deadline_continuation.py",
+    "sha256": "8e045780fc11647d6e46dbf02f104a20795dc1cff2f34faca1f24684053baa88"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-reproducer-entry-DRAFT.yaml",
+    "path": "component/capa172-reproducer-entry-DRAFT.yaml",
+    "sha256": "8b8b66313c5cc88fefe29ddfc480f47c8062776ff65edc65659a6d819dafe671"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-source.bundle",
+    "path": "component/capa172-m9-source.bundle",
+    "sha256": "524d0d73fe4b362397663b4a76b0e8c3b917eb395b7246655c940a1faa3b714c"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-controls-v1.xml",
+    "path": "component/capa172-m9-controls-v1.xml",
+    "sha256": "029cc496e2a34e17bb055885a9d7bbad05d687239f346ad26710fc2cf1ff1de1"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-controls-v1.log",
+    "path": "component/capa172-m9-controls-v1.log",
+    "sha256": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-focused.xml",
+    "path": "component/capa172-m9-focused.xml",
+    "sha256": "55f2941f1142f9ae9f961667388ed838756dc23f733b41c599c3484fa42a0742"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-focused.log",
+    "path": "component/capa172-m9-focused.log",
+    "sha256": "3ca63df1dde3ba9e2d2084a8facf905367fe65246c76bc33b3d06e0024ecdfa9"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-design.log",
+    "path": "component/capa172-m9-design.log",
+    "sha256": "c133d1470d3e79a746b2b7f36c9247481dff54e276316d5f0da3c5a66fd802fe"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-ruff.log",
+    "path": "component/capa172-m9-ruff.log",
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-before-tests-inputs.json",
+    "path": "component/capa172-m9-before-tests-inputs.json",
+    "sha256": "ac6fd04b2e57a22af57951c22a1dbb9ab1275f7f5076ca6a6702b4016934d9f5"
+  }
+]

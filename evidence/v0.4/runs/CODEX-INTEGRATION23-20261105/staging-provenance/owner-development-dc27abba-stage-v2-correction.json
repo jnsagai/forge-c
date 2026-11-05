@@ -1,0 +1,15 @@
+{
+  "original_script": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-dc27abba-staging-proposal-20261105/stage-remote.py",
+  "original_sha256": "1887033b0b070a17ec66885cfe5c4e23c0de4fe6b89e0d3fbe4d7a718670cca3",
+  "corrected_script": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-dc27abba-stage-remote-v2.py",
+  "corrected_sha256": "e89c4874193743de90f4bd84582bc0f18156ed0b0789625cf333d9c8c1b5da33",
+  "correction": "Both read-only ref snapshots use for-each-ref; no refs is valid for detached source, preserving exact before/after equality and all other guards.",
+  "original_failure": "git show-ref status1 before stage-intent, source clone or any test.",
+  "authoritative_remote_postfailure": {
+    "source_exists": false,
+    "stage_intent_exists": false,
+    "staging_receipt_exists": false
+  },
+  "frozen_factory_source_changed": false,
+  "models": 0
+}

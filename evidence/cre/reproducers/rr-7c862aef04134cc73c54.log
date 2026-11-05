@@ -1,0 +1,13 @@
+{"lrtx_progress": "requirements:IWDG_KR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_PR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_RLR", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_1", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:IWDG_SR_2", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 0, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 0, "errors": 1, "wall_ms": 1.0}
+{"lrtx_progress": "requirements:crosscutting", "attempt": 1, "errors": 1, "wall_ms": 1.0}
+gate execution b
+{"rejected": "MISSING_REQUIRED_OUTPUTS", "issues": ["SWE1_OBLIGATION_CRITICAL_GAP:OBL-no-polling: a critical owner obligation cannot be an obligation gap - write the requirement that implements it (owner: The driver never waits on a status flag.)"]}
+SYMPTOM_ABSENT
+
+--- stderr ---

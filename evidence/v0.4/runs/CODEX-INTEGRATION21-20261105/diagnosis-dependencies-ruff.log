@@ -1,0 +1,234 @@
+F811 Redefinition of unused `local` from line 11
+  --> factory/python/tests/test_da014_dependency_selection.py:16:16
+   |
+16 | def graph_case(local, tmp_path, dependencies=None):
+   |                ^^^^^ `local` redefined here
+17 |     store, order, bundle, eff, ws, _ = local
+18 |     source = ws / "workproducts/SWE.3/contract.md"
+   |
+  ::: factory/python/tests/test_da014_dependency_selection.py:11:37
+   |
+ 9 | from forge_factory.afo.durable import Refused, canonical
+10 | from forge_factory.afo.mission_ledger import MissionLedger
+11 | from test_afo_local_autonomy import local  # noqa: F401
+   |                                     ----- previous definition of `local` here
+12 | from test_afo_m4_recovery import order  # noqa: F401
+13 | from test_da014_protocol import protocol  # noqa: F401
+   |
+help: Remove definition: `local`
+
+F811 Redefinition of unused `order` from line 12
+  --> factory/python/tests/test_da014_dependency_selection.py:17:12
+   |
+16 | def graph_case(local, tmp_path, dependencies=None):
+17 |     store, order, bundle, eff, ws, _ = local
+   |            ^^^^^ `order` redefined here
+18 |     source = ws / "workproducts/SWE.3/contract.md"
+19 |     source.parent.mkdir(parents=True, exist_ok=True)
+   |
+  ::: factory/python/tests/test_da014_dependency_selection.py:12:34
+   |
+10 | from forge_factory.afo.mission_ledger import MissionLedger
+11 | from test_afo_local_autonomy import local  # noqa: F401
+12 | from test_afo_m4_recovery import order  # noqa: F401
+   |                                  ----- previous definition of `order` here
+13 | from test_da014_protocol import protocol  # noqa: F401
+   |
+help: Remove definition: `order`
+
+F811 Redefinition of unused `local` from line 11
+  --> factory/python/tests/test_da014_dependency_selection.py:38:77
+   |
+37 | @pytest.mark.parametrize("step", [None, 1, 2, 3, 4])
+38 | def test_actual_request_selects_prerequisite_and_preserves_global_inventory(local, tmp_path, step):
+   |                                                                             ^^^^^ `local` redefined here
+39 |     job, packet, case = graph_case(local, tmp_path)
+40 |     before = canonical(packet), case.read_bytes()
+   |
+  ::: factory/python/tests/test_da014_dependency_selection.py:11:37
+   |
+ 9 | from forge_factory.afo.durable import Refused, canonical
+10 | from forge_factory.afo.mission_ledger import MissionLedger
+11 | from test_afo_local_autonomy import local  # noqa: F401
+   |                                     ----- previous definition of `local` here
+12 | from test_afo_m4_recovery import order  # noqa: F401
+13 | from test_da014_protocol import protocol  # noqa: F401
+   |
+help: Remove definition: `local`
+
+F811 Redefinition of unused `local` from line 11
+  --> factory/python/tests/test_da014_dependency_selection.py:58:91
+   |
+58 | def test_actual_prepare_persists_same_prerequisite_without_resetting_original_reservation(local, tmp_path):
+   |                                                                                           ^^^^^ `local` redefined here
+59 |     store, order, bundle, eff, ws, _ = local
+60 |     _, packet, case = graph_case(local, tmp_path)
+   |
+  ::: factory/python/tests/test_da014_dependency_selection.py:11:37
+   |
+ 9 | from forge_factory.afo.durable import Refused, canonical
+10 | from forge_factory.afo.mission_ledger import MissionLedger
+11 | from test_afo_local_autonomy import local  # noqa: F401
+   |                                     ----- previous definition of `local` here
+12 | from test_afo_m4_recovery import order  # noqa: F401
+13 | from test_da014_protocol import protocol  # noqa: F401
+   |
+help: Remove definition: `local`
+
+F811 Redefinition of unused `order` from line 12
+  --> factory/python/tests/test_da014_dependency_selection.py:59:12
+   |
+58 | def test_actual_prepare_persists_same_prerequisite_without_resetting_original_reservation(local, tmp_path):
+59 |     store, order, bundle, eff, ws, _ = local
+   |            ^^^^^ `order` redefined here
+60 |     _, packet, case = graph_case(local, tmp_path)
+61 |     ledger = MissionLedger(store)
+   |
+  ::: factory/python/tests/test_da014_dependency_selection.py:12:34
+   |
+10 | from forge_factory.afo.mission_ledger import MissionLedger
+11 | from test_afo_local_autonomy import local  # noqa: F401
+12 | from test_afo_m4_recovery import order  # noqa: F401
+   |                                  ----- previous definition of `order` here
+13 | from test_da014_protocol import protocol  # noqa: F401
+   |
+help: Remove definition: `order`
+
+F811 Redefinition of unused `local` from line 11
+  --> factory/python/tests/test_da014_dependency_selection.py:81:61
+   |
+79 | @pytest.mark.parametrize("selected", [["AAA-DEPENDENT"], ["UNKNOWN"], [], "ZZZ-PREREQUISITE",
+80 |                                       ["AAA-DEPENDENT", "ZZZ-PREREQUISITE"]])
+81 | def test_explicit_invalid_or_unready_scope_never_serializes(local, tmp_path, selected):
+   |                                                             ^^^^^ `local` redefined here
+82 |     job, _, _ = graph_case(local, tmp_path)
+83 |     with pytest.raises(Refused):
+   |
+  ::: factory/python/tests/test_da014_dependency_selection.py:11:37
+   |
+ 9 | from forge_factory.afo.durable import Refused, canonical
+10 | from forge_factory.afo.mission_ledger import MissionLedger
+11 | from test_afo_local_autonomy import local  # noqa: F401
+   |                                     ----- previous definition of `local` here
+12 | from test_afo_m4_recovery import order  # noqa: F401
+13 | from test_da014_protocol import protocol  # noqa: F401
+   |
+help: Remove definition: `local`
+
+F811 Redefinition of unused `local` from line 11
+  --> factory/python/tests/test_da014_dependency_selection.py:93:73
+   |
+91 |     {"READY": [], "SELF": ["SELF"]},
+92 | ])
+93 | def test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready(local, tmp_path, dependencies):
+   |                                                                         ^^^^^ `local` redefined here
+94 |     job, packet, _ = graph_case(local, tmp_path, dependencies)
+95 |     with pytest.raises(Refused, match="OBLIGATION_DEPENDENCY_MISSING_OR_CYCLIC"):
+   |
+  ::: factory/python/tests/test_da014_dependency_selection.py:11:37
+   |
+ 9 | from forge_factory.afo.durable import Refused, canonical
+10 | from forge_factory.afo.mission_ledger import MissionLedger
+11 | from test_afo_local_autonomy import local  # noqa: F401
+   |                                     ----- previous definition of `local` here
+12 | from test_afo_m4_recovery import order  # noqa: F401
+13 | from test_da014_protocol import protocol  # noqa: F401
+   |
+help: Remove definition: `local`
+
+F811 Redefinition of unused `local` from line 11
+   --> factory/python/tests/test_da014_dependency_selection.py:101:79
+    |
+101 | def test_an_explicit_independent_root_is_allowed_without_calling_it_completed(local, tmp_path):
+    |                                                                               ^^^^^ `local` redefined here
+102 |     job, _, _ = graph_case(local, tmp_path, {"A": [], "Z": [], "DEPENDENT": ["A"]})
+103 |     body, _ = D.request_material({**job, "selected_obligations": ["Z"]})
+    |
+   ::: factory/python/tests/test_da014_dependency_selection.py:11:37
+    |
+  9 | from forge_factory.afo.durable import Refused, canonical
+ 10 | from forge_factory.afo.mission_ledger import MissionLedger
+ 11 | from test_afo_local_autonomy import local  # noqa: F401
+    |                                     ----- previous definition of `local` here
+ 12 | from test_afo_m4_recovery import order  # noqa: F401
+ 13 | from test_da014_protocol import protocol  # noqa: F401
+    |
+help: Remove definition: `local`
+
+F811 Redefinition of unused `local` from line 11
+   --> factory/python/tests/test_da014_dependency_selection.py:109:63
+    |
+109 | def test_empty_inventory_refuses_before_request_serialization(local, tmp_path):
+    |                                                               ^^^^^ `local` redefined here
+110 |     job, _, _ = graph_case(local, tmp_path, {})
+111 |     with pytest.raises(Refused, match="COHERENT_OBJECTIVE_REQUIRED"):
+    |
+   ::: factory/python/tests/test_da014_dependency_selection.py:11:37
+    |
+  9 | from forge_factory.afo.durable import Refused, canonical
+ 10 | from forge_factory.afo.mission_ledger import MissionLedger
+ 11 | from test_afo_local_autonomy import local  # noqa: F401
+    |                                     ----- previous definition of `local` here
+ 12 | from test_afo_m4_recovery import order  # noqa: F401
+ 13 | from test_da014_protocol import protocol  # noqa: F401
+    |
+help: Remove definition: `local`
+
+F811 Redefinition of unused `local` from line 11
+   --> factory/python/tests/test_da014_dependency_selection.py:117:58
+    |
+115 | @pytest.mark.parametrize("dependencies", [{}, {"A": ["MISSING"]},
+116 |                                           {"A": ["B"], "B": ["A"]}])
+117 | def test_invalid_prepare_charges_no_job_or_new_allowance(local, tmp_path, dependencies):
+    |                                                          ^^^^^ `local` redefined here
+118 |     store, order, bundle, eff, ws, _ = local
+119 |     _, _, case = graph_case(local, tmp_path, dependencies)
+    |
+   ::: factory/python/tests/test_da014_dependency_selection.py:11:37
+    |
+  9 | from forge_factory.afo.durable import Refused, canonical
+ 10 | from forge_factory.afo.mission_ledger import MissionLedger
+ 11 | from test_afo_local_autonomy import local  # noqa: F401
+    |                                     ----- previous definition of `local` here
+ 12 | from test_afo_m4_recovery import order  # noqa: F401
+ 13 | from test_da014_protocol import protocol  # noqa: F401
+    |
+help: Remove definition: `local`
+
+F811 Redefinition of unused `order` from line 12
+   --> factory/python/tests/test_da014_dependency_selection.py:118:12
+    |
+116 |                                           {"A": ["B"], "B": ["A"]}])
+117 | def test_invalid_prepare_charges_no_job_or_new_allowance(local, tmp_path, dependencies):
+118 |     store, order, bundle, eff, ws, _ = local
+    |            ^^^^^ `order` redefined here
+119 |     _, _, case = graph_case(local, tmp_path, dependencies)
+120 |     ledger = MissionLedger(store)
+    |
+   ::: factory/python/tests/test_da014_dependency_selection.py:12:34
+    |
+ 10 | from forge_factory.afo.mission_ledger import MissionLedger
+ 11 | from test_afo_local_autonomy import local  # noqa: F401
+ 12 | from test_afo_m4_recovery import order  # noqa: F401
+    |                                  ----- previous definition of `order` here
+ 13 | from test_da014_protocol import protocol  # noqa: F401
+    |
+help: Remove definition: `order`
+
+F811 Redefinition of unused `protocol` from line 13
+   --> factory/python/tests/test_da014_dependency_selection.py:132:73
+    |
+132 | def test_broker_refuses_a_legacy_dependent_job_even_without_new_request(protocol, tmp_path):
+    |                                                                         ^^^^^^^^ `protocol` redefined here
+133 |     from forge_factory.afo.completion_receipt import Context, Receipts
+134 |     from forge_factory.common import sha256_file
+    |
+   ::: factory/python/tests/test_da014_dependency_selection.py:13:33
+    |
+ 11 | from test_afo_local_autonomy import local  # noqa: F401
+ 12 | from test_afo_m4_recovery import order  # noqa: F401
+ 13 | from test_da014_protocol import protocol  # noqa: F401
+    |                                 -------- previous definition of `protocol` here
+help: Remove definition: `protocol`
+
+Found 12 errors.

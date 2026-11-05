@@ -27,7 +27,7 @@ def _allowed(store, job, eff, fence):
     keys = ('case', 'case_sha256', 'nonce', 'mission_id', 'order_id', 'role', 'deadline_epoch', 'policy_sha256', 'model')
     if any(saved.get(k) != job.get(k) for k in keys) or context.case_sha256 != job['case_sha256']:
         raise Refused('MAINTENANCE_BINDING_JOB_REBOUND')
-    if (eff.mode not in ('PILOT', 'ACTIVE') or eff.sha256 != job['policy_sha256']
+    if (eff.mode not in ('PILOT', 'ACTIVE', 'OWNER_SUPERVISED_DEVELOPMENT') or eff.sha256 != job['policy_sha256']
             or not L.authorized(store.order(job['order_id']), eff, job['model'])):
         raise Refused('MAINTENANCE_BINDING_NOT_AUTHORIZED')
     if configured() and Intent().read()['mode'] != 'RUNNING':

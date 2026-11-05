@@ -1,0 +1,49 @@
+{
+  "at": "2026-11-04T12:35:33.479742+00:00",
+  "manifest_sha256": "1ef22eff836025c6ca0a7b1b33eaf2ebedf334cfb2fa0ce4cb2b9470b7096a98",
+  "rows": [
+    {
+      "id": "old-provided-contract-mandate",
+      "producer": "CRE",
+      "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+      "observed": "SYMPTOM_PRESENT",
+      "regressions": []
+    },
+    {
+      "id": "corrected-provided-contract",
+      "producer": "CRE",
+      "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+      "observed": "SYMPTOM_ABSENT",
+      "regressions": []
+    },
+    {
+      "id": "greenfield-contract-is-excluded",
+      "producer": "reference",
+      "oracle_sha256": "f0985aa4893a6da90df002ead7db7f057a9dbc78b336949df6327bec6e0e0202",
+      "observed": "c39528d3ce72965d96c70928d980575bf332d1d71eba3e5e274cfe0848150c5a",
+      "regressions": []
+    },
+    {
+      "id": "real-cmsis-host-link",
+      "producer": "gate",
+      "oracle_sha256": "70b92cf7328558d737c71c40372c5b9ddfdf20ed489be170cb3a4e267ac1b429",
+      "observed": "COMPILE_LINK_OK",
+      "regressions": []
+    }
+  ],
+  "actual_observations": [
+    {
+      "case": "old-provided-contract-mandate",
+      "returncode": 1,
+      "stdout": "SYMPTOM_PRESENT:the provided CMSIS HAL architecture prompt mandates a fabricated register-block array\n",
+      "stderr": ""
+    },
+    {
+      "case": "corrected-provided-contract",
+      "returncode": 0,
+      "stdout": "SYMPTOM_ABSENT\n",
+      "stderr": ""
+    }
+  ],
+  "claim_limit": "Narrow scoped linkage observation; shorter successor; no runtime exposure or benefit claim."
+}

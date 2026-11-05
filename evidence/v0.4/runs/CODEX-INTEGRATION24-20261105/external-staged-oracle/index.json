@@ -1,0 +1,36 @@
+{
+  "schema": "forge-c/external-staged-fix-reproducer/1",
+  "state": "FROZEN_EXTERNAL_ORACLE_INDEPENDENT_ROOT_REVIEW_REQUIRED",
+  "id": "AFO-OWNER-BOOTSTRAP-COLD-20261105",
+  "source_boundary": "lrtx.stack._start(control_only=True) -> actual _in_ns/Popen/probe/owner_view/partialprojection",
+  "protected_repository_changes": false,
+  "baseline": {
+    "revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+    "exit": 1,
+    "signature": "SYMPTOM_PRESENT:owner bootstrap cold control process cannot persist provider identity"
+  },
+  "candidate": {
+    "revision": "c757eef02db2c51faa3d4a65ab02aaf95ddc0bbd",
+    "exit": 0,
+    "signature": "SYMPTOM_ABSENT"
+  },
+  "scope": "Own private CPU HTTP/sleep only; namespace entry and model-spec leaves explicit fixtures; no candidate tests imported/no real model/authority/production changes",
+  "files": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-cold-external-oracle/baseline214-r1.log",
+      "sha256": "cc4fb3419aae30316044cfc0f789c7b2036142c552759fc07cecad4d86400b3f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-cold-external-oracle/candidateV5-r1.log",
+      "sha256": "b395859e2d28863ec7ea9ce6d8b58a0c78a83df91272dad5a525bf84ea429ab1"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-cold-external-oracle/cold_control_identity.py",
+      "sha256": "8ac94c19d293eaa885064260be490d34b61d48b15ea83b6b5092462e91a5e3e1"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-cold-external-oracle/manifest.yaml",
+      "sha256": "ea6b4fac04f94d0f9bfef58fc7e6e5a9bf00246b57e5c97293b1017b31a785c3"
+    }
+  ]
+}

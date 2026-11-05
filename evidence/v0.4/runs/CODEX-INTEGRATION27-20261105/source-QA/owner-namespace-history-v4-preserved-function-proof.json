@@ -1,0 +1,15 @@
+{
+  "schema": "forge-c/owner-namespace-preserved-functions/1",
+  "baseline": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "candidate": "a42f715489625f44f51213c72a422d3ae2944a40",
+  "ast_identical": {
+    "factory/python/forge_factory/lrtx/provider_process.py:capture_worker": true,
+    "factory/python/forge_factory/lrtx/provider_process.py:signal_worker": true,
+    "factory/python/forge_factory/lrtx/provider_process.py:quiet": true,
+    "factory/python/forge_factory/lrtx/provider_process.py:stop": true,
+    "factory/python/forge_factory/lrtx/stack.py:_stop": true,
+    "factory/python/forge_factory/lrtx/stack.py:_locked_stop": true,
+    "factory/python/forge_factory/lrtx/stack.py:start": true,
+    "factory/python/forge_factory/lrtx/stack.py:stop": true
+  }
+}

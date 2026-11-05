@@ -1,0 +1,101 @@
+{
+ "CAPA-113": {
+  "history": [
+   {
+    "at": "2026-11-02T18:13:08.342623Z",
+    "capa_id": "CAPA-113",
+    "evidence": "[\"xinsp-local-budget-findings-refuted\"]",
+    "from_state": null,
+    "reason": "Local SWE.1 inspections: correct missing-CPU-budget findings withdrawn by the refuter",
+    "seq": 847,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T18:13:08.442458Z",
+    "capa_id": "CAPA-113",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 848,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T18:13:08.747002Z",
+    "capa_id": "CAPA-113",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-113 assigned",
+    "seq": 849,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T18:13:16.482603Z",
+    "capa_id": "CAPA-113",
+    "evidence": "[\"reproducer-run:rr-0bc8c00a4d45c380737d\", \"reproducer-run:rr-07243819b7a4ca5e5e62\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 850,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T18:13:16.511924Z",
+    "capa_id": "CAPA-113",
+    "evidence": "[\"git:e7ec0083726c..c659b3b00d5b\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix c659b3b00d5b (patch 11237 bytes)",
+    "seq": 851,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T18:16:48.265598Z",
+    "capa_id": "CAPA-113",
+    "evidence": "[\"reproducer-run:rr-7e9d4cdb1dee8411b50e\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-113 absent at c659b3b00d5b",
+    "seq": 852,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T18:16:48.292147Z",
+    "capa_id": "CAPA-113",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 853,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-12ebd0b9011a9ec7bc8c7b5ef4cb283b5a28c093",
+   "e7ec0083726c32a0a7822df1b5735d97599fb972",
+   "c659b3b00d5bb682eea7c91cb0f7ee38ca813208",
+   "pd-f9f611315aa04ac5f31c"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<c659b3b00d5b"
+   ],
+   "candidate_patch_sha256": "833e46732b0c9aca7c95cf9141d7bbbb930ef30811dd8ff442c5a9985433531e",
+   "capa_id": "CAPA-113",
+   "created_at": "2026-11-02T18:13:08.342623Z",
+   "event_ids": [],
+   "incident_ids": [
+    "xinsp-local-budget-findings-refuted"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-113",
+   "reproducer_id": "RPR-113",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-0bc8c00a4d45c380737d",
+    "reproducer-run:rr-07243819b7a4ca5e5e62"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T18:16:48.292147Z"
+  }
+ }
+}

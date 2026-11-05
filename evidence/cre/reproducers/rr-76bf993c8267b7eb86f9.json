@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-76bf993c8267b7eb86f9",
+  "reproducer_id": "RPR-173",
+  "revision": "afa651a717f391f4c1e689516c626141d0f205b1",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "SYMPTOM_PRESENT",
+  "signature": "offline signed patch carries unrelated deployed source drift into the reviewed target",
+  "log_sha256": "cddbb90b1fd6d804c428edd78960f2c8f2513949edb9244edb840dfbcff1eb2a",
+  "at": "2026-11-05T09:18:45.436239Z"
+}

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="5" time="3.364" timestamp="2026-11-05T14:02:09.672503+00:00" hostname="master"><testcase classname="factory.python.tests.test_owner_development_view" name="test_actual_private_pid_accepts_only_pinned_kernel_and_store_view" time="0.750"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 11, in &lt;module&gt;&#10;      assert D.current()['acceptance']=='UNACCEPTED'&#10;             ~~~~~~~~~^^&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 424, in current&#10;      return current(store=reader)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 474, in current&#10;      socket_path = provider_view(record, store)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 159, in current&#10;      return verify_mounted(record, instance[&quot;owner_development_view&quot;], instance, store)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 149, in verify_mounted&#10;      _fail(&quot;HOST_GUARDIAN_NOT_LIVE&quot;)&#10;      ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 19, in _fail&#10;      raise Refused(&quot;OWNER_DEVELOPMENT_VIEW_&quot; + code)&#10;  forge_factory.afo.durable.Refused: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE:&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['nsenter', '-t', '634760', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...OWNER_DEVELOPMENT_VIEW_&quot; + code)\nforge_factory.afo.durable.Refused: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE:\n').returncode">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388762...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-120/test_actual_private_pid_accept0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-120/test_actual_private_pid_accept0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f3f17f39f30&gt;
+
+    def test_actual_private_pid_accepts_only_pinned_kernel_and_store_view(supervised, tmp_path, monkeypatch):
+        with private_provider(supervised, tmp_path, monkeypatch) as (record, instance, view):
+            r = consumer(
+                instance,
+                PRELUDE
+                + """
+    assert not Path('/proc/'+str(record['guardian_pid'])).exists(), 'HOST_PROCESS_NOT_HIDDEN'
+    assert D.current()['acceptance']=='UNACCEPTED'
+    print('REAL_NESTED_PID_KERNEL_VIEW_PASS')
+    """,
+            )
+&gt;           assert r.returncode == 0, r.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "&lt;string&gt;", line 11, in &lt;module&gt;
+E                 assert D.current()['acceptance']=='UNACCEPTED'
+E                        ~~~~~~~~~^^
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 424, in current
+E                 return current(store=reader)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 474, in current
+E                 socket_path = provider_view(record, store)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 159, in current
+E                 return verify_mounted(record, instance["owner_development_view"], instance, store)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 149, in verify_mounted
+E                 _fail("HOST_GUARDIAN_NOT_LIVE")
+E                 ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 19, in _fail
+E                 raise Refused("OWNER_DEVELOPMENT_VIEW_" + code)
+E             forge_factory.afo.durable.Refused: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE:
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['nsenter', '-t', '634760', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...OWNER_DEVELOPMENT_VIEW_" + code)\nforge_factory.afo.durable.Refused: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE:\n').returncode
+
+factory/python/tests/test_owner_development_view.py:127: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_owner_development_view" name="test_actual_fake_proc_mount_refuses_in_private_pid" time="0.684" /><testcase classname="factory.python.tests.test_owner_development_view" name="test_actual_fake_socket_inode_refuses_in_private_pid" time="0.694" /><testcase classname="factory.python.tests.test_owner_development_view" name="test_copied_store_even_with_exact_authority_rows_cannot_replace_canonical" time="0.482" /><testcase classname="factory.python.tests.test_owner_development_view" name="test_guardian_shutdown_refuses_private_pid_without_new_authority" time="0.625"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 10, in &lt;module&gt;&#10;      try:D.current()&#10;          ~~~~~~~~~^^&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 424, in current&#10;      return current(store=reader)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py&quot;, line 474, in current&#10;      socket_path = provider_view(record, store)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 159, in current&#10;      return verify_mounted(record, instance[&quot;owner_development_view&quot;], instance, store)&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 149, in verify_mounted&#10;      _fail(&quot;HOST_GUARDIAN_NOT_LIVE&quot;)&#10;      ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py&quot;, line 19, in _fail&#10;      raise Refused(&quot;OWNER_DEVELOPMENT_VIEW_&quot; + code)&#10;  forge_factory.afo.durable.Refused: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE:&#10;  &#10;  During handling of the above exception, another exception occurred:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 12, in &lt;module&gt;&#10;      assert e.code=='OWNER_DEVELOPMENT_GUARDIAN_ATTESTATION_UNAVAILABLE',e.code&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;  AssertionError: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['nsenter', '-t', '634787', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE\n').returncode">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388763...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-120/test_guardian_shutdown_refuses0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-120/test_guardian_shutdown_refuses0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f3f178e3020&gt;
+
+    def test_guardian_shutdown_refuses_private_pid_without_new_authority(supervised, tmp_path, monkeypatch):
+        with private_provider(supervised, tmp_path, monkeypatch) as (_, instance, _):
+            D.close_guardian(supervised["ref"])
+            r = consumer(
+                instance,
+                PRELUDE
+                + """
+    try:D.current()
+    except Refused as e:
+     assert e.code=='OWNER_DEVELOPMENT_GUARDIAN_ATTESTATION_UNAVAILABLE',e.code
+     print('GUARDIAN_CLOSED_REFUSED')
+    else:raise AssertionError('DEAD_GUARDIAN_ACCEPTED')
+    """,
+            )
+&gt;           assert r.returncode == 0, r.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "&lt;string&gt;", line 10, in &lt;module&gt;
+E                 try:D.current()
+E                     ~~~~~~~~~^^
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 424, in current
+E                 return current(store=reader)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 474, in current
+E                 socket_path = provider_view(record, store)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 159, in current
+E                 return verify_mounted(record, instance["owner_development_view"], instance, store)
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 149, in verify_mounted
+E                 _fail("HOST_GUARDIAN_NOT_LIVE")
+E                 ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_development_view.py", line 19, in _fail
+E                 raise Refused("OWNER_DEVELOPMENT_VIEW_" + code)
+E             forge_factory.afo.durable.Refused: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE:
+E             
+E             During handling of the above exception, another exception occurred:
+E             
+E             Traceback (most recent call last):
+E               File "&lt;string&gt;", line 12, in &lt;module&gt;
+E                 assert e.code=='OWNER_DEVELOPMENT_GUARDIAN_ATTESTATION_UNAVAILABLE',e.code
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E             AssertionError: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['nsenter', '-t', '634787', '-U', '-m', '-p', '--preserve-credentials', '/media/jefferson/11c42d...^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: OWNER_DEVELOPMENT_VIEW_HOST_GUARDIAN_NOT_LIVE\n').returncode
+
+factory/python/tests/test_owner_development_view.py:194: AssertionError</failure></testcase></testsuite></testsuites>

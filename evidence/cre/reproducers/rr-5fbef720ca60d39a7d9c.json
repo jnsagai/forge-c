@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-5fbef720ca60d39a7d9c",
+  "reproducer_id": "AFO-PROVIDER-NSENTRY-20261105",
+  "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "SYMPTOM_PRESENT",
+  "signature": "provider entry rejects inherited ancestor network or already-current user namespace",
+  "log_sha256": "5ebec6e10b104da6fbaa9a1100b4a0ed6d994991fde0749d6d38c89cebbb4a47",
+  "at": "2026-11-05T21:31:48.477453Z"
+}

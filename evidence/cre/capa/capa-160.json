@@ -1,0 +1,101 @@
+{
+ "CAPA-160": {
+  "history": [
+   {
+    "at": "2026-11-04T17:17:54.693560Z",
+    "capa_id": "CAPA-160",
+    "evidence": "[\"cloud:WO-F014-CMP-SWE4-WWDGHAL-20261104-T1F:DEF-001\"]",
+    "from_state": null,
+    "reason": "Actual provided LL RAM effects are unavailable under the generated call-contract-only unit fake; immutable retained HAL/LL CPU contrast proves the verification gap.",
+    "seq": 1195,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T17:17:54.761228Z",
+    "capa_id": "CAPA-160",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1196,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T17:17:54.947272Z",
+    "capa_id": "CAPA-160",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-160 assigned",
+    "seq": 1197,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T17:17:58.600477Z",
+    "capa_id": "CAPA-160",
+    "evidence": "[\"reproducer-run:rr-bb2ee7dd045ebe2efd60\", \"reproducer-run:rr-759a638799f7f3bd63b0\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1198,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T17:17:58.619540Z",
+    "capa_id": "CAPA-160",
+    "evidence": "[\"git:796d662a450b..04d95051047a\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 04d95051047a (patch 20993 bytes)",
+    "seq": 1199,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T17:20:47.222755Z",
+    "capa_id": "CAPA-160",
+    "evidence": "[\"reproducer-run:rr-b27e5943637d0e1a4d30\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-160 absent at 04d95051047a",
+    "seq": 1200,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T17:20:47.261806Z",
+    "capa_id": "CAPA-160",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1201,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-ae7c9b82f56a94c7dc48546585fd77ed43482ad6",
+   "796d662a450b243843f7637c15bba29b57adf2f1",
+   "04d95051047ae0b5e13ed8b8b375ff61ada3bd3d",
+   "pd-0c69b173494b4cded1dc"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<04d95051047a"
+   ],
+   "candidate_patch_sha256": "c901a6d25c960cde178c012167efd3870a112d684b3500a121b68a18fc9a14a5",
+   "capa_id": "CAPA-160",
+   "created_at": "2026-11-04T17:17:54.693560Z",
+   "event_ids": [],
+   "incident_ids": [
+    "cloud:WO-F014-CMP-SWE4-WWDGHAL-20261104-T1F:DEF-001"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-160",
+   "reproducer_id": "RPR-160",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-bb2ee7dd045ebe2efd60",
+    "reproducer-run:rr-759a638799f7f3bd63b0"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "run_unit selects the protected LL fake for every unit; the delivered-CMSIS ABI route does not apply to a HAL on a provided LL. Separate explicitly bound real-LL host units observe original HAL C effects without modifying the LL or fake.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T17:20:47.261806Z"
+  }
+ }
+}

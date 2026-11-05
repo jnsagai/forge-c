@@ -1,0 +1,39 @@
+{
+  "schema": "forge-c/batch12-composite-final-review/1",
+  "status": "QUALIFIED_FIXTURE_CORRECTION_READY_FOR_ORACLE_CLEAN_BUNDLE_CHECK_PENDING",
+  "runtime_source_original_full_suite": "796d662a450b243843f7637c15bba29b57adf2f1",
+  "final_source": "4158dd453d12ee4e6349bf8196234f9122a20e3a",
+  "source_delta": [
+    "factory/python/tests/test_line_store_scope.py"
+  ],
+  "runtime_code_changed": false,
+  "original_full_comparison": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-batch12-comparison.json",
+    "sha256": "6920a148458ba6fe040af7684800a989ff87b311863c1dfd59b674dc64223b86"
+  },
+  "original_full_result": "2767PASS7FAIL27SKIP on234modules; actual result retained, not recomputed as finalHEAD total",
+  "baseline_full_result": "2461PASS6FAIL26SKIP on202modules",
+  "new_failure": "fixed-scope test expected implicit creation of missinglineauthority;157 correctlyrefused. Fixture now proves refusal/no parentcreation thenexplicitM3bootstrap beforeexisting-store routing. No runtimeguard weakened.",
+  "affected_modules_result": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "4",
+    "tests": "307",
+    "time": "94.163",
+    "timestamp": "2026-11-04T17:47:55.156282+00:00",
+    "hostname": "master"
+  },
+  "affected_result_scope": "303PASS4SKIP; alltest_line_* modules including157/M6/M7 andoriginalfailure nowpass. Fourrealstate replaysremain skipped, not passes.",
+  "affected_test_xml": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-b12-fixture-affected.xml",
+    "sha256": "1f4f817099046e6a46a29325a4d45f7672f2bbed572f9f4ac47108fb376b6464"
+  },
+  "fixture_CHANGE": "pd-98d16e064c3e8a278483",
+  "final_combined_CHANGE": "pd-f7cfa18e61dd49279166",
+  "new_environmental_skip": "test_lrtx_review_bundle::test_bundle_is_byte_identical_for_the_same_revision explicitlyskipped pendingdirtyprotectedfeatures; mustreruncleanexactoracleHEAD beforepush",
+  "clean_bundle_verification": "PENDING_POST_ORACLE_BEFORE_PUSH",
+  "landing_limit": "No fresh234modulefinalHEADrun claimed; onlyfixturechanged, allrelatedsourcecases andnewwholecombinedCHANGEqualified, original6baselinefailuresremainunresolved",
+  "live_changes": false,
+  "main_merge": false
+}

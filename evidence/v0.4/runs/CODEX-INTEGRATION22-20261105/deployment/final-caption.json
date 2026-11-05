@@ -1,0 +1,91 @@
+{
+  "schema": "forge-c/plant-floor-caption-rollout/1",
+  "status": "DEPLOYED_VERIFIED",
+  "recorded_at": "2026-11-05T13:02:44.738348+00:00",
+  "url": "http://localhost:8788/?line=local",
+  "source_revision": "1247d26793b27cf7d4f71385925e3cc191c2d22b",
+  "baseline_revision": "7f55de5c10a413bb251e91d8c6b9f4d61481df47",
+  "decision_id": "pd-5f508baa32b681c9c36a",
+  "scope": "Only two legacy GPU caption branches in factory-floor.html: loaded -> last reported. No API/engine/policy changes.",
+  "qualification_index": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/floor-last-reported-qualified-index.json",
+    "sha256": "19f2b1bf76b3d882ec92e326d1e4a0d4c93965257873ceab407cb0cb4eb8553c"
+  },
+  "focused_pass": 31,
+  "design_pass": 14,
+  "js_syntax": "PASS",
+  "prevention_pass": 175,
+  "all12_inputs_before_source_and_pooled_tests": true,
+  "deployment_root": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/floor-last-reported-deployment-1247d267",
+  "changed_units": [
+    "remote:forge-c-floor-swe1.service",
+    "laptop:forge-c-floor-lines.service"
+  ],
+  "invariants": {
+    "result": "PASS",
+    "checks": {
+      "conductor": true,
+      "intent": true,
+      "services_sha256": true,
+      "canonical_head": true,
+      "canonical_status": true,
+      "durable_tables": true,
+      "native": true
+    },
+    "floor_before": {
+      "MainPID": "3235973",
+      "WorkingDirectory": "/mnt/data/forge-c/swe1-fabro-20261031/monitor/plant-floor-7f55de5c/factory/python",
+      "ActiveState": "active",
+      "SubState": "running",
+      "InvocationID": "2459465e6d454ce4b055ed8557865ccc"
+    },
+    "floor_after": {
+      "MainPID": "3242924",
+      "WorkingDirectory": "/mnt/data/forge-c/swe1-fabro-20261031/monitor/floor-last-reported-1247d267/factory/python",
+      "ActiveState": "active",
+      "SubState": "running",
+      "InvocationID": "a148295f06ed4fca89777b2e4d07334f"
+    },
+    "local_floor_after": {
+      "MainPID": "584582",
+      "WorkingDirectory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-floor-last-reported/factory/python",
+      "ActiveState": "active",
+      "SubState": "running",
+      "InvocationID": "9fcc21fc018e4d1fa6edce276a3db0ee"
+    },
+    "other_laptop_units_unchanged": true,
+    "native": {
+      "count": 149,
+      "identity_lifecycle_sha256": "2985ee9947be2283250f7dcc774f7ad20e294d878eb972d90ede3dab4fc35583",
+      "nonterminal": 0,
+      "removing": 0
+    },
+    "conductor": {
+      "MainPID": "2866337",
+      "WorkingDirectory": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/controller-local-finite-d77709f4/factory/python",
+      "ActiveState": "active",
+      "SubState": "running",
+      "InvocationID": "17d293418b5143eb8a9815b6e5054835"
+    },
+    "intent": {
+      "sha256": "b969ca45271b1e642c3fb29835812e392879988f8cc0da29bb5be76f8c2ccd28",
+      "mode": "RUNNING",
+      "epoch": 1
+    }
+  },
+  "browser": {
+    "result": "PASS",
+    "station_actual_text": "GPU STATION \u00b7 RTX 6000 ADA\n0 %\nLOAD\n27 W\nPOWER\n38 \u00b0C \u00b7 41.8 of 48 GB \u00b7 last reported: Ornith 35B",
+    "screenshot": "plant-floor-live-8788-viewport.png",
+    "dom_receipt": "browser-rendered-state.json"
+  },
+  "rollback_used": false,
+  "old_deployment_retained": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/plant-floor-monitor-deployed-index.json",
+  "limits": [
+    "Monitoring remains read-only; OBSERVE/OBSERVING is not production admission.",
+    "Desired RUNNING epoch1 does not imply current driver.",
+    "No mission, Intent, grants, native jobs, models, clock or conductor effects.",
+    "Current provider model remains unverified; caption explicitly states last reported."
+  ],
+  "private_harness_error_preserved": "browser-v1-observation.json: initial async station DOM not ready; corrected only null-safe observation/wait, source unchanged."
+}

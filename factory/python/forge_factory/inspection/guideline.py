@@ -70,6 +70,19 @@ class Checker:
         self.PPP = self.ppp.upper()
         self.series = rules["series_prefix"]
         self.violations: list[dict] = []
+        self.dispositions: list[dict] = []
+        # owner disposition 2026-11-02 ("Exempt declared API"): in instance mode the parameter names the work order's API
+        # contract declares (ST's CRCx, InData) are kept exactly; GL-ARG-01 still checks every other parameter
+        self.declared_params: set[tuple[str, str]] = set()
+        if (Path(ws) / ".forge-run/manifest.json").is_file():
+            from ..layer import ll_instance
+
+            try:
+                inst = ll_instance(ws)
+            except ValueError:  # an invalid declaration fails its own checks; no exemption is granted
+                inst = None
+            for fn, sig in ((inst or {}).get("signatures") or {}).items():
+                self.declared_params |= {(fn, prm["name"]) for prm in sig.get("params") or []}
 
     def v(self, rule: str, file: str, line: int, detail: str) -> None:
         r = self.sev[rule]
@@ -194,7 +207,13 @@ class Checker:
                     continue
                 pname = pm.group(1)
                 if pname != pname.lower():
-                    self.v("GL-ARG-01", rel, line, f"{name}: parameter {pname} not lower case")
+                    if (name, pname) in self.declared_params:
+                        self.dispositions.append({"rule": "GL-ARG-01", "file": rel, "line": line,
+                                                  "detail": f"{name}: parameter {pname} declared by the API contract",
+                                                  "disposition": "OWNER_ACCEPTED_DECLARED_API_CONTRACT",
+                                                  "decided": "owner 2026-11-02"})
+                    else:
+                        self.v("GL-ARG-01", rel, line, f"{name}: parameter {pname} not lower case")
                 if "*" in prm and re.search(r"(config|cfg|init)", pname) and "const" not in prm:
                     self.v("GL-CONST-01", rel, line, f"{name}: pointer {pname} must be const-qualified")
         for m in re.finditer(r"struct\s*[a-z_0-9]*\s*\{([^{}]*)\}", s):
@@ -235,6 +254,11 @@ class Checker:
                 self.check_enums(p, raw, layer)
                 if layer == "hal" and p.suffix == ".h":
                     self.check_hal_header_macros(p, raw)
+        provided, frozen = provided_frozen(self.ws), []
+        if provided:  # CAPA-141: SWE3-07 covers *generated* HAL/LL code; the provided FROZEN LL (ST code) is not the
+            # HAL author's to change - its violations are delivered-code observations (package), not HAL findings
+            frozen = [x for x in self.violations if x["file"] in provided]
+            self.violations = [x for x in self.violations if x["file"] not in provided]
         major = [x for x in self.violations if x["severity"] == "major"]
         verdict = "PASS" if not major and self.rules["guideline_hash_ok"] and (hal or ll) else "FAIL"
         return {"check_id": "SWE3-07", "guideline": self.rules["guideline"]["title"],
@@ -244,7 +268,20 @@ class Checker:
                 "files_checked": [self.rel(p) for p in hal + ll],
                 "rules_applied": [r["id"] for r in self.rules["rules"]],
                 "violations": self.violations,
+                **({"dispositions": self.dispositions} if self.dispositions else {}),
+                **({"provided_frozen_violations": frozen, "provided_frozen_files": sorted(provided)}
+                   if provided else {}),
                 "not_automated": "API semantics, process models and documentation completeness: manual SWE3 items"}
+
+
+def provided_frozen(ws: Path) -> set[str]:
+    """CAPA-141: files a (HAL) work order received as FROZEN delivered code of its source work order (CAPA-130:
+    brownfield.provided_frozen_paths); empty for every other work order, so their reports are unchanged."""
+    if not (Path(ws) / ".forge-run/manifest.json").is_file():
+        return set()
+    from ..brownfield import manifest_of, provided_frozen_paths
+
+    return set(provided_frozen_paths(manifest_of(ws)))
 
 
 def check_workspace(ws: Path, rules_path: Path = RULES_FILE) -> dict:

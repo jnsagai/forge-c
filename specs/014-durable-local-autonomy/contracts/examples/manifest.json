@@ -336,6 +336,24 @@
       "schema": "runtime/process-lab-disposition.schema.json",
       "expected_valid": false,
       "purpose": "No fields beyond the contract (not the learning-only review-disposition)."
+    },
+    {
+      "file": "process-lab-owner-obligations.valid.json",
+      "schema": "runtime/owner-obligations.schema.json",
+      "expected_valid": true,
+      "purpose": "Owner obligations with one register-effect obligation and one behavioural obligation."
+    },
+    {
+      "file": "process-lab-owner-obligations-bad-id.invalid.json",
+      "schema": "runtime/owner-obligations.schema.json",
+      "expected_valid": false,
+      "purpose": "Obligation ids are OBL-<slug>."
+    },
+    {
+      "file": "process-lab-owner-obligations-empty.invalid.json",
+      "schema": "runtime/owner-obligations.schema.json",
+      "expected_valid": false,
+      "purpose": "A declared obligations input names at least one obligation."
     }
   ]
 }

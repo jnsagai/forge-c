@@ -1,0 +1,65 @@
+[
+  {
+    "seq": 1318,
+    "capa_id": "CAPA-175",
+    "from_state": null,
+    "to_state": "OPEN",
+    "at": "2026-11-05T11:11:50.162600Z",
+    "reason": "Review intake excludes nine baselines explicitly registered as learning after completed calibration. Owner requires human reviews to produce durable CAPA/prevention learning without contaminating unspent held-out sets.",
+    "evidence": "[\"OWNER-REVIEW-LEARNING-REGISTRATION-REFUSED\"]"
+  },
+  {
+    "seq": 1319,
+    "capa_id": "CAPA-175",
+    "from_state": "OPEN",
+    "to_state": "TRIAGED",
+    "at": "2026-11-05T11:11:50.226441Z",
+    "reason": "triage by RULE",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1320,
+    "capa_id": "CAPA-175",
+    "from_state": "TRIAGED",
+    "to_state": "REPRODUCER_PENDING",
+    "at": "2026-11-05T11:11:50.404487Z",
+    "reason": "reproducer RPR-175 assigned",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1321,
+    "capa_id": "CAPA-175",
+    "from_state": "REPRODUCER_PENDING",
+    "to_state": "CAUSE_VERIFIED",
+    "at": "2026-11-05T11:11:51.852824Z",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "evidence": "[\"reproducer-run:rr-3f1c022547afe6e9d9b0\", \"reproducer-run:rr-2eed33afc9c6c15282a6\"]"
+  },
+  {
+    "seq": 1322,
+    "capa_id": "CAPA-175",
+    "from_state": "CAUSE_VERIFIED",
+    "to_state": "FIX_CANDIDATE",
+    "at": "2026-11-05T11:11:51.882451Z",
+    "reason": "fix 03da05043307 (patch 76936 bytes)",
+    "evidence": "[\"git:18814617abb9..03da05043307\"]"
+  },
+  {
+    "seq": 1323,
+    "capa_id": "CAPA-175",
+    "from_state": "FIX_CANDIDATE",
+    "to_state": "PREVENTION_TESTED",
+    "at": "2026-11-05T11:13:55.066652Z",
+    "reason": "prevention test prevention:RPR-175 absent at 03da05043307",
+    "evidence": "[\"reproducer-run:rr-e2c089126cf7049c02e4\"]"
+  },
+  {
+    "seq": 1324,
+    "capa_id": "CAPA-175",
+    "from_state": "PREVENTION_TESTED",
+    "to_state": "EFFECTIVENESS_OBSERVING",
+    "at": "2026-11-05T11:13:55.080653Z",
+    "reason": "observation window opened",
+    "evidence": "[]"
+  }
+]

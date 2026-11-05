@@ -26,17 +26,34 @@ def resolve(ref):
     return document
 
 
-def authorized(ref, job, eff):
+def authorized(ref, job, eff, *, store=None, proposed_envelope=None):
     from ..lrtx.role_capability import key
     from . import authz
     from .local_agent import request_for
     from .queue import Store
 
     trial = resolve(ref)
-    order = Store().order(job["order_id"])
+    if store is None:
+        store = Store(state_dir() / "supervisor/line-queue.sqlite3") if job.get("line_origin") else Store()
+    order = store.order(job["order_id"])
+    if proposed_envelope is None:
+        if not order:
+            raise Refused("PRODUCT_ROLE_TRIAL_BINDING_CHANGED")
+        request = request_for(order)
+    else:
+        # A read-only proposal is not a queue row or a dispatch receipt. Normal
+        # runtime callers never supply this optional input and still need order.
+        from .contracts import errors
+        from .queue import order_id_for
+
+        if (order or errors("work-order", proposed_envelope)
+                or proposed_envelope.get("tenant_scope") != "line-local"
+                or order_id_for("line-local", proposed_envelope["request_id"]) != job["order_id"]):
+            raise Refused("PRODUCT_ROLE_TRIAL_PROPOSED_INTAKE_CHANGED")
+        request = {"order_id": proposed_envelope["request_id"], "driver_class": proposed_envelope["driver_class"],
+                   "model": proposed_envelope["model_profile"]}
     if (
-        not order
-        or trial.get("qualification_only") is not True
+        trial.get("qualification_only") is not True
         or job["order_id"] not in trial.get("order_ids", [])
         or trial.get("source_revision") != (job.get("factory_revision") or {}).get("commit")
         or trial.get("profile") != job.get("profile")
@@ -90,8 +107,13 @@ def authorized(ref, job, eff):
                 or identity["context_tokens"] > context_ceiling
             ):
                 raise Refused("PRODUCT_ROLE_TRIAL_CONFIGURATION_CHANGED")
+    from . import owner_supervised_development as development
+
+    if eff.mode == development.MODE:
+        development.trial_authorized(ref, job, eff, request)
+        return trial
     authref = trial.get("authorization_ref")
-    grant = authz.find(eff.mode, eff.sha256 or "", ref=authref, action="recover_workorder", request=request_for(order))
+    grant = authz.find(eff.mode, eff.sha256 or "", ref=authref, action="recover_workorder", request=request)
     if not grant.allow:
         raise Refused(grant.code)
     record = json.loads((authz.AUTH_DIR / f"{authref}.json").read_text())

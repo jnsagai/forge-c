@@ -1,0 +1,51 @@
+{
+  "schema": "forge-c/unit-target-timing-qualification-index/1",
+  "status": "SOURCE_CHANGE_ELIGIBLE_COMPONENT_CPU_PROVEN_NOT_DEPLOYED",
+  "candidate_revision": "5bb8d272cb55b0c61021e3f28e3a9a733f749674",
+  "baseline_revision": "796d662a450b243843f7637c15bba29b57adf2f1",
+  "decision": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-unit-target-timing/evidence/cre/decisions/pd-bcf46afab731d538075d.json",
+    "sha256": "5bdfed80cedc745b845304618f1c36d80d4e002010aa787ec14a926da245b8d5"
+  },
+  "source_files": [
+    "factory/python/forge_factory/workflow/unit_target_timing.py",
+    "factory/python/forge_factory/inspection/swtrace.py",
+    "factory/python/forge_factory/mcp/servers/evidence.py",
+    "factory/python/tests/test_unit_target_timing.py"
+  ],
+  "final_focused": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/unit-target-timing-final-focused04.xml",
+    "sha256": "7212258852e10bd11961052f6aad8d66eb08e4ea639f8869f34242cbbfda6d6e"
+  },
+  "related_prior_regression": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/unit-target-timing-regression02.xml",
+    "sha256": "1df3fd00fcd791c7236e3c8ca89dcdb261ed1d1869bf01161442820f48182e9a"
+  },
+  "related_regression_scope": "125passed before final immutable-input guard additions; final23 covers changed timing guards/actualmatrix+planned-unit",
+  "design": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/unit-target-timing-final-design.log",
+    "sha256": "52f90a2aea5217f820f0c6552e99a382de47a1146cb7ca9409fcd9968252aa52"
+  },
+  "actual_retained": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/unit-target-timing-retained-5bb8d272/measurement.json",
+    "sha256": "66ce4ba143865c0fe831210d2f2eb73e3641c1e1e259e74794cb03d2f18c4f90"
+  },
+  "gate_log": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/unit-target-timing-change.log",
+    "sha256": "6f26541bf613700ee0d0820aeddb07e15b1df0ef83618130f00a27bc70f7b2d2"
+  },
+  "caller_prefix": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/unit-target-timing-caller-prefix159.json",
+    "sha256": "79db4d4054a6e0334c10a623055bf739e7c21bd6a7cce68ab295de51402bd04b"
+  },
+  "run_unit_hook_installed": false,
+  "remaining": [
+    "Rootreviews4filecomponent",
+    "Rootintegratesallowedrun_unit hook+explicittypedcase authoring instructions",
+    "Independentcombinedqualification beforeproduction"
+  ],
+  "claim": "Exact observed simulated calls only, nothardwareWCET/silicon/fullSWE4phase/modelrolecompetence",
+  "model_calls": 0,
+  "live_changes": false,
+  "automatic_deployment": false
+}

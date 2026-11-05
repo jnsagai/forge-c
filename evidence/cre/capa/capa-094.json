@@ -1,0 +1,101 @@
+{
+ "CAPA-094": {
+  "history": [
+   {
+    "at": "2026-11-01T20:06:23.244265Z",
+    "capa_id": "CAPA-094",
+    "evidence": "[\"fabro-swe4-obl-l2-branch-coverage\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE4-OBL-20261101-L2: report 'branch None%' against a 100% branch goal, SWE4-05 failed, cancelled",
+    "seq": 706,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T20:06:23.265862Z",
+    "capa_id": "CAPA-094",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 707,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T20:06:23.358072Z",
+    "capa_id": "CAPA-094",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-094 assigned",
+    "seq": 708,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T20:06:26.862004Z",
+    "capa_id": "CAPA-094",
+    "evidence": "[\"reproducer-run:rr-a4b9ababa9168d42d88d\", \"reproducer-run:rr-d7db97d33720732e8eb4\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 709,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T20:06:26.894836Z",
+    "capa_id": "CAPA-094",
+    "evidence": "[\"git:c780dadc96dc..77ceea02245a\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 77ceea02245a (patch 4728 bytes)",
+    "seq": 710,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T20:09:20.645494Z",
+    "capa_id": "CAPA-094",
+    "evidence": "[\"reproducer-run:rr-fcb95612f2dfb291a003\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-094 absent at 77ceea02245a",
+    "seq": 711,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T20:09:20.663955Z",
+    "capa_id": "CAPA-094",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 712,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-26d034c762d021f943c745835a6e6b20881cd11b",
+   "c780dadc96dc2b12aed5ecb6341b3c700df49f44",
+   "77ceea02245aa3212ffb4e4738682ab55cffd8a2",
+   "pd-42948f9ed7cb36351ee0"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<77ceea02245a"
+   ],
+   "candidate_patch_sha256": "3e9c4702aeec02df0c239c7dff9657015eba0565f3b8f068a4239e4fc92b51d5",
+   "capa_id": "CAPA-094",
+   "created_at": "2026-11-01T20:06:23.244265Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe4-obl-l2-branch-coverage"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-094",
+   "reproducer_id": "RPR-094",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-a4b9ababa9168d42d88d",
+    "reproducer-run:rr-d7db97d33720732e8eb4"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "The generated report states no applicability for a coverage measure llvm-cov cannot compute",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T20:09:20.663955Z"
+  }
+ }
+}

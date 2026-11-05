@@ -66,7 +66,7 @@ def _allowed(store, job, eff):
 
     order = store.order(job['order_id'])
     revision = factory_revision()
-    if (eff.mode not in ('PILOT', 'ACTIVE') or eff.sha256 != job['policy_sha256']
+    if (eff.mode not in ('PILOT', 'ACTIVE', 'OWNER_SUPERVISED_DEVELOPMENT') or eff.sha256 != job['policy_sha256']
             or not L.enabled(job['role'], eff) or not L.authorized(order, eff, job['model'])
             or revision.get('dirty') or revision.get('commit') != job['factory_revision'].get('commit')):
         raise Refused('MAINTENANCE_REWORK_AUTHORITY_CHANGED')

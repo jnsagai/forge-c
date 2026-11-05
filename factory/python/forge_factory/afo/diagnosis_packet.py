@@ -274,37 +274,83 @@ def measure_request(body: dict, counter=None) -> dict:
     }
 
 
+def obligation_order(packet: dict) -> list[str]:
+    """Validate the entire graph before exposing any unit, including unrelated components."""
+    obligations = packet.get("obligations")
+    if not isinstance(obligations, dict):
+        raise Refused("OBLIGATION_GRAPH_INVALID")
+    dependencies, children = {}, {key: [] for key in obligations}
+    for key, value in obligations.items():
+        if (not isinstance(key, str) or not key or not isinstance(value, dict)
+                or value.get("id") != key or not isinstance(value.get("dependencies"), list)
+                or any(not isinstance(dep, str) or not dep for dep in value["dependencies"])):
+            raise Refused("OBLIGATION_GRAPH_INVALID")
+        deps = set(value["dependencies"])
+        if not deps <= obligations.keys():
+            raise Refused("OBLIGATION_DEPENDENCY_MISSING_OR_CYCLIC")
+        dependencies[key] = len(deps)
+        for dep in deps:
+            children[dep].append(key)
+    ready = sorted(key for key, count in dependencies.items() if count == 0)
+    ordered = []
+    while ready:
+        following = []
+        for key in ready:
+            ordered.append(key)
+            for child in children[key]:
+                dependencies[child] -= 1
+                if dependencies[child] == 0:
+                    following.append(child)
+        ready = sorted(following)
+    if len(ordered) != len(obligations):
+        raise Refused("OBLIGATION_DEPENDENCY_MISSING_OR_CYCLIC")
+    return ordered
+
+
+def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+    """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+    ordered = obligation_order(packet)
+    if selected is None:
+        selected = ordered[:1]
+    if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+        raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+    key = selected[0]
+    if key not in packet["obligations"]:
+        raise Refused("OBLIGATION_NOT_IN_PACKET")
+    # A packet inventories unresolved incident units. Only independent re-verification
+    # and a newly sealed packet can remove a prerequisite; job fields are not receipts.
+    if packet["obligations"][key]["dependencies"]:
+        raise Refused("OBLIGATION_DEPENDENCY_UNSATISFIED", key)
+    return list(selected)
+
+
 def partition(
     packet: dict, *, max_bytes: int, instructions: str = "", skill: str = "", tool_schema: dict | None = None
 ) -> list[dict]:
     """Topological coherent obligations; dependency/global inventories are never silently sliced."""
-    units, pending, done = [], dict(packet["obligations"]), set()
-    while pending:
-        ready = [k for k, o in pending.items() if set(o["dependencies"]) <= done]
-        if not ready:
-            raise Refused("OBLIGATION_DEPENDENCY_MISSING_OR_CYCLIC")
-        for oid in sorted(ready):
-            obligation = pending.pop(oid)
-            view = {
-                "binding": packet["binding"],
-                "obligation": obligation,
-                "findings": [f for f in packet["findings"] if f["ref"] in obligation["finding_refs"]],
-                "primary_evidence": packet["artifacts"],
-                "global_constraints": packet["global_constraints"],
-                "required_obligations": packet["required_obligations"],
-                "techniques": packet["techniques"],
-                "tests": packet["tests"],
-                "prior_strategies": packet["prior_strategies"],
-                "complete": packet["complete"],
-                "missing": packet["missing"],
-            }
-            body = {"instructions": instructions, "skill": skill, "tool_schema": tool_schema or {}, "case": view}
-            if len(canonical(body)) > max_bytes:
-                raise Refused("COHERENT_OBLIGATION_EXCEEDS_CONTEXT", oid)
-            units.append(
-                {"obligation_id": oid, "packet_sha256": digest(packet), "body": body, "accounting": measure_request(body)}
-            )
-            done.add(oid)
+    units, done = [], set()
+    for oid in obligation_order(packet):
+        obligation = packet["obligations"][oid]
+        view = {
+            "binding": packet["binding"],
+            "obligation": obligation,
+            "findings": [f for f in packet["findings"] if f["ref"] in obligation["finding_refs"]],
+            "primary_evidence": packet["artifacts"],
+            "global_constraints": packet["global_constraints"],
+            "required_obligations": packet["required_obligations"],
+            "techniques": packet["techniques"],
+            "tests": packet["tests"],
+            "prior_strategies": packet["prior_strategies"],
+            "complete": packet["complete"],
+            "missing": packet["missing"],
+        }
+        body = {"instructions": instructions, "skill": skill, "tool_schema": tool_schema or {}, "case": view}
+        if len(canonical(body)) > max_bytes:
+            raise Refused("COHERENT_OBLIGATION_EXCEEDS_CONTEXT", oid)
+        units.append(
+            {"obligation_id": oid, "packet_sha256": digest(packet), "body": body, "accounting": measure_request(body)}
+        )
+        done.add(oid)
     if done != set(packet["obligations"]):
         raise Refused("OBLIGATION_COVERAGE_INCOMPLETE")
     return units

@@ -1,0 +1,114 @@
+{
+  "at": "2026-10-31T17:01:22.965741Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 9088,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 8960,
+          "sha256": "c919d9952bb0943bbab881bc1aab1a906296ab91cd937d05b1c4e170ad8a115b"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2690,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7222
+      },
+      "errors": [
+        "[write_crc_idr_idr] effect WRITE_CRC_IDR_IDR_VALUE: value '0xXXXXXXXX' must be a number that fits CRC_IDR.IDR (32 bits)"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "b80810ce6b99901ff8363bd2ed0d213c44ef0d363db1c2393d5c6805bf3372e0",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 393,
+        "prompt_tokens": 1817,
+        "prompt_tokens_details": {
+          "cached_tokens": 269
+        },
+        "total_tokens": 2210
+      },
+      "wall_ms": 5623.2
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 10879,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 10751,
+          "sha256": "b2d6677303003ee2f5262e932d186c38f92912a0dc991913fb3377c720f8c484"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 3294,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 8884
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "b3441488c502eb880b1e73594a45f936df3a0007be44ecffc1c329981f7e1641",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 392,
+        "prompt_tokens": 2279,
+        "prompt_tokens_details": {
+          "cached_tokens": 269
+        },
+        "total_tokens": 2671
+      },
+      "wall_ms": 5598.1
+    }
+  ],
+  "base_hash": "b80810ce6b99901ff8363bd2ed0d213c44ef0d363db1c2393d5c6805bf3372e0",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [
+          {
+            "case": "WRITE_CRC_IDR_IDR_VALUE",
+            "field": "IDR",
+            "op": "write",
+            "register": "CRC_IDR",
+            "value": "0xFFFFFFFF"
+          }
+        ],
+        "key": "write_crc_idr_idr",
+        "source_page": 1172,
+        "statement": "The CRC LL driver shall write the 32-bit value provided by the caller into the CRC_IDR.IDR register when LL_CRC_Write_IDR is invoked with a valid CRC peripheral instance and the register interface is accessible.",
+        "verification": "Passes when reading CRC_IDR.IDR after the write returns the exact 32-bit value written, verified by register array access.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [
+          {
+            "case": "READ_CRC_IDR_IDR_VALUE",
+            "field": "IDR",
+            "op": "no_write",
+            "register": "CRC_IDR",
+            "value": ""
+          }
+        ],
+        "key": "read_crc_idr_idr",
+        "source_page": 1172,
+        "statement": "The CRC LL driver shall return the current 32-bit value stored in the CRC_IDR.IDR register when LL_CRC_Read_IDR is invoked with a valid CRC peripheral instance and the register interface is accessible.",
+        "verification": "Passes when the value returned by LL_CRC_Read_IDR matches the value last written to CRC_IDR.IDR or the reset value (0x00000000) if never written, verified by register array access.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:CRC_IDR"
+}

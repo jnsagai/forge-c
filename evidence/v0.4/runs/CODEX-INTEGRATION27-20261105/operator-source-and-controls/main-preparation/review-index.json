@@ -1,0 +1,166 @@
+{
+  "schema": "forge-c/f0-owner-main-reviewed-operator-preparation/1",
+  "at": "2026-11-05T22:10:49.287702+00:00",
+  "status": "LOCAL_PREPARED_PRIVATE_CONTROLS_PASS_PENDING_ROOT_REVIEW_NOT_INSTALLED_OR_STARTED",
+  "source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "root": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-f0c8fc5c-review-20261105",
+  "unit": "forge-c-owner-development-f0c8fc5c-20261105.service",
+  "helpers": [
+    {
+      "path": "owner-main-ops/binding.json",
+      "sha256": "576c8af67548e57efb1363c8f80f117600ac4c067ffa9dbe6d60782237ef9733"
+    },
+    {
+      "path": "owner-main-ops/install-metadata-reviewed.py",
+      "sha256": "4ab15ab4b6b76066710f1b49f21fdb258d9206ab75a7dea831ae72a5aa1a849e"
+    },
+    {
+      "path": "owner-main-ops/start-main-reviewed.py",
+      "sha256": "fa044e4edcf492940289f2cea98995527839cdcdc097418fc60ea9892155c118"
+    }
+  ],
+  "controls": {
+    "publication_and_consumption": {
+      "PASS": 23,
+      "FAIL": 0,
+      "report": "private-controls-r2.json",
+      "scope": "Actualprivatefile/SQLite/socket/normalD._attest. Consumption checks actualnormal hashrow/consumption value; only normalhistorical_control/trial _chain leaf substituted. Fullsource_authority is independently qualified, notclaimedbyfixture."
+    },
+    "operator_fence": {
+      "PASS": 7,
+      "FAIL": 0,
+      "report": "private-fence-controls-r1.json",
+      "scope": "Exactrequest/evidence_freshAST under real privateIntent, harmlessPython effect leaf and explicitticketvalidationleaf; actualsystemd/action notrun."
+    },
+    "counting": "Two overlapping control groups; do not sum as distinct sourceQA.",
+    "preserved_failure": "Initialcontrolscript quoteSyntaxError before any control; helpers unchanged; originalscript/log+errorreceipt retained."
+  },
+  "bindings": {
+    "control": "27cb69ea9d524416af19327afcd0aea29429969d1d7ce16c4f3c5d25b0899061",
+    "native": "aef57c57eb80c91f09b90487f70d479708101362bad1f7e60507372e0fad640e",
+    "old642_intent": "b432d51de1413ed18aa70d84501d8260efa8ed9870ccb8c928562f00f42fb16a",
+    "old642_UNKNOWN": "2e03aeffdc18f7c6de25408af94fab8b31f4b57ee093e73b0eb9a84a3e01e384",
+    "source_paths": 14,
+    "input_hashes": 12,
+    "fixed_deadline": 1795057626
+  },
+  "new_readiness": "ExactnewissuerD.current \u2192 current642ACK request/evidence/issuer \u2192 normalQ._chain \u2192 exactCONSUMED and successorINTENT/2, plus currenttypedhashboundREADY under one readonlySQLite snapshot. Old214ACK cannot substitute.",
+  "invocation_env": "Run helpers as clean externalinitialOSowner but retain actualSSH XDG_RUNTIME_DIR/DBUS_SESSION_BUS_ADDRESS for userbus. Helpersinheritcallerbus; no fabricatedbusvalues/sudo/remote effects.",
+  "actual_metadata_install": "NOT_RUN",
+  "actual_cleanup": "NOT_RUN",
+  "actual_start": "NOT_RUN",
+  "new_UTC_ticket": "NOT_CREATED",
+  "models_GPU_services": "NO_EFFECTS",
+  "files": [
+    {
+      "path": "check-private-controls-r2.py",
+      "sha256": "ebaf5ffdd10204dd307cc6b016022add0eebcd30faf6de80681ae0312773af56",
+      "bytes": 13267
+    },
+    {
+      "path": "check-private-controls.py",
+      "sha256": "eda14295b6d57bd448e45096138cb2eadd85580d9cedb85df2879d5d2ee95b74",
+      "bytes": 13267
+    },
+    {
+      "path": "check-private-fence-controls.py",
+      "sha256": "59d9e29cfdb1bd9b96ac88ba09e8942dcb79b814746a7cb6bbdbd5c5a0d82e60",
+      "bytes": 6200
+    },
+    {
+      "path": "development-inputs/afo-policy.proposed.yaml",
+      "sha256": "1c9a1cde4bfa440c4d2b8302b0b011cc7fd79a71a5cb984481b7cf99d47b9875",
+      "bytes": 2019
+    },
+    {
+      "path": "development-inputs/campaigns/finite-crc-swe6-owner-development.yaml",
+      "sha256": "9167aaa14dad3d43086123c54a48d4a1ad0187c6e6adf69d7ca5e3c2e2f82859",
+      "bytes": 1447
+    },
+    {
+      "path": "development-inputs/control/line-recovery-control.development.json",
+      "sha256": "27cb69ea9d524416af19327afcd0aea29429969d1d7ce16c4f3c5d25b0899061",
+      "bytes": 1883
+    },
+    {
+      "path": "development-inputs/generation-report.json",
+      "sha256": "deab5dffe33361b3b17cafbcf03359fdb52a681340c1aca1452da84319f22c6a",
+      "bytes": 1884
+    },
+    {
+      "path": "development-inputs/line-policy.proposed.yaml",
+      "sha256": "05e43e8935748390ebd7cb59c0adf37f5753669bdc762d9314f27a97ef9a2681",
+      "bytes": 890
+    },
+    {
+      "path": "development-inputs/trial-assets/afo/product-role-trials/2200d614fee0745aa9f6e4a30e1b925c59e9e4799e822cba00009e4edffbb0f0.json",
+      "sha256": "5af2453b0b8c63374064ec23d4d74a2500810e4eb5bc98766be8d1ee64d63a9b",
+      "bytes": 2737
+    },
+    {
+      "path": "development-inputs/trial-assets/afo/product-role-trials/92fa0136f24161b0345885f94c0570e1e222c61e3816df4e296fbe2960205d8e.json",
+      "sha256": "a624c653e7e6780f8f07057743a348045829fdbfc6a199a2a927697208d75e9f",
+      "bytes": 1270
+    },
+    {
+      "path": "native-header/measurement.json",
+      "sha256": "aef57c57eb80c91f09b90487f70d479708101362bad1f7e60507372e0fad640e",
+      "bytes": 3173
+    },
+    {
+      "path": "owner-main-ops/binding.json",
+      "sha256": "576c8af67548e57efb1363c8f80f117600ac4c067ffa9dbe6d60782237ef9733",
+      "bytes": 8612
+    },
+    {
+      "path": "owner-main-ops/install-metadata-reviewed.py",
+      "sha256": "4ab15ab4b6b76066710f1b49f21fdb258d9206ab75a7dea831ae72a5aa1a849e",
+      "bytes": 5707
+    },
+    {
+      "path": "owner-main-ops/start-main-reviewed.py",
+      "sha256": "fa044e4edcf492940289f2cea98995527839cdcdc097418fc60ea9892155c118",
+      "bytes": 19208
+    },
+    {
+      "path": "private-controls-inputs-before-tests.json",
+      "sha256": "191f89810467ed9438a3fd584789be6f66afb399c808cbfd25e6f2bf42982e57",
+      "bytes": 4582
+    },
+    {
+      "path": "private-controls-r1-syntax-error.json",
+      "sha256": "ebdc26d72b41a10752ece7296838d1aee5457ddceff265f052ee404c1fdf1519",
+      "bytes": 250
+    },
+    {
+      "path": "private-controls-r1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "private-controls-r2.json",
+      "sha256": "4797464183ec8804a18439104119bf667e65797647f9bfe51f7b25eb81835079",
+      "bytes": 2887
+    },
+    {
+      "path": "private-controls-r2.log",
+      "sha256": "bd46d95c126ea54b3ded4e926a401cb5dbd66372920a059b0381c2560daa9b21",
+      "bytes": 2356
+    },
+    {
+      "path": "private-fence-controls-r1.json",
+      "sha256": "3262a178de32ce17531723cba0c40a6cc29329e3dcbfc380acbbff388eb5fe37",
+      "bytes": 1132
+    },
+    {
+      "path": "private-fence-controls-r1.log",
+      "sha256": "42da6fd85ee422caa928a6711cba59b5d73c89c992db65b039ccf32a836da260",
+      "bytes": 957
+    },
+    {
+      "path": "readonly-remote-bindings.json",
+      "sha256": "5925a54841b5a2a6b21db2acd37e60483b6a9d207c56fa44ede4f66ac057490b",
+      "bytes": 24761
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+ "CAPA-090": {
+  "history": [
+   {
+    "at": "2026-11-01T16:50:39.263454Z",
+    "capa_id": "CAPA-090",
+    "evidence": "[\"fabro-swe3-resume-checkpoints\"]",
+    "from_state": null,
+    "reason": "Runs WO-F014-SWE3-IWDG-20261101-01/-OBL-01: resumed SWE.3 refused at once, the SWE.2 interface checkpoint was not carried",
+    "seq": 680,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T16:50:39.304293Z",
+    "capa_id": "CAPA-090",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 681,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T16:50:39.402344Z",
+    "capa_id": "CAPA-090",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-090 assigned",
+    "seq": 682,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T16:50:43.486360Z",
+    "capa_id": "CAPA-090",
+    "evidence": "[\"reproducer-run:rr-dc6f77d36b1f3221f5ac\", \"reproducer-run:rr-e2f9d7eb9f1464231399\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 683,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T16:50:43.515350Z",
+    "capa_id": "CAPA-090",
+    "evidence": "[\"git:815c52c829cd..e1292cb35101\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix e1292cb35101 (patch 4643 bytes)",
+    "seq": 684,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T16:53:36.926807Z",
+    "capa_id": "CAPA-090",
+    "evidence": "[\"reproducer-run:rr-13841d16dbe53d14f12f\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-090 absent at e1292cb35101",
+    "seq": 685,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T16:53:36.963878Z",
+    "capa_id": "CAPA-090",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 686,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-fe44eec5e0d8fbc45e6943bb6c64b06f47fd534b",
+   "815c52c829cdfea37990bbd6c1b1398070a784b8",
+   "e1292cb351011114de7683d180a4a091c47b283f",
+   "pd-06cec20cfe07e60f8a0c"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<e1292cb35101"
+   ],
+   "candidate_patch_sha256": "45b8fd3b2805bc8edd9e0522b13e05e89660efcacf5d12e86d09f17c48138125",
+   "capa_id": "CAPA-090",
+   "created_at": "2026-11-01T16:50:39.263454Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe3-resume-checkpoints"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-090",
+   "reproducer_id": "RPR-090",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-dc6f77d36b1f3221f5ac",
+    "reproducer-run:rr-e2f9d7eb9f1464231399"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "resume_from does not copy the structured checkpoints later structured phases read",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T16:53:36.963878Z"
+  }
+ }
+}

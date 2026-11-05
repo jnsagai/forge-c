@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="4" time="0.219" timestamp="2026-11-04T15:29:01.593114+00:00" hostname="master"><testcase classname="factory.python.tests.test_cre_d7_isolation" name="test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[verifier-2001]" time="0.062"><failure message="AssertionError: assert ('OSError' != 'WROTE' and 'WROTE' != 'WROTE')">role = 'verifier', uid = 2001
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-235/test_role_runs_as_separate_os_0')
+
+    @pytest.mark.parametrize("role,uid", [("verifier", 2001), ("repair", 2002)])
+    def test_role_runs_as_separate_os_identity_with_kernel_enforced_limits(role, uid, tmp_path):
+        import json
+    
+        secret = _secret()
+        scratch = isolation.new_dir(f"t049-{role}")
+        try:
+            (scratch / "probe.py").write_text(PROBE)
+            isolation.hand_over(role, scratch)
+            env = {"PATH": os.environ["PATH"], "PYTHONPATH": str(REPO_ROOT / "factory/python"),
+                   "PYTHONDONTWRITEBYTECODE": "1", "FORGE_DEV_TOKEN": "must-not-pass"}
+            p = isolation.execute(role, [sys.executable, str(scratch / "probe.py"), str(REPO_ROOT), str(data_root()),
+                                         str(secret), str(scratch)], cwd=scratch, env=env, writable=[scratch], timeout=120)
+            assert p.returncode == 0, p.stderr.decode()[-400:]
+            r = json.loads(p.stdout.decode().strip().splitlines()[-1])
+            assert r["uid"] == uid and r["home"] == str(scratch)
+&gt;           assert r["write_repo"] != "WROTE" and r["write_data"] != "WROTE"
+E           AssertionError: assert ('OSError' != 'WROTE' and 'WROTE' != 'WROTE')
+
+factory/python/tests/test_cre_d7_isolation.py:63: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_cre_d7_isolation" name="test_role_runs_as_separate_os_identity_with_kernel_enforced_limits[repair-2002]" time="0.034"><failure message="AssertionError: assert ('OSError' != 'WROTE' and 'WROTE' != 'WROTE')">role = 'repair', uid = 2002
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-235/test_role_runs_as_separate_os_1')
+
+    @pytest.mark.parametrize("role,uid", [("verifier", 2001), ("repair", 2002)])
+    def test_role_runs_as_separate_os_identity_with_kernel_enforced_limits(role, uid, tmp_path):
+        import json
+    
+        secret = _secret()
+        scratch = isolation.new_dir(f"t049-{role}")
+        try:
+            (scratch / "probe.py").write_text(PROBE)
+            isolation.hand_over(role, scratch)
+            env = {"PATH": os.environ["PATH"], "PYTHONPATH": str(REPO_ROOT / "factory/python"),
+                   "PYTHONDONTWRITEBYTECODE": "1", "FORGE_DEV_TOKEN": "must-not-pass"}
+            p = isolation.execute(role, [sys.executable, str(scratch / "probe.py"), str(REPO_ROOT), str(data_root()),
+                                         str(secret), str(scratch)], cwd=scratch, env=env, writable=[scratch], timeout=120)
+            assert p.returncode == 0, p.stderr.decode()[-400:]
+            r = json.loads(p.stdout.decode().strip().splitlines()[-1])
+            assert r["uid"] == uid and r["home"] == str(scratch)
+&gt;           assert r["write_repo"] != "WROTE" and r["write_data"] != "WROTE"
+E           AssertionError: assert ('OSError' != 'WROTE' and 'WROTE' != 'WROTE')
+
+factory/python/tests/test_cre_d7_isolation.py:63: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_cre_d7_isolation" name="test_storage_and_worktrees_live_on_the_data_volume" time="0.001"><failure message="AssertionError: assert 'bubblewrap-u...scoped-mounts' == 'podman-rootless-subuid'&#10;  &#10;  - podman-rootless-subuid&#10;  + bubblewrap-userns-scoped-mounts">def test_storage_and_worktrees_live_on_the_data_volume():
+        assert isolation.base() == data_root() / "podman"
+        assert isolation.SHORT.resolve() == isolation.base().resolve()
+        d = isolation.new_dir("t049-loc")
+        try:
+            assert str(d).startswith(str(data_root()))
+        finally:
+            isolation.discard(d)
+&gt;       assert isolation.level() == "podman-rootless-subuid"
+E       AssertionError: assert 'bubblewrap-u...scoped-mounts' == 'podman-rootless-subuid'
+E         
+E         - podman-rootless-subuid
+E         + bubblewrap-userns-scoped-mounts
+
+factory/python/tests/test_cre_d7_isolation.py:87: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_cre_d7_isolation" name="test_disable_switch_falls_back_to_plain_subprocess" time="0.016" /></testsuite></testsuites>

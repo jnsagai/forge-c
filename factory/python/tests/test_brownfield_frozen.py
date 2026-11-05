@@ -96,6 +96,10 @@ def test_swtrace_uses_the_trace_map_for_delivered_code(ws):
 def test_frozen_code_defect_is_escalated_to_the_owner(ws):
     from forge_factory.inspection import defects
 
+    # a FROZEN work order prepared before 2026-11-03 (no unit_verification): the owner decides
+    m = json.loads((ws / ".forge-run/manifest.json").read_text())
+    m.pop("unit_verification", None)
+    (ws / ".forge-run/manifest.json").write_text(json.dumps(m))
     (ws / "workproducts/SWE.1").mkdir(parents=True, exist_ok=True)
     (ws / "workproducts/SWE.1/software_requirements.md").write_text(
         "- **SWR-001** When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.\n")
@@ -105,6 +109,21 @@ def test_frozen_code_defect_is_escalated_to_the_owner(ws):
                          requirement_quote="the RCC LL driver shall set RCC_CR.HSION")
     assert rec["status"] == "ESCALATED" and rec["target_phase"] is None and rec["target_kind"] == "DELIVERED_CODE"
     assert f"escalated_defect:{rec['id']}:CODE" in defects.gaps(ws)
+
+
+def test_frozen_code_defect_goes_to_swe3_under_provided_code_change_control(ws):
+    """Owner 2026-11-03 (revised): with unit_verification the FROZEN delivered code may be changed in this work
+    order's copy for a linked CODE defect (diff report for human inspection); the defect goes to SWE.3."""
+    from forge_factory.inspection import defects
+
+    (ws / "workproducts/SWE.1").mkdir(parents=True, exist_ok=True)
+    (ws / "workproducts/SWE.1/software_requirements.md").write_text(
+        "- **SWR-001** When the HSI enable function is called, the RCC LL driver shall set RCC_CR.HSION.\n")
+    rec = defects.report(ws, detected_phase="SWE.3", reported_by="swe3-inspector", kind="CODE",
+                         summary="HSI enable sets the wrong bit", requirement_ids=["SWR-001"], test_files=[],
+                         evidence_refs=["software/ll/stm32n6xx_ll_rcc.h:75"],
+                         requirement_quote="the RCC LL driver shall set RCC_CR.HSION")
+    assert rec["target_phase"] == "SWE.3" and rec["status"] != "ESCALATED"
 
 
 class _Store:

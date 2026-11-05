@@ -1,0 +1,101 @@
+{
+ "CAPA-125": {
+  "history": [
+   {
+    "at": "2026-11-04T09:23:39.693162Z",
+    "capa_id": "CAPA-125",
+    "evidence": "[\"INC-CAPA125-20261104\"]",
+    "from_state": null,
+    "reason": "Deterministic timeout-named engineering gate findings become transient infrastructure failures",
+    "seq": 1062,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T09:23:39.744990Z",
+    "capa_id": "CAPA-125",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1063,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T09:23:39.892543Z",
+    "capa_id": "CAPA-125",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-125 assigned",
+    "seq": 1064,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T09:23:43.674646Z",
+    "capa_id": "CAPA-125",
+    "evidence": "[\"reproducer-run:rr-23a13bf189df8ca70bbc\", \"reproducer-run:rr-985b91eda575f6e299d6\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1065,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T09:23:43.701671Z",
+    "capa_id": "CAPA-125",
+    "evidence": "[\"git:211f1162f081..16a98463ece2\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 16a98463ece2 (patch 3814 bytes)",
+    "seq": 1066,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T09:29:31.687759Z",
+    "capa_id": "CAPA-125",
+    "evidence": "[\"reproducer-run:rr-92da19c5c4e059ded63c\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-125 absent at 16a98463ece2",
+    "seq": 1075,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T09:29:31.706185Z",
+    "capa_id": "CAPA-125",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1076,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-50892379f29cf9b5620eb3c85776754f035dfde1",
+   "211f1162f0815ba244015292a911f6ce1cb09bdc",
+   "16a98463ece2a007bc82681d373b773a891dfe28",
+   "pd-e629e38008ed2b675774"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<16a98463ece2"
+   ],
+   "candidate_patch_sha256": "928d46ef067e45eeff71c018d35754c383bcef68a52db9d47af0d029b828fc7f",
+   "capa_id": "CAPA-125",
+   "created_at": "2026-11-04T09:23:39.693162Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-CAPA125-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-125",
+   "reproducer_id": "RPR-125",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-23a13bf189df8ca70bbc",
+    "reproducer-run:rr-985b91eda575f6e299d6"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Both timeout regex alternatives lack identifier boundaries",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T09:29:31.706185Z"
+  }
+ }
+}

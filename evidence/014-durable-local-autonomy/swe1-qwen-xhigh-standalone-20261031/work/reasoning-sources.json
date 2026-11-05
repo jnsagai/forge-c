@@ -1,0 +1,36 @@
+{
+ "max_profile_gateway_reasoning": {
+  "qwen3.8:27b-q8_0": {
+   "effort": "xhigh",
+   "extra_output_tokens": 32768
+  }
+ },
+ "max_profile_llama_server": {
+  "batch_tokens": 1024,
+  "gpu_layers": "all",
+  "microbatch_tokens": 512,
+  "model": "qwen3.8:27b-q8_0",
+  "mtp_draft": 3,
+  "reasoning": "on",
+  "reasoning_effort": "xhigh",
+  "slots": 1
+ },
+ "workspace_profile_gateway_reasoning": {
+  "qwen3.8:27b-q8_0": {
+   "effort": "medium",
+   "extra_output_tokens": 8192,
+   "role_efforts": {},
+   "system_message_order": "merge_first"
+  }
+ },
+ "workspace_profile_llama_server": {
+  "batch_tokens": 1024,
+  "gpu_layers": "all",
+  "microbatch_tokens": 512,
+  "model": "qwen3.8:27b-q8_0",
+  "mtp_draft": 3,
+  "reasoning": "on",
+  "reasoning_effort": "medium",
+  "slots": 1
+ }
+}

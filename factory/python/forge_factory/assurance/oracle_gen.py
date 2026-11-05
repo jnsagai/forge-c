@@ -16,6 +16,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from ..afo.owner_supervised_development import native_process
 from . import hardware, oracle
 
 SET_CLEAR = re.compile(r"When (?P<trig>.+?), the [\w ]+? shall (?P<op>set|clear) (?P<reg>RCC_[A-Z0-9]+)\.(?P<fld>[A-Z0-9_]+)")
@@ -205,23 +206,60 @@ def c_source(cases: list[dict], include: str, extra: list[dict] | None = None, b
     return "\n".join(lines)
 
 
+INSTANCE_WORDS = "FORGE_ORACLE_WORDS"
+ORACLE_INSTANCE = "forge_oracle_inst"
+
+
+def instance_prelude(include: str, inst: dict, offsets: dict[str, int]) -> list[str]:
+    """Instance mode: the oracle passes its own instance object (ORACLE_INSTANCE, never the instance macro) and its
+    register words are that object's words. Its layout is asserted against the RM offsets the oracle uses (a mismatch
+    does not compile), so a word index is a register. Every word starts from a non-zero background and every other
+    word must be unchanged, and the macro's host object (the same RAM object as the macro in host builds) must not change: a
+    driver that ignores its instance argument fails."""
+    t, obj = inst["type_name"], inst["host_object"]
+    w = INSTANCE_WORDS
+    asserts = [f'_Static_assert(offsetof({t}, {inst["members"][r]}) == {off}U, "RM offset of {r}");'
+               for r, off in sorted(offsets.items())]
+    return ["#define FORGE_HOST_DEVICE_IMPLEMENTATION /* the RAM instance is defined once, here */",
+            f'#include "{include}"', "#include <stddef.h>", "#include <stdio.h>", "#include <string.h>",
+            f"#define {w} (sizeof({t}) / 4U)",
+            f'_Static_assert((sizeof({t}) % 4U) == 0U, "{t} is a whole number of register words");', *asserts,
+            f"static {t} {ORACLE_INSTANCE}; /* the instance the oracle passes; never the instance macro */",
+            f"#define regs (*(volatile uint32_t (*)[{w}])(void *)&{ORACLE_INSTANCE})",
+            "unsigned long shim_n; /* instance mode: register accesses are not counted */", "static int fails;",
+            "static void forge_instance_background(void)", "{", "    unsigned i;",
+            f"    for (i = 0U; i < {w}; i++) {{ regs[i] = 0xA5A50000U | i; }}",
+            f"    (void)memset((void *)&{obj}, 0xC3, sizeof({obj}));", "}",
+            "static int forge_instance_others_same(const uint32_t *b, unsigned w)", "{", "    unsigned i;",
+            f"    for (i = 0U; i < {w}; i++) {{ if ((i != w) && (regs[i] != b[i])) {{ return 0; }} }}",
+            "    return 1;", "}",
+            "static int forge_host_unchanged(const uint32_t *h)", "{",
+            f"    return memcmp(h, (const void *)&{obj}, sizeof({obj})) == 0;", "}",
+            "int main(void)", "{", f"    uint32_t before[{w}];", f"    uint32_t host_before[{w}];"]
+
+
 def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs", count: int = 1024,
-                    time_base: str | None = None) -> str:
+                    time_base: str | None = None, instance: dict | None = None,
+                    offsets: dict[str, int] | None = None) -> str:
     """C oracle from the register contract (register_contract.cases): expected bit and status per case, all other
     bits of the register unchanged, a no_write case leaves its named register unchanged (no register named: no
-    register access at all), a bounded poll for a never-ready case."""
+    register access at all), a bounded poll for a never-ready case. `instance` (instance mode): the register words
+    are the host RAM instance of the declared device header (instance_prelude); cases must be instance_cases."""
     from .register_contract import call_text
 
-    lines = [f'#include "{include}"', f"#undef {block}", "#include <stddef.h>", "#include <stdio.h>",
-             "#include <string.h>", f"volatile uint32_t regs[{count}];", "unsigned long shim_n;",
-             f"volatile uint32_t (*shim_regs(void))[{count}] {{ shim_n++; return &regs; }}", "static int fails;",
-             *([f"static uint32_t forge_tick; uint32_t {time_base}(void) {{ forge_tick++; return forge_tick; }}"]
-               if time_base else []),  # FND-07: the HAL's time base, +1 ms per call
-             "int main(void)", "{", f"    uint32_t before[{count}];"]
+    lines = instance_prelude(include, instance, offsets or {}) if instance is not None else [
+        f'#include "{include}"', f"#undef {block}", "#include <stddef.h>", "#include <stdio.h>",
+        "#include <string.h>", f"volatile uint32_t regs[{count}];", "unsigned long shim_n;",
+        f"volatile uint32_t (*shim_regs(void))[{count}] {{ shim_n++; return &regs; }}", "static int fails;",
+        *([f"static uint32_t forge_tick; uint32_t {time_base}(void) {{ forge_tick++; return forge_tick; }}"]
+          if time_base else []),  # FND-07: the HAL's time base, +1 ms per call
+        "int main(void)", "{", f"    uint32_t before[{count}];"]
     for i, c in enumerate(cases, 1):
         t = 5 if c["never_ready"] or c.get("busy") else 10
         lines += [f"    /* {c['swr']} {c['case']}: {c['op']} {c.get('register', '')}.{c.get('field', '')} via "
                   f"{c['function']} (contract + RM constants) */", "    memset((void *)regs, 0, sizeof regs);"]
+        if instance is not None:  # every word from a non-zero background; the case word is preset below
+            lines.append("    forge_instance_background();")
         if c["op"] != "no_write":
             other = 0xA5A5A5A5 & ~c["mask"] & 0xFFFFFFFF
             pre = c["mask"] if c["op"] == "clear" and not c["never_ready"] else 0
@@ -233,6 +271,9 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
         if c.get("busy"):  # a status flag held set: the call must give up after a bounded wait
             lines.append(f"    regs[{c['busy'][0]}U] |= 0x{c['busy'][1]:08X}U; /* busy, never clears */")
         lines += ["    memcpy(before, (const void *)regs, sizeof before);", "    shim_n = 0UL;"]
+        if instance is not None:
+            lines.append(f"    memcpy(host_before, (const void *)&{instance['host_object']}, sizeof host_before);")
+            c = {**c, "args": [f"&{ORACLE_INSTANCE}" if a.strip() == instance["macro"] else a for a in c["args"]]}
         call = call_text(c, f"{t}U")
         lines.append(f"    {{ hal_status_t st = {call};" if c["status"] else f"    {{ (void){call};")
         conds = []
@@ -251,14 +292,35 @@ def contract_source(cases: list[dict], include: str, block: str = "ll_rcc_regs",
             conds.append(f"(shim_n <= {4 * (t + 2) + 8}UL) && (shim_n >= {t}UL)")
         if c["status"]:
             conds.append(f"(st == {c['status']})")
+        if instance is not None:
+            conds += [f"forge_instance_others_same(before, {c['word']}U)", "forge_host_unchanged(host_before)"]
         lines += [f"      int ok = {' && '.join(conds)};",
                   f'      printf("OR-{i:03d} {c["swr"]} {c["case"]} %s\\n", ok ? "PASS" : "FAIL"); fails += !ok; }}']
     lines += ["    return fails ? 1 : 0;", "}", ""]
     return "\n".join(lines)
 
 
+def instance_cases(cases: list[dict], inst: dict) -> tuple[list[dict], list[str]]:
+    """Instance mode: the cases the typed-instance oracle derives. Register accesses are not counted on the instance,
+    so a case whose expectation is an access count (no register named, never-ready or busy polling), or a register
+    the declared layout does not map, is stated not derivable instead of passing without a check."""
+    out, notes = [], []
+    for c in cases:
+        if "word" not in c or c.get("never_ready") or c.get("busy"):
+            notes.append(f"ORACLE_NOT_DERIVABLE:{c['case']}:INSTANCE_MODE (register-access count)")
+        elif c.get("register") not in inst["members"]:
+            notes.append(f"ORACLE_NOT_DERIVABLE:{c['case']}:INSTANCE_MODE ({c.get('register')} not in the declared "
+                         "typed layout)")
+        else:
+            out.append(c)
+    return out, notes
+
+
 def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str) -> dict:
     ws = Path(ws)
+    from ..layer import instance_flags, ll_instance
+
+    inst = ll_instance(ws)
     req = (ws / "workproducts/SWE.1/software_requirements.md").read_text(errors="replace")
     arch = (ws / "workproducts/SWE.2/software_architecture.md").read_text(errors="replace")
     hdr_path = next((d / api_header for d in include_dirs if (d / api_header).is_file()), None)
@@ -275,12 +337,19 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
         from ..layer import profile
 
         pr = profile(ws)
+        offsets = None
+        if inst is not None:
+            cases, inst_notes = instance_cases(cases, inst)
+            notes = notes + inst_notes
+            offsets = {c["register"]: c["word"] * 4 for c in cases}
         src = contract_source(cases, api_header, pr["ll"]["register_block"], pr["ll"]["register_count"],
-                              pr["hal"].get("time_base"))
+                              pr["hal"].get("time_base"), inst, offsets)
         contract_digests = [hashlib.sha256((ws / p).read_bytes()).hexdigest() for p in (RC.EFFECTS, RC.CALLS)]
         from . import safec_oracle as SO
 
-        if SO.present(ws):  # F011-T034: full register images from the frozen SafeC oracle (LL work orders)
+        if inst is not None and SO.present(ws):  # the SafeC images are whole register-block words
+            notes.append("ORACLE_NOT_DERIVABLE:SAFEC_REGISTER_IMAGES:INSTANCE_MODE")
+        elif SO.present(ws):  # F011-T034: full register images from the frozen SafeC oracle (LL work orders)
             eff = {e.get("case"): e for e in json.loads((ws / RC.EFFECTS).read_text()).get("effects") or []}
             sc, sc_notes = SO.cases(ws, eff, json.loads((ws / RC.CALLS).read_text()).get("calls") or {})
             notes = notes + sc_notes
@@ -319,11 +388,14 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
 
         (t / "shim.h").write_text(shim_text(_profile(ws)["ll"]["register_block"], _profile(ws)["ll"]["register_count"]))
         (t / "oracle.c").write_text(src)
-        inc = sum((["-I", str(d)] for d in include_dirs), []) + ["-include", str(t / "shim.h")]
+        inc = sum((["-I", str(d)] for d in include_dirs), [])
+        # instance mode: no register-block shim; the pinned device header maps the instance to its RAM object
+        inc += instance_flags(ws, host=True) if inst is not None else ["-include", str(t / "shim.h")]
+        std = "-std=c11" if inst is not None else "-std=c99"
         objs = []
         for s in [*sources, t / "oracle.c"]:
             o = t / (Path(s).stem + ".o")
-            b = subprocess.run(["gcc", "-std=c99", "-O0", "-w", *inc, "-c", str(s), "-o", str(o)], capture_output=True,
+            b = subprocess.run(["gcc", std, "-O0", "-w", *inc, "-c", str(s), "-o", str(o)], capture_output=True,
                                text=True)
             if b.returncode:
                 return {"status": "BUILD_FAILED", "reason": b.stderr[-300:], "notes": notes, "provenance": prov,
@@ -333,7 +405,7 @@ def run(ws: Path, include_dirs: list[Path], sources: list[Path], api_header: str
         if b.returncode:  # CAPA-046 (r159): an unresolved symbol is a build failure, never a verifier crash
             return {"status": "BUILD_FAILED", "reason": b.stderr[-300:], "notes": notes, "provenance": prov,
                     "contract": contract}
-        r = subprocess.run([str(t / "oracle")], capture_output=True, text=True, timeout=60)
+        r = native_process([str(t / "oracle")], directory=t, readable=[ws], capture_output=True, text=True, timeout=60)
     res = re.findall(r"^(OR-\d{3}) (SWR-\d{3}|TIMEOUT|INVALID) (\S+) (PASS|FAIL)$", r.stdout, re.M)
     if contract and len(res) < len(cases):  # a crash or hang mid-run: the missing cases are failures, not passes
         res += [(f"OR-{i:03d}", c["swr"], c["case"], "FAIL") for i, c in enumerate(cases, 1)

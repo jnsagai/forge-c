@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-4c09b5b67c7934d9b8bc",
+  "reproducer_id": "RPR-175",
+  "revision": "18814617abb98491abb5c03adb0802553634f14f",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "SYMPTOM_PRESENT",
+  "signature": "review intake rejects explicitly registered post-calibration learning baselines as held out",
+  "log_sha256": "8dffd3eb281c7b759a9c26eb91a9db786acc5682023e9a9c12936097492efc8a",
+  "at": "2026-11-05T11:11:53.230313Z"
+}

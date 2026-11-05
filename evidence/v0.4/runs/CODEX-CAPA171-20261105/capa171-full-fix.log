@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa171-causal-and-fix.py", line 8, in <module>
+    r.open('CAPA-171',incident_ids=['CAPA-171'],reason='Independent actual normal SDK/Matrix4 WWDG host-only target timing false credit; source/history/frozen contracts preserved.')
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: CapaRegistry.open() missing 1 required positional argument: 'fingerprints'

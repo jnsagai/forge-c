@@ -1,0 +1,45 @@
+{
+  "command": [
+    "clang",
+    "-std=c11",
+    "-O0",
+    "-g",
+    "-Wall",
+    "-Wextra",
+    "-DFORGE_HOST_TEST=1",
+    "-DFORGE_HOST_BUILD=1",
+    "-isystem",
+    "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders/WO-F014-SWE5-CRCHAL-20261104-L34/workspace/software/tests/host_device",
+    "-include",
+    "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders/WO-F014-SWE5-CRCHAL-20261104-L34/workspace/software/tests/host_device/forge_host_device.h",
+    "-DSTM32N657xx",
+    "-I/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders/WO-F014-SWE5-CRCHAL-20261104-L34/workspace/software/hal",
+    "-I/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders/WO-F014-SWE5-CRCHAL-20261104-L34/workspace/software/ll",
+    "-I/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders/WO-F014-SWE5-CRCHAL-20261104-L34/workspace/software/tests/integration",
+    "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders/WO-F014-SWE5-CRCHAL-20261104-L34/workspace/software/tests/integration/test_crc_integration.c",
+    "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders/WO-F014-SWE5-CRCHAL-20261104-L34/workspace/software/hal/stm32n6xx_hal_crc.c",
+    "-o",
+    "/mnt/data/forge-c/swe1-fabro-20261031/qualification/line-m8-lesson-20261104/host-link-mlav5z31/crc-host"
+  ],
+  "compile_returncode": 0,
+  "compile_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_sha256_before": {
+    "software/tests/host_device/forge_host_device.h": "0422af51ee7eabed75037e5aca093da476f97b13d01788fe79936ba4547af597",
+    "software/tests/integration/test_crc_integration.c": "432a62057acdffab2048af9e0a55b155eef42ef2bac91e3e522fa78eea1a90bf",
+    "software/hal/stm32n6xx_hal_crc.c": "84bd4775bf47500204525ef340b2ea0f6a26134ad22969f6cc7b471e4cb8c98a",
+    "software/ll/stm32n6xx_ll_crc.h": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+  },
+  "source_sha256_after": {
+    "software/tests/host_device/forge_host_device.h": "0422af51ee7eabed75037e5aca093da476f97b13d01788fe79936ba4547af597",
+    "software/tests/integration/test_crc_integration.c": "432a62057acdffab2048af9e0a55b155eef42ef2bac91e3e522fa78eea1a90bf",
+    "software/hal/stm32n6xx_hal_crc.c": "84bd4775bf47500204525ef340b2ea0f6a26134ad22969f6cc7b471e4cb8c98a",
+    "software/ll/stm32n6xx_ll_crc.h": "c7f11306015c5951fd62886656d8733102565e0ad9fe0578216fbdcd0e5fc80b"
+  },
+  "real_ll_used": true,
+  "scope": "COMPILE_AND_LINK_ONLY_NOT_PHASE_ACCEPTANCE",
+  "original_success_log": {
+    "path": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders/WO-F014-SWE5-CRCHAL-20261104-L34/workspace/evidence/raw/baaea5f8cb407c800ea4deb37c8f07dcbc979cbfdc4608ab800ffbd75d9b2663.log",
+    "sha256": "baaea5f8cb407c800ea4deb37c8f07dcbc979cbfdc4608ab800ffbd75d9b2663"
+  },
+  "checks_pass": true
+}

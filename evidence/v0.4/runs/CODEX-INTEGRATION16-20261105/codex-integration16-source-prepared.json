@@ -1,0 +1,79 @@
+{
+  "at": "2026-11-05T02:29:04.912422+00:00",
+  "candidate": "a856b521fccab43309ee4bfe1cded42c2eb37938",
+  "baseline": "c121ea79813bcd06f51b2468a067e7584ef15cdf",
+  "component_source": "b8d45b3d1d30a3332ea1f3c38605e0db3bce3c61",
+  "component_index_sha256": "3183ce5d5950f32abd7e895cbb9ab896b9c950bfff96764b4126dd8faea6f441",
+  "source_bytes_equal": true,
+  "files": [
+    {
+      "path": "docs/adr/ADR-DA-009-line-soak-stage-admission.md",
+      "sha256": "854e5c98e361c73bfe7ab1c4cabaab3de1cd11d947c9feddce9cbbd3973895d3"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_orders.py",
+      "sha256": "ba484c4a8b29a7ca4d3ac35926e27572de75db6974bf03892b369376184f8915"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_recovery.py",
+      "sha256": "c4c7548f963898069059123720866ed199b7f5142dd090b2ffe2405ecba3afdd"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_soak.py",
+      "sha256": "b84b7aa37f900e8b9e900880ddc91610c8595b365b074679e48572b764ac708d"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_soak_claims.py",
+      "sha256": "de5e068f8c6d292e0f44a049db84eb76a26fe5fce7ea846613da091660da9903"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_soak_intake.py",
+      "sha256": "f7807212728f4318daaeb3c6f3754d50a922805aec631c003cbd121d72828808"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_soak_prerequisites.py",
+      "sha256": "54e1683ae94187b131c9dc475e7499086c64e43e67456375f410efebce4066ae"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_soak_snapshot.py",
+      "sha256": "a2fc49aa80c6ffadba07ba99647a38349bae7c0f7998911c887a66033a0398e9"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/operational_campaign.py",
+      "sha256": "1ac853a686ddc68ef63c4cef6e839d8897af7dde20e1b224af09944d702efb21"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/product_role_trial.py",
+      "sha256": "8d52c4efd9aaa2480ed5794ec5df102b5b27495631d8ff92548ba9ffa3c57168"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/qualification_capture.py",
+      "sha256": "fe0d6799d60f7ebc5e9b12c9dddc9ddae7f7959c1e4bdbb076a8e27a25c946fa"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/queue.py",
+      "sha256": "56d7fca7d109c90b038394ff90eb159a51d77d2fbdbc26079c829290a1a0b3a2"
+    },
+    {
+      "path": "factory/python/forge_factory/knowledge/qualification.py",
+      "sha256": "95c80c6d28ee46e9209a3ea488b298bb2c9f77e0df7b4f858fdd01a1cccb96db"
+    },
+    {
+      "path": "factory/python/tests/test_line_soak_claims.py",
+      "sha256": "72e9880f71ad599de5076a0a76a367da8e7f941eb12686b307d2170e4126b9ad"
+    },
+    {
+      "path": "factory/python/tests/test_line_soak_intake.py",
+      "sha256": "b1f64b43bcb9b88ab938578ec740501f6eda5f4141efca42cea625576346e43d"
+    },
+    {
+      "path": "factory/python/tests/test_line_soak_prerequisites.py",
+      "sha256": "0f95b40b04723683de27959a6cf4977e4a59abd2502a3f4fd666e98622b0384d"
+    }
+  ],
+  "all8_ignored_and10dependencies_verified_before_tests": true,
+  "frozen_manifest_sha256": "e12fd44033ec0d945ea900bfa6d5e57a8edc5c3c5837263d49534da71bee820d",
+  "frozen_entries": 170,
+  "last_id": "RPR-171",
+  "status": "PREPARED_NOT_YET_INDEPENDENTLY_QUALIFIED"
+}

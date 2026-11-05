@@ -1,0 +1,9 @@
+{
+  "skill_loaded": true,
+  "context_read_allowed": true,
+  "all_four_findings_visible": true,
+  "context_write_refused": true,
+  "receipt_write_refused": true,
+  "context_hash_unchanged": true,
+  "model_calls": 0
+}

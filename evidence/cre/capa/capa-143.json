@@ -1,0 +1,101 @@
+{
+ "CAPA-143": {
+  "history": [
+   {
+    "at": "2026-11-04T03:56:34.331453Z",
+    "capa_id": "CAPA-143",
+    "evidence": "[\"crchal-l31b-swe5-greenfield-register-rule\"]",
+    "from_state": null,
+    "reason": "Local CRC HAL L31B SWE.5: the target-test register rule told a HAL on a provided ST LL to use a greenfield register-block array (ll_crc_regs, LL_CRC_<REG>_OFFSET)",
+    "seq": 1043,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T03:56:34.364735Z",
+    "capa_id": "CAPA-143",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 1044,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T03:56:34.504297Z",
+    "capa_id": "CAPA-143",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-143 assigned",
+    "seq": 1045,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T03:56:38.433211Z",
+    "capa_id": "CAPA-143",
+    "evidence": "[\"reproducer-run:rr-f34af861ba61289967cc\", \"reproducer-run:rr-4e14d02822119ee3d966\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1046,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T03:56:38.461078Z",
+    "capa_id": "CAPA-143",
+    "evidence": "[\"git:01bd80dce11d..bdaac39d28c2\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix bdaac39d28c2 (patch 8508 bytes)",
+    "seq": 1047,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T04:01:44.030148Z",
+    "capa_id": "CAPA-143",
+    "evidence": "[\"reproducer-run:rr-5c163cdb98da8d8ab15a\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-143 absent at bdaac39d28c2",
+    "seq": 1048,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T04:01:44.044653Z",
+    "capa_id": "CAPA-143",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1049,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-3875cd1e2c23496dc4d67fea07296bd3a0cea2e2",
+   "01bd80dce11dca245ab1cadf0275d2ec7309cfe3",
+   "bdaac39d28c2633f75dd8b1178094c9ca47d4fff",
+   "pd-13cc208e24e5ab7135a0"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<bdaac39d28c2"
+   ],
+   "candidate_patch_sha256": "5d9cda9712695e76827cd5b97679729b9632fa58aa020a7f1b8a8dd325d17554",
+   "capa_id": "CAPA-143",
+   "created_at": "2026-11-04T03:56:34.331453Z",
+   "event_ids": [],
+   "incident_ids": [
+    "crchal-l31b-swe5-greenfield-register-rule"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-143",
+   "reproducer_id": "RPR-143",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-f34af861ba61289967cc",
+    "reproducer-run:rr-4e14d02822119ee3d966"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T04:01:44.044653Z"
+  }
+ }
+}

@@ -24,7 +24,9 @@ from .durable import Refused, canonical, digest, strict_json
 MODES = {"RUNNING", "PAUSED", "DRAINING", "STOPPED"}
 # Fixed approved operational recipe: Conductor only; no recursive supervisor restarts.
 UNIT = os.environ.get("FORGE_CONDUCTOR_UNIT", "forge-conductor.service")
-if UNIT not in ("forge-conductor.service", "forge-conductor-local-omniverse2.service"):
+APPROVED_CONDUCTOR_UNITS = {"forge-conductor.service", "forge-conductor-local-omniverse2.service",
+                            "forge-line-conductor-local.service"}
+if UNIT not in APPROVED_CONDUCTOR_UNITS:
     raise ValueError("UNAPPROVED_CONDUCTOR_RECOVERY_UNIT")
 COOLDOWN = 600
 
@@ -45,7 +47,9 @@ class Intent:
         self.path = Path(location) if location else path()
 
     @contextmanager
-    def lock(self):
+    def lock(self, *, blocking=True):
+        if type(blocking) is not bool:
+            raise Refused("OPERATIONS_LOCK_SELECTION_INVALID")
         parent = self.path.parent
         if not parent.is_dir() or parent.stat().st_uid != os.getuid() or parent.stat().st_mode & 0o022:
             raise Refused("OPERATIONS_DIRECTORY_NOT_PRIVATE_OR_OWNED")
@@ -54,7 +58,10 @@ class Intent:
             raise Refused("OPERATIONS_SYMLINK_DENIED")
         fd = os.open(lock, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
         with os.fdopen(fd, "r+") as stream:
-            fcntl.flock(stream, fcntl.LOCK_EX)
+            try:
+                fcntl.flock(stream, fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB))
+            except BlockingIOError:
+                raise Refused("OPERATIONS_INTENT_BUSY") from None
             yield
 
     def read(self):
@@ -122,7 +129,10 @@ class Intent:
                 self._write(rec)
             return rec
 
-    def start(self, epoch, *, probe, runner=None, now=None, authorize=None):
+    def start(self, epoch, *, probe, runner=None, now=None, authorize=None, unit=None):
+        target = unit or UNIT
+        if target not in APPROVED_CONDUCTOR_UNITS:
+            raise Refused("UNAPPROVED_CONDUCTOR_RECOVERY_UNIT")
         now = time.time() if now is None else now
         with self.lock():
             rec = self.read()
@@ -152,7 +162,7 @@ class Intent:
             rec["pending_start"] = True
             self._write(rec)  # persist cooldown before uncertain external start
             run = runner or (lambda argv: subprocess.run(argv, capture_output=True, text=True, timeout=20))
-            result = run(["systemctl", "--user", "start", UNIT])
+            result = run(["systemctl", "--user", "start", target])
             rec["pending_start"] = False
             self._write(rec)
             # Do not reset-failed: retain systemd's burst limit. A future bounded probe can try after its interval.

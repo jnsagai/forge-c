@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-31T16:00:32.002743Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 7218,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 7090,
+          "sha256": "eb7b7ca115ac18a847d1303d441b04d33adfb455ec27adc39455ceaf4d362f31"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2027,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 5399
+      },
+      "errors": [
+        "[no_status_flag_wait] is a requirement on CRC_IDR, which its register task covers - remove requirement [no_status_flag_wait] from the cross-cutting task",
+        "[no_write_other_than_idr] is a requirement on CRC_IDR, which its register task covers - remove requirement [no_write_other_than_idr] from the cross-cutting task"
+      ],
+      "finish_reason": "stop",
+      "input_hash": "4fe5660a090156afeb1a94b23155e9817730a6388473e9e4d000b48e12699fa5",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 12039,
+        "prompt_tokens": 1382,
+        "prompt_tokens_details": {
+          "cached_tokens": 279
+        },
+        "total_tokens": 13421
+      },
+      "wall_ms": 211951.5
+    },
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 9654,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 9526,
+          "sha256": "24ee1228fbdf5b97bccd6ddb9e98a26fdd24c0bb46fb29555c64cb8b3703503d"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2876,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 7733
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "cee0ef90b62c571c31fa5d7cd5887063b933d0ad8a00de72477f7294bfcc75fa",
+      "n": 1,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 827,
+        "prompt_tokens": 1975,
+        "prompt_tokens_details": {
+          "cached_tokens": 866
+        },
+        "total_tokens": 2802
+      },
+      "wall_ms": 15534.4
+    }
+  ],
+  "base_hash": "4fe5660a090156afeb1a94b23155e9817730a6388473e9e4d000b48e12699fa5",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "no_automatic_startup_write",
+        "source_page": 1170,
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any register.",
+        "verification": "A target robot test resets the target, monitors register write accesses to the CRC peripheral before any LL call, and then invokes LL_CRC_Write_IDR and LL_CRC_Read_IDR on a valid accessible instance; the test passes when no register write access is observed while no LL function has been called after reset.",
+        "verified_by": "target_robot_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

@@ -1,9 +1,12 @@
 """DA-T058 / DA-AT-058: a signed patch bundle activates only after every check and its local preflight and
 regression pass; tampered, unsigned, wrong-base, drifted, protected-path and CRE-less bundles are refused with their
 exact reason; rollback restores the previous release; nothing opens a network connection."""
+import hashlib
+import io
 import json
 import socket
 import subprocess
+import tarfile
 import zipfile
 
 import pytest
@@ -14,6 +17,10 @@ POLICY = "security:\n  protected_path_globs:\n    - config/factory/reliability-p
 
 def _git(repo, *a):
     return subprocess.run(["git", *a], cwd=repo, capture_output=True, text=True, check=True).stdout.strip()
+
+
+def _tree(repo, revision):
+    return hashlib.sha256(subprocess.check_output(["git", "ls-tree", "-r", revision], cwd=repo)).hexdigest()
 
 
 @pytest.fixture()
@@ -51,7 +58,8 @@ def env(tmp_path):
     signers.write_text(f'Jefferson namespaces="{P.NAMESPACE}" {(tmp_path / "owner.pub").read_text()}')
     dec = tmp_path / "pd-test.json"
     dec.write_text(json.dumps({"decision_id": "pd-test", "decision": P.ELIGIBLE, "candidate_revision": target,
-                               "baseline_revision": base, "allowed_auto_deployment": False}))
+                               "baseline_revision": base, "allowed_auto_deployment": False,
+                               "baseline_sha256": _tree(repo, base), "candidate_sha256": _tree(repo, target)}))
     return {"repo": repo, "base": base, "target": target, "root": root, "key": key, "signers": signers, "dec": dec,
             "tmp": tmp_path}
 
@@ -142,7 +150,8 @@ def test_wrong_base_local_drift_protected_paths_and_missing_cre_decisions_are_re
     weak = _git(repo, "rev-parse", "HEAD")
     dec = env["tmp"] / "pd-weak.json"
     dec.write_text(json.dumps({"decision_id": "pd-w", "decision": P.ELIGIBLE, "candidate_revision": weak,
-                               "baseline_revision": env["base"]}))
+                               "baseline_revision": env["base"], "baseline_sha256": _tree(repo, env["base"]),
+                               "candidate_sha256": _tree(repo, weak)}))
     r = _import(env, _bundle(env, "weak.zip", target=weak, cre_decision=dec))
     assert r["code"] == "PATCH_PROTECTED_PATH" and "reliability-policy.yaml" in r["reason"]
     P._switch(env["root"], "f" * 40)  # the deployment is on another release
@@ -158,3 +167,86 @@ def test_failing_preflight_or_regression_keeps_the_current_release(env):
     assert r["code"] == "PATCH_CHECKS_FAILED" and "preflight" in r["reason"]
     r = P.import_patch(b, install_root=env["root"], allowed_signers=env["signers"])  # no preflight configured
     assert r["code"] == "PATCH_NO_PREFLIGHT" and (env["root"] / "current").resolve().name == env["base"]
+
+
+@pytest.mark.parametrize("drift", ["unchanged", "injected", "executable", "symlink", "policy"])
+def test_whole_base_drift_is_refused_before_any_check(env, drift):
+    live = env["root"] / "current"
+    unchanged = live / "factory/python/pkg/__init__.py"
+    if drift == "unchanged":
+        unchanged.write_text("UNREVIEWED = True\n")
+    elif drift == "injected":
+        (live / "unreviewed.py").write_text("UNREVIEWED = True\n")
+    elif drift == "executable":
+        unchanged.chmod(0o755)
+    elif drift == "symlink":
+        unchanged.unlink()
+        unchanged.symlink_to("rule.py")
+    else:
+        (live / "config/factory/reliability-policy.yaml").write_text(POLICY.replace("evidence/**", "nothing/**"))
+
+    def unexpected_checks(*args):
+        raise AssertionError("drifted base reached local checks")
+
+    result = _import(env, _bundle(env), checks=unexpected_checks)
+    assert result["code"] == "PATCH_BASE_DRIFT"
+    assert result["current"] == env["base"]
+    assert not (env["root"] / "releases" / env["target"]).exists()
+
+
+def test_release_identity_requires_both_signed_cre_tree_hashes(env):
+    decision = json.loads(env["dec"].read_text())
+    del decision["baseline_sha256"]
+    env["dec"].write_text(json.dumps(decision))
+    assert _import(env, _bundle(env))["code"] == "PATCH_CRE_TREE_IDENTITY"
+
+
+def test_external_current_with_same_revision_name_is_not_the_installed_base(env):
+    external = env["tmp"] / "elsewhere" / env["base"]
+    external.mkdir(parents=True)
+    current = env["root"] / "current"
+    current.unlink()
+    current.symlink_to(external)
+    assert _import(env, _bundle(env))["code"] == "PATCH_BASE_MISMATCH"
+    assert current.resolve() == external
+
+
+def test_check_cannot_mutate_the_reviewed_target(env):
+    def mutate(staged, regression):
+        (staged / "factory/python/pkg/__init__.py").write_text("UNREVIEWED = True\n")
+        return [{"check": "preflight", "exit_code": 0}, {"check": "regression", "exit_code": 0}]
+
+    result = _import(env, _bundle(env), checks=mutate)
+    assert result["code"] == "PATCH_TARGET_DRIFT" and result["current"] == env["base"]
+
+
+def test_release_content_identity_matches_git_listing_for_paths_modes_and_links(env):
+    repo = env["repo"]
+    for name in ("space name", 'quote"name', "tab\tname", "line\nname", "nonascii-é", "back\\slash"):
+        (repo / name).write_text("bytes\n")
+    (repo / "exec").write_bytes(b"\0binary")
+    (repo / "exec").chmod(0o755)
+    (repo / "link").symlink_to("exec")
+    (repo / "dir.ext").write_text("sorting")
+    (repo / "dir").mkdir()
+    (repo / "dir/file").write_text("sorting")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-qm", "identity fixture")
+    # The deployment is an archive, with no Git database or untracked metadata.
+    installed = env["tmp"] / "identity-release"
+    installed.mkdir()
+    with tarfile.open(fileobj=io.BytesIO(subprocess.check_output(["git", "archive", "HEAD"], cwd=repo))) as archive:
+        archive.extractall(installed, filter="data")
+    assert P._release_sha256(installed) == _tree(repo, "HEAD")
+
+
+def test_development_build_can_supply_a_portable_reviewed_runner(env):
+    runner = env["tmp"] / "transfer" / "apply-update.py"
+    result = P.build(env["repo"], env["base"], env["target"], ["tests/test_rule.py"], env["dec"],
+                     "Jefferson", env["tmp"] / "patch.zip", runner_out=runner)
+    assert result["runner"] == str(runner)
+    assert result["runner_sha256"] == hashlib.sha256(runner.read_bytes()).hexdigest()
+    assert "forge_factory.offline.patch" in runner.read_text()
+    assert "pip install" not in runner.read_text() and "curl" not in runner.read_text()
+    help_result = subprocess.run([__import__("sys").executable, str(runner), "--help"], capture_output=True, text=True)
+    assert help_result.returncode == 0 and "rollback" in help_result.stdout

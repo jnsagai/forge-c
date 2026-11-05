@@ -1,0 +1,47 @@
+{
+  "schema": "forge-c/source-component-validation/1",
+  "component": "Native transport tool-presence/count metadata only",
+  "candidate": "a4b0049a99b585c072ccc7f66c7edf2dae835510",
+  "baseline": "4028292307bd44b206acf3ece81c14fa7dc7ae1d",
+  "decision_id": "pd-b5a8754bd2f149811712",
+  "decision": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "source_change": "Only2metadatafields; no toolnames/schema/body or authority changes",
+  "dependencies": [
+    "qualified15840282923",
+    "qualified16b63e43 already ancestor; do not cherryduplicate"
+  ],
+  "actual_transport": {
+    "ref": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/native-tools-laptop-a4b0049a/measurement.json",
+      "sha256": "def777d3991d6bdcf36c55bc394b79a4d8af2700501e6121a4c28622cefa1889"
+    },
+    "native_nodes": 2,
+    "identity_controls": 5,
+    "tool_count_each": [
+      13,
+      13
+    ],
+    "tools_present_each": [
+      true,
+      true
+    ],
+    "server_stopped": true
+  },
+  "actual_model_calls": 0,
+  "role_qualification": "NOT_RUN",
+  "final_source_profile_probe": "REMEASURE_REQUIRED",
+  "log_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-native-tools-unit.log",
+      "sha256": "175e2c7f25a2b6732e49828c2a65ec9075e250319e34201a8ccec41eb57c55d8"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-native-tools-design.log",
+      "sha256": "755c93ce11becfd4e17848fb80cf7f385f6ccd664bf9e2448a2fd583978f3a9d"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-native-tools-change.log",
+      "sha256": "e0e0b98b5fd4f75053a3a173dabc3220aeec9c1947e5c989a98dccb1b5d0238b"
+    }
+  ]
+}

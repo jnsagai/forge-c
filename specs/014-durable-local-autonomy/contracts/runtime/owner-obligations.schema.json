@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Owner obligations for SWE.1 coverage (docs/designs/swe1-owner-obligation-coverage.md)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "owner",
+    "source_inputs",
+    "obligations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "forge-c/owner-obligations/1"
+    },
+    "status": {
+      "enum": [
+        "DRAFT_FOR_OWNER_REVIEW",
+        "OWNER_APPROVED"
+      ]
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "source_inputs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_.-]{1,160}$"
+      }
+    },
+    "obligations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "critical"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^OBL-[a-z0-9][a-z0-9-]{1,60}$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 600
+          },
+          "critical": {
+            "type": "boolean"
+          },
+          "effects": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "register",
+                "field",
+                "op"
+              ],
+              "properties": {
+                "register": {
+                  "type": "string",
+                  "pattern": "^[A-Z][A-Z0-9_]{0,40}$"
+                },
+                "field": {
+                  "type": "string",
+                  "pattern": "^[A-Z][A-Z0-9_]{0,40}$"
+                },
+                "op": {
+                  "enum": [
+                    "set",
+                    "clear",
+                    "write",
+                    "no_write"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

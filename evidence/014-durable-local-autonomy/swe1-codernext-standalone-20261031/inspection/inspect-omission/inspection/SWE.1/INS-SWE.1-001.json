@@ -1,0 +1,114 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "c566b006b392caf1244548d73d26855a43bff399caa2648acdc3de2d066c14b6",
+  "baseline_id": "BL-SWE.1-001",
+  "checklist_sha256": "baffe47eeb5b33095a500378e6b6e5db44105a0929cbaa3148fa6a1cb4a1bdd9",
+  "checklist_version": "0.4",
+  "findings": [
+    {
+      "detail": "SWR-001 verification criterion is incomplete: it states the test passes when CRC_IDR.IDR reads back the supplied value, but does not specify how the read-back is performed (e.g., which function or met",
+      "id": "SWE1-06",
+      "severity": "major"
+    }
+  ],
+  "inspection_id": "INS-SWE.1-001",
+  "inspector_role": "swe1-inspector",
+  "items": {
+    "SWE1-01": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        ".forge-run/manifest.json",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        "workproducts/SWE.1/register_effects.json"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-02": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        ".forge-run/manifest.json#scope-target-budgets",
+        ".forge-run/manifest.json#inspection-assessment-context",
+        "safety/software_safety_requirements.md"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-03": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "workproducts/SWE.1/register_effects.json",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "traceability/upstream_gaps.md",
+        "safety/software_safety_requirements.md"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-04": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        ".forge-run/manifest.json#scope-target-budgets",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/register_effects.json",
+        "safety/software_safety_requirements.md"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-05": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md",
+        "workproducts/SWE.1/software_requirements.md",
+        "workproducts/SWE.1/register_effects.json",
+        ".forge-run/manifest.json#scope-target-budgets"
+      ],
+      "findings": [],
+      "verdict": "PASS"
+    },
+    "SWE1-06": {
+      "evidence_refs": [
+        "configuration/baselines/SWE.1/BL-SWE.1-001.json",
+        "workproducts/SWE.1/software_requirements.md",
+        "traceability/requirements_to_tests.csv",
+        "traceability/upstream_gaps.md"
+      ],
+      "findings": [
+        "SWR-001 verification criterion is incomplete: it states the test passes when CRC_IDR.IDR reads back the supplied value, but does not specify how the read-back is performed (e.g., which function or method is used to read, timing constraints, or preconditions for the read), nor what constitutes a successful match (e.g., exact bit-for-bit equality, tolerance for hardware quirks).",
+        "SWR-002 verification criterion is incomplete: it states the returned value must equal the current value of CRC_IDR.IDR, but does not document how the reference value is obtained (e.g., direct register read via debugger, simulator state, or known prior write), nor whether the comparison is performed in the same context as the test assertion or if timing delays affect validity.",
+        "Unresolved ambiguities are not documented: e.g., whether consecutive writes before a read are allowed, whether IDR must retain its value across function calls without side effects, or whether read-after-write must be in the same thread context or interrupt context; these ambiguities are not recorded in the work product."
+      ],
+      "verdict": "FAIL"
+    },
+    "SWE1-07": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-07-2026-10-31T170227.187831Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    },
+    "SWE1-08": {
+      "evidence_refs": [
+        "inspection/SWE.1/deterministic/SWE1-08-2026-10-31T170227.512600Z.json"
+      ],
+      "findings": [],
+      "source": "deterministic",
+      "verdict": "PASS"
+    }
+  },
+  "phase": "SWE.1",
+  "recorded_at": "2026-10-31T17:02:27.512836Z",
+  "schema": "forge-c/inspection/0.4",
+  "stale_reason": null,
+  "verdict": "FAIL"
+}

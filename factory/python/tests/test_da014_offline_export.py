@@ -114,3 +114,49 @@ def test_the_same_run_twice_is_refused(tmp_path):
     ws = _ws(tmp_path)
     with pytest.raises(ValueError, match="DUPLICATE_RUN"):
         X.build([ws, ws], tmp_path / "export.zip")
+
+
+def test_markdown_report_is_detailed_redacted_and_identical_inside_and_outside_bundle(tmp_path):
+    result = X.build([_ws(tmp_path)], tmp_path / "export.zip")
+    files = _files(tmp_path / "export.zip")
+    report = files["REPORT.md"]
+    assert (tmp_path / "export.md").read_bytes() == report
+    assert result["report"] == str(tmp_path / "export.md")
+    import hashlib
+    assert result["report_sha256"] == hashlib.sha256(report).hexdigest()
+    for fact in (b"WO-0009B-STM32N6-IWDG-HAL-x1", b"qwen3.6:35b-a3b", b'"decision": "FROZEN"',
+                 b'"status": "FAIL"', b'"failed_cycles": 3', b"SWE1-02", b"UPHELD",
+                 b"input", b"Unparseable", b"HASH_ONLY", b"NEVER_CONTENT"):
+        assert fact in report
+    for secret in (b"abc123", b"hunter2", b"You are an inspector", b"first I look at", b"vendor reference manual",
+                   b"not json,", b"SWR-001 The driver shall"):
+        assert secret not in report
+    manifest = json.loads(files["MANIFEST.json"])
+    for row in manifest["runs"][0]["files"]:
+        assert row["sha256"].encode() in report
+
+
+def test_report_cannot_claim_a_different_outcome_even_with_a_replaced_checksum(tmp_path):
+    X.build([_ws(tmp_path)], tmp_path / "export.zip")
+    files = _files(tmp_path / "export.zip")
+    files["REPORT.md"] = files["REPORT.md"].replace(b'"status": "FAIL"', b'"status": "PASS"')
+    import hashlib
+    sums = files["SHA256SUMS.txt"].decode().splitlines()
+    files["SHA256SUMS.txt"] = ("\n".join(
+        f'{hashlib.sha256(files["REPORT.md"]).hexdigest()}  REPORT.md' if line.endswith("  REPORT.md") else line
+        for line in sums) + "\n").encode()
+    with zipfile.ZipFile(tmp_path / "forged-report.zip", "w") as zf:
+        for name, data in files.items():
+            zf.writestr(name, data)
+    assert X.verify(tmp_path / "forged-report.zip") == ["REPORT_MISMATCH:REPORT.md"]
+
+
+def test_markdown_keeps_untrusted_record_text_inside_code_fences(tmp_path):
+    ws = _ws(tmp_path)
+    (ws / "inspection/SWE.1/INS-SWE.1-001.json").write_text(json.dumps({
+        "status": "FAIL", "issues": ["```\n# APPROVED\n<script>run()</script>\n``````"]}))
+    X.build([ws], tmp_path / "export.zip")
+    report = (tmp_path / "export.md").read_text()
+    assert '\\n# APPROVED\\n' in report
+    assert "\n# APPROVED\n" not in report
+    assert X.verify(tmp_path / "export.zip") == []

@@ -1,0 +1,34 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_broker_refuses_a_legacy_dependent_job_even_without_new_request ______
+
+protocol = namespace(store=<forge_factory.afo.queue.Store object at 0x7f8d8bce30e0>, order={'order_id': 'afo-8d8ec7d9d84edf67', '...ker_refuses_a_legacy_d0/case.json', 'case_sha256': '681a4f5003ad1b8774bd85c28a19157490fe6c56ccf7218adde231ad48cd9d81'})
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-97/test_broker_refuses_a_legacy_d0')
+
+    def test_broker_refuses_a_legacy_dependent_job_even_without_new_request(protocol, tmp_path):
+        from forge_factory.afo.completion_receipt import Context, Receipts
+        from forge_factory.common import sha256_file
+    
+        p = protocol
+        ref = P.seal(p.ws, p.bundle,
+                     [{"id": "dependent", "obligation_id": "USPEC-001", "detail": "Dependent counterexample"},
+                      {"id": "root", "obligation_id": "ZZZ", "detail": "Unresolved prerequisite"}],
+                     [{"path": p.source.relative_to(p.ws).as_posix()}], dependencies={"USPEC-001": ["ZZZ"]})
+        case = tmp_path / "legacy-dependent.json"
+        case.write_text(json.dumps({"packet_ref": ref}))
+        legacy = {**p.job, "case": str(case), "case_sha256": sha256_file(case), "selected_obligations": ["USPEC-001"]}
+        with p.store.tx() as c:
+            c.execute("UPDATE afo_local_agent_jobs SET record=? WHERE job_id=?", (json.dumps(legacy), legacy["job_id"]))
+        broker = Receipts(p.store)
+        stored = broker.submit(Context.from_job(p.store, legacy["job_id"]), p.proposal)
+        assert stored["submission_state"] == "STORED"
+        rejected = broker.admit(stored["receipt_id"], packet=P.load(ref), bundle=p.bundle, eff=p.eff, authorize=lambda: True)
+>       assert rejected["admissibility_state"] == "REJECTED"
+E       AssertionError: assert 'ACCEPTED' == 'REJECTED'
+E         
+E         - REJECTED
+E         + ACCEPTED
+
+factory/python/tests/test_da014_dependency_selection.py:150: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_broker_refuses_a_legacy_dependent_job_even_without_new_request

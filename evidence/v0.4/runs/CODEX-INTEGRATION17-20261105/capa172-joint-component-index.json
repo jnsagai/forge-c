@@ -1,0 +1,161 @@
+{
+  "schema": "forge-c/capa172-joint-component/1",
+  "at": "2026-11-05T05:44:37.529487+00:00",
+  "source_revision": "6d69dfb65a6336e3a554641c75e430eca3c5f82e",
+  "base_revision": "a856b521fccab43309ee4bfe1cded42c2eb37938",
+  "ordered_commits": [
+    "33c2626d",
+    "b2e69e2c",
+    "6d69dfb6"
+  ],
+  "source_files": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/forge_factory/afo/line_recovery_product.py",
+      "sha256": "7698ce47f664d965c557554d066eac18dea261d44e4fc78207aec6ace7b2e05c",
+      "bytes": 28406
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/forge_factory/afo/line_soak_intake.py",
+      "sha256": "1fb8deca5e0d6f59d16d4558130e028e465a1a5e022c7d701c7061ab636ac304",
+      "bytes": 11749
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/forge_factory/afo/line_soak_prerequisites.py",
+      "sha256": "904d83ec10d195c96b10ec8505bceed07900ac8f4b04befa6bd1dd85fdabc6ff",
+      "bytes": 38568
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/tests/test_line_mission_renewal.py",
+      "sha256": "45daa5d415742e7ad753295d2fbef9c0503cec74cbb6a13d9e3ca504fcd4e70c",
+      "bytes": 5788
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/tests/test_line_soak_mission_renewal.py",
+      "sha256": "346296d4788be83964c5dece46a4048e603ea08432cab9a7bf3f3155e8248bd6",
+      "bytes": 9735
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-related.xml",
+      "sha256": "326b0070acb8eea7e119e89ca090158cf8006f8a2f1de9efab3603c573b73f86",
+      "bytes": 13536
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-related.log",
+      "sha256": "ac495f87c93297f7a6b6576302f0c026457a444008c68b065caf82d3eed780d0",
+      "bytes": 160
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-identity-final.xml",
+      "sha256": "81cef3eec667efe56335c6cfa2c7c884f271c6181bad2c054b53d032ae38682c",
+      "bytes": 5073
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-identity-final.log",
+      "sha256": "a82a0b51cd86fa0131904e08c34ef556963104f0e3677f688117e093ebf2d3fe",
+      "bytes": 80
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-final.xml",
+      "sha256": "f221531062e862a58b7d103c1ec644a817c0a7d91185e94e95b7e9c8c685275a",
+      "bytes": 1614
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-final.log",
+      "sha256": "06955fb47f16312e5d13266c774a2aa4648c46e423cbe6564a92e25b68e39131",
+      "bytes": 80
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-design.log",
+      "sha256": "f8d8da5467efe30ca8673da3318165f8f5d7b89ce7dfd7a68e38482392c83139",
+      "bytes": 1514
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-identity-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-input-provision.json",
+      "sha256": "a9f6d4921484c3c832dde75827ec5b03ed7e5c42314a26f924681fb9b20ec817",
+      "bytes": 3883
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-m9-component-index.json",
+      "sha256": "be56dda0ed3773495ab8295ce06f380805aeee800bfe3994bf6b36e7eac588d8",
+      "bytes": 5922
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-joint-source.bundle",
+      "sha256": "71b1e4725053bf2e1b1c3ba826b3b4364a962db4a1c2449c69b98feaf406eb41",
+      "bytes": 8426
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-baseline.log",
+      "sha256": "603dba7ecd3fbf7bffa6b55a724368f3cf114b18abd1f51a6e557f7550f47a4e",
+      "bytes": 9034
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-line-baseline.xml",
+      "sha256": "7e579849338b39d8a2cbabfc13f82c2a78ca6806f203715b83c4e4bb5546585a",
+      "bytes": 9228
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rpr172-development-v1-broad-auth-leaf.py",
+      "sha256": "9ce35d90b835b7eab4cfc6144b1839252ba9ef8801feeffe14582a320153c58d",
+      "bytes": 5841
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-rpr-draft-candidate-v3.log",
+      "sha256": "b395859e2d28863ec7ea9ce6d8b58a0c78a83df91272dad5a525bf84ea429ab1",
+      "bytes": 15
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-rpr-draft-baseline-v3.log",
+      "sha256": "1545f1f4dd04f96b9816aea41742a10d8c1d8417023c76adbc7a12a09e40dc2f",
+      "bytes": 134
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-rpr-final-candidate.log",
+      "sha256": "b395859e2d28863ec7ea9ce6d8b58a0c78a83df91272dad5a525bf84ea429ab1",
+      "bytes": 15
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/rpr172_mission_deadline_continuation.py",
+      "sha256": "8e045780fc11647d6e46dbf02f104a20795dc1cff2f34faca1f24684053baa88",
+      "bytes": 7367
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa172-reproducer-entry-DRAFT.yaml",
+      "sha256": "8b8b66313c5cc88fefe29ddfc480f47c8062776ff65edc65659a6d819dafe671",
+      "bytes": 1491
+    }
+  ],
+  "RPR_status": "DRAFT_FOR_ROOT_FREEZE_AND_NORMAL_CAUSAL_NOT_OFFICIAL",
+  "direct_contrast": {
+    "baseline": "203/a856 PRESENT exit1",
+    "candidate": "6d69 SYMPTOM_ABSENT exit0",
+    "authorization_leaf": "Only authz.signature_valid substituted; actual schema/time/policy/scope/revocation plus4negative controls"
+  },
+  "controls": {
+    "LRP_related_prior_identity_check": 78,
+    "LRP_final_exact_identity": 27,
+    "M9_child": 140,
+    "static_design": 14,
+    "ruff": "PASS",
+    "joint_full_suite": "NOT_RUN_ROOT_OWNS"
+  },
+  "historical_development": {
+    "initial_unit_fixture": "2setupERROR before extension contrast due imported historical flag omission; XML/log preserved",
+    "early8_controls": "DEVELOPMENT_ONLY_NOT_FULLY_PROVISIONED; no vendor inputs consumed; all8+10 copied before final related78 run",
+    "RPRv1": "development-only broad authz.verify leaf/output protocol draft preserved; not frozen/qualified"
+  },
+  "effects": {
+    "production_state": false,
+    "policy_install": false,
+    "mission_extension": false,
+    "model_calls": 0,
+    "GPU": false
+  }
+}

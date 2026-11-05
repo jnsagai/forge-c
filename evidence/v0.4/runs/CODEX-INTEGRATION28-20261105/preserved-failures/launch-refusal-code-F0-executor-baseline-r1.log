@@ -1,0 +1,298 @@
+FF.FFF.FFF                                                               [100%]
+=================================== FAILURES ===================================
+_________ test_only_reverified_line_origin_lifts_development_deferral __________
+
+bound = (<forge_factory.afo.queue.Store object at 0x76366b9ae660>, {'admitted_utc': '2026-11-05T23:04:16.787330Z', 'authorizat...h('/tmp/pytest-of-jefferson/pytest-181/test_only_reverified_line_orig0/state/afo/cases/afo-fb-1-da014/case.json'), ...)
+
+    def test_only_reverified_line_origin_lifts_development_deferral(bound):
+        s, o, b, eff, ws, case, _, _ = bound
+        with pytest.raises(QueueError, match="DEFERRED_BY_DEVELOPMENT_POLICY"):
+            L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff)
+>       job = prepare(bound)
+              ^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_recovery_executor.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_line_recovery_executor.py:39: in prepare
+    return L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff, line_origin=origin, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/local_agent.py:282: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_____________ test_origin_or_case_cannot_be_rebound_or_downgraded ______________
+
+bound = (<forge_factory.afo.queue.Store object at 0x76366b3bb250>, {'admitted_utc': '2026-11-05T23:04:17.361497Z', 'authorizat...h('/tmp/pytest-of-jefferson/pytest-181/test_origin_or_case_cannot_be_0/state/afo/cases/afo-fb-1-da014/case.json'), ...)
+
+    def test_origin_or_case_cannot_be_rebound_or_downgraded(bound):
+        s, o, b, eff, ws, case, _, state = bound
+>       prepare(bound)
+
+factory/python/tests/test_line_recovery_executor.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_line_recovery_executor.py:39: in prepare
+    return L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff, line_origin=origin, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/local_agent.py:282: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+____ test_current_line_binding_is_required_in_addition_to_generic_authority ____
+
+bound = (<forge_factory.afo.queue.Store object at 0x76366b1b6190>, {'admitted_utc': '2026-11-05T23:04:18.077609Z', 'authorizat...h('/tmp/pytest-of-jefferson/pytest-181/test_current_line_binding_is_r0/state/afo/cases/afo-fb-1-da014/case.json'), ...)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76366b1967a0>
+
+    def test_current_line_binding_is_required_in_addition_to_generic_authority(bound, monkeypatch):
+        from forge_factory.afo import authority
+    
+>       job = prepare(bound)
+              ^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_recovery_executor.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_line_recovery_executor.py:39: in prepare
+    return L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff, line_origin=origin, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/local_agent.py:282: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_ test_revocation_before_dispatch_never_calls_fabro_and_preserves_reservation __
+
+bound = (<forge_factory.afo.queue.Store object at 0x76366b1b68b0>, {'admitted_utc': '2026-11-05T23:04:18.464120Z', 'authorizat...h('/tmp/pytest-of-jefferson/pytest-181/test_revocation_before_dispatc0/state/afo/cases/afo-fb-1-da014/case.json'), ...)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76366b196cf0>
+
+    def test_revocation_before_dispatch_never_calls_fabro_and_preserves_reservation(bound, monkeypatch):
+        from forge_factory.afo import authority
+    
+        s, o, _, eff, _, _, _, state = bound
+>       job = prepare(bound)
+              ^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_recovery_executor.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_line_recovery_executor.py:39: in prepare
+    return L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff, line_origin=origin, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/local_agent.py:282: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+___ test_binding_refusal_is_checked_before_native_launch_even_after_prepare ____
+
+bound = (<forge_factory.afo.queue.Store object at 0x76366b21c050>, {'admitted_utc': '2026-11-05T23:04:18.849303Z', 'authorizat...h('/tmp/pytest-of-jefferson/pytest-181/test_binding_refusal_is_checke0/state/afo/cases/afo-fb-1-da014/case.json'), ...)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76366b1c8c50>
+
+    def test_binding_refusal_is_checked_before_native_launch_even_after_prepare(bound, monkeypatch):
+>       job = prepare(bound)
+              ^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_recovery_executor.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_line_recovery_executor.py:39: in prepare
+    return L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff, line_origin=origin, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/local_agent.py:282: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_______ test_default_line_dispatch_uses_existing_host_interlocks_adapter _______
+
+bound = (<forge_factory.afo.queue.Store object at 0x76366b1969c0>, {'admitted_utc': '2026-11-05T23:04:19.562820Z', 'authorizat...h('/tmp/pytest-of-jefferson/pytest-181/test_default_line_dispatch_use0/state/afo/cases/afo-fb-1-da014/case.json'), ...)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76366b3c28a0>
+
+    def test_default_line_dispatch_uses_existing_host_interlocks_adapter(bound, monkeypatch):
+        from forge_factory.afo import line_recovery_runtime
+    
+        s, o, _, eff, _, _, _, _ = bound
+>       job = prepare(bound)
+              ^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_recovery_executor.py:122: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_line_recovery_executor.py:39: in prepare
+    return L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff, line_origin=origin, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/local_agent.py:282: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+___ test_explicit_controller_role_inputs_are_bound_without_source_inference ____
+
+bound = (<forge_factory.afo.queue.Store object at 0x76366b1ca350>, {'admitted_utc': '2026-11-05T23:04:20.926921Z', 'authorizat...h('/tmp/pytest-of-jefferson/pytest-181/test_explicit_controller_role_0/state/afo/cases/afo-fb-1-da014/case.json'), ...)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76366aee8e60>
+
+    def test_explicit_controller_role_inputs_are_bound_without_source_inference(bound, monkeypatch):
+        from forge_factory.afo import line_recovery_control as control
+        from forge_factory.lrtx.profile import load
+    
+        store, _, _, eff, _, _, _, context = bound
+        profile = load("local-rtx-v2-omniverse2")
+        context["source_revision"] = "1" * 40
+        authority = {"path": "/controller/frozen.json", "sha256": "f" * 64}
+        value = {"profile": profile["id"], "profile_sha256": profile["_sha256"], "source_revision": "1" * 40,
+                 "role_capabilities": {}, "product_role_trial": None}
+        from forge_factory.afo import operations
+        from forge_factory.afo.mission_ledger import MissionLedger
+    
+        mission = MissionLedger(store).snapshot("line-controller-fixture")
+        value.update(operations_intent="/controller/frozen-intent.json", policy_sha256=eff.sha256,
+                     mission={key: mission[key] for key in ("mission_id", "lineage", "limits")})
+        monkeypatch.setenv("FORGE_OPERATIONS_INTENT", value["operations_intent"])
+        monkeypatch.setattr(operations, "configured", lambda: False)  # metadata fixture; no live intent authority inferred
+        seen = []
+        monkeypatch.setattr(control, "configuration", lambda ref, eff, **kw: seen.append(ref) or value)
+>       job = prepare(bound, line_role_authority_ref=authority)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_recovery_executor.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_line_recovery_executor.py:39: in prepare
+    return L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff, line_origin=origin, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/local_agent.py:282: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+_________ test_controller_role_authority_is_rechecked_before_dispatch __________
+
+bound = (<forge_factory.afo.queue.Store object at 0x76366b1c9a50>, {'admitted_utc': '2026-11-05T23:04:21.324928Z', 'authorizat...h('/tmp/pytest-of-jefferson/pytest-181/test_controller_role_authority0/state/afo/cases/afo-fb-1-da014/case.json'), ...)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76366b1da5f0>
+
+    def test_controller_role_authority_is_rechecked_before_dispatch(bound, monkeypatch):
+        from forge_factory.afo import line_recovery_control as control
+        from forge_factory.afo.durable import Refused
+    
+>       job = prepare(bound)
+              ^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_recovery_executor.py:162: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_line_recovery_executor.py:39: in prepare
+    return L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff, line_origin=origin, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/local_agent.py:282: in prepare
+    job["selected_obligations"] = select_obligation(packet)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+packet = {'artifacts': [{'bytes': 52, 'path': '.forge-run/manifest.json', 'phase': None, 'ref': 'artifact:5c104377459a2cd5b4546...afo-fb-1', 'fingerprint': 'cfp1-aaa', 'order_id': 'afo-8d8ec7d9d84edf67', ...}, 'complete': False, 'findings': [], ...}
+selected = []
+
+    def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
+        """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+        ordered = obligation_order(packet)
+        if selected is None:
+            selected = ordered[:1]
+        if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
+>           raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+E           forge_factory.afo.durable.Refused: COHERENT_OBJECTIVE_REQUIRED:
+
+factory/python/forge_factory/afo/diagnosis_packet.py:316: Refused
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_line_recovery_executor.py::test_only_reverified_line_origin_lifts_development_deferral
+FAILED factory/python/tests/test_line_recovery_executor.py::test_origin_or_case_cannot_be_rebound_or_downgraded
+FAILED factory/python/tests/test_line_recovery_executor.py::test_current_line_binding_is_required_in_addition_to_generic_authority
+FAILED factory/python/tests/test_line_recovery_executor.py::test_revocation_before_dispatch_never_calls_fabro_and_preserves_reservation
+FAILED factory/python/tests/test_line_recovery_executor.py::test_binding_refusal_is_checked_before_native_launch_even_after_prepare
+FAILED factory/python/tests/test_line_recovery_executor.py::test_default_line_dispatch_uses_existing_host_interlocks_adapter
+FAILED factory/python/tests/test_line_recovery_executor.py::test_explicit_controller_role_inputs_are_bound_without_source_inference
+FAILED factory/python/tests/test_line_recovery_executor.py::test_controller_role_authority_is_rechecked_before_dispatch

@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-76ff9916adb94cdae9b5",
+  "reproducer_id": "RPR-173",
+  "revision": "63a3a91d10932d8693b2f144b5d425424e0311a3",
+  "role": "CANDIDATE",
+  "exit_code": 0,
+  "verdict": "SYMPTOM_ABSENT",
+  "signature": null,
+  "log_sha256": "3165ea027146aac1cf5f41bfc332c4ed3dcbce7cb4e1b166a9bc3e38d9f73064",
+  "at": "2026-11-05T09:18:48.619013Z"
+}

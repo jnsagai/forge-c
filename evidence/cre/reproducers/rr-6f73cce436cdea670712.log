@@ -1,0 +1,4 @@
+report_defect: PASS DEF-001 TEST -> SWE.5 DECLARED; gate: no undeclared test change
+SYMPTOM_ABSENT
+
+--- stderr ---

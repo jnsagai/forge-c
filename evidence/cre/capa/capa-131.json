@@ -1,0 +1,101 @@
+{
+ "CAPA-131": {
+  "history": [
+   {
+    "at": "2026-11-03T15:36:31.964918Z",
+    "capa_id": "CAPA-131",
+    "evidence": "[\"hal-prompts-no-ll-instance\"]",
+    "from_state": null,
+    "reason": "HAL on ST LL: prompts showed the greenfield LL API without the instance argument",
+    "seq": 966,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-03T15:36:31.991456Z",
+    "capa_id": "CAPA-131",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 967,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-03T15:36:32.141370Z",
+    "capa_id": "CAPA-131",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-131 assigned",
+    "seq": 968,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-03T15:36:37.859346Z",
+    "capa_id": "CAPA-131",
+    "evidence": "[\"reproducer-run:rr-052e82081f3c8d26d4fb\", \"reproducer-run:rr-b2ecfed81c0f80ebf13e\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 969,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-03T15:36:37.885537Z",
+    "capa_id": "CAPA-131",
+    "evidence": "[\"git:b46867263dd4..5617b3afca29\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 5617b3afca29 (patch 12852 bytes)",
+    "seq": 970,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-03T15:40:57.356545Z",
+    "capa_id": "CAPA-131",
+    "evidence": "[\"reproducer-run:rr-2a458b4d51132a165901\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-131 absent at 2e4ee28898ff",
+    "seq": 971,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-03T15:40:57.379331Z",
+    "capa_id": "CAPA-131",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 972,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-bbb5abef1401e58830e6e4a1eb848501f724e78b",
+   "b46867263dd40c0ff65f6dac36352784064519c3",
+   "5617b3afca29d28eae673eb1bfcfd829466c9f4a",
+   "pd-40f00f9dff468e616c6e"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<5617b3afca29"
+   ],
+   "candidate_patch_sha256": "360b52446be80e3667d5025e055c7303955887dfc6497c28f89917ba3de9dd85",
+   "capa_id": "CAPA-131",
+   "created_at": "2026-11-03T15:36:31.964918Z",
+   "event_ids": [],
+   "incident_ids": [
+    "hal-prompts-no-ll-instance"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-131",
+   "reproducer_id": "RPR-131",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-052e82081f3c8d26d4fb",
+    "reproducer-run:rr-b2ecfed81c0f80ebf13e"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-03T15:40:57.379331Z"
+  }
+ }
+}

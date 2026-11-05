@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-04T18:08:26.898154+00:00",
+  "work_order": "WO-F014-SWE6-WWDGHAL-20261104-L35",
+  "run_id": "01M6KPE5H69XZMP9BSMS5PSB8S",
+  "binding_id": "WO-F014-SWE6-WWDGHAL-20261104-L35",
+  "path": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/governor/WO-F014-SWE6-WWDGHAL-20261104-L35.json",
+  "bytes": 91,
+  "sha256": "99897047654a715b8db0bb0c7f9dd2705e08766e5a2c5726181f8101f32b6bc6",
+  "scope": "READONLY_COUNTER_JSON_SHAPE_ONLY_NO_VALUES_OR_REPAIR",
+  "JSON_valid": false,
+  "error": "Extra data",
+  "error_position": 45,
+  "error_line": 1,
+  "concatenated_complete_JSON_segments": [
+    {
+      "type": "dict",
+      "keys": 1,
+      "start": 0,
+      "end": 45
+    },
+    {
+      "type": "dict",
+      "keys": 1,
+      "start": 45,
+      "end": 91
+    }
+  ],
+  "all_bytes_consumed": true
+}

@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-31T15:33:24.894508Z",
+  "attempts": [
+    {
+      "accounting": {
+        "complete_serialized_request": {
+          "input_tokens": 7179,
+          "method": "utf8_byte_upper_bound",
+          "native_measured": false,
+          "serialized_bytes": 7051,
+          "sha256": "65c42ca9e89a9f9cb4b82702f7e36e408b594cc92d51b368b223593e665f0951"
+        },
+        "context_basis": "legacy:FORGE_LRTX_CONTEXT_TOKENS",
+        "context_tokens": 24576,
+        "estimated_prompt_tokens": 2013,
+        "fits": true,
+        "output_reserve": 4096,
+        "serialized_chars": 5360
+      },
+      "errors": [],
+      "finish_reason": "stop",
+      "input_hash": "790e79b3c1222080ac76a81f3850a055483f7da647ac5ade8c5f1760f677ab26",
+      "n": 0,
+      "schema_mode": "json_schema",
+      "schema_mode_basis": "UNPROBED (default)",
+      "usage": {
+        "completion_tokens": 3504,
+        "prompt_tokens": 1336,
+        "prompt_tokens_details": {
+          "cached_tokens": 241
+        },
+        "total_tokens": 4840
+      },
+      "wall_ms": 52338.9
+    }
+  ],
+  "base_hash": "790e79b3c1222080ac76a81f3850a055483f7da647ac5ade8c5f1760f677ab26",
+  "doc": {
+    "not_covered": [],
+    "open_points": [],
+    "requirements": [
+      {
+        "effects": [],
+        "key": "no_autonomous_startup_write",
+        "source_page": 1170,
+        "statement": "While no LL function has been called after reset, the CRC LL driver shall not write any register.",
+        "verification": "A target test resets the device, performs no LL function calls, reads CRC_IDR, and compares against the documented reset value; the test passes when CRC_IDR.IDR equals its reset value and no register write is observed after reset without an LL call.",
+        "verified_by": "target_robot_test"
+      },
+      {
+        "effects": [],
+        "key": "no_status_flag_polling",
+        "source_page": 1170,
+        "statement": "When the caller invokes LL_CRC_Write_IDR or LL_CRC_Read_IDR on a valid CRC peripheral instance, the CRC LL driver shall complete the operation without polling any status flag.",
+        "verification": "A host unit test calls LL_CRC_Write_IDR and LL_CRC_Read_IDR with a valid instance, instruments the code path for any loop or wait on a flag register, and asserts zero flag-poll iterations; the test passes when no status-flag polling loop executes in either function.",
+        "verified_by": "host_unit_test"
+      },
+      {
+        "effects": [],
+        "key": "write_modifies_idr_only",
+        "source_page": 1170,
+        "statement": "When the caller invokes LL_CRC_Write_IDR on a valid CRC peripheral instance, the CRC LL driver shall modify only the IDR field of CRC_IDR.",
+        "verification": "A host unit test captures the memory address and bit mask used by LL_CRC_Write_IDR and asserts the address maps to CRC_IDR and the mask is limited to bits [31:0] of IDR; the test passes when the write operation targets only CRC_IDR.IDR and no other register address or bit range is written.",
+        "verified_by": "host_unit_test"
+      }
+    ]
+  },
+  "errors": [],
+  "reused": false,
+  "status": "VALID",
+  "task": "requirements:crosscutting"
+}

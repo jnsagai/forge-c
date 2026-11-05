@@ -1,0 +1,131 @@
+{
+  "all29_source_files_byte_identical_to_I23": true,
+  "bundle_heads": [
+    "dc27abba601e5f6713f30e6027cb0bbd64241528 HEAD"
+  ],
+  "bundle_is_exact29_file_source_delta_only": true,
+  "bundle_verified": true,
+  "integration_code_revision": "c541a3b44db25a26cbbd784485d9938c361ca3bd",
+  "qualified_native_baseline": "74e44a1f23b01f3200350436df1691249b441292",
+  "qualified_native_revision": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+  "source_git_and_worktrees_untouched": true,
+  "source_paths": [
+    {
+      "path": "docs/adr/ADR-DA-011-owner-supervised-development.md",
+      "sha256": "20bfabba75cdc2bf00e455bea5ea1e5bb1fd66b9147f79f83c94a730566a115f"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/authority.py",
+      "sha256": "e5186309c13d1aabffa640ef6eade5a2a7da8c5676518414a0d2c40b2fc81caf"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_orders.py",
+      "sha256": "0e9cfeecc9504566fa1f57a2d5c7b534af8e1e30ec163678c32d857f21deb3a6"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_recovery.py",
+      "sha256": "a04f38c8bf60efd998a12b0f5ab464a962ce924b0bfd87679408c20b17060a5c"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_recovery_control.py",
+      "sha256": "641a56afcc16e5d43b7091abf1f4901812f23d2eab372823e3532a8ac7d6a5a8"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/local_agent.py",
+      "sha256": "3160e8cd77f10f44514e23b990fac02f30d7bb5bbca8b9cde7b4dce58cbd8114"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/maintenance_binding.py",
+      "sha256": "975719a851e4e18e80cf43c5b21a1f8ad8f894ba1bae13aa84afcdb56d32617d"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/maintenance_rework.py",
+      "sha256": "19e116d99b59ef0c47ec3469edc658cdd48fa72cb36c9eaf82f21df39d059f23"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_development_view.py",
+      "sha256": "80e5ad3c31f9e1993e924d4d02ceb4ef2d4b7d3f50f3c7b3e03d3710102b01c3"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_supervised_development.py",
+      "sha256": "b9c60dae19b63d3778ac5cf482cff8d0079b0c1bd1cb9139c527bbb6e929646f"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/policy.py",
+      "sha256": "415784e95cc8344c51e278ca123189b195f717393a59914c2f78179650b6b37b"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/product_job.py",
+      "sha256": "6424047e7dab2744a58477fc281e724cf1c2e07192fe43ab4ec56dc6f995fb1a"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/product_role_trial.py",
+      "sha256": "bc7f75c28fe17de647cfd06d8422b4a8d96904ac2d37ba8d2574fe7387d5e6fb"
+    },
+    {
+      "path": "factory/python/forge_factory/assurance/corpus.py",
+      "sha256": "ca833c4111be5c35a740da12e607621357fb50e05f3d54d4eca84b4f0dea5c28"
+    },
+    {
+      "path": "factory/python/forge_factory/assurance/coverage.py",
+      "sha256": "330a1ee767816dec28d5ee35afd250decf46dca9257c07d5998a0d3a523c4ed1"
+    },
+    {
+      "path": "factory/python/forge_factory/assurance/mutation.py",
+      "sha256": "7c93505ee89b93e3fea5d40b6f6a0e332faefcf0b523077b284f5a9d3e47ef98"
+    },
+    {
+      "path": "factory/python/forge_factory/assurance/oracle_gen.py",
+      "sha256": "1154811cf210a717d42efc8f26390407162c0bac2ced765469b47bfd24f4ab5d"
+    },
+    {
+      "path": "factory/python/forge_factory/fabro/runconfig.py",
+      "sha256": "97e920b151b9c00fdebad399208ec273367680960bf9a80bcb24d7f1d5c2f5c0"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "ef84dbed339cb786a7760ab5876295b0b9c017805a8b565ac15ee32897a44a8c"
+    },
+    {
+      "path": "factory/python/forge_factory/mcp/sdk.py",
+      "sha256": "d5eb30b2d32c982cbb252ed0be9655ae0928187b1e31ddad8bcfd801597db83a"
+    },
+    {
+      "path": "factory/python/forge_factory/reliability/isolation.py",
+      "sha256": "3281c945b81a54d27edcc9eb908bcf0a869b3d4e982f44f2aaf50a5278ae91ca"
+    },
+    {
+      "path": "factory/python/forge_factory/workflow/builder.py",
+      "sha256": "a71e49d11a0239997fa6bff35d337d28f25d28d001f787200c6d00d1914f2eab"
+    },
+    {
+      "path": "factory/python/forge_factory/workorder.py",
+      "sha256": "ad1834d0497369c76b760441e9d64e52668111af263a4cabc560c710694fe23c"
+    },
+    {
+      "path": "factory/python/tests/fixtures/owner-supervised-development/afo-policy.proposed.yaml",
+      "sha256": "1c9a1cde4bfa440c4d2b8302b0b011cc7fd79a71a5cb984481b7cf99d47b9875"
+    },
+    {
+      "path": "factory/python/tests/fixtures/owner-supervised-development/line-policy.proposed.yaml",
+      "sha256": "05e43e8935748390ebd7cb59c0adf37f5753669bdc762d9314f27a97ef9a2681"
+    },
+    {
+      "path": "factory/python/tests/fixtures/owner-supervised-development/ornith-trial.json",
+      "sha256": "02d2f5b6fbd84d8c25541637f0cd35ee94f21682aae1738a0b5bbca6f8efda95"
+    },
+    {
+      "path": "factory/python/tests/fixtures/owner-supervised-development/qwen-trial.json",
+      "sha256": "49622785cdb86bd50586a3dd0ffbd86400de0b17e39552fe6f78c4c1058f2d0e"
+    },
+    {
+      "path": "factory/python/tests/test_owner_development_view.py",
+      "sha256": "89dbc2c8701228444dc5c2d78526e60c52d450869fafde8aa6b18c9e1dec519f"
+    },
+    {
+      "path": "factory/python/tests/test_owner_supervised_development.py",
+      "sha256": "0d1f633f8c44f2af1b2eed0e55d46ebe5bf814be4088c70e552c5aec5ec4481d"
+    }
+  ],
+  "whole_integration_tree_CRE_claimed": false
+}

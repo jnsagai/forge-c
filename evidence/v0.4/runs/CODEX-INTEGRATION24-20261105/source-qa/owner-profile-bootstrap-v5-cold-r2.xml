@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.293" timestamp="2026-11-05T19:07:00.746203+00:00" hostname="master"><testcase classname="factory.python.tests.test_owner_bootstrap_cold_start" name="test_real_control_start_persists_owned_partial_projection_before_health" time="1.144"><failure message="forge_factory.afo.durable.Refused: OWNER_BOOTSTRAP_HOLDER_PROJECTION_REMAINS:">cold = {'boot': {'binary': PosixPath('/tmp/pytest-of-jefferson/pytest-141/test_real_control_start_persis0/PRIVATE-TEST-fabro'...cts': [], ...}, 'called': [], 'observed': [], 'probe': &lt;function cold.&lt;locals&gt;.observe_partial at 0x7e2b3da168e0&gt;, ...}
+
+    def test_real_control_start_persists_owned_partial_projection_before_health(cold):
+        b = cold["boot"]
+&gt;       result = B.bootstrap(b["store"], b["placer"])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_bootstrap_cold_start.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:300: in bootstrap
+    _services_quiet(settings)
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:115: in _services_quiet
+    require(not holder.exists() and not holder.is_symlink(), "HOLDER_PROJECTION_REMAINS")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ok = False, code = 'HOLDER_PROJECTION_REMAINS'
+
+    def require(ok, code):
+        if not ok:
+&gt;           raise Refused("OWNER_BOOTSTRAP_" + code)
+E           forge_factory.afo.durable.Refused: OWNER_BOOTSTRAP_HOLDER_PROJECTION_REMAINS:
+
+factory/python/forge_factory/afo/owner_profile_bootstrap.py:28: Refused</failure></testcase></testsuite></testsuites>

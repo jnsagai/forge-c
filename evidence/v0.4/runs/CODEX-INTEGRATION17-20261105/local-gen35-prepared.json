@@ -1,0 +1,484 @@
+{
+  "schema": "forge-c/local-gen35-input-preparation/1",
+  "at": "2026-11-05T05:46:52.507780+00:00",
+  "revision": "38acc88c549e3713665542474385999822cdd3d4",
+  "frozen_source_pending_root_qualification": "84a35ccb3533488be2ec81a40c6b375c72dccf4d",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen35",
+  "branch": "run/gen35-mission-renewal-inputs",
+  "accepted_example_reference": "1e6a229bb85bfb5a03260deebeab241a7b6b1368",
+  "accepted_11_commit_inventory": [
+    {
+      "accepted_commit": "7d590f82abe3de58c1529a032adeba9a332ccd7e",
+      "example_paths": [
+        "examples/0009b-iwdg-hal/workorder.json"
+      ]
+    },
+    {
+      "accepted_commit": "07957a089db82df834e548189361c9f831504d55",
+      "example_paths": [
+        "examples/0009g-iwdg-ll-swe1-gen/README.md",
+        "examples/0009g-iwdg-ll-swe1-gen/upstream/upstream-inputs.yaml",
+        "examples/0009g-iwdg-ll-swe1-gen/workorder.json",
+        "examples/0009h-iwdg-ll-swe1-aspice-high/README.md",
+        "examples/0009h-iwdg-ll-swe1-aspice-high/upstream/upstream-inputs.yaml",
+        "examples/0009h-iwdg-ll-swe1-aspice-high/workorder.json",
+        "examples/0014k-st-crc-idr-swe1-gen/README.md",
+        "examples/0014k-st-crc-idr-swe1-gen/workorder.json",
+        "examples/0014l-st-cube-crc-swe1-gen/README.md",
+        "examples/0014l-st-cube-crc-swe1-gen/upstream/upstream-inputs.yaml",
+        "examples/0014l-st-cube-crc-swe1-gen/workorder.json"
+      ]
+    },
+    {
+      "accepted_commit": "79225a2d3d4f3f02daeb6dc49b211528455e5126",
+      "example_paths": [
+        "examples/0014k-st-crc-idr-swe1-gen/README.md",
+        "examples/0014k-st-crc-idr-swe1-gen/workorder.json",
+        "examples/0014l-st-cube-crc-swe1-gen/README.md"
+      ]
+    },
+    {
+      "accepted_commit": "1b0dd86a9c1480062d0e0a60153e88abcddd7399",
+      "example_paths": [
+        "examples/0002h-arm_55_rcc_ll-swe1-aspice-high/README.md",
+        "examples/0002h-arm_55_rcc_ll-swe1-aspice-high/upstream/upstream-inputs.yaml",
+        "examples/0002h-arm_55_rcc_ll-swe1-aspice-high/workorder.json"
+      ]
+    },
+    {
+      "accepted_commit": "3767dde7a889d85a5e735c13184b2bca8b976b29",
+      "example_paths": [
+        "examples/0009g-iwdg-ll-swe1-gen/README.md",
+        "examples/0009g-iwdg-ll-swe1-gen/workorder.json",
+        "examples/0009h-iwdg-ll-swe1-aspice-high/README.md",
+        "examples/0009h-iwdg-ll-swe1-aspice-high/workorder.json"
+      ]
+    },
+    {
+      "accepted_commit": "992c5303469a6a3ff8ab92440358c24509f53455",
+      "example_paths": [
+        "examples/0014l-st-cube-crc-swe1-gen/workorder.json"
+      ]
+    },
+    {
+      "accepted_commit": "54be0330c871cd12487322e28a908d11cc77670e",
+      "example_paths": [
+        "examples/0014m-crc-hal/workorder.json"
+      ]
+    },
+    {
+      "accepted_commit": "fe83cbb9dba122901a28bd3e1e58eeee67e0c34b",
+      "example_paths": [
+        "examples/0014m-crc-hal/workorder.json"
+      ]
+    },
+    {
+      "accepted_commit": "26ac22e16b019b28a9437d5e1b9d2e95bd97f102",
+      "example_paths": [
+        "examples/0016c-st-cube-wwdg/workorder.json"
+      ]
+    },
+    {
+      "accepted_commit": "af76b3ea35758cc517809f66151549a3beed0619",
+      "example_paths": [
+        "examples/0016m-wwdg-hal/workorder.json"
+      ]
+    },
+    {
+      "accepted_commit": "3c89a51ee4d89d50e8a7dbf71c9ef2a942ff4553",
+      "example_paths": [
+        "examples/0016c-st-cube-wwdg/workorder.json"
+      ]
+    }
+  ],
+  "example_paths": [
+    {
+      "path": "examples/0002h-arm_55_rcc_ll-swe1-aspice-high/README.md",
+      "sha256": "8b1397dc893fece9182e5b0e27722b8dbc63827ea9395cbee92c853890ea62bf"
+    },
+    {
+      "path": "examples/0002h-arm_55_rcc_ll-swe1-aspice-high/upstream/upstream-inputs.yaml",
+      "sha256": "dac298ee221959e12adba5a9f3e70793ccddd7955abc469c6f43c7b7d1fb5f76"
+    },
+    {
+      "path": "examples/0002h-arm_55_rcc_ll-swe1-aspice-high/workorder.json",
+      "sha256": "29286622f6aac1f9a01a82d690fb1947c3763c1691d57f4e6b3d2a2ddee65d1d"
+    },
+    {
+      "path": "examples/0009g-iwdg-ll-swe1-gen/README.md",
+      "sha256": "2cd027387cc3dfab642bee6efb79c8c1cb60666ae150af1850e5e3a4fef39c2f"
+    },
+    {
+      "path": "examples/0009g-iwdg-ll-swe1-gen/upstream/upstream-inputs.yaml",
+      "sha256": "dac298ee221959e12adba5a9f3e70793ccddd7955abc469c6f43c7b7d1fb5f76"
+    },
+    {
+      "path": "examples/0009g-iwdg-ll-swe1-gen/workorder.json",
+      "sha256": "7dfcab594298bfec1b7968c0c4c17c557d8bbc1336bcc55b907866c430dda6f8"
+    },
+    {
+      "path": "examples/0009h-iwdg-ll-swe1-aspice-high/README.md",
+      "sha256": "6494b06b01d5932d9dc6ea9fdc0a8814027d07eca95f1b39d3d044981b9b4085"
+    },
+    {
+      "path": "examples/0009h-iwdg-ll-swe1-aspice-high/upstream/upstream-inputs.yaml",
+      "sha256": "dac298ee221959e12adba5a9f3e70793ccddd7955abc469c6f43c7b7d1fb5f76"
+    },
+    {
+      "path": "examples/0009h-iwdg-ll-swe1-aspice-high/workorder.json",
+      "sha256": "4358bdc37ad36b96fe72decf23c1141fc204a14d9f7f7d16072739bc82d0f51d"
+    },
+    {
+      "path": "examples/0014k-st-crc-idr-swe1-gen/README.md",
+      "sha256": "b2fe0390f6e9a8d99f320b45330f4b3ffcc8e737f56f2ffa4ec481b2c06c1b31"
+    },
+    {
+      "path": "examples/0014k-st-crc-idr-swe1-gen/workorder.json",
+      "sha256": "05cab30ec2eaca2c209709b4dc172ff660ef040445627eb85dac6b71b2a7044c"
+    },
+    {
+      "path": "examples/0014l-st-cube-crc-swe1-gen/README.md",
+      "sha256": "444fbc85aaff9bb10b03687ce27935e44d2e21e6f94cbfec4fd55d97a553db93"
+    },
+    {
+      "path": "examples/0014l-st-cube-crc-swe1-gen/upstream/upstream-inputs.yaml",
+      "sha256": "dac298ee221959e12adba5a9f3e70793ccddd7955abc469c6f43c7b7d1fb5f76"
+    },
+    {
+      "path": "examples/0014l-st-cube-crc-swe1-gen/workorder.json",
+      "sha256": "68f3f9ba958c32a40f40d364797b736e90ae5e8035e855799288f42488c0ae56"
+    },
+    {
+      "path": "examples/0014m-crc-hal/workorder.json",
+      "sha256": "6f2703ce29d98426d990994abc9987b9eff38f45c8b531a142066dee3833bac8"
+    },
+    {
+      "path": "examples/0016c-st-cube-wwdg/workorder.json",
+      "sha256": "c9fa4670ada91ee8d0b3726e11e0705a80fffdbe0bfd7d4854b0347d8c176d7a"
+    },
+    {
+      "path": "examples/0016m-wwdg-hal/workorder.json",
+      "sha256": "93d197155b6cfd438b704254c6e18b8f825e7767febb54499165851a1bcefb14"
+    }
+  ],
+  "only17_accepted_example_paths_changed": true,
+  "all_examples_byte_identical_G32": true,
+  "all_nonexample_tracked_source_byte_identical_I17": true,
+  "all_factory_policies_skills_docs_specs_oracles_unchanged": true,
+  "all8ignored_inputs": [
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+      "bytes": 1056393,
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen32/examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "source_revision": "1e6a229bb85bfb5a03260deebeab241a7b6b1368",
+      "copied_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "sha256": "e3cf9752ca360156369cd227bafd8c71fd4472d38176d8b8f712f3874fc1e2b4",
+      "bytes": 2203410,
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen32/examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-ch14-rcc.md",
+      "source_revision": "1e6a229bb85bfb5a03260deebeab241a7b6b1368",
+      "copied_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "sha256": "477331ba9540f760dbc1c0fae6508a987b68302a60c0f0c6f82dfe9bb5ebb8fb",
+      "bytes": 3472,
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen32/examples/0002-arm_55_rcc_st/inputs/RM0486-rev4-memory-map-excerpt.md",
+      "source_revision": "1e6a229bb85bfb5a03260deebeab241a7b6b1368",
+      "copied_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+      "bytes": 28656,
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen32/examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "source_revision": "1e6a229bb85bfb5a03260deebeab241a7b6b1368",
+      "copied_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac",
+      "bytes": 3455,
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen32/examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "source_revision": "1e6a229bb85bfb5a03260deebeab241a7b6b1368",
+      "copied_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4",
+      "bytes": 3358,
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen32/examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "source_revision": "1e6a229bb85bfb5a03260deebeab241a7b6b1368",
+      "copied_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+      "sha256": "f3e02884a5692b9779b3f409322ae4425324daeecab41f5df18d5b4b6d5dd273",
+      "bytes": 36401,
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen32/examples/0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+      "source_revision": "1e6a229bb85bfb5a03260deebeab241a7b6b1368",
+      "copied_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md",
+      "sha256": "c1ab2f86a424135941ba8ff5da9c22c6899c3021f37c4430dfbf4d228952f9b8",
+      "bytes": 3444,
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen32/examples/0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md",
+      "source_revision": "1e6a229bb85bfb5a03260deebeab241a7b6b1368",
+      "copied_before_any_tests_or_gate": true
+    }
+  ],
+  "all10needed_dependencies": [
+    {
+      "path": "examples/0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "sha256": "509e0e83661ed934a6278e21102ca5579205ed0ac99b121b5ec0f2823e410909",
+      "bytes": 455865,
+      "verified_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4",
+      "bytes": 1056393,
+      "verified_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+      "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1",
+      "bytes": 28656,
+      "verified_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+      "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac",
+      "bytes": 3455,
+      "verified_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0014-crc-st/inputs/inputs-manifest.json",
+      "sha256": "67c297e691fc1df49c7a744aef316d34ab0234c67975246c9e2607945cad18f2",
+      "bytes": 1362,
+      "verified_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "sha256": "d0add3aa6708062f9067c88c60c86df5ec7048ed6d1095824fbb41bbd6fc1506",
+      "bytes": 697,
+      "verified_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4",
+      "bytes": 3358,
+      "verified_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+      "sha256": "f3e02884a5692b9779b3f409322ae4425324daeecab41f5df18d5b4b6d5dd273",
+      "bytes": 36401,
+      "verified_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md",
+      "sha256": "c1ab2f86a424135941ba8ff5da9c22c6899c3021f37c4430dfbf4d228952f9b8",
+      "bytes": 3444,
+      "verified_before_any_tests_or_gate": true
+    },
+    {
+      "path": "examples/0016-wwdg-st/inputs/inputs-manifest.json",
+      "sha256": "0e681a279eaffa0695d72e08722adedb0b1277ad9becd5ebc4f878fd83d20095",
+      "bytes": 1364,
+      "verified_before_any_tests_or_gate": true
+    }
+  ],
+  "input_provision_complete_before_tests_or_gate": true,
+  "finite_profile": {
+    "path": "config/factory/profiles/local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104.yaml",
+    "sha256": "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c",
+    "tracked_in_frozen_I17": true,
+    "byte_identical_G32_and_I17": true
+  },
+  "all_profiles_byte_identical_I17_and_G32": true,
+  "tracked_clean": true,
+  "CPU_checks": {
+    "normal_plan_inputs": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-plan-inputs-cpu.json",
+      "sha256": "f8d890b3b4e5df3cc4b2008c8c99614f9298bf0744c55e00b2410ca47a28c57f",
+      "bytes": 2899
+    },
+    "actual_plan_inputs": {
+      "0014m-crc-hal": [
+        {
+          "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+          "status": "PRESENT",
+          "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+        },
+        {
+          "path": "examples/0014-crc-st/inputs/RM0486-rev4-ch26-crc.md",
+          "status": "PRESENT",
+          "sha256": "11cbedc82a26259b3228f2673d3c81dd1140adff7aff195c6cf25ee300de2ea1"
+        },
+        {
+          "path": "examples/0014-crc-st/inputs/RM0486-rev4-memory-map-excerpt-crc.md",
+          "status": "PRESENT",
+          "sha256": "cbfbcd39f82d598a0870eee22c5429f91d2990ce86d63a2ce96a1a85da1f6bac"
+        },
+        {
+          "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+          "status": "PRESENT",
+          "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+        },
+        {
+          "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+          "status": "TRACKED"
+        },
+        {
+          "path": "examples/0014-crc-st/inputs/inputs-manifest.json",
+          "status": "TRACKED"
+        },
+        {
+          "path": "examples/0002-arm_55_rcc_st/hal_driver_guideline.md",
+          "status": "TRACKED"
+        }
+      ],
+      "0016m-wwdg-hal": [
+        {
+          "path": "examples/0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+          "status": "PRESENT",
+          "sha256": "a22465623d28d7a9d8bbfacff436fb2be5995c7393a57a61273c65573bb375b4"
+        },
+        {
+          "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-ch60-wwdg.md",
+          "status": "PRESENT",
+          "sha256": "f3e02884a5692b9779b3f409322ae4425324daeecab41f5df18d5b4b6d5dd273"
+        },
+        {
+          "path": "examples/0016-wwdg-st/inputs/RM0486-rev4-memory-map-excerpt-wwdg.md",
+          "status": "PRESENT",
+          "sha256": "c1ab2f86a424135941ba8ff5da9c22c6899c3021f37c4430dfbf4d228952f9b8"
+        },
+        {
+          "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+          "status": "PRESENT",
+          "sha256": "2ff18efb52be8af84d4cb8e57d40eb93660e53aed3de4b3057134051111c20e4"
+        },
+        {
+          "path": "examples/0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+          "status": "TRACKED"
+        },
+        {
+          "path": "examples/0016-wwdg-st/inputs/inputs-manifest.json",
+          "status": "TRACKED"
+        },
+        {
+          "path": "examples/0002-arm_55_rcc_st/hal_driver_guideline.md",
+          "status": "TRACKED"
+        }
+      ]
+    },
+    "input_integrity": {
+      "status": "PASS1",
+      "log": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-input-integrity.log",
+        "sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+        "bytes": 80
+      },
+      "xml": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-input-integrity.xml",
+        "sha256": "dcd7ef0d7ee95ad9f37fd07c94ada72dba9e6db8b3327177980cb56a73c9a189",
+        "bytes": 403
+      }
+    },
+    "design": {
+      "status": "PASS14_STATIC_ONLY",
+      "log": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-design.log",
+        "sha256": "c133d1470d3e79a746b2b7f36c9247481dff54e276316d5f0da3c5a66fd802fe",
+        "bytes": 1514
+      }
+    }
+  },
+  "CRE_gate": "NOT_RUN_ROOT_OWNS",
+  "live_effects": false,
+  "authority": "OFFLINE_INPUT_VARIANT_ONLY_OLD_0307_AUTHORITY_EXPIRED_NOT_REUSED",
+  "no_new_authorization_window_capacity_proposed": true,
+  "no_runtime_workspaces_grants_ledger_mission_counters_transplanted": true,
+  "completed_at": "2026-11-05T05:48:03.833155+00:00",
+  "source_qualification": "PENDING_ROOT_SOURCE172_CRE",
+  "exact_run_CHANGE": "NOT_RUN_ROOT_OWNS",
+  "nonexample_tree_identity_to_I17": {
+    ".claude": true,
+    ".devcontainer": true,
+    ".fabro": true,
+    ".gitignore": true,
+    ".specify": true,
+    "CLAUDE.md": true,
+    "CLAUDE_CRE_START.md": true,
+    "CLAUDE_FEATURE005_START.md": true,
+    "CLAUDE_FEATURE006_START.md": true,
+    "CLAUDE_FEATURE011_START.md": true,
+    "CLAUDE_START.md": true,
+    "CMakeLists.txt": true,
+    "FORGE-C-PROJETO.md": true,
+    "FORGEC_CRE_IMPLEMENTATION_PLAN.md": true,
+    "FORGEC_CRE_PACKAGE_INDEX.md": true,
+    "FORGEC_CRE_SHA256SUMS.txt": true,
+    "FORGEC_FEATURE005_INDEX.md": true,
+    "FORGEC_FEATURE005_SHA256SUMS.txt": true,
+    "FORGEC_FEATURE005_VALIDATION.md": true,
+    "FORGEC_FEATURE006_INDEX.md": true,
+    "FORGEC_FEATURE006_MANIFEST.json": true,
+    "FORGEC_FEATURE006_SCOPE.md": true,
+    "Forge-C-v0.5-CLAUDE-HANDOFF.md": true,
+    "Forge-C-v0.5-PROJECT-INDEX.md": true,
+    "KPI_CLAUDE_START.md": true,
+    "KPI_RELEASE_NOTES.md": true,
+    "LICENSE": true,
+    "LOCAL_RTX_START.md": true,
+    "Makefile": true,
+    "PROJECT_HANDOFF_v0.5.md": true,
+    "PROJECT_MANIFEST.json": true,
+    "QWEN.md": true,
+    "README.md": true,
+    "SHA256SUMS.txt": true,
+    "TEST_RESULTS_v0.5.md": true,
+    "architecture": true,
+    "cmake": true,
+    "config": true,
+    "deploy": true,
+    "docs": true,
+    "drivers": true,
+    "evidence": true,
+    "factory": true,
+    "forge_rcc_demo.plist": true,
+    "profiles": true,
+    "pyproject.toml": true,
+    "requirements": true,
+    "scripts": true,
+    "specs": true,
+    "templates": true,
+    "tests": true,
+    "tools": true,
+    "workflows": true
+  },
+  "all_examples_byte_identical_qualified_GEN34": true,
+  "source_bundle": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-source.bundle",
+    "sha256": "6127e76252fb27acf4b34171f36d359830d3008d99eb85e4b070d3cf8e535b45",
+    "bytes": 11084
+  },
+  "pretest_input_inventory": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-prepared-inputs.json",
+    "sha256": "4562f19f0f272b61b4777bb3faaa164f806f7f0dcd9c33ef34584aa154f9bd8e",
+    "bytes": 13745
+  },
+  "model_GPU_admin_grant_service_runtime_queue_calls": 0,
+  "limits": [
+    "Source and exactGEN35 full normalCHANGE must qualify before any runtime consumption; root exclusively ownsCRE.",
+    "No deadline authority renewal, policy, grants, mission/counters/history or oldworkspaces transplanted.",
+    "Finite profile32ef byte-identical; no profile change or new budget.",
+    "Inputs were all present/hashverified before any tests; CPU checks do not prove native/model competence or phasePASS."
+  ]
+}

@@ -47,7 +47,7 @@ INPUTS = ["HSI contract", "Safety allocation", "Budgets"]
 SAFETY_DOC = "safety/software_safety_requirements.md"
 LESSONS = {"dir": None, "include_proposed": False}  # F011-T044: seeded harness (--lessons [--lessons-trial]);
 # otherwise the profile flag decides (VALIDATED lessons only)
-LESSON_SOURCE = "reference/inspection-lessons.md"
+LESSON_SOURCE = R.LESSON_SOURCE  # one reference source name for both local inspectors
 _reply = R._reply  # the runner's error path writes the same compact inspect reply
 STARTUP = re.compile(r"\*\*(SWR-\d{3})\*\*\s+" + STARTUP_NO_CALL, re.I)
 # run 2 (2026-10-26): "at most HAL_RCC_TIMEOUT_VALUE = 1000 polling iterations" is a measurable count bound
@@ -1039,6 +1039,8 @@ def lessons_dir(ws: Path) -> Path | None:
     from ..knowledge import inspection as IL
     from .swe2 import _structured_flag
 
+    if R.LESSONS["off"]:  # a paired trial's control arm: no lesson in either inspector
+        return None
     if LESSONS["dir"]:
         return Path(LESSONS["dir"])
     return IL.LESSON_DIR if _structured_flag(ws, "inspection_lessons") else None
@@ -1054,11 +1056,7 @@ def item_lessons(ws: Path, item_id: str, srcs: list[dict]) -> list[dict]:
                      include_proposed=bool(LESSONS["dir"] and LESSONS["include_proposed"])) if d else []
 
 
-def lesson_source(lessons: list[dict]) -> dict | None:
-    from ..knowledge import inspection as IL
-
-    text = IL.render(lessons)
-    return {"path": LESSON_SOURCE, "sha256": sha256_bytes(text.encode()), "text": text} if text else None
+lesson_source = R.lesson_source  # the same rendering (knowledge/inspection.render) as the structured inspector
 
 
 def item_packet(ws: Path, item: dict, bl: dict, srcs: list[dict], targets: list[str], model: str, findings=None,

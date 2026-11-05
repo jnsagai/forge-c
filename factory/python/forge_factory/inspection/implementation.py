@@ -78,8 +78,15 @@ def check_implementation(ws: Path) -> dict:
     if layer == "LL":
         return _check_ll(ws)
     findings: list[str] = []
+    from .provided_changes import enabled as change_control
+    from .provided_changes import linked_defects
+
     for rec in provided(ws):  # ADR-0009: the HAL work order must not change the PROVIDED, verified LL
         if not (ws / rec["path"]).is_file() or sha256_file(ws / rec["path"]) != rec["sha256"]:
+            # owner 2026-11-03 (revised): a change linked to a CODE defect is allowed and reported for human inspection
+            # (inspection/provided_changes); an unlinked change stays refused
+            if (ws / rec["path"]).is_file() and change_control(ws) and linked_defects(ws, rec["path"]):
+                continue
             findings.append(f"IMPL:PROVIDED_COMPONENT_CHANGED:{rec['path']}")
     from ..layer import hal_c, hal_h, ll_header, profile
 
@@ -112,9 +119,38 @@ def check_implementation(ws: Path) -> dict:
     findings += _reg_block_defined(ws)
     called = set(re.findall(r"\b(" + re.escape(prof["ll"]["function_prefix"]) + r"\w+)\s*\(", code.get(HAL_C, "")))
     findings += [f"IMPL:LL_CALL_UNDEFINED:{f}" for f in sorted(called - set(ll_defs))]
+    findings += hal_bypass_findings(ws, {rel: code[rel] for rel in (HAL_H, HAL_C) if rel in code},
+                                    prof["ll"]["function_prefix"])
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"allocated": len(wanted), "hal_defined": len([f for f in wanted if f in hal_defs]),
                       "ll_functions": len(ll_defs), "ll_calls": len(called)}}
+
+
+# CAPA-134: register access that bypasses a provided CMSIS LL (ST code): the instance dereferenced, the CMSIS register
+# macros (stm32n6xx.h) or the LL's register macros, the host RAM struct, an own register array, the instance base address
+_ST_REG_MACROS = r"(?:READ_REG|WRITE_REG|SET_BIT|CLEAR_BIT|READ_BIT|CLEAR_REG|MODIFY_REG|ATOMIC_\w+)"
+
+
+def hal_bypass_findings(ws: Path, code: dict[str, str], ll_prefix: str) -> list[str]:
+    """HAL work order on a provided CMSIS LL (brownfield/cmsis.provided_api): the HAL source and header (comments and
+    literals stripped) reach the registers only through the provided LL functions. [] for every other work order
+    (a greenfield HAL that bypasses the LL already fails to build on the generated LL test double)."""
+    from ..brownfield.cmsis import provided_api
+
+    api = provided_api(ws)
+    if api is None:
+        return []
+    inst = re.escape(api["instance"])
+    pfx = re.escape(ll_prefix)
+    rx = re.compile(rf"\b{inst}\s*->|\b{_ST_REG_MACROS}\s*\(|\b{pfx}(?:WriteReg|ReadReg)\s*\(|\bforge_host_\w+"
+                    rf"|\bvolatile\s+uint(?:8|16|32)_t\s+\w+\s*\[|\b{inst}(?:_NS|_S)?_BASE\w*\b")
+    out = []
+    for rel, src in code.items():
+        for m in rx.finditer(src):
+            out.append(f"IMPL:HAL_BYPASSES_LL:{rel}:{src.count(chr(10), 0, m.start()) + 1}:{' '.join(m.group(0).split())} "
+                       f"(the HAL reaches the registers only through the provided {ll_prefix} functions, called with "
+                       f"{api['instance']}; no register macro, member access, register array or base address)")
+    return out[:10]
 
 
 def _reg_block_defined(ws: Path) -> list[str]:
@@ -129,6 +165,27 @@ def _reg_block_defined(ws: Path) -> list[str]:
         if re.search(r"^[^\n;]*\bvolatile\s+uint32_t\s+" + blk + r"\s*\[", code, re.M) \
                 and not re.search(r"\bextern\b[^;]*\b" + blk + r"\b", code):
             out.append(f"IMPL:REG_BLOCK_DEFINED_IN_DRIVER:{src.relative_to(ws).as_posix()}")
+    return out
+
+
+def instance_body_findings(code: str, inst: dict, prefix: str) -> list[str]:
+    """Instance mode: an LL function reaches its registers only through its instance parameter. The instance macro and
+    the host object name the same RAM object in host tests, so a body using them passes every host check while
+    ignoring the caller's instance; any other `x->` is an alias of the instance and is refused likewise."""
+    masked, out, param = strip_c(code), [], inst["parameter"]
+    for m in re.finditer(r"^[ \t]*static\s+inline\s+[\w\s*]+?\b(" + re.escape(prefix) + r"\w+)\s*\([^;{}]*\)\s*\{",
+                         masked, re.M):
+        depth, end = 1, m.end()
+        while end < len(masked) and depth:
+            depth += (masked[end] == "{") - (masked[end] == "}")
+            end += 1
+        body, name = masked[m.end():end - 1], m.group(1)
+        out += [f"IMPL:INSTANCE_BYPASSED:{name}:{x} (access registers only through the parameter {param})"
+                for x in (inst["macro"], inst["host_object"]) if re.search(rf"\b{re.escape(x)}\b", body)]
+        out += [f"IMPL:INSTANCE_BYPASSED:{name}:{x}-> (access registers only through the parameter {param})"
+                for x in sorted(set(re.findall(r"\b([A-Za-z_]\w*)\s*->", body)) - {param})]
+        if not re.search(rf"\b{re.escape(param)}\s*->", body):
+            out.append(f"IMPL:INSTANCE_NOT_USED:{name} (no register access through {param}->)")
     return out
 
 
@@ -170,6 +227,11 @@ def _check_ll(ws: Path) -> dict:
     # CAPA-019 (r84): the author replaced the generated register block by a pointer API; the unit harness, regmap and
     # measurement all use the extern array, and SWE.2/SWE.3 contradicted each other until the loop budget ran out
     typed = selected(ws) is not None
+    from ..layer import ll_instance
+
+    inst = ll_instance(ws)
+    if inst is not None:
+        findings += instance_body_findings(txt, inst, pfx)
     if txt and not typed and not re.search(r"\bextern\s+volatile\s+uint32_t\s+" + blk + r"\s*\[[^\]]+\]", code):
         findings.append("IMPL:LL_REG_BLOCK_DECLARATION_MISSING")
     for m in re.finditer(r"^[ \t]*static\s+inline\s+[\w\s*]+?\b(" + re.escape(pfx) + r"\w+)\s*\(([^)]*)\)\s*\{",

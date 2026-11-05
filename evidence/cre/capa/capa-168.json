@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<27eef6a010f2"
+  ],
+  "candidate_patch_sha256": "b1d6d670d0ba3e4425f9e942b4ca8f7e238086ec6b5e57edf271ce2de7727f06",
+  "capa_id": "CAPA-168",
+  "created_at": "2026-11-04T22:40:57.009614Z",
+  "event_ids": [],
+  "incident_ids": [
+    "CAPA-168"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-168",
+  "reproducer_id": "RPR-168",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-62e6e8f16a22ca6e8820",
+    "reproducer-run:rr-2c7983ee312ace01b7e3"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Typed producer binds preservation to historical UT021 and behavior wording; actual approved USPEC preservation is generatedUT023. Unique parsed frozen semantic row must bind actual IDs, preserving masks, source, approvals and frozen obligations.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-04T22:52:07.950284Z"
+}

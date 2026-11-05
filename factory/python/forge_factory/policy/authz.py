@@ -82,6 +82,12 @@ class Binding:
                                     "nodes": self.nodes}, indent=2, sort_keys=True), encoding="utf-8")
 
 
+# CAPA-142 (run WO-F014-SWE5-WWDGHAL-20261103-L32): headers the factory build provides to target images
+# (factory/sim/stm32n6/forge_target_test.h; forge_performance_calls.h is generated into the build directory). A workspace
+# copy precedes them on the include path and silently replaces the harness.
+FACTORY_HARNESS_HEADERS = ("forge_target_test.h", "forge_performance_calls.h")
+
+
 def _match(rel: str, globs: list[str]) -> bool:
     return any(fnmatch.fnmatchcase(rel, g) or fnmatch.fnmatchcase(rel + "/", g) or rel == g.rstrip("/*")
                for g in globs)
@@ -158,6 +164,10 @@ class Authorizer:
         if rel not in code:  # no new driver source next to the delivered code (it would escape verification)
             return "BROWNFIELD_NEW_CODE_FILE" if rel.startswith(("software/ll/", "software/hal/", "software/src/",
                                                                    "software/include/")) else None
+        from ..inspection.provided_changes import allowed as provided_change_allowed
+
+        if code_mode(m) == "FROZEN" and role_id == "swe3-author" and provided_change_allowed(self.workspace, rel):
+            return None  # owner 2026-11-03 (revised): a linked CODE defect in fix; reported in the diff report
         if code_mode(m) != "FIX_ALLOWED":
             return "DELIVERED_CODE_FROZEN"
         if role_id != "swe3-author":
@@ -167,6 +177,20 @@ class Authorizer:
         if not any(d.get("status") == "IN_FIX" and rel in _defect_files(d, code) for d in _code_defects(self.workspace)):
             return "DELIVERED_CODE_NO_DEFECT"
         return None
+
+    def _provided_write(self, role_id: str, rel: str) -> str | None:
+        """The provided (read-only) LL of a HAL work order: refused, except - work orders with unit_verification - for
+        the SWE.3 author while a CODE defect naming the file is open or in fix; the workspace copy is then made
+        writable (the hash-bound original and the source work order are never touched)."""
+        provided = {r.get("path") for r in self._manifest().get("provided") or []}
+        if rel not in provided:
+            return None
+        from ..inspection.provided_changes import allowed, unlock
+
+        if role_id == "swe3-author" and allowed(self.workspace, rel):
+            unlock(self.workspace)
+            return None
+        return "PROVIDED_COMPONENT_READ_ONLY"
 
     def _delivery_first_write(self, node_id: str, rel: str) -> str | None:
         """Only the three existing graph visits can mutate a delivery-first candidate."""
@@ -258,7 +282,20 @@ class Authorizer:
                 denied = self._delivered_write(role_id, rel)
                 if denied:  # feature 008 (FR-013/FR-014): delivered code is frozen or changes only for a CODE defect
                     return Decision(False, denied, rel, role_id)
-                if not any(rel == p.rstrip("/") or rel.startswith(p) for p in prefixes):
+                denied = self._provided_write(role_id, rel)
+                if denied:  # ADR-0009 + owner 2026-11-03 (revised): provided LL only for a linked CODE defect
+                    return Decision(False, denied, rel, role_id)
+                # CAPA-138 (run WO-F014-SWE1-WWDGHAL-20261103-L32B): a directory prefix (".../") admits only paths
+                # strictly inside it. Its own path, or any existing directory, is never written as a file - an empty
+                # file "workproducts/SWE.1" blocked every later write below it ("File exists") for the whole run.
+                if rel.startswith("software/") and Path(rel).name in FACTORY_HARNESS_HEADERS:
+                    return Decision(False, "HARNESS_SHADOW_DENIED", f"{rel}: {Path(rel).name} is provided by the factory "
+                                    f"build; include it with #include \"{Path(rel).name}\" and call FORGE_TEST_BEGIN() "
+                                    "first - do not write a copy", role_id)
+                if any(p.endswith("/") and rel == p.rstrip("/") for p in prefixes) or (self.workspace / rel).is_dir():
+                    return Decision(False, "PATH_IS_DIRECTORY", f"{rel} is a directory: write the file inside it "
+                                    f"({rel}/<name>); write_file creates missing parent directories", role_id)
+                if not any(rel == p or rel.startswith(p) for p in prefixes):
                     return Decision(False, "WRITE_SCOPE_DENIED", rel, role_id)
                 from ..development_execution import mutation_allowed
 

@@ -1,0 +1,101 @@
+{
+ "CAPA-116": {
+  "history": [
+   {
+    "at": "2026-11-02T19:54:15.823089Z",
+    "capa_id": "CAPA-116",
+    "evidence": "[\"cmp-swe3-inspector-without-architecture\"]",
+    "from_state": null,
+    "reason": "Cloud SWE.3 OBL/IWDG -08: inspector lacked the frozen SWE.2 architecture, instance inputs and baseline records",
+    "seq": 861,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T19:54:15.921042Z",
+    "capa_id": "CAPA-116",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 862,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T19:54:16.072484Z",
+    "capa_id": "CAPA-116",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-116 assigned",
+    "seq": 863,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T19:54:21.678705Z",
+    "capa_id": "CAPA-116",
+    "evidence": "[\"reproducer-run:rr-ddf8299f0b590547fc7c\", \"reproducer-run:rr-c64769f8251df97d597a\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 864,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T19:54:21.698935Z",
+    "capa_id": "CAPA-116",
+    "evidence": "[\"git:e7ec0083726c..6fa46553d882\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 6fa46553d882 (patch 8426 bytes)",
+    "seq": 865,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T20:03:55.224322Z",
+    "capa_id": "CAPA-116",
+    "evidence": "[\"reproducer-run:rr-10979ae29384473d81f9\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-116 absent at 9cdeccc30694",
+    "seq": 873,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T20:03:55.247882Z",
+    "capa_id": "CAPA-116",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 874,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-cd7d24e31bd3342711d873e531ebed4285ed58d6",
+   "e7ec0083726c32a0a7822df1b5735d97599fb972",
+   "6fa46553d88289205e4363ad22ef588d857247db",
+   "pd-4aca30b30498d87a3d41"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<6fa46553d882"
+   ],
+   "candidate_patch_sha256": "703dcaed453c6bf74d1d8ba96566136c406bd289cd6c01e2d8ed8f01fa0444c1",
+   "capa_id": "CAPA-116",
+   "created_at": "2026-11-02T19:54:15.823089Z",
+   "event_ids": [],
+   "incident_ids": [
+    "cmp-swe3-inspector-without-architecture"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-116",
+   "reproducer_id": "RPR-116",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-ddf8299f0b590547fc7c",
+    "reproducer-run:rr-c64769f8251df97d597a"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T20:03:55.247882Z"
+  }
+ }
+}

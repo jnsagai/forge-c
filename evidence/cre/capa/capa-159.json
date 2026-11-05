@@ -1,0 +1,193 @@
+{
+ "CAPA-159": {
+  "history": [
+   {
+    "at": "2026-11-04T16:17:16.500104Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[\"isolated-real-signed-local-cloud-order-scope\"]",
+    "from_state": null,
+    "reason": "Actual local/cloud requestbuilders andcloudchild/per-WOcleanup withreal isolated TESTkeysignatures; noownerkey/signature, model orproductionaction",
+    "seq": 1178,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T16:17:16.595754Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1179,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T16:17:16.765262Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-159 assigned",
+    "seq": 1180,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T16:17:19.462114Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[\"reproducer-run:rr-090f986b57484df3eb4c\", \"reproducer-run:rr-dd30ca960a44e3243db4\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1181,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T16:17:19.491802Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[\"git:0de07c62e6e6..0fb9f6b68a8b\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 0fb9f6b68a8b (patch 19588 bytes)",
+    "seq": 1182,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T16:41:41.761281Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "Additional actual signed manual-live adoption bypass remains in first partialfix; old decision/proof retained; expand same RPR159 before any effectiveness claim.",
+    "seq": 1183,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T16:41:41.778541Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1184,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T16:41:41.938061Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-159 assigned",
+    "seq": 1185,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T16:41:45.090887Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[\"reproducer-run:rr-d86cfbc83ca21a3dc785\", \"reproducer-run:rr-4abf6495450d08d66ccd\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1186,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T16:41:45.120822Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[\"git:0de07c62e6e6..1f32ff646383\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 1f32ff646383 (patch 31119 bytes)",
+    "seq": 1187,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T16:49:20.085929Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "Complete159candidate hard gate rejected RPR151 ERROR: frozen grant protocol provides permit, not an allow attribute. Preserve existing oracle and correct observation actor check through permit; no source/admission scope weakening. Rejecteddecision retained.",
+    "seq": 1188,
+    "to_state": "UNRESOLVED"
+   },
+   {
+    "at": "2026-11-04T16:49:20.116732Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1189,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T16:49:20.270360Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-159 assigned",
+    "seq": 1190,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T16:49:23.147897Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[\"reproducer-run:rr-010f497ac9a74adfa2bb\", \"reproducer-run:rr-cb4819a6449676ea2a02\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1191,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T16:49:23.167884Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[\"git:0de07c62e6e6..f48e1df32397\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix f48e1df32397 (patch 31407 bytes)",
+    "seq": 1192,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T16:52:35.455790Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[\"reproducer-run:rr-66be7566ed1340674649\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-159 absent at f48e1df32397",
+    "seq": 1193,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T16:52:35.488373Z",
+    "capa_id": "CAPA-159",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1194,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-5437e16fb1ebea55375ab1dad7cbbb6269ec47cc",
+   "0de07c62e6e6db67d69b3d9d110e451836da3551",
+   "0fb9f6b68a8b851bc41d57397f38e5cc1322acf8",
+   "1f32ff6463836ade32e9f0a4f80903e81eaf6d53",
+   "f48e1df32397d822af30d97c7d6a9a49c9293fce",
+   "pd-c90f9788b75a51315cfe"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<f48e1df32397"
+   ],
+   "candidate_patch_sha256": "eeea20b30700a865d040fd75ba48249acd0bf3e65a9eb9f2ee20f3242ea0d262",
+   "capa_id": "CAPA-159",
+   "created_at": "2026-11-04T16:17:16.500104Z",
+   "event_ids": [],
+   "incident_ids": [
+    "isolated-real-signed-local-cloud-order-scope"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-159",
+   "reproducer_id": "RPR-159",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-010f497ac9a74adfa2bb",
+    "reproducer-run:rr-cb4819a6449676ea2a02"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "Order-related missing requestidentity and missing admission/adoption authorization bypass restrictedgrant. Final source uses full current scope on newadmission and preserves original-dispatch observation through existing permit protocol.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T16:52:35.488373Z"
+  }
+ }
+}

@@ -1,0 +1,36 @@
+{
+  "candidate": "362d2fb028832ae2810c4b55ae200c876c4a6313",
+  "baseline": "211f1162f0815ba244015292a911f6ce1cb09bdc",
+  "reports": {
+    "base": {
+      "summary": "5 failed, 2110 passed, 18 skipped in 3016.42s (0:50:16)",
+      "exit": 1,
+      "failures": [
+        "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_frozen_v1_fixtures",
+        "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_preserved_baseline_fixtures",
+        "factory/python/tests/test_lrtx_p3.py::test_changed_upstream_requirements_invalidate_dependent_swe2_tasks",
+        "factory/python/tests/test_lrtx_rework_unchanged.py::test_a_valid_checkpoint_without_findings_is_still_reused",
+        "factory/python/tests/test_owner_obligation_coverage.py::test_orders_without_obligations_are_unchanged"
+      ],
+      "log_sha256": "7d3591baf6ecfa7e54508df44ad90a8831e6e72733441c950bdd0b0b8ab6b634",
+      "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-batch10-base-suite.log"
+    },
+    "cand": {
+      "summary": "5 failed, 2141 passed, 18 skipped in 3018.26s (0:50:18)",
+      "exit": 1,
+      "failures": [
+        "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_frozen_v1_fixtures",
+        "factory/python/tests/test_lrtx_compat.py::test_current_tree_reproduces_the_preserved_baseline_fixtures",
+        "factory/python/tests/test_lrtx_p3.py::test_changed_upstream_requirements_invalidate_dependent_swe2_tasks",
+        "factory/python/tests/test_lrtx_rework_unchanged.py::test_a_valid_checkpoint_without_findings_is_still_reused",
+        "factory/python/tests/test_owner_obligation_coverage.py::test_orders_without_obligations_are_unchanged"
+      ],
+      "log_sha256": "e2fa03614e5744e410df3c3fb4e436c60cfe1f4ff0823ccc9add5f9ffcd3f595",
+      "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-batch10-cand-suite.log"
+    }
+  },
+  "candidate_only_failures": [],
+  "focused": "191 passed, 4 skipped in41.61s",
+  "scope": "CAPA125/144/145/146/147/149; upstream architecture recovery campaign; cloud transport scope clarification",
+  "not_in_this_batch": "Native inspector model fixCAPA150 and latercampaign/M5/M6 work remain separate; this is no production release"
+}

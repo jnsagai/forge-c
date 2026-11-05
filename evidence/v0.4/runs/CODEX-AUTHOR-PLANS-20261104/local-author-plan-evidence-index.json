@@ -1,0 +1,63 @@
+{
+  "at": "2026-11-04T15:15:16.364961+00:00",
+  "candidate": "f843b2464aede3f9448f83af718e6875f7d5a410",
+  "baseline": "e014fd86a00233605b2f82c026499aa4e8fbd7b4",
+  "kind": "CHANGE",
+  "claims": [
+    "procedure order clarified within exactprovidedHALSWE6scope",
+    "factorySWE3timingownership clarified onlywithprovidedCMSISHAL+explicitperformanceallocation",
+    "deterministicnegativecontrolsandfrozenoutside-scopegraphcontrols"
+  ],
+  "claim_limits": [
+    "NoLLMefficiency orsuccessmeasured fornewguidance",
+    "No fabricatedsimulationmeasurement; gatecontrolstubsarefixturesonly",
+    "CRC ESCALATED4 preserved; no productionactivation/reset/renaming"
+  ],
+  "evidence": {
+    "local-swe6-AB-evidence-20261104.json": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-swe6-AB-evidence-20261104.json",
+      "sha256": "1998d8e047c35795bb5c1f55c2370cfbde4b5af8594d806b07706a2e93b4089e"
+    },
+    "local-swe6-C-first-rework-20261104.json": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-swe6-C-first-rework-20261104.json",
+      "sha256": "8be46cadb7de96cdea07baac5e23c631c28b3158ab85687efe0fed98194b633a"
+    },
+    "local-swe6-C-final-20261104.json": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-swe6-C-final-20261104.json",
+      "sha256": "945169130c5fa83629bb098b1b028b67e9e7305724b60ff32b629e155151c3f4"
+    },
+    "local-swe6-D-final-20261104.json": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-swe6-D-final-20261104.json",
+      "sha256": "d35e6c4021082227d0bacdc767c57a7c20ac4028f4ebad28835652fa948bb082"
+    },
+    "local-swe6-plan-protected-input-index.json": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-swe6-plan-protected-input-index.json",
+      "sha256": "f1a800e2fedb22728195d1dc7ea921570acd41aab313eadd2e2148484c5708f1"
+    },
+    "local-author-plan-controls.xml": {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-author-plan-controls.xml",
+      "sha256": "56371b9702fdd0eb1d5c859746d3a88b740f00b9116b3a41d55aa44a0ae6f340"
+    }
+  },
+  "qualification_log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-author-plan-change-bwrap.log",
+  "qualification": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "focused_tests": {
+    "total": 101,
+    "passed": 84,
+    "skipped": 17,
+    "failed": 0,
+    "xml": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-author-plan-focused.xml"
+  },
+  "new_controls_passed": 26,
+  "design": "PASS",
+  "prior_qualification": {
+    "decision": "pd-8feba98255e84028c595",
+    "status": "REJECTED",
+    "cause": "RPR037/039/040 Podman storage/preflight errors, noSYMPTOM_PRESENT",
+    "log": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-author-plan-change.log"
+  },
+  "input_health": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-author-plan-input-health.log",
+  "decision_id": "pd-fe996c28543e09462a37",
+  "decision_export": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-author-plan-exports/evidence/cre/decisions/pd-fe996c28543e09462a37.json",
+  "protected_receipt_index": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-author-plan-exports/evidence/cre/protected-receipt-index.json"
+}

@@ -96,7 +96,19 @@ def selection_issues(prof: dict, *, model: str, provider: str, code_model: str |
     for m in {model, code_model} - {None}:
         if m not in prof["models"]["allowed"]:
             issues.append(f"PROFILE_MODEL_NOT_ALLOWED:{m}")
+    roles = role_models(prof)
+    for m in sorted(set(roles.values()) | set((prof.get("runtime") or {}).get("llama_server_alternates") or {})):
+        if m not in prof["models"]["allowed"]:  # owner 2026-10-31: every swapped-in model is a pinned model
+            issues.append(f"PROFILE_SERVED_MODEL_NOT_ALLOWED:{m}")
+    if roles and (set(roles) - {"author", "inspector"} or not all(isinstance(v, str) for v in roles.values())):
+        issues.append("PROFILE_ROLE_MODELS_INVALID")
     return issues
+
+
+def role_models(prof: dict) -> dict:
+    """structured.role_models {author, inspector} (in-run model swap, owner 2026-10-31); {} when not declared."""
+    rm = (prof.get("structured") or {}).get("role_models") or {}
+    return rm if isinstance(rm, dict) else {"invalid": rm}
 
 
 def _overlap(a: Path, b: Path) -> bool:
@@ -197,6 +209,9 @@ def network_enforcement(probe: tuple[str, int] = EXTERNAL_PROBE, timeout: float 
 def model_identity(prof: dict, model: str, ollama_url: str) -> dict:
     """LRTX-FR-018/T007: the served model's digest/quantization must equal the profile's pinned identity."""
     want = prof["models"]["allowed"][model]
+    cb = (prof.get("runtime") or {}).get("cloud_bridge")
+    if isinstance(cb, dict) and cb.get("models"):
+        return _bridge_identity(prof, model, want, cb)
     try:
         with urllib.request.urlopen(ollama_url.rstrip("/") + "/api/tags", timeout=10) as r:  # noqa: S310
             tags = json.loads(r.read())
@@ -206,9 +221,37 @@ def model_identity(prof: dict, model: str, ollama_url: str) -> dict:
     if got is None:
         return {"model": model, "status": "MISSING"}
     q = (got.get("details") or {}).get("quantization_level")
-    ok = got.get("digest") == want["digest"] and q == want["quantization"]
+    # Ollama 0.34 reports quantization_level 'unknown' for some GGUFs (Ornith Q8_0: llama-server reads model_ftype Q8_0);
+    # a profile may record that reported label - the manifest digest (and the stack's blob pin) still identify the model
+    ok = got.get("digest") == want["digest"] and q == want.get("reported_quantization", want["quantization"])
     return {"model": model, "status": "MATCH" if ok else "MISMATCH", "digest": got.get("digest"), "quantization": q,
             "size": got.get("size"), "expected_digest": want["digest"], "role_qualification": want["role_qualification"]}
+
+
+def _bridge_identity(prof: dict, model: str, want: dict, cb: dict) -> dict:
+    """Owner 2026-11-02 (comparison line): a cloud model has no file digest. It MATCHes when the profile routes it to
+    the bridge and the bridge serves exactly that name (/v1/models over its socket); the recorded identity is the
+    profile's declared cloud identity, with its basis."""
+    import socket as _socket
+
+    root = os.environ.get(prof["deployment"]["root_env"]) or prof["deployment"]["default_root"]
+    sock = Path(root) / cb["socket"]
+    try:
+        with _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM) as c:
+            c.settimeout(10)
+            c.connect(str(sock))
+            c.sendall(b"GET /v1/models HTTP/1.1\r\nHost: cloud-bridge\r\nConnection: close\r\n\r\n")
+            data = b""
+            while chunk := c.recv(65536):
+                data += chunk
+        served = [m.get("id") for m in json.loads(data.split(b"\r\n\r\n", 1)[1]).get("data") or []]
+    except (OSError, ValueError, IndexError) as exc:
+        return {"model": model, "status": "UNREACHABLE", "detail": f"cloud bridge: {exc}"[:200]}
+    if model not in cb["models"] or model not in served:
+        return {"model": model, "status": "MISSING", "detail": "not served by the cloud bridge"}
+    return {"model": model, "status": "MATCH", "digest": want["digest"], "identity_basis": "cloud_bridge_served_model_name",
+            "quantization": None, "size": None, "expected_digest": want["digest"],
+            "role_qualification": want["role_qualification"]}
 
 
 def runtime_record(env: dict[str, str] | None = None) -> dict:
@@ -219,6 +262,29 @@ def runtime_record(env: dict[str, str] | None = None) -> dict:
     if p is None or not p.is_file():
         return {"status": "UNKNOWN", "reason": "no services.json from scripts/forge_lrtx.sh"}
     return {"status": "RECORDED", **json.loads(p.read_text())}
+
+
+def served_model_issues(prof: dict, env: dict[str, str] | None = None, wait_s: float | None = None) -> list[str]:
+    """CAPA-081 (run WO-F014-SWE1-OBL-20261031-01): the work order was launched before the stack's llama-server was
+    healthy; the gateway refused the first calls and they used the one development repair pass. When this stack records
+    a llama-server, wait (bounded) for its health before anything starts; refuse if it never becomes healthy. Without a
+    recorded llama-server (no stack, Ollama-only profiles) nothing is checked."""
+    import time
+
+    rec = runtime_record(env)
+    pr = ((rec.get("processes") or {}).get("llama_server") or {}) if rec.get("status") == "RECORDED" else {}
+    if not (prof.get("runtime") or {}).get("llama_server") or not pr.get("health"):
+        return []
+    wait = float(wait_s if wait_s is not None else (prof["runtime"].get("model_ready_wait_s") or 120))
+    end = time.monotonic() + wait
+    while True:
+        try:
+            with urllib.request.urlopen(pr["health"], timeout=5):  # noqa: S310 - the stack's loopback health URL
+                return []
+        except OSError:
+            if time.monotonic() >= end:
+                return [f"MODEL_SERVER_NOT_READY:{pr['health']}"]
+            time.sleep(1)
 
 
 def select(profile_id: str, *, model: str, provider: str, code_model: str | None, acp_authors: str | None,
@@ -235,8 +301,11 @@ def select(profile_id: str, *, model: str, provider: str, code_model: str | None
     if require_network_denied and prof.get("network", {}).get("required") == "namespace_denied" \
             and net["status"] != "DENIED_VERIFIED":
         issues.append(f"NETWORK_NOT_DENIED:{net['status']}")
-    models = [model_identity(prof, m, env.get("FORGE_OLLAMA_URL", "")) for m in sorted({model, code_model} - {None})]
+    models = [model_identity(prof, m, env.get("FORGE_OLLAMA_URL", ""))
+              for m in sorted({model, code_model, *role_models(prof).values()} - {None})]
     issues += [f"MODEL_IDENTITY_{m['status']}:{m['model']}" for m in models if m["status"] != "MATCH"]
+    if not issues:  # CAPA-081: nothing starts while the served model is not answering
+        issues += served_model_issues(prof, env)
     if issues:
         raise ProfileRefused(issues)
     record = {"id": prof["id"], "version": prof["version"], "status": prof["status"], "config": prof["_path"],

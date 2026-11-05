@@ -1,0 +1,120 @@
+{
+  "schema": "forge-c/owner-bootstrap-reconciliation-source-index/1",
+  "state": "FROZEN_SOURCE_QA_PASS_ROOT_FULL_FIX_PENDING",
+  "source": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "base": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v7",
+  "tracked_clean": true,
+  "files": [
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_reconciliation.py",
+      "sha256": "3fc096ede3677d8ce40f302d3fdbe8f2884f42acf4cc22c58604510de89cf522"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "a175cd76a014c3e30cdace1b8c29a3a18143b8d42254e2bdd3748782a8ef25d1"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_supervised_development.py",
+      "sha256": "3cf9888de2cb97d51ca8dccdcaed499e58bfd574a68a201a2a1481411d15a3d0"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "4ab58c96d8d6c1b482ad87f4260189986f4365b686898f7cf655df4f142c1076"
+    },
+    {
+      "path": "factory/python/tests/test_owner_bootstrap_cold_start.py",
+      "sha256": "8d36deafa72db5a54b071582d1bd36026ea3186a64ca69e04080c1f342bf46d6"
+    },
+    {
+      "path": "factory/python/tests/test_owner_bootstrap_reconciliation.py",
+      "sha256": "d29e75550d5cb98850f80726c2b5218251e51e0e9cf6adc137f6303b2116b69b"
+    }
+  ],
+  "affected": {
+    "tests": "185",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "173.188"
+  },
+  "new_reconciliation_controls": "34 PASS including real dead oldissuer/private netnamespace, exact canonical receipt/UNKNOWN unchanged, fresh consumer, collectedunit, canonical oldissuance, currentcancel and delayed M/B evidence",
+  "design": "14 PASS",
+  "legacy": "16 PASS",
+  "packager": "7 PASS",
+  "ruff": "PASS",
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v7-affected-r1.log",
+      "sha256": "ad30a00f8e10de426029e7b777444922aa8c00dfb89d922021fd074dadde5396"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v7-affected-r1.xml",
+      "sha256": "6b791b95126047645465b8a6ad5f5c21eca0fc706d54c11530b511be74b52843"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v7-design.log",
+      "sha256": "75fdae0f6c198910a59b722ca4b91bd948fda8b3444f13abd544b651c68e8122"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v7-inputs-before-tests.json",
+      "sha256": "49d1d8f8772128b6c6bc512d05086f46bc942d0d81236ef4d7a071ca4069ebc0"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v7-legacy.log",
+      "sha256": "3befd505481044371e9c0178b2f214b58badd3fdfe8740b18492fd16f74393c2"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v7-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v7-v03-packager.log",
+      "sha256": "8aec391b3fe96f04b465ef9306713c64fd89c296f74211756b1439c57be68ef0"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v6-first-snapshot.json",
+      "sha256": "6070b91c0ea58be8d43710ea8d82c3fdd453cc3dae77985229f7622a4a8850dc"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v6-reconciliation-r1.log",
+      "sha256": "0a8ff6229d5186c19e601a8a8e7e8cca3553a4f5e219467b0c082bb27337c440"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v6-reconciliation-r1.xml",
+      "sha256": "3110c7e0901abfd67885f2fe786378f9975e549f5b4af3a38c3d9ea12205c816"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v6-reconciliation-r2.log",
+      "sha256": "229fa1ee47c94334d9739118a4957223489063ef5f45c42a282179e638400064"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v6-reconciliation-r2.xml",
+      "sha256": "e1905cf0562c57032606832d8d3fc63b783616177ce0e89386cd02d380bf3be3"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v6-reconciliation-r3.log",
+      "sha256": "5cba8a0d336f6301764b9e7cb54d2168880bd1238a4afa7c45b0666fad715409"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v6-reconciliation-r3.xml",
+      "sha256": "c37ae303181159d6528c90d8951ad5369e6060db325a20ff6512780c1c2842d0"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-fix-source-index.json",
+      "sha256": "9c53e809ab9b15b672a6cdc113454988d1270ae9fd735e22be3ef416302e1456"
+    }
+  ],
+  "external_staged_FIX": {
+    "id": "AFO-OWNER-BOOTSTRAP-COLD-20261105",
+    "manifest_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-cold-external-oracle/manifest.yaml",
+    "manifest_sha256": "ea6b4fac04f94d0f9bfef58fc7e6e5a9bf00246b57e5c97293b1017b31a785c3",
+    "script_sha256": "8ac94c19d293eaa885064260be490d34b61d48b15ea83b6b5092462e91a5e3e1",
+    "index_sha256": "5bec00eaf7dc30aaa1a863906bc45e1f442c077fe1e2b2b923b358b6f4519834",
+    "root_independent_bwrap": "Root reports baseline214 PRESENT/c757 ABSENT verified; finalsource fullFIX pending"
+  },
+  "producer_contract": "forge-c/owner-bootstrap-cleanup-evidence/1 in private Intent.parent/owner-bootstrap-reconciliation; exact field schema/source public validate(); external reaper is separate/no cleanup API",
+  "defaults": "Unchanged failure refusal. Only explicit complete4flags + SAME currentNEWissuer + strict physical/action/Intent locks can append receipt; bootstrap consumes exacttoken after fresh checks",
+  "scope": "Existing UNKNOWN/mission/accounting/source214 remain unmodified. Source appends distinct receipt only; zero signals/leases release/refill/authority renewal. Actual cleanup/activation NOT_RUN by this agent.",
+  "limitations": "One explicit oldUNKNOWN pair supported at a time; any additional unresolved attempt refuses. Engineering controls are privateCPU/kernel, not model-role competence or runtime acceptance."
+}

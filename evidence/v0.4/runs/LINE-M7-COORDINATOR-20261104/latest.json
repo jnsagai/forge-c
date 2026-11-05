@@ -1,0 +1,22 @@
+{
+  "schema": "forge-c/line-m7-coordinator-source-validation/1",
+  "at": "2026-11-04T13:39:11.655664+00:00",
+  "status": "PASS_SOURCE_COMPONENT_ONLY",
+  "candidate_revision": "7da0e9e84fcba8e0eeb820775b9a969b77376a37",
+  "baseline_revision": "7ecd8d3252abde51273aa324a412f16c10aa859d",
+  "promotion_decision": "pd-37a510c72b64a18f7b4b",
+  "prior_broader_tests": {
+    "passed": 98,
+    "evidence": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m7-coordinator-final-tests.xml"
+  },
+  "final_affected_controls": {
+    "passed": 26,
+    "evidence": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/autonomy-m7-review-binding-tests.xml"
+  },
+  "static_design": "14PASS; exactCREquality_processPASS",
+  "changes": "Existing recovery-worker adapter -> frozen full failure case -> existing durable Maintainer -> existing VerificationJobs -> independent CRE offline candidate. No new queue, deployment or network publication.",
+  "runtime_model_calls": 0,
+  "live_maintainer_qualification": "NOT_RUN",
+  "full_M7": "INCOMPLETE",
+  "configuration_preflight": "BLOCKED:131072maintainer reservation <131073minimalpositive output aftergateway thinking. No budgets changed."
+}

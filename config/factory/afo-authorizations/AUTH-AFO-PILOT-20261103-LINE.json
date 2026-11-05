@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "authorization_id": "AUTH-AFO-PILOT-20261103-LINE",
+  "approver": "jnsagai",
+  "approval_evidence_ref": "owner 2026-11-03: \"go with your proposal\" + \"i approve everything\" (autonomous Omniverse2 line M3: campaign orders, retry rule, quality rule)",
+  "issued_utc": "2026-11-03T17:42:17Z",
+  "expires_utc": "2026-11-17T17:42:17Z",
+  "policy_sha256": "826ce250bd5f11b20863d02cf40ac6ed4c049509b61c9e3799a129c2110d1a1e",
+  "mode": "PILOT",
+  "allowed_actions": [
+    "submit_workorder",
+    "launch_workorder",
+    "recover_workorder"
+  ],
+  "scope": {
+    "driver_classes": [
+      "STM32N6_IWDG_HAL",
+      "STM32N6_CRC_LL_ST",
+      "STM32N6_CRC_HAL",
+      "STM32N6_WWDG_LL_ST",
+      "STM32N6_WWDG_HAL"
+    ],
+    "models": [
+      "local-rtx-v2-omniverse2-ornith-think-author-q38-inspector"
+    ],
+    "service_actions": [
+      "line_stack_restart",
+      "line_orphan_sweep",
+      "line_run_worktree_cleanup"
+    ]
+  },
+  "signature_ref": "AUTH-AFO-PILOT-20261103-LINE.sig",
+  "revoked_utc": null,
+  "signed_runbook_ref": null
+}

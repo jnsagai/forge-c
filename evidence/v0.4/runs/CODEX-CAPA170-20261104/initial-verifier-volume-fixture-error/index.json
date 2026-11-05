@@ -1,0 +1,6 @@
+{
+  "status": "PRESERVED_ORACLE_FIXTURE_ERROR_NO_SOURCE_FAILURE_CLAIM",
+  "original_sha256": "b5248a4f81e8cc82c45a6aa957adbbc59de673c537b273948f5af8c4e273ab30",
+  "runner_error": "rr-86b94c3232c7af4bf343",
+  "cause": "Normal durable Store host volume write-probe was not modeled as explicit external fixture leaf under read-only verifier data-root mount. No evaluated source, evaluator, policy or runtime guard changed."
+}

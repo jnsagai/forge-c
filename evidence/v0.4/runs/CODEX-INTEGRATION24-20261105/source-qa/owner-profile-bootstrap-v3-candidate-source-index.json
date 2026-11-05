@@ -1,0 +1,51 @@
+{
+  "status": "FROZEN_CANDIDATE_RELEVANT_QA_AND_ROOT_CRE_PENDING",
+  "revision": "d38a5f230273ec78e30cfed50e2c58354ffdef5e",
+  "base": "dc27abba601e5f6713f30e6027cb0bbd64241528",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v3",
+  "changed_paths": [
+    {
+      "path": "docs/adr/ADR-DA-012-owner-profile-bootstrap.md",
+      "sha256": "209407b20bf61fc10ef0586a2c4f20fa505d76267628e27d5b98f6c6bb99f4e8"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_native_transport.py",
+      "sha256": "8aeab8d2991a4329ef8a0b98a7f3d4437445e0e935edf943cc29b63d518b41d8"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/operations.py",
+      "sha256": "122f29dba8af979cade1e7a793c38fafc05c2aef0ce1bb34f7ea51473e210973"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_history.py",
+      "sha256": "5ba3f37c34dead13c164c0c5058f26d3c8cfcaa26bc39053992d1b219640194f"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "12b339f8e9d700e1e92fabae6ad54a17b64432dae4d17ae6e61794ae5ebeea11"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_supervised_development.py",
+      "sha256": "de5ebc1bf11ac919759d43a4ac04f214b9f373b9d430a4811e444e66053ed4bf"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "f399772651da6d52efa858ed923e68ba72e40afee6bd2d6eddb89d7dafc1294f"
+    },
+    {
+      "path": "factory/python/tests/test_owner_profile_bootstrap.py",
+      "sha256": "d080cdfead03ddd89d704a9535f4a9a9753cee7af2c2caf82b52e3cb5bd72775"
+    }
+  ],
+  "inputs_before_any_tests": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v3-inputs-before-tests.json",
+    "sha256": "9597859c02f1cd7937d4049157f41a40bd58442831d30d63e948596b3a2311f2"
+  },
+  "ruff": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v3-ruff.log",
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "result": "PASS"
+  },
+  "source_not_to_be_edited_while_consumed": true,
+  "model_or_remote_effects": false
+}

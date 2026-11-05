@@ -1,0 +1,107 @@
+{
+  "schema": "forge-c/typed-prelaunch-diagnostic-independent-review/1",
+  "at": "2026-11-05T23:18:32.726750+00:00",
+  "source": "11dd97481907057174812ad26e109a506dfa3435",
+  "status": "NO_BLOCKING_FINDING_IN_SCOPED_DIAGNOSTIC_DELTA",
+  "files": [
+    {
+      "path": "factory/python/forge_factory/afo/local_agent.py",
+      "sha256": "20d1cd5a929fda6e5c755e83e9cb395a0d8bb9158b4d7aef8a91407936601cae"
+    },
+    {
+      "path": "factory/python/tests/test_launch_refusal_diagnostics.py",
+      "sha256": "4422010890a78f975e7ada17752e5ab3987626f2104a094854b2a0d9f4e2e769"
+    },
+    {
+      "path": "docs/adr/ADR-DA-016-preserve-prelaunch-refusal-codes.md",
+      "sha256": "03a9e827b03b565d639fc0af1818dee7c00f0d125e39f5c091185b997ad70012"
+    }
+  ],
+  "findings": [],
+  "checks": [
+    "Only trusted existing Refused type plus complete ASCII uppercase/digit/underscore code, length1..128 becomes newfailure_type; malformed/untrustedcode keeps oldclassfallback. No exceptiondetail enters newkey.",
+    "Existing exceptionmessage/job_id/nonce remain unchanged. No launch/authority/native guard or policy/cap/ledger mutation path changed.",
+    "local_agent.launch marks invoked before subprocess call; after-invocation timeout is not wrapped as LaunchNotStarted.",
+    "line_recovery_product.launcher still requires absent native submit intent plus existing explicit earlyoutcome/refusal proof before creating LaunchNotStarted.",
+    "dispatch still binds exactjob/nonce, Executions.not_dispatched still validates DISPATCH_INTENT_RECORDED/no nativeIDs/unconfirmedidentity before quiescence; command quarantined/no replay; spentattempt retained.",
+    "New10 controls exerciseactualprivateSQLite/outbox/no-dispatch proof andtransportuncertainty; timeout keepsHELD lease/noLAUNCH_NOT_STARTED proof."
+  ],
+  "evidence": {
+    "focused": {
+      "tests": 10,
+      "passed": 10,
+      "skipped": 0
+    },
+    "broader": {
+      "tests": 47,
+      "passed": 39,
+      "failed": 8,
+      "skipped": 0
+    },
+    "F0_baseline_executor": {
+      "tests": 10,
+      "passed": 2,
+      "failed": 8
+    },
+    "exact_same_8_failure_test_ids": [
+      "factory.python.tests.test_line_recovery_executor::test_binding_refusal_is_checked_before_native_launch_even_after_prepare",
+      "factory.python.tests.test_line_recovery_executor::test_controller_role_authority_is_rechecked_before_dispatch",
+      "factory.python.tests.test_line_recovery_executor::test_current_line_binding_is_required_in_addition_to_generic_authority",
+      "factory.python.tests.test_line_recovery_executor::test_default_line_dispatch_uses_existing_host_interlocks_adapter",
+      "factory.python.tests.test_line_recovery_executor::test_explicit_controller_role_inputs_are_bound_without_source_inference",
+      "factory.python.tests.test_line_recovery_executor::test_only_reverified_line_origin_lifts_development_deferral",
+      "factory.python.tests.test_line_recovery_executor::test_origin_or_case_cannot_be_rebound_or_downgraded",
+      "factory.python.tests.test_line_recovery_executor::test_revocation_before_dispatch_never_calls_fabro_and_preserves_reservation"
+    ],
+    "failure_reason": "COHERENT_OBJECTIVE_REQUIRED during existing executor fixture preparation before thisCtor",
+    "legacy_fixture_debt": "OPEN_NOT_WAIVED; no whole-suiteGREEN or taskclosure claimed",
+    "design": "14PASS peractualrootlog",
+    "ruff": "PASS peractualrootlog"
+  },
+  "read_only": true,
+  "reviewer_tests": "NOT_RUN",
+  "runtime_effects": false,
+  "backup_source_modified": false,
+  "evidence_files": [
+    {
+      "path": "launch-refusal-code-v1-inputs-before-tests.json",
+      "sha256": "691097773c534f3de11c43f1e2322a66fbaef02300244fa836252cde71cdecad"
+    },
+    {
+      "path": "launch-refusal-code-v1-focused-r1.log",
+      "sha256": "7040371af15613c02e821ec0eecc1d1330f691ace4cef93a41bfa358822c4103"
+    },
+    {
+      "path": "launch-refusal-code-v1-focused-r1.xml",
+      "sha256": "881efdfc55262e8a7961524eac43185fef6cf5e5145d9c81577db73c54859f3a"
+    },
+    {
+      "path": "launch-refusal-code-v1-regression-r1.log",
+      "sha256": "d7443c87fe2a67c2af563272226a39cb663ca7eae36117d31677042ce16eb7d4"
+    },
+    {
+      "path": "launch-refusal-code-v1-regression-r1.xml",
+      "sha256": "98aed642afff0a33f888bf8197ce91d5bfdc218583dcb15e48a70e6a47f0cba5"
+    },
+    {
+      "path": "launch-refusal-code-F0-executor-baseline-r1.log",
+      "sha256": "0eb803b2ee6b30cca9dd603894b9eb55d1e9f6814e7f5e2840115bd49cb1880b"
+    },
+    {
+      "path": "launch-refusal-code-F0-executor-baseline-r1.xml",
+      "sha256": "075a52162aaf3483b40835f02b04c4a0e4cb3957dbd663811dcf380323554a06"
+    },
+    {
+      "path": "launch-refusal-code-F0-baseline-red-r1.log",
+      "sha256": "7052ae9ff6fe65dbb8f22c3061d06250ee2d78af9aa2e8fcf9211b87a8499e7e"
+    },
+    {
+      "path": "launch-refusal-code-v1-design-r1.log",
+      "sha256": "fede7f81d76edec7257be2a3ee7903ce9fd96cc53787f7fb4d77c573a2959748"
+    },
+    {
+      "path": "launch-refusal-code-v1-ruff-r1.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    }
+  ]
+}

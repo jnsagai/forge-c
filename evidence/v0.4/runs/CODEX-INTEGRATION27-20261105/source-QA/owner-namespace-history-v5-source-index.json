@@ -1,0 +1,179 @@
+{
+  "accounting_new_controls": {
+    "errors": "0",
+    "failures": "0",
+    "hostname": "master",
+    "name": "pytest",
+    "skipped": "0",
+    "tests": "9",
+    "time": "11.229",
+    "timestamp": "2026-11-05T21:26:02.574553+00:00"
+  },
+  "actual_causal_baseline": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "actual_effects": false,
+  "all_own_handles_closed": true,
+  "base_qualified": "8edd6a5657ff9c5f67b1c40c243532cb71d5bc69",
+  "branch": "feat/owner-namespace-history-v5-20261105",
+  "changed_files": [
+    {
+      "bytes": 4054,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v5/docs/adr/ADR-DA-015-nested-provider-entry-and-bootstrap-history.md",
+      "sha256": "dacaef2361b8a4da6a38ed7fdda9ad3249c9053591f196385283da8f46ff1892"
+    },
+    {
+      "bytes": 23511,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v5/factory/python/forge_factory/afo/owner_bootstrap_reconciliation.py",
+      "sha256": "130d431fd77bf0d01ae7feae260ed5811f55e5eed874b4722b0d30622473c8a5"
+    },
+    {
+      "bytes": 21245,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v5/factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "c4a6be646514d597413d005f3feb5289ccfd8fc9a591c22c79cd24dce2cd9ac7"
+    },
+    {
+      "bytes": 19908,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v5/factory/python/forge_factory/lrtx/provider_process.py",
+      "sha256": "b42d6a5238cb0ad257c07c993a8dbeed2659c199f7d6eff36b4c2d082b4b2a04"
+    },
+    {
+      "bytes": 63528,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v5/factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "d18b6c01a26cd8b699ef5bf56d9f64d7290fe8d0ad545267c2b4a1cc96059957"
+    },
+    {
+      "bytes": 31272,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v5/factory/python/tests/test_owner_bootstrap_reconciliation.py",
+      "sha256": "903bdbd5e67efa7ffc7345041a58d4f16e01a9e1ce9023fc73f806da1e54a799"
+    },
+    {
+      "bytes": 9716,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v5/factory/python/tests/test_owner_managed_namespace_start.py",
+      "sha256": "8a90465d9e4d674c0d06474dfd636ac48b1ab6e4db2f881f531aec7b35b2ba70"
+    }
+  ],
+  "checks": {
+    "changed_file_Ruff": "PASS_V5",
+    "design14": "PASS_V5",
+    "legacy16": "PASS_V4_source_unchanged",
+    "packager7": "PASS_V4_source_unchanged",
+    "real_full_managed_CPU_startup_swap_HOST_boundary": "PASS_V3_and_V4_source_unchanged"
+  },
+  "composite": {
+    "V4_initial_affected": {
+      "errors": "0",
+      "failures": "1",
+      "hostname": "master",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "261",
+      "time": "250.396",
+      "timestamp": "2026-11-05T21:08:58.422240+00:00"
+    },
+    "V4_unchanged_tool_rerun": {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "master",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "1",
+      "time": "6.259",
+      "timestamp": "2026-11-05T21:15:45.816396+00:00"
+    },
+    "V5_history_cases": 63,
+    "V5_replaces_history_cases": 54,
+    "distinct_cases": 270,
+    "label": "270distinctcases covered: V4 unaffected modules + V4 unchanged pinned-tool rerun + fullV5 history63. NOT single full-suiteGREEN."
+  },
+  "evidence": [
+    {
+      "bytes": 1769,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-accounting-r1.xml",
+      "sha256": "122ea1be5198ce7cf03d3ff3fc0e319fa1bc5ba5590c9e58ff76fc2a8414092b"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-accounting-r1.log",
+      "sha256": "585ba42829657b9e2d56f8614be6c3365a8405474eed008559511ab50f2ffcfb"
+    },
+    {
+      "bytes": 11675,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-history-r1.xml",
+      "sha256": "834e116f8b4b342690befa76bc99e9068aed981d236ed2e1fa53d8add2a4a451"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-history-r1.log",
+      "sha256": "07ef2673018afac0f550dc47983fd7c74e3e61ce80ed4a8d60881dc214204985"
+    },
+    {
+      "bytes": 2366,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-inputs-before-tests.json",
+      "sha256": "2b4b9b22675f641f16924a5bcacbf8804aed82dddb1ffc264dc03d5bc5e3cd0d"
+    },
+    {
+      "bytes": 1514,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-design.log",
+      "sha256": "f8d8da5467efe30ca8673da3318165f8f5d7b89ce7dfd7a68e38482392c83139"
+    },
+    {
+      "bytes": 19,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "bytes": 3583,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-independent-accounting-review.json",
+      "sha256": "702b49a4dd8d5006243f1369e16f8f21182a0aa88143df7bd522330de400f2d1"
+    }
+  ],
+  "full_history_regression": {
+    "errors": "0",
+    "failures": "0",
+    "hostname": "master",
+    "name": "pytest",
+    "skipped": "0",
+    "tests": "63",
+    "time": "145.083",
+    "timestamp": "2026-11-05T21:27:11.569587+00:00"
+  },
+  "independent_accounting_review": {
+    "bytes": 3583,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-independent-accounting-review.json",
+    "sha256": "702b49a4dd8d5006243f1369e16f8f21182a0aa88143df7bd522330de400f2d1"
+  },
+  "independent_namespace_review": {
+    "bytes": 14322,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-a42-independent-review-r1.json",
+    "sha256": "235975944c535e07dc3b7c31e019857d8abfc91704d0b0bdbfaec5861e185f7d"
+  },
+  "limitations": [
+    "No full CRE run by component author; root owns independent causal/fullFIX.",
+    "External oracle baseline/candidate isolation ERROR attempts are not source verdicts and remain separately preserved by root.",
+    "No actual runtime cleanup/start/model/GPU/signature/authority effects performed.",
+    "No human MISRA/role competence/endurance/production acceptance/task checkbox closure."
+  ],
+  "predecessor_source_index": {
+    "bytes": 13502,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-source-index.json",
+    "sha256": "96c7056971e6bc22f34c0465af741887a897332221582a34afa6ea1fd4a4ea24"
+  },
+  "schema": "forge-c/owner-namespace-history-final-source-index/1",
+  "scope": [
+    "Namespace entry preserves ancestor NET capability and skips same USER reentry.",
+    "New captured provider instance/2 pins exact outer holder kernel ownership for mapped native/model-switch observers; instance/1 archives remain unchanged.",
+    "Historical accepted cleanup is immutable data; pending failure still requires fresh normal cleanup/current authority/full quiescence.",
+    "Future consumed receipt and successorINTENT are one atomic transaction. Audited legacy format requires exact three source blobs and canonical chain.",
+    "Worker capture/signal and HOST quiescence/stop AST unchanged. No policy/grant/mission-budget/signed-ACT changes.",
+    "Exact six nonnegative-integer counter keys; compare current>=each historical issuer; historicalunknown is sticky across newissuers/same-inode restores."
+  ],
+  "source": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+  "source_bundle": {
+    "bytes": 23986,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-source.bundle",
+    "sha256": "4023044a6a7f95a4eb3dfa6142f5654196acdba462d5d4d0dd5ca914af515eb0"
+  },
+  "source_delta_after_V4": "ONLY historical issuer accounting monotonicity helper + realprivate/typed-negative tests; provider/nsentry/worker/signedproduction paths byteidentical",
+  "status": "FROZEN_COMPONENT_READY_FOR_ROOT_CAUSAL_FIX",
+  "tracked_clean": true,
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v5"
+}

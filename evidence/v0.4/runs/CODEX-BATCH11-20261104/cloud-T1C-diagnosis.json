@@ -1,0 +1,37 @@
+{
+  "at": "2026-11-04T11:02:29.759286+00:00",
+  "runs": [
+    {
+      "workorder": "WO-F014-CMP-SWE1-CRCHAL-20261104-T1C",
+      "deterministic_checks": {
+        "register_effects": [],
+        "owner_coverage": [],
+        "scope": [],
+        "missing_outputs": []
+      },
+      "artifacts": {
+        "workproducts/SWE.1/register_effects.json": "b02bd2b98fda9cac34202c54c581495989f29929df5399b9f04eb03ba0bdb23a",
+        "workproducts/SWE.1/software_requirements.md": "942b210a8794ecf85f0f1ae0fe9a84db35fec564a222461068004b943fd1bc09",
+        "workproducts/SWE.1/software_requirements.reqif": "24944b26d8a8037f37465c0c2bce8426d92f0ab4b6fc482f489b3c5ab19d87b4"
+      },
+      "outcome": "SWE1 BLOCKED; artifact presence and these checks do not substitute for independent inspection"
+    },
+    {
+      "workorder": "WO-F014-CMP-SWE1-WWDGHAL-20261104-T1C",
+      "deterministic_checks": {
+        "register_effects": [],
+        "owner_coverage": [],
+        "scope": [],
+        "missing_outputs": []
+      },
+      "artifacts": {
+        "workproducts/SWE.1/register_effects.json": "2d6252a452ffed19333fa3a57a8d13a8156242aade8879b5ae12fe7e6e93a53c",
+        "workproducts/SWE.1/software_requirements.md": "c8e1749bbe55ff0bde48b12e83b526cf136d1d1405963c805f9296054851420b",
+        "workproducts/SWE.1/software_requirements.reqif": "52248ddb128943b84335e72d1dfda62dd4c2c9607e1d8bb7f585cde14cfcd0b3"
+      },
+      "outcome": "SWE1 BLOCKED; artifact presence and these checks do not substitute for independent inspection"
+    }
+  ],
+  "candidate": "5ecf65b9",
+  "change": "Clarify existing no_write semantics for mixed HAL calls and preserve frozen capability catalog without treating it as additional allocated APIs. No oracle, scope, or engine capability gates changed; causal CAPA152 not asserted."
+}

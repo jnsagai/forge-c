@@ -1,0 +1,22 @@
+{
+  "schema": "forge-c/normal-change-runner-review/1",
+  "runner": {
+    "path": "codex-integration27-normal-change-runner-v1.py",
+    "sha256": "f78b74ca5d4b38ebf7e436139e61969bfa7af481164ede82e3554fa7ff757a47"
+  },
+  "status": "PREPARED_NOT_EXECUTED_PENDING_ROOT_REVIEW_CPU_RELEASE",
+  "caller": "74e44a1f23b01f3200350436df1691249b441292",
+  "baseline": "97b847d80f33efc29ad1c1c8f46deddde5f6230f",
+  "candidate": "b66c018b18cca81732f14d04af384f2bf9984b07",
+  "normal_evaluator": "Unmodified G36 promotion.evaluate(kind=CHANGE,pool=explicitG36pool); no passed skip flags or custom policies/oracles.",
+  "controls": [
+    "Default PLANONLY; execution explicit --execute-reviewed.",
+    "Exact clean caller/candidate, fixed9-path source-only delta, candidate all12 receipt.",
+    "Copies and hashes12 into BOTH detached pooltrees before calling ANY evaluate/tests.",
+    "Bubblewrap + CPU1 required; same canonical CREStore, loadpolicy, frozen175globalmanifest incl RPR176SHA.",
+    "All normal gates required; only causalNOT_RUN_NOT_APPLICABLE_FOR_CHANGE allowed; preventionexact175.",
+    "Append-only receipt files mode x, no overwrite of prior decisions/logs."
+  ],
+  "expected_command": "cd B/repos/forge-c-014-local-gen36; source scripts/forge-env.sh; PYTHONPATH=$FORGE_REPO_ROOT/factory/python FORGE_CRE_ISOLATION=bubblewrap FORGE_CPU_JOBS=1 python O/codex-integration27-normal-change-runner-v1.py --execute-reviewed",
+  "runtime_effects": "NONE; no remote/model/GPU/queues/signing/mission/service effects"
+}

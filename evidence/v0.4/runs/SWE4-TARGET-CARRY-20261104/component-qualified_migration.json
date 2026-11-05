@@ -1,0 +1,98 @@
+{
+  "schema": "forge-c/target-proof-qualified-consumer-control/1",
+  "scope": "PRIVATE_DETERMINISTIC_CONTROL_INSPECTIONS_NOT_LIVE_PHASE_OR_ROLE_QUALIFICATION",
+  "consumer_revision": {
+    "commit": "d24c80d4609cacdca4d91c554b151338b6cbb6c8",
+    "dirty": false,
+    "branch": "HEAD",
+    "basis": "recorded_at_launch"
+  },
+  "qualification_reference": {
+    "registry_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/supervisor/incidents.sqlite3",
+    "decision_id": "pd-f65f849e4ed5c805068d"
+  },
+  "producer_module_sha256_unchanged": {
+    "factory/python/forge_factory/workflow/unit_target_timing.py": "3ccac65cba87f6f1d2f5eb4380ff01942cfdc91c132cbe9421a79c6d00401144",
+    "factory/python/forge_factory/workflow/unit_target_observation.py": "b7752d9abe19130c48d0140069c957884613a0454f498c748ebd90c7dc47d826"
+  },
+  "cases": [
+    {
+      "case": "wwdg",
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/target-proof-carry-actual-control-state/workorders/WO-CONTROL-SOURCE/workspace",
+      "destination": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/target-proof-carry-actual-control-state/workorders/WO-CONTROL-WWDG-QUALIFIED/workspace",
+      "source_factory_revision": {
+        "commit": "b0d8ef13998291a3e16d65d5158a63eaf7bfdadf",
+        "dirty": false,
+        "branch": "CONTROL"
+      },
+      "unqualified_migration": "TARGET_PROOF_CARRY_CONSUMER_REVISION_CHANGE_UNQUALIFIED",
+      "normal_resume_remaining": [
+        "SWE.5",
+        "SWE.6"
+      ],
+      "receipt_sha256": "588400fb31cb6456039290669d357247ad79bbc490153a53ac9e549b58c88da0",
+      "migration": {
+        "consumer_revision": "d24c80d4609cacdca4d91c554b151338b6cbb6c8",
+        "creator_revision": "b0d8ef13998291a3e16d65d5158a63eaf7bfdadf",
+        "reference": {
+          "decision_id": "pd-f65f849e4ed5c805068d",
+          "registry_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/supervisor/incidents.sqlite3"
+        },
+        "row_sha256": "cd54be1e3d13cffcce602575af7f051bb16d48030b001e465eed9f186ee09dfc"
+      },
+      "target_results": {
+        "UT-021": "PASS"
+      },
+      "full_trace_builder_SWE4_findings": [],
+      "source_file_hashes_unchanged": true,
+      "normal_phase_gates": {
+        "SWE.1": "PASS",
+        "SWE.2": "PASS",
+        "SWE.3": "PASS",
+        "SWE.4": "PASS"
+      }
+    },
+    {
+      "case": "crc",
+      "source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/target-proof-carry-actual-control-state/workorders/WO-CONTROL-CRC/workspace",
+      "destination": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/target-proof-carry-actual-control-state/workorders/WO-CONTROL-CRC-QUALIFIED/workspace",
+      "source_factory_revision": {
+        "commit": "b0d8ef13998291a3e16d65d5158a63eaf7bfdadf",
+        "dirty": false,
+        "branch": "CONTROL"
+      },
+      "unqualified_migration": "TARGET_PROOF_CARRY_CONSUMER_REVISION_CHANGE_UNQUALIFIED",
+      "normal_resume_remaining": [
+        "SWE.5",
+        "SWE.6"
+      ],
+      "receipt_sha256": "b3d169a72db5fae6a956dab82fe92ae06752ce99ba0d4a6fea94cf25db5d871b",
+      "migration": {
+        "consumer_revision": "d24c80d4609cacdca4d91c554b151338b6cbb6c8",
+        "creator_revision": "b0d8ef13998291a3e16d65d5158a63eaf7bfdadf",
+        "reference": {
+          "decision_id": "pd-f65f849e4ed5c805068d",
+          "registry_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/supervisor/incidents.sqlite3"
+        },
+        "row_sha256": "cd54be1e3d13cffcce602575af7f051bb16d48030b001e465eed9f186ee09dfc"
+      },
+      "target_results": {
+        "UT-001": "PASS",
+        "UT-002": "PASS",
+        "UT-003": "PASS"
+      },
+      "full_trace_builder_SWE4_findings": [],
+      "source_file_hashes_unchanged": true,
+      "normal_phase_gates": {
+        "SWE.1": "PASS",
+        "SWE.2": "PASS",
+        "SWE.3": "PASS",
+        "SWE.4": "PASS"
+      }
+    }
+  ],
+  "shared_trace_integration": "proposed wrapper interface exercised through isolated in-process seam, no source edit",
+  "models_called": 0,
+  "production_changes": false,
+  "signatures_created": 0
+}

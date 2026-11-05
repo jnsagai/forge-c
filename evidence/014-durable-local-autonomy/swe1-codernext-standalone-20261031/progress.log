@@ -1,0 +1,44 @@
+2026-10-31T16:45:47Z PREFLIGHT PASS (measured 16:45:47Z): gpu 936MiB used of 49140, 0% util, 0 compute procs; afo intent STOPPED epoch 7 sha 9eff2df3; production-local-014 intent PAUSED epoch 111 sha 1387fbb2; gpuq pending/running empty, no STOP; no own llama-server or gateway; guard OK; time limit 150 min until 19:16:20Z (server deadline 19:05:00Z, last inspector pass start 18:45:00Z)
+2026-10-31T16:48:10Z MODEL: qwen3-coder-next:q4_K_M manifest library/qwen3-coder-next/q4_K_M, model layer sha256-30e51a7c (51741599936 bytes, size verified), arch qwen3next 79.7B, 48 blocks, 512 experts (10 used), ctx_train 262144; chat template (6067 chars) has no think tag / enable_thinking / reasoning_content -> no thinking mode
+2026-10-31T16:48:10Z CHECKOUT: existing clone /mnt/data/forge-c/operations/swe1-qwen-20261031/repo HEAD 2d91c2fa6f7cc7f7983e98259bd4ddb20fba6733, git status clean, used read-only
+2026-10-31T16:48:18Z RO SNAPSHOT BEFORE: trial-06 source + all five earlier run trees (ornith-protocol, swe1-ornith, swe1-qwen incl. repo, swe1-qwen-xhigh, swe1-omission) -> work/ro-before.json {'/mnt/data/forge-c/delivery-first-afo-014-20261030-v1/state/workorders/WO-AFO-7f71565db57f0a76-a1/workspace': 706, '/mnt/data/forge-c/operations/ornith-protocol-20261031': 51, '/mnt/data/forge-c/operations/swe1-ornith-20261031': 10671, '/mnt/data/forge-c/operations/swe1-qwen-20261031': 11576, '/mnt/data/forge-c/operations/swe1-qwen-xhigh-20261031': 2626, '/mnt/data/forge-c/operations/swe1-omission-20261031': 1343}
+2026-10-31T16:48:45Z SERVER STARTING qwen3-coder-next:q4_K_M pid 2793648 port 18610 (argv /mnt/data/forge-c/operations/swe1-codernext-20261031/work/server-ncmoe10.argv: /mnt/data/forge-c/ollama-0.34.0/lib/ollama/llama-server --model sha256-30e51a7cb1cf1333b9e298b90b4c7790fe2572d8736b002482a0ac96328a2ffb --alias qwen3-coder-next:q4_K_M --host 127.0.0.1 --port 18610 --no-webui --offline -c 65536 -np 1 --jinja --reasoning off --cache-type-k f16 --cache-type-v f16 --flash-attn on --gpu-layers all --n-cpu-moe 10 -b 2048 -ub 2048 --spec-type none --fit off --metrics )
+2026-10-31T16:59:36Z SERVER UP pid 2793648: health ok after 650.92s; VRAM 43564 MiB (baseline 936); host RSS 51392912 kB; n_ctx_slot = 65536
+2026-10-31T16:59:46Z PROTOCOL CHECK STARTING (Q1 strict json_schema x20, control, Q3 truncation x4, Q5 stream usage, factory structured.call x2)
+2026-10-31T17:00:42Z PROTOCOL CHECK FINISHED rc 0 verdicts {"Q1_strict_json_schema": "PASS", "Q1_counts": {"n": 20, "stop": 20, "exact": 20, "schema_valid": 20, "reasoning_present": 0}, "Q3_truncation_finish_reason": "PASS", "Q5_streaming_usage": "PASS", "factory_call": "PASS"}
+2026-10-31T17:00:44Z START-WS READY: /mnt/data/forge-c/operations/swe1-codernext-20261031/start-ws (cp -a of trial 06); isolation: {"edits": [[".forge-run/binding.json", "replace_path", 1], [".forge-run/workflow.toml", "replace_path", 2], [".forge-run/durable-binding.json", "moved_out_of_copy", null]], "left_unchanged": 57}
+2026-10-31T17:00:44Z MODELCMP STARTING (repeat 2, SWE.1, model qwen3-coder-next:q4_K_M, direct server 18610, no gateway)
+2026-10-31T17:00:45Z CHECKPOINTS: no attempt workspace yet
+2026-10-31T17:00:47Z ATTEMPT STARTED qwen3-coder-next_q4_K_M-01
+2026-10-31T17:00:55Z CALL requirements:CRC_IDR attempt 0 errors 3 wall 6161.0 ms
+2026-10-31T17:01:01Z CALL requirements:CRC_IDR attempt 1 errors 0 wall 5668.6 ms
+2026-10-31T17:01:07Z CALL requirements:crosscutting attempt 0 errors 6 wall 6445.9 ms
+2026-10-31T17:01:09Z CALL requirements:crosscutting attempt 1 errors 1 wall 1289.8 ms
+2026-10-31T17:01:11Z CALL requirements:crosscutting attempt 2 errors 4 wall 2896.3 ms
+2026-10-31T17:01:13Z ATTEMPT STARTED qwen3-coder-next_q4_K_M-02
+2026-10-31T17:01:13Z ATTEMPT FINISHED qwen3-coder-next:q4_K_M-01: visit FAILED, gate NOT_RUN (visit FAILED), calls 5, wall 26.1 s
+2026-10-31T17:01:15Z CHECKPOINTS qwen3-coder-next_q4_K_M-02: 0 task checkpoints
+2026-10-31T17:01:17Z CALL requirements:CRC_IDR attempt 0 errors 1 wall 5623.2 ms
+2026-10-31T17:01:23Z CALL requirements:CRC_IDR attempt 1 errors 0 wall 5598.1 ms
+2026-10-31T17:01:29Z CALL requirements:crosscutting attempt 0 errors 3 wall 6002.2 ms
+2026-10-31T17:01:31Z CALL requirements:crosscutting attempt 1 errors 0 wall 2502.3 ms
+2026-10-31T17:01:39Z ATTEMPT FINISHED qwen3-coder-next:q4_K_M-02: visit PASS, gate FROZEN, calls 4, wall 20.9 s
+2026-10-31T17:01:43Z MODELCMP FINISHED rc 0 ({"rc":0,"wall_s":53.9,"at":"2026-10-31T17:01:38Z"})
+2026-10-31T17:01:43Z INSPECTION (a) DECISION: NO_GO visit=FAILED gate=NOT_RUN (visit FAILED)
+2026-10-31T17:01:44Z [omission] INSPECT COPY READY: /mnt/data/forge-c/operations/swe1-codernext-20261031/inspect-omission (copy of /mnt/data/forge-c/operations/swe1-ornith-20261031/report-workspaces/ornith-1.5-35b-a3b-q8-02/workspace); isolation: {"edits": [[".forge-run/binding.json", "replace_path", 1], [".forge-run/workflow.toml", "replace_path", 2], [".forge-run/durable-binding.json", "moved_out_of_copy", null]], "left_unchanged": 25}
+2026-10-31T17:01:52Z [omission] INSPECT RUNNER PASS 1 START (inspect SWE.1 --time-budget 1200 )
+2026-10-31T17:01:52Z [omission] INSPECT CHECKPOINTS: 0 inspector item checkpoints
+2026-10-31T17:02:00Z [omission] INSPECT CALL inspect:c566b006b392caf1:SWE1-01 attempt 0 errors 3 wall 6742.6 ms
+2026-10-31T17:02:02Z [omission] INSPECT CALL inspect:c566b006b392caf1:SWE1-01 attempt 1 errors 0 wall 2457.9 ms
+2026-10-31T17:02:06Z [omission] INSPECT CALL inspect:c566b006b392caf1:SWE1-02 attempt 0 errors 0 wall 3412.9 ms
+2026-10-31T17:02:08Z [omission] INSPECT CALL inspect:c566b006b392caf1:SWE1-03 attempt 0 errors 0 wall 3211.4 ms
+2026-10-31T17:02:12Z [omission] INSPECT CALL inspect:c566b006b392caf1:SWE1-04 attempt 0 errors 0 wall 3158.3 ms
+2026-10-31T17:02:16Z [omission] INSPECT CALL inspect:c566b006b392caf1:SWE1-05 attempt 0 errors 0 wall 3229.4 ms
+2026-10-31T17:02:22Z [omission] INSPECT CALL inspect:c566b006b392caf1:SWE1-06 attempt 0 errors 1 wall 6909.2 ms
+2026-10-31T17:02:22Z [omission] INSPECT CHECKPOINTS: 5 inspector item checkpoints; latest SWE1-05 VALID verdict PASS findings 0 (1 calls)
+2026-10-31T17:02:27Z [omission] INSPECT RUNNER PASS 1 FINISHED rc 0 status REWORK calls 8 wall {"pass":1,"rc":0,"status":"REWORK","calls":"8","wall_s":34.8,"at":"2026-10-31T17:02:27Z"}
+2026-10-31T17:02:28Z [omission] INSPECT CALL inspect:c566b006b392caf1:SWE1-06 attempt 1 errors 0 wall 4876.5 ms
+2026-10-31T17:02:31Z [omission] INSPECT GATE rc 11: gate execution bi {"phase": "SWE.1", "decision": "REWORK", "reason": "INS-SWE.1-001", "failed_inspections": 1, "max_rework_cycles": 3} 
+2026-10-31T17:02:34Z SERVER STOPPED (STOP_REQUESTED) server 2793648 signal TERM exit 0 gone=yes; GPU after 936 MiB apps []; port 18610 open=no; VRAM peak 43632 MiB; host RSS peak 57909672 kB
+2026-10-31T17:02:35Z RUN DONE
+2026-10-31T17:08:29Z CLEANUP VERIFIED (17:03:00Z): server 2793648 gone, no own llama-server/scripts, GPU 936 MiB 0 compute apps, port 18610 closed, guard OK, runner 2742646 + conductor 3699940 untouched, gpuq empty, no STOP; intents unchanged; read-only proof: trial-06 + 5 earlier run dirs identical except swe1-qwen-20261031/repo/.git dir mtime (own git status, index.lock) (work/ro-compare.json)

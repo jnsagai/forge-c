@@ -1,0 +1,32 @@
+{
+  "schema": "forge-c/remote-qa-portability-final-independent-review/1",
+  "at": "2026-11-05T21:49:47.751832+00:00",
+  "source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "base": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+  "source_clean": true,
+  "changed_files": [
+    {
+      "path": "factory/python/tests/test_da014_provider_process.py",
+      "sha256": "591db86d176c748cc0f32083d327b649f594525527d39d0c5da557f1ded50ea3"
+    },
+    {
+      "path": "factory/python/tests/test_line_stack_lifecycle.py",
+      "sha256": "a3d0ecf76a594316b9f42f00ef553512fd604b3b6da2507b0441d81d81ecae7b"
+    }
+  ],
+  "production_all_other_paths_git_identical": true,
+  "status": "NO_BLOCKING_FINDING_IN_TEST_ONLY_DIFF",
+  "findings": [],
+  "checks": [
+    "P.pidfd.open_pid actual stop effect seam patched; missing optional os.pidfd_open no longer prevents negative reusedPID observation; signaling-open and fenced-effect still pytest.fail.",
+    "Only ST.time binding replaced with facade; stdlib time.sleep unchanged, preserving ordinary subprocess waits before admitted effect.",
+    "Stop-poll sleeps delegate real bounded sleep until two real free-memory observations; expiry injection only after free_calls>=2 and active effectguard nonNone.",
+    "Original exact EFFECT_AUTHORITY_EXPIRED_OR_CHANGED match retained; no widened alternatives or regex, no skip, no production authority change.",
+    "After expiry no additional processes may spawn; targetedwaits required; effect ContextVar reset, original Intent bytes unchanged and executionlease HELD still asserted.",
+    "Both monkeypatched A.time.time and ST.time binding restored in finally; unrelated authority clocks remain normal until targetedwait deliberately expires job."
+  ],
+  "tests": "NOT_RUN_BY_REVIEWER; author41443 actualresults separate",
+  "observed_prior_remote_failure": "270 total/268PASS/2FAIL/0skip preserved at predecessor; no retrospective rewrite",
+  "causal_harness_scope": "Static source review; parent deterministic globaltime/subprocesswait witness independently supplied, not reexecuted by reviewer",
+  "constraints": "No source edits/heavyCPU/publication/remoteeffects"
+}

@@ -24,7 +24,8 @@ additional_checks:
   severity_if_failed: major
   criterion: The architecture provides a static (component) view and a dynamic (sequence) view in PlantUML that
     are syntactically valid, render, name the driver components, show the allocated driver APIs and, for a HAL
-    (or combined LL+HAL) work order, a timeout path (an LL-only work order shows the caller-bounded ready poll).
+    (or combined LL+HAL) work order whose HAL has a bounded wait, a timeout path (an LL-only work order shows the
+    caller-bounded ready poll; a HAL that never waits shows none).
   deterministic_check: architecture_views
   tool: forge-docs-mcp.validate_artifact
   source: owner request 2026-10-15 (PlantUML static and dynamic views)
@@ -32,6 +33,14 @@ additional_checks:
   - workproduct_reference
   - views_report_reference
   - recorded_verdict
+  revisions:
+  - previous_item_sha256: ccb7ba66e36ddbe5f66149069477223f1e550684ed021a0b7456a4b351e4733b
+    item_sha256: b57e86e1a1e2c39d0639ccf7139db9c9e7aa79f77e7832b41a9c60ffab66ce9a
+    unchanged_for:
+      layer: [LL]
+    decision: owner 2026-11-03 (CAPA-133) - a88b61a5 changed only the HAL timeout-path clause; for an LL-only work
+      order SWE2-08 still asks for the static and dynamic views, the driver components, the allocated APIs and the
+      caller-bounded ready poll
 - id: SWE2-09
   required: true
   severity_if_failed: major

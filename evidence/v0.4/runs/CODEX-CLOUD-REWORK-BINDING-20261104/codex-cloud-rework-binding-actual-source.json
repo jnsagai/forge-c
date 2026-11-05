@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-04T15:50:14.631717+00:00",
+  "mode": "READ_ONLY_TERMINAL_SOURCE_METADATA_NO_LAUNCH_OR_MODELS",
+  "source": "UNCOMMITTED_ROOT_BINDING_FOLLOWUP",
+  "results": [
+    {
+      "tag": "CRCHAL",
+      "context": {
+        "source_work_order": "WO-F014-CMP-SWE3-CRCHAL-20261104-T1E",
+        "phase": "SWE.3",
+        "gate_log_sha256": "6f0182f816001497caa6cb0a41d99f9f723f7eb83f0bfd5336c8da684f7af520",
+        "inspection_sha256": "ABSENT"
+      },
+      "matches_independent_feature_preparation": true,
+      "terminal_exact_native_and_workspace": true
+    },
+    {
+      "tag": "WWDGHAL",
+      "context": {
+        "source_work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1E",
+        "phase": "SWE.4",
+        "gate_log_sha256": "bb1ed8674ff9563a13dffdfc7194cc1512123ad91a214a3b160efeb05ec40511",
+        "inspection_sha256": "9c17d77c6f0d9af812aaa33a04ad55a93556b09e6da62def43bb21e6e4562a73"
+      },
+      "matches_independent_feature_preparation": true,
+      "terminal_exact_native_and_workspace": true
+    }
+  ]
+}

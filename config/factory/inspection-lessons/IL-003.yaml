@@ -1,6 +1,7 @@
 # F011-T045: written from the learning set (F011-T029 runs 3-5: claims on the recorded PENDING safety allocation)
 id: IL-003
 version: 1
+purpose: CLARIFICATION
 state: PROPOSED
 scope:
   phase: SWE.1

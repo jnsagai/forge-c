@@ -43,6 +43,14 @@ def signed(local, tmp_path, monkeypatch):
         authorize=lambda *a: True,
     )
     ledger.link("qualification-only", order["order_id"])
+    # This fixture qualifies reservation/transport behavior for an observed
+    # blocked gate, not an empty diagnosis inventory. Keep its negative grant
+    # controls reachable after dependency-aware objective admission.
+    gate = ws / ".forge-run/gates/gate-log.jsonl"
+    gate.parent.mkdir(parents=True, exist_ok=True)
+    gate.write_text(json.dumps({"phase": bundle["phase"], "step": "route", "gate": {
+        "phase": bundle["phase"], "decision": "BLOCKED", "reason": bundle["error_code"],
+    }}) + "\n")
     case = planner.case(bundle, ws, {"attempts": 0}, mission_id="qualification-only")
     model = "qwen3.6:35b-a3b"
     info = load("local-rtx-v2-omniverse2")["models"]["allowed"][model]

@@ -145,9 +145,18 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
         raise DefectError(f"UNKNOWN_PHASE:{detected_phase}")
     target = detected_phase if kind == "TEST" else KIND_TARGET.get(kind)
     frozen = kind == "CODE" and _frozen_delivery(ws)
+    from .provided_changes import enabled as change_control
+
+    if frozen and change_control(ws):  # owner 2026-11-03 (revised): changed in SWE.3 with a diff report
+        frozen = False
     if frozen:  # feature 008 (FROZEN): nobody may change the delivered code; the defect goes to the owner
         target = None
-    early_fix = kind == "CODE" and _delivered_code(ws) and detected_phase in ("SWE.1", "SWE.2", "SWE.3")
+    from . import provided_early_code as early
+
+    provided_early = (early.reference(ws, evidence_refs)
+                      if kind == "CODE" and detected_phase in ("SWE.1", "SWE.2", "SWE.3") else None)
+    early_fix = kind == "CODE" and (_delivered_code(ws) or provided_early is not None) \
+        and detected_phase in ("SWE.1", "SWE.2", "SWE.3")
     if early_fix:  # feature 008 (FIX_ALLOWED, b002): delivered code exists before SWE.3 and is fixed in SWE.3
         pass
     elif target is not None and PHASES.index(target) > PHASES.index(detected_phase):
@@ -221,6 +230,8 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
         rec["code_sha"] = code_hash(ws)  # the product code the correction was declared against (ADR-0008 L14)
     if frozen or early_fix:
         rec["target_kind"] = "DELIVERED_CODE"
+    if provided_early is not None:
+        rec["target_kind"], rec[early.FIELD] = early.KIND, provided_early
     od = settled_by(ws, requirement_ids, requirement_quote) if kind == "INPUT" or frozen else None
     if od is not None:  # the owner already decided this input issue: recorded, not escalated again
         _event(rec, "DISPOSITIONED", disposition=od["id"], by=od.get("approved_by"), note=od.get("disposition"))
@@ -228,7 +239,8 @@ def report(ws: Path, *, detected_phase: str, reported_by: str, kind: str, summar
         _event(rec, "ESCALATED", note="FROZEN delivered code: a finding for the owner (no rework loop); an owner "
                                       "disposition may accept it as a deviation")
     elif early_fix and detected_phase == "SWE.3":  # found in SWE.3 itself: fixed by the SWE.3 rework now
-        _event(rec, "IN_FIX", note="delivered code (FIX_ALLOWED): fixed in the SWE.3 rework")
+        _event(rec, "IN_FIX", note="provided LL: fixed in the SWE.3 rework" if provided_early else
+               "delivered code (FIX_ALLOWED): fixed in the SWE.3 rework")
     elif kind in ESCALATED_KINDS:
         _event(rec, "ESCALATED", note="approved inputs / factory assets are changed by a human only")
     elif kind == "TEST":
@@ -264,7 +276,8 @@ def reject(ws: Path, defect_id: str, role: str, reason: str) -> dict:
 def open_from(ws: Path, phase: str) -> list[dict]:
     """OPEN upstream defects reported by `phase` (route leaves the phase instead of burning rework cycles)."""
     return [d for d in all_defects(ws) if d["detected_phase"] == phase and d["status"] == "OPEN"
-            and d["target_phase"] and d["target_phase"] != phase]
+            and d["target_phase"] in PHASES and d["target_phase"] != phase
+            and not (d.get("target_kind") == "PROVIDED_CODE" and d.get("detected_phase") in ("SWE.1", "SWE.2"))]
 
 
 def loops_used(ws: Path) -> int:
@@ -281,7 +294,8 @@ def loop_budget(ws: Path) -> int:
 
 def take_upstream(ws: Path, target: str) -> list[dict]:
     """Chain node `upstream_<target>`: claim every OPEN defect owned by `target` if loop budget remains."""
-    todo = [d for d in all_defects(ws) if d["status"] == "OPEN" and d["target_phase"] == target]
+    todo = [d for d in all_defects(ws) if d["status"] == "OPEN" and d["target_phase"] == target
+            and not (d.get("target_kind") == "PROVIDED_CODE" and d.get("detected_phase") in ("SWE.1", "SWE.2"))]
     if not todo or loops_used(ws) >= loop_budget(ws):
         return []
     for d in todo:
@@ -305,27 +319,47 @@ def mark_fixed(ws: Path, phase: str, baseline_id: str) -> list[str]:
     return out
 
 
+def verification_phase(ws: Path, defect: dict) -> str:
+    """Early CODE is tested after its SWE.3 fix, never by nonexistent SWE.1/SWE.2 test tools."""
+    early = (defect.get("target_kind") in ("DELIVERED_CODE", "PROVIDED_CODE")
+             and defect.get("kind") == "CODE" and defect.get("target_phase") == "SWE.3"
+             and defect.get("detected_phase") in ("SWE.1", "SWE.2", "SWE.3"))
+    if early and defect.get("target_kind") == "PROVIDED_CODE":
+        from .provided_early_code import validate
+
+        validate(ws, defect)
+    return "SWE.4" if early else defect["detected_phase"]
+
+
 def verify_on_freeze(ws: Path, phase: str) -> list[str]:
     """Author gate of the detecting phase: a fixed defect is VERIFIED only with byte-identical cited tests and a
     test-tool PASS recorded after the fix. Returns blocking issues (cited test changed)."""
     issues = []
     results = _tool_results(ws)
     for d in all_defects(ws):
-        early = d.get("target_kind") == "DELIVERED_CODE" and d["detected_phase"] in ("SWE.1", "SWE.2", "SWE.3") \
-            and phase == "SWE.4"  # feature 008: verified by the first requirement-based tests after the fix
-        if (d["detected_phase"] != phase and not early) or d["status"] not in ("FIXED", "IN_FIX"):
+        if d["status"] not in ("FIXED", "IN_FIX") or verification_phase(ws, d) != phase:
             continue
         changed = [t for t, h in d["test_files"].items() if t.startswith("software/tests/")  # CAPA-012
                    and (not (ws / t).is_file() or sha256_file(ws / t) != h)]
         if changed and d["status"] == "FIXED":
             # r75: the author extended the cited test file before any post-fix run. The gate runs the cited
             # version itself (restored from the snapshots) against the fixed code: that is the verification.
-            from .reverify import reverify
+            from .reverify import receipt_binding, reverify
 
             status, found = reverify(ws, d, ws / SNAPSHOTS)
             if status == "PASS":
+                binding = receipt_binding(ws, d)
+                from ..brownfield import manifest_of
+
+                corrected_provided = any((ws / item["path"]).is_file()
+                                         and sha256_file(ws / item["path"]) != item["sha256"]
+                                         for item in manifest_of(ws).get("provided", []))
+                if corrected_provided and binding is None:
+                    issues.append(f"REVERIFY_RECEIPT_UNAVAILABLE:{d['id']}")
+                    continue
                 _event(d, "VERIFIED", tools=["gate-reverify"], note="cited tests restored from the snapshots "
-                       "passed on the fixed code; the edited copies are checked by anti-bending")
+                       "passed on the fixed code; the edited copies are checked by anti-bending",
+                       **({"reverify_receipt": binding} if binding is not None else {}))
                 _save(ws, d)
                 continue
             if status == "FAIL":
@@ -578,6 +612,27 @@ def last_loop(ws: Path) -> dict | None:
     p = ws / LOOPS
     lines = [x for x in p.read_text().splitlines() if x.strip()] if p.is_file() else []
     return json.loads(lines[-1]) if lines else None
+
+
+def overrule_rejections(ws: Path, target: str, findings: list[str]) -> list[dict]:
+    """CAPA-137 (run WO-F014-SWE3-CRCHAL-20261103-L31B): a defect of the latest loop the target author REJECTED is
+    re-opened (IN_FIX, by the triage gate) when a deterministic finding of the target phase still names a target-phase
+    file the defect cites - an opinion does not outweigh a reproducing tool finding. The author's reason stays recorded."""
+    loop = last_loop(ws)
+    if loop is None or not findings:
+        return []
+    out = []
+    for d in all_defects(ws):
+        if d["id"] not in loop["defects"] or d["status"] != "REJECTED" or d.get("target_phase") != target:
+            continue
+        cited = [r for r in d.get("evidence_refs") or [] if _in_paths(r, target)]
+        hit = [f for f in findings if any(c in f for c in cited)]
+        if hit:
+            _event(d, "IN_FIX", by="triage-gate", note="OVERRULED: the cited file still has a deterministic "
+                   f"{target} finding", findings=[h[:300] for h in hit[:3]])
+            _save(ws, d)
+            out.append(d)
+    return out
 
 
 def rejected_loop_return(ws: Path) -> str | None:

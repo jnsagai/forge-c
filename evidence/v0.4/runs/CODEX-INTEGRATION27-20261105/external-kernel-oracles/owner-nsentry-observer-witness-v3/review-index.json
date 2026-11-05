@@ -1,0 +1,178 @@
+{
+  "schema": "forge-c/private-namespace-observer-evidence/1",
+  "candidate": "6eeac5962a45e40ba39414eafa5dd612bd669d56",
+  "helper_sha256": "4f2bb55edae74fb0208b3bb08aea4d25b8c199965b1d9f97898c383dbde2304d",
+  "scope": "REAL_PRIVATE_KERNEL_NO_MODELS_GPU_REMOTE_OR_CANONICAL_MUTATIONS",
+  "observation": {
+    "original_host_entry_controls": "PASS",
+    "outer_serving_entry": "PROVIDER_ENTRY_INIT_CHANGED_UID1000_CAPTURE_VS_OBSERVED0",
+    "nested_provider_user_entry": "ANCESTOR_HOLDER_NS_READ_EACCES",
+    "same_provider_user_entry": "PROVIDER_ENTRY_INIT_CHANGED"
+  },
+  "report_verdict_correction": "SOURCE_ENTRY_SUCCEEDED names only original four source cases; all four added observer cases failed. Do not treat report verdict as observer success or full candidate acceptance.",
+  "preserved_probe_error": "owner-nsentry-causal-oracle-v2/candidate6ee-r1/report.json: metadata reading EACCES before log initialization; all own handles closed",
+  "cleanup": [
+    {
+      "init_pid": 845940,
+      "quiet": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED"
+    },
+    {
+      "init_pid": 845937,
+      "quiet": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED"
+    }
+  ],
+  "files": [
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/nested-user-provider-setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/ordered-nested-control.json",
+      "sha256": "c310269394b95c059773b26e72658fa1e4c23ffce627e7bf5e23dd9b17aa8aa9"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/ordered-nested-control.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/ordered-same-user-reentry-negative.log",
+      "sha256": "ae32c851541aaf0ae008cb79ccc4a43478fa670088de2d69d85702332d4a5038"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/ordered-same-user-skip-control.json",
+      "sha256": "122dd064c7775a7997507208de73276114fcacc0792411e3b5fe72a83da28cd2"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/ordered-same-user-skip-control.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/outer-holder.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/report.json",
+      "sha256": "b9c6eec61b49057116455888391c33bc4f92990da2425a079d69a7a9e5890997"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/report_namespaces.py",
+      "sha256": "83e1cded4f1d1e8defa3af3848770d4c8ada085ea26f2afa568137ea63a299f5"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/same-user-provider-setup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/same_current_user_source.py",
+      "sha256": "4be6a4746363407441e696a9eb19326c1a154d123be2860d879d4f9d389a786e"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/serving_observer.py",
+      "sha256": "0f2e96672190492ad82a85a665d64d125f000b1bd408a98824e469444d19e1b2"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-from-outer-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-from-outer-user-observer.json",
+      "sha256": "2c9437d46de46991c3abfa2b2b35ba400076780e0228a0c81e7da4203720141a"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-from-outer-user-record.json",
+      "sha256": "60e686ac4ca058985f41f88138a8ab4c812d2d0d0d7360e7aea7014450588d2e"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-from-outer-user.log",
+      "sha256": "6995a676c1c152bdd9d11ffd9fe553cfc51595737e6ff83150f4091159c37d8c"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-from-provider-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-from-provider-user-observer.json",
+      "sha256": "eb4870f418efda12ea0d827df67c2b121f9609969e2fb3fe15cac1c8816414fa"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-from-provider-user-record.json",
+      "sha256": "60e686ac4ca058985f41f88138a8ab4c812d2d0d0d7360e7aea7014450588d2e"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-from-provider-user.log",
+      "sha256": "27b00c0ab0863c344bdc74e346cda076054ee13f8bc2994dd8cfbd93daebfd70"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-provider.json",
+      "sha256": "2d14dec2fdd32a80b62ea170f516a3f76293a32467a3d90252f0da61e4cc1030"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-nested-provider.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-normal-outer.json",
+      "sha256": "67894619f27ecc09b103b5ff01908e8cdd79b1db55c5e28adb6715178931e955"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-normal-outer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-normal-same-current-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-normal-same-current-user.json",
+      "sha256": "5fc28698b40c4b9712d20131efe8eedecd6709fb18e9da4ed00b9644a78f1627"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-normal-same-current-user.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-from-outer-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-from-outer-user-observer.json",
+      "sha256": "0f50ddc9c4742434edaa87a6b750ac6b44bcac65633c7c4e2013e505476e3172"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-from-outer-user-record.json",
+      "sha256": "c2f9aae77ed5f474aa568f63965b7c12c5c0b0f576f177527c53802037d8841a"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-from-outer-user.log",
+      "sha256": "6995a676c1c152bdd9d11ffd9fe553cfc51595737e6ff83150f4091159c37d8c"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-from-provider-user-launch.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-from-provider-user-observer.json",
+      "sha256": "96ac2f5b3f707ce5f7154b9e5a3df3873d9c0814951283f3521a314ce7c3fd6a"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-from-provider-user-record.json",
+      "sha256": "c2f9aae77ed5f474aa568f63965b7c12c5c0b0f576f177527c53802037d8841a"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-from-provider-user.log",
+      "sha256": "6995a676c1c152bdd9d11ffd9fe553cfc51595737e6ff83150f4091159c37d8c"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-user-provider.json",
+      "sha256": "4e4849fcca8cfbfeedf94984d0b1f3bc037d34eac0ac802adc02c9c849ec7b9b"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/candidate6ee-r1/source-same-user-provider.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "owner-nsentry-observer-witness-v3/kernel_probe.py",
+      "sha256": "4f2bb55edae74fb0208b3bb08aea4d25b8c199965b1d9f97898c383dbde2304d"
+    }
+  ]
+}

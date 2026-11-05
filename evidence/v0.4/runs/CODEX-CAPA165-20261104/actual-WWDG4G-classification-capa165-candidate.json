@@ -1,0 +1,298 @@
+{
+  "at": "2026-11-04T20:22:22.609874+00:00",
+  "source_work_order": "WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G",
+  "RID": "01M6KSXC9K4AC1H4W8XJ2Y24X3",
+  "status": "ENDED",
+  "phase": "SWE.4",
+  "phase_verdict": "NO",
+  "recorded_life": null,
+  "core": {
+    "class": "PRODUCT",
+    "phase": "SWE.3",
+    "error_code": "OPEN_UPSTREAM_DEFECT",
+    "route": "UPSTREAM",
+    "codes": [],
+    "suspected": false,
+    "fingerprint": "sup1-8199e1ac33823cb1358e3fc38ce196da7d430957",
+    "cre_fingerprint": "cfp1-134bca84d605b893a1137bb9915ab18d28bd0412",
+    "evidence": [
+      {
+        "kind": "manifest",
+        "ref": "workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/.forge-run/manifest.json"
+      },
+      {
+        "kind": "package",
+        "ref": "workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/.forge-run/package.json"
+      },
+      {
+        "kind": "fabro_run",
+        "ref": "fabro:runs/01M6KSXC9K4AC1H4W8XJ2Y24X3"
+      },
+      {
+        "kind": "inspection_record",
+        "ref": "workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/inspection/SWE.3/INS-SWE.3-002.json"
+      },
+      {
+        "kind": "defect_register",
+        "ref": "workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/.forge-run/defects"
+      }
+    ],
+    "upstream": [
+      "SWE.2"
+    ],
+    "status": "OPEN",
+    "capa": null
+  },
+  "revision": "89b2e2bae868ec9592a61f0d8581ea7b70e39899",
+  "package_status": "BLOCKED",
+  "references": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge/state/workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/.forge-run/manifest.json",
+      "sha256": "588111e1044946e0808292439ae1aa5d24908c943fa422079623abd5872439b2"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge/state/workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/.forge-run/package.json",
+      "sha256": "a99ce881eac3712316284d47c45ca5f4d248af0f575ddb722e97393a41da1604"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge/state/workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "48f5364dc27eb00c506828e9c148ff7b452f392b56995180c087a8230ac5041d"
+    }
+  ],
+  "open_defects": [
+    {
+      "id": "DEF-005",
+      "kind": "ARCHITECTURE",
+      "status": "OPEN",
+      "detected_phase": "SWE.3",
+      "target_phase": "SWE.2",
+      "reported_by": "swe3-inspector",
+      "reference": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge/state/workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/.forge-run/defects/DEF-005.json",
+        "sha256": "4f988fa56d974a2345bdc4de4b7f921976bce47f24df479dee5bddf6402bbce4"
+      }
+    }
+  ],
+  "latest_inspections": [
+    {
+      "reference": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge/state/workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/inspection/SWE.1/INS-SWE.1-002.json",
+        "sha256": "c98646f0759c87102c6de9eaefc0d5b32d5bf5e31e38805b60557664f73115c1"
+      },
+      "inspection_id": "INS-SWE.1-002",
+      "phase": "SWE.1",
+      "verdict": "PASS",
+      "inspector_role": "swe1-inspector",
+      "items": {
+        "SWE1-01": "PASS",
+        "SWE1-02": "PASS",
+        "SWE1-03": "PASS",
+        "SWE1-04": "PASS",
+        "SWE1-05": "PASS",
+        "SWE1-06": "PASS",
+        "SWE1-07": "PASS",
+        "SWE1-08": "PASS"
+      }
+    },
+    {
+      "reference": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge/state/workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/inspection/SWE.2/INS-SWE.2-002.json",
+        "sha256": "87cdfd2b8df9827dd54b55fb19e149bbcc215830f1faf1d5134adf71b9b61161"
+      },
+      "inspection_id": "INS-SWE.2-002",
+      "phase": "SWE.2",
+      "verdict": "PASS",
+      "inspector_role": "swe2-inspector",
+      "items": {
+        "SWE2-01": "PASS",
+        "SWE2-02": "PASS",
+        "SWE2-03": "PASS",
+        "SWE2-04": "PASS",
+        "SWE2-05": "PASS",
+        "SWE2-06": "PASS",
+        "SWE2-07": "PASS",
+        "SWE2-08": "PASS",
+        "SWE2-09": "PASS"
+      }
+    },
+    {
+      "reference": {
+        "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/lrtx-cloud-bridge/state/workorders/WO-F014-CMP-SWE4-WWDGHAL-20261104-T1G/workspace/inspection/SWE.3/INS-SWE.3-002.json",
+        "sha256": "054b5bf3cefac9c99fe0d9d6b3249f5e0b51baefb9248969f7286bdb35f8174d"
+      },
+      "inspection_id": "INS-SWE.3-002",
+      "phase": "SWE.3",
+      "verdict": "FAIL",
+      "inspector_role": "swe3-inspector",
+      "items": {
+        "SWE3-01": "PASS",
+        "SWE3-02": "FAIL",
+        "SWE3-03": "PASS",
+        "SWE3-04": "PASS",
+        "SWE3-05": "PASS",
+        "SWE3-06": "PASS",
+        "SWE3-07": "PASS",
+        "SWE3-08": "PASS",
+        "SWE3-09": "PASS",
+        "SWE3-10": "PASS"
+      }
+    }
+  ],
+  "gate_rows": [
+    {
+      "ts": "2026-11-04T17:40:45.040675Z",
+      "phase": "SWE.3",
+      "step": "author",
+      "result": "REJECTED",
+      "status": "INCOMPLETE",
+      "gate": {},
+      "issue_count": 1
+    },
+    {
+      "ts": "2026-11-04T17:40:45.398138Z",
+      "phase": "SWE.3",
+      "step": "route",
+      "gate": {
+        "decision": "UPSTREAM",
+        "phase": "SWE.3"
+      },
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:40:45.658735Z",
+      "phase": "SWE.1",
+      "step": "upstream",
+      "result": "LOOP",
+      "gate": {},
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:41:25.457934Z",
+      "phase": "SWE.1",
+      "step": "triage",
+      "result": "RETURN",
+      "gate": {},
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:41:25.940623Z",
+      "phase": "SWE.3",
+      "step": "return",
+      "result": "RESUME",
+      "gate": {},
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:45:02.366104Z",
+      "phase": "SWE.3",
+      "step": "author",
+      "result": "REJECTED",
+      "status": "INCOMPLETE",
+      "gate": {},
+      "issue_count": 1
+    },
+    {
+      "ts": "2026-11-04T17:45:02.857668Z",
+      "phase": "SWE.3",
+      "step": "route",
+      "gate": {
+        "decision": "PASS",
+        "phase": "SWE.3"
+      },
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:45:03.178403Z",
+      "phase": "SWE.3",
+      "step": "reinspect_direct",
+      "result": "AUTHOR",
+      "gate": {},
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:48:54.200624Z",
+      "phase": "SWE.3",
+      "step": "author",
+      "result": "FROZEN",
+      "gate": {},
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:48:54.647906Z",
+      "phase": "SWE.3",
+      "step": "verify",
+      "gate": {},
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:52:16.459928Z",
+      "phase": "SWE.3",
+      "step": "inspect",
+      "gate": {
+        "decision": "REWORK",
+        "phase": "SWE.3"
+      },
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:52:16.955845Z",
+      "phase": "SWE.3",
+      "step": "route",
+      "gate": {
+        "decision": "UPSTREAM",
+        "phase": "SWE.3"
+      },
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:52:17.203998Z",
+      "phase": "SWE.1",
+      "step": "upstream",
+      "result": "NONE",
+      "gate": {},
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:52:17.459857Z",
+      "phase": "SWE.2",
+      "step": "upstream",
+      "result": "NONE",
+      "gate": {},
+      "issue_count": 0
+    },
+    {
+      "ts": "2026-11-04T17:52:17.731455Z",
+      "phase": "SWE.3",
+      "step": "upstream",
+      "result": "NONE",
+      "gate": {},
+      "issue_count": 0
+    }
+  ],
+  "no_mutation": true,
+  "authoritative_native_lifecycle": {
+    "kind": "succeeded",
+    "reason": "completed"
+  },
+  "store_gates": {
+    "SWE.1": {
+      "phase": "SWE.1",
+      "decision": "PASS"
+    },
+    "SWE.2": {
+      "phase": "SWE.2",
+      "decision": "PASS"
+    },
+    "SWE.3": {
+      "phase": "SWE.3",
+      "decision": "REWORK"
+    },
+    "SWE.4": {
+      "phase": "SWE.4",
+      "decision": "REWORK"
+    }
+  },
+  "classifier_source_revision": "297f8ebd8f130b31536f77790f5fa99808c8f3e4",
+  "classifier_factory_sources_unchanged_since_commit": true,
+  "gate_rows_scope": "LAST15_GATE_EVENTS_ONLY_NOT_ALL_HISTORICAL_PHASE_EVENTS"
+}

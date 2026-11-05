@@ -1,6 +1,7 @@
 # F011-T045: written from the learning set (F011-T029 runs 1-5: every family rejected the clean LL baselines on SWE1-03)
 id: IL-002
 version: 1
+purpose: CLARIFICATION
 state: PROPOSED
 scope:
   phase: SWE.1

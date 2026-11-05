@@ -1,0 +1,8 @@
+{
+  "status": "PACKAGING_SCRIPT_SYNTAX_ERROR_BEFORE_EXECUTION",
+  "script": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/package-codex-integration24.py",
+  "sha256": "16ad270603ef0a67b88c60e357df65e749ad9dc63d55dd0fd66cca06bf076923",
+  "error": "Conditional expression else175 lacked whitespace; Python parser rejected before any publication writes.",
+  "replacement": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/package-codex-integration24-v2.py",
+  "source_or_runtime_effects": false
+}

@@ -25,6 +25,7 @@ import json
 import re
 from pathlib import Path
 
+from ..assurance import register_contract as RC
 from ..common import sha256_bytes, utc_now
 from . import structured as S
 from . import visit as V
@@ -100,7 +101,7 @@ def _context(ws: Path, swrs: list[str]) -> list[dict]:
     eff = json.loads((Path(ws) / "workproducts/SWE.1/register_effects.json").read_text())["effects"]
     req = "\n".join(f"{s} (TCHECK {int(s[4:])}): {reqs[s]}" for s in swrs) + "\n" + "\n".join(
         f"case {e['case']} ({e['swr']}): {e.get('register', '')}.{e.get('field', '')} op {e['op']}" +
-        (f" value {e['value']}" if e.get("value") is not None else "") for e in eff if e["swr"] in swrs)
+        RC.value_text(e) for e in eff if e["swr"] in swrs)
     api = "\n".join(f"{_sig(f)} - {f['operation']}" for f in iface["functions"])
     defs = _defines(ws, sorted({x for f in iface["functions"] for x in f["fields"]}))
     return [{"path": n, "text": t, "sha256": sha256_bytes(t.encode())}
@@ -120,7 +121,7 @@ def must_name(ws: Path, swrs: list[str]) -> dict[str, tuple[set[str], set[str]]]
 
 
 def scenario_packet(ws: Path, topic: str, swrs: list[str], model: str, findings=None, previous=None) -> dict:
-    from .swe5 import _p
+    from .swe5 import _p, registers_rule
 
     p = _p(ws)
     need = must_name(ws, swrs)
@@ -137,13 +138,17 @@ def scenario_packet(ws: Path, topic: str, swrs: list[str], model: str, findings=
              "'FORGE_MAILBOX_DEFINE;', then 'int main(void) { FORGE_TEST_BEGIN(); ... FORGE_TEST_END(); return 0; }'. "
              "Every requirement gets exactly ONE check TCHECK(<its number>, <condition>) in exactly one of the two "
              "programs, testing what the requirement states on LL return values and "
-             f"{p['block']}[LL_{p['pfx']}_<REG>_OFFSET / 4U] register bits as the target model makes them observable. "
+             f"{registers_rule(p)} as the target model makes them observable. "
              f"Observation rule (checked by the test tool): {naming or 'none'}; a write-only field that the model "
              "reads as 0 is still named in its check (e.g. '(reg & <FIELD>_MSK) == 0U') together with the observable "
              "effect of the write. A requirement about the state after reset checks the register values BEFORE any LL "
              "call. Polls are "
              "bounded by the caller (at most 1000 iterations). Use only the interface functions, the generated "
              "defines and the register block.")
+    from .swe5 import TARGET_ACCESS_RULE, requirement_prohibitions
+
+    if requirement_prohibitions(ws, swrs):
+        instr += " " + TARGET_ACCESS_RULE
     return S.packet(phase=PHASE, task=f"scenario:{topic}", role="swe6-author", instructions=instr, sources=[],
                     artifacts=_context(ws, swrs), criteria=["one TCHECK per requirement, numbered as given",
                                                             "expected values from the requirement and the model"],
@@ -163,6 +168,10 @@ def validate_scenarios(ws: Path, doc: dict, swrs: list[str]) -> list[str]:
     out += [f"never_ready_swrs names {s}, which is not a requirement of this task" for s in doc["never_ready_swrs"]
             if s not in swrs]
     known = set(re.findall(r"#define\s+(\w+)", _header(ws).read_text()))
+    out += [e for prog in progs.values() if prog for e in V.offset_index_errors(prog, p["block"], p["pfx"])]
+    from .swe5 import instance_findings
+
+    out += [e for prog in progs.values() if prog for e in instance_findings(p, prog)]
     api = {f["name"] for f in interfaces(ws)["functions"]}
     seen: dict[int, str] = {}
     for key, code in progs.items():
@@ -229,6 +238,24 @@ def _write(ws: Path, pl: dict, recs: dict[str, dict]) -> None:
     V.write_scoped(ws, files, "swe6_test_author")
 
 
+def _last_failing_topics(ws: Path, pl: dict) -> dict[str, list[str]]:
+    """Topics whose scenario failed at runtime in this phase's latest run_robot, with the failing SWR ids."""
+    p = Path(ws) / "evidence/tool-results.jsonl"
+    last = None
+    for line in (p.read_text().splitlines() if p.is_file() else []):
+        if '"op": "run_robot"' in line:
+            r = json.loads(line)
+            if r.get("phase") == PHASE:
+                last = r
+    out: dict[str, list[str]] = {}
+    if last and (last.get("result") or {}).get("status") != "PASS":
+        for i in last["result"].get("issues") or []:
+            if i.startswith("ROBOT_FAIL:"):
+                for t in _topic_of(i, pl):
+                    out.setdefault(t, []).extend(re.findall(r"SWR-\d{3}", i))
+    return out
+
+
 def _topic_of(issue: str, pl: dict) -> list[str]:
     hit = [t for t, swrs in pl["topics"].items() if any(s in issue for s in swrs) or f"scn_{t}" in issue]
     m = re.search(r"#(\d+):", issue)
@@ -263,14 +290,28 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
 
     pl = plan(ws)
     routed: dict[str, list[str]] = {}
-    for f in findings:
+    for f in V.routable(findings):
         for t in _topic_of(f, pl) or list(pl["topics"]):
             routed.setdefault(f"scenario:{t}", []).append(f)
     recs = {}
+    failing = _last_failing_topics(ws, pl)
     for topic, swrs in pl["topics"].items():
+        ck = V._ckpt(ws, PHASE, f"scenario:{topic}")
+        before = (json.loads(ck.read_text()).get("doc") if ck.is_file() else None)
         recs[topic] = V.run_task(ws, PHASE, f"scenario:{topic}",
                                  lambda fi, pr, t=topic, sw=swrs: scenario_packet(ws, t, sw, model, fi, pr),
                                  lambda d, sw=swrs: validate_scenarios(ws, d, sw), budget, routed.get(f"scenario:{topic}"))
+        if topic in failing and before is not None and recs[topic]["status"] == "VALID" and recs[topic]["doc"] != before:
+            # CAPA-099: a scenario that failed at runtime and is re-authored by a rework visit is a corrected test; it
+            # is declared (TEST) before it runs again, never left as an undeclared change that blocks a passing run
+            ids = sorted(set(failing[topic]) & set(swrs)) or list(swrs)
+            try:
+                defects.report(ws, detected_phase=PHASE, reported_by="swe6-author", kind="TEST",
+                               summary=f"scn_{topic} re-authored after failing: {'; '.join(routed.get(f'scenario:{topic}') or [])}"[:400],
+                               requirement_ids=ids[:5], test_files=[f for f in scn_files(topic) if (ws / f).is_file()],
+                               evidence_refs=[], requirement_quote=V.requirement_quote(ws, ids))
+            except defects.DefectError:
+                pass  # the run tool then reports the undeclared change; the gate decides
     bad = [r for r in recs.values() if r["status"] != "VALID"]
     if bad:
         return V.reply(ws, PHASE, "FAILED", [f"{r['task']}: {e}" for r in bad for e in r["errors"][:4]], budget)
@@ -306,7 +347,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                                                 summary=f"scn_{topic}: {d['reason']}"[:400], requirement_ids=swr_ids,
                                                 test_files=[scn_files(topic)[0]], evidence_refs=[
                                                     f"run_robot:{res['summary']}"[:120]],
-                                                requirement_quote=d["reason"][:300])["id"])
+                                                requirement_quote=V.requirement_quote(ws, swr_ids, d["reason"]))["id"])
                 except defects.DefectError as exc:
                     filed.append(f"REFUSED:{exc}")
             else:
@@ -317,7 +358,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                     defects.report(ws, detected_phase=PHASE, reported_by="swe6-author", kind="TEST",
                                    summary=f"scn_{topic} corrected: {d['reason']}"[:400], requirement_ids=swr_ids,
                                    test_files=[f for f in scn_files(topic) if (ws / f).is_file()], evidence_refs=[],
-                                   requirement_quote=d["reason"][:300])
+                                   requirement_quote=V.requirement_quote(ws, swr_ids, d["reason"]))
                 except defects.DefectError as exc:
                     filed.append(f"REFUSED:{exc}")
                     continue

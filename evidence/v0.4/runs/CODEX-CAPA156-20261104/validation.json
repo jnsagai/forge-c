@@ -1,0 +1,11 @@
+{
+  "source": "36236baef77c8a3efa311596a0d0ac4251ee5c50",
+  "decision": "pd-2e344c629b4985026e17",
+  "tests": "5 focused PASS, including real namespace direct/symlink inputs readonly + state hidden; design14PASS",
+  "causal": {
+    "baseline": "rr-c7a3d651ee921705c344",
+    "candidate": "rr-4a387bcd65379f88432f"
+  },
+  "prior_observer_error": "Initial actualPRESENT returned0 not required1, officialrunnerERROR; correctedobserverexitprotocol, originalaudit retained, boundedretriage no registryreset.",
+  "runtime": "Not activated; noproductionauthority/rolequalificationclaim"
+}

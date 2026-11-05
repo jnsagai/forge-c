@@ -1,0 +1,4 @@
+{"rejected": "MISSING_REQUIRED_OUTPUTS", "issues": ["DEFECT_NOT_ADDRESSED:DEF-001: no SWE.3 file changed since the defect was handed to you; fix it, or reject_defect with the reason it is not a defect"]}
+SYMPTOM_ABSENT
+
+--- stderr ---

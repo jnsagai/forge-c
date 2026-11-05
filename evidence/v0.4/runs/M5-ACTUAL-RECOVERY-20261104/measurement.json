@@ -1,0 +1,267 @@
+{
+  "schema": "forge-c/watchdog169-actual-drill/1",
+  "started_at": "20261104T234119Z",
+  "status": "FAILED_REQUIRES_REVIEW",
+  "actions": [
+    "INSTALL_EXACT_QUALIFIED169_WATCHDOG_SERVICE_KEEP_EXISTING_ENABLED_TIMER",
+    "AUTHORIZED_EXACT_OWNED_UNIT_MAIN_SIGKILL_FAULT_NO_NATIVE_WORKER"
+  ],
+  "authority": "Explicit owner approval of reviewed recovery setup; parent technical review authorizes qualified169 artifact installation and bounded failed-conductor drill. No67501 native source reinterpretation.",
+  "before": {
+    "conductor": {
+      "Restart": "always",
+      "MainPID": "2843960",
+      "Result": "success",
+      "WorkingDirectory": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/controller-local-finite-d77709f4/factory/python",
+      "KillMode": "process",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled",
+      "Job": "",
+      "InvocationID": "bd848160be7c47ba8146fed127749efd"
+    },
+    "watchdog": {
+      "Restart": "no",
+      "MainPID": "0",
+      "Result": "success",
+      "WorkingDirectory": "!/home/omniverse2",
+      "KillMode": "control-group",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "static",
+      "Job": "",
+      "InvocationID": "a081de7979eb48768fab7cd0213a2da8"
+    },
+    "timer": {
+      "Result": "success",
+      "ActiveState": "active",
+      "SubState": "waiting",
+      "UnitFileState": "enabled",
+      "Job": "",
+      "InvocationID": "1f0ff6de52a84b4b980bd0727f7ecc5f"
+    },
+    "intent": {
+      "actor": "codex-implementation-engineer",
+      "changed_at": "2026-11-04T22:36:19.238700Z",
+      "control_context": {
+        "at": 1793831779.240272,
+        "authentication": {
+          "method": "OS_STATE_DIRECTORY_OWNER",
+          "uid": 1000
+        },
+        "control_id": "control-394b02d8be76a7a166eb0142c71cad43dd3a92708738f62333576108725bbf28",
+        "intent_epoch": 1,
+        "intent_path_sha256": "1b9d0f329d11d954ef5fe9edf5281b11efcffbab604bd88c50681deeeb085825",
+        "intent_request_sha256": "290bed52a58de62eff5f250f6737ee138c5961ff9f65024d30b8a88511c02d4b",
+        "mode": "RUNNING",
+        "mono": 3583363.272605637,
+        "pid": 2832370,
+        "process": {
+          "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+          "namespace_pid": 2832370,
+          "pid_namespace": "pid:[4026531836]",
+          "start_ticks": "358336308",
+          "state": "R",
+          "uid": 1000
+        },
+        "producer_source_sha256": "d78e00544cf71618c0b99edad673f99c542bc8a38a875243cc1de3908043497e",
+        "schema": "forge-c/control-source-context/1",
+        "scope": "CALLER_AND_OS_SOURCE_FACTS_NOT_INDEPENDENT_HOST_AUDIT",
+        "uid_map": [
+          [
+            0,
+            0,
+            4294967295
+          ]
+        ],
+        "user_namespace": "user:[4026531837]"
+      },
+      "effective_stop": false,
+      "epoch": 1,
+      "last_recovery": null,
+      "mode": "RUNNING",
+      "next_recovery_epoch": 0,
+      "pending_start": false,
+      "reason": "Explicit owner-approved 67501 finite trial and reviewed failed-conductor recovery setup; no automatic recovery activation yet",
+      "recoveries": 0,
+      "schema": "forge-c/operations-intent/1"
+    },
+    "policy_sha256": "cdafa70d0e6067a253acbf21d27efbe13fb5f68116bf1c3f9d91506d318e5fbb",
+    "packet_index_sha256": "67501d081348e125f6e6cee5a07bcdd9952e974d84df7de7c68acf6ed320903e"
+  },
+  "ledger_before": {
+    "afo_attempts": {
+      "rows": 30,
+      "sha256": "563d7af44efe095a1580e41a255a9dec6ca0d5fcb80181d732cde5c01314d25c"
+    },
+    "afo_mission_counters": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "afo_mission_executions": {
+      "rows": 1,
+      "sha256": "5a62e9a7356026689dcf39c6ee31599ca7976829b3dcd8072889ff674ed9f184"
+    },
+    "afo_mission_orders": {
+      "rows": 1,
+      "sha256": "1a630b11214ae596773c30e5a97517c8da1316244d74aeaec232e0b2ea1b1a4d"
+    },
+    "afo_missions": {
+      "rows": 1,
+      "sha256": "426dee72060c983618f279e89cb5111ebca6ebb90226e21f9b25f6d6ad39e751"
+    },
+    "afo_product_jobs": {
+      "rows": 1,
+      "sha256": "a5d829990c572b2b7aa1804746d61d79a70f20fde63038ce2a79635d536f6f72"
+    },
+    "afo_resource_ownership": {
+      "rows": 1,
+      "sha256": "8350c7b5e34db0486f8da1564a0dc2a144bb8f66c281d7dd9050ef685005d06e"
+    }
+  },
+  "backups": [
+    {
+      "path": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/watchdog169-actual-drill-20261104T234119Z/forge-line-conductor-local.service",
+      "sha256": "a89e85e09a52e5d2f2a3a11a90c060d0781da1523b984706862c4e810496bd3a"
+    },
+    {
+      "path": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/watchdog169-actual-drill-20261104T234119Z/forge-line-watchdog-local.service",
+      "sha256": "90e7efc8c881b8d8a65f2e026e58e5aacb63b26a8ff9f2af56507b90c1cb3443"
+    },
+    {
+      "path": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/watchdog169-actual-drill-20261104T234119Z/forge-line-watchdog-local.timer",
+      "sha256": "06fdfc1f8a29181af856727f3535049935053a89d1f194ea75d327d84373feca"
+    },
+    {
+      "path": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/watchdog169-actual-drill-20261104T234119Z/finite-source170-hold.conf",
+      "sha256": "a0be0ede834cf6a7f344ad97ba5a7254f18a4897dc9815a237640e021ea26c40"
+    }
+  ],
+  "fault_at": "2026-11-04T23:41:19.770188+00:00",
+  "failed": {
+    "Restart": "no",
+    "MainPID": "0",
+    "Result": "signal",
+    "WorkingDirectory": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/controller-local-finite-d77709f4/factory/python",
+    "KillMode": "process",
+    "ActiveState": "failed",
+    "SubState": "failed",
+    "UnitFileState": "enabled",
+    "Job": "",
+    "InvocationID": "bd848160be7c47ba8146fed127749efd"
+  },
+  "recovered": {
+    "conductor": {
+      "Restart": "no",
+      "MainPID": "2866337",
+      "Result": "success",
+      "WorkingDirectory": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/controller-local-finite-d77709f4/factory/python",
+      "KillMode": "process",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled",
+      "Job": "",
+      "InvocationID": "17d293418b5143eb8a9815b6e5054835"
+    },
+    "intent": {
+      "actor": "codex-implementation-engineer",
+      "changed_at": "2026-11-04T22:36:19.238700Z",
+      "control_context": {
+        "at": 1793831779.240272,
+        "authentication": {
+          "method": "OS_STATE_DIRECTORY_OWNER",
+          "uid": 1000
+        },
+        "control_id": "control-394b02d8be76a7a166eb0142c71cad43dd3a92708738f62333576108725bbf28",
+        "intent_epoch": 1,
+        "intent_path_sha256": "1b9d0f329d11d954ef5fe9edf5281b11efcffbab604bd88c50681deeeb085825",
+        "intent_request_sha256": "290bed52a58de62eff5f250f6737ee138c5961ff9f65024d30b8a88511c02d4b",
+        "mode": "RUNNING",
+        "mono": 3583363.272605637,
+        "pid": 2832370,
+        "process": {
+          "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+          "namespace_pid": 2832370,
+          "pid_namespace": "pid:[4026531836]",
+          "start_ticks": "358336308",
+          "state": "R",
+          "uid": 1000
+        },
+        "producer_source_sha256": "d78e00544cf71618c0b99edad673f99c542bc8a38a875243cc1de3908043497e",
+        "schema": "forge-c/control-source-context/1",
+        "scope": "CALLER_AND_OS_SOURCE_FACTS_NOT_INDEPENDENT_HOST_AUDIT",
+        "uid_map": [
+          [
+            0,
+            0,
+            4294967295
+          ]
+        ],
+        "user_namespace": "user:[4026531837]"
+      },
+      "effective_stop": false,
+      "epoch": 1,
+      "last_recovery": {
+        "at": 1793835734.1993937,
+        "epoch": 1,
+        "recipe": "conductor-failed-start-v1",
+        "state": {
+          "ActiveState": "failed",
+          "Job": "",
+          "MainPID": "0",
+          "Result": "signal",
+          "SubState": "failed",
+          "UnitFileState": "enabled"
+        }
+      },
+      "mode": "RUNNING",
+      "next_recovery_epoch": 1793836334.1993937,
+      "pending_start": false,
+      "reason": "Explicit owner-approved 67501 finite trial and reviewed failed-conductor recovery setup; no automatic recovery activation yet",
+      "recoveries": 1,
+      "schema": "forge-c/operations-intent/1"
+    },
+    "observed_at": "2026-11-04T23:42:16.097770+00:00"
+  },
+  "ledger_after": {
+    "afo_attempts": {
+      "rows": 30,
+      "sha256": "563d7af44efe095a1580e41a255a9dec6ca0d5fcb80181d732cde5c01314d25c"
+    },
+    "afo_mission_counters": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "afo_mission_executions": {
+      "rows": 1,
+      "sha256": "5a62e9a7356026689dcf39c6ee31599ca7976829b3dcd8072889ff674ed9f184"
+    },
+    "afo_mission_orders": {
+      "rows": 1,
+      "sha256": "1a630b11214ae596773c30e5a97517c8da1316244d74aeaec232e0b2ea1b1a4d"
+    },
+    "afo_missions": {
+      "rows": 1,
+      "sha256": "426dee72060c983618f279e89cb5111ebca6ebb90226e21f9b25f6d6ad39e751"
+    },
+    "afo_product_jobs": {
+      "rows": 1,
+      "sha256": "a5d829990c572b2b7aa1804746d61d79a70f20fde63038ce2a79635d536f6f72"
+    },
+    "afo_resource_ownership": {
+      "rows": 1,
+      "sha256": "8350c7b5e34db0486f8da1564a0dc2a144bb8f66c281d7dd9050ef685005d06e"
+    }
+  },
+  "after_health": {
+    "ok": true,
+    "code": "HEALTHY",
+    "unit": "forge-line-conductor-local.service",
+    "pid": 2866337,
+    "mode": "OBSERVE",
+    "age_s": 6.6
+  },
+  "error_type": "RuntimeError",
+  "error": "COMMAND_FAILED:['journalctl', '--user', '-u', 'forge-line-watchdog-local.service']:1",
+  "restart_restored": "always"
+}

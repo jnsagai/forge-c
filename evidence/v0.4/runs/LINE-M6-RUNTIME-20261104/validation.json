@@ -1,0 +1,20 @@
+{
+  "source_candidate": "6b04e665914288c96e724443314d61d8daf763cb",
+  "decision_id": "pd-d4b8605bbd21bcc4946d",
+  "source_state": "ELIGIBLE_FOR_OFFLINE_REVIEW",
+  "milestone_state": "INCOMPLETE_NOT_QUALIFIED_FOR_PRODUCTION_DISPATCH",
+  "controls": {
+    "functional_regression": "111 PASS; one unchanged real-Fabro control initially timed out from optional Git SSH metadata access",
+    "real_fabro_control_isolated": "PASS 2.95s with process-scoped GIT_SSH_COMMAND=/usr/bin/false; no production environment change",
+    "invalid_local_graph": "REFUSED exit1 under same isolated environment",
+    "final_targeted": "18 PASS",
+    "design": "14 PASS"
+  },
+  "role_qualification": "NOT_RUN; profile author/inspector results are not diagnosis-role receipts",
+  "real_model_dispatch": "NOT_RUN",
+  "remaining": [
+    "M3 coordination and finite mission binding",
+    "exact qualified runtime and complete request admission",
+    "owner-reviewed policy/grant/budget and independently measured role capability or signed qualification campaign"
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "schema": "forge-c/native-header-transport-measurement/1",
+  "scope": "TRANSPORT_ONLY_DETERMINISTIC_STUB_NO_ROLE_QUALIFICATION",
+  "started_at": "2026-11-05T18:32:35.877010Z",
+  "binary_sha256": "e9d7b28207d2bb51f4764e7231f08bfe5a5ccc166d335f6bec786b3fed37581a",
+  "profile_sha256": "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c",
+  "source_revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "settings_sha256": "e18296b7b4c140c7562faed14c05b9d677b824f2f0ba8f6c0c4373c445ede441",
+  "graph_sha256": "e09f58ed8ee8800140fd70fa1ca1f51bdd44fa2d3fef7a8371570087ad01a4b6",
+  "requests": [
+    {
+      "path": "/v1/chat/completions",
+      "x_session_id": "01M6PFQXQS1PWWCF0NBB251KDS",
+      "model": "qwen3.8:27b-q8_0",
+      "stream": true,
+      "max_tokens": 16384,
+      "max_completion_tokens": null,
+      "temperature": null,
+      "top_p": null,
+      "seed": null,
+      "tools_present": true,
+      "tool_count": 13,
+      "response_format_type": null
+    },
+    {
+      "path": "/v1/chat/completions",
+      "x_session_id": "01M6PFQXQS1PWWCF0NBB251KDS",
+      "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0",
+      "stream": true,
+      "max_tokens": 16384,
+      "max_completion_tokens": null,
+      "temperature": null,
+      "top_p": null,
+      "seed": null,
+      "tools_present": true,
+      "tool_count": 13,
+      "response_format_type": null
+    }
+  ],
+  "production_mutations": false,
+  "profile": "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104",
+  "source_tracked_dirty": false,
+  "harness_sha256": "8583102295fb4f1138e8b5a557257709eaaaf6112a17b1b178f9a13c9f97c88f",
+  "adapter_sha256": {
+    "llm_gateway.py": "afb2d8904d252c7d8194e88b926950442c65c5e16e2f4ea11c27b8b9090ada92",
+    "afo/product_job.py": "6424047e7dab2744a58477fc281e724cf1c2e07192fe43ab4ec56dc6f995fb1a",
+    "afo/execution_lifecycle.py": "f806fa4907ac284e12e7d42bcf51be33457f96160f1b06759a093a4f3b3217bc",
+    "fabro/client.py": "530cc7d85d29380ddbc726f1a10866cdf90410d211f6e48be9b8359414081608",
+    "lrtx/stack.py": "f399772651da6d52efa858ed923e68ba72e40afee6bd2d6eddb89d7dafc1294f"
+  },
+  "binary_version": "fabro 0.362.0-nightly.0 (a192bce 2026-09-20)",
+  "launch_returncode": 0,
+  "native_run_id": "01M6PFQXQS1PWWCF0NBB251KDS",
+  "terminal_status": "SUCCEEDED",
+  "labels_match": true,
+  "all_headers_equal_actual_run_id": true,
+  "request_count": 2,
+  "identity_controls": {
+    "actual_header_and_nonce": {
+      "pass": true,
+      "accepted": true,
+      "reason": "CONFIRMED"
+    },
+    "missing_header": {
+      "pass": true,
+      "accepted": false,
+      "reason": "NATIVE_REQUEST_IDENTITY_INVALID:"
+    },
+    "unknown_header": {
+      "pass": true,
+      "accepted": false,
+      "reason": "HTTPStatusError:404"
+    },
+    "foreign_nonce": {
+      "pass": true,
+      "accepted": false,
+      "reason": "NATIVE_REQUEST_IDENTITY_UNCONFIRMED:"
+    },
+    "foreign_job": {
+      "pass": true,
+      "accepted": false,
+      "reason": "NATIVE_REQUEST_IDENTITY_UNCONFIRMED:"
+    }
+  },
+  "verdict": "PASS",
+  "fixture_terminal_confirmed": true,
+  "own_server_stopped": true,
+  "finished_at": "2026-11-05T18:32:42.894753Z"
+}

@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-db20b40b72c69004bdb9",
+  "reproducer_id": "RPR-078",
+  "revision": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+  "role": "PREVENTION",
+  "exit_code": 0,
+  "verdict": "SYMPTOM_ABSENT",
+  "signature": null,
+  "log_sha256": "aa2d81abb375306868b12cfd197b02bc68bf0e004ca4780367214b305b57b9fa",
+  "at": "2026-11-05T21:32:17.290183Z"
+}

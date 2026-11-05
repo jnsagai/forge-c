@@ -1,0 +1,153 @@
+...............EEE                                                       [100%]
+==================================== ERRORS ====================================
+__ ERROR at setup of test_existing_role_request_ledger_and_nonce_integration ___
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388470...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-110/test_existing_role_request_led0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-110/test_existing_role_request_led0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c8b02f5c7e0>
+
+    @pytest.fixture
+    def native_job(supervised,tmp_path,monkeypatch):
+        from test_afo_m2_queue import _env
+        from forge_factory import workorder
+        from forge_factory.afo import product_job, line_product_context
+        from forge_factory.afo.execution_lifecycle import Executions
+        from forge_factory.lrtx.profile import load
+        store=supervised['store'];control=supervised['control'];eff=policy.load(supervised['runtime'])
+        repo=tmp_path/'input-repo';(repo/'afo-manifests').mkdir(parents=True)
+        oid,_=store.submit(_env(repo,rid=D.ORDERS[0],model=control['profile'],driver_class=D.DRIVER,tenant_scope='line-local'),repo=repo,max_queued=10)
+        epoch=store.acquire_lease('line:local','PRIVATE-TEST',300)
+        aid=store.admit(oid,epoch=epoch,scope='line:local',policy_sha256=eff.sha256,authorization_id='OWNER_SUPERVISED_DEVELOPMENT',max_concurrent=1)
+        MissionLedger(store).link(D.MISSION,oid)
+        attempt=store.attempts(oid)[-1]
+        attempt['record']['workspace_ref']='workorder:'+D.ORDERS[0]
+        ws=tmp_path/'state/workorders'/D.ORDERS[0]/'workspace';(ws/'.forge-run').mkdir(parents=True)
+        model='qwen3.8:27b-q8_0'
+        monkeypatch.setattr(workorder,'factory_revision',lambda:dict(commit='a'*40,dirty=False))
+        manifest=dict(model=model,profile=control['profile'],operations_epoch=1,line_role_authority_ref=supervised['control_ref'],line_origin={})
+>       job=product_job.prepare(store,store.order(oid),attempt,'PRIVATE-NONCE',manifest,eff)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/product_job.py:113: in prepare
+    Executions(store).reserve(job_id, mission, nonce)
+factory/python/forge_factory/afo/execution_lifecycle.py:59: in reserve
+    validate("execution-lifecycle", rec)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'execution-lifecycle'
+value = {'admission_state': 'RESERVED', 'authorization_state': 'VALID', 'cancel_attempts': 0, 'cancellation_state': 'NOT_REQUESTED', ...}
+
+    def validate(name: str, value) -> None:
+        from jsonschema import Draft202012Validator, FormatChecker
+    
+        errors = list(Draft202012Validator(schema(name), format_checker=FormatChecker()).iter_errors(value))
+        if errors:
+            e = errors[0]
+>           raise Refused("CONTRACT_INVALID", f"{name}:{'/'.join(map(str, e.path))}:{e.validator}")
+E           forge_factory.afo.durable.Refused: CONTRACT_INVALID:execution-lifecycle:launch_nonce:pattern
+
+factory/python/forge_factory/afo/durable.py:70: Refused
+_ ERROR at setup of test_guardian_exit_between_reservation_and_effect_refuses_and_holds _
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388470...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-110/test_guardian_exit_between_res0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-110/test_guardian_exit_between_res0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c8b02f49310>
+
+    @pytest.fixture
+    def native_job(supervised,tmp_path,monkeypatch):
+        from test_afo_m2_queue import _env
+        from forge_factory import workorder
+        from forge_factory.afo import product_job, line_product_context
+        from forge_factory.afo.execution_lifecycle import Executions
+        from forge_factory.lrtx.profile import load
+        store=supervised['store'];control=supervised['control'];eff=policy.load(supervised['runtime'])
+        repo=tmp_path/'input-repo';(repo/'afo-manifests').mkdir(parents=True)
+        oid,_=store.submit(_env(repo,rid=D.ORDERS[0],model=control['profile'],driver_class=D.DRIVER,tenant_scope='line-local'),repo=repo,max_queued=10)
+        epoch=store.acquire_lease('line:local','PRIVATE-TEST',300)
+        aid=store.admit(oid,epoch=epoch,scope='line:local',policy_sha256=eff.sha256,authorization_id='OWNER_SUPERVISED_DEVELOPMENT',max_concurrent=1)
+        MissionLedger(store).link(D.MISSION,oid)
+        attempt=store.attempts(oid)[-1]
+        attempt['record']['workspace_ref']='workorder:'+D.ORDERS[0]
+        ws=tmp_path/'state/workorders'/D.ORDERS[0]/'workspace';(ws/'.forge-run').mkdir(parents=True)
+        model='qwen3.8:27b-q8_0'
+        monkeypatch.setattr(workorder,'factory_revision',lambda:dict(commit='a'*40,dirty=False))
+        manifest=dict(model=model,profile=control['profile'],operations_epoch=1,line_role_authority_ref=supervised['control_ref'],line_origin={})
+>       job=product_job.prepare(store,store.order(oid),attempt,'PRIVATE-NONCE',manifest,eff)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/product_job.py:113: in prepare
+    Executions(store).reserve(job_id, mission, nonce)
+factory/python/forge_factory/afo/execution_lifecycle.py:59: in reserve
+    validate("execution-lifecycle", rec)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'execution-lifecycle'
+value = {'admission_state': 'RESERVED', 'authorization_state': 'VALID', 'cancel_attempts': 0, 'cancellation_state': 'NOT_REQUESTED', ...}
+
+    def validate(name: str, value) -> None:
+        from jsonschema import Draft202012Validator, FormatChecker
+    
+        errors = list(Draft202012Validator(schema(name), format_checker=FormatChecker()).iter_errors(value))
+        if errors:
+            e = errors[0]
+>           raise Refused("CONTRACT_INVALID", f"{name}:{'/'.join(map(str, e.path))}:{e.validator}")
+E           forge_factory.afo.durable.Refused: CONTRACT_INVALID:execution-lifecycle:launch_nonce:pattern
+
+factory/python/forge_factory/afo/durable.py:70: Refused
+__ ERROR at setup of test_wrong_nonce_and_changed_role_config_reserve_nothing __
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388470...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-110/test_wrong_nonce_and_changed_r0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-110/test_wrong_nonce_and_changed_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7c8b019d1130>
+
+    @pytest.fixture
+    def native_job(supervised,tmp_path,monkeypatch):
+        from test_afo_m2_queue import _env
+        from forge_factory import workorder
+        from forge_factory.afo import product_job, line_product_context
+        from forge_factory.afo.execution_lifecycle import Executions
+        from forge_factory.lrtx.profile import load
+        store=supervised['store'];control=supervised['control'];eff=policy.load(supervised['runtime'])
+        repo=tmp_path/'input-repo';(repo/'afo-manifests').mkdir(parents=True)
+        oid,_=store.submit(_env(repo,rid=D.ORDERS[0],model=control['profile'],driver_class=D.DRIVER,tenant_scope='line-local'),repo=repo,max_queued=10)
+        epoch=store.acquire_lease('line:local','PRIVATE-TEST',300)
+        aid=store.admit(oid,epoch=epoch,scope='line:local',policy_sha256=eff.sha256,authorization_id='OWNER_SUPERVISED_DEVELOPMENT',max_concurrent=1)
+        MissionLedger(store).link(D.MISSION,oid)
+        attempt=store.attempts(oid)[-1]
+        attempt['record']['workspace_ref']='workorder:'+D.ORDERS[0]
+        ws=tmp_path/'state/workorders'/D.ORDERS[0]/'workspace';(ws/'.forge-run').mkdir(parents=True)
+        model='qwen3.8:27b-q8_0'
+        monkeypatch.setattr(workorder,'factory_revision',lambda:dict(commit='a'*40,dirty=False))
+        manifest=dict(model=model,profile=control['profile'],operations_epoch=1,line_role_authority_ref=supervised['control_ref'],line_origin={})
+>       job=product_job.prepare(store,store.order(oid),attempt,'PRIVATE-NONCE',manifest,eff)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/product_job.py:113: in prepare
+    Executions(store).reserve(job_id, mission, nonce)
+factory/python/forge_factory/afo/execution_lifecycle.py:59: in reserve
+    validate("execution-lifecycle", rec)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'execution-lifecycle'
+value = {'admission_state': 'RESERVED', 'authorization_state': 'VALID', 'cancel_attempts': 0, 'cancellation_state': 'NOT_REQUESTED', ...}
+
+    def validate(name: str, value) -> None:
+        from jsonschema import Draft202012Validator, FormatChecker
+    
+        errors = list(Draft202012Validator(schema(name), format_checker=FormatChecker()).iter_errors(value))
+        if errors:
+            e = errors[0]
+>           raise Refused("CONTRACT_INVALID", f"{name}:{'/'.join(map(str, e.path))}:{e.validator}")
+E           forge_factory.afo.durable.Refused: CONTRACT_INVALID:execution-lifecycle:launch_nonce:pattern
+
+factory/python/forge_factory/afo/durable.py:70: Refused
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_owner_supervised_development.py::test_existing_role_request_ledger_and_nonce_integration
+ERROR factory/python/tests/test_owner_supervised_development.py::test_guardian_exit_between_reservation_and_effect_refuses_and_holds
+ERROR factory/python/tests/test_owner_supervised_development.py::test_wrong_nonce_and_changed_role_config_reserve_nothing

@@ -41,8 +41,8 @@ def test_unit_verification_checks_complete_three_digit_spec_id(tmp_path, monkeyp
     compilations = []
     monkeypatch.setattr(swe4, "_compile_test", lambda *args: compilations.append(args) or [])
     code = '/** @test UT-100 @verifies USPEC-LL-100-01 */\nstatic void ut_ut_100(void) { CHECK("UT-100", LL_PORT_Get() == 0U); }'
-    assert swe4.validate_test(tmp_path, {"code": code}, case) == [] and len(compilations) == 1
-    assert swe4.validate_test(tmp_path, {"code": code.replace("USPEC-LL-100-01", "USPEC-LL-101-01")}, case)
+    assert swe4.validate_test(tmp_path, {"code": code, "kinds": ["positive"]}, case) == [] and len(compilations) == 1
+    assert swe4.validate_test(tmp_path, {"code": code.replace("USPEC-LL-100-01", "USPEC-LL-101-01"), "kinds": ["positive"]}, case)
     assert len(compilations) == 1  # Wrong ownership cannot reach compilation.
 
 

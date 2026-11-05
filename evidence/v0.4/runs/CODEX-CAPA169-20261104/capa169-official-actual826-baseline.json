@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-a6be6a2e31136a27144f",
+  "reproducer_id": "RPR-169",
+  "revision": "826a8724e94229c7b8d3bde45909fa6f008251c6",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "SYMPTOM_PRESENT",
+  "signature": "standalone host watchdog recovery cannot load its normal policy dependencies",
+  "log_sha256": "290815088bfda6c9c96499575f4240b1df36fe95d9f19a402047bb4058ec07ac",
+  "at": "2026-11-04T23:04:58.336509Z"
+}

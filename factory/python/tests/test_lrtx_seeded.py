@@ -17,6 +17,14 @@ HOLDOUT = Path(os.environ.get("FORGE_DATA_ROOT", "/nonexistent")) / \
 pytestmark = pytest.mark.skipif(not (HOLDOUT / ".forge-run/manifest.json").is_file(), reason="rc1 holdout not present")
 
 
+@pytest.fixture(autouse=True)
+def _envelope(monkeypatch):
+    """CAPA-116: a SWE.3 inspector packet also carries the frozen SWE.2 architecture; the rc1 holdout selects no
+    profile and the inherited 24k legacy envelope refuses it (never truncated). These tests check the harness
+    mechanics, so they use the smallest production profile envelope (65536, local-rtx-v2-omniverse2-q38-aspice)."""
+    monkeypatch.setattr(S, "CONTEXT_TOKENS", 65536)
+
+
 def test_seeded_cases_are_attributed_and_the_holdout_is_untouched(tmp_path, monkeypatch):
     before = {p: sha256_file(p) for p in HOLDOUT.rglob("*") if p.is_file() and "build" not in p.parts}
 
@@ -66,7 +74,7 @@ def test_the_paired_swe1_mutations_seed_one_named_defect_each(tmp_path):
     base = ws.parent / "base"
     shutil.copytree(ws, base)
     cases = {c["id"]: c for c in SD.CATALOGUE}
-    assert SD.CATALOGUE_VERSION == "lrtx-seeded-2"
+    assert SD.CATALOGUE_VERSION == "lrtx-seeded-3"
     for cid, target, check in (
             ("S1-EFFECT", "SWR-001", lambda w: json.loads((w / "workproducts/SWE.1/register_effects.json").read_text())
              ["effects"][0]["op"] == "clear"),

@@ -1,0 +1,92 @@
+[
+  {
+    "at": "2026-11-04T22:58:58.555546Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[\"CAPA-169\"]",
+    "from_state": null,
+    "reason": "Actual standalone host watchdog recover imports missing yaml; no service action/model call. Artifact dependency packaging hypothesis; source qualified independently.",
+    "seq": 1268,
+    "to_state": "OPEN"
+  },
+  {
+    "at": "2026-11-04T22:58:58.635803Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by RULE",
+    "seq": 1269,
+    "to_state": "TRIAGED"
+  },
+  {
+    "at": "2026-11-04T22:58:58.825010Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-169 assigned",
+    "seq": 1270,
+    "to_state": "REPRODUCER_PENDING"
+  },
+  {
+    "at": "2026-11-04T23:04:32.542177Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[\"reproducer-run:rr-d09fd0d20c41528334ba\", \"reproducer-run:rr-9c06409684c144f59d39\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CANDIDATE_NOT_FIXED:ERROR",
+    "seq": 1271,
+    "to_state": "UNRESOLVED"
+  },
+  {
+    "at": "2026-11-04T23:04:54.253232Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[]",
+    "from_state": "UNRESOLVED",
+    "reason": "triage by RULE",
+    "seq": 1272,
+    "to_state": "TRIAGED"
+  },
+  {
+    "at": "2026-11-04T23:04:54.465512Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-169 assigned",
+    "seq": 1273,
+    "to_state": "REPRODUCER_PENDING"
+  },
+  {
+    "at": "2026-11-04T23:04:59.101200Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[\"reproducer-run:rr-01c44278015195c7de5c\", \"reproducer-run:rr-14ca08e6230e628843f0\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1274,
+    "to_state": "CAUSE_VERIFIED"
+  },
+  {
+    "at": "2026-11-04T23:04:59.158846Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[\"git:826a8724e942..405ea04291ae\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 405ea04291ae (patch 419403 bytes)",
+    "seq": 1275,
+    "to_state": "FIX_CANDIDATE"
+  },
+  {
+    "at": "2026-11-04T23:10:59.261767Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[\"reproducer-run:rr-0b499e3050ee75874d36\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-169 absent at 405ea04291ae",
+    "seq": 1276,
+    "to_state": "PREVENTION_TESTED"
+  },
+  {
+    "at": "2026-11-04T23:10:59.279347Z",
+    "capa_id": "CAPA-169",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1277,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+  }
+]

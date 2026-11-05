@@ -1,0 +1,101 @@
+{
+ "CAPA-088": {
+  "history": [
+   {
+    "at": "2026-11-01T11:25:45.200574Z",
+    "capa_id": "CAPA-088",
+    "evidence": "[\"fabro-swe1-rcc-03-inspector-source-limit\"]",
+    "from_state": null,
+    "reason": "Run WO-F014-SWE1-RCC-20261101-03: inspector refused the frozen RCC baseline (register_effects 107046 > 40000); blocked by CAPA-085",
+    "seq": 666,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-01T11:25:45.288414Z",
+    "capa_id": "CAPA-088",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 667,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-01T11:25:45.428467Z",
+    "capa_id": "CAPA-088",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-088 assigned",
+    "seq": 668,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-01T11:25:49.938534Z",
+    "capa_id": "CAPA-088",
+    "evidence": "[\"reproducer-run:rr-7fde66f367b48959cd26\", \"reproducer-run:rr-8fdbad37122efccdcbc9\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 669,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-01T11:25:49.974469Z",
+    "capa_id": "CAPA-088",
+    "evidence": "[\"git:7eb50799a55c..8ee683b7f0f3\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 8ee683b7f0f3 (patch 3469 bytes)",
+    "seq": 670,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-01T11:28:23.607302Z",
+    "capa_id": "CAPA-088",
+    "evidence": "[\"reproducer-run:rr-57e0f7760795e7da5c67\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-088 absent at 8ee683b7f0f3",
+    "seq": 671,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-01T11:28:23.621015Z",
+    "capa_id": "CAPA-088",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 672,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-a669aed2ab890ecf20c6a3aab4eff79f128f7005",
+   "7eb50799a55c2651d0a253e89f4d4d92cc6913e5",
+   "8ee683b7f0f3aa44cc8ead4e22b7d4dc761c71f6",
+   "pd-96606a3ab7a863fca783"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<8ee683b7f0f3"
+   ],
+   "candidate_patch_sha256": "c8d4ce0e7d956ab69f0d2e7d4ad0089d946099dbb76e6bcfbf46627f9f99cd63",
+   "capa_id": "CAPA-088",
+   "created_at": "2026-11-01T11:25:45.200574Z",
+   "event_ids": [],
+   "incident_ids": [
+    "fabro-swe1-rcc-03-inspector-source-limit"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-088",
+   "reproducer_id": "RPR-088",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-7fde66f367b48959cd26",
+    "reproducer-run:rr-8fdbad37122efccdcbc9"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "The thinking profile has no inspection_max_source_chars, so large parts exceed the inherited 40 000-character bound",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-01T11:28:23.621015Z"
+  }
+ }
+}

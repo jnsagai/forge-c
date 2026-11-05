@@ -25,6 +25,7 @@ import json
 import re
 from pathlib import Path
 
+from ..assurance import register_contract as RC
 from ..common import sha256_bytes, utc_now
 from . import structured as S
 from . import visit as V
@@ -38,11 +39,62 @@ TRIAGE_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["
 
 
 def _p(ws: Path) -> dict:
-    from ..layer import profile
+    from ..layer import ll_instance, profile
     from .swe3 import _ident
 
     pr = profile(ws)
-    return {**_ident(ws), "id": pr["id"], "prompt": pr.get("prompt") or {}}
+    return {**_ident(ws), "id": pr["id"], "prompt": pr.get("prompt") or {}, "instance": ll_instance(ws)}
+
+
+def registers_rule(p: dict) -> str:
+    """How a test reaches registers: the register-block array, or (instance mode) the instance macro's members."""
+    inst = p.get("instance")
+    if inst is None:
+        return f"{p['block']}[LL_{p['pfx']}_<REG>_OFFSET / 4U] register bits"
+    members = ", ".join(f"{inst['macro']}->{m} for {r}" for r, m in inst["members"].items())
+    return (f"the registers of the instance macro {inst['macro']} ({members}; {inst['macro']} is passed as the "
+            f"instance argument of every LL call and is the only way to a register - there is no register-block "
+            f"array {p['block']})")
+
+
+# Owner 2026-11-02 ("Allow access logging"): a register-access prohibition is verified on the simulated target's
+# register-access log (factory/sim/stm32n6/forge_access_log.py), never on final register contents - a write that restores
+# the original value, or a read, leaves no trace there. The host RAM register block has no access log.
+PROHIBITION = re.compile(r"(?i:\bshall not (?:read|write|access)\b)[^.]*(?:(?i:\bregisters?\b)|\b[A-Z][A-Z0-9]*_[A-Z0-9_]+\b)"
+                         r"|(?i:register-access log)")
+TARGET_ACCESS_RULE = (
+    "A requirement that the driver shall not read/write/access a register (before its first call, outside a call, "
+    "or in a stated situation) is checked on the simulation's register-access log (forge_target_test.h), never by "
+    "final register values: 'TCHECK(<n>, FORGE_ACCESS_COUNT() == 0U);' at the start of main before any LL call; "
+    "around other code 'FORGE_ACCESS_PHASE(<p>U);' (p 1..15) and then 'TCHECK(<n>, FORGE_ACCESS_COUNT_IN(<p>U) == "
+    "0U);'. The model counts every register access, including the test's own register reads, so set a phase that "
+    "contains only the code under check.")
+HOST_ACCESS_RULE = (
+    "The host RAM register block has no access log: a requirement that the driver shall not read/write/access a "
+    "register is verified only on the simulated target's register-access log (SWE.5/SWE.6 target tests); here check "
+    "only the register and return-value effects the requirement states and claim nothing about absent accesses.")
+
+
+def has_prohibition(*texts: str) -> bool:
+    return any(PROHIBITION.search(t or "") for t in texts)
+
+
+def requirement_prohibitions(ws: Path, swrs: list[str] | None = None) -> bool:
+    """Whether the SWE.1 requirements (or the given ones) contain a register-access prohibition."""
+    from ..assurance.register_contract import _requirements
+
+    reqs = _requirements(ws)
+    return has_prohibition(*(reqs.get(s, "") for s in swrs) if swrs is not None else reqs.values())
+
+
+def instance_findings(p: dict, code: str) -> list[str]:
+    """Instance mode: a test that uses the register-block array of the legacy layout cannot build."""
+    from ..brownfield.scope import strip_comments
+
+    inst = p.get("instance")
+    if inst is None or not re.search(rf"\b{re.escape(p['block'])}\b", strip_comments(code)):
+        return []
+    return [f"{p['block']} does not exist in instance mode: access registers as {inst['macro']}-><MEMBER>"]
 
 
 def files(ws: Path) -> dict[str, str]:
@@ -75,7 +127,7 @@ def _context(ws: Path) -> list[dict]:
     api = "\n".join(f"{_sig(f)} - {f['operation']} [{', '.join(f['fields'])}]" for f in iface["functions"])
     req = "\n".join(f"{k}: {v}" for k, v in reqs.items()) + "\n" + "\n".join(
         f"case {e['case']} ({e['swr']}): {e.get('register', '')}.{e.get('field', '')} op {e['op']}"
-        + (f" value {e['value']}" if e.get("value") is not None else "") for e in eff)
+        + RC.value_text(e) for e in eff)
     dyn = (Path(ws) / "workproducts/SWE.2/architecture_dynamic.puml").read_text()
     defs = _defines(ws, sorted({x for f in iface["functions"] for x in f["fields"]}))
     return [{"path": n, "text": t, "sha256": sha256_bytes(t.encode())} for n, t in
@@ -96,9 +148,11 @@ def file_packet(ws: Path, kind: str, model: str, findings=None, previous=None) -
                  f"{Path(rel).name} @verifies {ifs} */', then '#include \"{p['header']}\"', '#include "
                  "\"forge_target_test.h\"', the line 'FORGE_MAILBOX_DEFINE;', then 'int main(void) { FORGE_TEST_BEGIN(); "
                  "... FORGE_TEST_END(); return 0; }' with checks 'TCHECK(<number>, <condition>);' numbered 1, 2, 3 ... "
-                 f"on LL return values and {p['block']}[LL_{p['pfx']}_<REG>_OFFSET / 4U] register bits. Expected values "
+                 f"on LL return values and {registers_rule(p)}. Expected values "
                  "follow the target model and the requirements. A poll is bounded by the caller (at most 1000 iterations). "
                  "Use only the interface functions, the generated defines and the register block.")
+        if requirement_prohibitions(ws):
+            instr += " " + TARGET_ACCESS_RULE
     else:
         scope = " ".join(str(p["prompt"].get("integration") or "the LL sequences of the SWE.2 dynamic view").split())
         instr = (f"Write the complete host integration test program {rel} for the {p['header']} LL on a plain RAM "
@@ -110,6 +164,20 @@ def file_packet(ws: Path, kind: str, model: str, findings=None, previous=None) -
                  f"from: {ifs}> SWC_LL */' (IT-001, IT-002 ...), and every CHECK id of that function starts with its "
                  "IT id (IT-001, IT-001-A ...; each id used once). main() clears the array, calls every test and "
                  "returns (failures == 0) ? 0 : 1. Expected values come from the requirements and their cases.")
+        inst = p.get("instance")
+        if inst is not None:  # instance mode: the RAM instance of the pinned device header replaces the array
+            obj = inst["host_object"]
+            instr = instr.replace(
+                f"on a plain RAM register array: '#include <stdio.h>', '#include <stdint.h>', '#include \"{p['header']}\"', "
+                f"define 'volatile uint32_t {p['block']}[LL_{p['pfx']}_REG_COUNT];' and",
+                f"on the RAM instance {obj} of the pinned device header {inst['device_header']}: '#include <stdio.h>', "
+                "'#include <stdint.h>', '#include <string.h>', the line '#define FORGE_HOST_DEVICE_IMPLEMENTATION' "
+                f"directly before '#include \"{p['header']}\"' (it defines {obj} once), then define")
+            instr = instr.replace("main() clears the array,", f"main() clears the instance with (void)memset((void *)&"
+                                  f"{obj}, 0, sizeof({obj})),")
+            instr += (f" Registers are read and preset as {registers_rule(p)}; every LL call passes {inst['macro']}.")
+        if requirement_prohibitions(ws):
+            instr += " " + HOST_ACCESS_RULE
     artifacts = _context(ws)
     if kind == "target_performance":
         from .. import simulation_performance as performance
@@ -152,6 +220,11 @@ def validate_file(ws: Path, kind: str, doc: dict) -> list[str]:
     ifs = set(interface_ids(ws))
     used = set(re.findall(rf"\bLL_{p['pfx']}_\w+", code))
     out += [f"{x} is neither an interface function nor a generated define" for x in sorted(used - known - api)]
+    out += V.offset_index_errors(code, p["block"], p["pfx"])
+    out += instance_findings(p, code)
+    if p.get("instance") is not None and kind == "integration" and "#define FORGE_HOST_DEVICE_IMPLEMENTATION" not in code:
+        out.append(f"missing the line '#define FORGE_HOST_DEVICE_IMPLEMENTATION' before the LL header include (it "
+                   f"defines the RAM instance {p['instance']['host_object']})")
     if re.search(r"\(\s*(?:volatile\s+)?uint32_t\s*\*\s*\)", code):
         out.append("no integer-to-pointer casts: use the register block array")
     tags_if = set(re.findall(r"\bIF-\d{2}\b", " ".join(re.findall(r"@verifies([^*]*)", code))))
@@ -236,7 +309,7 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
     from . import tools as T
 
     routed: dict[str, list[str]] = {}
-    for f in findings:
+    for f in V.routable(findings):
         k = _kind_of(f, ws)
         for kind in [k] if k else list(files(ws)):
             routed.setdefault(f"file:{kind}", []).append(f)
@@ -278,7 +351,8 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                                             requirement_ids=sorted(set(re.findall(r"SWR-\d{3}", d["reason"])))[:5],
                                             test_files=[rel], evidence_refs=[f"{k}:{r['summary']}"[:120]
                                                                              for k, r in res.items()],
-                                            requirement_quote=d["reason"][:300])["id"])
+                                            requirement_quote=V.requirement_quote(
+                                                ws, sorted(set(re.findall(r"SWR-\d{3}", d["reason"]))), d["reason"]))["id"])
             except defects.DefectError as exc:
                 filed.append(f"REFUSED:{exc}")
         elif validate_file(ws, kind, {"code": d["code"]}) == []:
@@ -286,7 +360,8 @@ def _visit_tests(ws: Path, model: str, budget: dict, findings: list[str]) -> dic
                 defects.report(ws, detected_phase=PHASE, reported_by="swe5-author", kind="TEST",
                                summary=f"{Path(rel).name} corrected: {d['reason']}"[:400],
                                requirement_ids=sorted(set(re.findall(r"SWR-\d{3}", d["reason"])))[:5],
-                               test_files=[rel], evidence_refs=[], requirement_quote=d["reason"][:300])
+                               test_files=[rel], evidence_refs=[], requirement_quote=V.requirement_quote(
+                                   ws, sorted(set(re.findall(r"SWR-\d{3}", d["reason"]))), d["reason"]))
             except defects.DefectError as exc:
                 filed.append(f"REFUSED:{exc}")
                 continue
@@ -316,9 +391,11 @@ def visit_report(ws: Path, model: str = "", **_k) -> dict:
     size = [json.loads(x) for x in (ws / "evidence/tool-results.jsonl").read_text().splitlines()
             if '"op": "measure_elf"' in x or '"op": "stack_usage"' in x][-2:]
     excluded = [s for s in m["scope"] if s.lower().startswith("out of scope")]
+    store = ("a RAM register array" if p.get("instance") is None else
+             f"the RAM {p['instance']['type_name']} instance {p['instance']['host_object']}")
     md = ["# Integration verification report", "", "## Plan", "", "Component and integration measures: the host "
-          f"integration program {files(ws)['integration']} drives the SWE.2 sequences through the real LL on a RAM "
-          "register array; the Renode target programs run the LL on the simulated STM32N6 (Cortex-M55) with the "
+          f"integration program {files(ws)['integration']} drives the SWE.2 sequences through the real LL on {store}"
+          "; the Renode target programs run the LL on the simulated STM32N6 (Cortex-M55) with the "
           "behavioural peripheral model.", "", "## Integration sequence", "",
           f"The sequences of workproducts/SWE.2/architecture_dynamic.puml over the interfaces {', '.join(interface_ids(ws))} "
           "of the static view.", "", "## Clock/reset interactions tested", "",

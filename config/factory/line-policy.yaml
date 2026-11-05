@@ -1,0 +1,34 @@
+# Autonomous line M3 (owner 2026-11-03) - the Line Conductor's ACT policy for the Omniverse2 local line.
+# Owner-controlled: the PILOT grant (config/factory/afo-authorizations/<authorization_ref>.json, signed by the owner
+# with `python -m forge_factory.afo.authz sign`) is bound to the sha256 of this file's canonical JSON
+# (forge_factory.afo.line_orders.load_policy(...).sha256). Any edit invalidates the grant: ACT then refuses and the
+# conductor observes. Values below the code floor (line_orders.FLOOR) are refused, never applied.
+schema: forge-c/line-policy/1
+line: local
+mode: PILOT                       # requested; effective only with a valid signed grant, else OBSERVE
+authorization_ref: AUTH-AFO-PILOT-20261103-LINE
+campaigns_dir: config/factory/campaigns
+owner_rules:
+  same_issue_limit: 3             # decision 14: the same issue more than 3 times in a row stops the lineage
+  resume_from_last_good_part: true
+  retries_while_progressing: unlimited
+  quality: order target, at least the order minimum, gap reported   # decision 15
+pacing:                           # decision 7 values: pacing and cost guards, never a stop reason
+  max_concurrent_gpu_runs: 1
+  infra_backoff_base_s: 60
+  infra_cooldown_s: 600
+  infra_recoveries_per_hour_host: 6
+disk:                             # decision 12
+  min_free_gb: 30
+  cleanup_min_age_days: 3
+  cleanup: own run worktrees of finished archived orders, own pytest temps
+escalation:                       # decision 5
+  github_repo: jnsagai/forge-c
+  mentions: false
+  issue_for: [NEEDS_OWNER, LINE_STOPPED, DISK_BELOW_GUARD]
+never:                            # decision 4 and the always-owner list
+  merge: true
+  promote: true
+  weaken_gate: true
+  edit_requirements: true
+models: local only (the campaign profile); model calls of healthy cycles 0

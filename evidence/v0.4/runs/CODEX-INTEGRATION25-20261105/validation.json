@@ -1,0 +1,67 @@
+{
+  "CHANGE_reproducer": "NOT_APPLICABLE_FOR_CHANGE",
+  "I25_design": 14,
+  "I25_ruff": "4FILES_PASS",
+  "Omniverse_boot_mount_dependency_faults": "NOT_RUN",
+  "affected": {
+    "errors": 0,
+    "failures": 0,
+    "passed": 102,
+    "skipped": 4,
+    "tests": 106
+  },
+  "component_CRE_baseline": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "component_design": 14,
+  "component_ruff": "4FILES_PASS",
+  "counting_limit": "Repeated source versions/CRE prevention/systemd rows are not additional product jobs or independent native competence.",
+  "decision_id": "pd-f8860ecfd2e7a25ff728",
+  "endurance_24_72_168h": "NOT_RUN",
+  "evaluator": "cre-promotion-runner@74e44a1f23b0",
+  "failures_and_prototypes": "Preserved red/initial-green PROTOTYPE_NONIMMUTABLE plus frozenV2 lint failure; never relabeled as final passes.",
+  "installed_timer_CRE_recovery": "NOT_RUN",
+  "integration_source": "66d61cb1bb24f6db9a158cc9f040cf51c1517b71",
+  "legacy": 16,
+  "local_disposable_systemd": {
+    "outcome_rows": 4,
+    "passed": 1,
+    "production": false,
+    "scope": "LOCAL_DISPOSABLE_SYSTEMD_CONTROL",
+    "test_count": 1,
+    "units": [
+      "forge-c-014-qual-dae08617e70c-boot.service",
+      "forge-c-014-qual-d2e528dbbc64-boot.service"
+    ]
+  },
+  "model_GPU_actions": "NONE",
+  "packager": 7,
+  "prevention": 175,
+  "publication_install": "NONE_LOCAL_PREPARATION_ONLY",
+  "qualified_component": "8edd6a5657ff9c5f67b1c40c243532cb71d5bc69",
+  "schema": "forge-c/integration25-publication-validation/1",
+  "signatures_policy_profiles_budgets": "UNCHANGED",
+  "skips": [
+    {
+      "reason": "FORGE_M1_REPLAY_LIVE_DIR (read-only copy of the live line + supervisor state) not given",
+      "status": "NOT_RUN_HISTORICAL_REPLAY",
+      "test": "test_replay_live_state_with_its_persisted_feed"
+    },
+    {
+      "reason": "FORGE_M1_REPLAY_TODAY_DIR (read-only copy of today's line state) not given",
+      "status": "NOT_RUN_HISTORICAL_REPLAY",
+      "test": "test_replay_today_the_first_live_feeds_stale_noise_is_not_open"
+    },
+    {
+      "reason": "FORGE_M1_REPLAY_DIR (read-only copy of the Omniverse2 line state) not given",
+      "status": "NOT_RUN_HISTORICAL_REPLAY",
+      "test": "test_classification_replay_over_a_copy_of_the_omniverse2_line_state"
+    },
+    {
+      "reason": "FORGE_M3_REPLAY_DIR (read-only copy of the Omniverse2 line state) not given",
+      "status": "NOT_RUN_HISTORICAL_REPLAY",
+      "test": "test_act_dry_run_replay_over_todays_line_state"
+    }
+  ],
+  "source_task_checkbox_closure": false,
+  "status": "LOCAL_SOURCE_QUALIFIED_COMPONENT_ROOT_REVIEW_ONLY",
+  "whole_I25_tree_CRE": "NOT_CLAIMED_COMPONENT_BYTES_ONLY"
+}

@@ -1,0 +1,101 @@
+{
+ "CAPA-117": {
+  "history": [
+   {
+    "at": "2026-11-02T19:56:44.001233Z",
+    "capa_id": "CAPA-117",
+    "evidence": "[\"cmp-swe3-unit-design-text-truncated\"]",
+    "from_state": null,
+    "reason": "Cloud SWE.3 IWDG -08: as-built unit design cut statements mid-identifier",
+    "seq": 866,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-02T19:56:44.053854Z",
+    "capa_id": "CAPA-117",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Claude Code)",
+    "seq": 867,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-02T19:56:44.223376Z",
+    "capa_id": "CAPA-117",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-117 assigned",
+    "seq": 868,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-02T19:56:49.495422Z",
+    "capa_id": "CAPA-117",
+    "evidence": "[\"reproducer-run:rr-d41211f982a6a932cd24\", \"reproducer-run:rr-9d8b6a6af66eb4760bb9\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 869,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-02T19:56:49.523644Z",
+    "capa_id": "CAPA-117",
+    "evidence": "[\"git:6fa46553d882..9cdeccc30694\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix 9cdeccc30694 (patch 2974 bytes)",
+    "seq": 870,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-02T20:00:07.058924Z",
+    "capa_id": "CAPA-117",
+    "evidence": "[\"reproducer-run:rr-6bc4af227b215ecd2e9c\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-117 absent at 9cdeccc30694",
+    "seq": 871,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-02T20:00:07.080930Z",
+    "capa_id": "CAPA-117",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 872,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-779c60409f6b60f240397b2cdff36463ca957230",
+   "6fa46553d88289205e4363ad22ef588d857247db",
+   "9cdeccc30694a376b00bfe3cc233fd3c9ff12fbf",
+   "pd-13444802bb7b6d13e8e9"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<9cdeccc30694"
+   ],
+   "candidate_patch_sha256": "33629d896438b68c25ebc0d0b5506d923709ac7fecaa5e247ecbfed78b839e85",
+   "capa_id": "CAPA-117",
+   "created_at": "2026-11-02T19:56:44.001233Z",
+   "event_ids": [],
+   "incident_ids": [
+    "cmp-swe3-unit-design-text-truncated"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-117",
+   "reproducer_id": "RPR-117",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-d41211f982a6a932cd24",
+    "reproducer-run:rr-9d8b6a6af66eb4760bb9"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "See the reproducer's root cause",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-02T20:00:07.080930Z"
+  }
+ }
+}

@@ -82,8 +82,10 @@ prompt:
     that a preset unrelated field of the same register is preserved (CRC_CR); write functions of whole registers check the register value; read functions return a preset register
     value; the reset function checks CRC_CR.RESET.
   target_model: >-
-    The simulated CRC (factory/sim/stm32n6/crc_model.py) is behavioural: CRC_DR and CRC_INIT reset to 0xFFFFFFFF,
-    CRC_POL to 0x04C11DB7 and the others to 0; a 32-bit write to CRC_DR combines the word with the current CRC
+    The simulated CRC (factory/sim/stm32n6/crc_model.py) is behavioural. Its registers (byte offset from the CRC base,
+    reset value): CRC_DR 0x000 0xFFFFFFFF, CRC_IDR 0x004 0x00000000, CRC_CR 0x008 0x00000000, CRC_INIT 0x010
+    0xFFFFFFFF, CRC_POL 0x014 0x04C11DB7; a register outside the generated defines is addressed by this offset
+    (block[offset / 4U]). A 32-bit write to CRC_DR combines the word with the current CRC
     (polynomial CRC_POL of size CRC_CR.POLYSIZE, input reversal CRC_CR.REV_IN of type CRC_CR.RTYPE_IN) and a read of
     CRC_DR returns the CRC after the output reversal CRC_CR.REV_OUT of type CRC_CR.RTYPE_OUT (RM0486 26.3.3 examples); setting CRC_CR.RESET or writing CRC_INIT loads CRC_INIT into the CRC and
     CRC_CR.RESET reads 0; CRC_IDR is storage. With the reset configuration the CRC of the single word 0x12345678 reads

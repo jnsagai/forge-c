@@ -36,13 +36,19 @@ CHARS_PER_TOKEN = 2.75
 CONTEXT_TOKENS = int(os.environ.get("FORGE_LRTX_CONTEXT_TOKENS", "24576"))
 DEFAULT_OUTPUT_RESERVE = 4096
 RECOVERY_WORKSPACE: ContextVar[Path | None] = ContextVar("lrtx_recovery_workspace", default=None)
+# Owner change 2026-11-02: earlier-round inspection findings the current inspection no longer raises, for an author
+# task's repair packet ({"findings": [...oldest first], "omitted": n}); set by visit.run_task, never for an inspector.
+KEEP_FIXED: ContextVar[dict | None] = ContextVar("lrtx_keep_fixed", default=None)
+KEEP_FIXED_HEADER = ("PREVIOUSLY FIXED - KEEP FIXED (findings of earlier inspection rounds of this phase that the "
+                     "current inspection no longer raises; they are not findings to fix now - keep the answer free of "
+                     "each of them, especially when you rewrite more than the findings name):")
 
 
 class PacketRefused(ValueError):
     pass
 
 
-def profile_context_tokens(ws: Path | None) -> tuple[int, str]:
+def profile_context_tokens(ws: Path | None, model: str | None = None) -> tuple[int, str]:
     """The serialized-prompt envelope of this packet: the selected local profile's OLLAMA_CONTEXT_LENGTH, else the
     legacy env/default. The profile is the same selection every structured role of the work order uses, so all of
     its packets share one consistent context; without a selection the preserved legacy default applies."""
@@ -53,6 +59,9 @@ def profile_context_tokens(ws: Path | None) -> tuple[int, str]:
             from . import profile as lp
 
             prof = lp.load(prof_id)
+            alt = ((prof["runtime"].get("llama_server_alternates") or {}).get(model) or {}) if model else {}
+            if alt.get("context_tokens"):  # an alternate served model has its own context (in-run swap)
+                return int(alt["context_tokens"]), f"profile:{prof_id}:{model}"
             return int(prof["runtime"]["ollama"]["OLLAMA_CONTEXT_LENGTH"]), f"profile:{prof_id}"
     return CONTEXT_TOKENS, "legacy:FORGE_LRTX_CONTEXT_TOKENS"
 
@@ -79,7 +88,7 @@ def packet_identity(ws: Path | None, model: str, role: str) -> dict | None:
     digest = allowed.get("digest")
     served = (prof.get("runtime") or {}).get("llama_server") or {}
     if served.get("model", model) != model:
-        served = {}
+        served = ((prof.get("runtime") or {}).get("llama_server_alternates") or {}).get(model) or {}
     gateway = (((prof.get("gateway") or {}).get("reasoning") or {}).get(model)) or {}
     return {
         "profile_id": selected["id"],
@@ -95,7 +104,7 @@ def packet_identity(ws: Path | None, model: str, role: str) -> dict | None:
         },
         # only the selected profile's digest: "" disables the FORGE_LRTX_PROFILE fallback of schema_mode_for
         "schema_mode": schema_mode_for(model, digest or "")[0],
-        "context_tokens": profile_context_tokens(ws)[0],
+        "context_tokens": profile_context_tokens(ws, model)[0],
     }
 
 
@@ -155,8 +164,12 @@ def packet(
     sampling: dict | None = None,
     with_lessons: bool = True,
     assessment_workspace: Path | None = None,
+    keep_fixed: dict | None = None,
 ) -> dict:
     original_sources, original_instructions, original_schema = list(sources), instructions, output_schema
+    kf = keep_fixed if keep_fixed is not None else KEEP_FIXED.get()
+    kf = ({"findings": [str(f) for f in kf.get("findings") or []], "omitted": int(kf.get("omitted") or 0)}
+          if isinstance(kf, dict) and role.endswith("-author") and findings else None)
     ws = RECOVERY_WORKSPACE.get()
     if ws is not None:
         from ..afo.recovery_context import source as recovery_source
@@ -223,6 +236,10 @@ def packet(
     }
     if exposed:
         p["lessons_offered"] = [x["lesson_id"] for x in exposed]
+    if kf and kf["findings"]:  # only present on a repair with keep-fixed memory: other packet identities unchanged
+        p["keep_fixed"] = kf["findings"]
+    if kf and kf["omitted"]:
+        p["keep_fixed_omitted"] = {"count": kf["omitted"], "reason": "COUNT_OR_CONTEXT_LIMIT", "kept": "most recent"}
     if sampling:  # F011-T048: part of the input hash, so a checkpoint never crosses sampling settings
         p["sampling"] = {k: sampling[k] for k in ("temperature", "top_p", "seed") if sampling.get(k) is not None}
     identity = packet_identity(ws, model, role)
@@ -244,7 +261,7 @@ def packet(
     msgs = messages(p, sk, sources, artifacts or [], previous)
     chars = sum(len(m["content"]) for m in msgs)
     est = int(chars / CHARS_PER_TOKEN) + 64
-    context_tokens, context_basis = profile_context_tokens(ws)
+    context_tokens, context_basis = profile_context_tokens(ws, model)
     p["accounting"] = {
         "serialized_chars": chars,
         "estimated_prompt_tokens": est,
@@ -300,6 +317,7 @@ def packet(
             with_skill=with_skill,
             sampling=sampling,
             with_lessons=False,
+            keep_fixed=kf or {},
         )
         q["lessons_omitted"] = {"count": len(exposed), "reason": reason}
         return q
@@ -307,6 +325,15 @@ def packet(
     if p["accounting"]["fits"] is False:
         if exposed:  # DA-FR-040: an unfit lesson block is omitted explicitly; it never refuses the task itself
             return without_lessons("CONTEXT_UNFIT")
+        if kf and kf["findings"]:
+            # keep-fixed memory is context, never required evidence: the OLDEST whole finding is dropped (never cut
+            # mid-text) and counted until the packet fits; without any it is refused as before
+            return packet(phase=phase, task=task, role=role, instructions=original_instructions,
+                          sources=original_sources, criteria=criteria, output_schema=original_schema,
+                          artifacts=artifacts, findings=findings, previous=previous, model=model,
+                          output_reserve=output_reserve, with_skill=with_skill, sampling=sampling, with_lessons=False,
+                          assessment_workspace=assessment_workspace,
+                          keep_fixed={"findings": kf["findings"][1:], "omitted": kf["omitted"] + 1})
         raise PacketRefused(f"PACKET_TOO_LARGE:{task}:{est}+{output_reserve}>{context_tokens} (repartition)")
     if exposed and not LessonStore().expose(
         exposed, manifest.get("work_order", task), data={"packet_input_hash": p["input_hash"], "role": role, "phase": phase}
@@ -345,6 +372,10 @@ def messages(p: dict, sk: dict | None, sources: list[dict], artifacts: list[dict
         )
     if p["findings"]:
         user.append("FINDINGS TO FIX:\n" + "\n".join(f"- {f}" for f in p["findings"]))
+    if p.get("keep_fixed") or p.get("keep_fixed_omitted"):
+        omitted = (p.get("keep_fixed_omitted") or {}).get("count")
+        user.append(KEEP_FIXED_HEADER + "".join(f"\n- {f}" for f in p.get("keep_fixed") or []) +
+                    (f"\n({omitted} older keep-fixed finding(s) omitted by count to fit the packet)" if omitted else ""))
     user.append("OUTPUT SCHEMA (JSON Schema):\n" + json.dumps(p["output_schema"]))
     return [{"role": "system", "content": "\n\n".join(sys_parts)}, {"role": "user", "content": "\n\n".join(user)}]
 

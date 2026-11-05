@@ -1,0 +1,17 @@
+{
+  "source": "0774236593bdb3e969c6127567c39bd573f25992",
+  "baseline": "a4334cd57654a6530658d00bda9bca3dd12d9e86",
+  "source_tree_equivalent": "405ea04291aea7250861f4d4a7f63749c017ab8d except prior protected evidence",
+  "source_increments": [
+    "27eef6a010f239b302d96c55609da02fe345982d",
+    "821f73b8b56ff6865e44a6619cef6408df9bb98a",
+    "c1787e4277237849ce218d851284cb6d9cd981c9"
+  ],
+  "all8ignoredrefs_verified": true,
+  "full_frozen_caller_last": "RPR-169",
+  "affected_modules": [
+    "factory/python/tests/test_line_watchdog_package.py",
+    "factory/python/tests/test_unit_target_observation.py",
+    "factory/python/tests/test_unit_target_observation_binding.py"
+  ]
+}

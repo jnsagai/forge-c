@@ -1,0 +1,15 @@
+KERNEL_IMPORT_PROVENANCE:{"capture_module": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-wt-7f82fee76908/887820300340/factory/python/forge_factory/lrtx/provider_process.py", "capture_sha256": "326f78fff7d7a90f2ea60e9642adaa4ce1c29cb65e411cbdfbdbd8be1a477cac", "source": "NOT_OBSERVED_INSIDE_SANDBOX", "stack_module": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-wt-7f82fee76908/887820300340/factory/python/forge_factory/lrtx/stack.py", "stack_sha256": "4ab58c96d8d6c1b482ad87f4260189986f4365b686898f7cf655df4f142c1076"}
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "ordered-nested-control", "returncode": 0}
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "ordered-same-user-skip-control", "returncode": 0}
+KERNEL_CASE:{"errno_hint": "EINVAL", "log_sha256": "ae32c851541aaf0ae008cb79ccc4a43478fa670088de2d69d85702332d4a5038", "name": "ordered-same-user-reentry-negative", "returncode": 1}
+KERNEL_ERRNO:nsenter: reassociate to namespace 'ns/user' failed: Invalid argument
+KERNEL_CASE:{"errno_hint": "EPERM", "log_sha256": "e7646730c24a8234f96ecf63133a49b0498f7cab81a7c41da402ed4de798b1cd", "name": "source-nested-provider", "returncode": 1}
+KERNEL_ERRNO:nsenter: reassociate to namespace 'ns/net' failed: Operation not permitted
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "source-same-user-provider", "returncode": 0}
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "source-normal-outer", "returncode": 0}
+KERNEL_CASE:{"errno_hint": "EINVAL", "log_sha256": "ae32c851541aaf0ae008cb79ccc4a43478fa670088de2d69d85702332d4a5038", "name": "source-normal-same-current-user", "returncode": 1}
+KERNEL_ERRNO:nsenter: reassociate to namespace 'ns/user' failed: Invalid argument
+KERNEL_LIFETIMES:OWN_PROVIDER_INIT_QUIET_AND_ALL_HANDLES_CLOSED_NO_MODELS
+SYMPTOM_PRESENT:provider entry rejects inherited ancestor network or already-current user namespace
+
+--- stderr ---

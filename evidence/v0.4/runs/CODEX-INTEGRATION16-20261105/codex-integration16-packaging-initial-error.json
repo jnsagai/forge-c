@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-05T02:40:56.104693+00:00",
+  "command": "package-codex-integration16-root.py",
+  "exit_code": 1,
+  "exception": "AssertionError at canonical DB record == evaluator return",
+  "observed": "Evaluator return adds candidate_revision and baseline_revision. Stored record has identical shared fields; canonical row candidate/base match exact source.",
+  "effect": "No exports written; valid source gate decision pd-40d0e474c2e4c53e8b9c unchanged.",
+  "correction": "Compare canonical decision fields and explicit row source identities; no gate rerun or policy/test change.",
+  "original_script": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/package-codex-integration16-root.initial-error.py"
+}

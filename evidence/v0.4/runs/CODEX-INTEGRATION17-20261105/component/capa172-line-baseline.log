@@ -1,0 +1,164 @@
+EE
+==================================== ERRORS ====================================
+_ ERROR at setup of test_normal_time_extension_links_next_order_without_replacing_base_or_spend _
+
+product = namespace(store=<forge_factory.afo.queue.Store object at 0x7e0749803cb0>, oid='afo-6c54e9a3baa836c2', aid='afo-6c54e9a...ata/forge-c/swe1-fabro-20261031/launch.log'), health_timeout_s=600.0, health_poll_s=5.0, sweep_grace_s=10.0, uid=1000))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-65/test_normal_time_extension_lin0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e074a553a80>
+
+    @pytest.fixture
+    def renewal(product, tmp_path, monkeypatch):
+        p = product
+        ledger = MissionLedger(p.store)
+        old = copy.deepcopy(p.control["mission"])
+        old["limits"]["deadline"] = time.time() - 1
+        ledger.register(**old, authorization_ref=p.control["authorization_ref"], authorize=lambda *_: True)
+>       ledger.execution(old["mission_id"], "retained-old-launch", "PRODUCT", reserved_tokens=100_000)
+
+factory/python/tests/test_line_mission_renewal.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <forge_factory.afo.mission_ledger.MissionLedger object at 0x7e0748f2e660>
+mission_id = 'fixture-mission', identity = 'retained-old-launch'
+kind = 'PRODUCT'
+
+    def execution(
+        self,
+        mission_id: str,
+        identity: str,
+        kind: str,
+        *,
+        reserved_tokens: int,
+        reported_tokens: int | None = None,
+        imported=False,
+        evidence_refs=(),
+        historical_counts=None,
+        now=None,
+    ) -> dict:
+        if (
+            kind not in ("PRODUCT", "DIAGNOSIS", "MAINTENANCE", "LEARNING")
+            or type(reserved_tokens) is not int
+            or reserved_tokens < 0
+        ):
+            raise Refused("EXECUTION_ACCOUNTING_INVALID")
+        if reported_tokens is not None and (type(reported_tokens) is not int or reported_tokens < 0):
+            raise Refused("REPORTED_USAGE_INVALID")
+        if historical_counts is not None and (
+            not imported or not evidence_refs or not isinstance(historical_counts, dict)
+            or set(historical_counts) != {"requests", "tools", "corrections"}
+            or any(type(n) is not int or n < 0 for n in historical_counts.values())
+        ):
+            raise Refused("HISTORY_COUNTERS_INVALID")
+        with self.store.tx() as c:
+            row = c.execute("SELECT mission_id,record FROM afo_mission_executions WHERE identity=?", (identity,)).fetchone()
+            if row:
+                rec = json.loads(row["record"])
+                if row["mission_id"] != mission_id or rec["kind"] != kind:
+                    raise Refused("EXECUTION_IDENTITY_REBOUND")
+                if reserved_tokens != rec["reserved_tokens"]:
+                    raise Refused("EXECUTION_RESERVATION_REBOUND")
+                if historical_counts is not None:
+                    if not rec.get("imported"):
+                        raise Refused("HISTORY_COUNTERS_INVALID")
+                    if "historical_counts" in rec and rec["historical_counts"] != historical_counts:
+                        raise Refused("HISTORY_COUNTERS_REBOUND")
+                    rec["historical_counts"] = dict(historical_counts)
+                    rec["evidence_refs"] = list(dict.fromkeys([*rec.get("evidence_refs", []), *evidence_refs]))
+                if reported_tokens is not None:
+                    rec["reported_tokens"] = max(reported_tokens, rec.get("reported_tokens") or 0)
+                rec["charge"] = max(rec["charge"], rec.get("reported_tokens") or 0)
+                c.execute("UPDATE afo_mission_executions SET record=? WHERE identity=?", (canonical(rec).decode(), identity))
+                return rec
+            snap = self._snapshot(c, mission_id)
+            limits = snap["limits"]
+            if not imported:
+                if snap["unbounded_historical_usage"]:
+                    raise Refused("HISTORICAL_USAGE_REQUIRES_INDEPENDENT_BOUND")
+                if (time.time() if now is None else now) >= limits["deadline"]:
+>                   raise Refused("MISSION_DEADLINE_EXHAUSTED")
+E                   forge_factory.afo.durable.Refused: MISSION_DEADLINE_EXHAUSTED:
+
+factory/python/forge_factory/afo/mission_ledger.py:178: Refused
+_ ERROR at setup of test_renewal_never_links_changed_authority_limits_or_unaccounted_history[authority] _
+
+product = namespace(store=<forge_factory.afo.queue.Store object at 0x7e074a435d10>, oid='afo-6c54e9a3baa836c2', aid='afo-6c54e9a...ata/forge-c/swe1-fabro-20261031/launch.log'), health_timeout_s=600.0, health_poll_s=5.0, sweep_grace_s=10.0, uid=1000))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-65/test_renewal_never_links_chang0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e074a553bb0>
+
+    @pytest.fixture
+    def renewal(product, tmp_path, monkeypatch):
+        p = product
+        ledger = MissionLedger(p.store)
+        old = copy.deepcopy(p.control["mission"])
+        old["limits"]["deadline"] = time.time() - 1
+        ledger.register(**old, authorization_ref=p.control["authorization_ref"], authorize=lambda *_: True)
+>       ledger.execution(old["mission_id"], "retained-old-launch", "PRODUCT", reserved_tokens=100_000)
+
+factory/python/tests/test_line_mission_renewal.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <forge_factory.afo.mission_ledger.MissionLedger object at 0x7e0748fd2850>
+mission_id = 'fixture-mission', identity = 'retained-old-launch'
+kind = 'PRODUCT'
+
+    def execution(
+        self,
+        mission_id: str,
+        identity: str,
+        kind: str,
+        *,
+        reserved_tokens: int,
+        reported_tokens: int | None = None,
+        imported=False,
+        evidence_refs=(),
+        historical_counts=None,
+        now=None,
+    ) -> dict:
+        if (
+            kind not in ("PRODUCT", "DIAGNOSIS", "MAINTENANCE", "LEARNING")
+            or type(reserved_tokens) is not int
+            or reserved_tokens < 0
+        ):
+            raise Refused("EXECUTION_ACCOUNTING_INVALID")
+        if reported_tokens is not None and (type(reported_tokens) is not int or reported_tokens < 0):
+            raise Refused("REPORTED_USAGE_INVALID")
+        if historical_counts is not None and (
+            not imported or not evidence_refs or not isinstance(historical_counts, dict)
+            or set(historical_counts) != {"requests", "tools", "corrections"}
+            or any(type(n) is not int or n < 0 for n in historical_counts.values())
+        ):
+            raise Refused("HISTORY_COUNTERS_INVALID")
+        with self.store.tx() as c:
+            row = c.execute("SELECT mission_id,record FROM afo_mission_executions WHERE identity=?", (identity,)).fetchone()
+            if row:
+                rec = json.loads(row["record"])
+                if row["mission_id"] != mission_id or rec["kind"] != kind:
+                    raise Refused("EXECUTION_IDENTITY_REBOUND")
+                if reserved_tokens != rec["reserved_tokens"]:
+                    raise Refused("EXECUTION_RESERVATION_REBOUND")
+                if historical_counts is not None:
+                    if not rec.get("imported"):
+                        raise Refused("HISTORY_COUNTERS_INVALID")
+                    if "historical_counts" in rec and rec["historical_counts"] != historical_counts:
+                        raise Refused("HISTORY_COUNTERS_REBOUND")
+                    rec["historical_counts"] = dict(historical_counts)
+                    rec["evidence_refs"] = list(dict.fromkeys([*rec.get("evidence_refs", []), *evidence_refs]))
+                if reported_tokens is not None:
+                    rec["reported_tokens"] = max(reported_tokens, rec.get("reported_tokens") or 0)
+                rec["charge"] = max(rec["charge"], rec.get("reported_tokens") or 0)
+                c.execute("UPDATE afo_mission_executions SET record=? WHERE identity=?", (canonical(rec).decode(), identity))
+                return rec
+            snap = self._snapshot(c, mission_id)
+            limits = snap["limits"]
+            if not imported:
+                if snap["unbounded_historical_usage"]:
+                    raise Refused("HISTORICAL_USAGE_REQUIRES_INDEPENDENT_BOUND")
+                if (time.time() if now is None else now) >= limits["deadline"]:
+>                   raise Refused("MISSION_DEADLINE_EXHAUSTED")
+E                   forge_factory.afo.durable.Refused: MISSION_DEADLINE_EXHAUSTED:
+
+factory/python/forge_factory/afo/mission_ledger.py:178: Refused
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_line_mission_renewal.py::test_normal_time_extension_links_next_order_without_replacing_base_or_spend
+ERROR factory/python/tests/test_line_mission_renewal.py::test_renewal_never_links_changed_authority_limits_or_unaccounted_history[authority]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 2 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!

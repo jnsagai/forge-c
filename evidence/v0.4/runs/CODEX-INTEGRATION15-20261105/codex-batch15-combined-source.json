@@ -1,0 +1,9 @@
+{
+  "source": "0e81c597e26a69053712127cdbdb64820dd980e7",
+  "base": "ba84311d611ef66faca0dafd11f40bbe9a6bdde9",
+  "code_equivalent_to_qualified171": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+  "protected_staged_separately": true,
+  "full_caller_sha256": "e12fd44033ec0d945ea900bfa6d5e57a8edc5c3c5837263d49534da71bee820d",
+  "prevention_entries": 170,
+  "normal_combined_CHANGE": "NOT_RUN"
+}

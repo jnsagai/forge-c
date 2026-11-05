@@ -1,0 +1,22 @@
+id: RPR-166
+script: rpr166_reviewed_provided_code_rejected.py
+sha256: 8bf5ea18c3ca918ee16d0aa26a51da2b08e268fe9d6bd963bdca05171ec93a00
+symptom_signature: reviewed provided CODE correction is refused as an unauthorized
+  input change
+observed_in: Independent normal PC/CODE/SWE1-3 CONTROL; existing owner20261103 workspace-only
+  correction with preserved pristine/original SHA and independent approval
+baseline_revision: 297f8ebd8f130b31536f77790f5fa99808c8f3e4
+error_codes:
+- PROVIDED_LL_UNIT_INPUT_CHANGED
+- TARGET_TIMING_APPROVED_INPUT_CHANGED
+operations:
+- forge-tests-mcp.run_unit
+- workorder.resume_from
+root_cause: Verification selectors equate effective workspace LL bytes to original
+  approval SHA and discard normal CODE/diff/independent approval context, despite
+  existing owner-authorized workspace-only correction protocol. Resume and restored-test
+  verification lose that context.
+remedy: Pure effective identity validates original/pristine plus normal independentSWE1-3/CODE/diff
+  history, imports only attested corrected bytes/provenance and binds actual restored-test
+  receipts; vendor/unlinked/stale inputs stay refused and original approvals are never
+  repinned.

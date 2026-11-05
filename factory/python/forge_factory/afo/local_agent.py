@@ -26,12 +26,15 @@ from .queue import QueueError
 
 ROLES = {"afo-recovery-planner": "forge-afo-mcp", "afo-factory-maintainer": "forge-maintainer-mcp"}
 NATIVE_CONTEXT = (
+    "FORGE_OWNER_DEVELOPMENT_RECORD",
+    "FORGE_OWNER_DEVELOPMENT_SHA256",
     "FORGE_DATA_ROOT",
     "FORGE_AFO_POLICY",
     "FORGE_AFO_AUTH_DIR",
     "FORGE_AFO_ALLOWED_SIGNERS",
     "FORGE_OPERATIONS_INTENT",
     "FORGE_EVENTS_DIR",
+    "FORGE_AFO_QUEUE_SCOPE",
 )
 SCHEMA = """CREATE TABLE IF NOT EXISTS afo_local_agent_jobs (
  job_id TEXT PRIMARY KEY, order_id TEXT NOT NULL, attempt_id TEXT NOT NULL, role TEXT NOT NULL,
@@ -73,6 +76,25 @@ def authorized(order: dict, eff, model: str | None = None) -> bool:
     return authority.decide("recover_workorder", request, afo=eff).allow
 
 
+def authorized_job(order, eff, job):
+    """Keep the existing generic authority API; intersect line provenance for line-origin jobs."""
+    if not authorized(order, eff, job["model"]):
+        return False
+    if job.get("line_role_authority_ref"):
+        from .line_recovery_control import configuration, require_job_binding
+
+        try:
+            control = configuration(job["line_role_authority_ref"], eff, request=request_for(order))
+            require_job_binding(job, control)
+        except (ValueError, OSError, KeyError, TypeError):
+            return False
+    if job and "line_origin" in job:
+        from .line_recovery import valid_job
+
+        return valid_job(job)
+    return True
+
+
 def local_order(ws) -> bool:
     """A work order the local profile authors (its manifest names a local profile); only these are diagnosed by the
     local agent (prepare refuses the others with LOCAL_RECOVERY_PROFILE_REQUIRED)."""
@@ -85,10 +107,11 @@ def local_order(ws) -> bool:
 
 def enabled(role: str, eff) -> bool:
     flag = "engineering.enable_recovery_planner" if role == "afo-recovery-planner" else "maintenance.enable_factory_maintainer"
-    return role in ROLES and eff.mode in ("PILOT", "ACTIVE") and bool(eff.get(flag))
+    return role in ROLES and eff.mode in ("PILOT", "ACTIVE", "OWNER_SUPERVISED_DEVELOPMENT") and bool(eff.get(flag))
 
 
-def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path, eff, *, qualification_manifest=None) -> dict:
+def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path, eff, *, qualification_manifest=None,
+            line_origin=None, line_role_authority_ref=None) -> dict:
     """Reserve the role call and its worst-case capacity BEFORE dispatch (including crashed launches)."""
     from ..registry.agents import load_agents
     from ..workorder import factory_revision
@@ -103,7 +126,35 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     man = json.loads((ws / ".forge-run/manifest.json").read_text())
     from ..development_execution import selected as development_execution
 
-    if development_execution(ws) and role in ("afo-recovery-planner", "afo-factory-maintainer"):
+    line_context = None
+    if line_origin is not None:
+        from .line_recovery import context
+
+        line_context = context(store, order["order_id"], attempt_id, ws, line_origin)
+        source = json.loads(case.read_text())
+        if role == "afo-factory-maintainer":
+            from ..common import canonical_json, sha256_bytes
+            from .mission_ledger import MissionLedger
+
+            if os.environ.get("FORGE_DURABLE_AUTONOMY") != "1":
+                raise QueueError("LINE_MAINTENANCE_DURABLE_PROTOCOL_REQUIRED", role)
+            binding = source.get("line_binding") or {}
+            if (binding.get("schema") != "forge-c/line-maintenance-origin/1"
+                    or binding.get("context_sha256") != sha256_bytes(canonical_json(line_context))
+                    or binding.get("mission_id") != MissionLedger(store).for_order(order["order_id"])
+                    or binding.get("source_revision") != source.get("base")
+                    or source.get("base") != line_context.get("source_revision")):
+                raise QueueError("LINE_MAINTENANCE_CASE_BINDING_MISMATCH", role)
+            source_workspace = binding.get("workspace", "")
+        else:
+            if not source.get("packet_ref") or not source.get("mission_id"):
+                raise QueueError("LINE_RECOVERY_DURABLE_PROTOCOL_REQUIRED", role)
+            source_workspace = source.get("workspace", "")
+        bundle = source.get("bundle") or source.get("incident") or {}
+        if (bundle.get("order_id") != order["order_id"] or bundle.get("attempt_id") != attempt_id
+                or Path(source_workspace).resolve() != ws.resolve()):
+            raise QueueError("LINE_RECOVERY_CASE_BINDING_MISMATCH", role)
+    if development_execution(ws) and role in ("afo-recovery-planner", "afo-factory-maintainer") and line_context is None:
         raise QueueError("DEFERRED_BY_DEVELOPMENT_POLICY", role)
     profile = (man.get("local_profile") or {}).get("id")
     model = json.loads((ws / ".forge-run/model-profile.json").read_text()).get("default")
@@ -116,6 +167,17 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     from ..lrtx.profile import load as load_profile
 
     selected = load_profile(profile)
+    role_inputs = None
+    if line_role_authority_ref is not None:
+        from .line_recovery_control import configuration
+
+        if line_context is None:
+            raise QueueError("LINE_RECOVERY_ROLE_AUTHORITY_REQUIRES_CONTEXT", role)
+        control = configuration(line_role_authority_ref, eff, request=request_for(order))
+        if (control["profile"] != profile or control["profile_sha256"] != selected["_sha256"]
+                or control["source_revision"] != line_context["source_revision"]):
+            raise QueueError("LINE_RECOVERY_ROLE_AUTHORITY_BINDING_CHANGED", role)
+        role_inputs = {key: control[key] for key in ("role_capabilities", "product_role_trial")}
     tokens = role_job_tokens(selected, role, agent.max_stage_tokens)
     profile_reservation = None
     if role in (selected.get("afo", {}).get("role_job_tokens") or {}):
@@ -134,10 +196,17 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     # into a fresh job or enlarge its original allowance, including legacy jobs.
     for prior in records(store, order["order_id"]):
         if prior["attempt_id"] == attempt_id and prior["role"] == role and (
-                prior["profile"] != profile or prior["model"] != model
+                eff.mode == "OWNER_SUPERVISED_DEVELOPMENT" and any(
+                    (prior.get("native_context") or {}).get(k) != os.environ.get(k)
+                    for k in ("FORGE_OWNER_DEVELOPMENT_RECORD", "FORGE_OWNER_DEVELOPMENT_SHA256"))
+                or prior["profile"] != profile or prior["model"] != model
                 or prior["case_sha256"] != sha256_file(case)
                 or prior.get("profile_sha256", selected["_sha256"]) != selected["_sha256"]
-                or prior.get("profile_initial_reservation") != profile_reservation):
+                or prior.get("profile_initial_reservation") != profile_reservation
+                or prior.get("line_role_authority_ref") != line_role_authority_ref
+                or prior.get("line_context_sha256") != (
+                    hashlib.sha256(json.dumps(line_context, sort_keys=True, separators=(",", ":"),
+                                              ensure_ascii=False).encode()).hexdigest() if line_context else None)):
             raise QueueError("LOCAL_AGENT_JOB_REBOUND", prior["job_id"])
     now = time.time()
     deadline = min(
@@ -167,8 +236,17 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         "reported_tokens": None,
         "run_id": None,
     }
+    if eff.mode == "OWNER_SUPERVISED_DEVELOPMENT":
+        job.update(execution_scope="OWNER_SUPERVISED_DEVELOPMENT", qualification_only=True, acceptance="UNACCEPTED")
     if profile_reservation is not None:
         job["profile_initial_reservation"] = profile_reservation
+    if line_context is not None:
+        from ..common import canonical_json, sha256_bytes
+
+        job["line_origin"] = dict(line_origin)
+        job["line_context_sha256"] = sha256_bytes(canonical_json(line_context))
+    if line_role_authority_ref is not None:
+        job["line_role_authority_ref"] = dict(line_role_authority_ref)
     doc = json.loads(case.read_text())
     if doc.get("retained_rework"):
         # A refinement cannot restart the original recovery wall allowance.
@@ -198,24 +276,36 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         else:
             job["durable_protocol"] = "1.0"
             from .diagnosis_packet import load as load_packet
+            from .diagnosis_packet import select_obligation
 
             packet = load_packet(doc["packet_ref"])
-            job["selected_obligations"] = sorted(packet["obligations"])[:1]
+            job["selected_obligations"] = select_obligation(packet)
             fixture = doc.get("qualification_fixture") or {}
             seeded = fixture.get("source_kind") == "SEEDED_PROTOCOL_NOT_PRODUCT"
             job["work_class"] = "PROTOCOL_DIAGNOSIS" if seeded else "PRODUCT_DIAGNOSIS"
-        job["role_capabilities"] = man.get("role_capabilities") or {}
+        job["role_capabilities"] = (role_inputs or man).get("role_capabilities") or {}
         job["qualified_local_alternatives"] = man.get("qualified_local_alternatives") or []
         job["qualification_manifest_sha256"] = doc.get("qualification_manifest_sha256")
         model_identity = selected["models"]["allowed"][model]
         job["model_digest"] = model_identity["digest"]
         job["precision"] = model_identity["quantization"]
         job["native_context"] = {key: os.environ[key] for key in NATIVE_CONTEXT if os.environ.get(key)}
+        if line_context is not None:
+            job["native_context"]["FORGE_AFO_QUEUE_SCOPE"] = "line-local"
         job["factory_revision"] = factory_revision()
+        if line_role_authority_ref is not None:
+            from .line_recovery_control import require_job_binding
+
+            require_job_binding(job, control, store=store)
         from .product_role_trial import bind as bind_trial
 
         launch_path = REPO_ROOT / order["input_manifest_ref"]
-        if launch_path.is_file():
+        if role_inputs is not None:
+            bind_trial(role_inputs.get("product_role_trial"), job, eff)
+        elif line_context is not None:
+            # M3 intake is a hash-bound campaign YAML, not the generic AFO JSON launch manifest.
+            bind_trial(man.get("product_role_trial"), job, eff)
+        elif launch_path.is_file():
             if sha256_file(launch_path) != order["manifest_sha256"]:
                 raise QueueError("LAUNCH_MANIFEST_HASH_CHANGED")
             bind_trial(json.loads(launch_path.read_text()).get("product_role_trial"), job, eff)
@@ -312,6 +402,17 @@ class LaunchNotStarted(RuntimeError):
         self.job_id = job["job_id"]
         self.nonce = job["nonce"]
         self.failure_type = type(cause).__name__
+        # Preserve a trusted controller refusal code for durable diagnosis. A
+        # class name alone erases e.g. GUARD_FAIL before it reaches the ledger.
+        # Never put exception details or arbitrary adapter strings in this key.
+        from .durable import Refused
+
+        if (
+            isinstance(cause, Refused)
+            and isinstance(cause.code, str)
+            and re.fullmatch(r"[A-Z][A-Z0-9_]{0,127}", cause.code)
+        ):
+            self.failure_type = cause.code
 
 
 def launch(job: dict) -> str:
@@ -364,6 +465,12 @@ def _launch(job: dict, invoke) -> str:
     from ..registry.agents import load_agents, preflight
     from ..workflow.builder import _env, _q
     from ..workorder import factory_revision
+
+    if job.get("line_origin"):
+        from .line_recovery import valid_job
+
+        if not valid_job(job):
+            raise RuntimeError("LINE_RECOVERY_AUTHORITY_OR_PROVENANCE_CHANGED")
 
     revision = factory_revision()
     if (
@@ -525,6 +632,10 @@ def endpoint_for(job):
 
 
 def poll(store, order, job, eff, *, client=None, launch_fn=None):
+    if launch_fn is None and job.get("line_origin"):
+        from .line_recovery_runtime import launch as line_launch
+
+        launch_fn = line_launch
     own = client is None
     client = client or FabroClient(base_url=endpoint_for(job), token=load_token(job.get("fabro_storage")), timeout=5)
     try:
@@ -544,7 +655,7 @@ def _poll(store, order: dict, job: dict, eff, *, client=None, launch_fn=None) ->
         return durable_poll(store, order, job, eff, client, launch_fn)
     if job["state"] in ("FAILED", "UNKNOWN", "TIMED_OUT", "REVOKED"):
         return job
-    if eff.sha256 != job["policy_sha256"] or not enabled(job["role"], eff) or not authorized(order, eff, job["model"]):
+    if eff.sha256 != job["policy_sha256"] or not enabled(job["role"], eff) or not authorized_job(order, eff, job):
         job["state"] = "REVOKED"
     elif time.time() >= job["deadline_epoch"]:
         job["state"] = "TIMED_OUT"
@@ -678,7 +789,7 @@ def supervise(store, eff) -> list[dict]:
                 eff.sha256 == job["policy_sha256"]
                 and enabled(job["role"], eff)
                 and time.time() < job["deadline_epoch"]
-                and authorized(order, eff, job["model"])
+                and authorized_job(order, eff, job)
             ):
                 continue
             out.append(poll(store, order, job, eff))
@@ -689,11 +800,12 @@ def supervise(store, eff) -> list[dict]:
     return out
 
 
-def make_planner(store, eff):
+def make_planner(store, eff, *, line_origin=None, line_role_authority_ref=None):
     def invoke(case: Path) -> str:
         doc = json.loads(case.read_text())
         order = store.order(doc["bundle"]["order_id"])
-        job = prepare(store, order, doc["bundle"]["attempt_id"], "afo-recovery-planner", case, Path(doc["workspace"]), eff)
+        job = prepare(store, order, doc["bundle"]["attempt_id"], "afo-recovery-planner", case, Path(doc["workspace"]), eff,
+                      line_origin=line_origin, line_role_authority_ref=line_role_authority_ref)
         job = poll(store, order, job, eff)
         if job["state"] in ("PREPARED", "LAUNCHING", "RUNNING"):
             raise planner.Pending(job["job_id"])
@@ -723,7 +835,8 @@ def make_planner(store, eff):
 
             prior = [
                 p["record"].get("material_difference_ref", "").removeprefix("semantic-strategy:")
-                for p in recovery.plans(store, bundle["order_id"])
+                for p in (recovery.strategy_history(store, bundle["order_id"]) if line_origin is not None
+                          else recovery.plans(store, bundle["order_id"]))
                 if p["failure_fingerprint"] == bundle["fingerprint"]
             ]
         else:
@@ -735,7 +848,8 @@ def make_planner(store, eff):
 
 def sweep_maintenance(store, eff) -> list[dict]:
     """Dispatch the existing Maintainer and its independent evaluation outside the Conductor's health loop."""
-    if not eff.get("maintenance.enable_factory_maintainer") or eff.mode not in ("PILOT", "ACTIVE"):
+    if (not eff.get("maintenance.enable_factory_maintainer")
+            or eff.mode not in ("PILOT", "ACTIVE", "OWNER_SUPERVISED_DEVELOPMENT")):
         return []
     from . import maintainer, runtime
 

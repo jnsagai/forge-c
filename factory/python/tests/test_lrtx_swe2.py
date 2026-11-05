@@ -127,3 +127,38 @@ def test_a_function_named_differently_from_the_requirement_gets_an_actionable_fi
     hint = [f for f in out if "names LL_IWDG_Enable, which is not a defined function" in f]
     assert hint and "define the function as LL_IWDG_Enable" in hint[0] and "allocated to" in hint[0]
     assert "LL_IWDG_Start" in hint[0]
+
+
+def test_capa120_truncating_write_passes_the_requested_input(ws1):
+    """CAPA-120 (run WO-F014-CMP-SWE2-IWDGG-20261102-08): the check forced the argument to the field value, so a
+    truncating write (requested 0x1234 -> RL 0x234) could only be called with 0x234U, which never exercises the
+    above-field input its requirement requires. With a requested input the argument must be exactly that input."""
+    from forge_factory.assurance import register_contract as RC
+    from forge_factory.assurance.hardware import index
+
+    idx = index(ws1 / "inputs/sections/RM0486")
+    p = ws1 / "workproducts/SWE.1/register_effects.json"
+    legacy = swe2.interfaces_packet(ws1, "m")
+    assert "requested input" not in json.dumps(legacy["_messages"])
+    doc = json.loads(p.read_text())
+    reload_ = next(e for e in doc["effects"] if e["case"] == "SET_RELOAD")
+    reload_["requested"] = "0xFFFFFFFF"
+    p.write_text(json.dumps(doc))
+
+    def args_of(arg):
+        d = json.loads(json.dumps(IFACE))
+        d["calls"][5]["args"] = [arg]
+        return [f for f in swe2.validate_interfaces(ws1, d, idx) if "argument must be" in f]
+
+    assert args_of("0xFFFU") == ["case SET_RELOAD: the argument must be the requested input 0xFFFFFFFF (the field "
+                                 "keeps 0xFFF)"]  # the truncated field value is not the requested input
+    assert args_of("0xFFFFFFFFU") == []
+    assert RC.check_effects(ws1, "LL") == []
+    pk = swe2.interfaces_packet(ws1, "m")
+    assert "SET_RELOAD: SWR-006 IWDG_RLR.RL op write value 0xFFF (the call passes the requested input 0xFFFFFFFF; " \
+           "the field keeps 0xFFF)" in "".join(m["content"] for m in pk["_messages"])
+    assert "passes exactly that requested input" in "".join(m["content"] for m in pk["_messages"])
+    for bad, code in (("0x1FFE", "must be the low 12 bits"), ("0x123", "fits the 12-bit field")):
+        reload_["requested"] = bad
+        p.write_text(json.dumps(doc))
+        assert any(f.startswith("CONTRACT_WRITE_REQUESTED:") and code in f for f in RC.check_effects(ws1, "LL"))

@@ -1,0 +1,13 @@
+{
+  "schema": "forge-c/packaging-failure/1",
+  "source_qualification_unchanged": true,
+  "failed_script": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/package-diagnosis-dependencies-integration21.py",
+  "script_sha256": "76a2c4582a6783e83885f5c7207969d85a5fc22afedf90d18944392bb29b6919",
+  "partial_exports_preserved": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration21-exports",
+  "failure": "Secret marker substring check matched its own Python source literal during whitelisted helper copy. No private key header line found.",
+  "actual_substring_hits": [
+    "evidence/v0.4/runs/CODEX-INTEGRATION21-20261105/package-diagnosis-dependencies-integration21.py"
+  ],
+  "actual_private_key_header_lines": [],
+  "source_or_oracle_edits": false
+}

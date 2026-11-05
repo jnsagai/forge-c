@@ -1,0 +1,11 @@
+REJECTED pd-1c84ddaa21d6a348698f candidate 06914b8b84da baseline 0a421d25b80a
+  protected_files   PASS     
+  policy_integrity  PASS     
+  reproducer        NOT_RUN  NOT_APPLICABLE_FOR_CHANGE
+  prevention        FAIL     RESOLVED_FAILURE_REAPPEARED
+  quality_process   NOT_RUN  SKIPPED_AFTER_HARD_FAIL
+  golden_benchmark  NOT_RUN  SKIPPED_AFTER_HARD_FAIL
+  holdout           NOT_RUN  SKIPPED_AFTER_HARD_FAIL
+  - sandbox: 15666 protected paths read-only (OS) in the candidate/baseline worktrees
+  - previously resolved failures reappear: RPR-077:SYMPTOM_PRESENT
+exit 0

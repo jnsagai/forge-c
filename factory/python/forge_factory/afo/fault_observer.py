@@ -116,6 +116,12 @@ def plan(manifest, ref):
             or not parsed.port
         ):
             raise Refused("OBSERVER_PROBE_MUST_BE_LOOPBACK")
+    if "line_runtime" in d:
+        from .line_soak import validate_runtime
+
+        validate_runtime(d["line_runtime"], d)
+        if d["line_runtime"]["candidate_revision"] != manifest["source_revision"]:
+            raise Refused("LINE_SOAK_CAMPAIGN_REVISION_MISMATCH")
     return d
 
 
@@ -280,6 +286,10 @@ def _healthy(url):
 
 
 def health(frozen, bound):
+    if "line_runtime" in frozen:
+        from .line_soak import health as line_health
+
+        return line_health(frozen, bound)
     checks = {key: _healthy(url) for key, url in frozen["health_urls"].items()}
     try:
         heartbeat = read_json(frozen["heartbeat"], 65536)

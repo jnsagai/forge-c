@@ -1,0 +1,43 @@
+{
+  "at": "2026-11-04T14:31:52.749993+00:00",
+  "source_change": "Owner-approved handoff9.9: prospective CMSIS C ABI for native GoogleTest tests",
+  "source_candidate": "daf37550660a8a5ddd629009f7e1c803384640c2",
+  "decision": "pd-89a2b7fb3d638981bfd8",
+  "validation": {
+    "related_regression": "28PASS 0SKIP",
+    "final_new_feature_checks": "10PASS 0SKIP",
+    "design": "14PASS",
+    "final_intake_output_contract": "10PASS 0SKIP"
+  },
+  "checks": [
+    "Real pinned ST RCC header scope executes through generated C forwarding unit and declaration-only C++ header view",
+    "Actual C and C++ compile units share host RAM object",
+    "LLVM observes executed regions in original vendor C header; instrumented original function names retained",
+    "Unallocated vendor function has no generated C-ABI export and fails linkage",
+    "Real CRC and WWDG instance-pointer/scalar argument and return values pass through C ABI",
+    "Unmodified vendor target code compiles with pinned Cortex-M55 compiler",
+    "Delivered code bytes unchanged",
+    "Legacy orders retain C harness; resume intake inherits source ABI before creating work; optional contract field absent from legacy identity",
+    "Native bound CMSIS instructions use actual harness/vendor fields, not generated array sample"
+  ],
+  "scope": "HOST unit test interoperation only; no HIL/silicon claim, production deployment, blanketcoverage100claim, or role qualification",
+  "precommit_experiments": "Earlier prototype C++ directly included vendor headers and correctlyfailed32bitpointercasts; scoped C wrappers were implemented. Early resume-spy fixture purpose mismatch corrected; no production authorization bypass. Private exploratory logs retained.",
+  "logs": {
+    "codex-cmsis-gtest-regression.log": {
+      "sha256": "256a5e51ba1cde7f3e77612a1493bdc09466c2fd425b60030a1fa562b0cb9f82",
+      "tail": "28 passed in 78.78s (0:01:18)"
+    },
+    "codex-cmsis-gtest-final-validation.log": {
+      "sha256": "342e8284796706a4365135ccc4b72728760ac9f31e9c33c2432c027ae83cd44d",
+      "tail": "10 passed in 19.33s"
+    },
+    "codex-cmsis-gtest-design.log": {
+      "sha256": "c133d1470d3e79a746b2b7f36c9247481dff54e276316d5f0da3c5a66fd802fe",
+      "tail": "PASS: 14 static design tests. This does NOT validate runtime integrations."
+    },
+    "codex-cmsis-gtest-output-contract.log": {
+      "sha256": "d4c9ca5ec91d4bdd41f86970e98f80f07cb8dded80a09737ff875f5187eddbe5",
+      "tail": "10 passed in 19.02s"
+    }
+  }
+}

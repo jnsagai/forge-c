@@ -1,0 +1,101 @@
+{
+ "CAPA-163": {
+  "history": [
+   {
+    "at": "2026-11-04T19:22:19.555738Z",
+    "capa_id": "CAPA-163",
+    "evidence": "[\"INC-CONTROL-WWDG-RESERVED-WRITE-20261104\"]",
+    "from_state": null,
+    "reason": "Independent actual Renode CONTROL incorrectly credits SR write FFFFFFFE as full SWR034 verification solely because readback is zero; no actual production phase PASS claimed.",
+    "seq": 1219,
+    "to_state": "OPEN"
+   },
+   {
+    "at": "2026-11-04T19:22:19.635551Z",
+    "capa_id": "CAPA-163",
+    "evidence": "[]",
+    "from_state": "OPEN",
+    "reason": "triage by AGENT (Codex)",
+    "seq": 1220,
+    "to_state": "TRIAGED"
+   },
+   {
+    "at": "2026-11-04T19:22:19.824827Z",
+    "capa_id": "CAPA-163",
+    "evidence": "[]",
+    "from_state": "TRIAGED",
+    "reason": "reproducer RPR-163 assigned",
+    "seq": 1221,
+    "to_state": "REPRODUCER_PENDING"
+   },
+   {
+    "at": "2026-11-04T19:22:30.168906Z",
+    "capa_id": "CAPA-163",
+    "evidence": "[\"reproducer-run:rr-e5155b663a2f46e68e60\", \"reproducer-run:rr-8315e04569efa97c7f3a\"]",
+    "from_state": "REPRODUCER_PENDING",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "seq": 1222,
+    "to_state": "CAUSE_VERIFIED"
+   },
+   {
+    "at": "2026-11-04T19:22:30.192601Z",
+    "capa_id": "CAPA-163",
+    "evidence": "[\"git:b0d8ef139982..fcef1fd2eb6f\"]",
+    "from_state": "CAUSE_VERIFIED",
+    "reason": "fix fcef1fd2eb6f (patch 85611 bytes)",
+    "seq": 1223,
+    "to_state": "FIX_CANDIDATE"
+   },
+   {
+    "at": "2026-11-04T19:25:49.793020Z",
+    "capa_id": "CAPA-163",
+    "evidence": "[\"reproducer-run:rr-4451df2b81fb1ec2857f\"]",
+    "from_state": "FIX_CANDIDATE",
+    "reason": "prevention test prevention:RPR-163 absent at fcef1fd2eb6f",
+    "seq": 1224,
+    "to_state": "PREVENTION_TESTED"
+   },
+   {
+    "at": "2026-11-04T19:25:49.810080Z",
+    "capa_id": "CAPA-163",
+    "evidence": "[]",
+    "from_state": "PREVENTION_TESTED",
+    "reason": "observation window opened",
+    "seq": 1225,
+    "to_state": "EFFECTIVENESS_OBSERVING"
+   }
+  ],
+  "links": [
+   "cfp1-04308905ba61a0d4b8e96bf6512476ec884e1d8c",
+   "b0d8ef13998291a3e16d65d5158a63eaf7bfdadf",
+   "fcef1fd2eb6ff964dac09a4a55b41295c62eaa59",
+   "pd-01945301b773e6f7cb09"
+  ],
+  "record": {
+   "affected_versions": [
+    "forge-c@<fcef1fd2eb6f"
+   ],
+   "candidate_patch_sha256": "d548b5f86dfb3ccaad7a215a7788f8fc64bd2fb5ca6fec141bd206a0dbbfc3aa",
+   "capa_id": "CAPA-163",
+   "created_at": "2026-11-04T19:22:19.555738Z",
+   "event_ids": [],
+   "incident_ids": [
+    "INC-CONTROL-WWDG-RESERVED-WRITE-20261104"
+   ],
+   "lesson_ids": [],
+   "observation_window_end": null,
+   "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+   "prevention_test_id": "prevention:RPR-163",
+   "reproducer_id": "RPR-163",
+   "root_cause_evidence_refs": [
+    "reproducer-run:rr-e5155b663a2f46e68e60",
+    "reproducer-run:rr-8315e04569efa97c7f3a"
+   ],
+   "root_cause_status": "VERIFIED",
+   "root_cause_summary": "The observer checks before1/post0/HAL_OK and SR-only writes but omits SR31:1 reserved reset-value predicate on actual MMIO write values. Seal and recompute the strict write mask under proofversion2; original complement case FAIL and distinct zero-write CONTROL PASS.",
+   "schema_version": "1.0",
+   "state": "EFFECTIVENESS_OBSERVING",
+   "updated_at": "2026-11-04T19:25:49.810080Z"
+  }
+ }
+}

@@ -1,0 +1,31 @@
+# Cloud cross-inspection 2026-11-02, class X10 (candidate IL-C5): a rule stated for all functions contradicts a
+# specific requirement
+id: IL-009
+version: 1
+purpose: DETECTION
+state: PROPOSED
+scope:
+  phase: SWE.1
+  items: [SWE1-02]
+  layers: [LL, HAL]
+  requires: [workproducts/SWE.1/software_requirements.md]
+statement: >-
+  A rule stated for all functions must hold for every specific requirement it covers: a preservation rule that allows
+  one changed field contradicts a requirement that changes two fields together or clears reserved bits, and a
+  no-change rule contradicts a documented hardware side effect. Such a pair is an inconsistency of the baseline even
+  when each requirement reads correctly alone.
+source: {kind: contract, ref: "factory/release-manager/checklists/SWE.1.yaml#SWE1-02"}
+origin: {owner_decision: "2026-11-02: production uses local models only; cloud findings the local inspector missed become validated lessons", harvest: "cloud cross-inspection 2026-11-02", classes: [X10]}
+evidence_refs:
+  - factory/release-manager/checklists/SWE.1.yaml
+  - factory/python/forge_factory/inspection/assessment_context.py
+pending_evidence_refs:  # the cloud cross-inspection evidence, to be committed (must resolve before VALIDATED)
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/results.json
+  - evidence/014-durable-local-autonomy/cross-inspection-20261102/harvest.json
+must_still_detect: [S1-XCUT]
+detection:
+  real_misses:
+    - {work_order: WO-F014-SWE1-CRCL-20261102-L12, baseline_id: BL-SWE.1-001, baseline_hash: 95824649ba5be476ce9c29d1d88f098bd53e0deddb1d9f1ddb4cc583d7f330d4, item: SWE1-02, element: SWR-013}
+  certified_clean:  # gpt-6.1-sol fresh cross-inspection PASS on every SWE.1 item (2026-11-02)
+    - {holdout: WO-F014-CMP-SWE1-OBL-20261102-05, baseline_id: BL-SWE.1-003, baseline_hash: 079c0dc3c798b0bde768c7f5774fe8b79d397297fd8215acac2425127aa4d835, certified_by: "cloud cross-inspection INS-SWE.1-004 PASS"}
+    - {holdout: WO-F014-CMP-SWE1-CRCL-20261102-07, baseline_id: BL-SWE.1-002, baseline_hash: 33fc327d6a717fd5ae4f8a89effbfbff6044d7b6d37213d95fe7dc14538b98c5, certified_by: "cloud cross-inspection PASS"}

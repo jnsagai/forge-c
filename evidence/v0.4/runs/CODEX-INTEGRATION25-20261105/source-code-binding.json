@@ -1,0 +1,32 @@
+{
+  "all5_source_paths_byteidentical": true,
+  "existing_archives_unchanged": true,
+  "inputs_hashes_only_no_vendor_contents": true,
+  "integration_source": "66d61cb1bb24f6db9a158cc9f040cf51c1517b71",
+  "published_base": "99146ba27372737a8548205cf67458de0ac237a3",
+  "qualified_component": "8edd6a5657ff9c5f67b1c40c243532cb71d5bc69",
+  "source_paths": [
+    {
+      "path": "docs/adr/ADR-DA-013-line-service-boot-fencing.md",
+      "sha256": "cf3c33a37c77fed771e6de9021898ce98ea36e884347611823c4e607ffe297f3"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_conductor.py",
+      "sha256": "4cca2c939552fb2474a20bd2eabfd7ab88d72ae78913bbcf7c2ddb4a07b65dc9"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/services.py",
+      "sha256": "7b33c0cda7f491bddf4effd331158eda1cb03b08d5849e93e2a09a5aee973d75"
+    },
+    {
+      "path": "factory/python/tests/test_line_service_boot.py",
+      "sha256": "67dff872360aee73b02f9421e05a9fd928d7868e5138fc9698c01784d925d5fc"
+    },
+    {
+      "path": "factory/python/tests/test_line_service_boot_systemd.py",
+      "sha256": "eb211e93861c4b386bd6f30fce8198fd74b6423606f51085d4a61987819dd7c5"
+    }
+  ],
+  "unchanged_monitoring_changes_preserved": true,
+  "whole_integration_tree_CRE_claimed": false
+}

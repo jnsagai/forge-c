@@ -130,6 +130,13 @@ class QueueError(ValueError):
 
 
 def default_path() -> Path:
+    import os
+
+    scope = os.environ.get("FORGE_AFO_QUEUE_SCOPE")
+    if scope == "line-local":
+        return state_dir() / "supervisor/line-queue.sqlite3"
+    if scope:
+        raise QueueError("AFO_QUEUE_SCOPE_INVALID")
     return state_dir() / "conductor/conductor.sqlite3"
 
 
@@ -137,18 +144,61 @@ def order_id_for(tenant: str, request_id: str) -> str:
     return "afo-" + hashlib.sha256(f"{tenant}|{request_id}".encode()).hexdigest()[:16]
 
 
+def validate_intake(env: dict, *, repo: Path, approve=None) -> str:
+    """Validate the normal intake material without writing queue state."""
+    errs = contracts.errors("work-order", env)
+    if errs:
+        raise QueueError("INTAKE_SCHEMA", errs[0])
+    mpath = (repo / env["input_manifest_ref"]).resolve()
+    if repo.resolve() not in mpath.parents or not mpath.is_file():
+        raise QueueError("INTAKE_MANIFEST_MISSING", env["input_manifest_ref"])
+    if hashlib.sha256(mpath.read_bytes()).hexdigest() != env["manifest_sha256"]:
+        raise QueueError("INTAKE_MANIFEST_HASH_MISMATCH", env["input_manifest_ref"])
+    if approve is not None:
+        ok, code = approve(env)
+        if not ok:
+            raise QueueError("INTAKE_NOT_APPROVED", code)
+    return order_id_for(env["tenant_scope"], env["request_id"])
+
+
 class Store:
-    def __init__(self, path: Path | None = None, producer: str = "afo-conductor"):
-        self.path = Path(path or default_path())
+    def __init__(self, path: Path | None = None, producer: str = "afo-conductor", *, must_exist: bool | None = None):
         import os
+
+        if must_exist is not None and type(must_exist) is not bool:
+            raise QueueError("AUTHORITATIVE_DATABASE_REQUIREMENT_INVALID")
+        # Native gateway/MCP consumers of the explicit line-local scope cannot
+        # initialize authority. Initial M3 admission uses an explicit path.
+        self._existing_only = must_exist if must_exist is not None else (
+            path is None and os.environ.get("FORGE_AFO_QUEUE_SCOPE") == "line-local"
+        )
+        self.path = Path(path or default_path())
+        self.producer = producer
 
         if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
             from .host import preflight
 
             if not preflight()["ok"]:
                 raise QueueError("DURABLE_DATA_VOLUME_NOT_READY")
+        if self._existing_only:
+            self._existing_identity = None
+            self._check_existing()
+            # No mkdir, migration, chmod or WAL conversion before proving this
+            # is the already initialized M3 store. A lookalike empty SQLite DB
+            # cannot acquire authority through a consumer constructor.
+            try:
+                c = sqlite3.connect(self.path.absolute().as_uri() + "?mode=ro", uri=True, timeout=2)
+                try:
+                    have = c.execute("SELECT MAX(version) FROM afo_schema_version").fetchone()[0]
+                finally:
+                    c.close()
+                self._check_existing()
+                if type(have) is not int or have < len(MIGRATIONS):
+                    raise QueueError("AUTHORITATIVE_DATABASE_SCHEMA_UNAVAILABLE")
+            except sqlite3.Error as exc:
+                raise QueueError("AUTHORITATIVE_DATABASE_SCHEMA_UNAVAILABLE") from exc
+            return
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.producer = producer
         with self.tx() as c:
             c.execute("CREATE TABLE IF NOT EXISTS afo_schema_version (version INTEGER NOT NULL, applied_utc TEXT NOT NULL)")
             have = c.execute("SELECT COALESCE(MAX(version), 0) FROM afo_schema_version").fetchone()[0]
@@ -160,6 +210,25 @@ class Store:
                     c.execute("INSERT INTO afo_schema_version VALUES (?, ?)", (v, utc_now()))
         self.path.chmod(0o600)
 
+    def _check_existing(self):
+        import os
+        import stat
+
+        try:
+            fd = os.open(self.path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            try:
+                info = os.fstat(fd)
+                if not stat.S_ISREG(info.st_mode) or os.read(fd, 16) != b"SQLite format 3\x00":
+                    raise QueueError("AUTHORITATIVE_DATABASE_UNAVAILABLE")
+            finally:
+                os.close(fd)
+            identity = (info.st_dev, info.st_ino)
+            if self._existing_identity is not None and identity != self._existing_identity:
+                raise QueueError("AUTHORITATIVE_DATABASE_IDENTITY_CHANGED")
+            self._existing_identity = identity
+        except OSError as exc:
+            raise QueueError("AUTHORITATIVE_DATABASE_UNAVAILABLE") from exc
+
     def connect(self) -> sqlite3.Connection:
         import os
 
@@ -169,7 +238,21 @@ class Store:
             if hasattr(self, "_data_device") and data_root().stat().st_dev != self._data_device:
                 raise QueueError("AUTHORITATIVE_DATA_DEVICE_CHANGED")
             self._data_device = data_root().stat().st_dev
-        c = sqlite3.connect(self.path, timeout=10, isolation_level=None)
+        existing = getattr(self, "_existing_only", False)
+        if existing:
+            self._check_existing()
+        try:
+            c = sqlite3.connect(self.path.absolute().as_uri() + "?mode=rw", uri=True, timeout=10,
+                                isolation_level=None) if existing else sqlite3.connect(
+                                    self.path, timeout=10, isolation_level=None)
+            if existing:
+                self._check_existing()
+        except (OSError, sqlite3.Error) as exc:
+            raise QueueError("AUTHORITATIVE_DATABASE_UNAVAILABLE") from exc
+        except BaseException:
+            if 'c' in locals():
+                c.close()
+            raise
         c.row_factory = sqlite3.Row
         c.execute("PRAGMA journal_mode=WAL")
         c.execute("PRAGMA synchronous=FULL")
@@ -280,19 +363,7 @@ class Store:
     # -- intake (T017, T022) -------------------------------------------------------------------------------------
     def submit(self, env: dict, *, repo: Path, max_queued: int, approve=None) -> tuple[str, bool]:
         """Returns (order_id, created). Raises QueueError(REJECTED_INTAKE codes / CONFLICT)."""
-        errs = contracts.errors("work-order", env)
-        if errs:
-            raise QueueError("INTAKE_SCHEMA", errs[0])
-        mpath = (repo / env["input_manifest_ref"]).resolve()
-        if repo.resolve() not in mpath.parents or not mpath.is_file():
-            raise QueueError("INTAKE_MANIFEST_MISSING", env["input_manifest_ref"])
-        if hashlib.sha256(mpath.read_bytes()).hexdigest() != env["manifest_sha256"]:
-            raise QueueError("INTAKE_MANIFEST_HASH_MISMATCH", env["input_manifest_ref"])
-        if approve is not None:
-            ok, code = approve(env)
-            if not ok:
-                raise QueueError("INTAKE_NOT_APPROVED", code)
-        oid = order_id_for(env["tenant_scope"], env["request_id"])
+        oid = validate_intake(env, repo=repo, approve=approve)
         with self.tx() as c:
             row = c.execute("SELECT manifest_sha256 FROM afo_work_orders WHERE order_id=?", (oid,)).fetchone()
             if row is not None:
@@ -497,6 +568,7 @@ class Store:
         authorization_id: str | None,
         max_concurrent: int,
         qualification_ref: str | None = None,
+        recovery_plan_id: str | None = None,
     ) -> str:
         """QUEUED -> ADMITTED and the FABRO_LAUNCH intent for attempt seq 1+, atomically, under the fencing epoch."""
         if qualification_ref is not None and (
@@ -537,7 +609,7 @@ class Store:
                 "created_utc": utc_now(),
                 "fabro_run_id": None,
                 "fabro_server": None,
-                "recovery_plan_id": None,
+                "recovery_plan_id": recovery_plan_id,
                 "exit_status": None,
                 "terminal_package_status": None,
                 "checkpoint_refs": [],

@@ -40,12 +40,12 @@ ANSWERS = {
         _req("lock", f"When LL_IWDG_DisableWriteAccess is called, the {SYS} shall write 0x00000000 to IWDG_KR.KEY.",
              2989, [_eff("LOCK", "IWDG_KR", "KEY", "write", "0x0")])], "not_covered": [], "open_points": []},
     "requirements:IWDG_PR": {"requirements": [
-        _req("prescaler", f"When LL_IWDG_SetPrescaler is called with a value from 0U to 15U, the {SYS} shall write the "
-             "value to IWDG_PR.PR.", 2990, [_eff("SET_PRESCALER", "IWDG_PR", "PR", "write", "0x5")])],
+        _req("prescaler", f"When LL_IWDG_SetPrescaler is called with a value, the {SYS} shall write the low 4 bits of "
+             "the value to IWDG_PR.PR, so that a value above 15U is confined to the field.", 2990, [_eff("SET_PRESCALER", "IWDG_PR", "PR", "write", "0x5")])],
         "not_covered": [], "open_points": []},
     "requirements:IWDG_RLR": {"requirements": [
-        _req("reload", f"When LL_IWDG_SetReloadCounter is called with a value from 0U to 4095U, the {SYS} shall write "
-             "the value to IWDG_RLR.RL.", 2990, [_eff("SET_RELOAD", "IWDG_RLR", "RL", "write", "0xFFF")])],
+        _req("reload", f"When LL_IWDG_SetReloadCounter is called with a value, the {SYS} shall write the low 12 bits "
+             "of the value to IWDG_RLR.RL, so that a value above 4095U is confined to the field.", 2990, [_eff("SET_RELOAD", "IWDG_RLR", "RL", "write", "0xFFF")])],
         "not_covered": [], "open_points": []},
     "requirements:IWDG_SR_1": {"requirements": [
         _req("onf_set", f"When LL_IWDG_IsActive is called with IWDG_SR.ONF set, the {SYS} shall return 1U.", 2991,
@@ -142,7 +142,8 @@ def test_invalid_answer_is_never_assembled(ws, monkeypatch):
     rep = swe1.visit(ws, "qwen3-coder:30b", max_calls=40)
     assert rep["status"] == "FAILED" and any("requirements:IWDG_KR" in i for i in rep["issues"])
     assert not (ws / swe1.REQS).exists()
-    assert len([p for p in calls if p["task"] == "requirements:IWDG_KR"]) == 3  # bounded: 1 + 2 repairs
+    # bounded: 1 call + 1 repair; the repair repeats the same findings, which stops the task (CAPA-084)
+    assert len([p for p in calls if p["task"] == "requirements:IWDG_KR"]) == 2
     assert _gate(ws, monkeypatch) != 0
 
 
@@ -301,8 +302,8 @@ def test_repairs_get_a_bounded_extension_only_while_the_answer_improves(ws, monk
     (ws / ".forge-run/lrtx/SWE.1/packets/requirements__IWDG_PR.json").unlink()
     monkeypatch.setattr(S, "call", _scripted({**ANSWERS, "requirements:IWDG_PR": stuck}, calls))
     assert swe1.visit(ws, "m")["status"] == "FAILED"
-    # no improvement: no extension, and the in-visit repair round stops after one round (3 + 3 calls)
-    assert len([c for c in calls if c["task"] == "requirements:IWDG_PR"]) == 6
+    # no improvement: the repeated findings stop the task (CAPA-084) in the visit and in its repair round (2 + 2)
+    assert len([c for c in calls if c["task"] == "requirements:IWDG_PR"]) == 4
 
 
 def test_reset_state_requirements_are_moved_out_of_register_tasks(ws):
@@ -384,3 +385,67 @@ def test_consistency_finds_the_same_write_in_other_words():
                                               "0xAAAA to IWDG_KR.KEY - remove it here")]
     found = swe1.consistency([({}, rec("requirements:IWDG_KR", a))], rec("requirements:crosscutting", b))
     assert found and found[0][0] == "requirements:crosscutting"  # removed from the cross-cutting task
+
+
+def test_aspice_only_baseline_states_no_safe_state_and_the_inspector_is_told(ws, monkeypatch):
+    """CAPA-083 (run -11): SWE1-03 failed for a missing safe state on an ASPICE-only order where the allocated safety
+    safe state is outside the owner scope."""
+    from forge_factory.lrtx import review
+
+    monkeypatch.setattr(review, "safe_state_outside_scope", lambda _ws: True)
+    monkeypatch.setattr(S, "call", _scripted(ANSWERS, []))
+    assert swe1.visit(ws, "qwen3-coder:30b")["status"] == "PASS"
+    assert "Safe state: no software safe state is allocated" in (ws / swe1.REQS).read_text()
+    assert review.SAFE_STATE_NOTE in review._notes(ws, "SWE.1", "SWE1-03")
+    assert review.SAFE_STATE_NOTE not in review._notes(ws, "SWE.1", "SWE1-02")
+    monkeypatch.setattr(review, "safe_state_outside_scope", lambda _ws: False)
+    assert review.SAFE_STATE_NOTE not in review._notes(ws, "SWE.1", "SWE1-03")
+
+
+def test_capa120_truncating_write_records_the_requested_input(ws, monkeypatch):
+    """CAPA-120 (run WO-F014-CMP-SWE2-IWDGG-20261102-08): SWR-009 'write only bits 11:0 of the requested value',
+    verified with 0x00001234 -> RL == 0x234. The effect could hold only 0x234, so SWE.2 had to pass 0x234U and the
+    inspector rejected it three times. The effect now records the requested input apart from the field value."""
+    from forge_factory.assurance.hardware import index
+
+    idx = index(ws / "inputs/sections/RM0486")
+    g = next(x for x in swe1.groups(swe1.inventory(ws)) if x["id"] == "IWDG_RLR")
+    trunc = _req("reload_masked", f"If the caller requests a reload value above 0xFFF, then the {SYS} shall write only "
+                 "bits 11:0 of the requested value to IWDG_RLR.RL.", 2990,
+                 [_eff("RLR_TRUNCATED", "IWDG_RLR", "RL", "write", "0x234")])
+    trunc["verification"] = ("Host unit test: preset IWDG_RLR to 0x00000FFF, call the reload-set function with "
+                             "0x00001234 (and with 0xFFFFFFFF); passes when IWDG_RLR.RL equals 0x234 (respectively "
+                             "0xFFF).")
+    doc = {"requirements": [trunc], "not_covered": [], "open_points": []}
+
+    def about(d):
+        return [f for f in swe1.validate_group(ws, d, g, SYS, idx) if "requested" in f]
+
+    hint = about(doc)
+    assert hint == ['[reload_masked] effect RLR_TRUNCATED: the verification calls with 0x00001234, which does not fit '
+                    'IWDG_RLR.RL (12 bits) and leaves 0x234: give requested "0x00001234" (the input the call passes) '
+                    'and keep value 0x234'], hint
+    trunc["effects"][0]["requested"] = "0x00001234"
+    assert about(doc) == [] and S.validate(doc, swe1.GROUP_SCHEMA) == []
+    trunc["effects"][0]["requested"] = "0x1235"
+    assert about(doc) == ["[reload_masked] effect RLR_TRUNCATED: value '0x234' must be the low 12 bits of requested "
+                          "'0x1235' (0x235)"]
+    trunc["effects"][0]["requested"] = "0x234"  # fits the field: no separate input
+    assert "fits the 12-bit field" in about(doc)[0]
+    # an in-range write (the existing answers) and a non-write keep their findings unchanged
+    assert about(ANSWERS["requirements:IWDG_RLR"]) == []
+    bad = json.loads(json.dumps(ANSWERS["requirements:IWDG_SR_2"]))
+    bad["requirements"][0]["effects"][0]["requested"] = "0x1"
+    sr2 = next(x for x in swe1.groups(swe1.inventory(ws)) if x["id"] == "IWDG_SR_2")
+    assert [f for f in swe1.validate_group(ws, bad, sr2, SYS, idx) if "requested" in f] == [
+        '[pvu] effect PVU_SET: requested must be "" for op no_write']
+
+    # assembly writes requested only on the effect that has one; the unchanged gate freezes the baseline
+    answers = json.loads(json.dumps(ANSWERS))
+    answers["requirements:IWDG_RLR"]["requirements"][0]["effects"][0]["requested"] = "0xFFFFFFFF"
+    monkeypatch.setattr(S, "call", _scripted(answers, []))
+    assert swe1.visit(ws, "m")["status"] == "PASS"
+    eff = {e["case"]: e for e in json.loads((ws / swe1.EFFECTS).read_text())["effects"]}
+    assert eff["SET_RELOAD"]["requested"] == "0xFFFFFFFF" and eff["SET_RELOAD"]["value"] == "0xFFF"
+    assert [c for c, e in eff.items() if "requested" in e] == ["SET_RELOAD"]
+    assert _gate(ws, monkeypatch) == 0

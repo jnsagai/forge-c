@@ -1,0 +1,7 @@
+{
+  "status": "EXACT169PREFIX_RESTORED_BEFORE_FINAL_GATE",
+  "prefix_bytes": 198400,
+  "prefix_sha256": "160cb7a988acebf8c343155abc4bba394ee8e06a70636f86d34d72c7376f5895",
+  "final_caller_sha256": "5a469381e0b4f1b57f5d028944b83660dd75746fae4ec580d7728f2bc3421fb6",
+  "prior_semantically_equal_formatting_gate": "pd-ac2a307db8df5ebfb34e ALL_HARD_PASS, retained; final repeat uses byte-exact prefix"
+}

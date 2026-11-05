@@ -1,0 +1,180 @@
+FFFFFFFFF.                                                               [100%]
+=================================== FAILURES ===================================
+___________ test_line_renderer_selects_only_its_existing_three_units ___________
+
+deployment = {'intent': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_selects_onl0/private/intent.json'), 'laun...atchdog_dependencies': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_selects_onl0/host/deps'), ...}
+
+    def test_line_renderer_selects_only_its_existing_three_units(deployment):
+>       units = services.render_line(**deployment)
+                ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.afo.services' has no attribute 'render_line'
+
+factory/python/tests/test_line_service_boot.py:24: AttributeError
+______________ test_line_act_render_does_not_invent_authorization ______________
+
+deployment = {'intent': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_act_render_does_not_0/private/intent.json'), 'laun...atchdog_dependencies': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_act_render_does_not_0/host/deps'), ...}
+
+    def test_line_act_render_does_not_invent_authorization(deployment):
+>       text = services.render_line(mode="ACT", **deployment)["forge-line-conductor-local.service"]
+               ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.afo.services' has no attribute 'render_line'
+
+factory/python/tests/test_line_service_boot.py:44: AttributeError
+_ test_line_renderer_rejects_ambiguous_or_injected_configuration[intent-value0] _
+
+deployment = {'intent': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_rejects_amb0/private/intent.json'), 'laun...atchdog_dependencies': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_rejects_amb0/host/deps'), ...}
+field = 'intent', value = PosixPath('relative')
+
+    @pytest.mark.parametrize("field,value", [("intent", Path("relative")), ("watchdog_code", Path("/tmp/a\nExecStart=/bin/true")),
+                                            ("launch_dir", Path("/tmp/%u")), ("mode", "OWNER_SUPERVISED_DEVELOPMENT")])
+    def test_line_renderer_rejects_ambiguous_or_injected_configuration(deployment, field, value):
+        with pytest.raises(ValueError):
+>           services.render_line(**(deployment | {field: value}))
+            ^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'forge_factory.afo.services' has no attribute 'render_line'
+
+factory/python/tests/test_line_service_boot.py:53: AttributeError
+_ test_line_renderer_rejects_ambiguous_or_injected_configuration[watchdog_code-value1] _
+
+deployment = {'intent': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_rejects_amb1/private/intent.json'), 'laun...atchdog_dependencies': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_rejects_amb1/host/deps'), ...}
+field = 'watchdog_code', value = PosixPath('/tmp/a\nExecStart=/bin/true')
+
+    @pytest.mark.parametrize("field,value", [("intent", Path("relative")), ("watchdog_code", Path("/tmp/a\nExecStart=/bin/true")),
+                                            ("launch_dir", Path("/tmp/%u")), ("mode", "OWNER_SUPERVISED_DEVELOPMENT")])
+    def test_line_renderer_rejects_ambiguous_or_injected_configuration(deployment, field, value):
+        with pytest.raises(ValueError):
+>           services.render_line(**(deployment | {field: value}))
+            ^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'forge_factory.afo.services' has no attribute 'render_line'
+
+factory/python/tests/test_line_service_boot.py:53: AttributeError
+_ test_line_renderer_rejects_ambiguous_or_injected_configuration[launch_dir-value2] _
+
+deployment = {'intent': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_rejects_amb2/private/intent.json'), 'laun...atchdog_dependencies': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_rejects_amb2/host/deps'), ...}
+field = 'launch_dir', value = PosixPath('/tmp/%u')
+
+    @pytest.mark.parametrize("field,value", [("intent", Path("relative")), ("watchdog_code", Path("/tmp/a\nExecStart=/bin/true")),
+                                            ("launch_dir", Path("/tmp/%u")), ("mode", "OWNER_SUPERVISED_DEVELOPMENT")])
+    def test_line_renderer_rejects_ambiguous_or_injected_configuration(deployment, field, value):
+        with pytest.raises(ValueError):
+>           services.render_line(**(deployment | {field: value}))
+            ^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'forge_factory.afo.services' has no attribute 'render_line'
+
+factory/python/tests/test_line_service_boot.py:53: AttributeError
+_ test_line_renderer_rejects_ambiguous_or_injected_configuration[mode-OWNER_SUPERVISED_DEVELOPMENT] _
+
+deployment = {'intent': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_rejects_amb3/private/intent.json'), 'laun...atchdog_dependencies': PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_line_renderer_rejects_amb3/host/deps'), ...}
+field = 'mode', value = 'OWNER_SUPERVISED_DEVELOPMENT'
+
+    @pytest.mark.parametrize("field,value", [("intent", Path("relative")), ("watchdog_code", Path("/tmp/a\nExecStart=/bin/true")),
+                                            ("launch_dir", Path("/tmp/%u")), ("mode", "OWNER_SUPERVISED_DEVELOPMENT")])
+    def test_line_renderer_rejects_ambiguous_or_injected_configuration(deployment, field, value):
+        with pytest.raises(ValueError):
+>           services.render_line(**(deployment | {field: value}))
+            ^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'forge_factory.afo.services' has no attribute 'render_line'
+
+factory/python/tests/test_line_service_boot.py:53: AttributeError
+_ test_public_line_startup_fences_before_fabro_state_or_model_access[STOPPED] __
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_public_line_startup_fence0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70c71a5c7450>
+mode = 'STOPPED'
+
+    @pytest.mark.parametrize("mode", ["STOPPED", "UNKNOWN"])
+    def test_public_line_startup_fences_before_fabro_state_or_model_access(tmp_path, monkeypatch, mode):
+        path = tmp_path / "private/intent.json"
+        path.parent.mkdir(mode=0o700)
+        monkeypatch.setenv("FORGE_OPERATIONS_INTENT", str(path))
+        if mode != "UNKNOWN":
+            operations.Intent(path).set(mode, actor="CONTROL", reason="CONTROL", initialize=True)
+        monkeypatch.setattr(line_conductor.FabroView, "from_env", lambda *_: pytest.fail("fenced before any Fabro lookup"))
+>       assert line_conductor.main(["--mode", "OBSERVE", "--once"]) == 77
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_service_boot.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/line_conductor.py:1399: in main
+    fabro = FabroView.from_env(a.fabro_snapshot)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+_ = (None,)
+
+>   monkeypatch.setattr(line_conductor.FabroView, "from_env", lambda *_: pytest.fail("fenced before any Fabro lookup"))
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: fenced before any Fabro lookup
+
+factory/python/tests/test_line_service_boot.py:63: Failed
+_ test_public_line_startup_fences_before_fabro_state_or_model_access[UNKNOWN] __
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_public_line_startup_fence1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70c71a5cd040>
+mode = 'UNKNOWN'
+
+    @pytest.mark.parametrize("mode", ["STOPPED", "UNKNOWN"])
+    def test_public_line_startup_fences_before_fabro_state_or_model_access(tmp_path, monkeypatch, mode):
+        path = tmp_path / "private/intent.json"
+        path.parent.mkdir(mode=0o700)
+        monkeypatch.setenv("FORGE_OPERATIONS_INTENT", str(path))
+        if mode != "UNKNOWN":
+            operations.Intent(path).set(mode, actor="CONTROL", reason="CONTROL", initialize=True)
+        monkeypatch.setattr(line_conductor.FabroView, "from_env", lambda *_: pytest.fail("fenced before any Fabro lookup"))
+>       assert line_conductor.main(["--mode", "OBSERVE", "--once"]) == 77
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_service_boot.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/line_conductor.py:1399: in main
+    fabro = FabroView.from_env(a.fabro_snapshot)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+_ = (None,)
+
+>   monkeypatch.setattr(line_conductor.FabroView, "from_env", lambda *_: pytest.fail("fenced before any Fabro lookup"))
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: fenced before any Fabro lookup
+
+factory/python/tests/test_line_service_boot.py:63: Failed
+____________ test_unknown_after_running_is_fenced_at_the_next_start ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-150/test_unknown_after_running_is_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x70c71a5ce8a0>
+
+    def test_unknown_after_running_is_fenced_at_the_next_start(tmp_path, monkeypatch):
+        path = tmp_path / "private/intent.json"
+        path.parent.mkdir(mode=0o700)
+        intent = operations.Intent(path)
+        intent.set("RUNNING", actor="CONTROL", reason="CONTROL", initialize=True)
+        path.write_text("{corrupt")
+        monkeypatch.setenv("FORGE_OPERATIONS_INTENT", str(path))
+        monkeypatch.setattr(line_conductor.FabroView, "from_env", lambda *_: pytest.fail("unknown cannot start"))
+>       assert line_conductor.main(["--mode", "ACT", "--once"]) == 77
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_line_service_boot.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/line_conductor.py:1399: in main
+    fabro = FabroView.from_env(a.fabro_snapshot)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+_ = (None,)
+
+>   monkeypatch.setattr(line_conductor.FabroView, "from_env", lambda *_: pytest.fail("unknown cannot start"))
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: unknown cannot start
+
+factory/python/tests/test_line_service_boot.py:75: Failed
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_line_service_boot.py::test_line_renderer_selects_only_its_existing_three_units
+FAILED factory/python/tests/test_line_service_boot.py::test_line_act_render_does_not_invent_authorization
+FAILED factory/python/tests/test_line_service_boot.py::test_line_renderer_rejects_ambiguous_or_injected_configuration[intent-value0]
+FAILED factory/python/tests/test_line_service_boot.py::test_line_renderer_rejects_ambiguous_or_injected_configuration[watchdog_code-value1]
+FAILED factory/python/tests/test_line_service_boot.py::test_line_renderer_rejects_ambiguous_or_injected_configuration[launch_dir-value2]
+FAILED factory/python/tests/test_line_service_boot.py::test_line_renderer_rejects_ambiguous_or_injected_configuration[mode-OWNER_SUPERVISED_DEVELOPMENT]
+FAILED factory/python/tests/test_line_service_boot.py::test_public_line_startup_fences_before_fabro_state_or_model_access[STOPPED]
+FAILED factory/python/tests/test_line_service_boot.py::test_public_line_startup_fences_before_fabro_state_or_model_access[UNKNOWN]
+FAILED factory/python/tests/test_line_service_boot.py::test_unknown_after_running_is_fenced_at_the_next_start

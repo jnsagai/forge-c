@@ -70,6 +70,34 @@
       "role": "mock-generation"
     },
     {
+      "name": "GoogleTest/GoogleMock",
+      "license": "BSD-3-Clause",
+      "role": "requirement-based-unit-testing-and-mocking",
+      "version": "1.11.0",
+      "artifact": "/usr/src/googletest (Debian googletest 1.11.0-3; built with LLVM 19.1.7 clang++ by scripts/build_googletest.sh)",
+      "source_tree_sha256": "20f0358aad458d6d85beb7fb9348fa0c279d9eb5522befd66c4489bcce95e238",
+      "install": "$FORGE_DATA_ROOT/toolchains/googletest-1.11.0",
+      "hosts": {
+        "loop10": {
+          "install": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/googletest-1.11.0",
+          "libraries_sha256": {
+            "libgtest.a": "cd511f86f97b926730ac7143a410ae26f89792ea8f1f1c792ffea4a8b4090ab5",
+            "libgmock.a": "3ecaac7302439575f282f93c105feb93b6fdeb7b65124e8b7340bc67e1d1249f"
+          }
+        },
+        "omniverse2": {
+          "install": "/mnt/data/forge-c/toolchains/googletest-1.11.0",
+          "cxx_flags": [
+            "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/11"
+          ],
+          "libraries_sha256": {
+            "libgtest.a": "e796672f042612b90978cbdd23401523901efa26463b0165d054fd53a5d6a27c",
+            "libgmock.a": "72ad2be5c3b45bf4daba9a0bdaf5b37a7adbe62513ab60ddaac08e711f690714"
+          }
+        }
+      }
+    },
+    {
       "name": "Renode",
       "license": "MIT",
       "role": "simulation",

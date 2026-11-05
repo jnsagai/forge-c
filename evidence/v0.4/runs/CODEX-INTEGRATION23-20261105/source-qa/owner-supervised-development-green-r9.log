@@ -1,0 +1,127 @@
+...............FFF....                                                   [100%]
+=================================== FAILURES ===================================
+___________ test_existing_role_request_ledger_and_nonce_integration ____________
+
+native_job = {'body': {'max_tokens': 100, 'messages': [], 'model': 'qwen3.8:27b-q8_0', 'reasoning_effort': 'medium', ...}, 'control...22b2708193d3ddfbdc637'}, 'execution': <forge_factory.afo.execution_lifecycle.Executions object at 0x719de22a5310>, ...}
+
+    def test_existing_role_request_ledger_and_nonce_integration(native_job):
+        from forge_factory.afo import request_admission as A
+        from forge_factory.lrtx.role_capability import admit_job
+        p=native_job;store=p['store'];job=p['job'];body=p['body']
+        selected=__import__('forge_factory.afo.line_product_context',fromlist=['request_job']).request_job(job,'swe6-inspector',body['model'],policy.load())
+        assert admit_job(selected,'swe6-inspector',input_tokens=10,output_tokens=100,body=body)==dict(qualification_only=True,qualified=False)
+        binding=dict(job_id=job['job_id'],nonce=job['nonce'],request_id='PRIVATE-REQUEST',role='swe6-inspector')
+        measure=dict(sha256=digest(body),input_tokens=10,provider_instance_sha256=digest(None))
+>       rec=A.reserve(store,binding,body,measurement=measure)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/request_admission.py:31: in reserve
+    job = resolve(store, binding["job_id"])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <forge_factory.afo.queue.Store object at 0x719de35dadd0>
+job_id = 'afo-product-c3a387e4ec19edf57321365c'
+
+    def resolve(store, job_id):
+        with store.tx() as c:
+            row = c.execute("SELECT record FROM afo_product_jobs WHERE job_id=?", (job_id,)).fetchone()
+        if not row:
+            raise Refused("PRODUCT_JOB_UNBOUND")
+        job = json.loads(row[0])
+        p = Path(job["binding"])
+        if p.is_symlink() or not p.is_file():
+>           raise Refused("PRODUCT_BINDING_UNAVAILABLE")
+E           forge_factory.afo.durable.Refused: PRODUCT_BINDING_UNAVAILABLE:
+
+factory/python/forge_factory/afo/product_job.py:129: Refused
+_____ test_guardian_exit_between_reservation_and_effect_refuses_and_holds ______
+
+native_job = {'body': {'max_tokens': 100, 'messages': [], 'model': 'qwen3.8:27b-q8_0', 'reasoning_effort': 'medium', ...}, 'control...456dfae90bf3e868da57d'}, 'execution': <forge_factory.afo.execution_lifecycle.Executions object at 0x719de2413bb0>, ...}
+
+    def test_guardian_exit_between_reservation_and_effect_refuses_and_holds(native_job):
+        from forge_factory.afo import request_admission as A
+        p=native_job;job=p['job'];body=p['body'];store=p['store']
+        binding=dict(job_id=job['job_id'],nonce=job['nonce'],request_id='PRIVATE-REQUEST',role='swe6-inspector')
+>       rec=A.reserve(store,binding,body,measurement=dict(sha256=digest(body),input_tokens=10,provider_instance_sha256=digest(None)))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:171: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/request_admission.py:31: in reserve
+    job = resolve(store, binding["job_id"])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <forge_factory.afo.queue.Store object at 0x719de362d650>
+job_id = 'afo-product-c3a387e4ec19edf57321365c'
+
+    def resolve(store, job_id):
+        with store.tx() as c:
+            row = c.execute("SELECT record FROM afo_product_jobs WHERE job_id=?", (job_id,)).fetchone()
+        if not row:
+            raise Refused("PRODUCT_JOB_UNBOUND")
+        job = json.loads(row[0])
+        p = Path(job["binding"])
+        if p.is_symlink() or not p.is_file():
+>           raise Refused("PRODUCT_BINDING_UNAVAILABLE")
+E           forge_factory.afo.durable.Refused: PRODUCT_BINDING_UNAVAILABLE:
+
+factory/python/forge_factory/afo/product_job.py:129: Refused
+___________ test_wrong_nonce_and_changed_role_config_reserve_nothing ___________
+
+native_job = {'body': {'max_tokens': 100, 'messages': [], 'model': 'qwen3.8:27b-q8_0', 'reasoning_effort': 'medium', ...}, 'control...121c21582b38498397d6a'}, 'execution': <forge_factory.afo.execution_lifecycle.Executions object at 0x719de2200830>, ...}
+
+    def test_wrong_nonce_and_changed_role_config_reserve_nothing(native_job):
+        from forge_factory.afo import request_admission as A
+        p=native_job;job=p['job'];body=p['body'];store=p['store']
+        before=MissionLedger(store).snapshot(D.MISSION)
+        b=dict(job_id=job['job_id'],nonce='FOREIGN',request_id='PRIVATE',role='swe6-inspector')
+>       with pytest.raises(Refused,match='GENERATION_NONCE_MISMATCH'):A.reserve(store,b,body)
+                                                                      ^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:185: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/request_admission.py:31: in reserve
+    job = resolve(store, binding["job_id"])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+store = <forge_factory.afo.queue.Store object at 0x719de21ed090>
+job_id = 'afo-product-c3a387e4ec19edf57321365c'
+
+    def resolve(store, job_id):
+        with store.tx() as c:
+            row = c.execute("SELECT record FROM afo_product_jobs WHERE job_id=?", (job_id,)).fetchone()
+        if not row:
+            raise Refused("PRODUCT_JOB_UNBOUND")
+        job = json.loads(row[0])
+        p = Path(job["binding"])
+        if p.is_symlink() or not p.is_file():
+>           raise Refused("PRODUCT_BINDING_UNAVAILABLE")
+E           forge_factory.afo.durable.Refused: PRODUCT_BINDING_UNAVAILABLE:
+
+factory/python/forge_factory/afo/product_job.py:129: Refused
+
+During handling of the above exception, another exception occurred:
+
+native_job = {'body': {'max_tokens': 100, 'messages': [], 'model': 'qwen3.8:27b-q8_0', 'reasoning_effort': 'medium', ...}, 'control...121c21582b38498397d6a'}, 'execution': <forge_factory.afo.execution_lifecycle.Executions object at 0x719de2200830>, ...}
+
+    def test_wrong_nonce_and_changed_role_config_reserve_nothing(native_job):
+        from forge_factory.afo import request_admission as A
+        p=native_job;job=p['job'];body=p['body'];store=p['store']
+        before=MissionLedger(store).snapshot(D.MISSION)
+        b=dict(job_id=job['job_id'],nonce='FOREIGN',request_id='PRIVATE',role='swe6-inspector')
+>       with pytest.raises(Refused,match='GENERATION_NONCE_MISMATCH'):A.reserve(store,b,body)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'GENERATION_NONCE_MISMATCH'
+E         Actual message: 'PRODUCT_BINDING_UNAVAILABLE:'
+
+factory/python/tests/test_owner_supervised_development.py:185: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_owner_supervised_development.py::test_existing_role_request_ledger_and_nonce_integration
+FAILED factory/python/tests/test_owner_supervised_development.py::test_guardian_exit_between_reservation_and_effect_refuses_and_holds
+FAILED factory/python/tests/test_owner_supervised_development.py::test_wrong_nonce_and_changed_role_config_reserve_nothing

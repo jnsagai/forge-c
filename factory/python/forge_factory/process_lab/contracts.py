@@ -12,7 +12,7 @@ from ..common import REPO_ROOT
 
 CONTRACTS = REPO_ROOT / "specs/014-durable-local-autonomy/contracts/runtime"
 NAMES = ("process-lab", "process-handoff", "swe1-oracle", "process-lab-experiment", "model-swap",
-         "process-lab-disposition")
+         "process-lab-disposition", "owner-obligations")
 
 
 class ContractError(ValueError):

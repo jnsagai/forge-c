@@ -1,0 +1,74 @@
+[
+  {
+    "seq": 1,
+    "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+    "from_state": null,
+    "to_state": "OPEN",
+    "at": "2026-11-05T11:20:16.698858Z",
+    "reason": "Verified owner review requests corrective analysis: CONFIRMED_DEFECT",
+    "evidence": "[\"human-review:215f9e6fec7296bbc49242c6aace93c16ab79c88049334baef4d34924aeb94be\"]"
+  },
+  {
+    "seq": 2,
+    "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+    "from_state": "OPEN",
+    "to_state": "TRIAGED",
+    "at": "2026-11-05T11:22:20.773418Z",
+    "reason": "triage by RULE:independent-CRE-receipt",
+    "evidence": "[]"
+  },
+  {
+    "seq": 3,
+    "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+    "from_state": "TRIAGED",
+    "to_state": "REPRODUCER_PENDING",
+    "at": "2026-11-05T11:22:20.786567Z",
+    "reason": "immutable qualified reproducer bound",
+    "evidence": "[]"
+  },
+  {
+    "seq": 4,
+    "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+    "from_state": "REPRODUCER_PENDING",
+    "to_state": "CAUSE_VERIFIED",
+    "at": "2026-11-05T11:22:20.814537Z",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "evidence": "[\"reproducer-run:rr-e38feb617961b2b862ae\", \"reproducer-run:rr-52e9c4a5a0016c05cc2c\"]"
+  },
+  {
+    "seq": 5,
+    "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+    "from_state": "CAUSE_VERIFIED",
+    "to_state": "FIX_CANDIDATE",
+    "at": "2026-11-05T11:22:20.837354Z",
+    "reason": "fix 03da05043307 (patch 76936 bytes)",
+    "evidence": "[\"git:18814617abb9..03da05043307\"]"
+  },
+  {
+    "seq": 6,
+    "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+    "from_state": "FIX_CANDIDATE",
+    "to_state": "PREVENTION_TESTED",
+    "at": "2026-11-05T11:22:20.881526Z",
+    "reason": "prevention test prevention:AFO-REVIEW-CPU-CONTROL absent at 03da05043307",
+    "evidence": "[\"reproducer-run:rr-52e9c4a5a0016c05cc2c\"]"
+  },
+  {
+    "seq": 7,
+    "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+    "from_state": "PREVENTION_TESTED",
+    "to_state": "EFFECTIVENESS_OBSERVING",
+    "at": "2026-11-05T11:22:20.897769Z",
+    "reason": "observation window opened",
+    "evidence": "[]"
+  },
+  {
+    "seq": 8,
+    "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+    "from_state": "EFFECTIVENESS_OBSERVING",
+    "to_state": "EFFECTIVENESS_OBSERVING",
+    "at": "2026-11-05T11:24:19.399077Z",
+    "reason": "lesson lesson-b558d6332f83 validated",
+    "evidence": "[\"lesson:lesson-b558d6332f83\"]"
+  }
+]

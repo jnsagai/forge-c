@@ -1,0 +1,4 @@
+{"engineering_inputs_unchanged": true, "host_passed": 1, "matrix4_timing_statuses": ["VERIFIED"], "provided_approval_valid": true, "public_unit_status": "PASS", "target_evidence": false}
+SYMPTOM_PRESENT:WWDG frozen target instruction and virtual-time requirement receives host-only verified credit
+
+--- stderr ---

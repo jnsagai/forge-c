@@ -71,6 +71,56 @@ class Executions:
             if not old or json.loads(old[0])["revision"] != expected_revision:
                 raise Refused("EXECUTION_FENCE_STALE")
             if rec["execution_liveness"] in ("QUIESCENT", "NOT_STARTED") and rec.get("resource_lease") == "HELD":
+                holds = c.execute("SELECT record,sha256 FROM afo_execution_evidence WHERE job_id=? "
+                                  "AND kind LIKE 'LINE_STARTUP_CLEANUP_UNKNOWN:%' LIMIT 101", (rec["job_id"],)).fetchall()
+                if len(holds) > 100:
+                    raise Refused("PROVIDER_QUIESCENCE_UNPROVEN")
+                for hold in holds:
+                    try:
+                        from ..lrtx import provider_process as provider
+
+                        value = json.loads(hold[0])
+                        binding = value["binding"]
+                        if not isinstance(binding, dict):
+                            raise ValueError("startup hold binding")
+                        registered = c.execute("SELECT record FROM afo_product_jobs WHERE job_id=?", (rec["job_id"],)).fetchone()
+                        job = json.loads(registered[0]) if registered else {}
+                        if not isinstance(job, dict):
+                            raise ValueError("startup hold job")
+                        instance = value["provider_instance"]
+                        if (value.get("schema") != "forge-c/line-startup-cleanup-unknown/1" or not isinstance(instance, dict)
+                                or value.get("root") != str(self.store.path.resolve().parents[2])
+                                or instance.get("root") != value["root"]
+                                or instance.get("profile") != value.get("profile") or value.get("profile") != job.get("profile")
+                                or instance.get("profile_sha256") != value.get("profile_sha256")
+                                or value.get("profile_sha256") != job.get("profile_sha256")):
+                            raise ValueError("startup hold provider scope")
+                        if (digest(value) != hold[1] or binding.get("job_id") != rec["job_id"]
+                                or binding.get("nonce") != rec["launch_nonce"] or binding.get("mission_id") != rec["mission_id"]
+                                or binding.get("lease_epoch") != rec["lease_epoch"]
+                                or digest(value["provider_instance"]) != value["provider_instance_sha256"]):
+                            raise ValueError("startup hold binding")
+                        quiet = provider.quiet(value["provider_instance"])
+                        if not quiet:
+                            raise ValueError("startup provider is not quiet")
+                        receipt = {"schema": "forge-c/line-startup-cleanup-quiescent/1", "hold_sha256": hold[1],
+                                   "binding": binding, "kernel_quiescence": quiet}
+                        kind = "LINE_STARTUP_CLEANUP_QUIESCENT:" + hold[1]
+                        prior = c.execute("SELECT record,sha256 FROM afo_execution_evidence WHERE job_id=? AND kind=?",
+                                          (rec["job_id"], kind)).fetchone()
+                        if prior:
+                            previous = json.loads(prior[0])
+                            if (not isinstance(previous, dict) or digest(previous) != prior[1]
+                                    or previous.get("schema") != receipt["schema"]
+                                    or previous.get("hold_sha256") != hold[1] or previous.get("binding") != binding
+                                    or not isinstance(previous.get("kernel_quiescence"), dict)
+                                    or previous["kernel_quiescence"].get("instance_sha256") != digest(instance)):
+                                raise ValueError("startup hold receipt changed")
+                        else:
+                            c.execute("INSERT INTO afo_execution_evidence VALUES (?,?,?,?)", (rec["job_id"], kind,
+                                      canonical(receipt).decode(), digest(receipt)))
+                    except (OSError, ValueError, KeyError, TypeError) as exc:
+                        raise Refused("PROVIDER_QUIESCENCE_UNPROVEN") from exc
                 active = c.execute(
                     "SELECT COUNT(*) FROM afo_request_ledger WHERE job_id=? AND state NOT IN ('QUIESCENT','RESERVED')",
                     (rec["job_id"],),

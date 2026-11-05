@@ -1,0 +1,4 @@
+{"engineering_inputs_unchanged": true, "host_passed": 1, "matrix4_timing_statuses": ["UNVERIFIED", "UNVERIFIED"], "provided_approval_valid": true, "public_unit_status": "FAIL", "target_evidence": false}
+SYMPTOM_ABSENT
+
+--- stderr ---

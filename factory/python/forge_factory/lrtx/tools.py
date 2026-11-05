@@ -26,7 +26,7 @@ def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_
          *, invocation_id: str | None = None) -> dict:
     from importlib import import_module
 
-    from ..mcp.sdk import ToolContext, ToolDenied, result
+    from ..mcp.sdk import ToolContext, ToolDenied, result, verification_executed
     from ..registry.mcp_registry import load_registry
 
     ws = Path(ws).resolve()
@@ -63,7 +63,7 @@ def call(ws: Path, server: str, op: str, args: dict, role: str, phase: str, run_
             if verify:
                 verification(ws, phase, role, key, "UNKNOWN")
             raise
-        if verify:
+        if verify and verification_executed(out):
             verification(ws, phase, role, key, out["status"])
     rec = {"ts_utc": utc_now(), "server": server, "op": op, "role": role, "phase": phase, "run_id": run,
            "result": out, "caller": "lrtx-structured-runner"}

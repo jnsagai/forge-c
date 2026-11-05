@@ -1,0 +1,17 @@
+{
+  "author_role": "swe1-author",
+  "baseline_hash": "528a461d74183f1141b483d1c3120a82751ac3e1b25b83220de6d2f9decbe48f",
+  "baseline_id": "BL-SWE.1-001",
+  "files": {
+    "safety/software_safety_requirements.md": "1880e611d9f9bea2c459b3cd985f2578059bdb8a52dd62ece24d05a23df3347d",
+    "traceability/requirements_to_tests.csv": "d7d726667c3458afc32dd4ceed36accb431522a21cd3c8019e8e9ab1f6302291",
+    "traceability/upstream_gaps.md": "a837647ac2aecd0bd0b1e0c2d1e98eaca743b76bc9d5a8beb23ff2559f743130",
+    "workproducts/SWE.1/register_effects.json": "9c41afd0616a0e4a183e4a0ce0d436358745e2ecc6bb0cce5ba887d58f262c52",
+    "workproducts/SWE.1/software_requirements.md": "1d41728d691120539bd10181479da66d97ba5a2bceda8d6d5bdf3ba9e42dabf3",
+    "workproducts/SWE.1/software_requirements.reqif": "2e1020d4b8e5e00166773a12cc66b12d47f63866bb44f9fa6d4e0a7bdb5656d7"
+  },
+  "frozen_at": "2026-10-31T17:01:38.381244Z",
+  "phase": "SWE.1",
+  "schema": "forge-c/baseline/0.4",
+  "upstream": {}
+}

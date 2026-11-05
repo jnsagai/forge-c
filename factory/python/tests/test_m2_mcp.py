@@ -170,7 +170,9 @@ def test_t014_unit_negative_and_mcdc_coverage_raw_kept(ws):
     assert out["status"] == "PASS" and out["metrics"]["target_evidence"] is False, out
     cov = call(tests, "forge-tests-mcp", "llvm_coverage", {}, "swe4-author", "SWE.4")
     assert cov["status"] == "PASS" and cov["metrics"]["mcdc_pct"] is not None and cov["metrics"]["line_pct"] > 50
-    assert len(cov["artifact_refs"]) == 3
+    # json summary, report, profdata - plus (owner 2026-11-03, D) the list of uncovered items (possibly empty)
+    assert len(cov["artifact_refs"]) == 4 and cov["metrics"]["uncovered_artifact"] == cov["artifact_refs"][-1]
+    assert isinstance(cov["metrics"]["uncovered_count"], int)
     (ws / "software/tests/unit/test_negative.c").write_text("int main(void){ return 3; }\n")
     neg = call(tests, "forge-tests-mcp", "run_unit", {}, "swe4-author", "SWE.4")
     assert neg["status"] == "FAIL" and "TEST_FAIL:test_negative.c:exit3" in neg["issues"]
