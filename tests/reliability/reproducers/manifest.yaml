@@ -3027,13 +3027,13 @@ reproducers:
   remedy: Verify whole clean release identities against the signed CRE tree digests before loading deployed policy and before and after local checks; serialize local imports and rollback, preserve previous release and all signature and policy checks.
 
 - id: RPR-174
-  script: rpr174v2_maintenance_effective_mission.py
-  sha256: 75d8f7629a3778660738b7b880cef572f34dacb0c34b0a2c8bbac823ee980564
-  revision: 2
+  script: rpr174v3_maintenance_effective_mission.py
+  sha256: 9c863ccdc9549fabd9761471b457a1698c2808cc0b22dbc85f396dda35ec654d
+  revision: 3
   supersedes:
-    script: rpr174_maintenance_effective_mission.py
-    sha256: b3cc74d38bca7484f310c3a0bbea2c890428e503cadf9f5e89050dad76793e27
-    reason: Static review before first execution found foreign-authority negative control failed current-primary policy binding before reaching target guard. Version2 supplies a consistent synthetic primary reference while retaining real TEST signatures, immutable initial mission authority and all verdict assertions. Original frozen version retained.
+    script: rpr174v2_maintenance_effective_mission.py
+    sha256: 75d8f7629a3778660738b7b880cef572f34dacb0c34b0a2c8bbac823ee980564
+    reason: Both first normal CRE runs ERROR because detached worktree Git common metadata is outside scoped mounts and source identity resolves UNKNOWN before target predicate. Version3 makes only source-identity metadata an explicit fixture leaf; CRE import preflight still pins actual code and all real TEST crypto, effective mission and target predicate assertions remain. Original v1 and v2 preserved.
   symptom_signature: maintenance review rejects an owner-signed effective mission deadline amendment
   observed_in: Private real signed-control and mission-extension contrast on qualified GEN35; normal effective job binding passes but maintenance review compares raw initial limits.
   baseline_revision: 03f968603369f7934fde478ae8fd107c40ecec8b
