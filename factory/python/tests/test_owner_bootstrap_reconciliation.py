@@ -215,6 +215,39 @@ def test_explicit_reconciliation_appends_exact_receipt_then_fresh_bootstrap(pend
         assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 1
     assert R.ledger_checkpoint(b["store"].path) == p["ledger"]
     assert B.bootstrap(b["store"], b["placer"], reconciliation_ref=token)["status"] == "READY"
+    with b["store"].tx() as c:
+        consumed = c.execute(
+            "SELECT record FROM afo_independent_decisions WHERE kind=?", (R.CONSUMED_KIND,)
+        ).fetchall()
+        assert len(consumed) == 1
+        value = json.loads(consumed[0][0])
+        successor = R._row(c, value["successor_intent_id"], B.INTENT_KIND)
+        assert digest(successor) == value["successor_intent_sha256"]
+        assert successor["reconciliation_ref"] == token
+        assert R.historical_acknowledged(c, b["store"], D.current(), p["old"]["intent_id"])
+
+
+def test_consumed_receipt_and_following_intent_rollback_together(pending):
+    p = pending
+    b = p["boot"]
+    key = "owner-profile-bootstrap-" + digest(D.current())
+    # Actual SQLite failure after receipt validation must roll back both rows.
+    with b["store"].tx() as c:
+        c.execute(
+            "CREATE TRIGGER private_reject_bootstrap BEFORE INSERT ON afo_independent_decisions "
+            "WHEN NEW.decision_id='" + key + "' BEGIN SELECT RAISE(ABORT,'PRIVATE_INTENT_ABORT'); END"
+        )
+    p["evidence"]["ledger_before"] = p["evidence"]["ledger_after"] = R.ledger_checkpoint(b["store"].path)
+    p["ref"] = p["write"](p["evidence"])
+    token = reconcile(p)
+    import sqlite3
+
+    with pytest.raises(sqlite3.IntegrityError, match="PRIVATE_INTENT_ABORT"):
+        B.bootstrap(b["store"], b["placer"], reconciliation_ref=token)
+    with b["store"].tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.CONSUMED_KIND,)).fetchone()[0] == 0
+        assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE decision_id=?", (key,)).fetchone()[0] == 0
+    assert b["effects"] == []
 
 
 @pytest.mark.parametrize(

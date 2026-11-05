@@ -349,7 +349,15 @@ def _holder(s: dict) -> int | None:
 
 
 def _nsenter(pid: int) -> list[str]:
-    return ["nsenter", "-t", str(pid), "-U", "-n", "--preserve-credentials"]
+    # setns into the current user namespace is EINVAL. Enter USER before NET
+    # only when that user namespace actually differs from the caller's.
+    target = Path(f"/proc/{pid}/ns")
+    args = ["nsenter", "-t", str(pid)]
+    if os.readlink(target / "user") != os.readlink("/proc/self/ns/user"):
+        args.append("-U")
+    if os.readlink(target / "net") != os.readlink("/proc/self/ns/net"):
+        args.append("-n")
+    return args + ["--preserve-credentials"]
 
 
 def _wait(url: str, timeout: float) -> bool:
@@ -366,7 +374,33 @@ def _wait(url: str, timeout: float) -> bool:
 def _in_ns(holder: int, argv: list[str], env: dict, log: Path, cwd: Path, *, serving=None, pass_fds=()) -> subprocess.Popen:
     enter = _nsenter(holder)
     if serving is not None:
-        enter = ["nsenter", "-t", str(serving["init_pid"]), "-U", "-n", "-m", "-p", "--preserve-credentials"]
+        from . import provider_process as provider
+        from ..afo.durable import Refused
+
+        provider.validate(serving)
+        init = serving["init_pid"]
+        actual = provider.identity(init)
+        if not actual or actual.get("state") == "Z" or any(actual.get(k) != v for k, v in serving["init"].items()):
+            raise Refused("PROVIDER_ENTRY_INIT_CHANGED")
+        target_user = os.readlink(f"/proc/{init}/ns/user")
+        outer_user = os.readlink(f"/proc/{holder}/ns/user")
+        outer_net = os.readlink(f"/proc/{holder}/ns/net")
+        current_user = os.readlink("/proc/self/ns/user")
+        if target_user != serving["init_owner_view"]["user_namespace"] or os.readlink(f"/proc/{init}/ns/net") != outer_net:
+            raise Refused("PROVIDER_ENTRY_NAMESPACE_CHANGED")
+        # A development provider owns a child USER/MNT/PID namespace but
+        # inherits NET from the outer holder. Joining that child USER first
+        # would lose the capability to enter its ancestor-owned NET (EPERM).
+        # A caller already inside the exact provider must not enter an ancestor
+        # USER; it must already share the pinned outer NET instead.
+        if current_user == target_user:
+            if os.readlink("/proc/self/ns/net") != outer_net:
+                raise Refused("PROVIDER_ENTRY_CALLER_NETWORK_CHANGED")
+            enter = []
+        inner = ["nsenter", "-t", str(init)]
+        if target_user != (current_user if not enter else outer_user):
+            inner.append("-U")
+        enter += inner + ["-m", "-p", "--preserve-credentials"]
     with log.open("ab") as fh:
         _guard_effect()
         return subprocess.Popen(

@@ -322,7 +322,7 @@ def _coordinate(
                     placer._act_lock = None
                     acquired = False
                     return token
-                consumed_reconciliation = False
+                consumed_reconciliation = None
                 for row in c.execute("SELECT decision_id FROM afo_independent_decisions WHERE kind=?", (INTENT_KIND,)):
                     old = c.execute(
                         "SELECT record FROM afo_independent_decisions WHERE decision_id=? AND kind=?",
@@ -330,18 +330,20 @@ def _coordinate(
                     ).fetchone()
                     require(old is not None, "PRIOR_ATTEMPT_UNRESOLVED")
                     if json.loads(old[0]).get("status") != "READY":
-                        require(not consumed_reconciliation and reconciliation_ref is not None, "PRIOR_ATTEMPT_UNRESOLVED")
-                        from .owner_bootstrap_reconciliation import consume
+                        from .owner_bootstrap_reconciliation import consume, historical_acknowledged
 
-                        consume(c, store, record, reconciliation_ref, row[0], native_before, guard)
-                        consumed_reconciliation = True
+                        if historical_acknowledged(c, store, record, row[0]):
+                            continue
+                        require(consumed_reconciliation is None and reconciliation_ref is not None, "PRIOR_ATTEMPT_UNRESOLVED")
+                        checked = consume(c, store, record, reconciliation_ref, row[0], native_before, guard)
+                        consumed_reconciliation = (row[0], checked)
                 require(reconciliation_ref is None or consumed_reconciliation, "RECONCILIATION_NOT_CONSUMED")
                 require(
                     not c.execute("SELECT 1 FROM afo_independent_decisions WHERE decision_id=?", (key,)).fetchone(),
                     "ALREADY_ATTEMPTED",
                 )
                 value = dict(
-                    schema="forge-c/owner-profile-bootstrap-intent/1",
+                    schema="forge-c/owner-profile-bootstrap-intent/2",
                     record_sha256=digest(record),
                     control_ref=record["control_ref"],
                     root=str(root),
@@ -350,10 +352,17 @@ def _coordinate(
                     acceptance="UNACCEPTED",
                     model_calls=0,
                 )
+                if consumed_reconciliation:
+                    value["reconciliation_ref"] = reconciliation_ref
                 c.execute(
                     "INSERT INTO afo_independent_decisions VALUES (?,?,?,?)",
                     (key, INTENT_KIND, canonical(value).decode(), digest(value)),
                 )
+                if consumed_reconciliation:
+                    from .owner_bootstrap_reconciliation import record_consumption
+
+                    old_id, checked = consumed_reconciliation
+                    record_consumption(c, record, reconciliation_ref, old_id, key, value, checked, guard)
             attempted = True  # Committed intent before any process effect; never replay unknown.
             with store.tx() as c, stack.line_effect_guard(guard):
                 quiet_ledger(c)

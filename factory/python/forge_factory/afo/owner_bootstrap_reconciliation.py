@@ -5,9 +5,11 @@ old outcome. The independent cleanup file is data; current authority and fresh
 normal physical quiescence are required by the coordinator on both paths.
 """
 
+import hashlib
 import math
 import os
 import re
+import subprocess
 import time
 from pathlib import Path
 
@@ -15,7 +17,162 @@ from .durable import canonical, digest, strict_json
 from .owner_profile_bootstrap import INTENT_KIND, RESULT_KIND, require
 
 KIND = "OWNER_PROFILE_BOOTSTRAP_RECONCILED"
+CONSUMED_KIND = "OWNER_PROFILE_BOOTSTRAP_RECONCILIATION_CONSUMED"
 SCHEMA = "forge-c/owner-bootstrap-cleanup-evidence/1"
+SCOPE_FIELDS = (
+    "intent_path", "intent_epoch", "store_path", "store_identity", "profile", "profile_sha256",
+    "mission", "driver_class", "order_ids", "runtime_policy_sha256", "line_policy_sha256",
+)
+# Audited producer *formats*, not machine-specific records or source revisions.
+# Only this old coordinator could consume without an explicit durable receipt.
+LEGACY_FORMAT = {
+    "owner_profile_bootstrap.py": "a175cd76a014c3e30cdace1b8c29a3a18143b8d42254e2bdd3748782a8ef25d1",
+    "owner_bootstrap_reconciliation.py": "3fc096ede3677d8ce40f302d3fdbe8f2884f42acf4cc22c58604510de89cf522",
+    "owner_supervised_development.py": "3cf9888de2cb97d51ca8dccdcaed499e58bfd574a68a201a2a1481411d15a3d0",
+}
+
+
+def _legacy_format(revisions):
+    from ..common import REPO_ROOT
+
+    if not isinstance(revisions, list) or not revisions:
+        return False
+    for revision in revisions:
+        if not isinstance(revision, str) or not re.fullmatch("[0-9a-f]{40}", revision):
+            return False
+        for name, expected in LEGACY_FORMAT.items():
+            obj = revision + ":factory/python/forge_factory/afo/" + name
+            try:
+                size = int(subprocess.check_output(["git", "-C", str(REPO_ROOT), "cat-file", "-s", obj], timeout=3, stderr=subprocess.DEVNULL))
+                if not 0 < size <= 128 * 1024:
+                    return False
+                raw = subprocess.check_output(["git", "-C", str(REPO_ROOT), "cat-file", "blob", obj], timeout=3, stderr=subprocess.DEVNULL)
+            except (OSError, ValueError, subprocess.SubprocessError):
+                return False
+            if hashlib.sha256(raw).hexdigest() != expected:
+                return False
+    return True
+
+
+def _issued(c, sha, current):
+    """Authenticate historical data only; never attest an expired/dead guardian."""
+    from . import owner_supervised_development as D
+
+    require(isinstance(sha, str) and re.fullmatch("[0-9a-f]{64}", sha), "RECONCILIATION_ISSUER_INVALID")
+    old = _row(c, "owner-development-" + sha, D.MODE)
+    require(
+        digest(old) == sha and old.get("schema") == D.SCHEMA and old.get("mode") == D.MODE
+        and old.get("qualification_only") is True and old.get("acceptance") == "UNACCEPTED"
+        and old.get("directive_sha256") == digest(dict(external_directive=D.DIRECTIVE))
+        and all(old.get(k) == current[k] for k in SCOPE_FIELDS)
+        and old["mission_anchor"]["base_sha256"] == current["mission_anchor"]["base_sha256"],
+        "RECONCILIATION_HISTORICAL_SCOPE_CHANGED",
+    )
+    control = D._read_file(old["control_ref"])
+    require(
+        digest(control) == old["control_sha256"] and control["mission"] == old["mission"]
+        and control["product_role_trials"] == old["trial_refs"]
+        and control["source_revision"] in old["source_revisions"],
+        "RECONCILIATION_HISTORICAL_CONTROL_CHANGED",
+    )
+    D._trial_envelopes(control)
+    return old
+
+
+def _chain(c, current, intent_id, ack):
+    """Check immutable old failure -> acknowledgement -> issuing successor data."""
+    intent = _row(c, intent_id, INTENT_KIND)
+    result = _row(c, intent_id + "-result", RESULT_KIND)
+    old = _issued(c, intent["record_sha256"], current)
+    reconciler = _issued(c, ack["reconciler_record_sha256"], current)
+    successor_id = "owner-profile-bootstrap-" + digest(reconciler)
+    successor = _row(c, successor_id, INTENT_KIND)
+    bindings = ack.get("bindings") or {}
+    require(
+        intent_id == "owner-profile-bootstrap-" + digest(old)
+        and intent_id != successor_id
+        and result.get("status") == "UNKNOWN_REQUIRES_RECONCILIATION" and result.get("no_retry") is True
+        and result.get("record_sha256") == digest(old)
+        and intent.get("control_ref") == old["control_ref"]
+        and ack.get("schema") == "forge-c/owner-bootstrap-reconciliation/1"
+        and ack.get("status") == "FAILED_ATTEMPT_RECONCILED_QUIESCENT"
+        and ack.get("no_authority_renewal") is True and ack.get("old_outcomes_unchanged") is True
+        and ack["request"] == dict(intent_id=intent_id, result_sha256=digest(result), evidence_ref=ack["evidence_ref"])
+        and bindings == dict(
+            old_intent_id=intent_id, bootstrap_nonce=intent_id, old_intent_sha256=digest(intent),
+            old_result_sha256=digest(result), old_record_sha256=digest(old), old_source_revisions=old["source_revisions"],
+            old_control_ref=old["control_ref"], profile=old["profile"], profile_sha256=old["profile_sha256"],
+            mission=old["mission"], store_path=old["store_path"], store_identity=old["store_identity"], intent_epoch=old["intent_epoch"],
+        )
+        and ack.get("reconciler_source_revisions") == reconciler["source_revisions"]
+        and successor.get("record_sha256") == digest(reconciler)
+        and successor.get("control_ref") == reconciler["control_ref"]
+        and successor.get("root") == intent.get("root") == str(Path(current["store_path"]).parents[2])
+        and successor.get("qualification_only") is True and successor.get("acceptance") == "UNACCEPTED"
+        and successor.get("model_calls") == 0
+        and successor.get("request", {}).get("order_id") in current["order_ids"]
+        and successor.get("request", {}).get("service_action") == "line_stack_restart",
+        "RECONCILIATION_HISTORICAL_CHAIN_CHANGED",
+    )
+    return reconciler, successor_id, successor
+
+
+def historical_acknowledged(c, store, current, intent_id):
+    """Past consumption is data, never current authority or refreshed cleanup.
+
+    No old guardian challenge, clock/freshness extension, or current-history
+    equality is implied here. The coordinator always performs its normal fresh
+    issuer/Intent/physical/native checks, including the current pending failure.
+    """
+    require(str(store.path.resolve()) == current["store_path"], "RECONCILIATION_HISTORICAL_STORE_CHANGED")
+    matches = []
+    for key, in c.execute("SELECT decision_id FROM afo_independent_decisions WHERE kind=?", (KIND,)):
+        ack = _row(c, key, KIND)
+        if ack.get("request", {}).get("intent_id") != intent_id:
+            continue
+        successor_id = "owner-profile-bootstrap-" + str(ack.get("reconciler_record_sha256"))
+        if c.execute("SELECT 1 FROM afo_independent_decisions WHERE decision_id=? AND kind=?", (successor_id, INTENT_KIND)).fetchone() is None:
+            continue  # An unconsumed or future acknowledgement is not history.
+        reconciler, successor_id, successor = _chain(c, current, intent_id, ack)
+        token = dict(decision_id=key, sha256=digest(ack))
+        consumed_id = successor_id + "-reconciliation-consumed"
+        exists = c.execute("SELECT 1 FROM afo_independent_decisions WHERE decision_id=?", (consumed_id,)).fetchone()
+        if exists:
+            consumed = _row(c, consumed_id, CONSUMED_KIND)
+            require(
+                consumed == _consumption_value(intent_id, token, current=reconciler, successor_id=successor_id, successor=successor)
+                and successor.get("schema") == "forge-c/owner-profile-bootstrap-intent/2"
+                and successor.get("reconciliation_ref") == token,
+                "RECONCILIATION_CONSUMPTION_CHANGED",
+            )
+        else:
+            require(
+                successor.get("schema") == "forge-c/owner-profile-bootstrap-intent/1"
+                and "reconciliation_ref" not in successor and _legacy_format(reconciler["source_revisions"]),
+                "RECONCILIATION_LEGACY_FORMAT_UNPROVEN",
+            )
+        matches.append(key)
+    require(len(matches) <= 1, "RECONCILIATION_MULTIPLE_HISTORICAL_ACKS")
+    return bool(matches)
+
+
+def _consumption_value(intent_id, ref, *, current, successor_id, successor):
+    return dict(
+        schema="forge-c/owner-bootstrap-reconciliation-consumed/1", status="CONSUMED_BY_FOLLOWING_BOOTSTRAP_INTENT",
+        old_intent_id=intent_id, reconciliation_ref=ref, successor_intent_id=successor_id,
+        successor_intent_sha256=digest(successor), issuer_record_sha256=digest(current),
+        no_authority_renewal=True, old_outcomes_unchanged=True,
+    )
+
+
+def record_consumption(c, current, ref, intent_id, successor_id, successor, checked, guard):
+    """Same writer transaction as successor INTENT; any failure rolls back both."""
+    guard()
+    _fresh_tail(checked)
+    value = _consumption_value(intent_id, ref, current=current, successor_id=successor_id, successor=successor)
+    c.execute("INSERT INTO afo_independent_decisions VALUES (?,?,?,?)", (
+        successor_id + "-reconciliation-consumed", CONSUMED_KIND, canonical(value).decode(), digest(value),
+    ))
 
 
 def owner_context():
@@ -313,3 +470,4 @@ def consume(c, store, record, ref, intent_id, native, guard):
     )
     guard()
     _fresh_tail(value)
+    return value
