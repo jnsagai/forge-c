@@ -843,6 +843,10 @@ def main(argv=None):
     ap.add_argument("--max-cycles", type=int)
     ap.add_argument("--bootstrap-managed-profile", action="store_true",
                     help="external issuer only: scoped canonical managed startup before any placement")
+    ap.add_argument("--reconcile-bootstrap-intent")
+    ap.add_argument("--reconcile-bootstrap-result-sha256")
+    ap.add_argument("--reconcile-bootstrap-evidence", type=Path)
+    ap.add_argument("--reconcile-bootstrap-evidence-sha256")
     a = ap.parse_args(argv)
     if (
         os.environ.get("FORGE_AFO_QUEUE_SCOPE") != "line-local"
@@ -853,6 +857,10 @@ def main(argv=None):
         and a.max_cycles < 1
     ):
         _fail("EXPLICIT_DURABLE_LOCAL_INPUTS_REQUIRED")
+    reconciliation_args = (a.reconcile_bootstrap_intent, a.reconcile_bootstrap_result_sha256,
+                           a.reconcile_bootstrap_evidence, a.reconcile_bootstrap_evidence_sha256)
+    if any(reconciliation_args) and (not all(reconciliation_args) or not a.bootstrap_managed_profile):
+        _fail("EXPLICIT_COMPLETE_BOOTSTRAP_RECONCILIATION_REQUIRED")
     store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     from .line_recovery_control import revision
 
@@ -889,7 +897,18 @@ def main(argv=None):
         if a.bootstrap_managed_profile:
             from .owner_profile_bootstrap import bootstrap
 
-            bootstrap(store, placer, cancelled=stop.is_set)
+            reconciled = None
+            if all(reconciliation_args):
+                from .owner_profile_bootstrap import reconcile_unknown
+
+                reconciled = reconcile_unknown(store, placer, intent_id=a.reconcile_bootstrap_intent,
+                    result_sha256=a.reconcile_bootstrap_result_sha256,
+                    evidence_ref=dict(path=str(a.reconcile_bootstrap_evidence), sha256=a.reconcile_bootstrap_evidence_sha256),
+                    cancelled=stop.is_set)
+            if reconciled is None:
+                bootstrap(store, placer, cancelled=stop.is_set)
+            else:
+                bootstrap(store, placer, cancelled=stop.is_set, reconciliation_ref=reconciled)
         while not stop.is_set() and (a.max_cycles is None or n < a.max_cycles):
             current(store=store)
             readiness = provider_preflight(cfg.stack_root)

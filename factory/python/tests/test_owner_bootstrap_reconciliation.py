@@ -1,0 +1,380 @@
+"""Real private old issuer death, canonical receipts and fresh normal fences; no cleanup API."""
+
+import copy
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+import pytest
+from forge_factory.afo import owner_bootstrap_history as H
+from forge_factory.afo import owner_bootstrap_reconciliation as R
+from forge_factory.afo import owner_profile_bootstrap as B
+from forge_factory.afo import owner_supervised_development as D
+from forge_factory.afo.durable import Refused, digest
+from forge_factory.common import sha256_file
+from test_owner_profile_bootstrap import boot  # noqa: F401 - real private canonical fixture
+from test_owner_supervised_development import supervised  # noqa: F401 - transitive guardian fixture
+
+OLD_ISSUER = r"""
+import json,os,sys
+from pathlib import Path
+from forge_factory.afo import owner_supervised_development as D,owner_profile_bootstrap as B,line_recovery_control as C,host
+from forge_factory.afo.queue import Store
+from forge_factory.afo.line_orders import Placer
+from forge_factory.afo.line_launcher import LineConfig
+from forge_factory.afo.durable import digest
+from forge_factory.lrtx import stack
+from forge_factory import workorder
+workorder.factory_revision=lambda:dict(commit='a'*40,dirty=False)
+cfg=json.loads(sys.argv[1]);root=Path(cfg['root'])
+C.revision=lambda:dict(commit='a'*40,dirty=False)
+host.preflight=lambda:dict(ok=True)
+B.GPU_LOCK=Path(cfg['gpu'])
+LineConfig.from_env=classmethod(lambda cls:LineConfig(launch_dir=root,stack_root=root,gpu_lock=Path(cfg['gpu']),fabro_bin=cfg['binary']))
+store=Store(Path(os.environ['FORGE_STATE_DIR'])/'supervisor/line-queue.sqlite3',must_exist=True)
+ref=D.create(store,control_ref=cfg['control_ref'],runtime_policy=Path(cfg['runtime']),line_policy=Path(cfg['line']),directive=D.DIRECTIVE,expiry_ticket=cfg['ticket'])
+os.environ.update({D.FILE:ref['path'],D.SHA:ref['sha256']})
+record=D.current()
+def fail(*a,**k):raise RuntimeError('PRIVATE_FAILED_BOOTSTRAP_NO_MODEL')
+stack._start=fail
+placer=Placer(object(),policy_path=Path(cfg['line']),owner_supervised_development=True)
+try:
+ try:B.bootstrap(store,placer)
+ except RuntimeError:pass
+ key='owner-profile-bootstrap-'+digest(record)
+ with store.tx() as c: result=json.loads(c.execute('SELECT record FROM afo_independent_decisions WHERE decision_id=?',(key+'-result',)).fetchone()[0])
+ print(json.dumps(dict(record=record,intent_id=key,result_sha256=digest(result))),flush=True)
+finally:D.close_guardian(ref)
+"""
+
+
+@pytest.fixture
+def pending(boot, monkeypatch, request):  # noqa: F811 - imported fixture
+    current = D.current()
+    cfg = dict(
+        root=str(boot["root"]),
+        gpu=str(boot["lock"]),
+        binary=str(boot["binary"]),
+        control_ref=current["control_ref"],
+        runtime=str(boot["original"]["runtime"]),
+        line=str(boot["original"]["line"]),
+        ticket=boot["original"]["ticket"],
+    )
+    child = subprocess.run(
+        [sys.executable, "-c", OLD_ISSUER, json.dumps(cfg)], capture_output=True, text=True, timeout=15, check=False
+    )
+    assert child.returncode == 0, child.stderr[-2000:]
+    old = json.loads(child.stdout.strip().splitlines()[-1])
+    # Real isolated namespace lifetime; no hardware/model/service is involved.
+    probe = subprocess.Popen(["unshare", "--user", "--map-root-user", "--net", "sleep", "30"])
+    try:
+        until = time.monotonic() + 3
+        while time.monotonic() < until:
+            if probe.poll() is not None:
+                raise RuntimeError("PRIVATE_NAMESPACE_LEAF_UNAVAILABLE")
+            net = os.readlink(f"/proc/{probe.pid}/ns/net")
+            if net != os.readlink("/proc/self/ns/net"):
+                break
+            time.sleep(0.01)
+        namespace = {k: os.readlink(f"/proc/{probe.pid}/ns/{k}") for k in ("user", "net", "pid")}
+        namespace["uid_map"] = [list(map(int, x.split())) for x in Path(f"/proc/{probe.pid}/uid_map").read_text().splitlines()]
+        from forge_factory.lrtx.provider_process import identity
+
+        observed = identity(probe.pid)
+    finally:
+        if probe.poll() is None:
+            probe.terminate()
+        probe.wait(timeout=3)
+    D.close_guardian(dict(path=os.environ[D.FILE]))
+    ref = D.create(
+        boot["store"],
+        control_ref=current["control_ref"],
+        runtime_policy=boot["original"]["runtime"],
+        line_policy=boot["original"]["line"],
+        directive=D.DIRECTIVE,
+        expiry_ticket=boot["original"]["ticket"],
+    )
+    request.addfinalizer(lambda: D.close_guardian(ref))
+    monkeypatch.setenv(D.FILE, ref["path"])
+    monkeypatch.setenv(D.SHA, ref["sha256"])
+    new = D.current()
+    boot["instance"]["owner_development_view"].update(
+        record_sha256=digest(new),
+        socket_identity=new["guardian_socket_identity"],
+        store_identity=new["store_identity"],
+        store_path=new["store_path"],
+    )
+    oldrecord = old["record"]
+    with boot["store"].tx() as c:
+        intent = json.loads(
+            c.execute("SELECT record FROM afo_independent_decisions WHERE decision_id=?", (old["intent_id"],)).fetchone()[0]
+        )
+        before_unknown = c.execute(
+            "SELECT record,sha256 FROM afo_independent_decisions WHERE decision_id=?", (old["intent_id"] + "-result",)
+        ).fetchone()
+    # Unchanged stopped projection, just as root's independently cleaned214 case.
+    services = boot["root"] / "run/services.json"
+    stack_record = dict(root=str(boot["root"]), profile_sha256=D.PROFILE_SHA, processes={})
+    services.write_text(json.dumps(stack_record))
+    services.chmod(0o600)
+    unit = dict(name="forge-c-owner-development-aaaaaaaa-20261105.service", MainPID="0", InvocationID="b" * 32)
+    real_check_output = subprocess.check_output
+
+    def systemctl_leaf(argv, *a, **k):
+        if argv[:3] == ["systemctl", "--user", "show"]:
+            assert argv[3] == unit["name"]
+            return "MainPID=0\nInvocationID=" + unit["InvocationID"] + "\nLoadState=loaded\nActiveState=failed\n"
+        return real_check_output(argv, *a, **k)
+
+    monkeypatch.setattr(subprocess, "check_output", systemctl_leaf)
+    native = H.native_checkpoint(boot["root"])
+    ledger = R.ledger_checkpoint(boot["store"].path)
+    evidence = dict(
+        schema=R.SCHEMA,
+        status="WHOLE_STACK_QUIET_HISTORY_CONSERVED",
+        old_intent_id=old["intent_id"],
+        bootstrap_nonce=old["intent_id"],
+        old_intent_sha256=digest(intent),
+        old_result_sha256=old["result_sha256"],
+        old_record_sha256=digest(oldrecord),
+        old_source_revisions=oldrecord["source_revisions"],
+        old_control_ref=oldrecord["control_ref"],
+        profile=oldrecord["profile"],
+        profile_sha256=oldrecord["profile_sha256"],
+        mission=oldrecord["mission"],
+        store_path=oldrecord["store_path"],
+        store_identity=oldrecord["store_identity"],
+        intent_epoch=oldrecord["intent_epoch"],
+        next_source_revisions=new["source_revisions"],
+        old_unit=unit,
+        old_namespace=namespace,
+        owner_context=R.owner_context(),
+        observed_monotonic=time.monotonic(),
+        observed_boottime=time.clock_gettime(time.CLOCK_BOOTTIME),
+        whole_stack_quiet=True,
+        unknown_occupants=[],
+        lifetimes=[
+            dict(
+                pid=oldrecord["guardian_pid"],
+                boot_id=oldrecord["guardian"]["boot_id"],
+                start_ticks=oldrecord["guardian"]["start_ticks"],
+            ),
+            dict(pid=probe.pid, boot_id=observed["boot_id"], start_ticks=observed["start_ticks"]),
+        ],
+        native_before=native,
+        native_after=native,
+        ledger_before=ledger,
+        ledger_after=ledger,
+        services_before_sha256=sha256_file(services),
+        services_after_sha256=sha256_file(services),
+        holder_file_removed_after_quiet=True,
+        old_lifetimes_fds_quiet=True,
+        no_charge_reset_or_relabel=True,
+    )
+    parent = Path(new["intent_path"]).parent / "owner-bootstrap-reconciliation"
+    parent.mkdir(mode=0o700)
+    path = parent / "independent-cleanup.json"
+
+    def write(value):
+        path.write_text(json.dumps(value))
+        path.chmod(0o600)
+        return dict(path=str(path), sha256=sha256_file(path))
+
+    return dict(
+        boot=boot, old=old, evidence=evidence, write=write, ref=write(evidence), before_unknown=before_unknown, ledger=ledger
+    )
+
+
+def reconcile(p):
+    return B.reconcile_unknown(
+        p["boot"]["store"],
+        p["boot"]["placer"],
+        intent_id=p["old"]["intent_id"],
+        result_sha256=p["old"]["result_sha256"],
+        evidence_ref=p["ref"],
+    )
+
+
+def test_explicit_reconciliation_appends_exact_receipt_then_fresh_bootstrap(pending):
+    p = pending
+    b = p["boot"]
+    with pytest.raises(Refused, match="PRIOR_ATTEMPT_UNRESOLVED"):
+        B.bootstrap(b["store"], b["placer"])
+    token = reconcile(p)
+    assert b["effects"] == [] and b["placer"]._act_lock is None
+    with b["store"].tx() as c:
+        assert (
+            c.execute(
+                "SELECT record,sha256 FROM afo_independent_decisions WHERE decision_id=?", (p["old"]["intent_id"] + "-result",)
+            ).fetchone()
+            == p["before_unknown"]
+        )
+        assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 1
+    assert R.ledger_checkpoint(b["store"].path) == p["ledger"]
+    assert B.bootstrap(b["store"], b["placer"], reconciliation_ref=token)["status"] == "READY"
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("old_result_sha256", "0" * 64),
+        ("old_intent_sha256", "0" * 64),
+        ("old_record_sha256", "0" * 64),
+        ("bootstrap_nonce", "foreign"),
+        ("old_source_revisions", ["c" * 40]),
+        ("next_source_revisions", ["c" * 40]),
+        ("intent_epoch", 99),
+        ("store_identity", {}),
+        ("profile_sha256", "0" * 64),
+        ("mission", {}),
+        ("owner_context", {}),
+        ("unknown_occupants", [123]),
+        ("whole_stack_quiet", False),
+        ("observed_monotonic", 0),
+        ("observed_boottime", 0),
+        ("native_before", {}),
+        ("ledger_before", {}),
+        ("services_before_sha256", "0" * 64),
+        ("no_charge_reset_or_relabel", False),
+        ("holder_file_removed_after_quiet", False),
+        ("old_lifetimes_fds_quiet", False),
+    ],
+)
+def test_wrong_stale_or_unaccounted_independent_evidence_refuses(pending, field, value):
+    p = pending
+    bad = copy.deepcopy(p["evidence"])
+    bad[field] = value
+    p["ref"] = p["write"](bad)
+    with pytest.raises(Refused):
+        reconcile(p)
+    assert p["boot"]["effects"] == []
+    with p["boot"]["store"].tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 0
+
+
+def test_receipt_requires_exact_optin_and_rechecks_actual_history(pending):
+    p = pending
+    b = p["boot"]
+    token = reconcile(p)
+    with pytest.raises(Refused, match="PRIOR_ATTEMPT_UNRESOLVED"):
+        B.bootstrap(b["store"], b["placer"])
+    with pytest.raises(Refused):
+        B.bootstrap(b["store"], b["placer"], reconciliation_ref={**token, "sha256": "0" * 64})
+    with b["store"].tx() as c:
+        c.execute(
+            "INSERT INTO afo_operator_actions(action,actor,reason,utc) VALUES('PRIVATE','OWNER','changed after receipt','now')"
+        )
+    with pytest.raises(Refused, match="LEDGER_HISTORY_CHANGED"):
+        B.bootstrap(b["store"], b["placer"], reconciliation_ref=token)
+    assert b["effects"] == []
+
+
+def test_live_foreign_lifetime_cannot_be_declared_clean(pending):
+    p = pending
+    own = subprocess.Popen(["sleep", "30"])
+    try:
+        from forge_factory.lrtx.provider_process import identity
+
+        i = identity(own.pid)
+        bad = copy.deepcopy(p["evidence"])
+        bad["lifetimes"].append(dict(pid=own.pid, boot_id=i["boot_id"], start_ticks=i["start_ticks"]))
+        p["ref"] = p["write"](bad)
+        with pytest.raises(Refused, match="OLD_LIFETIME_LIVE"):
+            reconcile(p)
+        assert own.poll() is None
+    finally:
+        own.terminate()
+        own.wait(timeout=3)
+
+
+def test_collected_failed_unit_retains_historical_invocation_in_evidence(pending, monkeypatch):
+    p = pending
+    real = subprocess.check_output
+
+    def collected(argv, *a, **k):
+        if argv[:3] == ["systemctl", "--user", "show"]:
+            return "MainPID=0\nInvocationID=\nLoadState=not-found\nActiveState=inactive\n"
+        return real(argv, *a, **k)
+
+    monkeypatch.setattr(subprocess, "check_output", collected)
+    assert reconcile(p)["sha256"]
+    assert p["evidence"]["old_unit"]["InvocationID"] == "b" * 32
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        dict(MainPID="123", InvocationID="b" * 32, LoadState="loaded", ActiveState="active"),
+        dict(MainPID="0", InvocationID="c" * 32, LoadState="loaded", ActiveState="failed"),
+        dict(MainPID="0", InvocationID="c" * 32, LoadState="not-found", ActiveState="inactive"),
+    ],
+)
+def test_replaced_or_active_failed_unit_refuses(pending, monkeypatch, fields):
+    p = pending
+    real = subprocess.check_output
+
+    def changed(argv, *a, **k):
+        if argv[:3] == ["systemctl", "--user", "show"]:
+            return "\n".join(k + "=" + v for k, v in fields.items()) + "\n"
+        return real(argv, *a, **k)
+
+    monkeypatch.setattr(subprocess, "check_output", changed)
+    with pytest.raises(Refused, match="OLD_UNIT_CHANGED"):
+        reconcile(p)
+
+
+@pytest.mark.parametrize("kind", ["missing", "mismatch"])
+def test_original_canonical_issuance_required_without_old_liveness(pending, kind):
+    p = pending
+    key = "owner-development-" + p["evidence"]["old_record_sha256"]
+    with p["boot"]["store"].tx() as c:
+        if kind == "missing":
+            c.execute("DELETE FROM afo_independent_decisions WHERE decision_id=?", (key,))
+        else:
+            altered = copy.deepcopy(p["old"]["record"])
+            altered["acceptance"] = "FALSE_APPROVAL"
+            from forge_factory.afo.durable import canonical
+
+            c.execute(
+                "UPDATE afo_independent_decisions SET record=?,sha256=? WHERE decision_id=?",
+                (canonical(altered).decode(), digest(altered), key),
+            )
+    with pytest.raises(Refused):
+        reconcile(p)
+    assert p["boot"]["effects"] == []
+
+
+def test_current_authority_cancelled_after_full_validation_cannot_append(pending, monkeypatch):
+    p = pending
+    cancelled = [False]
+    original = R.validate
+
+    def delayed(*a, **k):
+        value = original(*a, **k)
+        cancelled[0] = True
+        return value
+
+    monkeypatch.setattr(R, "validate", delayed)
+    with pytest.raises(Refused, match="CANCELLED"):
+        B.reconcile_unknown(
+            p["boot"]["store"],
+            p["boot"]["placer"],
+            intent_id=p["old"]["intent_id"],
+            result_sha256=p["old"]["result_sha256"],
+            evidence_ref=p["ref"],
+            cancelled=lambda: cancelled[0],
+        )
+    with p["boot"]["store"].tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 0
+
+
+def test_explicit_reconcile_does_not_duplicate_same_issuer_receipt(pending):
+    p = pending
+    reconcile(p)
+    with pytest.raises(Refused, match="ALREADY_APPENDED_NO_REPLAY"):
+        reconcile(p)
+    with p["boot"]["store"].tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 1

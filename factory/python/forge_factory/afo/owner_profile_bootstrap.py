@@ -136,7 +136,21 @@ def _services_quiet(settings):
             require(stack.process_identity(pid) is None, "RECORDED_PROCESS_STILL_PRESENT")
 
 
-def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: False):
+def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: False, reconciliation_ref=None):
+    return _coordinate(
+        store, placer, order_wo=order_wo, timeout_s=timeout_s, cancelled=cancelled, reconciliation_ref=reconciliation_ref
+    )
+
+
+def reconcile_unknown(store, placer, *, intent_id, result_sha256, evidence_ref, timeout_s=600, cancelled=lambda: False):
+    """Explicit no-signal append under the SAME current authority and fences."""
+    request = dict(intent_id=intent_id, result_sha256=result_sha256, evidence_ref=evidence_ref)
+    return _coordinate(store, placer, timeout_s=timeout_s, cancelled=cancelled, reconcile_request=request)
+
+
+def _coordinate(
+    store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: False, reconciliation_ref=None, reconcile_request=None
+):
     """Supported optional D.main stage, in the issuing initial-host owner process.
 
     Intent -> nonblocking GPU -> nonblocking stack -> nonblocking ACT -> canonical
@@ -300,12 +314,28 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
                 _services_quiet(settings)
                 native_before = native_checkpoint(root)
                 guard()
+                if reconcile_request is not None:
+                    from .owner_bootstrap_reconciliation import append
+
+                    token = append(c, store, record, reconcile_request, native_before, guard)
+                    placer._act_lock.close()
+                    placer._act_lock = None
+                    acquired = False
+                    return token
+                consumed_reconciliation = False
                 for row in c.execute("SELECT decision_id FROM afo_independent_decisions WHERE kind=?", (INTENT_KIND,)):
                     old = c.execute(
                         "SELECT record FROM afo_independent_decisions WHERE decision_id=? AND kind=?",
                         (row[0] + "-result", RESULT_KIND),
                     ).fetchone()
-                    require(old is not None and json.loads(old[0]).get("status") == "READY", "PRIOR_ATTEMPT_UNRESOLVED")
+                    require(old is not None, "PRIOR_ATTEMPT_UNRESOLVED")
+                    if json.loads(old[0]).get("status") != "READY":
+                        require(not consumed_reconciliation and reconciliation_ref is not None, "PRIOR_ATTEMPT_UNRESOLVED")
+                        from .owner_bootstrap_reconciliation import consume
+
+                        consume(c, store, record, reconciliation_ref, row[0], native_before, guard)
+                        consumed_reconciliation = True
+                require(reconciliation_ref is None or consumed_reconciliation, "RECONCILIATION_NOT_CONSUMED")
                 require(
                     not c.execute("SELECT 1 FROM afo_independent_decisions WHERE decision_id=?", (key,)).fetchone(),
                     "ALREADY_ATTEMPTED",
