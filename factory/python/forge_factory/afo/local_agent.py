@@ -402,6 +402,17 @@ class LaunchNotStarted(RuntimeError):
         self.job_id = job["job_id"]
         self.nonce = job["nonce"]
         self.failure_type = type(cause).__name__
+        # Preserve a trusted controller refusal code for durable diagnosis. A
+        # class name alone erases e.g. GUARD_FAIL before it reaches the ledger.
+        # Never put exception details or arbitrary adapter strings in this key.
+        from .durable import Refused
+
+        if (
+            isinstance(cause, Refused)
+            and isinstance(cause.code, str)
+            and re.fullmatch(r"[A-Z][A-Z0-9_]{0,127}", cause.code)
+        ):
+            self.failure_type = cause.code
 
 
 def launch(job: dict) -> str:

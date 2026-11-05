@@ -29,6 +29,15 @@ def bound(local, monkeypatch):  # noqa: F811
         "max_tools": 0, "max_corrections": 0, "deadline": time.time() + 600,
     }, "FIXTURE-NOT-PRODUCTION", authorize=lambda *a: True)
     ledger.link("line-controller-fixture", o["order_id"])
+    # These controls exercise dispatch lifecycle after a diagnosis is prepared.
+    # Supply explicit private primary evidence through the normal packet builder;
+    # an empty incident inventory correctly refuses before those controls run.
+    inspection = ws / "inspection" / b["phase"] / "INS-lifecycle-fixture.json"
+    inspection.parent.mkdir(parents=True, exist_ok=True)
+    inspection.write_text(json.dumps({"findings": [{
+        "id": "LIFECYCLE-CONTROL", "obligation_id": "LIFECYCLE-CONTROL",
+        "detail": "Private lifecycle fixture incident; not product or qualification evidence.",
+    }]}))
     case = planner.case(b, ws, {"attempts": 0}, mission_id="line-controller-fixture")
     origin = {"campaign_path": "/owner-approved/campaign.yaml"}
     return s, o, b, eff, ws, case, origin, state
@@ -45,6 +54,7 @@ def test_only_reverified_line_origin_lifts_development_deferral(bound):
         L.prepare(s, o, b["attempt_id"], "afo-recovery-planner", case, ws, eff)
     job = prepare(bound)
     assert job["state"] == "PREPARED" and job["line_context_sha256"]
+    assert job["selected_obligations"] == ["LIFECYCLE-CONTROL"]
     assert prepare(bound) == job
 
 
