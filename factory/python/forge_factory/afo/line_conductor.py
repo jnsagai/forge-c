@@ -1396,6 +1396,19 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("--line must match [a-z0-9-]{1,32}")
     if a.mode == "ACT" and a.line == "cloud" and not a.cloud_account_line:
         raise SystemExit("CLOUD_ACT_REQUIRES_CLOUD_ACCOUNT_LINE")
+    if a.line == "local" and os.environ.get("FORGE_OPERATIONS_INTENT"):
+        from . import operations
+
+        # Configured local deployments must not even inspect Fabro/state before authenticated boot intent.
+        # Exit 77 leaves a failed unit recoverable by existing Intent.start after an authorized resume, while
+        # RestartPreventExitStatus=77 prevents systemd from repeatedly starting a STOPPED/UNKNOWN deployment.
+        try:
+            allowed = operations.path().is_absolute() and operations.boot_allowed()
+        except ValueError:
+            allowed = False
+        if not allowed:
+            print(json.dumps({"status": "BLOCKED", "code": "LINE_BOOT_INTENT_NOT_AUTHORIZED"}))
+            return 77
     fabro = FabroView.from_env(a.fabro_snapshot)
     placer, ports = None, {p for p in (fabro.port(),) if p}
     if a.mode == "ACT":

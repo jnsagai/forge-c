@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -131,6 +132,64 @@ def render() -> dict[str, str]:
     return out
 
 
+def render_line(*, intent: Path, launch_dir: Path, watchdog_code: Path, watchdog_dependencies: Path,
+                watchdog_python: Path, mode: str = "OBSERVE", fabro_url: str = "http://127.0.0.1:32397",
+                fabro_storage: Path | None = None) -> dict[str, str]:
+    """Render the existing local LINE templates only. No install, authority or Intent initialization.
+
+    Explicit host paths keep watchdog code/dependencies and durable Intent outside the application volume.
+    This deliberately supports simple absolute deployment paths, not systemd quoting/specifier expansion.
+    The generic renderer and manually rendered legacy templates retain their existing behavior.
+    """
+    def path(value, name):
+        value = str(value)
+        if not re.fullmatch(r"/[A-Za-z0-9_./+\-]+", value) or ".." in Path(value).parts:
+            raise ValueError("LINE_DEPLOYMENT_PATH_INVALID:" + name)
+        return value
+
+    if mode not in ("OBSERVE", "ACT"):
+        raise ValueError("LINE_DEPLOYMENT_MODE_INVALID")
+    if not re.fullmatch(r"https?://[A-Za-z0-9.\-]+:[0-9]{1,5}", fabro_url):
+        raise ValueError("LINE_DEPLOYMENT_FABRO_URL_INVALID")
+    vals = values()
+    for key in ("@REPO@", "@DATA@", "@VENV@"):
+        path(vals[key], key)
+    extra = {"@INTENT@": path(intent, "intent"), "@LAUNCH_DIR@": path(launch_dir, "launch_dir"),
+             "@WATCHDOG_CODE@": path(watchdog_code, "watchdog_code"),
+             "@WATCHDOG_DEPENDENCIES@": path(watchdog_dependencies, "watchdog_dependencies"),
+             "@WATCHDOG_PYTHON@": path(watchdog_python, "watchdog_python"),
+             "@FABRO_STORAGE@": path(fabro_storage or Path(launch_dir) / "lrtx/fabro/storage", "fabro_storage"),
+             "@STATE@": path(Path(launch_dir) / "lrtx/state", "state"),
+             "@MODE@": mode, "@LINE@": "local", "@FABRO_URL@": fabro_url}
+    for key in ("@INTENT@", "@WATCHDOG_CODE@", "@WATCHDOG_DEPENDENCIES@", "@WATCHDOG_PYTHON@"):
+        if Path(extra[key]).resolve().is_relative_to(Path(vals["@DATA@"]).resolve()):
+            raise ValueError("LINE_HOST_PATH_ON_APPLICATION_VOLUME:" + key)
+    vals.update(extra)
+    out = {}
+    for unit, template in (
+        ("forge-line-conductor-local.service", "forge-line-conductor.service.in"),
+        ("forge-line-watchdog-local.service", "forge-line-watchdog-local.service.in"),
+        ("forge-line-watchdog-local.timer", "forge-line-watchdog-local.timer.in"),
+    ):
+        text = (TEMPLATES / template).read_text()
+        for key, value in vals.items():
+            text = text.replace(key, value)
+        text = text.replace("[Service]", "[Service]\nEnvironment=FORGE_OPERATIONS_INTENT=" + extra["@INTENT@"]
+                            + "\nEnvironment=FORGE_CONDUCTOR_UNIT=forge-line-conductor-local.service")
+        if unit == "forge-line-conductor-local.service":
+            text = text.replace("ExecStart=", "ExecStartPre=" + vals["@VENV@"]
+                                + "/bin/python -m forge_factory.afo.host preflight\nExecStart=", 1)
+            text = text.replace("UMask=0077", "UMask=0077\nRestartPreventExitStatus=77\nCPUWeight=1000"
+                                + "\nIOWeight=1000\nMemoryLow=256M\nTasksMax=128")
+            # Keep the installed LLVM path selected by the normal renderer/environment.
+            text = text.replace("Environment=PATH=" + vals["@VENV@"] + "/bin:/usr/bin:/bin",
+                                "Environment=PATH=" + vals["@PATH@"])
+        if any("@" in line for line in text.splitlines() if not line.startswith("#")):
+            raise ValueError("UNRENDERED_LINE_PLACEHOLDER:" + unit)
+        out[unit] = text
+    return out
+
+
 def verify(units: dict[str, str] | None = None) -> dict:
     units = units or render()
     with tempfile.TemporaryDirectory() as td:
@@ -178,13 +237,28 @@ def status() -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="forge_factory.afo.services")
-    ap.add_argument("cmd", choices=["render", "verify", "install", "status", "stop"])
+    ap.add_argument("cmd", choices=["render", "render-line", "verify", "install", "status", "stop"])
     ap.add_argument("units", nargs="*")
     ap.add_argument("--out", type=Path)
     ap.add_argument("--enable", nargs="*", default=[])
+    ap.add_argument("--intent", type=Path)
+    ap.add_argument("--launch-dir", type=Path)
+    ap.add_argument("--watchdog-code", type=Path)
+    ap.add_argument("--watchdog-dependencies", type=Path)
+    ap.add_argument("--watchdog-python", type=Path)
+    ap.add_argument("--mode", choices=["OBSERVE", "ACT"], default="OBSERVE")
+    ap.add_argument("--fabro-url", default="http://127.0.0.1:32397")
+    ap.add_argument("--fabro-storage", type=Path)
     a = ap.parse_args(argv)
-    if a.cmd == "render":
-        units = render()
+    if a.cmd in ("render", "render-line"):
+        if a.cmd == "render-line":
+            keys = ("intent", "launch_dir", "watchdog_code", "watchdog_dependencies", "watchdog_python")
+            if any(getattr(a, key) is None for key in keys) or a.enable or a.units:
+                ap.error("render-line requires explicit intent, launch-dir and three watchdog host paths; render only")
+            units = render_line(**{key: getattr(a, key) for key in keys}, mode=a.mode,
+                                fabro_url=a.fabro_url, fabro_storage=a.fabro_storage)
+        else:
+            units = render()
         if a.out:
             a.out.mkdir(parents=True, exist_ok=True)
             for u, t in units.items():
