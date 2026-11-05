@@ -71,10 +71,13 @@ def quiet_ledger(c):
         rec = json.loads(row[0])
         require(rec.get("resource_lease") == "RELEASED", "EXECUTION_LEASE_NOT_RELEASED")
     require(
-        not c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone(), "REQUEST_NOT_QUIESCENT"
+        not c.execute("SELECT 1 FROM afo_request_ledger WHERE state IS NULL OR state!='QUIESCENT' LIMIT 1").fetchone(),
+        "REQUEST_NOT_QUIESCENT",
     )
     require(
-        not c.execute("SELECT 1 FROM afo_commands_outbox WHERE state NOT IN ('ACKED','FAILED','QUARANTINED') LIMIT 1").fetchone(),
+        not c.execute(
+            "SELECT 1 FROM afo_commands_outbox WHERE state IS NULL OR state NOT IN ('ACKED','FAILED','QUARANTINED') LIMIT 1"
+        ).fetchone(),
         "COMMAND_OUTCOME_UNRESOLVED",
     )
 
@@ -97,7 +100,7 @@ def gpu_lock(path):
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             raise Refused("OWNER_BOOTSTRAP_GPU_BUSY") from None
-        yield
+        yield fd
     finally:
         os.close(fd)
 
@@ -141,15 +144,16 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
     startup revokes this issuer and leaves an append-only unresolved result; no
     new issuer can silently retry an unresolved bootstrap.
     """
-    from ..common import state_dir, sha256_file
+    from ..common import sha256_file, state_dir
     from ..lrtx import stack
     from . import line_recovery_control as C
     from . import owner_supervised_development as D
     from .authority import decide
     from .line_launcher import LineConfig, ShellHost
+    from .line_orders import Placer
     from .operations import Intent
-    from .policy import load
     from .owner_bootstrap_history import native_checkpoint, native_status
+    from .policy import load
 
     require(type(timeout_s) in (int, float) and math.isfinite(timeout_s) and 1 <= timeout_s <= 600, "BOUNDED_DEADLINE_REQUIRED")
     require(
@@ -170,6 +174,7 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
         [list(map(int, x.split())) for x in Path("/proc/self/uid_map").read_text().splitlines()] == [[0, 0, 4294967295]],
         "INITIAL_USER_NAMESPACE_REQUIRED",
     )
+    require(isinstance(placer, Placer), "NORMAL_PLACER_REQUIRED")
     record = D.current()
     require(record["guardian_pid"] == os.getpid(), "ISSUING_PROCESS_REQUIRED")
     root = Path(record["store_path"]).parents[2]
@@ -187,6 +192,11 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
         and settings["profile"]["_sha256"] == record["profile_sha256"]
         and stack.managed_serving(),
         "MANAGED_PROFILE_REQUIRED",
+    )
+    run = root / "run"
+    require(
+        run.is_dir() and not run.is_symlink() and run.stat().st_uid == os.getuid() and not run.stat().st_mode & 0o022,
+        "STACK_RUN_DIRECTORY_UNKNOWN",
     )
     request = dict(
         order_id=order_wo or D.ORDERS[0], driver_class=D.DRIVER, model=record["profile"], service_action="line_stack_restart"
@@ -211,6 +221,7 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
     key = "owner-profile-bootstrap-" + digest(record)
     acquired, attempted, result = False, False, None
     host = ShellHost(cfg)
+    gpu_fd, stack_identity, act_identity = None, None, None
 
     def guard():
         require(not cancelled(), "CANCELLED")
@@ -232,6 +243,16 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
         for ref in (record["control_ref"], record["runtime_policy_ref"], record["line_policy_ref"], native_ref):
             require(sha256_file(Path(ref["path"])) == ref["sha256"], "INPUT_CHANGED_AT_EFFECT")
         state = intent.read()
+        require(not cfg.gpu_lock.is_symlink() and not act.is_symlink(), "LOCK_PATH_REBOUND")
+        gf, gp = os.fstat(gpu_fd), cfg.gpu_lock.stat()
+        af, ap = os.fstat(placer._act_lock.fileno()), act.stat()
+        sp = stack.lock_path(root).stat()
+        require(
+            (gf.st_dev, gf.st_ino) == (gp.st_dev, gp.st_ino)
+            and (af.st_dev, af.st_ino) == (ap.st_dev, ap.st_ino) == act_identity
+            and (sp.st_dev, sp.st_ino) == stack_identity,
+            "PHYSICAL_LOCK_IDENTITY_CHANGED",
+        )
         bs = binary.stat()
         require(
             (bs.st_dev, bs.st_ino, bs.st_size, bs.st_mtime_ns) == binary_identity
@@ -259,11 +280,20 @@ def bootstrap(store, placer, *, order_wo=None, timeout_s=600, cancelled=lambda: 
 
     try:
         # Do not retain Intent while issuing a guardian; issuance happened already.
-        with intent.lock(blocking=False), gpu_lock(cfg.gpu_lock), stack.stack_lock(root):
+        with intent.lock(blocking=False), gpu_lock(cfg.gpu_lock) as gpu_fd, stack.stack_lock(root) as stack_path:
+            require(stack_path is not None, "STACK_FENCE_UNAVAILABLE")
+            ss = stack_path.stat()
+            stack_identity = (ss.st_dev, ss.st_ino)
             act = store.path.parent / "act.lock"
             require(not act.is_symlink(), "ACT_LOCK_UNKNOWN")
             require(placer._take_act_lock(), "ACT_BUSY")
             acquired = True
+            af, ap = os.fstat(placer._act_lock.fileno()), act.stat()
+            require(
+                not act.is_symlink() and af.st_uid == os.getuid() and (af.st_dev, af.st_ino) == (ap.st_dev, ap.st_ino),
+                "ACT_LOCK_REBOUND",
+            )
+            act_identity = (af.st_dev, af.st_ino)
             with store.tx() as c:
                 quiet_ledger(c)
                 guard()

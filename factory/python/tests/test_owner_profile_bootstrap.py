@@ -1,6 +1,5 @@
 """Private kernel/process/SQLite controls; not native/model role competence."""
 
-import contextlib
 import copy
 import fcntl
 import json
@@ -8,13 +7,12 @@ import os
 import sqlite3
 import subprocess
 import sys
-from pathlib import Path
 
 import pytest
 from forge_factory.afo import owner_bootstrap_history as H
 from forge_factory.afo import owner_profile_bootstrap as B
 from forge_factory.afo import owner_supervised_development as D
-from forge_factory.afo.durable import Refused, canonical, digest
+from forge_factory.afo.durable import Refused, digest
 from forge_factory.afo.line_launcher import LineConfig, ShellHost
 from forge_factory.afo.line_orders import Placer
 from forge_factory.afo.mission_ledger import MissionLedger
@@ -59,7 +57,7 @@ class NativeClient:
 
 
 @pytest.fixture
-def boot(supervised, tmp_path, monkeypatch):
+def boot(supervised, tmp_path, monkeypatch):  # noqa: F811 - imported pytest fixture is requested by name
     store = supervised["store"]
     root = store.path.parents[2]
     (root / "run").mkdir()
@@ -84,8 +82,8 @@ def boot(supervised, tmp_path, monkeypatch):
     # Fresh TEST-only metadata and own guardian, never rewrite the first immutable control.
     from forge_factory import workorder
     from forge_factory.afo import line_native_transport as T
-    from forge_factory.common import REPO_ROOT, sha256_file
     from forge_factory.afo.durable import immutable_json
+    from forge_factory.common import REPO_ROOT, sha256_file
 
     revision = {"commit": "a" * 40, "dirty": False}
     monkeypatch.setattr(workorder, "factory_revision", lambda: copy.deepcopy(revision))
@@ -375,9 +373,10 @@ def test_existing_physical_lock_contention_refuses_without_effect(boot, kind):
 
 @pytest.mark.parametrize("clock", ["monotonic", "boottime"])
 def test_effect_tail_catches_expiry_during_heavy_authorization(boot, monkeypatch, clock):
-    from types import SimpleNamespace
-    from forge_factory.afo import line_recovery_control as C
     import time
+    from types import SimpleNamespace
+
+    from forge_factory.afo import line_recovery_control as C
 
     delta = [0]
     calls = [0]
@@ -452,6 +451,7 @@ def test_holder_file_without_services_projection_is_unknown(boot):
 
 def test_unrecorded_owned_harmless_stack_process_is_not_absent(boot):
     import time
+
     from forge_factory.afo.line_launcher import ProcFS
 
     p = subprocess.Popen(["sleep", "infinity"], cwd=boot["root"])
@@ -496,8 +496,9 @@ def test_actual_process_creation_checks_effect_guard_after_log_open(tmp_path, mo
 
 
 def test_main_optional_stage_retains_actual_signal_cancellation_before_cycle(boot, monkeypatch):
-    from forge_factory.afo import line_orders
     import signal
+
+    from forge_factory.afo import line_orders
 
     record = D.current()
     seen = []
@@ -536,3 +537,46 @@ def test_main_optional_stage_retains_actual_signal_cancellation_before_cycle(boo
         ]
     )
     assert result == 0 and seen == ["SIGNAL_CANCEL_PROPAGATED"]
+
+
+def test_missing_runtime_run_directory_cannot_skip_stack_fence(boot):
+    (boot["root"] / "run").rmdir()
+    with pytest.raises(Refused, match="STACK_RUN_DIRECTORY_UNKNOWN"):
+        B.bootstrap(boot["store"], boot["placer"])
+    assert not boot["effects"]
+
+
+def test_gpu_lock_replacement_during_authorization_refuses_before_spawn(boot, monkeypatch):
+    from forge_factory.afo import line_recovery_control as C
+
+    original = C.configuration
+    calls = [0]
+
+    def replaced(*args, **kw):
+        value = original(*args, **kw)
+        calls[0] += 1
+        if calls[0] == 4:
+            boot["lock"].unlink()
+            boot["lock"].write_text("replacement")
+        return value
+
+    monkeypatch.setattr(C, "configuration", replaced)
+    with pytest.raises(Refused, match="PHYSICAL_LOCK_IDENTITY_CHANGED"):
+        B.bootstrap(boot["store"], boot["placer"])
+    assert not boot["effects"]
+
+
+def test_null_and_future_unknown_states_are_not_quiescence():
+    # Pure SQL predicate control: NULL remains unknown even in a future nullable schema.
+    with sqlite3.connect(":memory:") as c:
+        c.execute("CREATE TABLE afo_resource_ownership(resource TEXT,holder TEXT)")
+        c.execute("CREATE TABLE afo_execution_liveness(record TEXT)")
+        c.execute("CREATE TABLE afo_request_ledger(state TEXT)")
+        c.execute("CREATE TABLE afo_commands_outbox(state TEXT)")
+        c.execute("INSERT INTO afo_commands_outbox VALUES(NULL)")
+        with pytest.raises(Refused, match="COMMAND_OUTCOME_UNRESOLVED"):
+            B.quiet_ledger(c)
+        c.execute("DELETE FROM afo_commands_outbox")
+        c.execute("INSERT INTO afo_request_ledger VALUES(NULL)")
+        with pytest.raises(Refused, match="REQUEST_NOT_QUIESCENT"):
+            B.quiet_ledger(c)

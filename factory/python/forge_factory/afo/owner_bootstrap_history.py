@@ -4,10 +4,11 @@ Framing follows the independently reviewed owner-retirementv5 source; this modul
 contains only the pure SQLite fingerprint functions, not that OPS harness.
 """
 
-from pathlib import Path
 import hashlib
 import sqlite3
 import struct
+from pathlib import Path
+
 from .durable import Refused
 
 HASH_CHUNK_BYTES = 65536
@@ -101,7 +102,7 @@ def table_hashes(path, names=None):
             no_null_keys = (
                 primary
                 and c.execute(
-                    "SELECT 1 FROM "
+                    "SELECT 1 FROM "  # noqa: S608 - _quote frames schema-derived identifiers
                     + _quote(name)
                     + " WHERE "
                     + " OR ".join(_quote(col) + " IS NULL" for col in primary)
@@ -119,12 +120,12 @@ def table_hashes(path, names=None):
                     "typeof(" + _quote(col) + ") COLLATE BINARY," + _quote(col) + " COLLATE BINARY" for col in columns
                 )
                 order_kind = "TYPE_AWARE_ALL_COLUMNS_BINARY"
-            counted = c.execute("SELECT COUNT(*) FROM " + _quote(name)).fetchone()[0]
+            counted = c.execute("SELECT COUNT(*) FROM " + _quote(name)).fetchone()[0]  # noqa: S608 - quoted identifier
             hasher = hashlib.sha256(b"forge-c/sqlite-logical-stream/1\0" + bytes.fromhex(schema_sha))
             seen = 0
             encoded_bytes = 0
             max_row_bytes = 0
-            cursor = c.execute("SELECT * FROM " + _quote(name) + " ORDER BY " + ordering)
+            cursor = c.execute("SELECT * FROM " + _quote(name) + " ORDER BY " + ordering)  # noqa: S608 - metadata identifiers
             for row in cursor:
                 size = _hash_row(hasher, row)
                 seen += 1
