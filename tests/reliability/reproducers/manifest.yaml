@@ -3005,3 +3005,18 @@ reproducers:
   remedy: Validate immutable original CONTROL identity and replayed effective mission limits and lineage,
     then link a new accounted order without re-registration; retain current crypto control verification,
     cumulative counters, amendment integrity, historical accounting and per-job execution bounds.
+
+- id: RPR-173
+  script: rpr173_offline_whole_release.py
+  sha256: 0071c4fbb620c03e9b707cf572d671e09c91e100ac91a7de94c2bb64bca753b1
+  symptom_signature: offline signed patch carries unrelated deployed source drift into the reviewed target
+  observed_in: DA058 clean archive installed release with unrelated tracked source drift; TEST-signed patch and real local preflight and regression still activate under the target revision.
+  baseline_revision: afa651a717f391f4c1e689516c626141d0f205b1
+  error_codes:
+  - PATCH_BASE_DRIFT
+  - PATCH_TARGET_DRIFT
+  - PATCH_CRE_TREE_IDENTITY
+  operations:
+  - offline.patch.import
+  root_cause: Import verifies only changed paths then copies the entire deployed release, so unrelated bytes or modes are never bound to the signed CRE baseline and candidate tree identities.
+  remedy: Verify whole clean release identities against the signed CRE tree digests before loading deployed policy and before and after local checks; serialize local imports and rollback, preserve previous release and all signature and policy checks.
