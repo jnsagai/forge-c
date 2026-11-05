@@ -131,6 +131,69 @@ def mapped_host_guardian_alive(record):
 
 
 _GUARDIANS = {}  # External guardian memory, never reconstructed from an agent-writable record.
+_HEARTBEAT_LOCK = threading.Lock()
+
+
+def _publish_heartbeat(record, *, cycle=None, completed=False):
+    """Private guardian liveness; completed-cycle progress is a separate fact.
+
+    The existing nonce server can attest while a synchronous launcher waits for
+    a model/stack. That proves guardian liveness, never product or cycle progress.
+    Atomic replacement prevents the host guard observing a half-written JSON.
+    """
+    import tempfile
+
+    sha = digest(record)
+    parent = Path(record["intent_path"]).parent / "owner-supervised-development"
+    path = parent / (sha + ".heartbeat.json")
+    if cycle is not None and (type(cycle) is not int or cycle < 0):
+        _fail("HEARTBEAT_PROGRESS_INVALID")
+    with _HEARTBEAT_LOCK:
+        _private(parent, directory=True)
+        previous = {}
+        if path.exists() or path.is_symlink():
+            _private(path)
+            previous = strict_json(path.read_bytes(), 16384)
+            if (
+                previous.get("record_sha256") != sha
+                or previous.get("pid") != record["guardian_pid"]
+                or previous.get("mode") != MODE
+                or previous.get("acceptance") != "UNACCEPTED"
+            ):
+                _fail("HEARTBEAT_IDENTITY_CHANGED")
+        now = time.time()
+        value = dict(
+            schema="forge-c/owner-guardian-heartbeat/1", mode=MODE, acceptance="UNACCEPTED",
+            record_sha256=sha, pid=record["guardian_pid"], at=now,
+            liveness="GUARDIAN_RESPONSIVE_NOT_ENGINEERING_PROGRESS",
+            cycle=previous.get("cycle", -1), cycle_state=previous.get("cycle_state", "NOT_STARTED"),
+            last_completed_cycle=previous.get("last_completed_cycle", -1),
+            last_cycle_completed_at=previous.get("last_cycle_completed_at"),
+        )
+        if cycle is not None:
+            value.update(cycle=cycle, cycle_state="COMPLETE" if completed else "IN_PROGRESS")
+            if completed:
+                value.update(last_completed_cycle=cycle, last_cycle_completed_at=now)
+        fd, temp = tempfile.mkstemp(prefix=".heartbeat-", dir=parent)
+        try:
+            with os.fdopen(fd, "wb") as stream:
+                os.fchmod(stream.fileno(), 0o600)
+                stream.write(canonical(value))
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temp, path)
+            directory = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
+        except OSError as exc:
+            raise Refused("OWNER_DEVELOPMENT_HEARTBEAT_STORAGE_UNAVAILABLE") from exc
+        finally:
+            try:
+                os.unlink(temp)
+            except FileNotFoundError:
+                pass
 
 
 @contextmanager
@@ -152,6 +215,7 @@ def _serve_guardian(record, server):
     sha = digest(record)
 
     def serve():
+        last_heartbeat = None
         while not stop.is_set():
             try:
                 client, _ = server.accept()
@@ -172,6 +236,13 @@ def _serve_guardian(record, server):
                         or not re.fullmatch("[0-9a-f]{64}", nonce)
                     ):
                         continue
+                    # Publish before acknowledging the first challenge. The host
+                    # launch guard calls current() before reading this heartbeat.
+                    # Do not renew completed-cycle progress from an attestation.
+                    now = time.monotonic()
+                    if last_heartbeat is None or now - last_heartbeat >= 15:
+                        _publish_heartbeat(record)
+                        last_heartbeat = now
                     client.sendall(canonical(dict(record_sha256=sha, nonce=nonce, scope=MODE)))
                 except (OSError, ValueError, Refused):
                     continue
@@ -891,7 +962,6 @@ def main(argv=None):
     signal.signal(signal.SIGTERM, lambda *_: stop.set())
     signal.signal(signal.SIGINT, lambda *_: stop.set())
     audit = Path(ref["path"]).with_suffix(".audit.jsonl")
-    heartbeat = Path(ref["path"]).with_suffix(".heartbeat.json")
     n = 0
     try:
         if a.bootstrap_managed_profile:
@@ -910,7 +980,8 @@ def main(argv=None):
             else:
                 bootstrap(store, placer, cancelled=stop.is_set, reconciliation_ref=reconciled)
         while not stop.is_set() and (a.max_cycles is None or n < a.max_cycles):
-            current(store=store)
+            live_record = current(store=store)
+            _publish_heartbeat(live_record, cycle=n)
             readiness = provider_preflight(cfg.stack_root)
             result = placer.cycle() if readiness["placing"] else dict(mode=MODE, actions=[], readiness=readiness)
             # No submit/admission or PRODUCT reservation occurs while replacement
@@ -928,7 +999,7 @@ def main(argv=None):
             )
             with audit.open("ab") as stream:
                 stream.write(canonical(row) + b"\n")
-            heartbeat.write_bytes(canonical(dict(mode=MODE, acceptance="UNACCEPTED", pid=os.getpid(), cycle=n, at=time.time())))
+            _publish_heartbeat(live_record, cycle=n, completed=True)
             n += 1
             if a.max_cycles is None or n < a.max_cycles:
                 stop.wait(a.interval)
