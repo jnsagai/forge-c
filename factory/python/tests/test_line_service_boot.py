@@ -84,3 +84,85 @@ def test_legacy_observe_without_configured_intent_is_unchanged(tmp_path, monkeyp
     monkeypatch.setattr(line_conductor, "install_guard", lambda *_: None)
     monkeypatch.setattr(line_conductor, "run", lambda *_: 0)
     assert line_conductor.main(["--mode", "OBSERVE", "--fabro-snapshot", str(snapshot)]) == 0
+
+
+@pytest.mark.parametrize("mode", ["RUNNING", "PAUSED", "DRAINING"])
+def test_authenticated_nonstopped_intent_can_start_model_free_observer(tmp_path, monkeypatch, mode):
+    path = tmp_path / "private/intent.json"
+    path.parent.mkdir(mode=0o700)
+    operations.Intent(path).set(mode, actor="CONTROL", reason="CONTROL", initialize=True)
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", str(path))
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    snapshot = tmp_path / "snapshot.json"
+    snapshot.write_text("{}")
+    monkeypatch.setattr(line_conductor, "install_guard", lambda *_: None)
+    monkeypatch.setattr(line_conductor, "run", lambda *_: 0)
+    before = path.read_bytes()
+    assert line_conductor.main(["--mode", "OBSERVE", "--fabro-snapshot", str(snapshot)]) == 0
+    assert path.read_bytes() == before  # boot does not initialize/rewrite Intent, resume, or grant any work.
+
+
+def test_relative_configured_intent_refuses_before_lookup(monkeypatch):
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", "relative.json")
+    monkeypatch.setattr(line_conductor.FabroView, "from_env", lambda *_: pytest.fail("relative Intent"))
+    assert line_conductor.main(["--once"]) == 77
+
+
+@pytest.mark.parametrize("field", ["intent", "watchdog_code", "watchdog_dependencies", "watchdog_python"])
+def test_watchdog_and_control_must_survive_application_volume_loss(deployment, monkeypatch, field):
+    root = deployment["launch_dir"].parent / "data"
+    monkeypatch.setenv("FORGE_DATA_ROOT", str(root))
+    with pytest.raises(ValueError, match="LINE_HOST_PATH_ON_APPLICATION_VOLUME"):
+        services.render_line(**(deployment | {field: root / field}))
+
+
+def test_symlink_alias_into_application_volume_is_not_host_survivable(deployment, tmp_path, monkeypatch):
+    root = tmp_path / "data"
+    root.mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(root, target_is_directory=True)
+    monkeypatch.setenv("FORGE_DATA_ROOT", str(root))
+    with pytest.raises(ValueError, match="LINE_HOST_PATH_ON_APPLICATION_VOLUME"):
+        services.render_line(**(deployment | {"watchdog_code": alias / "archive.zip"}))
+
+
+@pytest.mark.parametrize("url", ["http://127.0.0.1:65536", "http://127.0.0.1:0", "http://localhost:80\nExecStart=true"])
+def test_renderer_refuses_invalid_endpoint_or_directive_injection(deployment, url):
+    with pytest.raises(ValueError, match="LINE_DEPLOYMENT_FABRO_URL_INVALID"):
+        services.render_line(**deployment, fabro_url=url)
+
+
+def test_line_cli_renders_only_never_installs_or_starts(deployment, tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(services.subprocess, "run", lambda *_a, **_k: pytest.fail("render must have zero service effects"))
+    out = tmp_path / "units"
+    argv = ["render-line", "--out", str(out)]
+    for key, value in deployment.items():
+        argv.extend(["--" + key.replace("_", "-"), str(value)])
+    assert services.main(argv) == 0
+    assert set(json.loads(capsys.readouterr().out)) == set(services.render_line(**deployment))
+    assert {p.name: p.read_text() for p in out.iterdir()} == services.render_line(**deployment)
+
+
+def test_line_cli_cannot_use_generic_installer_or_enable(deployment):
+    argv = ["render-line", "--enable", "forge-line-conductor-local.service"]
+    for key, value in deployment.items():
+        argv.extend(["--" + key.replace("_", "-"), str(value)])
+    with pytest.raises(SystemExit) as error:
+        services.main(argv)
+    assert error.value.code == 2
+
+
+def test_line_render_keeps_generic_unit_set_and_legacy_render_unchanged(deployment, monkeypatch):
+    monkeypatch.delenv("FORGE_OPERATIONS_INTENT", raising=False)
+    generic = services.render()
+    services.render_line(**deployment)
+    assert services.render() == generic
+    assert set(generic) == set(services.UNITS)
+
+
+def test_line_render_is_accepted_by_real_systemd_analyzer(deployment, monkeypatch):
+    import sys
+
+    monkeypatch.setenv("FORGE_VENV", str(Path(sys.executable).parent.parent))
+    result = services.verify(services.render_line(**deployment))
+    assert result["ok"], result["messages"]

@@ -1,6 +1,8 @@
 """AFO-T009 (AFO-FR-009, AT-001/004/005/007) - render, verify, install, status and stop the AFO user units.
 
   python -m forge_factory.afo.services render  [--out DIR]     # dry run: rendered units to DIR (default: stdout)
+  python -m forge_factory.afo.services render-line --intent PATH --launch-dir PATH --watchdog-code ZIP \\
+      --watchdog-dependencies DIR --watchdog-python PYTHON [--mode OBSERVE] [--out DIR] # local LINE only, no install
   python -m forge_factory.afo.services verify                  # systemd-analyze --user verify on the rendered units
   python -m forge_factory.afo.services install [--enable U..]  # OPERATOR action: write ~/.config/systemd/user units
   python -m forge_factory.afo.services status | stop U..
@@ -154,6 +156,10 @@ def render_line(*, intent: Path, launch_dir: Path, watchdog_code: Path, watchdog
     vals = values()
     for key in ("@REPO@", "@DATA@", "@VENV@"):
         path(vals[key], key)
+    for entry in vals["@PATH@"].split(":"):
+        path(entry, "PATH")
+    if not 0 < int(fabro_url.rsplit(":", 1)[1]) <= 65535:
+        raise ValueError("LINE_DEPLOYMENT_FABRO_URL_INVALID")
     extra = {"@INTENT@": path(intent, "intent"), "@LAUNCH_DIR@": path(launch_dir, "launch_dir"),
              "@WATCHDOG_CODE@": path(watchdog_code, "watchdog_code"),
              "@WATCHDOG_DEPENDENCIES@": path(watchdog_dependencies, "watchdog_dependencies"),
