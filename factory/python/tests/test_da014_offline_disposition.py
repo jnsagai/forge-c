@@ -11,7 +11,9 @@ from test_da014_offline_export import _ws
 
 
 @pytest.fixture()
-def env(tmp_path):
+def env(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "events"))
     key = tmp_path / "owner"
     subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-f", str(key)], check=True)
     signers = tmp_path / "allowed-signers"
@@ -90,7 +92,7 @@ def test_routing_feeds_the_learning_set_once_refuses_held_out_work_and_never_cha
     out = env["tmp"] / "learning-intake.jsonl"
     kw = {"bundle": env["bundle"], "out": out, "allowed_signers": env["signers"]}
     r = D.route(env["recs"], heldout=set(), **kw)
-    assert r == {"routed": 1, "refused": []}
+    assert r["routed"] == 1 and r["refused"] == []
     assert D.route(env["recs"], heldout=set(), **kw)["routed"] == 0  # idempotent
     rows = [json.loads(x) for x in out.read_text().splitlines()]
     assert len(rows) == 1 and rows[0]["use"] == "LEARNING_SET_ONLY" and "rationale" not in rows[0]
@@ -99,5 +101,62 @@ def test_routing_feeds_the_learning_set_once_refuses_held_out_work_and_never_cha
     assert env["bundle"].read_bytes() == before
 
 
-def test_the_frozen_f011_test_set_is_held_out():
-    assert "WO-0009B-STM32N6-IWDG-HAL-rc3" in D.heldout_workorders()
+def test_active_frozen_baselines_remain_held_out_and_registered_spent_sets_are_learning():
+    active = D.heldout_workorders()
+    assert "WO-0002A-STM32N6-RCC-LL-r168" in active
+    assert "WO-0009B-STM32N6-IWDG-HAL-rc3" not in active
+    assert "WO-AFO-03122bd1dd4fb5ff-a1" not in active
+    assert "WO-AFO-efc1871950537b1a-a1" not in active
+
+
+def test_confirmed_human_review_opens_one_evidence_linked_capa_without_trusting_rationale(env):
+    from forge_factory.reliability.capa import CapaRegistry
+    from forge_factory.reliability.policy import load
+    from forge_factory.reliability.store import CREStore
+
+    _rec(env)
+    kw = dict(bundle=env["bundle"], out=env["tmp"] / "intake.jsonl", allowed_signers=env["signers"])
+    first = D.route(env["recs"], **kw)
+    registry = CapaRegistry(CREStore(), load())
+    records = registry.all()
+    assert len(records) == 1
+    capa = records[0]
+    assert first["capa_ids"] == [capa["capa_id"]]
+    assert capa["state"] == "OPEN" and capa["root_cause_status"] == "UNKNOWN"
+    assert capa["root_cause_summary"] is None and capa["lesson_ids"] == []
+    assert registry.links(capa["capa_id"], "HUMAN_REVIEW")
+    assert env["sha"] in " ".join(registry.links(capa["capa_id"], "EXPORT"))
+    history = registry.history(capa["capa_id"])
+    assert D.route(env["recs"], **kw)["routed"] == 0
+    assert len(registry.all()) == 1 and registry.history(capa["capa_id"]) == history
+
+
+@pytest.mark.parametrize("verdict", ["MISSING_INPUT", "OUT_OF_SCOPE"])
+def test_other_review_verdicts_are_kept_without_fabricating_defect_capas(env, verdict):
+    from forge_factory.reliability.capa import CapaRegistry
+    from forge_factory.reliability.policy import load
+    from forge_factory.reliability.store import CREStore
+
+    _rec(env, verdict=verdict)
+    result = D.route(env["recs"], bundle=env["bundle"], out=env["tmp"] / "intake.jsonl",
+                     allowed_signers=env["signers"])
+    assert result["routed"] == 1 and result["capa_ids"] == []
+    assert CapaRegistry(CREStore(), load()).all() == []
+
+
+def test_confirmed_false_finding_opens_inspector_correction_for_analysis(env):
+    _rec(env, verdict="FALSE_FINDING")
+    result = D.route(env["recs"], bundle=env["bundle"], out=env["tmp"] / "intake.jsonl",
+                     allowed_signers=env["signers"])
+    assert result["routed"] == 1 and len(result["capa_ids"]) == 1
+
+
+def test_reusing_a_review_id_with_different_signed_content_is_a_conflict(env):
+    _rec(env)
+    kw = dict(bundle=env["bundle"], out=env["tmp"] / "intake.jsonl", allowed_signers=env["signers"])
+    D.route(env["recs"], **kw)
+    before = kw["out"].read_bytes()
+    _rec(env, verdict="FALSE_FINDING")
+    result = D.route(env["recs"], **kw)
+    assert result["routed"] == 0 and result["refused"][0]["code"] == "DSP_ID_CONFLICT"
+    assert kw["out"].read_bytes() == before

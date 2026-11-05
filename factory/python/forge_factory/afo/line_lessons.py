@@ -7,7 +7,6 @@ existing knowledge governance; raw repair text is never promoted to a trusted pr
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 from ..common import canonical_json, sha256_bytes, state_dir, utc_now
 from ..knowledge import experience
@@ -32,7 +31,8 @@ def capture(store, lessons=None, *, limit=8):
             "SELECT a.* FROM afo_attempts a WHERE state IN ('SUCCEEDED','FAILED','CANCELLED','UNKNOWN') "
             "AND created_utc||attempt_id>? ORDER BY created_utc,attempt_id LIMIT ?", (cursor, limit),
         ).fetchall()
-    refs, gaps = [], []
+    refs, gaps, review_checks = [], [], []
+    reviewed_capas = None
     for row in rows:
         try:
             order = store.order(row["order_id"])
@@ -68,6 +68,10 @@ def capture(store, lessons=None, *, limit=8):
                        "phase_reference_provenance": {"work_order": wo, "manifest_sha256": digest}},
                 source_refs=["native-run:" + native, "manifest:sha256:" + digest], cohort=cohort))
             refs.extend(experience.capture_workspace(lessons, workspace, native))
+            from ..offline.feedback import reconcile, registry
+
+            reviewed_capas = reviewed_capas or registry()
+            review_checks.extend(reconcile(reviewed_capas, [workspace], lessons=lessons, cursor_store=store))
         except (OSError, ValueError, KeyError, TypeError) as exc:
             # Keep telemetry failure separate from manufacturing control: no item_failure/queue transition.
             gaps.append({"attempt_id": row["attempt_id"], "code": getattr(exc, "code", type(exc).__name__)})
@@ -82,5 +86,5 @@ def capture(store, lessons=None, *, limit=8):
     dispositions = experience.consolidate(lessons, limit=limit, inference_budget=0)
     return {"schema": "forge-c/line-learning-capture/1", "status": "CAPTURE_GAPS" if gaps else "OBSERVED",
             "processed_attempts": len(rows), "experience_refs": sorted(set(refs)), "gaps": gaps,
-            "dispositions": dispositions, "model_calls": 0, "new_lessons": 0,
+            "dispositions": dispositions, "review_capa_checks": review_checks, "model_calls": 0, "new_lessons": 0,
             "lesson_validation": "EXISTING_INDEPENDENT_KNOWLEDGE_GOVERNANCE_ONLY"}

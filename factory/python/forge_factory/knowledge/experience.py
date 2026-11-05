@@ -412,7 +412,7 @@ def capture_controller_outcomes(afo_store, lessons, *, limit=32):
     return out
 
 
-def capture_workorders(afo_store, lessons, *, client=None, limit=8):
+def capture_workorders(afo_store, lessons, *, client=None, limit=8, on_workspace=None):
     """Bounded reconciliation also covers detached/non-AFO jobs and interrupted finalizers."""
     import heapq
     import os
@@ -441,6 +441,8 @@ def capture_workorders(afo_store, lessons, *, client=None, limit=8):
             package = json.loads(package_path.read_text()) if package_path.is_file() and not package_path.is_symlink() else None
             identity = native or "workorder:" + name
             out.extend(capture_workspace(lessons, ws, identity, package=package))
+            if on_workspace is not None and package:
+                on_workspace(ws)
             if native and client is not None and not package:
                 try:
                     outcome = run_status(client.get_run(native))

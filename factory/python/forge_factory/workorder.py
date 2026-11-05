@@ -326,6 +326,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     for item in listed:
         if item["path"].endswith(".md"):
             idx[item["path"]] = register_index(ws / item["path"])
+    revision = factory_revision()
     manifest = {
         "schema": "forge-c/work-order/0.4",
         "purpose": purpose,
@@ -339,7 +340,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         "work_order": wo,
         "created_at": utc_now(),
         "input_baseline_commit": head,
-        "factory_revision": factory_revision(),
+        "factory_revision": revision,
+        "tool_versions": {"forge-factory": revision["commit"]},
         "driver": spec["driver"],
         "layer": layer,
         "provided": provided,

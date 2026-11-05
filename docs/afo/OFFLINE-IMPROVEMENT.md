@@ -86,3 +86,69 @@ namespace. It checks no-route failure and seven rejection paths. Synthetic fixtu
 CRE metadata does not replace the separate normal CRE qualification of the actual
 source. Actual Omniverse model competence, live work, offline cold-start/time handling
 and the authored endurance campaigns require their own acceptance evidence.
+
+## Turn the owner's review into preventive learning
+
+Record each reviewed gap/finding using the existing
+`specs/014-durable-local-autonomy/contracts/review-disposition.schema.json`.
+The owner signs it in the separate `forge-review-disposition` namespace. Route
+the signed records against the exact export:
+
+```sh
+python -m forge_factory.offline.disposition route /path/to/signed-reviews \
+  --bundle /path/to/report.zip --out /path/to/learning-intake.jsonl \
+  --allowed-signers /path/to/local-public-review-signers
+```
+
+Confirmed defects and confirmed false findings open evidence-linked corrective
+CAPAs with an UNKNOWN root cause. Missing-input and out-of-scope decisions remain
+review facts. The command archives the verified review, public signature/signers
+and exact export, deduplicates repeated subjects, refuses changed content under
+an existing review ID, and can recover an interrupted JSONL projection from CRE.
+Raw rationale never becomes a root-cause finding or lesson automatically.
+
+Set membership replays protected registrations and their exact source hashes.
+The nine spent F011 subset baselines and the spent F015 GPIOA/CRC pair already
+have explicit post-calibration learning registrations; the remaining thirteen
+F011 cases stay excluded. Missing/inconsistent registration or incomplete
+calibration evidence refuses intake. Historical packages, test sets and rates
+remain unchanged; these transitions confer no new held-out measurement result
+or permission to distill an ordinary positive example from evaluation evidence.
+
+After the existing independent CRE process actually reproduces and tests a fix:
+
+```sh
+python -m forge_factory.offline.disposition qualify-capa \
+  --capa CAPA-HR-ID --decision pd-QUALIFIED --reproducer RPR-ID
+python -m forge_factory.offline.disposition publish-lesson \
+  --capa CAPA-HR-ID --workspace /path/to/prepared-future-training-workspace \
+  --role swe1-author
+```
+
+Qualification consumes an existing eligible FIX decision, all seven hard gates,
+its exact baseline/candidate/prevention runner records and hash-matching raw logs.
+The normal guarded CAPA lifecycle verifies the cause and registers prevention.
+This command fabricates no run or approval and applies no patch. For a newly
+staged maintainer reproducer, provide `--staged-manifest` and
+`--lesson-description` (a JSON object containing the curated `root_cause`,
+`remedy`, `operations` and `error_codes`). Its script must equal the committed
+candidate source; the immutable descriptor is retained for later validation.
+Qualified staged tests are registered for subsequent CRE prevention gates, in
+addition to every protected global oracle. A missing or changed registered
+descriptor/script refuses qualification rather than dropping the test.
+
+Publication uses the qualified frozen remedy through the existing deterministic
+lesson curator. It requires explicit phase/role/target, unchanged input hashes
+and tool identities; new work orders record their factory revision as a tool
+identity. Missing identities or a held-out destination refuse publication.
+Unsafe explanations are quarantined. Matching future author/recovery/maintainer
+contexts retrieve bounded reference data through the existing knowledge MCP;
+the independent inspector path remains separately governed. New versions/scopes
+require explicit revalidation, rather than silent transfer of old memory.
+
+The existing generic and local-line learning cycles reconcile reviewed CAPAs
+against completed packages and recorded source/operation exposures. A recurrence
+on a revision containing the fix reopens the CAPA and retracts its lessons. The
+clean effectiveness window is distinct from source qualification and from any
+claim of measured learning benefit. Reconciliation is bounded, rotates through
+CAPAs, uses existing stores, and makes zero model calls.

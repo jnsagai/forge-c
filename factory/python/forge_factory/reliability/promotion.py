@@ -87,8 +87,9 @@ def evaluate(candidate: str, baseline: str, store: CREStore, policy: Policy, *, 
              kind: str = "FIX", pool: RR.WorktreePool | None = None, repo: Path = REPO_ROOT,
              skip_quality: bool = False, staged_manifest: Path | None = None) -> dict:
     """`staged_manifest` (AFO-T048): reproducers a deterministic broker sealed OUTSIDE the repo for a maintainer
-    candidate (ids `AFO-*`, sha256-checked like the frozen manifest). They serve the reproducer gate only; the
-    prevention gate keeps the frozen tests/reliability manifest, which no candidate can change."""
+    candidate (ids `AFO-*`, sha256-checked like the frozen manifest). Unqualified staged tests serve the reproducer
+    gate only. The prevention gate retains every protected global oracle and adds staged tests only after the
+    independent human-review CAPA qualification registers their immutable committed-source descriptors."""
     cand, base = _rev(candidate, repo), _rev(baseline, repo)
     own_pool = pool is None
     pool = pool or RR.WorktreePool(repo)
@@ -158,6 +159,11 @@ def evaluate(candidate: str, baseline: str, store: CREStore, policy: Policy, *, 
                 gates.append(_gate("reproducer", "NOT_RUN", ["gate:reproducer"],
                                    "NO_REPRODUCER_FOR_FIX" if kind == "FIX" else "NOT_APPLICABLE_FOR_CHANGE"))
         if not stopped:
+            from .registered import prevention as registered_prevention
+
+            registered, registered_issues = registered_prevention(store)
+            man_issues += registered_issues
+            reps = {**reps, **registered}
             present = []
             refs = []
             runs = RR.run_many(store, policy, sorted(reps), cand, "PREVENTION", pool, reps)

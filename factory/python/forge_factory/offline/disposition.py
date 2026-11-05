@@ -23,6 +23,7 @@ from pathlib import Path
 
 from ..common import REPO_ROOT, canonical_json
 from . import export as X
+from . import feedback as F
 
 NAMESPACE = "forge-review-disposition"
 SCHEMA = REPO_ROOT / "specs/014-durable-local-autonomy/contracts/review-disposition.schema.json"
@@ -48,9 +49,13 @@ def schema_errors(rec: dict) -> list[str]:
     return [f"{'/'.join(map(str, e.path)) or '<root>'}: {e.message}"[:160] for e in v.iter_errors(rec)]
 
 
-def heldout_workorders(testset: Path = TESTSET) -> set[str]:
-    """Work orders of the frozen F011-T046 held-out set (the calibration subset is a part of it)."""
-    return {s["workorder"] for s in json.loads(testset.read_text())["selected"]} if testset.is_file() else set()
+def heldout_workorders(testset: Path | None = None) -> set[str]:
+    """Active frozen members after the recorded post-calibration learning transfers."""
+    from .review_sets import active_workorders
+
+    if testset is not None:
+        return {s["workorder"] for s in json.loads(testset.read_text())["selected"]}
+    return active_workorders(REPO_ROOT)
 
 
 def _mentions(o, ref: str) -> bool:
@@ -81,8 +86,8 @@ def verify(rec: dict, *, base: Path, allowed_signers: Path, bundle: Path) -> Dec
     errs = schema_errors(rec) if isinstance(rec, dict) else ["<root>: not an object"]
     if errs:
         return Decision(False, "DSP_SCHEMA_INVALID", errs[0], did)
-    sig = (base / rec["signature_ref"]).resolve()
-    if not sig.is_file() or not allowed_signers.is_file() or subprocess.run(
+    sig = base / rec["signature_ref"]
+    if sig.is_symlink() or not sig.is_file() or not allowed_signers.is_file() or subprocess.run(
             ["ssh-keygen", "-Y", "verify", "-f", str(allowed_signers), "-I", rec["approver"], "-n", NAMESPACE,
              "-s", str(sig)], input=message(rec), capture_output=True, timeout=30).returncode != 0:
         return Decision(False, "DSP_SIGNATURE_INVALID", f"no valid {NAMESPACE} signature by {rec['approver']}", did)
@@ -101,34 +106,73 @@ def verify(rec: dict, *, base: Path, allowed_signers: Path, bundle: Path) -> Dec
     return Decision(True, "DSP_OK", "", did)
 
 
-def route(records: Path, *, bundle: Path, out: Path, allowed_signers: Path, heldout: set[str] | None = None) -> dict:
-    """Append every verified, non-held-out disposition to the learning-set intake (once per disposition id)."""
-    heldout = heldout_workorders() if heldout is None else heldout
-    seen = {json.loads(ln)["disposition_id"] for ln in out.read_text().splitlines() if ln.strip()} \
-        if out.is_file() else set()
-    decisions = []
-    for p in sorted(records.glob("*.json")):
-        try:
-            rec = json.loads(p.read_text())
-        except ValueError:
-            decisions.append(Decision(False, "DSP_NOT_JSON", p.name))
-            continue
-        d = verify(rec, base=records, allowed_signers=allowed_signers, bundle=bundle)
-        if d.ok and rec["workorder"] in heldout:
-            d = Decision(False, "DSP_HELDOUT_REFUSED", f"{rec['workorder']} is in a frozen held-out set", d.disposition_id)
-        if d.ok and d.disposition_id in seen:
-            d = Decision(True, "DSP_ALREADY_ROUTED", "", d.disposition_id)
-        elif d.ok:
-            out.parent.mkdir(parents=True, exist_ok=True)
-            with out.open("a") as f:
-                f.write(json.dumps({"disposition_id": rec["disposition_id"], "export_sha256": rec["export_sha256"],
-                                    "record_sha256": hashlib.sha256(p.read_bytes()).hexdigest(),
-                                    "workorder": rec["workorder"], "subject": rec["subject"],
-                                    "verdict": rec["verdict"], "use": "LEARNING_SET_ONLY"}, sort_keys=True) + "\n")
-            seen.add(d.disposition_id)
-        decisions.append(d)
+def route(records: Path, *, bundle: Path, out: Path, allowed_signers: Path, heldout: set[str] | None = None,
+          registry=None) -> dict:
+    """Verify, archive and open corrective CAPAs; JSONL is an idempotent intake projection."""
+    import os
+
+    try:
+        excluded = heldout_workorders() | (heldout or set())  # extra exclusions never override frozen membership
+    except (OSError, ValueError, TypeError, KeyError):
+        return {"routed": 0, "refused": [{"id": None, "code": "DSP_SET_REGISTRY_INVALID",
+                                         "reason": "set registration unavailable or inconsistent"}], "capa_ids": []}
+    paths = sorted(records.glob("*.json"))
+    if len(paths) > 128:
+        return {"routed": 0, "refused": [{"id": None, "code": "DSP_BATCH_TOO_LARGE", "reason": "limit 128"}],
+                "capa_ids": []}
+    reg = registry or F.registry()
+    decisions, capas = [], set()
+    with F.intake_lock(reg):
+        seen = {r["disposition_id"]: r for r in (json.loads(ln) for ln in out.read_text().splitlines() if ln.strip())} \
+            if out.is_file() else {}
+        for p in paths:
+            try:
+                raw = p.read_bytes()
+                rec = json.loads(raw)
+                if not isinstance(rec, dict) or schema_errors(rec):
+                    decisions.append(Decision(False, "DSP_SCHEMA_INVALID", p.name))
+                    continue
+                raw_sha = hashlib.sha256(raw).hexdigest()
+                review_sha = hashlib.sha256(message(rec)).hexdigest()
+                sig = records / str(rec.get("signature_ref", "")) if isinstance(rec, dict) else records
+                signature = sig.read_bytes() if sig.is_file() and not sig.is_symlink() else b""
+                signers = allowed_signers.read_bytes() if allowed_signers.is_file() else b""
+                exported = bundle.read_bytes()
+                d = verify(rec, base=records, allowed_signers=allowed_signers, bundle=bundle)
+                if d.ok and rec["workorder"] in excluded:
+                    d = Decision(False, "DSP_HELDOUT_REFUSED", "work order is still held out", d.disposition_id)
+                if d.ok:
+                    if sig.read_bytes() != signature or allowed_signers.read_bytes() != signers:
+                        raise F.Refused("DSP_AUTHORITY_CHANGED")
+                    prior = seen.get(d.disposition_id)
+                    if prior and prior.get("review_sha256", prior.get("record_sha256")) != (
+                            review_sha if "review_sha256" in prior else raw_sha):
+                        raise F.Refused("DSP_ID_CONFLICT")
+                    cid = F.ingest(reg, rec, review_sha256=review_sha, signature=signature, signers=signers,
+                                   bundle=exported)
+                    if cid:
+                        capas.add(cid)
+                    if prior:
+                        d = Decision(True, "DSP_ALREADY_ROUTED", "", d.disposition_id)
+                    else:
+                        row = {"disposition_id": rec["disposition_id"], "export_sha256": rec["export_sha256"],
+                               "record_sha256": raw_sha, "review_sha256": review_sha,
+                               "workorder": rec["workorder"], "subject": rec["subject"],
+                               "verdict": rec["verdict"], "use": "LEARNING_SET_ONLY", "capa_id": cid}
+                        out.parent.mkdir(parents=True, exist_ok=True)
+                        with out.open("a") as stream:
+                            stream.write(json.dumps(row, sort_keys=True) + "\n")
+                            stream.flush()
+                            os.fsync(stream.fileno())
+                        seen[d.disposition_id] = row
+            except F.Refused as exc:
+                d = Decision(False, exc.code, "verified intake refused", rec.get("disposition_id"))
+            except (OSError, ValueError, TypeError, KeyError, zipfile.BadZipFile):
+                d = Decision(False, "DSP_INPUT_INVALID", p.name)
+            decisions.append(d)
     return {"routed": sum(d.code == "DSP_OK" for d in decisions),
-            "refused": [{"id": d.disposition_id, "code": d.code, "reason": d.reason} for d in decisions if not d.ok]}
+            "refused": [{"id": d.disposition_id, "code": d.code, "reason": d.reason} for d in decisions if not d.ok],
+            "capa_ids": sorted(capas)}
 
 
 def sign(rec_path: Path, key: Path, agent: bool = False) -> Path:
@@ -157,10 +201,35 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--bundle", type=Path, required=True)
     r.add_argument("--out", type=Path, required=True)
     r.add_argument("--allowed-signers", type=Path, required=True)
+    learn = sub.add_parser("publish-lesson", help="curate a frozen remedy after causal, prevention and CRE proof")
+    learn.add_argument("--capa", required=True)
+    learn.add_argument("--workspace", type=Path, required=True)
+    learn.add_argument("--role", required=True)
+    qualify = sub.add_parser("qualify-capa", help="bind an existing independent FIX decision and its runner evidence")
+    qualify.add_argument("--capa", required=True)
+    qualify.add_argument("--decision", required=True)
+    qualify.add_argument("--reproducer")
+    qualify.add_argument("--staged-manifest", type=Path)
+    qualify.add_argument("--lesson-description", type=Path)
     a = ap.parse_args(argv)
     if a.cmd == "sign":
         print(sign(a.record, a.key, a.agent))
         return 0
+    if a.cmd in ("publish-lesson", "qualify-capa"):
+        try:
+            reg = F.registry()
+            with F.intake_lock(reg):
+                if a.cmd == "publish-lesson":
+                    res = F.publish(reg, a.capa, workspace=a.workspace, role=a.role)
+                else:
+                    description = json.loads(a.lesson_description.read_text()) if a.lesson_description else None
+                    res = F.qualify(reg, a.capa, a.decision, reproducer=a.reproducer,
+                                    staged_manifest=a.staged_manifest, description=description)
+        except (F.Refused, ValueError, OSError, KeyError, TypeError, subprocess.SubprocessError) as exc:
+            print(json.dumps({"status": "REFUSED", "code": getattr(exc, "code", "DSP_CAPA_INVALID")}))
+            return 1
+        print(json.dumps(res))
+        return 0 if res["state"] in ("VALIDATED", "PREVENTION_TESTED", "EFFECTIVENESS_OBSERVING", "EFFECTIVE") else 1
     res = route(a.records, bundle=a.bundle, out=a.out, allowed_signers=a.allowed_signers)
     print(json.dumps(res))
     return 1 if res["refused"] else 0
