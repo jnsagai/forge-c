@@ -1,0 +1,28 @@
+{
+  "affected_versions": [
+    "forge-c@<03da05043307"
+  ],
+  "candidate_patch_sha256": "397c216583253932b502e82d73f7a6690271569796a228ad02ba748601f38f83",
+  "capa_id": "CAPA-HR-f81f31dcb6ca75c125863d68",
+  "created_at": "2026-11-05T11:20:16.698858Z",
+  "event_ids": [],
+  "incident_ids": [
+    "human-review:215f9e6fec7296bbc49242c6aace93c16ab79c88049334baef4d34924aeb94be"
+  ],
+  "lesson_ids": [
+    "lesson-b558d6332f83"
+  ],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:AFO-REVIEW-CPU-CONTROL",
+  "reproducer_id": "AFO-REVIEW-CPU-CONTROL",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-e38feb617961b2b862ae",
+    "reproducer-run:rr-52e9c4a5a0016c05cc2c"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Original set membership omitted protected post-calibration learning transfers.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-05T11:24:19.399077Z"
+}

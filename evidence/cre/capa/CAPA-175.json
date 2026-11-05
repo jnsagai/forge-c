@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<03da05043307"
+  ],
+  "candidate_patch_sha256": "397c216583253932b502e82d73f7a6690271569796a228ad02ba748601f38f83",
+  "capa_id": "CAPA-175",
+  "created_at": "2026-11-05T11:11:50.162600Z",
+  "event_ids": [],
+  "incident_ids": [
+    "OWNER-REVIEW-LEARNING-REGISTRATION-REFUSED"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-175",
+  "reproducer_id": "RPR-175",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-3f1c022547afe6e9d9b0",
+    "reproducer-run:rr-2eed33afc9c6c15282a6"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Default set membership ignores immutable post-calibration learning registrations. Replay source-bound transitions and require completed calibration, retaining unspent heldout cases and all original evidence. Connect verified reviews to existing guarded CAPA and qualified scoped memory.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-05T11:13:55.080653Z"
+}

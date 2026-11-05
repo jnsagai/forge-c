@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="39" time="21.205" timestamp="2026-11-05T10:35:14.184006+00:00" hostname="master"><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_a_signed_disposition_of_a_registered_gap_or_finding_is_accepted" time="0.113" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_an_edited_disposition_is_refused[&lt;lambda&gt;-DSP_SIGNATURE_INVALID0]" time="0.035" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_an_edited_disposition_is_refused[&lt;lambda&gt;-DSP_SIGNATURE_INVALID1]" time="0.039" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_an_edited_disposition_is_refused[&lt;lambda&gt;-DSP_SCHEMA_INVALID]" time="0.036" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_forged_unsigned_wrong_namespace_wrong_bundle_and_unknown_subjects_are_refused" time="0.126" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_routing_feeds_the_learning_set_once_refuses_held_out_work_and_never_changes_the_bundle" time="0.438" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_active_frozen_baselines_remain_held_out_and_registered_spent_sets_are_learning" time="0.002" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_confirmed_human_review_opens_one_evidence_linked_capa_without_trusting_rationale" time="0.378" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_other_review_verdicts_are_kept_without_fabricating_defect_capas[MISSING_INPUT]" time="0.238" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_other_review_verdicts_are_kept_without_fabricating_defect_capas[OUT_OF_SCOPE]" time="0.254" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_confirmed_false_finding_opens_inspector_correction_for_analysis" time="0.361" /><testcase classname="factory.python.tests.test_da014_offline_disposition" name="test_reusing_a_review_id_with_different_signed_content_is_a_conflict" time="0.388" /><testcase classname="factory.python.tests.test_review_feedback" name="test_unvalidated_review_cannot_publish_a_lesson" time="0.398" /><testcase classname="factory.python.tests.test_review_feedback" name="test_causal_and_prevention_evidence_alone_do_not_bypass_cre_or_destination_checks[missing_decision]" time="1.315" /><testcase classname="factory.python.tests.test_review_feedback" name="test_causal_and_prevention_evidence_alone_do_not_bypass_cre_or_destination_checks[failed_gate]" time="1.333" /><testcase classname="factory.python.tests.test_review_feedback" name="test_causal_and_prevention_evidence_alone_do_not_bypass_cre_or_destination_checks[incomplete_gates]" time="1.292" /><testcase classname="factory.python.tests.test_review_feedback" name="test_causal_and_prevention_evidence_alone_do_not_bypass_cre_or_destination_checks[changed_input]" time="1.297" /><testcase classname="factory.python.tests.test_review_feedback" name="test_causal_and_prevention_evidence_alone_do_not_bypass_cre_or_destination_checks[holdout]" time="1.313" /><testcase classname="factory.python.tests.test_review_feedback" name="test_causal_and_prevention_evidence_alone_do_not_bypass_cre_or_destination_checks[inspector]" time="1.286" /><testcase classname="factory.python.tests.test_review_feedback" name="test_curated_lesson_reaches_matching_future_author_once_and_rejects_other_scopes" time="1.460"><failure message="KeyError: 'symptom_signature'">env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-87/test_curated_lesson_reaches_ma0/export.zip'), 'key': PosixPat.../pytest-87/test_curated_lesson_reaches_ma0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+
+    def test_curated_lesson_reaches_matching_future_author_once_and_rejects_other_scopes(env):
+        reg, cid, ws, _ = ready(env)
+&gt;       first = F.publish(reg, cid, workspace=ws, role="swe1-author")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_review_feedback.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+reg = &lt;forge_factory.reliability.capa.CapaRegistry object at 0x7d9dcd864c90&gt;
+cid = 'CAPA-HR-cab00b905489d7294978d1bd'
+
+    def publish(reg: CapaRegistry, cid: str, *, workspace: Path | None = None, role: str | None = None) -&gt; dict:
+        """Curate a frozen remedy only after causal/prevention proof AND an eligible CRE decision."""
+        from ..knowledge.store import LessonStore
+        from ..reliability import reproduce as RR
+    
+        record = reg.must(cid)
+        phases = reg.links(cid, "REVIEW_PHASE")
+        if not reg.links(cid, "HUMAN_REVIEW") or len(phases) != 1:
+            raise Refused("DSP_REVIEW_CAPA_REQUIRED")
+        if record["state"] not in ("PREVENTION_TESTED", "EFFECTIVENESS_OBSERVING", "EFFECTIVE"):
+            raise Refused("DSP_CAPA_NOT_VALIDATED")
+        manifests, issues = RR.load_manifest()
+        entry = manifests.get(record.get("reproducer_id"))
+        if issues or not entry or not record.get("prevention_test_id") or record["root_cause_status"] != "VERIFIED":
+            raise Refused("DSP_PREVENTION_REQUIRED")
+        fix, baseline = reg.links(cid, "FIX_REVISION"), reg.links(cid, "BASELINE_REVISION")
+        eligible = False
+        with reg.s.conn() as connection:
+            for did in reg.links(cid, "PROMOTION_DECISION"):
+                row = connection.execute("SELECT * FROM cre_promotion_decisions WHERE decision_id=?", (did,)).fetchone()
+                if row and fix and baseline and row["candidate"] == fix[-1] and row["baseline"] == baseline[-1]:
+                    decision = json.loads(row["record"])
+                    gates = decision.get("hard_gates") or []
+                    expected = {"protected_files", "policy_integrity", "reproducer", "prevention", "quality_process",
+                                "golden_benchmark", "holdout"}
+                    eligible |= (decision.get("decision") == "ELIGIBLE_FOR_OFFLINE_REVIEW"
+                                 and decision.get("evaluator_kind") == "INDEPENDENT_DETERMINISTIC_RUNNER"
+                                 and decision.get("policy_sha256") == reg.p.sha256
+                                 and len(gates) == len(expected) and {g["name"] for g in gates} == expected
+                                 and all(g["result"] == "PASS" for g in decision["hard_gates"]))
+        if not eligible:
+            raise Refused("DSP_ELIGIBLE_CRE_REQUIRED")
+        from ..knowledge.context import applicability
+        from .review_sets import active_workorders
+        from ..common import REPO_ROOT
+    
+        if workspace is None or role not in ("afo-factory-maintainer", "afo-recovery-planner", f"swe{phases[0][-1]}-author"):
+            raise Refused("DSP_LESSON_SCOPE_REQUIRED")
+        manifest = json.loads((workspace / ".forge-run/manifest.json").read_text())
+        scope = applicability(workspace)
+        if scope["holdout"] or manifest.get("work_order") in active_workorders(REPO_ROOT):
+            raise Refused("DSP_HELDOUT_REFUSED")
+        if not scope["target"] or not scope["source_version"] or not scope["tool_versions"]:
+            raise Refused("DSP_LESSON_SCOPE_REQUIRED")
+        for entry in manifest.get("inputs", []):
+            path = workspace / entry["path"]
+            if (path.is_symlink() or not path.resolve().is_relative_to(workspace.resolve()) or not path.is_file()
+                    or hashlib.sha256(path.read_bytes()).hexdigest() != entry.get("sha256")):
+                raise Refused("DSP_SCOPE_INPUTS_CHANGED")
+        destination = dict(phases=phases, roles=[role], targets=[scope["target"]], source_versions=[scope["source_version"]])
+        lessons = LessonStore(incidents=reg.lesson_source())
+        reg.lessons = lessons
+        for lid in reg.links(cid, "LESSON"):
+            lesson = lessons.get(lid)
+            same_scope = lesson and lesson.get("applicability") == destination and lesson.get("tool_versions") == scope["tool_versions"]
+            if same_scope and lesson["state"] == "VALIDATED":
+                return {"capa_id": cid, "lesson_id": lid, "state": "VALIDATED", "created": False}
+            if same_scope:
+                raise Refused("DSP_LESSON_REQUIRES_REVIEW")
+        try:
+&gt;           lesson = reg.propose_lesson(cid, lessons, entry["symptom_signature"], entry["remedy"], phase=phases[0],
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                        applicability=destination, tool_versions=scope["tool_versions"])
+E                                       KeyError: 'symptom_signature'
+
+factory/python/forge_factory/offline/feedback.py:171: KeyError</failure></testcase><testcase classname="factory.python.tests.test_review_feedback" name="test_actual_gate_recurrence_reopens_review_capa_and_retracts_its_lesson" time="1.439"><failure message="KeyError: 'symptom_signature'">env = {'bundle': PosixPath('/tmp/pytest-of-jefferson/pytest-87/test_actual_gate_recurrence_re0/export.zip'), 'key': PosixPat.../pytest-87/test_actual_gate_recurrence_re0/dispositions'), 'run_key': 'WO-0009B-STM32N6-IWDG-HAL-x1-a7b7082e0fbb', ...}
+
+    def test_actual_gate_recurrence_reopens_review_capa_and_retracts_its_lesson(env):
+        reg, cid, ws, fix = ready(env)
+&gt;       lesson = F.publish(reg, cid, workspace=ws, role="swe1-author")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_review_feedback.py:122: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+reg = &lt;forge_factory.reliability.capa.CapaRegistry object at 0x7d9dcd9b7690&gt;
+cid = 'CAPA-HR-cab00b905489d7294978d1bd'
+
+    def publish(reg: CapaRegistry, cid: str, *, workspace: Path | None = None, role: str | None = None) -&gt; dict:
+        """Curate a frozen remedy only after causal/prevention proof AND an eligible CRE decision."""
+        from ..knowledge.store import LessonStore
+        from ..reliability import reproduce as RR
+    
+        record = reg.must(cid)
+        phases = reg.links(cid, "REVIEW_PHASE")
+        if not reg.links(cid, "HUMAN_REVIEW") or len(phases) != 1:
+            raise Refused("DSP_REVIEW_CAPA_REQUIRED")
+        if record["state"] not in ("PREVENTION_TESTED", "EFFECTIVENESS_OBSERVING", "EFFECTIVE"):
+            raise Refused("DSP_CAPA_NOT_VALIDATED")
+        manifests, issues = RR.load_manifest()
+        entry = manifests.get(record.get("reproducer_id"))
+        if issues or not entry or not record.get("prevention_test_id") or record["root_cause_status"] != "VERIFIED":
+            raise Refused("DSP_PREVENTION_REQUIRED")
+        fix, baseline = reg.links(cid, "FIX_REVISION"), reg.links(cid, "BASELINE_REVISION")
+        eligible = False
+        with reg.s.conn() as connection:
+            for did in reg.links(cid, "PROMOTION_DECISION"):
+                row = connection.execute("SELECT * FROM cre_promotion_decisions WHERE decision_id=?", (did,)).fetchone()
+                if row and fix and baseline and row["candidate"] == fix[-1] and row["baseline"] == baseline[-1]:
+                    decision = json.loads(row["record"])
+                    gates = decision.get("hard_gates") or []
+                    expected = {"protected_files", "policy_integrity", "reproducer", "prevention", "quality_process",
+                                "golden_benchmark", "holdout"}
+                    eligible |= (decision.get("decision") == "ELIGIBLE_FOR_OFFLINE_REVIEW"
+                                 and decision.get("evaluator_kind") == "INDEPENDENT_DETERMINISTIC_RUNNER"
+                                 and decision.get("policy_sha256") == reg.p.sha256
+                                 and len(gates) == len(expected) and {g["name"] for g in gates} == expected
+                                 and all(g["result"] == "PASS" for g in decision["hard_gates"]))
+        if not eligible:
+            raise Refused("DSP_ELIGIBLE_CRE_REQUIRED")
+        from ..knowledge.context import applicability
+        from .review_sets import active_workorders
+        from ..common import REPO_ROOT
+    
+        if workspace is None or role not in ("afo-factory-maintainer", "afo-recovery-planner", f"swe{phases[0][-1]}-author"):
+            raise Refused("DSP_LESSON_SCOPE_REQUIRED")
+        manifest = json.loads((workspace / ".forge-run/manifest.json").read_text())
+        scope = applicability(workspace)
+        if scope["holdout"] or manifest.get("work_order") in active_workorders(REPO_ROOT):
+            raise Refused("DSP_HELDOUT_REFUSED")
+        if not scope["target"] or not scope["source_version"] or not scope["tool_versions"]:
+            raise Refused("DSP_LESSON_SCOPE_REQUIRED")
+        for entry in manifest.get("inputs", []):
+            path = workspace / entry["path"]
+            if (path.is_symlink() or not path.resolve().is_relative_to(workspace.resolve()) or not path.is_file()
+                    or hashlib.sha256(path.read_bytes()).hexdigest() != entry.get("sha256")):
+                raise Refused("DSP_SCOPE_INPUTS_CHANGED")
+        destination = dict(phases=phases, roles=[role], targets=[scope["target"]], source_versions=[scope["source_version"]])
+        lessons = LessonStore(incidents=reg.lesson_source())
+        reg.lessons = lessons
+        for lid in reg.links(cid, "LESSON"):
+            lesson = lessons.get(lid)
+            same_scope = lesson and lesson.get("applicability") == destination and lesson.get("tool_versions") == scope["tool_versions"]
+            if same_scope and lesson["state"] == "VALIDATED":
+                return {"capa_id": cid, "lesson_id": lid, "state": "VALIDATED", "created": False}
+            if same_scope:
+                raise Refused("DSP_LESSON_REQUIRES_REVIEW")
+        try:
+&gt;           lesson = reg.propose_lesson(cid, lessons, entry["symptom_signature"], entry["remedy"], phase=phases[0],
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                        applicability=destination, tool_versions=scope["tool_versions"])
+E                                       KeyError: 'symptom_signature'
+
+factory/python/forge_factory/offline/feedback.py:171: KeyError</failure></testcase><testcase classname="factory.python.tests.test_review_feedback" name="test_missing_or_corrupt_set_evidence_cannot_reclassify_frozen_work" time="0.025" /><testcase classname="factory.python.tests.test_review_feedback" name="test_crash_after_cre_receipt_before_jsonl_can_recover_without_duplicate_capa" time="0.408" /><testcase classname="factory.python.tests.test_da014_learning" name="test_every_unique_outcome_is_factually_captured_once_with_durable_disposition" time="0.546" /><testcase classname="factory.python.tests.test_da014_learning" name="test_ordinary_lesson_requires_independent_source_and_actual_scope" time="0.358" /><testcase classname="factory.python.tests.test_da014_learning" name="test_late_holdout_classification_retracts_older_source_without_erasing_facts" time="0.420" /><testcase classname="factory.python.tests.test_da014_learning" name="test_afo_and_qualification_job_capture_preserve_evaluation_scope" time="0.977" /><testcase classname="factory.python.tests.test_da014_learning" name="test_late_holdout_classification_excludes_old_facts_from_improvement_routing" time="0.249" /><testcase classname="factory.python.tests.test_da014_learning" name="test_holdout_classification_between_selection_and_delivery_fences_exposure" time="0.388" /><testcase classname="factory.python.tests.test_da014_learning" name="test_self_asserted_passes_and_changed_scope_do_not_qualify" time="0.434" /><testcase classname="factory.python.tests.test_da014_learning" name="test_retraction_removes_qualified_memory_and_retains_consumers" time="0.392" /><testcase classname="factory.python.tests.test_da014_learning" name="test_chronological_comparison_includes_learning_cost_and_holdout" time="0.152" /><testcase classname="factory.python.tests.test_da014_learning" name="test_detached_failed_job_capture_survives_absent_package_and_keeps_unknown" time="0.321" /><testcase classname="factory.python.tests.test_da014_learning" name="test_retraction_between_selection_and_delivery_fences_exposure" time="0.372" /><testcase classname="factory.python.tests.test_da014_learning" name="test_recurring_facts_link_existing_capa_reproducer_without_fabricating_incident" time="0.780" /><testcase classname="factory.python.tests.test_da014_learning" name="test_never_dispatched_orders_take_holdout_scope_from_their_intake_manifest" time="0.461" /><testcase classname="factory.python.tests.test_da014_phase_gate_experience" name="test_native_phase_gate_capture_is_deduplicated_with_a_durable_disposition[PASS]" time="0.224" /><testcase classname="factory.python.tests.test_da014_phase_gate_experience" name="test_native_phase_gate_capture_is_deduplicated_with_a_durable_disposition[BLOCKED]" time="0.233" /><testcase classname="factory.python.tests.test_da014_phase_gate_experience" name="test_unfinished_unknown_or_nonroute_rows_cannot_invent_a_phase_result" time="0.177" /></testsuite></testsuites>

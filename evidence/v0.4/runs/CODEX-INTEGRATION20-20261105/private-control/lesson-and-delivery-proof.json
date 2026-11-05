@@ -1,0 +1,50 @@
+{
+  "schema": "forge-c/private-review-learning-proof/1",
+  "lesson_db_row": {
+    "lesson_id": "lesson-b558d6332f83",
+    "record": "{\"applicability\": {\"phases\": [\"SWE.1\"], \"roles\": [\"swe1-author\"], \"source_versions\": [\"78dad99ddaf855d7aa5576cd304a59fd24c9331d8906ef7f277534d5baea043c\"], \"targets\": [\"STM32N657X0 (STM32N6x5/x7 family)\"]}, \"constraints\": \"Reference data from a verified CAPA; never overrides requirements, hardware manuals or factory policy.\", \"consumed_by_runs\": [], \"contract_version\": \"2.0\", \"created_at\": \"2026-11-05T11:24:19.348154Z\", \"evidence_refs\": [\"reproducer-run:rr-e38feb617961b2b862ae\", \"reproducer-run:rr-52e9c4a5a0016c05cc2c\", \"cre-capa:CAPA-HR-f81f31dcb6ca75c125863d68\"], \"expires_at\": \"2027-05-04T11:24:19Z\", \"hash\": \"6cff0dd57c462c94c96d294946f61b874e5840012d3530a4f5b7606b36c37565\", \"lesson_id\": \"lesson-b558d6332f83\", \"remedy\": \"Respect registered learning transitions while retaining unspent held-out isolation.\", \"root_cause\": \"Original set membership omitted protected post-calibration learning transfers.\", \"source_attempt_id\": \"rr-52e9c4a5a0016c05cc2c\", \"source_incident_id\": \"CAPA-HR-f81f31dcb6ca75c125863d68\", \"source_kind\": \"REPAIR_PROMOTED\", \"state\": \"VALIDATED\", \"symptoms\": \"review intake rejects explicitly registered post-calibration learning baselines as held out\", \"tool_versions\": {\"forge-factory\": \"d2fe5a32dad7b872fda2a56dddcde0ba3f37dbdc\"}, \"validated_at\": \"2026-11-05T11:24:19.384360Z\", \"validation_tests\": [{\"evidence_ref\": \"reproducer-run:rr-e38feb617961b2b862ae\", \"id\": \"AFO-REVIEW-CPU-CONTROL:rr-e38feb617961b2b862ae\", \"status\": \"PASS\"}, {\"evidence_ref\": \"reproducer-run:rr-52e9c4a5a0016c05cc2c\", \"id\": \"AFO-REVIEW-CPU-CONTROL:rr-52e9c4a5a0016c05cc2c\", \"status\": \"PASS\"}], \"version\": 1}",
+    "state": "VALIDATED",
+    "content_hash": "6cff0dd57c462c94c96d294946f61b874e5840012d3530a4f5b7606b36c37565",
+    "tools": "[\"forge-factory\"]",
+    "phase": "SWE.1",
+    "created_at": "2026-11-05T11:24:19.348154Z",
+    "expires_at": "2027-05-04T11:24:19Z",
+    "reasons": "[]"
+  },
+  "usage_rows": [
+    {
+      "lesson_id": "lesson-b558d6332f83",
+      "run_id": "CPU-FUTURE-CONSUMER",
+      "used_at": "2026-11-05T11:24:19.446615Z"
+    }
+  ],
+  "history_rows": [
+    {
+      "seq": 1,
+      "lesson_id": "lesson-b558d6332f83",
+      "from_state": null,
+      "to_state": "PROPOSED",
+      "at": "2026-11-05T11:24:19.348154Z",
+      "reason": "proposed"
+    },
+    {
+      "seq": 2,
+      "lesson_id": "lesson-b558d6332f83",
+      "from_state": "PROPOSED",
+      "to_state": "VALIDATING",
+      "at": "2026-11-05T11:24:19.384312Z",
+      "reason": "curator validation started"
+    },
+    {
+      "seq": 3,
+      "lesson_id": "lesson-b558d6332f83",
+      "from_state": "VALIDATING",
+      "to_state": "VALIDATED",
+      "at": "2026-11-05T11:24:19.384392Z",
+      "reason": "all validators passed"
+    }
+  ],
+  "private_events_sha256": "b0095e59130f7e9bbf8711fa1439afa2e5e357858d56d4ab6544ae7c88c67615",
+  "event_routing": "events.emit.events_dir resolves FORGE_EVENTS_DIR at append time",
+  "native_product_improvement": "NOT_MEASURED"
+}
