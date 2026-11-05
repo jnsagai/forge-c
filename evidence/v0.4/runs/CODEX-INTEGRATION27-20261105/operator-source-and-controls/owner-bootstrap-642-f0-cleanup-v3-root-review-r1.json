@@ -1,0 +1,10 @@
+{
+  "status": "NO_BLOCKER_FOR_SCOPE",
+  "helper_sha256": "ed6c1cdb08c1fff6fe75f86763e6aac31fbe11cb55790bcaaf969bc064848c8f",
+  "expectation_sha256": "95ad72cc87510751a6f64304cfa809c2872001d2520b63f0abe9faf3ae1b3c6f",
+  "author_controls": "42PASS0FAIL",
+  "independent_review_sha256": "4927f2e5537d26ec85d51cf6f92ee6b9b80cd343b9b869daf5720e6c5856fbf2",
+  "reviewed": "exactpidfd5lifetimes/TERM3+onlyholderKILL/naturalwaiter; fullcanonicaloldissuancechain+wholeindependenttable continuity; finalcomparedsnapshot followedbyfinaltail+freshness",
+  "scope_authorized_now": "transfer+inspect-reviewed ONLY; no apply before newmetadata/starter/freshwitness readiness",
+  "actual_cleanup": "NOT_RUN"
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "forge-c/owner-development-prospective/1",
+  "source": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+  "scope": "CPU_KERNEL_AND_TRANSPORT_STUB_ONLY",
+  "actual_model_calls": 0,
+  "production_mutations": false,
+  "role_competence": "NOT_RUN",
+  "actual_owner_authority": "NO_NEW_CANONICAL_ISSUER_CREATED_HISTORICAL_DEAD_642_AND_214_ACK_PRESERVED",
+  "status": "UNKNOWN_OR_REFUSED_NO_AUTOMATIC_RETRY",
+  "error_type": "CalledProcessError",
+  "fixture_state": "Inspect own private fixture evidence before any retry; no live-service cleanup authorized here"
+}

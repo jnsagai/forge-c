@@ -1,0 +1,132 @@
+{
+  "actual_remote_predecessor_result": {
+    "FAIL": 2,
+    "PASS": 268,
+    "auto_retry": false,
+    "errors": 0,
+    "native_stub": "NOT_RUN",
+    "skipped": 0,
+    "source": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+    "tests": 270
+  },
+  "all_own_heavy_CPU_handles_closed": true,
+  "all_production_paths_byte_identical_to_bfe": true,
+  "base": "bfe89899e8b914c6b6bfec34d2c49a1c7704b0be",
+  "base_qualified_decision": "pd-6ac385a2a8dec0c41a14",
+  "changes": [
+    {
+      "bytes": 7891,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v6/factory/python/tests/test_da014_provider_process.py",
+      "sha256": "591db86d176c748cc0f32083d327b649f594525527d39d0c5da557f1ded50ea3"
+    },
+    {
+      "bytes": 28409,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v6/factory/python/tests/test_line_stack_lifecycle.py",
+      "sha256": "a3d0ecf76a594316b9f42f00ef553512fd604b3b6da2507b0441d81d81ecae7b"
+    }
+  ],
+  "checks": {
+    "Ruff": "PASS",
+    "design14": "PASS",
+    "unaffected_history63": "PRESERVED_FROM_EXACT_PRODUCTION_BFE",
+    "unaffected_other_modules": "PRESERVED_FROM_V4"
+  },
+  "evidence": [
+    {
+      "bytes": 2366,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v6-inputs-before-tests.json",
+      "sha256": "c755cfe77ead7867d56fcf07e0a9c8cf49724f121f27e55b7421241f9d007a7f"
+    },
+    {
+      "bytes": 572,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v6-targeted-r1.xml",
+      "sha256": "b049e3a6ba3a7dd944d58b819f4269ad6a187c9c853dd689b85dcadb47af5bfd"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v6-targeted-r1.log",
+      "sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87"
+    },
+    {
+      "bytes": 1514,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v6-design.log",
+      "sha256": "713164c606ac4cf2706ae782d8875060f15ee99720a980a1af01d8453af05c2b"
+    },
+    {
+      "bytes": 19,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v6-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "bytes": 1507,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v6-shared-sleep-cause-control.json",
+      "sha256": "280339282f1e557778a2192683aef5dee76ae7974fb75f5c3739d966b5c4b25b"
+    },
+    {
+      "bytes": 2152,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v6-portability-independent-review-r1.json",
+      "sha256": "b8cc617d9cca853b3d858d67e6fb315ae00e63c46ed8eda8751a69372ba47eb3"
+    },
+    {
+      "bytes": 70159,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-bfe89899-actual-affected-r1.xml",
+      "sha256": "f552125737038e30e180230113cfd60dc82135fa50ce4f44ea1b4f1992fc519a"
+    },
+    {
+      "bytes": 25276,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-bfe89899-actual-affected-r1.log",
+      "sha256": "eb81164c32fe4ae31dae90a19b461f828929751f6c981d82fc3f95797fb964f5"
+    },
+    {
+      "bytes": 567,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-bfe89899-actual-probe-summary-r1.json",
+      "sha256": "6e5df3a0a27ac0855e60cd4c8ca76793a87765a2d41da93f06b1bb361c920d4a"
+    },
+    {
+      "bytes": 6257,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-bfe-post-QA-preservation-r1.json",
+      "sha256": "5d315e23bc54b783b2dc14355534679a9f5ba24712a485d843988111773002ea"
+    }
+  ],
+  "fix_semantics": [
+    "Patch actual portable pidfd.open_pid test seam; no runtime syscall fallback change.",
+    "Isolate ST.time facade so shared subprocess.wait cannot advance injected clock before initial authority.",
+    "Only expire during actual active effect guard VRAM wait after >=2 memory observations; exact error/no spawn/HELD lease/Intent tests unchanged."
+  ],
+  "independent_review": {
+    "bytes": 2152,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v6-portability-independent-review-r1.json",
+    "sha256": "b8cc617d9cca853b3d858d67e6fb315ae00e63c46ed8eda8751a69372ba47eb3"
+  },
+  "limits": [
+    "No production source/policy/role/accounting/safety check changed.",
+    "Local2PASS is not Omniverse270PASS; fresh source-bound remote QA/nativeSTUB pending rootreview/qualification.",
+    "Unreadable postfailure process identities are separately diagnosed; no broad privatequiet inferred.",
+    "No cleanup/guardian/canonicalmetadata/model/GPU/runtime acceptance."
+  ],
+  "predecessor_index": {
+    "bytes": 8805,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v5-source-index.json",
+    "sha256": "c47bcde64a20ce72dd61cfae43ad72d2cf2695cdd1180432faecc1e2cb89cfb6"
+  },
+  "schema": "forge-c/owner-namespace-history-portability-source-index/1",
+  "source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "source_bundle": {
+    "bytes": 38462,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v6-source.bundle",
+    "sha256": "ca9138406b2e1c269074e1a8f5ef4519a17cc157ce6cd711c59eb9fde305eeb4"
+  },
+  "status": "FROZEN_TEST_ONLY_CANDIDATE_ROOT_FIX_IN_PROGRESS",
+  "targeted_local_result": {
+    "errors": "0",
+    "failures": "0",
+    "hostname": "master",
+    "name": "pytest",
+    "skipped": "0",
+    "tests": "2",
+    "time": "6.044",
+    "timestamp": "2026-11-05T21:48:49.477209+00:00"
+  },
+  "tracked_clean": true,
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v6"
+}

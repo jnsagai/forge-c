@@ -1,0 +1,398 @@
+........................................................................ [ 26%]
+........................................................................ [ 53%]
+.........................F............................................F. [ 80%]
+......................................................                   [100%]
+=================================== FAILURES ===================================
+__________ test_pid_reuse_observation_never_signals_the_newer_process __________
+
+tmp_path = PosixPath('/tmp/pytest-of-omniverse2/pytest-15/test_pid_reuse_observation_nev0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ead981b4600>
+
+    def test_pid_reuse_observation_never_signals_the_newer_process(tmp_path, monkeypatch):
+        with provider(tmp_path, "reused") as instance:
+            real = P.identity
+            newer = {**real(instance["init_pid"]), "start_ticks": "different"}
+            monkeypatch.setattr(P, "identity", lambda pid: newer)
+>           monkeypatch.setattr(os, "pidfd_open", lambda pid: pytest.fail("reused PID was opened for signaling"))
+E           AttributeError: <module 'os' (frozen)> has no attribute 'pidfd_open'
+
+factory/python/tests/test_da014_provider_process.py:105: AttributeError
+_ test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_lease[True] _
+
+claimed = namespace(store=<forge_factory.afo.queue.Store object at 0x7ead98518360>, oid='afo-6c54e9a3baa836c2', aid='afo-6c54e9a...cc59afa.json', durable_sha256='1fb8094be8506273cf1bdd56400a746faffa7af0fbedbe7b3ec589ad4b6c4fcb', rework_context=None))
+tmp_path = PosixPath('/tmp/pytest-of-omniverse2/pytest-15/test_prelaunch_serve_swaps_rea0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ead9851a3c0>
+
+    def test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_lease(claimed, tmp_path, monkeypatch):
+        """Transport substitute is an actual HTTP server; no model or GPU is emulated as qualification."""
+        import copy
+        import socket
+    
+        from forge_factory.afo.durable import digest, immutable_json
+        from forge_factory.lrtx import provider_process as provider
+        from test_da014_provider_process import provider as private_namespace
+    
+        p = claimed
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            port = listener.getsockname()[1]
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            gateway_port = listener.getsockname()[1]
+        script = tmp_path / "llama-server-control.py"
+        script.write_text("""
+    import argparse,json
+    from http.server import BaseHTTPRequestHandler,HTTPServer
+    ap=argparse.ArgumentParser();ap.add_argument('--alias');ap.add_argument('--port',type=int);ap.add_argument('--bad',action='store_true');a=ap.parse_args()
+    class Handler(BaseHTTPRequestHandler):
+     def do_GET(self):
+      body=json.dumps({'data':[{'id':'wrong-alias' if a.bad else a.alias}]} if self.path=='/v1/models' else {'admission':{'inflight':0,'waiting':0}}).encode()
+      self.send_response(200);self.end_headers();self.wfile.write(body)
+     def log_message(self,*args):pass
+    HTTPServer.allow_reuse_address=True
+    HTTPServer(('127.0.0.1',a.port),Handler).serve_forever()
+    """)
+        profile = copy.deepcopy(p.s["profile"])
+        first, second = "qwen3.6:35b-a3b", "gpt-oss:20b"
+        # CPU backend declarations only; real model pins/capabilities are not exercised by this test.
+        profile["runtime"]["llama_server"] = {"model": first, "vram_required_mib": 0}
+        profile["runtime"]["llama_server_alternates"] = {second: {"vram_required_mib": 0}}
+        p.s["profile"] = profile
+        p.s["ports"] = p.s["ports"] | {"llama": port, "gateway": gateway_port}
+        (p.s["root"] / "logs").mkdir()
+        monkeypatch.setattr(ST, "envmap", lambda s: dict(os.environ) | {"FORGE_VENV": str(Path(sys.executable).parent.parent)})
+        monkeypatch.setattr(ST, "_vram_free_mib", lambda: 100000)
+        bad_models = set()
+        monkeypatch.setattr(ST, "llama_server_spec", lambda r, prof, ports, env, model=None:
+                            ([sys.executable, str(script), "--alias", model or first, "--port", str(port)]
+                             + (["--bad"] if model in bad_models else []), dict(os.environ),
+                             f"http://127.0.0.1:{port}/health", [model or first]))
+        processes = []
+        original_spawn = ST._in_ns
+        expire_new_worker = [False]
+    
+        def actual_spawn(*args, **kwargs):
+            assert kwargs.get("serving"), "managed worker must enter private provider PID namespace"
+            child = original_spawn(*args, **kwargs)
+            processes.append(child)
+            if expire_new_worker[0]:
+                deadline = P.registered(p.store, P.job_id(p.aid))["deadline_epoch"]
+                monkeypatch.setattr(A.time, "time", lambda: deadline + 1)
+            return child
+    
+        monkeypatch.setattr(ST, "_in_ns", actual_spawn)
+        before = p.intent.path.read_bytes()
+        try:
+            with private_namespace(tmp_path, "managed-cpu-transport", network=True) as base:
+                instance = provider.capture(p.s["root"], profile=profile["id"], profile_sha256=profile["_sha256"],
+                                            parent_pid=base["parent_pid"])
+                subprocess.run(ST._nsenter(instance["init_pid"]) + ["ip", "link", "set", "lo", "up"], check=True,
+                               capture_output=True)
+                immutable_json(p.s["root"] / "run/provider-instances" / (digest(instance) + ".json"), instance)
+                ST._save_services(p.s["root"], {"processes": {}, "serving_instance": instance})
+                inner_code = """
+    import copy,json,os,sys
+    from pathlib import Path
+    from forge_factory.lrtx import provider_process as P
+    from forge_factory.afo.durable import Refused
+    v=json.loads(Path(sys.argv[1]).read_text());P.require_live_instance(v)
+    bad=copy.deepcopy(v);bad['init_owner_view']['uid_map'][0][1]+=1
+    try:P.require_live_instance(bad)
+    except Refused:pass
+    else:raise AssertionError('changed UID mapping accepted')
+    print(json.dumps({'mapped_owner_verified':True,'current_uid':os.getuid(),'captured_uid':v['init']['uid']}))
+    """
+                inner = subprocess.run(ST._nsenter(instance["init_pid"]) + [sys.executable, "-c", inner_code,
+                                       str(p.s["root"] / "run/provider-instances" / (digest(instance) + ".json"))],
+                                       env=dict(os.environ), capture_output=True, text=True, check=True)
+                mapped = json.loads(inner.stdout)
+                assert mapped["mapped_owner_verified"] and mapped["current_uid"] == 0
+                monkeypatch.setattr(ST, "_holder", lambda s: instance["init_pid"])
+                gateway = actual_spawn(instance["init_pid"], [sys.executable, str(script), "--alias", "gateway-control",
+                                       "--port", str(gateway_port)], dict(os.environ), p.s["root"] / "logs/gateway.log",
+                                       p.s["root"], serving=instance)
+                import time
+    
+                until = time.monotonic() + 5
+                while True:
+                    try:
+                        response = ST._get(f"http://127.0.0.1:{gateway_port}/health", instance["init_pid"], ST.envmap(p.s), False)
+                        if response:
+                            break
+                        raise OSError("isolated gateway not ready")
+                    except OSError:
+                        if gateway.poll() is not None or time.monotonic() >= until:
+                            pytest.fail("isolated CPU gateway did not start")
+                        time.sleep(0.02)
+                with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
+                    assert ST.serve(p.s, first)["result"] == "SWAPPED"
+                    record = json.loads((p.s["root"] / "run/services.json").read_text())["processes"]["llama_server"]
+                    assert record["worker"]["pid"] != record["pid"]  # actual worker, not nsenter waiter
+                    assert record["worker"]["identity"]["pid_namespace"] == instance["init"]["pid_namespace"]
+                    assert ST.serve(p.s, second)["result"] == "SWAPPED"
+                    assert provider.identity(record["worker"]["pid"]) is None
+                    assert ST.serve(p.s, second)["result"] == "ALREADY_SERVED"
+                    failed = "gpt-oss:120b"
+                    profile["runtime"]["llama_server_alternates"][failed] = {"vram_required_mib": 0}
+                    bad_models.add(failed)
+                    profile["runtime"]["llama_server_swap"] = {"health_timeout_s": 0.2}
+                    with pytest.raises(RuntimeError, match="MODEL_SWAP_NOT_SERVED"):
+                        ST.serve(p.s, failed)
+                    processes[-1].wait(timeout=5)  # actual worker killed; its waiter exits naturally
+                    assert provider.quiet(instance) is None  # gateway/container are still owned and live
+                    real_clock = A.time.time
+                    expire_new_worker[0] = True
+                    try:
+                        with pytest.raises(Refused, match="EFFECT_AUTHORITY_EXPIRED_OR_CHANGED"):
+                            ST.serve(p.s, first)
+                        processes[-1].wait(timeout=5)  # cleanup remains allowed under original startup nonce
+                    finally:
+                        expire_new_worker[0] = False
+                        monkeypatch.setattr(A.time, "time", real_clock)
+                    profile["runtime"]["llama_server_swap"] = {"health_timeout_s": 5}
+                    assert ST.serve(p.s, second)["result"] == "SWAPPED"
+                    # Expire a real claimed job during the model-stop/VRAM wait;
+                    # the exact worker may already be retired, but no replacement can start.
+                    before_spawn_count = len(processes)
+                    job = P.registered(p.store, P.job_id(p.aid))
+                    real_clock, real_sleep = A.time.time, ST.time.sleep
+                    free_calls = [0]
+    
+                    def free_memory():
+                        free_calls[0] += 1
+                        return 0 if free_calls[0] <= 2 else 100000
+    
+                    def expire_during_wait(delay):
+                        monkeypatch.setattr(A.time, "time", lambda: job["deadline_epoch"] + 1)
+                        real_sleep(0.02)
+    
+                    profile["runtime"]["llama_server"]["vram_required_mib"] = 5
+                    monkeypatch.setattr(ST, "_vram_free_mib", free_memory)
+                    monkeypatch.setattr(ST.time, "sleep", expire_during_wait)
+                    try:
+                        with pytest.raises(Refused, match="EFFECT_AUTHORITY_EXPIRED_OR_CHANGED"):
+>                           ST.serve(p.s, first)
+
+factory/python/tests/test_line_stack_lifecycle.py:284: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/lrtx/stack.py:1001: in serve
+    return line_stack_lifecycle.serve(s, model, workspace)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/line_stack_lifecycle.py:371: in serve
+    with fenced(s, "serve", model=model, workspace=workspace) as guard, stack.line_effect_guard(guard):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/omniverse2/.local/share/uv/python/cpython-3.13.13-linux-x86_64-gnu/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/line_stack_lifecycle.py:230: in fenced
+    cfg, store, job, execution, intent, effect_guard = _bound(s)
+                                                       ^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+s = {'ports': {'fabro': 32391, 'gateway': 54703, 'llama': 53095, 'ollama': 11455}, 'profile': {'_path': 'config/factory/pr..._LRTX_ROOT', ...}, ...}, 'root': PosixPath('/tmp/pytest-of-omniverse2/pytest-15/test_prelaunch_serve_swaps_rea0/lrtx')}
+
+    def _bound(s):
+        from . import line_recovery_control as C
+        from . import line_recovery_product as P
+        from .execution_lifecycle import Executions
+        from .line_launcher import LineConfig
+        from .local_agent import authorized, request_for
+        from .operations import Intent
+        from .policy import load
+        from .queue import Store
+    
+        cfg = LineConfig.from_env()
+        root = s["root"].resolve()
+        if (os.environ.get("FORGE_DURABLE_AUTONOMY") != "1"
+                or os.environ.get("FORGE_AFO_QUEUE_SCOPE") != "line-local"
+                or cfg.stack_root.resolve() != root
+                or Path(os.environ.get("FORGE_STATE_DIR", "/")).resolve() != root / "state"):
+            raise Refused("LINE_STACK_SCOPE_MISMATCH")
+        value = P.payload(os.environ.get(FILE), os.environ.get(SHA))
+        store = Store(root / "state/supervisor/line-queue.sqlite3", must_exist=True)
+        job, row, spec = P._job_for_payload(store, value)
+        eff = load()
+        control = C.configuration(job["line_role_authority_ref"], eff, request=request_for(row))
+        C.require_job_binding(job, control, store=store)
+        C.require_native_transport(job, cfg=cfg, control=control)
+        intent = Intent(control["operations_intent"])
+        record = intent.read()
+        execution = Executions(store).get(job["job_id"])
+        if (record["mode"] != "RUNNING" or record["epoch"] != job.get("operations_epoch")
+                or os.environ.get("FORGE_OPERATIONS_INTENT") != control["operations_intent"]
+                or os.environ.get("FORGE_OPERATIONS_PROFILE") != job["profile"]
+                or s["profile"]["id"] != job["profile"] or s["profile"]["_sha256"] != job["profile_sha256"]
+                or spec["profile"] != job["profile"] or eff.sha256 != job["policy_sha256"]
+                or row["state"] not in ("ADMITTED", "RUNNING") or not authorized(row, eff, job["model"])
+                or not time.time() < job["deadline_epoch"] or not execution
+                or execution["launch_nonce"] != job["nonce"] or execution["mission_id"] != job["mission_id"]
+                or execution["resource_lease"] != "HELD" or execution["authorization_state"] != "VALID"
+                or execution["task_outcome"] != "ACTIVE"):
+>           raise Refused("LINE_STACK_AUTHORITY_OR_EXECUTION_FENCED")
+E           forge_factory.afo.durable.Refused: LINE_STACK_AUTHORITY_OR_EXECUTION_FENCED:
+
+factory/python/forge_factory/afo/line_stack_lifecycle.py:79: Refused
+
+During handling of the above exception, another exception occurred:
+
+claimed = namespace(store=<forge_factory.afo.queue.Store object at 0x7ead98518360>, oid='afo-6c54e9a3baa836c2', aid='afo-6c54e9a...cc59afa.json', durable_sha256='1fb8094be8506273cf1bdd56400a746faffa7af0fbedbe7b3ec589ad4b6c4fcb', rework_context=None))
+tmp_path = PosixPath('/tmp/pytest-of-omniverse2/pytest-15/test_prelaunch_serve_swaps_rea0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ead9851a3c0>
+
+    def test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_lease(claimed, tmp_path, monkeypatch):
+        """Transport substitute is an actual HTTP server; no model or GPU is emulated as qualification."""
+        import copy
+        import socket
+    
+        from forge_factory.afo.durable import digest, immutable_json
+        from forge_factory.lrtx import provider_process as provider
+        from test_da014_provider_process import provider as private_namespace
+    
+        p = claimed
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            port = listener.getsockname()[1]
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            gateway_port = listener.getsockname()[1]
+        script = tmp_path / "llama-server-control.py"
+        script.write_text("""
+    import argparse,json
+    from http.server import BaseHTTPRequestHandler,HTTPServer
+    ap=argparse.ArgumentParser();ap.add_argument('--alias');ap.add_argument('--port',type=int);ap.add_argument('--bad',action='store_true');a=ap.parse_args()
+    class Handler(BaseHTTPRequestHandler):
+     def do_GET(self):
+      body=json.dumps({'data':[{'id':'wrong-alias' if a.bad else a.alias}]} if self.path=='/v1/models' else {'admission':{'inflight':0,'waiting':0}}).encode()
+      self.send_response(200);self.end_headers();self.wfile.write(body)
+     def log_message(self,*args):pass
+    HTTPServer.allow_reuse_address=True
+    HTTPServer(('127.0.0.1',a.port),Handler).serve_forever()
+    """)
+        profile = copy.deepcopy(p.s["profile"])
+        first, second = "qwen3.6:35b-a3b", "gpt-oss:20b"
+        # CPU backend declarations only; real model pins/capabilities are not exercised by this test.
+        profile["runtime"]["llama_server"] = {"model": first, "vram_required_mib": 0}
+        profile["runtime"]["llama_server_alternates"] = {second: {"vram_required_mib": 0}}
+        p.s["profile"] = profile
+        p.s["ports"] = p.s["ports"] | {"llama": port, "gateway": gateway_port}
+        (p.s["root"] / "logs").mkdir()
+        monkeypatch.setattr(ST, "envmap", lambda s: dict(os.environ) | {"FORGE_VENV": str(Path(sys.executable).parent.parent)})
+        monkeypatch.setattr(ST, "_vram_free_mib", lambda: 100000)
+        bad_models = set()
+        monkeypatch.setattr(ST, "llama_server_spec", lambda r, prof, ports, env, model=None:
+                            ([sys.executable, str(script), "--alias", model or first, "--port", str(port)]
+                             + (["--bad"] if model in bad_models else []), dict(os.environ),
+                             f"http://127.0.0.1:{port}/health", [model or first]))
+        processes = []
+        original_spawn = ST._in_ns
+        expire_new_worker = [False]
+    
+        def actual_spawn(*args, **kwargs):
+            assert kwargs.get("serving"), "managed worker must enter private provider PID namespace"
+            child = original_spawn(*args, **kwargs)
+            processes.append(child)
+            if expire_new_worker[0]:
+                deadline = P.registered(p.store, P.job_id(p.aid))["deadline_epoch"]
+                monkeypatch.setattr(A.time, "time", lambda: deadline + 1)
+            return child
+    
+        monkeypatch.setattr(ST, "_in_ns", actual_spawn)
+        before = p.intent.path.read_bytes()
+        try:
+            with private_namespace(tmp_path, "managed-cpu-transport", network=True) as base:
+                instance = provider.capture(p.s["root"], profile=profile["id"], profile_sha256=profile["_sha256"],
+                                            parent_pid=base["parent_pid"])
+                subprocess.run(ST._nsenter(instance["init_pid"]) + ["ip", "link", "set", "lo", "up"], check=True,
+                               capture_output=True)
+                immutable_json(p.s["root"] / "run/provider-instances" / (digest(instance) + ".json"), instance)
+                ST._save_services(p.s["root"], {"processes": {}, "serving_instance": instance})
+                inner_code = """
+    import copy,json,os,sys
+    from pathlib import Path
+    from forge_factory.lrtx import provider_process as P
+    from forge_factory.afo.durable import Refused
+    v=json.loads(Path(sys.argv[1]).read_text());P.require_live_instance(v)
+    bad=copy.deepcopy(v);bad['init_owner_view']['uid_map'][0][1]+=1
+    try:P.require_live_instance(bad)
+    except Refused:pass
+    else:raise AssertionError('changed UID mapping accepted')
+    print(json.dumps({'mapped_owner_verified':True,'current_uid':os.getuid(),'captured_uid':v['init']['uid']}))
+    """
+                inner = subprocess.run(ST._nsenter(instance["init_pid"]) + [sys.executable, "-c", inner_code,
+                                       str(p.s["root"] / "run/provider-instances" / (digest(instance) + ".json"))],
+                                       env=dict(os.environ), capture_output=True, text=True, check=True)
+                mapped = json.loads(inner.stdout)
+                assert mapped["mapped_owner_verified"] and mapped["current_uid"] == 0
+                monkeypatch.setattr(ST, "_holder", lambda s: instance["init_pid"])
+                gateway = actual_spawn(instance["init_pid"], [sys.executable, str(script), "--alias", "gateway-control",
+                                       "--port", str(gateway_port)], dict(os.environ), p.s["root"] / "logs/gateway.log",
+                                       p.s["root"], serving=instance)
+                import time
+    
+                until = time.monotonic() + 5
+                while True:
+                    try:
+                        response = ST._get(f"http://127.0.0.1:{gateway_port}/health", instance["init_pid"], ST.envmap(p.s), False)
+                        if response:
+                            break
+                        raise OSError("isolated gateway not ready")
+                    except OSError:
+                        if gateway.poll() is not None or time.monotonic() >= until:
+                            pytest.fail("isolated CPU gateway did not start")
+                        time.sleep(0.02)
+                with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
+                    assert ST.serve(p.s, first)["result"] == "SWAPPED"
+                    record = json.loads((p.s["root"] / "run/services.json").read_text())["processes"]["llama_server"]
+                    assert record["worker"]["pid"] != record["pid"]  # actual worker, not nsenter waiter
+                    assert record["worker"]["identity"]["pid_namespace"] == instance["init"]["pid_namespace"]
+                    assert ST.serve(p.s, second)["result"] == "SWAPPED"
+                    assert provider.identity(record["worker"]["pid"]) is None
+                    assert ST.serve(p.s, second)["result"] == "ALREADY_SERVED"
+                    failed = "gpt-oss:120b"
+                    profile["runtime"]["llama_server_alternates"][failed] = {"vram_required_mib": 0}
+                    bad_models.add(failed)
+                    profile["runtime"]["llama_server_swap"] = {"health_timeout_s": 0.2}
+                    with pytest.raises(RuntimeError, match="MODEL_SWAP_NOT_SERVED"):
+                        ST.serve(p.s, failed)
+                    processes[-1].wait(timeout=5)  # actual worker killed; its waiter exits naturally
+                    assert provider.quiet(instance) is None  # gateway/container are still owned and live
+                    real_clock = A.time.time
+                    expire_new_worker[0] = True
+                    try:
+                        with pytest.raises(Refused, match="EFFECT_AUTHORITY_EXPIRED_OR_CHANGED"):
+                            ST.serve(p.s, first)
+                        processes[-1].wait(timeout=5)  # cleanup remains allowed under original startup nonce
+                    finally:
+                        expire_new_worker[0] = False
+                        monkeypatch.setattr(A.time, "time", real_clock)
+                    profile["runtime"]["llama_server_swap"] = {"health_timeout_s": 5}
+                    assert ST.serve(p.s, second)["result"] == "SWAPPED"
+                    # Expire a real claimed job during the model-stop/VRAM wait;
+                    # the exact worker may already be retired, but no replacement can start.
+                    before_spawn_count = len(processes)
+                    job = P.registered(p.store, P.job_id(p.aid))
+                    real_clock, real_sleep = A.time.time, ST.time.sleep
+                    free_calls = [0]
+    
+                    def free_memory():
+                        free_calls[0] += 1
+                        return 0 if free_calls[0] <= 2 else 100000
+    
+                    def expire_during_wait(delay):
+                        monkeypatch.setattr(A.time, "time", lambda: job["deadline_epoch"] + 1)
+                        real_sleep(0.02)
+    
+                    profile["runtime"]["llama_server"]["vram_required_mib"] = 5
+                    monkeypatch.setattr(ST, "_vram_free_mib", free_memory)
+                    monkeypatch.setattr(ST.time, "sleep", expire_during_wait)
+                    try:
+>                       with pytest.raises(Refused, match="EFFECT_AUTHORITY_EXPIRED_OR_CHANGED"):
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E                       AssertionError: Regex pattern did not match.
+E                         Expected regex: 'EFFECT_AUTHORITY_EXPIRED_OR_CHANGED'
+E                         Actual message: 'LINE_STACK_AUTHORITY_OR_EXECUTION_FENCED:'
+
+factory/python/tests/test_line_stack_lifecycle.py:283: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_provider_process.py::test_pid_reuse_observation_never_signals_the_newer_process
+FAILED factory/python/tests/test_line_stack_lifecycle.py::test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_lease[True]

@@ -1,0 +1,39 @@
+{
+  "FAIL": 0,
+  "PASS": 7,
+  "actual_remote_source_jobs_models_GPU_or_services": false,
+  "all_private_handles_closed": true,
+  "no_actual_start_or_install": true,
+  "results": [
+    {
+      "PASS": true,
+      "name": "actual_both_default_plans_no_runtime_effect"
+    },
+    {
+      "PASS": true,
+      "name": "actual_local_data_all_bound_source_input_measurement_caps_hashes"
+    },
+    {
+      "PASS": true,
+      "name": "actual_main_command_complete4reconciliation_flags_no_restart_or_false_dead_predicate"
+    },
+    {
+      "PASS": true,
+      "name": "exact_request_AST_actual_private_Intent_and_harmless_effect_positive"
+    },
+    {
+      "PASS": true,
+      "name": "exact_request_AST_refuses_stop"
+    },
+    {
+      "PASS": true,
+      "name": "exact_request_AST_refuses_stale"
+    },
+    {
+      "PASS": true,
+      "name": "exact_request_AST_refuses_ticket"
+    }
+  ],
+  "schema": "forge-c/f0-owner-main-private-fence-controls/1",
+  "scope": "Private tempIntent+exactASTrequest with explicit ticket validation leaf; harmless localPython effect insteadofsystemd command. Wholeapply/start/canonicalmetadataNOT_RUN."
+}

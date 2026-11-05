@@ -1,0 +1,8 @@
+{
+  "status": "HARNESS_SYNTAX_ERROR_BEFORE_ANY_CONTROL",
+  "error_type": "SyntaxError",
+  "message": "invalid syntax",
+  "line": 143,
+  "source_sha256": "eda14295b6d57bd448e45096138cb2eadd85580d9cedb85df2879d5d2ee95b74",
+  "helpers_changed": false
+}

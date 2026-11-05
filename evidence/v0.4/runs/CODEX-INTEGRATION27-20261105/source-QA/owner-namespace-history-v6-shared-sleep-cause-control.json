@@ -1,0 +1,51 @@
+{
+  "schema": "forge-c/shared-sleep-fixture-causal-control/1",
+  "scope": "PRIVATE_STDLIB_CONTROL_NO_PRODUCT_EFFECT",
+  "python": "3.13.13 (main, May 29 2026, 21:59:41) [GCC 11.4.0]",
+  "subprocess_file": "/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py",
+  "wait_implementation_sha256": "773f67be387e442975136954e06b0113780c904d6075cb6957d5cfa7d3ad5fbd",
+  "shared_sleep_hook_called_from_Popen_wait": true,
+  "calls": [
+    {
+      "caller_module": "subprocess",
+      "caller_function": "_wait",
+      "delay": 0.001
+    },
+    {
+      "caller_module": "subprocess",
+      "caller_function": "_wait",
+      "delay": 0.002
+    },
+    {
+      "caller_module": "subprocess",
+      "caller_function": "_wait",
+      "delay": 0.004
+    },
+    {
+      "caller_module": "subprocess",
+      "caller_function": "_wait",
+      "delay": 0.008
+    },
+    {
+      "caller_module": "subprocess",
+      "caller_function": "_wait",
+      "delay": 0.016
+    },
+    {
+      "caller_module": "subprocess",
+      "caller_function": "_wait",
+      "delay": 0.032
+    },
+    {
+      "caller_module": "subprocess",
+      "caller_function": "_wait",
+      "delay": 0.05
+    }
+  ],
+  "child_ended": true,
+  "global_sleep_restored": true,
+  "system_clock_changed": false,
+  "canonical_state_changed": false,
+  "model_calls": 0,
+  "limits": "Proves shared stdlib clock-hook interference mechanism; remote failing test rawstack remains separately preserved. Corrected test must prove actual VRAM effect wait."
+}

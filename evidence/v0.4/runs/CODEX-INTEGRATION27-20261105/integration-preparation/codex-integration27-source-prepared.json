@@ -1,0 +1,95 @@
+{
+  "schema": "forge-c/integration27-source-byte-equivalence/1",
+  "at": "2026-11-05T21:55:57.826497+00:00",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-integration27",
+  "public_base": "97b847d80f33efc29ad1c1c8f46deddde5f6230f",
+  "integration26_parent": "2514f8312283ba19ff9f10214f408808709cc3c7",
+  "source_commit": "b66c018b18cca81732f14d04af384f2bf9984b07",
+  "qualified_source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "changed9": [
+    {
+      "path": "docs/adr/ADR-DA-015-nested-provider-entry-and-bootstrap-history.md",
+      "sha256": "dacaef2361b8a4da6a38ed7fdda9ad3249c9053591f196385283da8f46ff1892",
+      "byte_equal_f0": true
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_reconciliation.py",
+      "sha256": "130d431fd77bf0d01ae7feae260ed5811f55e5eed874b4722b0d30622473c8a5",
+      "byte_equal_f0": true
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "c4a6be646514d597413d005f3feb5289ccfd8fc9a591c22c79cd24dce2cd9ac7",
+      "byte_equal_f0": true
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/provider_process.py",
+      "sha256": "b42d6a5238cb0ad257c07c993a8dbeed2659c199f7d6eff36b4c2d082b4b2a04",
+      "byte_equal_f0": true
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "d18b6c01a26cd8b699ef5bf56d9f64d7290fe8d0ad545267c2b4a1cc96059957",
+      "byte_equal_f0": true
+    },
+    {
+      "path": "factory/python/tests/test_da014_provider_process.py",
+      "sha256": "591db86d176c748cc0f32083d327b649f594525527d39d0c5da557f1ded50ea3",
+      "byte_equal_f0": true
+    },
+    {
+      "path": "factory/python/tests/test_line_stack_lifecycle.py",
+      "sha256": "a3d0ecf76a594316b9f42f00ef553512fd604b3b6da2507b0441d81d81ecae7b",
+      "byte_equal_f0": true
+    },
+    {
+      "path": "factory/python/tests/test_owner_bootstrap_reconciliation.py",
+      "sha256": "903bdbd5e67efa7ffc7345041a58d4f16e01a9e1ce9023fc73f806da1e54a799",
+      "byte_equal_f0": true
+    },
+    {
+      "path": "factory/python/tests/test_owner_managed_namespace_start.py",
+      "sha256": "8a90465d9e4d674c0d06474dfd636ac48b1ab6e4db2f881f531aec7b35b2ba70",
+      "byte_equal_f0": true
+    }
+  ],
+  "existingLINE5": [
+    {
+      "path": "docs/adr/ADR-DA-013-line-service-boot-fencing.md",
+      "sha256": "cf3c33a37c77fed771e6de9021898ce98ea36e884347611823c4e607ffe297f3",
+      "unchanged": true
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_conductor.py",
+      "sha256": "4cca2c939552fb2474a20bd2eabfd7ab88d72ae78913bbcf7c2ddb4a07b65dc9",
+      "unchanged": true
+    },
+    {
+      "path": "factory/python/forge_factory/afo/services.py",
+      "sha256": "7b33c0cda7f491bddf4effd331158eda1cb03b08d5849e93e2a09a5aee973d75",
+      "unchanged": true
+    },
+    {
+      "path": "factory/python/tests/test_line_service_boot.py",
+      "sha256": "67dff872360aee73b02f9421e05a9fd928d7868e5138fc9698c01784d925d5fc",
+      "unchanged": true
+    },
+    {
+      "path": "factory/python/tests/test_line_service_boot_systemd.py",
+      "sha256": "eb211e93861c4b386bd6f30fce8198fd74b6423606f51085d4a61987819dd7c5",
+      "unchanged": true
+    }
+  ],
+  "no_safety_policy_grants_history_or_protected_files_changed": true,
+  "input_receipt": {
+    "path": "codex-integration27-inputs-before-tests.json",
+    "sha256": "ce1f80eafd5d27201231cd0f526b469d72e4fdaa0901d3fdbc79c3963942cc24"
+  },
+  "source_bundle": {
+    "path": "codex-integration27-source.bundle",
+    "sha256": "a6fbe5d1de1f2f279f3d0d1357d3948dddb7556f5d892e25ac7a352c27b2a66e"
+  },
+  "tests": "NOT_RUN_PARENT_STOP_HELPER_CPU_PRIORITY",
+  "remote_f0_qa": "PENDING",
+  "push": "NOT_RUN"
+}

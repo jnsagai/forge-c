@@ -1,0 +1,122 @@
+{
+  "schema": "forge-c/integration27-append-only-evidence-plan/1",
+  "status": "INVENTORY_ONLY_NOT_PUBLISHED",
+  "source": "b66c018b18cca81732f14d04af384f2bf9984b07",
+  "qualified_source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "source_receipt": {
+    "path": "codex-integration27-source-prepared.json",
+    "sha256": "18b6fea03a2dbc21acd6655ca8a2e8fce192d0e5c7d3764a4ba6de53abcb6417"
+  },
+  "prior_inventory": {
+    "path": "codex-integration26-evidence-plan.json",
+    "sha256": "561d06050aed4ef7eaa3d27ce07e22125c19610db93b3faaa8269df60c2ba1cf",
+    "preserve_all": true
+  },
+  "proposed_run_namespace": "evidence/v0.4/runs/CODEX-INTEGRATION27-20261105",
+  "additional_inventory": [
+    {
+      "path": "owner-namespace-history-v6-design.log",
+      "sha256": "713164c606ac4cf2706ae782d8875060f15ee99720a980a1af01d8453af05c2b",
+      "bytes": 1514
+    },
+    {
+      "path": "owner-namespace-history-v6-inputs-before-tests.json",
+      "sha256": "c755cfe77ead7867d56fcf07e0a9c8cf49724f121f27e55b7421241f9d007a7f",
+      "bytes": 2366
+    },
+    {
+      "path": "owner-namespace-history-v6-normal-fix-root-r1-decision.json",
+      "sha256": "67f210e38a448c66dae989399c1a0256dd1d8309fde546ae9f68d89b124f3d76",
+      "bytes": 11441
+    },
+    {
+      "path": "owner-namespace-history-v6-normal-fix-root-r1-raw-verification.json",
+      "sha256": "37ee6ace97d6ee434cee06e3ff1befe22114b70e399f8587d4839505bf430767",
+      "bytes": 80785
+    },
+    {
+      "path": "owner-namespace-history-v6-normal-fix-root-r1-worktrees-before-tests.json",
+      "sha256": "a70054c91e1d1ff604ecd531e41e83b04a0a6c0f3ce04f64bc1efcc5f71366ed",
+      "bytes": 4909
+    },
+    {
+      "path": "owner-namespace-history-v6-normal-fix-root-r1.log",
+      "sha256": "eb3f59c7050785543f576556565f77350e85f264e4dc68a7c5414605a12caa43",
+      "bytes": 327
+    },
+    {
+      "path": "owner-namespace-history-v6-portability-independent-review-r1.json",
+      "sha256": "b8cc617d9cca853b3d858d67e6fb315ae00e63c46ed8eda8751a69372ba47eb3",
+      "bytes": 2152
+    },
+    {
+      "path": "owner-namespace-history-v6-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "owner-namespace-history-v6-shared-sleep-cause-control.json",
+      "sha256": "280339282f1e557778a2192683aef5dee76ae7974fb75f5c3739d966b5c4b25b",
+      "bytes": 1507
+    },
+    {
+      "path": "owner-namespace-history-v6-source-index.json",
+      "sha256": "3197869d722c2bd4c7283d26241c1b32518a9ce84d96bb46d1c1a6fcd5ceb03a",
+      "bytes": 6253
+    },
+    {
+      "path": "owner-namespace-history-v6-targeted-r1.log",
+      "sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+      "bytes": 80
+    },
+    {
+      "path": "owner-namespace-history-v6-targeted-r1.xml",
+      "sha256": "b049e3a6ba3a7dd944d58b819f4269ad6a187c9c853dd689b85dcadb47af5bfd",
+      "bytes": 572
+    },
+    {
+      "path": "owner-profile-bootstrap-bfe89899-actual-probes-r1.stderr.log",
+      "sha256": "affbaca7ef4ba7793cbdbdaa934ac34b2a54d09a225dac8488c6747e5f044846",
+      "bytes": 4936
+    },
+    {
+      "path": "owner-profile-bootstrap-bfe89899-actual-probes-r1.stdout.log",
+      "sha256": "5fa56d8abdc14ed0f6d8640d418de3904b7ef9139d1ac2741a517db6661278c0",
+      "bytes": 546
+    },
+    {
+      "path": "owner-profile-bootstrap-f0c8fc5c-root-staging-review-r1.json",
+      "sha256": "cbbec9e58220ffa7d0508daa3a71616a71b3fa651dc54c22dcb737431f9c9a8e",
+      "bytes": 606
+    }
+  ],
+  "prior_bfe_remote": {
+    "status": "UNKNOWN_OR_REFUSED",
+    "tests": 270,
+    "passed": 268,
+    "failures": 2,
+    "skipped": 0,
+    "native_stub": "NOT_RUN_AFTER_QA_FAILURE",
+    "root_reported": true
+  },
+  "f0_local_targeted": {
+    "tests": 2,
+    "passed": 2,
+    "claim": "actualXML separate; no full270singleGREEN inferred"
+  },
+  "full_fix": {
+    "decision_id": "pd-8219005fce92294b70f1",
+    "all7": "ROOT_REPORTED_PASS",
+    "prevention175": "ROOT_REPORTED_PASS",
+    "export_requires_exact_records_raw_hash_verification": true
+  },
+  "remote_f0_qa": "PENDING",
+  "preservation": [
+    "Do not overwrite I26 worktree/source/archive draft/evidence.",
+    "Preserve prior bfe270/2FAIL, V4toolENVfailure+unchangedrerun and all frozenoracleharness errors.",
+    "Publish actual evidence only; no rolecompetence/model/productionACT/endurance/productPASS claims.",
+    "Exclude vendor/runtimeinputs tar/privateissuer/control/env/credentials/rawprompts/wholeFabro."
+  ],
+  "tests_here": "NOT_RUN",
+  "publication": "NO_EXPORT_OR_PUSH_UNTIL_ROOT_REVIEW"
+}

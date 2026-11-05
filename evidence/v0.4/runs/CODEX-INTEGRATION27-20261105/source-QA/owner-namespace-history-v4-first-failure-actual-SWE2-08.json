@@ -1,0 +1,16 @@
+{
+  "major_findings": [
+    "VIEWS:TOOL_MISSING:plantuml"
+  ],
+  "stats": {
+    "allocated_apis": 1,
+    "apis_in_dynamic_view": 1,
+    "checked_dynamic": "workproducts/SWE.2/architecture_dynamic.puml",
+    "checked_static": "workproducts/SWE.2/architecture_static.puml",
+    "syntax": "NOT_RUN",
+    "syntax_dynamic": "NOT_RUN",
+    "syntax_static": "NOT_RUN",
+    "timeout_path_required": true
+  },
+  "verdict": "FAIL"
+}

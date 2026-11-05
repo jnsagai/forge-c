@@ -1,0 +1,13 @@
+KERNEL_IMPORT_PROVENANCE:{"capture_module": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-wt-a18928b9e290/b66c018b18cc/factory/python/forge_factory/lrtx/provider_process.py", "capture_sha256": "b42d6a5238cb0ad257c07c993a8dbeed2659c199f7d6eff36b4c2d082b4b2a04", "source": "NOT_OBSERVED_INSIDE_SANDBOX", "stack_module": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-wt-a18928b9e290/b66c018b18cc/factory/python/forge_factory/lrtx/stack.py", "stack_sha256": "d18b6c01a26cd8b699ef5bf56d9f64d7290fe8d0ad545267c2b4a1cc96059957"}
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "ordered-nested-control", "returncode": 0}
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "ordered-same-user-skip-control", "returncode": 0}
+KERNEL_CASE:{"errno_hint": "EINVAL", "log_sha256": "ae32c851541aaf0ae008cb79ccc4a43478fa670088de2d69d85702332d4a5038", "name": "ordered-same-user-reentry-negative", "returncode": 1}
+KERNEL_ERRNO:nsenter: reassociate to namespace 'ns/user' failed: Invalid argument
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "source-nested-provider", "returncode": 0}
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "source-same-user-provider", "returncode": 0}
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "source-normal-outer", "returncode": 0}
+KERNEL_CASE:{"errno_hint": null, "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "name": "source-normal-same-current-user", "returncode": 0}
+KERNEL_LIFETIMES:OWN_PROVIDER_INIT_QUIET_AND_ALL_HANDLES_CLOSED_NO_MODELS
+SYMPTOM_ABSENT
+
+--- stderr ---

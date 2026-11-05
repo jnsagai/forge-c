@@ -1,0 +1,335 @@
+{
+  "schema": "forge-c/private-namespace-entry-causal/2",
+  "source": "6eeac5962a45e40ba39414eafa5dd612bd669d56",
+  "stack_module": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v1/factory/python/forge_factory/lrtx/stack.py",
+  "stack_sha256": "9f0dd6d072965ba45d007e90edff705fe1071271f9c0c6740d12079288121b0d",
+  "capture_module": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v1/factory/python/forge_factory/lrtx/provider_process.py",
+  "capture_sha256": "326f78fff7d7a90f2ea60e9642adaa4ce1c29cb65e411cbdfbdbd8be1a477cac",
+  "actual_model_calls": 0,
+  "canonical_mutations": false,
+  "results": [
+    {
+      "name": "ordered-nested-control",
+      "returncode": 0,
+      "observed": {
+        "user": "user:[4026534083]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534084]",
+        "pid": "pid:[4026534085]",
+        "uid": 0,
+        "pid_local": 2,
+        "uid_map": "         0          0          1\n"
+      },
+      "expected": {
+        "user": "user:[4026534083]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534084]",
+        "pid": "pid:[4026534085]"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "errno_hint": null
+    },
+    {
+      "name": "ordered-same-user-skip-control",
+      "returncode": 0,
+      "observed": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534086]",
+        "pid": "pid:[4026534087]",
+        "uid": 0,
+        "pid_local": 2,
+        "uid_map": "         0       1000          1\n"
+      },
+      "expected": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534086]",
+        "pid": "pid:[4026534087]"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "errno_hint": null
+    },
+    {
+      "name": "ordered-same-user-reentry-negative",
+      "returncode": 1,
+      "observed": null,
+      "expected": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534086]",
+        "pid": "pid:[4026534087]"
+      },
+      "log_sha256": "ae32c851541aaf0ae008cb79ccc4a43478fa670088de2d69d85702332d4a5038",
+      "errno_hint": "EINVAL"
+    },
+    {
+      "name": "source-nested-provider",
+      "returncode": 0,
+      "observed": {
+        "user": "user:[4026534083]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534084]",
+        "pid": "pid:[4026534085]",
+        "uid": 0,
+        "pid_local": 3,
+        "uid_map": "         0          0          1\n"
+      },
+      "expected": {
+        "user": "user:[4026534083]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534084]",
+        "pid": "pid:[4026534085]"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "errno_hint": null
+    },
+    {
+      "name": "source-same-user-provider",
+      "returncode": 0,
+      "observed": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534086]",
+        "pid": "pid:[4026534087]",
+        "uid": 0,
+        "pid_local": 3,
+        "uid_map": "         0       1000          1\n"
+      },
+      "expected": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534086]",
+        "pid": "pid:[4026534087]"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "errno_hint": null
+    },
+    {
+      "name": "source-normal-outer",
+      "returncode": 0,
+      "observed": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026531841]",
+        "pid": "pid:[4026531836]",
+        "uid": 0,
+        "pid_local": 845950,
+        "uid_map": "         0       1000          1\n"
+      },
+      "expected": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "errno_hint": null
+    },
+    {
+      "name": "source-normal-same-current-user",
+      "returncode": 0,
+      "observed": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026531841]",
+        "pid": "pid:[4026531836]",
+        "uid": 0,
+        "pid_local": 845952,
+        "uid_map": "         0       1000          1\n"
+      },
+      "expected": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]"
+      },
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "errno_hint": null
+    },
+    {
+      "name": "source-nested-from-outer-user",
+      "returncode": 42,
+      "observed": null,
+      "expected": {
+        "user": "user:[4026534083]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534084]",
+        "pid": "pid:[4026534085]"
+      },
+      "log_sha256": "6995a676c1c152bdd9d11ffd9fe553cfc51595737e6ff83150f4091159c37d8c",
+      "errno_hint": null,
+      "observer_metadata_sha256": "2c9437d46de46991c3abfa2b2b35ba400076780e0228a0c81e7da4203720141a"
+    },
+    {
+      "name": "source-same-from-outer-user",
+      "returncode": 42,
+      "observed": null,
+      "expected": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534086]",
+        "pid": "pid:[4026534087]"
+      },
+      "log_sha256": "6995a676c1c152bdd9d11ffd9fe553cfc51595737e6ff83150f4091159c37d8c",
+      "errno_hint": null,
+      "observer_metadata_sha256": "0f50ddc9c4742434edaa87a6b750ac6b44bcac65633c7c4e2013e505476e3172"
+    },
+    {
+      "name": "source-nested-from-provider-user",
+      "returncode": 42,
+      "observed": null,
+      "expected": {
+        "user": "user:[4026534083]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534084]",
+        "pid": "pid:[4026534085]"
+      },
+      "log_sha256": "27b00c0ab0863c344bdc74e346cda076054ee13f8bc2994dd8cfbd93daebfd70",
+      "errno_hint": null,
+      "observer_metadata_sha256": "eb4870f418efda12ea0d827df67c2b121f9609969e2fb3fe15cac1c8816414fa"
+    },
+    {
+      "name": "source-same-from-provider-user",
+      "returncode": 42,
+      "observed": null,
+      "expected": {
+        "user": "user:[4026533247]",
+        "net": "net:[4026533379]",
+        "mnt": "mnt:[4026534086]",
+        "pid": "pid:[4026534087]"
+      },
+      "log_sha256": "6995a676c1c152bdd9d11ffd9fe553cfc51595737e6ff83150f4091159c37d8c",
+      "errno_hint": null,
+      "observer_metadata_sha256": "96ac2f5b3f707ce5f7154b9e5a3df3873d9c0814951283f3521a314ce7c3fd6a"
+    }
+  ],
+  "outer_holder": {
+    "pid": 845935,
+    "identity": {
+      "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+      "start_ticks": "8075140",
+      "state": "S",
+      "uid": 1000,
+      "pid_namespace": "pid:[4026531836]",
+      "namespace_pid": 845935
+    },
+    "namespaces": {
+      "user": "user:[4026533247]",
+      "net": "net:[4026533379]",
+      "mnt": "mnt:[4026531841]",
+      "pid": "pid:[4026531836]"
+    },
+    "owner_view": {
+      "user_namespace": "user:[4026533247]",
+      "uid_map": [
+        [
+          0,
+          1000,
+          1
+        ]
+      ],
+      "observer_user_namespace": "user:[4026531837]",
+      "observer_uid": 1000
+    }
+  },
+  "nested-user-provider": {
+    "instance": {
+      "schema": "forge-c/managed-provider-instance/1",
+      "root": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-nsentry-observer-witness-v3/candidate6ee-r1",
+      "profile": "private-kernel-entry-only",
+      "profile_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "observer_user_namespace": "user:[4026531837]",
+      "init_owner_view": {
+        "user_namespace": "user:[4026534083]",
+        "uid_map": [
+          [
+            0,
+            1000,
+            1
+          ]
+        ],
+        "observer_user_namespace": "user:[4026531837]",
+        "observer_uid": 1000
+      },
+      "parent_pid": 845936,
+      "parent": {
+        "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+        "start_ticks": "8075142",
+        "uid": 1000,
+        "pid_namespace": "pid:[4026531836]",
+        "namespace_pid": 845936
+      },
+      "init_pid": 845937,
+      "init": {
+        "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+        "start_ticks": "8075143",
+        "uid": 1000,
+        "pid_namespace": "pid:[4026534085]",
+        "namespace_pid": 1
+      },
+      "captured_at": "2026-11-05T20:54:41.686854Z"
+    },
+    "namespaces": {
+      "user": "user:[4026534083]",
+      "net": "net:[4026533379]",
+      "mnt": "mnt:[4026534084]",
+      "pid": "pid:[4026534085]"
+    }
+  },
+  "same-user-provider": {
+    "instance": {
+      "schema": "forge-c/managed-provider-instance/1",
+      "root": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-nsentry-observer-witness-v3/candidate6ee-r1",
+      "profile": "private-kernel-entry-only",
+      "profile_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "observer_user_namespace": "user:[4026531837]",
+      "init_owner_view": {
+        "user_namespace": "user:[4026533247]",
+        "uid_map": [
+          [
+            0,
+            1000,
+            1
+          ]
+        ],
+        "observer_user_namespace": "user:[4026531837]",
+        "observer_uid": 1000
+      },
+      "parent_pid": 845939,
+      "parent": {
+        "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+        "start_ticks": "8075145",
+        "uid": 1000,
+        "pid_namespace": "pid:[4026531836]",
+        "namespace_pid": 845939
+      },
+      "init_pid": 845940,
+      "init": {
+        "boot_id": "cc8e3ce3-5885-46b0-870a-9c040dd3e867",
+        "start_ticks": "8075145",
+        "uid": 1000,
+        "pid_namespace": "pid:[4026534087]",
+        "namespace_pid": 1
+      },
+      "captured_at": "2026-11-05T20:54:41.710566Z"
+    },
+    "namespaces": {
+      "user": "user:[4026533247]",
+      "net": "net:[4026533379]",
+      "mnt": "mnt:[4026534086]",
+      "pid": "pid:[4026534087]"
+    }
+  },
+  "observer_cases_completed": true,
+  "symptom_present": false,
+  "same_current_user_source_failure": false,
+  "verdict": "SOURCE_ENTRY_SUCCEEDED",
+  "cleanup": [
+    {
+      "init_pid": 845940,
+      "quiet": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED"
+    },
+    {
+      "init_pid": 845937,
+      "quiet": "PROVIDER_PRIVATE_PID_NAMESPACE_ENDED"
+    }
+  ],
+  "own_process_handles_closed": true
+}

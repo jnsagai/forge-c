@@ -1,0 +1,268 @@
+{
+  "actual_causal_baseline": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "all_own_handles_closed": true,
+  "base_qualified": "8edd6a5657ff9c5f67b1c40c243532cb71d5bc69",
+  "branch": "feat/owner-namespace-history-v4-20261105",
+  "changed_files": [
+    {
+      "bytes": 4054,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v4/docs/adr/ADR-DA-015-nested-provider-entry-and-bootstrap-history.md",
+      "sha256": "dacaef2361b8a4da6a38ed7fdda9ad3249c9053591f196385283da8f46ff1892"
+    },
+    {
+      "bytes": 22427,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v4/factory/python/forge_factory/afo/owner_bootstrap_reconciliation.py",
+      "sha256": "8641f701d170e75f269c88787204f207dd03d744f1719d3dbac373674bdf9408"
+    },
+    {
+      "bytes": 21245,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v4/factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "c4a6be646514d597413d005f3feb5289ccfd8fc9a591c22c79cd24dce2cd9ac7"
+    },
+    {
+      "bytes": 19908,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v4/factory/python/forge_factory/lrtx/provider_process.py",
+      "sha256": "b42d6a5238cb0ad257c07c993a8dbeed2659c199f7d6eff36b4c2d082b4b2a04"
+    },
+    {
+      "bytes": 63528,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v4/factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "d18b6c01a26cd8b699ef5bf56d9f64d7290fe8d0ad545267c2b4a1cc96059957"
+    },
+    {
+      "bytes": 25910,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v4/factory/python/tests/test_owner_bootstrap_reconciliation.py",
+      "sha256": "d14ff3297a8a9024ed6ed4c57651c65d682354fa8f7c78f5f764a89dbb266656"
+    },
+    {
+      "bytes": 9716,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v4/factory/python/tests/test_owner_managed_namespace_start.py",
+      "sha256": "8a90465d9e4d674c0d06474dfd636ac48b1ab6e4db2f881f531aec7b35b2ba70"
+    }
+  ],
+  "checks": {
+    "design": 14,
+    "legacy": 16,
+    "ruff": "PASS",
+    "v03_packager": 7
+  },
+  "composite": {
+    "distinct_cases": 261,
+    "initial_errors": 0,
+    "initial_failures": 1,
+    "initial_skips": 0,
+    "label": "260 initial passes + 1 unchanged pinned-tool rerun PASS; NOT a single whole-suite green run",
+    "passing_distinct_cases": 261
+  },
+  "evidence": [
+    {
+      "bytes": 4400,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v1-red.log",
+      "sha256": "09981c48fc67226b303d6f7110af79bead149555b29166461acd5bca319e4d1e"
+    },
+    {
+      "bytes": 4624,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v1-red.xml",
+      "sha256": "0edb153aadbe943cf61159b671e8fbf19d838ab04bbc395dedf7d2c5af71e0ba"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v1-small-r1.log",
+      "sha256": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87"
+    },
+    {
+      "bytes": 577,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v1-small-r1.xml",
+      "sha256": "70e28cd7b0e3858d6c8df2fa693731322cdb0c4bfe92298c6cf35399babd69b3"
+    },
+    {
+      "bytes": 1686,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v2-focused-r1.log",
+      "sha256": "689a4a14a58d30c343a5ad7e4dc9b0a532604bd348aab245e90ef011088e1d13"
+    },
+    {
+      "bytes": 10615,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v2-focused-r1.xml",
+      "sha256": "3d3730f023a6a604cc6a5465689e47a119f688efc2da2e990c81ccf78f02de12"
+    },
+    {
+      "bytes": 384,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v2-gateway-fixture-import-error.log",
+      "sha256": "4685809ceea772ec64a1f271c11650e1b1bfd1846856578da166a1084652eaeb"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v3-full-managed-r1.log",
+      "sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d"
+    },
+    {
+      "bytes": 411,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v3-full-managed-r1.xml",
+      "sha256": "c281b47d3068088de07a78a23ecb23a2d456a3b33af8a23fb92b94ef5f884448"
+    },
+    {
+      "bytes": 5302,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-affected-r1.log",
+      "sha256": "ca3caefe639a8e03aeffab840a3ffd27a04fa7c49e57797cb4c0145659d19a41"
+    },
+    {
+      "bytes": 48643,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-affected-r1.xml",
+      "sha256": "697aebc3072a25e7ad32ca772659931d24891ef3eecd7175d5fb0cdea9e2802f"
+    },
+    {
+      "bytes": 423,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-first-failure-actual-SWE2-08.json",
+      "sha256": "36eb67603abc9c6f51e7ab5f7a381fb8ca6dca9fa2da196c0de0b3af3d6246cc"
+    },
+    {
+      "bytes": 80,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-pinned-tool-rerun-r1.log",
+      "sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d"
+    },
+    {
+      "bytes": 394,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-pinned-tool-rerun-r1.xml",
+      "sha256": "967319f801c9d6b4c0a1e3197b56629f7e5797042cd091704e4af38c7867c70b"
+    },
+    {
+      "bytes": 1514,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-design.log",
+      "sha256": "4c4c317d7167bf9e3b3dfcc5b6952403fa2a4eebf867035c0a92ecd7ce77aaf3"
+    },
+    {
+      "bytes": 19,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "bytes": 1799,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-legacy.log",
+      "sha256": "eca80814bf458749e114980a8e22193e52a54404d672821600fd75ba27063ae0"
+    },
+    {
+      "bytes": 1006,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-packager.log",
+      "sha256": "e995503615b894bac59f071e40e48cd258fa5b23f296177b3a10b05a34a82319"
+    },
+    {
+      "bytes": 2488,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v1-inputs-before-tests.json",
+      "sha256": "b0872491a9ba6177244d4c803d6a334ef31006b9227b807c154dc182b18cbbe6"
+    },
+    {
+      "bytes": 2366,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v2-inputs-before-tests.json",
+      "sha256": "ca2ccb3b6e9b0f083c7b60f7660fd81ab9144bc0beee0ed1c755f1d38ed1f2fa"
+    },
+    {
+      "bytes": 2366,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v3-inputs-before-tests.json",
+      "sha256": "69b5e87fd616abca20841d68078d129f9b42b1084f55c1bf094e01399157b6a6"
+    },
+    {
+      "bytes": 2366,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-inputs-before-tests.json",
+      "sha256": "957c4ea88401227a905513454416c5792bdeaf418cfed565a1f16895a1e96240"
+    },
+    {
+      "bytes": 3451,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-independent-history-review.json",
+      "sha256": "e146db31b81eabeeb7ec2164a280e4a18bf732de2fa8b5633155a2e1247552a6"
+    },
+    {
+      "bytes": 271,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-bundle-verify.log",
+      "sha256": "502f9ab206343fc312c748ae4612304afb9e19b9ac23c3dad552bbbb97c77e0f"
+    },
+    {
+      "bytes": 768,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-preserved-function-proof.json",
+      "sha256": "eb0dd7fd95dcb4e51acd9e641f98857c941193d4eaf0052d514b2a2f341c088e"
+    }
+  ],
+  "full_affected_initial": {
+    "errors": "0",
+    "failures": "1",
+    "hostname": "master",
+    "name": "pytest",
+    "skipped": "0",
+    "tests": "261",
+    "time": "250.396",
+    "timestamp": "2026-11-05T21:08:58.422240+00:00"
+  },
+  "initial_failure_actual_reason": "SWE2-08 VIEWS:TOOL_MISSING:plantuml: harness lacked normal FORGE_DATA_ROOT; source/tests unchanged for rerun",
+  "inputs12_before_tests": {
+    "bytes": 2366,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-inputs-before-tests.json",
+    "sha256": "957c4ea88401227a905513454416c5792bdeaf418cfed565a1f16895a1e96240"
+  },
+  "limitations": [
+    "No full CRE run by component author; root owns independent causal/fullFIX.",
+    "External oracle baseline/candidate isolation ERROR attempts are not source verdicts and remain separately preserved by root.",
+    "No actual runtime cleanup/start/model/GPU/signature/authority effects performed.",
+    "No human MISRA/role competence/endurance/production acceptance/task checkbox closure."
+  ],
+  "preserved_function_proof": {
+    "bytes": 768,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-preserved-function-proof.json",
+    "sha256": "eb0dd7fd95dcb4e51acd9e641f98857c941193d4eaf0052d514b2a2f341c088e"
+  },
+  "private_overlays": [
+    "Private Store/Intent and generated TEST-only original authority fixtures.",
+    "Full _start/_in_ns/provider kernel composition uses deterministic CPU HTTP backend executables and private profile root/ports; actual pinned venv retained.",
+    "_serve_model uses private CPU backend-spec and VRAM measurement leaves only; actual namespace/worker/pidfd/host recapture/stop run.",
+    "Legacy chain fixture overlays only fake a*40 source-format leaf; separate real Git format fingerprint checks run."
+  ],
+  "real_full_managed_cpu_composition": {
+    "errors": "0",
+    "failures": "0",
+    "hostname": "master",
+    "name": "pytest",
+    "skipped": "0",
+    "tests": "1",
+    "time": "5.602",
+    "timestamp": "2026-11-05T21:06:07.188128+00:00"
+  },
+  "rerun_harness": {
+    "FORGE_DATA_ROOT": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c",
+    "FORGE_LLVM_BIN": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/LLVM-19.1.7-Linux-X64/bin",
+    "plantuml": {
+      "bytes": 17739935,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/toolchains/plantuml/plantuml-asl-1.2026.8.jar",
+      "sha256": "796e464ece7c2d4ea1d6b75b26603f703bd1032c6e728940d3131963db76441d"
+    }
+  },
+  "review": {
+    "bytes": 3451,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-independent-history-review.json",
+    "sha256": "e146db31b81eabeeb7ec2164a280e4a18bf732de2fa8b5633155a2e1247552a6"
+  },
+  "schema": "forge-c/owner-namespace-history-source-index/1",
+  "scope": [
+    "Namespace entry preserves ancestor NET capability and skips same USER reentry.",
+    "New captured provider instance/2 pins exact outer holder kernel ownership for mapped native/model-switch observers; instance/1 archives remain unchanged.",
+    "Historical accepted cleanup is immutable data; pending failure still requires fresh normal cleanup/current authority/full quiescence.",
+    "Future consumed receipt and successorINTENT are one atomic transaction. Audited legacy format requires exact three source blobs and canonical chain.",
+    "Worker capture/signal and HOST quiescence/stop AST unchanged. No policy/grant/mission-budget/signed-ACT changes."
+  ],
+  "source": "a42f715489625f44f51213c72a422d3ae2944a40",
+  "source_bundle": {
+    "bytes": 21704,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-namespace-history-v4-source.bundle",
+    "sha256": "60b05be2ccdd7dc419da85193f5741b7d6062843dbcf2765692d9b252ef31ae3"
+  },
+  "status": "COMPONENT_SOURCE_FROZEN_AWAITING_ROOT_CAUSAL_FIX",
+  "tracked_clean": true,
+  "unchanged_one_case_pinned_tool_rerun": {
+    "errors": "0",
+    "failures": "0",
+    "hostname": "master",
+    "name": "pytest",
+    "skipped": "0",
+    "tests": "1",
+    "time": "6.259",
+    "timestamp": "2026-11-05T21:15:45.816396+00:00"
+  },
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-namespace-history-v4"
+}

@@ -1,0 +1,110 @@
+{
+  "schema": "forge-c/integration27-sanitized-operational-observation/1",
+  "runtime_source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "private_raw_sources": [
+    {
+      "name": "owner-profile-bootstrap-f0c8fc5c-actual-metadata-result-r1.json",
+      "sha256": "f5bd26320b909969b0fea194ea5018da57ff69868f1d81c5d65df1289ccde14c",
+      "publication": "HASH_REFERENCE_ONLY_PRIVATE_BODY_WITHHELD"
+    },
+    {
+      "name": "owner-profile-bootstrap-f0c8fc5c-post-metadata-preservation-r1.json",
+      "sha256": "b515804994b8df53b17bff9fc8e1af5836f667d5244bcd61958d5fa9258c30e0",
+      "publication": "HASH_REFERENCE_ONLY_PRIVATE_BODY_WITHHELD"
+    },
+    {
+      "name": "owner-profile-bootstrap-f0-live-observation-r4.json",
+      "sha256": "5b24caaa863777d2790430b58506f7d97b5614919e8e21bb93925387fa35ecb0",
+      "publication": "HASH_REFERENCE_ONLY_PRIVATE_BODY_WITHHELD"
+    },
+    {
+      "name": "owner-profile-bootstrap-f0-firstjob-cause-readonly-r1.json",
+      "sha256": "d0dab6462b875141035ca425b84c620f69e0bd0868b2c2c63dadc97eb0142999",
+      "publication": "HASH_REFERENCE_ONLY_PRIVATE_BODY_WITHHELD"
+    },
+    {
+      "name": "owner-profile-bootstrap-f0-firstjob-launch-transcript-readonly-r1.json",
+      "sha256": "f2183f92b1cd40d7b4db783f23b24f3823c4b019d9ac0fca8ee51d22f840ebd5",
+      "publication": "HASH_REFERENCE_ONLY_PRIVATE_BODY_WITHHELD"
+    },
+    {
+      "name": "owner-development-guard-heartbeat-budget-readonly-r1.json",
+      "sha256": "f758445bec6cb82ea98635a54212b4dceaaceecc143b832ec3a143d4944ba179",
+      "publication": "HASH_REFERENCE_ONLY_PRIVATE_BODY_WITHHELD"
+    },
+    {
+      "name": "owner-f0-actual-combined-r2.stdout.log",
+      "sha256": "f5a516fb62f3962fa07ca0ff23861390878209cb9d659eb14e2f623523294603",
+      "publication": "HASH_REFERENCE_ONLY_PRIVATE_BODY_WITHHELD"
+    }
+  ],
+  "metadata": {
+    "result_sha256": "f5bd26320b909969b0fea194ea5018da57ff69868f1d81c5d65df1289ccde14c",
+    "state": "METADATA_APPENDED_NO_RUNTIME_START",
+    "data_commit": "1cde5e6456a863c1f3b1466378ce7780583be4c7",
+    "canonical_HEAD_refs_status_FETCH_unchanged": true,
+    "source_and_role_metadata_only": true
+  },
+  "bootstrap": {
+    "status": "READY_OBSERVED_NOT_PRODUCT_ACCEPTANCE",
+    "ready_sha256": "7975083a307d0fca4f7f7599ae205aa79d3c6f9a6febb51a3dcc1fcf11b0c461",
+    "unit": {
+      "MainPID": "3564106",
+      "ExecMainStatus": "0",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "InvocationID": "57a877e0fe6845da95a221b062d5afdd"
+    },
+    "guardian_record_sha256_only": "9ca84ec6cfbc547e3ae62ad328fda8b032cb4eb585388ae61e63d2163a1c1311",
+    "cleanup_result_sha256": "53b9e061d2c3468dfefaab5dcc882cf49252fdbc0e7c5827156c16272225340f",
+    "same_fixed_deadline": 1795057626,
+    "old_UNKNOWN_history_preserved": true
+  },
+  "first_B": {
+    "work_order": "WO-F014-SWE6-AFOQUAL-20261104-L90B",
+    "source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+    "status": "GUARD_FAIL_BEFORE_NATIVE_DISPATCH",
+    "transcript_sha256": "33b41ae05d831907e2890e13c641e8184cf43222b8e828081832764d54ef8270",
+    "guard_sha256": "b899429bcf901b6fe73ab31e1de574a128959a92abcffad4d31cb84189b32493",
+    "guard_observations": [
+      "HardcodedPILOT requirement rejects existing healthy productionOBSERVE observer.",
+      "Passed llama PID3570111 is namespace waiter; actual owned model worker3570112 wrongly reported FOREIGN_GPU_PROCESS."
+    ],
+    "native_run_ids": [],
+    "task_outcome": "BLOCKED",
+    "resource_lease": "RELEASED",
+    "request_count": 0
+  },
+  "mission_budget": {
+    "mission_id": "line-local-role-trial-20261104",
+    "limits": {
+      "deadline": 1795057626.0,
+      "max_attempts": 4,
+      "max_corrections": 4,
+      "max_jobs": 4,
+      "max_requests": 32,
+      "max_tokens": 8388608,
+      "max_tools": 256
+    },
+    "attempts": 2,
+    "jobs": 0,
+    "requests": 0,
+    "tools": 0,
+    "corrections": 0,
+    "charged_tokens": 2097152,
+    "usage_unknown": true,
+    "unique_executions": 2,
+    "remaining_attempts": 2
+  },
+  "owned_model": {
+    "worker_pid": 3570112,
+    "waiter_pid": 3570111,
+    "served_alias": "qwen3.8:27b-q8_0",
+    "proof": "ROOT actual kernel/API observation; loaded/readiness does not establish rolecompetence or driverPASS"
+  },
+  "operational_status": "Supervisor/model left running; repeated RELAUNCH queue-refused without another newexecution at cycle19. Guard repair investigation separate and not deployed by this publication.",
+  "privacy": "Private record/control/socket/payload/nonce/rawenv/prompt/vendor bodies withheld; only factual selected metadata and complete privatefile hashes published.",
+  "product_or_role_PASS": false,
+  "new_task_closure": false
+}

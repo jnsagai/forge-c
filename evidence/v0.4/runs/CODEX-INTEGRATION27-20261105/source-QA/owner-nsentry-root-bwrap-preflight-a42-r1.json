@@ -1,0 +1,29 @@
+{
+  "baseline": {
+    "run_id": "rr-dfafc0f2295aa06a480e",
+    "reproducer_id": "AFO-PROVIDER-NSENTRY-20261105",
+    "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+    "role": "BASELINE",
+    "exit_code": 2,
+    "verdict": "ERROR",
+    "signature": "REPRODUCER_ERROR:KERNEL_REPORT_MISSING",
+    "log_sha256": "071291f91c75e44ff44376532f2ed231e246b374027ee50278670e9588761c18",
+    "at": "2026-11-05T21:13:47.761942Z"
+  },
+  "candidate": {
+    "run_id": "rr-7ac32f241ee57efa1c5c",
+    "reproducer_id": "AFO-PROVIDER-NSENTRY-20261105",
+    "revision": "a42f715489625f44f51213c72a422d3ae2944a40",
+    "role": "CANDIDATE",
+    "exit_code": 2,
+    "verdict": "ERROR",
+    "signature": "REPRODUCER_ERROR:KERNEL_REPORT_MISSING",
+    "log_sha256": "071291f91c75e44ff44376532f2ed231e246b374027ee50278670e9588761c18",
+    "at": "2026-11-05T21:13:47.987115Z"
+  },
+  "causal": [
+    false,
+    "BASELINE_NOT_REPRODUCED:ERROR"
+  ],
+  "scope": "EXTERNAL_FROZEN_REAL_KERNEL_ORACLE_BUBBLEWRAP_PREFLIGHT_ONLY_NOT_FULL_FIX_OR_RUNTIME_ACCEPTANCE"
+}

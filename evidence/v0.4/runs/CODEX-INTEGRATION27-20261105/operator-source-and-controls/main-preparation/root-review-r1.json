@@ -1,0 +1,12 @@
+{
+  "status": "NO_BLOCKER_FOR_METADATA_INSTALL",
+  "source": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "binding_sha256": "576c8af67548e57efb1363c8f80f117600ac4c067ffa9dbe6d60782237ef9733",
+  "metadata_sha256": "4ab15ab4b6b76066710f1b49f21fdb258d9206ab75a7dea831ae72a5aa1a849e",
+  "starter_sha256": "fa044e4edcf492940289f2cea98995527839cdcdc097418fc60ea9892155c118",
+  "index25_refs_hash_verified": true,
+  "private_controls": "23publicationconsumptionPASS and7overlappingoperatorfencePASS; no unique30claim",
+  "metadata_semantic_delta": "ONLY freshsource/path/binding/commitmessage vs previouslyreviewed12e7; canonicalobjectsimportwithoutHEADrefsFETCHchange +2exclusiveimmutabletrialassets +campaignonlyprivatecommit; no mission/Store/source/authority/models",
+  "starter_review": "Rootdiffread no blocker; independent review of extra current642durableCONSUMED+typedREADY stillrequested beforeactualstart",
+  "scope_authorized_now": "transfer exact3helpersandmetadatainstall only; no startup orcleanup yet"
+}
