@@ -1,0 +1,713 @@
+{
+  "Intent": {
+    "actor": "codex-implementation-engineer",
+    "changed_at": "2026-11-04T22:36:19.238700Z",
+    "control_context": {
+      "at": 1793831779.240272,
+      "authentication": {
+        "method": "OS_STATE_DIRECTORY_OWNER",
+        "uid": 1000
+      },
+      "control_id": "control-394b02d8be76a7a166eb0142c71cad43dd3a92708738f62333576108725bbf28",
+      "intent_epoch": 1,
+      "intent_path_sha256": "1b9d0f329d11d954ef5fe9edf5281b11efcffbab604bd88c50681deeeb085825",
+      "intent_request_sha256": "290bed52a58de62eff5f250f6737ee138c5961ff9f65024d30b8a88511c02d4b",
+      "mode": "RUNNING",
+      "mono": 3583363.272605637,
+      "pid": 2832370,
+      "process": {
+        "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+        "namespace_pid": 2832370,
+        "pid_namespace": "pid:[4026531836]",
+        "start_ticks": "358336308",
+        "state": "R",
+        "uid": 1000
+      },
+      "producer_source_sha256": "d78e00544cf71618c0b99edad673f99c542bc8a38a875243cc1de3908043497e",
+      "schema": "forge-c/control-source-context/1",
+      "scope": "CALLER_AND_OS_SOURCE_FACTS_NOT_INDEPENDENT_HOST_AUDIT",
+      "uid_map": [
+        [
+          0,
+          0,
+          4294967295
+        ]
+      ],
+      "user_namespace": "user:[4026531837]"
+    },
+    "effective_stop": false,
+    "epoch": 1,
+    "last_recovery": {
+      "at": 1793835734.1993937,
+      "epoch": 1,
+      "recipe": "conductor-failed-start-v1",
+      "state": {
+        "ActiveState": "failed",
+        "Job": "",
+        "MainPID": "0",
+        "Result": "signal",
+        "SubState": "failed",
+        "UnitFileState": "enabled"
+      }
+    },
+    "mode": "RUNNING",
+    "next_recovery_epoch": 1793836334.1993937,
+    "pending_start": false,
+    "reason": "Explicit owner-approved 67501 finite trial and reviewed failed-conductor recovery setup; no automatic recovery activation yet",
+    "recoveries": 1,
+    "schema": "forge-c/operations-intent/1"
+  },
+  "boot_id": "e16afd43-5f66-43c9-848f-48dce99b13dd",
+  "fabro_fds": [
+    {
+      "fd": 1,
+      "fdinfo": {
+        "flags": "0102001",
+        "ino": "85078666",
+        "mnt_id": "183",
+        "pos": "147427938"
+      },
+      "stat": {
+        "device": 2049,
+        "inode": 85078666,
+        "mode": "0o664",
+        "uid": 1000
+      },
+      "target": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/logs/fabro.log"
+    },
+    {
+      "fd": 2,
+      "fdinfo": {
+        "flags": "0102001",
+        "ino": "85078666",
+        "mnt_id": "183",
+        "pos": "147427938"
+      },
+      "stat": {
+        "device": 2049,
+        "inode": 85078666,
+        "mode": "0o664",
+        "uid": 1000
+      },
+      "target": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/logs/fabro.log"
+    },
+    {
+      "fd": 6,
+      "fdinfo": {
+        "flags": "02004002",
+        "ino": "107656983",
+        "mnt_id": "9",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 8,
+        "inode": 107656983,
+        "mode": "0o777",
+        "uid": 1000
+      },
+      "target": "socket:[107656983]"
+    },
+    {
+      "fd": 7,
+      "fdinfo": {
+        "flags": "02004002",
+        "ino": "107656984",
+        "mnt_id": "9",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 8,
+        "inode": 107656984,
+        "mode": "0o777",
+        "uid": 1000
+      },
+      "target": "socket:[107656984]"
+    },
+    {
+      "fd": 8,
+      "fdinfo": {
+        "flags": "02004002",
+        "ino": "107656983",
+        "mnt_id": "9",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 8,
+        "inode": 107656983,
+        "mode": "0o777",
+        "uid": 1000
+      },
+      "target": "socket:[107656983]"
+    },
+    {
+      "fd": 9,
+      "fdinfo": {
+        "flags": "02100001",
+        "ino": "85078667",
+        "mnt_id": "183",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 2049,
+        "inode": 85078667,
+        "mode": "0o664",
+        "uid": 1000
+      },
+      "target": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/fabro/storage/server.lock"
+    },
+    {
+      "fd": 10,
+      "fdinfo": {
+        "flags": "02500002",
+        "ino": "85078669",
+        "mnt_id": "183",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 2049,
+        "inode": 85078669,
+        "mode": "0o600",
+        "uid": 1000
+      },
+      "target": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/fabro/storage/db/fabro.sqlite3"
+    },
+    {
+      "fd": 11,
+      "fdinfo": {
+        "flags": "02500002",
+        "ino": "85100845",
+        "mnt_id": "183",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 2049,
+        "inode": 85100845,
+        "mode": "0o600",
+        "uid": 1000
+      },
+      "target": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/fabro/storage/db/fabro.sqlite3-wal"
+    },
+    {
+      "fd": 12,
+      "fdinfo": {
+        "flags": "02500002",
+        "ino": "85100885",
+        "mnt_id": "183",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 2049,
+        "inode": 85100885,
+        "mode": "0o600",
+        "uid": 1000
+      },
+      "target": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/fabro/storage/db/fabro.sqlite3-shm"
+    },
+    {
+      "fd": 13,
+      "fdinfo": {
+        "flags": "02500002",
+        "ino": "85078669",
+        "mnt_id": "183",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 2049,
+        "inode": 85078669,
+        "mode": "0o600",
+        "uid": 1000
+      },
+      "target": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/fabro/storage/db/fabro.sqlite3"
+    },
+    {
+      "fd": 14,
+      "fdinfo": {
+        "flags": "02500002",
+        "ino": "85100845",
+        "mnt_id": "183",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 2049,
+        "inode": 85100845,
+        "mode": "0o600",
+        "uid": 1000
+      },
+      "target": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx/fabro/storage/db/fabro.sqlite3-wal"
+    },
+    {
+      "fd": 15,
+      "fdinfo": {
+        "flags": "02004002",
+        "ino": "107670862",
+        "mnt_id": "9",
+        "pos": "0"
+      },
+      "stat": {
+        "device": 8,
+        "inode": 107670862,
+        "mode": "0o777",
+        "uid": 1000
+      },
+      "target": "socket:[107670862]"
+    }
+  ],
+  "failed_record_sha256": "ebf51a9f255362b73856c3dee781f3fae70a81f89f72800d989915b5c71563a0",
+  "holder_file": {
+    "sha256": "56061a2deb38834063dea68c9c70f641e74960d862b92a57fc15b77fb3a8a48d",
+    "stat": {
+      "device": 2049,
+      "inode": 85100531,
+      "mode": "0o600",
+      "uid": 1000
+    },
+    "value": 3453276
+  },
+  "ledger_checkpoint": {
+    "afo_attempts": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 20945,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 709,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 30,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "b87b3a22283c8d6aed2851ba11b3799994e9318a3aa15745392c81ce6752e770"
+    },
+    "afo_checkpoints": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_commands_outbox": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 10897,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 1144,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 30,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "214e77636d5dee6e9479f8458ec32e6d75a1b00e45be65bcaeb28968c235d269"
+    },
+    "afo_completion_receipts": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_control": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 174,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 174,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "793abbd17166ac13daf5581f1b02f6cb5908faaf60631b8d5a0fec9b34e14214"
+    },
+    "afo_dead_letters": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_dependency_waits": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_durable_effects": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_execution_evidence": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 1643,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 447,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 4,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "33733835eb8855a21c90c4351f9cd299b8d3894a23af621e746a5dadaad9c1fb"
+    },
+    "afo_execution_liveness": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 931,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 931,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "8a6cc822ce26a5fb9e2a27341951a4898d77cdee8a19cda269560bbe6388b011"
+    },
+    "afo_leases": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 119,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 119,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "3217519d23cc48b4e74ebe0aa33050d3327bea06de69fef79ed1d23ccbee4445"
+    },
+    "afo_lifecycle_events": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 184888,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 816,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 262,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "2ea6d54f5c339675cb666bbb5edfd8df942e100c6bd714d1fadce1ed85776525"
+    },
+    "afo_local_agent_jobs": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_maintainer_proposals": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_mission_counters": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_mission_executions": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 334,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 334,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "204da5c161700e2e9da335b48690708611e6156c00147fb1ecbaaede4a6b0bef"
+    },
+    "afo_mission_orders": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 80,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 80,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "e47ca3a78c52af8b9740137eefdf7364ff87fe8eceb3ce5248fef17c3fe0ef42"
+    },
+    "afo_missions": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 447,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 447,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "66bea86fcfe76c9f2f5e6e1e6758b4485e5858cc7f9d33687cc5807b569be243"
+    },
+    "afo_notifications": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_operator_actions": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_product_jobs": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 3082,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 3082,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "dca8974e7a0d580236941f3ad6c6595ee14f9ff0e6e0f2f3941f507eff89071b"
+    },
+    "afo_recovery_incidents": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 274,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 274,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "2a6248541560009b2501f7bfb59e28e87887dfce748146c3498b7399bd3bdc11"
+    },
+    "afo_request_ledger": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_resource_ownership": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 135,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 135,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "7d263697eb83c43460124b6d7fe28e07ff59f3c970247aae5e34030345c3b6f7"
+    },
+    "afo_schema_version": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 522,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 58,
+      "ordering": "TYPE_AWARE_ALL_COLUMNS_BINARY",
+      "rows": 9,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "ddcbd87d5c68116d9245bd444d59341f9a55b0bfc7811910548f9551cf8a8f95"
+    },
+    "afo_semantic_proposals": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_verification_jobs": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "bfa66e04c21832caa16f7cdb25ba6dbe32c134b5d8a51cfc69d093b85b08709d"
+    },
+    "afo_work_orders": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 38705,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 1439,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 28,
+      "schema_sha256": "86862b0a6449e85a92b9a1191d2f80a005863d3e9f08c2b742ff7ad46d48ad5b",
+      "sha256": "20c0e50384dbfe90a3f8b5ea66a62973a59e348c59d9f2480b8956286948a7ea"
+    }
+  },
+  "native_snapshot": {
+    "legacy_run_history_activation": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 105,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 105,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 1,
+      "schema_sha256": "a9c31eeb324e9aff854b4454271c50e2de4b4fd1f15a0e04c1f7a82a0d5798cc",
+      "sha256": "6826c9027a827599ea6cc3cee2d7aebc1ba14a99bc876bf6432540336fefbb13"
+    },
+    "legacy_run_history_deletions": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "a9c31eeb324e9aff854b4454271c50e2de4b4fd1f15a0e04c1f7a82a0d5798cc",
+      "sha256": "ec6d2c46bcd4520ea08038a96d2704a0ccb453cde09dd6365332416775ada0cf"
+    },
+    "run_events": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 308866625,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 320298,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 110428,
+      "schema_sha256": "a9c31eeb324e9aff854b4454271c50e2de4b4fd1f15a0e04c1f7a82a0d5798cc",
+      "sha256": "1d6b2156fd13a3b7e7803df7541cd93a3bef795b6032289b74afe308b574fce6"
+    },
+    "run_session_records": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 0,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 0,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 0,
+      "schema_sha256": "a9c31eeb324e9aff854b4454271c50e2de4b4fd1f15a0e04c1f7a82a0d5798cc",
+      "sha256": "ec6d2c46bcd4520ea08038a96d2704a0ccb453cde09dd6365332416775ada0cf"
+    },
+    "runs": {
+      "algorithm": "forge-c/sqlite-logical-stream/1",
+      "encoded_bytes": 426985,
+      "hash_chunk_bytes": 65536,
+      "max_row_bytes": 2993,
+      "ordering": "NONNULL_PRIMARY_KEY_BINARY",
+      "rows": 149,
+      "schema_sha256": "a9c31eeb324e9aff854b4454271c50e2de4b4fd1f15a0e04c1f7a82a0d5798cc",
+      "sha256": "9e46aced36d5aaf5f8c05d7284377cd4525efdb25afe47ee9f55ce071e037b95"
+    }
+  },
+  "no_new_work_authority": true,
+  "old_intent_sha256": "90f7174a3a0847243ef9e228d471a3ba3b7cc1809d0aa34e5a022ccfe599056b",
+  "old_result_sha256": "e6532390ad226334c26dfd253007348ea8cdb136ffaca3adfaa9965069ad6259",
+  "processes": {
+    "fabro": {
+      "argv_sha256": "639284cf68cea244f74bb029b6f59ec4293c4fb7f9e1ec28c30c9f0b53554854",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/forge-c-owner-development-214c9668-20261105.service",
+      "env_sha256": "0a6dc170c547e83e1eaba3097a66631003153e6f1b984377171491ffbb7d08a4",
+      "exe": "/mnt/data/forge-c/fabro-0.362.0/fabro-x86_64-unknown-linux-musl/fabro",
+      "kernel": {
+        "pid": 3453554,
+        "ppid": 637200,
+        "start_ticks": "365662965",
+        "state": "S",
+        "uid": 1000
+      },
+      "namespace": {
+        "ns/net": "net:[4026534140]",
+        "ns/pid": "pid:[4026531836]",
+        "ns/user": "user:[4026534139]"
+      },
+      "raw_argv_sha256": "eed165c052d3deda491a15d16ae39c12769d3e1d020ae0cb6ed2f1cd3a10c2a6",
+      "uid_map": [
+        [
+          0,
+          1000,
+          1
+        ]
+      ]
+    },
+    "holder": {
+      "argv_sha256": "b6d1f2b79cf8c68ce276cba3cca6f637175933a18575d0e42561c2193769c58f",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/forge-c-owner-development-214c9668-20261105.service",
+      "env_sha256": "f6ab3087d79c8a5612c692355e27d6ee2ca553c270e06bd518403acd3be44203",
+      "exe": "/usr/bin/sleep",
+      "kernel": {
+        "pid": 3453276,
+        "ppid": 3453275,
+        "start_ticks": "365662941",
+        "state": "S",
+        "uid": 1000
+      },
+      "namespace": {
+        "ns/net": "net:[4026534140]",
+        "ns/pid": "pid:[4026531836]",
+        "ns/user": "user:[4026534139]"
+      },
+      "raw_argv_sha256": "21e7b0eb0fbfc14a8eab229ae46632be62b33a26ffc0692960b9786c4008934b",
+      "uid_map": [
+        [
+          0,
+          1000,
+          1
+        ]
+      ]
+    },
+    "waiter": {
+      "argv_sha256": "de6f354e262050eac4ac971f9c610b482ffadb162101d4e5dde1fe60f33694e5",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/forge-c-owner-development-214c9668-20261105.service",
+      "env_sha256": "3c253abff0c54f4baee8b884f1ee06d0252d49de78047ce1c5881e0c6d60df76",
+      "exe": "/usr/bin/unshare",
+      "kernel": {
+        "pid": 3453275,
+        "ppid": 637200,
+        "start_ticks": "365662941",
+        "state": "S",
+        "uid": 1000
+      },
+      "namespace": {
+        "ns/net": "net:[4026534140]",
+        "ns/pid": "pid:[4026531836]",
+        "ns/user": "user:[4026534139]"
+      },
+      "raw_argv_sha256": "f1b18bd8cb6f4a3942a1b33a487fffcddc07e333ebf919596c2bb4f54abd667b",
+      "uid_map": [
+        [
+          0,
+          1000,
+          1
+        ]
+      ]
+    }
+  },
+  "producer_expectation_sha256": "cced4280b02cb2cf739b8ac0a6366fb0ae9e5c3c6009f9f82318fc235c1921a3",
+  "schema": "forge-c/exact-failed-bootstrap-cleanup-expectation/1",
+  "server_lock_file": {
+    "device": 2049,
+    "inode": 85078667,
+    "mode": "0o664",
+    "uid": 1000
+  },
+  "services": {
+    "bytes": 1306,
+    "dev": 2049,
+    "inode": 85078689,
+    "is_symlink": false,
+    "mode": "0o600",
+    "sha256": "c034ae400e2cce11782a2345d96061de1cefa79c62928372fba967c3ae201762",
+    "uid": 1000
+  },
+  "source_revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "unit": {
+    "ActiveState": "failed",
+    "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/forge-c-owner-development-214c9668-20261105.service",
+    "ExecMainCode": "1",
+    "ExecMainExitTimestampMonotonic": "3656629877850",
+    "ExecMainStartTimestampMonotonic": "3656627806365",
+    "ExecMainStatus": "1",
+    "InvocationID": "323f96d02a82433ba472249d275aeabd",
+    "MainPID": "0",
+    "Result": "exit-code",
+    "SubState": "failed"
+  }
+}

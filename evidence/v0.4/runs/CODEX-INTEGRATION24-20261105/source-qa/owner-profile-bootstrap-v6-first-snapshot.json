@@ -1,0 +1,24 @@
+{
+  "source": "9dd892d555333431f20c8f3788f6232c7cd74631",
+  "status": "FROZEN_32_PRIVATE_RECONCILIATION_PASS_FINAL_FRESHNESS_TAIL_FOLLOWUP_PENDING",
+  "test_xml_sha256": "c37ae303181159d6528c90d8951ad5369e6060db325a20ff6512780c1c2842d0",
+  "test_log_sha256": "5cba8a0d336f6301764b9e7cb54d2168880bd1238a4afa7c45b0666fad715409",
+  "files": [
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_reconciliation.py",
+      "sha256": "60538da08f1a22336ae09cc00cf19ef06ade7f6037dab4a48ae2f213ee284bf3"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "a175cd76a014c3e30cdace1b8c29a3a18143b8d42254e2bdd3748782a8ef25d1"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_supervised_development.py",
+      "sha256": "3cf9888de2cb97d51ca8dccdcaed499e58bfd574a68a201a2a1481411d15a3d0"
+    },
+    {
+      "path": "factory/python/tests/test_owner_bootstrap_reconciliation.py",
+      "sha256": "d1d155a1097e6f4f69fab0c8ac0f957f9fccb464f3992ad39f53fb936632e279"
+    }
+  ]
+}

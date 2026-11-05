@@ -1,0 +1,18 @@
+schema_version: '1.0'
+reproducers:
+- id: AFO-OWNER-BOOTSTRAP-COLD-20261105
+  script: cold_control_identity.py
+  sha256: 8ac94c19d293eaa885064260be490d34b61d48b15ea83b6b5092462e91a5e3e1
+  symptom_signature: owner bootstrap cold control process cannot persist provider
+    identity
+  observed_in: Actual214 first cold bootstrap stack.py848 UnboundLocalError after
+    private Fabro spawn; oldUNKNOWN preserved
+  baseline_revision: 214c9668c605a5bad690820cb1f6601bf9ccb935
+  error_codes:
+  - UnboundLocalError
+  operations:
+  - lrtx.stack._start
+  root_cause: provider is imported only in managed non-control branch but used in
+    early startup identity persistence
+  remedy: Initialize same provider dependency for cold control branch and execute
+    real branch under meaningful CPU controls

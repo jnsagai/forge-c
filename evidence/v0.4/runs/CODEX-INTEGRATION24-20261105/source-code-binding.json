@@ -1,0 +1,55 @@
+{
+  "all11_source_paths_byteidentical": true,
+  "existing_archives_unchanged": true,
+  "inputs_hashes_only_no_vendor_contents": true,
+  "integration_source": "2ec54d20f66fb908788a1cec97b1dc92a7488f18",
+  "published_base": "32e03f5c326330ac1056560dcc0b44451cfed523",
+  "qualified_runtime": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "source_paths": [
+    {
+      "path": "docs/adr/ADR-DA-012-owner-profile-bootstrap.md",
+      "sha256": "209407b20bf61fc10ef0586a2c4f20fa505d76267628e27d5b98f6c6bb99f4e8"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_native_transport.py",
+      "sha256": "8aeab8d2991a4329ef8a0b98a7f3d4437445e0e935edf943cc29b63d518b41d8"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/operations.py",
+      "sha256": "122f29dba8af979cade1e7a793c38fafc05c2aef0ce1bb34f7ea51473e210973"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_history.py",
+      "sha256": "5ba3f37c34dead13c164c0c5058f26d3c8cfcaa26bc39053992d1b219640194f"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_reconciliation.py",
+      "sha256": "3fc096ede3677d8ce40f302d3fdbe8f2884f42acf4cc22c58604510de89cf522"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "a175cd76a014c3e30cdace1b8c29a3a18143b8d42254e2bdd3748782a8ef25d1"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_supervised_development.py",
+      "sha256": "3cf9888de2cb97d51ca8dccdcaed499e58bfd574a68a201a2a1481411d15a3d0"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "4ab58c96d8d6c1b482ad87f4260189986f4365b686898f7cf655df4f142c1076"
+    },
+    {
+      "path": "factory/python/tests/test_owner_bootstrap_cold_start.py",
+      "sha256": "8d36deafa72db5a54b071582d1bd36026ea3186a64ca69e04080c1f342bf46d6"
+    },
+    {
+      "path": "factory/python/tests/test_owner_bootstrap_reconciliation.py",
+      "sha256": "d29e75550d5cb98850f80726c2b5218251e51e0e9cf6adc137f6303b2116b69b"
+    },
+    {
+      "path": "factory/python/tests/test_owner_profile_bootstrap.py",
+      "sha256": "1fde4ee71644eab7d8145aec5ec251d796e73c28a5d0f352f31c5f3c30854474"
+    }
+  ],
+  "whole_integration_tree_CRE_claimed": false
+}

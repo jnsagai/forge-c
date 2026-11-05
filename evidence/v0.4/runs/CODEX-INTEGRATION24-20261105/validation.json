@@ -1,0 +1,48 @@
+{
+  "actual214_start": "FAILED_UnboundLocalError_UNKNOWN_PRESERVED",
+  "actual887_bootstrap_or_cleanup": "NOT_RUN_BY_COMPONENT_AGENT",
+  "actual_product_phase_or_MISRA_acceptance": "NOT_CLAIMED",
+  "counting_limit": "185 final private cases overlap earlier22/71/149/151 runs and214 remote149; do not sum repetitions or distinct CRE gate records as new product tests.",
+  "decisions": [
+    {
+      "baseline": "74e44a1f23b01f3200350436df1691249b441292",
+      "benchmark_records": 4,
+      "candidate": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+      "causal": "NOT_RUN_CHANGE",
+      "decision_id": "pd-6f7f93b58fbd8f787e01",
+      "label": "initial214",
+      "prevention": 175,
+      "reproducer_records": 175
+    },
+    {
+      "baseline": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+      "benchmark_records": 4,
+      "candidate": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "causal": "PASS_EXTERNAL_STAGED_FIX",
+      "decision_id": "pd-732407cf0b292029816c",
+      "label": "fixed887",
+      "prevention": 175,
+      "reproducer_records": 177
+    }
+  ],
+  "design": 14,
+  "final_private_affected_tests": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 185
+  },
+  "integration_source": "2ec54d20f66fb908788a1cec97b1dc92a7488f18",
+  "legacy": 16,
+  "models_or_GPU_inference_by_component": 0,
+  "packager": 7,
+  "permanent_reproducer_registration": "NOT_CLAIMED_EXTERNAL_STAGED_ONLY",
+  "production_ACT": false,
+  "publication_scope": "New append-only sanitized evidence overlay and local integration source; root reviews/applies/commits. No push/main merge/runtime activation.",
+  "qualified_source": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "role_competence": "NOT_RUN",
+  "ruff": "PASS",
+  "schema": "forge-c/integration24-publication-validation/1",
+  "source_only_task_ticks": 0,
+  "status": "SOURCE_FIX_ELIGIBLE_OFFLINE_REVIEW_ONLY"
+}

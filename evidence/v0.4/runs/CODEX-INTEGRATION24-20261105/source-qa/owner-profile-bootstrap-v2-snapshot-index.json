@@ -1,0 +1,58 @@
+{
+  "status": "SNAPSHOT71PASS_NOT_CRE_QUALIFIED_LINT_PENDING",
+  "revision": "db4459213b21078de1c75114b6cc54eb1a7ab238",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v2",
+  "files": [
+    {
+      "path": "factory/python/forge_factory/afo/owner_profile_bootstrap.py",
+      "sha256": "fbf8926665393dab225f5e5f8c2e61dabaa96d061d76c056e55e0c49097c1dd2"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_bootstrap_history.py",
+      "sha256": "b442122d557c59f83ad1b8ebad68a15f0a8d077feae63021e582e8e62a96e016"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/line_native_transport.py",
+      "sha256": "8aeab8d2991a4329ef8a0b98a7f3d4437445e0e935edf943cc29b63d518b41d8"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/owner_supervised_development.py",
+      "sha256": "de5ebc1bf11ac919759d43a4ac04f214b9f373b9d430a4811e444e66053ed4bf"
+    },
+    {
+      "path": "factory/python/forge_factory/afo/operations.py",
+      "sha256": "122f29dba8af979cade1e7a793c38fafc05c2aef0ce1bb34f7ea51473e210973"
+    },
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "f399772651da6d52efa858ed923e68ba72e40afee6bd2d6eddb89d7dafc1294f"
+    },
+    {
+      "path": "factory/python/tests/test_owner_profile_bootstrap.py",
+      "sha256": "79cb33ccb314b7602d8003ff17a0b9185c7e03b62296ccac385447532681a7a1"
+    },
+    {
+      "path": "docs/adr/ADR-DA-012-owner-profile-bootstrap.md",
+      "sha256": "209407b20bf61fc10ef0586a2c4f20fa505d76267628e27d5b98f6c6bb99f4e8"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v2-focused.xml",
+      "sha256": "a9c6ca237143a5ae42c3e2b9ab5ed4ea7ee16c0652762020e64c53f408a7bbaf"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v2-focused.log",
+      "sha256": "302c481d0476715670506a6664542c2cdca3bcb6f6be63ec67b5ba0dde493cf4"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v2-ruff.log",
+      "sha256": "39b713743278a445b6aa512fcdce2fab75557e88637cd15ddd5e629cc7906a17"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v2-inputs-before-tests.json",
+      "sha256": "77402be8f8babdee87d3ae04d9cbf5b95df52e87dc397ea17504631076bc3f44"
+    }
+  ],
+  "runtime_effects": false
+}

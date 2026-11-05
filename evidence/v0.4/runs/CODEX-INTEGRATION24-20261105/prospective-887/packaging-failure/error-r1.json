@@ -1,0 +1,12 @@
+{
+  "state": "PACKAGING_REFUSED_BEFORE_NEW_PROOF_OR_I24_WRITES",
+  "script": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/package-codex-integration24-prospective887-addendum.py",
+  "script_sha256": "5a9b346a8900b6e69ae9f1f108beb2096e5c620014b6c3e4ba5e962f62f23248",
+  "error_type": "KeyError",
+  "field": "prior_repository_guardian_intent_unchanged",
+  "actual_frozen_stage_field": "dead_issuer_UNKNOWN_partial_lifetimes_history_Intent_repositories_unchanged",
+  "correction": "Use actual887 stage schema key; probe schema still uses prior_repository_guardian_intent_unchanged. No source/proof bytes or expectations changed.",
+  "partial_export_directory": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration24-exports-v3",
+  "preserved_prior_files_only": 841,
+  "old_indexes_or_source_or_runtime_modified": false
+}

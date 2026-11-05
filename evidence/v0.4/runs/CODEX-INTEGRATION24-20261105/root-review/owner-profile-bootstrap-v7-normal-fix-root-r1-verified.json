@@ -1,0 +1,2417 @@
+{
+  "schema": "forge-c/root-verified-causal-fix/1",
+  "decision_id": "pd-732407cf0b292029816c",
+  "decision_sha256": "2cb88a68a96bde28514180bda56bcdb7ad970cd74f1b1eadc6bd6f1dd2031137",
+  "source": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "baseline": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "root_session": 62129,
+  "root_session_exit_code": 0,
+  "all_seven_hard_gates": "PASS",
+  "all_177_reproducer_rows_and_raw_log_hashes_verified": true,
+  "baseline_causal_case": "SYMPTOM_PRESENT",
+  "candidate_causal_case": "SYMPTOM_ABSENT",
+  "global_prevention_cases": 175,
+  "global_prevention_failures": 0,
+  "all_four_benchmark_records_verified": true,
+  "reproducer_rows": [
+    {
+      "run_id": "rr-9f0f8e03ca1f97ded47c",
+      "reproducer_id": "AFO-OWNER-BOOTSTRAP-COLD-20261105",
+      "revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+      "role": "BASELINE",
+      "exit_code": 1,
+      "verdict": "SYMPTOM_PRESENT",
+      "signature": "owner bootstrap cold control process cannot persist provider identity",
+      "log_sha256": "138433eb11ad4e44c1eaf93796896661ebb7ade25eb924423816f688c0415300",
+      "at": "2026-11-05T19:31:41.227569Z"
+    },
+    {
+      "run_id": "rr-f3b3c61d58551edce4cb",
+      "reproducer_id": "AFO-OWNER-BOOTSTRAP-COLD-20261105",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "CANDIDATE",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:41.686639Z"
+    },
+    {
+      "run_id": "rr-f7b44593e0e6163e03e3",
+      "reproducer_id": "RPR-001",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:41.917110Z"
+    },
+    {
+      "run_id": "rr-e8a34f14ed65ff5e8fc9",
+      "reproducer_id": "RPR-002",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "793fad6b8223a018546fc069f48fa286322eaffd4494b6ffc3a511184aaa75f0",
+      "at": "2026-11-05T19:31:42.263942Z"
+    },
+    {
+      "run_id": "rr-93da7f832c61167e67d7",
+      "reproducer_id": "RPR-003",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:42.787146Z"
+    },
+    {
+      "run_id": "rr-f60d750bd3fc48978301",
+      "reproducer_id": "RPR-004",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:43.400581Z"
+    },
+    {
+      "run_id": "rr-d2b1856564858f1d0f2f",
+      "reproducer_id": "RPR-005",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:43.858220Z"
+    },
+    {
+      "run_id": "rr-18175c42eeffe210887e",
+      "reproducer_id": "RPR-006",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:44.020637Z"
+    },
+    {
+      "run_id": "rr-f3954007f8e793ab5f54",
+      "reproducer_id": "RPR-007",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:44.204381Z"
+    },
+    {
+      "run_id": "rr-4be26beefc814a59562e",
+      "reproducer_id": "RPR-008",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:44.558894Z"
+    },
+    {
+      "run_id": "rr-bd09f5b08460d0608824",
+      "reproducer_id": "RPR-009",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:44.919792Z"
+    },
+    {
+      "run_id": "rr-ba01d395e6185e75700f",
+      "reproducer_id": "RPR-010",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:45.195366Z"
+    },
+    {
+      "run_id": "rr-f8d936a72992a9412667",
+      "reproducer_id": "RPR-011",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:45.347310Z"
+    },
+    {
+      "run_id": "rr-a79f31aea8816e5e5b74",
+      "reproducer_id": "RPR-012",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:45.525856Z"
+    },
+    {
+      "run_id": "rr-8b08e3ab90af7d031fd2",
+      "reproducer_id": "RPR-013",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:45.872565Z"
+    },
+    {
+      "run_id": "rr-f993186dc5d88c9f9d3f",
+      "reproducer_id": "RPR-014",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:46.080593Z"
+    },
+    {
+      "run_id": "rr-879b03c87348eca3d4b5",
+      "reproducer_id": "RPR-015",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:46.506255Z"
+    },
+    {
+      "run_id": "rr-03ee882c2877806a9b5e",
+      "reproducer_id": "RPR-016",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:47.408307Z"
+    },
+    {
+      "run_id": "rr-b3d63ce5d8b25bafccb0",
+      "reproducer_id": "RPR-017",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:47.723676Z"
+    },
+    {
+      "run_id": "rr-a372ffc979cb412e9d0e",
+      "reproducer_id": "RPR-018",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:48.081304Z"
+    },
+    {
+      "run_id": "rr-efeb717bbc5589a0c534",
+      "reproducer_id": "RPR-019",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:48.373407Z"
+    },
+    {
+      "run_id": "rr-de064b635db73115adf2",
+      "reproducer_id": "RPR-020",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:48.553513Z"
+    },
+    {
+      "run_id": "rr-e519c5c339c3f3d6beef",
+      "reproducer_id": "RPR-021",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:48.837438Z"
+    },
+    {
+      "run_id": "rr-97a5871b78274355bb0b",
+      "reproducer_id": "RPR-022",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:49.241929Z"
+    },
+    {
+      "run_id": "rr-61d84758744f4687ad51",
+      "reproducer_id": "RPR-023",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:49.782571Z"
+    },
+    {
+      "run_id": "rr-d0034a4369c9a75acea0",
+      "reproducer_id": "RPR-024",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:50.249069Z"
+    },
+    {
+      "run_id": "rr-5c7a295781021de90a6c",
+      "reproducer_id": "RPR-025",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:50.603993Z"
+    },
+    {
+      "run_id": "rr-352c2f8685d9d002aad2",
+      "reproducer_id": "RPR-026",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:51.156073Z"
+    },
+    {
+      "run_id": "rr-d180d504f6bbf9d41819",
+      "reproducer_id": "RPR-027",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:51.518023Z"
+    },
+    {
+      "run_id": "rr-1f6b143199eb04479c9b",
+      "reproducer_id": "RPR-028",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:51.659044Z"
+    },
+    {
+      "run_id": "rr-4ec76101dbf6f6ffe935",
+      "reproducer_id": "RPR-029",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:51.864657Z"
+    },
+    {
+      "run_id": "rr-c62e367424f5f6e5204e",
+      "reproducer_id": "RPR-030",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:52.228799Z"
+    },
+    {
+      "run_id": "rr-6b1639dc0a083323efd4",
+      "reproducer_id": "RPR-031",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:52.382361Z"
+    },
+    {
+      "run_id": "rr-1097dcc7cf37ce8029fe",
+      "reproducer_id": "RPR-032",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:54.103269Z"
+    },
+    {
+      "run_id": "rr-568bda401c24732168d1",
+      "reproducer_id": "RPR-033",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:54.317169Z"
+    },
+    {
+      "run_id": "rr-0175d13db09cf566e8ee",
+      "reproducer_id": "RPR-034",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:54.416009Z"
+    },
+    {
+      "run_id": "rr-400ede323217a300e516",
+      "reproducer_id": "RPR-035",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:55.835602Z"
+    },
+    {
+      "run_id": "rr-eddbe84c0ebc1258cc84",
+      "reproducer_id": "RPR-036",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:56.058119Z"
+    },
+    {
+      "run_id": "rr-2a21255f50d9b7eb2386",
+      "reproducer_id": "RPR-037",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:56.191123Z"
+    },
+    {
+      "run_id": "rr-745d235d096ee6a1a636",
+      "reproducer_id": "RPR-038",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:56.395780Z"
+    },
+    {
+      "run_id": "rr-ad36f51349076ecf6d93",
+      "reproducer_id": "RPR-039",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:56.507201Z"
+    },
+    {
+      "run_id": "rr-7ab76bafbfdbdb54b6ff",
+      "reproducer_id": "RPR-040",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:56.721767Z"
+    },
+    {
+      "run_id": "rr-c716f9ab2c1ab8f40fad",
+      "reproducer_id": "RPR-041",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:57.061253Z"
+    },
+    {
+      "run_id": "rr-e5dac5602c3d807880f9",
+      "reproducer_id": "RPR-042",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:57.713850Z"
+    },
+    {
+      "run_id": "rr-9fa8057a631edfa79faa",
+      "reproducer_id": "RPR-043",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:58.789815Z"
+    },
+    {
+      "run_id": "rr-ac4dbd3a15e64522a5aa",
+      "reproducer_id": "RPR-044",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:58.968284Z"
+    },
+    {
+      "run_id": "rr-5cdf5385233c3923ad10",
+      "reproducer_id": "RPR-045",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:59.355808Z"
+    },
+    {
+      "run_id": "rr-22a53c6e985ffc7d633b",
+      "reproducer_id": "RPR-046",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:59.499787Z"
+    },
+    {
+      "run_id": "rr-d954c181f7341baacac1",
+      "reproducer_id": "RPR-047",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:31:59.652575Z"
+    },
+    {
+      "run_id": "rr-dca45f995a25f7747133",
+      "reproducer_id": "RPR-048",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:00.076464Z"
+    },
+    {
+      "run_id": "rr-62f098d9e68e7ace1e93",
+      "reproducer_id": "RPR-049",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:00.193176Z"
+    },
+    {
+      "run_id": "rr-330ec830926221c23664",
+      "reproducer_id": "RPR-050",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:00.605204Z"
+    },
+    {
+      "run_id": "rr-746c0f4e39016423842e",
+      "reproducer_id": "RPR-051",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:00.927758Z"
+    },
+    {
+      "run_id": "rr-68969447c7589a599b3d",
+      "reproducer_id": "RPR-052",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:01.218790Z"
+    },
+    {
+      "run_id": "rr-99bac4b5884265b6d249",
+      "reproducer_id": "RPR-053",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:01.325672Z"
+    },
+    {
+      "run_id": "rr-44d9ec2f3fe2f850c463",
+      "reproducer_id": "RPR-054",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:01.514946Z"
+    },
+    {
+      "run_id": "rr-2deade6c6f9cbb1b3546",
+      "reproducer_id": "RPR-055",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:01.908482Z"
+    },
+    {
+      "run_id": "rr-e4416674f49cc2869b1a",
+      "reproducer_id": "RPR-056",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:02.391594Z"
+    },
+    {
+      "run_id": "rr-43cc876644936cd51cd9",
+      "reproducer_id": "RPR-057",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:02.579674Z"
+    },
+    {
+      "run_id": "rr-c71d430aa867bd5d0cac",
+      "reproducer_id": "RPR-058",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:02.793682Z"
+    },
+    {
+      "run_id": "rr-3e2c26724cd83f06563b",
+      "reproducer_id": "RPR-059",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:03.021351Z"
+    },
+    {
+      "run_id": "rr-38bc79ed2296b790dd48",
+      "reproducer_id": "RPR-060",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:03.324900Z"
+    },
+    {
+      "run_id": "rr-e69c4c2de80b88c04fee",
+      "reproducer_id": "RPR-061",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:03.627669Z"
+    },
+    {
+      "run_id": "rr-071b37444d4c1c485c1b",
+      "reproducer_id": "RPR-062",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:03.747930Z"
+    },
+    {
+      "run_id": "rr-2b01ed6255da8f6c1a29",
+      "reproducer_id": "RPR-063",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:03.975806Z"
+    },
+    {
+      "run_id": "rr-34c224c00e0565fa9710",
+      "reproducer_id": "RPR-064",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:04.468012Z"
+    },
+    {
+      "run_id": "rr-346f48ed06222a5aa077",
+      "reproducer_id": "RPR-065",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:04.886951Z"
+    },
+    {
+      "run_id": "rr-c9f83ee1a504acc4cd70",
+      "reproducer_id": "RPR-066",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:05.025694Z"
+    },
+    {
+      "run_id": "rr-6d723415b0d827c62f5b",
+      "reproducer_id": "RPR-067",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:05.387866Z"
+    },
+    {
+      "run_id": "rr-5eb9bd32fa062be75486",
+      "reproducer_id": "RPR-068",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:05.522188Z"
+    },
+    {
+      "run_id": "rr-a55adad3f329d92e986d",
+      "reproducer_id": "RPR-069",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:05.610248Z"
+    },
+    {
+      "run_id": "rr-8ec27f8fb3cc4508bdee",
+      "reproducer_id": "RPR-070",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:05.733253Z"
+    },
+    {
+      "run_id": "rr-4059cdbd92dff6c196f2",
+      "reproducer_id": "RPR-071",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:05.866211Z"
+    },
+    {
+      "run_id": "rr-65cfd8f166caf24fdec4",
+      "reproducer_id": "RPR-072",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:06.122578Z"
+    },
+    {
+      "run_id": "rr-aee954c4e2109c348872",
+      "reproducer_id": "RPR-073",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:06.312049Z"
+    },
+    {
+      "run_id": "rr-65bda9c4872cc9e18547",
+      "reproducer_id": "RPR-074",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:06.597878Z"
+    },
+    {
+      "run_id": "rr-95d80109bab81557fe6b",
+      "reproducer_id": "RPR-075",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "d04f88013df8d5f8e17dfb43dfd8e81a41597468b6043e28c9c786ec875bfa1b",
+      "at": "2026-11-05T19:32:06.756045Z"
+    },
+    {
+      "run_id": "rr-2be1a81f0d1376d2bcb3",
+      "reproducer_id": "RPR-076",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "f3462edd9a7dc1219c83d97acd1d187a2623bcfbeb9016ba2d9309b68d9c3956",
+      "at": "2026-11-05T19:32:07.976175Z"
+    },
+    {
+      "run_id": "rr-247e3bdf1475f6508c44",
+      "reproducer_id": "RPR-077",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "8ebe3845e3438fafa79925f8abcdd3321ade4640b494bced03fb5874546a0b6a",
+      "at": "2026-11-05T19:32:09.205122Z"
+    },
+    {
+      "run_id": "rr-9815a8f7cdf09b58fae2",
+      "reproducer_id": "RPR-078",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "aa2d81abb375306868b12cfd197b02bc68bf0e004ca4780367214b305b57b9fa",
+      "at": "2026-11-05T19:32:09.988794Z"
+    },
+    {
+      "run_id": "rr-cc7f06798b10042c1227",
+      "reproducer_id": "RPR-079",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:10.502520Z"
+    },
+    {
+      "run_id": "rr-c4dec9611b33aacacbc4",
+      "reproducer_id": "RPR-080",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:11.685137Z"
+    },
+    {
+      "run_id": "rr-3e8e548ba386b2bde8a2",
+      "reproducer_id": "RPR-081",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:12.224782Z"
+    },
+    {
+      "run_id": "rr-3f25315bfdc591c1c0d9",
+      "reproducer_id": "RPR-082",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:12.737994Z"
+    },
+    {
+      "run_id": "rr-407cf2a660c68511a4d5",
+      "reproducer_id": "RPR-083",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "8ad0dc25995d70b308457343de1c6f27ad4b9e1fca4b895ba2fc199a8dacedd1",
+      "at": "2026-11-05T19:32:13.297970Z"
+    },
+    {
+      "run_id": "rr-d08d3e3a55e5f61e577b",
+      "reproducer_id": "RPR-084",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:13.952781Z"
+    },
+    {
+      "run_id": "rr-e18253bfc41b2a4b6c25",
+      "reproducer_id": "RPR-085",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "8ad0dc25995d70b308457343de1c6f27ad4b9e1fca4b895ba2fc199a8dacedd1",
+      "at": "2026-11-05T19:32:14.512965Z"
+    },
+    {
+      "run_id": "rr-17a1e6c78051d617fdab",
+      "reproducer_id": "RPR-086",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:14.883154Z"
+    },
+    {
+      "run_id": "rr-bd20c5b1b3a3a7e332ab",
+      "reproducer_id": "RPR-087",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "bbfc621eb76ab99a10cf71746cffc2156e73d3e4e061bea1852b19f8e2d1511f",
+      "at": "2026-11-05T19:32:15.417172Z"
+    },
+    {
+      "run_id": "rr-dd5f8b91104ff0d197dd",
+      "reproducer_id": "RPR-088",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:15.591346Z"
+    },
+    {
+      "run_id": "rr-eb08e4778e66b7507ac8",
+      "reproducer_id": "RPR-089",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "1a2565ab277e41d5a08f5ec11208806e1aab8453725f20a68b037de4fd843101",
+      "at": "2026-11-05T19:32:15.895247Z"
+    },
+    {
+      "run_id": "rr-ea5d8343a3b89ff0508c",
+      "reproducer_id": "RPR-090",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:16.284212Z"
+    },
+    {
+      "run_id": "rr-6123882d167d604fb4f4",
+      "reproducer_id": "RPR-091",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:16.478397Z"
+    },
+    {
+      "run_id": "rr-869cd57f407420d159a0",
+      "reproducer_id": "RPR-092",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:16.651537Z"
+    },
+    {
+      "run_id": "rr-342922e44f06fcbff2e1",
+      "reproducer_id": "RPR-093",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:16.887066Z"
+    },
+    {
+      "run_id": "rr-267085333ad0c1348831",
+      "reproducer_id": "RPR-094",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:17.149224Z"
+    },
+    {
+      "run_id": "rr-b7c4a58d1d68121bd257",
+      "reproducer_id": "RPR-095",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:17.327771Z"
+    },
+    {
+      "run_id": "rr-c9d4157a0e8ae486bec2",
+      "reproducer_id": "RPR-096",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:17.582655Z"
+    },
+    {
+      "run_id": "rr-6a9d530d9dc60cb49e72",
+      "reproducer_id": "RPR-097",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:17.750800Z"
+    },
+    {
+      "run_id": "rr-5177835291f9170e22b8",
+      "reproducer_id": "RPR-098",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:17.929878Z"
+    },
+    {
+      "run_id": "rr-79b82442520c9ddf5c76",
+      "reproducer_id": "RPR-099",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:18.207061Z"
+    },
+    {
+      "run_id": "rr-89feda13693a58b9b1dc",
+      "reproducer_id": "RPR-100",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "44f283418aeca1efb71a2647776605e288909ae6af734e281f50577fed762a82",
+      "at": "2026-11-05T19:32:18.297503Z"
+    },
+    {
+      "run_id": "rr-ae64cf8f7e3aa7837d94",
+      "reproducer_id": "RPR-101",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:18.545296Z"
+    },
+    {
+      "run_id": "rr-afb3d4e3fe4cf160add8",
+      "reproducer_id": "RPR-102",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:18.727304Z"
+    },
+    {
+      "run_id": "rr-384504b14d039d401c0d",
+      "reproducer_id": "RPR-103",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:18.903890Z"
+    },
+    {
+      "run_id": "rr-46ba025909686276fb4e",
+      "reproducer_id": "RPR-104",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:19.223411Z"
+    },
+    {
+      "run_id": "rr-986d731562bd9a9ac6ec",
+      "reproducer_id": "RPR-105",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:19.602613Z"
+    },
+    {
+      "run_id": "rr-d95c95765c9763105b76",
+      "reproducer_id": "RPR-106",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:19.822843Z"
+    },
+    {
+      "run_id": "rr-cfbd42c2cddd333f63ce",
+      "reproducer_id": "RPR-107",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:19.986530Z"
+    },
+    {
+      "run_id": "rr-96095e97a577f5fa794b",
+      "reproducer_id": "RPR-108",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "08a204a3c8461595412c2df90cc1ff0bdc2ba4d04e0f26bf2b17d8fb1f80c7c1",
+      "at": "2026-11-05T19:32:20.949110Z"
+    },
+    {
+      "run_id": "rr-0336dbaaaa2bc03ecf13",
+      "reproducer_id": "RPR-109",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:21.150246Z"
+    },
+    {
+      "run_id": "rr-38f2480e698f6092f1d0",
+      "reproducer_id": "RPR-110",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:21.432172Z"
+    },
+    {
+      "run_id": "rr-6869c1708f86a7cf87b3",
+      "reproducer_id": "RPR-111",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:21.661728Z"
+    },
+    {
+      "run_id": "rr-bef4d87efe0d3adf7efc",
+      "reproducer_id": "RPR-112",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:23.129600Z"
+    },
+    {
+      "run_id": "rr-081cdf38917ebc34f029",
+      "reproducer_id": "RPR-113",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:23.311893Z"
+    },
+    {
+      "run_id": "rr-f6c340101f48732c6b38",
+      "reproducer_id": "RPR-114",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:23.480843Z"
+    },
+    {
+      "run_id": "rr-2ffa635395b436b88b48",
+      "reproducer_id": "RPR-115",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "201741645736effde414b006c74a908d5ab81295020b5c7463202a6233f4cffe",
+      "at": "2026-11-05T19:32:24.426546Z"
+    },
+    {
+      "run_id": "rr-56ab4ec3425d0c7694ec",
+      "reproducer_id": "RPR-116",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:24.634860Z"
+    },
+    {
+      "run_id": "rr-c6fc2e6ecb9596701644",
+      "reproducer_id": "RPR-117",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:24.768479Z"
+    },
+    {
+      "run_id": "rr-ee7034fd0ddba59ecb13",
+      "reproducer_id": "RPR-118",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:24.917860Z"
+    },
+    {
+      "run_id": "rr-73ea95457872ecd4e55a",
+      "reproducer_id": "RPR-119",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:25.065728Z"
+    },
+    {
+      "run_id": "rr-30b83515ceaa6b19a102",
+      "reproducer_id": "RPR-120",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:25.339910Z"
+    },
+    {
+      "run_id": "rr-0ef4ff8696e4a3d0d634",
+      "reproducer_id": "RPR-121",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:25.727506Z"
+    },
+    {
+      "run_id": "rr-c74912ba508f44599ff6",
+      "reproducer_id": "RPR-122",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:25.983244Z"
+    },
+    {
+      "run_id": "rr-3ce7295196fbe974b7de",
+      "reproducer_id": "RPR-123",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:27.675176Z"
+    },
+    {
+      "run_id": "rr-b2cda4f7500e8f9f526b",
+      "reproducer_id": "RPR-124",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:27.863944Z"
+    },
+    {
+      "run_id": "rr-ca048464479d77dc2173",
+      "reproducer_id": "RPR-125",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:27.960403Z"
+    },
+    {
+      "run_id": "rr-f7024d6fef7eda96a16a",
+      "reproducer_id": "RPR-126",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:28.407943Z"
+    },
+    {
+      "run_id": "rr-1c0989995d2ed2d07987",
+      "reproducer_id": "RPR-127",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:28.891049Z"
+    },
+    {
+      "run_id": "rr-2779ac8e1bf2a5054140",
+      "reproducer_id": "RPR-128",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:29.446296Z"
+    },
+    {
+      "run_id": "rr-17ad7063d3d9825e51cb",
+      "reproducer_id": "RPR-129",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:29.654083Z"
+    },
+    {
+      "run_id": "rr-a8aa4d67e3f6b79a3287",
+      "reproducer_id": "RPR-130",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:30.746694Z"
+    },
+    {
+      "run_id": "rr-8ac8221350c64520a6d4",
+      "reproducer_id": "RPR-131",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:31.453121Z"
+    },
+    {
+      "run_id": "rr-d55aa048641f9b46fe76",
+      "reproducer_id": "RPR-132",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:32.073712Z"
+    },
+    {
+      "run_id": "rr-f757a4b8065937a4ede1",
+      "reproducer_id": "RPR-133",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:32.443371Z"
+    },
+    {
+      "run_id": "rr-0c50b5817769c0b5852c",
+      "reproducer_id": "RPR-134",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:32.632735Z"
+    },
+    {
+      "run_id": "rr-2aaece21812bf1d86c96",
+      "reproducer_id": "RPR-135",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:33.350644Z"
+    },
+    {
+      "run_id": "rr-0350eba4f6d294cc9268",
+      "reproducer_id": "RPR-136",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:33.478535Z"
+    },
+    {
+      "run_id": "rr-f5b0b1fce9fb33828818",
+      "reproducer_id": "RPR-137",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "484a33045c1f35b4005eceecc62720d66b9367be5b5a9beb76f66bdc9790c2f3",
+      "at": "2026-11-05T19:32:34.183872Z"
+    },
+    {
+      "run_id": "rr-dbbdc14ea23f834ed2b3",
+      "reproducer_id": "RPR-138",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:34.426235Z"
+    },
+    {
+      "run_id": "rr-9652f8af365b54df4d3a",
+      "reproducer_id": "RPR-139",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:36.905495Z"
+    },
+    {
+      "run_id": "rr-c1843a1f0d0723c9485b",
+      "reproducer_id": "RPR-140",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:37.143962Z"
+    },
+    {
+      "run_id": "rr-473e780b6900bc5c0134",
+      "reproducer_id": "RPR-141",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:37.476603Z"
+    },
+    {
+      "run_id": "rr-191f222ea12d4cf50305",
+      "reproducer_id": "RPR-142",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:37.949502Z"
+    },
+    {
+      "run_id": "rr-81063e18a8536e0d943b",
+      "reproducer_id": "RPR-143",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:38.415920Z"
+    },
+    {
+      "run_id": "rr-fa5279d7cc01adb61456",
+      "reproducer_id": "RPR-144",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:38.736663Z"
+    },
+    {
+      "run_id": "rr-aebed0549ac876b94e07",
+      "reproducer_id": "RPR-145",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:38.950929Z"
+    },
+    {
+      "run_id": "rr-13bceb64632ee17b1a26",
+      "reproducer_id": "RPR-146",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:39.124908Z"
+    },
+    {
+      "run_id": "rr-8867af1783a2a03810cb",
+      "reproducer_id": "RPR-147",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:39.390671Z"
+    },
+    {
+      "run_id": "rr-f4a877875f7606d1f3f5",
+      "reproducer_id": "RPR-149",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:39.856616Z"
+    },
+    {
+      "run_id": "rr-dd260f65445a4ffdc9bd",
+      "reproducer_id": "RPR-150",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:40.296775Z"
+    },
+    {
+      "run_id": "rr-9b06a5f9e5889207909a",
+      "reproducer_id": "RPR-151",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:40.920375Z"
+    },
+    {
+      "run_id": "rr-3609f93c25263e3787cb",
+      "reproducer_id": "RPR-152",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:41.526415Z"
+    },
+    {
+      "run_id": "rr-12e19c8d18046793b86b",
+      "reproducer_id": "RPR-153",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:42.961191Z"
+    },
+    {
+      "run_id": "rr-ecfbd66537c494e68693",
+      "reproducer_id": "RPR-154",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "bf9dbd902e5164df4e57750985bbec4ad9b9c96ab520992ebec933f9b2400d84",
+      "at": "2026-11-05T19:32:44.697286Z"
+    },
+    {
+      "run_id": "rr-06703894eb1e0e5ff743",
+      "reproducer_id": "RPR-155",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "4a7883e9ce6d56b5025c0b4e8b8b1eb9d3122a2ea8b70ed40d8c581715320795",
+      "at": "2026-11-05T19:32:46.981121Z"
+    },
+    {
+      "run_id": "rr-65b0f990109944ea02f9",
+      "reproducer_id": "RPR-156",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:47.156273Z"
+    },
+    {
+      "run_id": "rr-e8291edaa846175dcfa9",
+      "reproducer_id": "RPR-157",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "a522afb12e1772ad6115e07d017377a0a53c9c0c67b7ee24abb2e56ffe2126a3",
+      "at": "2026-11-05T19:32:47.555766Z"
+    },
+    {
+      "run_id": "rr-4cf5bdbff63d8fe0e45d",
+      "reproducer_id": "RPR-158",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "42f62441716b59c10e86f7ec083be73715981bdb559e2b23589f2626bf7faa03",
+      "at": "2026-11-05T19:32:47.937315Z"
+    },
+    {
+      "run_id": "rr-848f16a8f358bbc657af",
+      "reproducer_id": "RPR-159",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "f154ed4807c55a398e71425dd16dd98d5ca1e6a0b450c5d487b254e77547a783",
+      "at": "2026-11-05T19:32:48.758402Z"
+    },
+    {
+      "run_id": "rr-8175b211bb31ce500669",
+      "reproducer_id": "RPR-160",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:49.793913Z"
+    },
+    {
+      "run_id": "rr-2255d300cfd5ceaf22c7",
+      "reproducer_id": "RPR-161",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:49.974109Z"
+    },
+    {
+      "run_id": "rr-7528f804d10d6b41f727",
+      "reproducer_id": "RPR-162",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:50.319214Z"
+    },
+    {
+      "run_id": "rr-206a0b24e78146bac3c1",
+      "reproducer_id": "RPR-163",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "6809da245cda1d736dafa3189fca88c71fdb6b8a38b0ebddea2f8d8b13999d26",
+      "at": "2026-11-05T19:32:55.575030Z"
+    },
+    {
+      "run_id": "rr-671eb5030114c0d52131",
+      "reproducer_id": "RPR-164",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:55.906374Z"
+    },
+    {
+      "run_id": "rr-f6adeadcd173449a7720",
+      "reproducer_id": "RPR-165",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:56.685894Z"
+    },
+    {
+      "run_id": "rr-a9f7cf61fab42cc5800e",
+      "reproducer_id": "RPR-166",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "c579c811c52fdf4373ba4ef11e2530c7d11c3e293ccb96efa103736f0c699610",
+      "at": "2026-11-05T19:32:59.354357Z"
+    },
+    {
+      "run_id": "rr-139cb6d9930761cbe1af",
+      "reproducer_id": "RPR-167",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:59.601620Z"
+    },
+    {
+      "run_id": "rr-e92ed205bcf53b99a1d8",
+      "reproducer_id": "RPR-168",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:32:59.980347Z"
+    },
+    {
+      "run_id": "rr-102083abe547473fe6c3",
+      "reproducer_id": "RPR-169",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:33:01.144875Z"
+    },
+    {
+      "run_id": "rr-eca3fdb8176108273f55",
+      "reproducer_id": "RPR-170",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:33:01.876869Z"
+    },
+    {
+      "run_id": "rr-d5340f2d83ac217bb388",
+      "reproducer_id": "RPR-171",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "75892297920d4fd69dda1d08b70bb4583f9368eea715d1f76c940c7e353728e1",
+      "at": "2026-11-05T19:33:03.833855Z"
+    },
+    {
+      "run_id": "rr-985a10b2e44a7bddb4c9",
+      "reproducer_id": "RPR-172",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:33:04.172753Z"
+    },
+    {
+      "run_id": "rr-5d8af4c1eb43569d9f8c",
+      "reproducer_id": "RPR-173",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "bcce212b6312b4b0b04bae6c683185cae4d3ca6b5abed6dca5d48978619dc397",
+      "at": "2026-11-05T19:33:04.722279Z"
+    },
+    {
+      "run_id": "rr-0d779e595dfbf87e8d72",
+      "reproducer_id": "RPR-174",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:33:05.845133Z"
+    },
+    {
+      "run_id": "rr-01263d43be63e6f9f7b7",
+      "reproducer_id": "RPR-175",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:33:06.007030Z"
+    },
+    {
+      "run_id": "rr-00af5ee817874b3758af",
+      "reproducer_id": "RPR-176",
+      "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+      "role": "PREVENTION",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-11-05T19:33:06.487952Z"
+    }
+  ],
+  "benchmarks": [
+    {
+      "row": {
+        "run_id": "br-8c811783f00b15eb2c8c",
+        "suite_sha256": "e5bc1205c28e58cb2e8247717268c065ec7f096bd471396e2975782df6045a99",
+        "revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+        "at": "2026-11-05T19:33:32.222502Z"
+      },
+      "result": {
+        "model_tokens": 0,
+        "n": 9,
+        "passed": 9,
+        "results": [
+          {
+            "case_id": "BC-001",
+            "duration_s": 0.4,
+            "observed": {
+              "failed": 0,
+              "issues": [],
+              "passed": 1,
+              "status": "PASS"
+            },
+            "output_sha256": "b8a113dfdac10d21f9ee7a7322c85d862a3ce44986a68c2e4bf85e90451b8878",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-002",
+            "duration_s": 0.38,
+            "observed": {
+              "failure_class": "PRODUCT_QUALITY",
+              "issues": [
+                "BUILD_FAIL:test_forge_rcc_demo.c",
+                "software/src/forge_rcc_demo.c:6:32: error: expected expression"
+              ],
+              "route": "SWE_REWORK",
+              "status": "FAIL"
+            },
+            "output_sha256": "a645d7256239c9f1660c2dd8cea9633f5d9273cb70b2848aff55f835d9f00e97",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-003",
+            "duration_s": 0.33,
+            "observed": {
+              "issues": [
+                "error:arrayIndexOutOfBounds:array_oob.c:5",
+                "MISRA-8.4:array_oob.c:2"
+              ],
+              "status": "FAIL"
+            },
+            "output_sha256": "b6b0578d6c243a1d9e7fb4898b30d515437ab986af5502f7a67884923187acbc",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-004",
+            "duration_s": 0.33,
+            "observed": {
+              "admitted": 2,
+              "budget": 2,
+              "final_reason": "RETRY_BUDGET_EXHAUSTED"
+            },
+            "output_sha256": "12baad233479582afa050c419d9fecabd942be6d36fae7893459e641b744503d",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-005",
+            "duration_s": 0.32,
+            "observed": {
+              "final_state": "REQUIRES_OFFLINE_ATTENTION",
+              "transitions": 9,
+              "within_bound": true
+            },
+            "output_sha256": "fa50c447416722d61d2da32e75eff5a0e968a3f51f1179f44053d16568fc658f",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-006",
+            "duration_s": 0.49,
+            "observed": {
+              "failed": 0,
+              "issues": [],
+              "passed": 1,
+              "status": "PASS"
+            },
+            "output_sha256": "b8a113dfdac10d21f9ee7a7322c85d862a3ce44986a68c2e4bf85e90451b8878",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-007",
+            "duration_s": 0.38,
+            "observed": {
+              "failed": 1,
+              "issues": [
+                "TEST_FAIL:test_forge_uart_demo.c:exit1",
+                "CHECK_EXPR:test_forge_uart_demo.c#UT-012:forge_uart_available() == 2U",
+                "CHECK_EXPR:test_forge_uart_demo.c#UT-013:(forge_uart_read(&c) == FORGE_UART_OK) && (c == 0x30U)"
+              ],
+              "passed": 0,
+              "status": "FAIL"
+            },
+            "output_sha256": "1b50b44f117ad51c26f16bf96c99d288397a9545e2928292b70a90c909ec7119",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-008",
+            "duration_s": 0.95,
+            "observed": {
+              "gap_count": 2,
+              "gaps": [
+                "missing_or_empty_file:safety/software_safety_analysis.md",
+                "missing_or_empty_file:safety/tool_assurance_assessment.md"
+              ],
+              "gates": {
+                "SWE.1": "PASS",
+                "SWE.2": "PASS",
+                "SWE.3": "PASS",
+                "SWE.4": "PASS",
+                "SWE.5": "PASS",
+                "SWE.6": "PASS"
+              },
+              "gates_pass": 6,
+              "package_status": "BLOCKED"
+            },
+            "output_sha256": "9cc1d61db5eb5e9390d42a51ca3ed8e7b837617bcf3bb41f1c4b61cc8ee6d2a5",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-009",
+            "duration_s": 0.96,
+            "observed": {
+              "gap_count": 7,
+              "gates_pass": 5,
+              "package_status": "BLOCKED",
+              "swe4": "REINSPECT"
+            },
+            "output_sha256": "da71b03d6558a38f3b6c27c052a351f85b755f2db2caac1a398900c09a7c17e9",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+        "run_at": "2026-11-05T19:33:32.222502Z",
+        "run_id": "br-8c811783f00b15eb2c8c",
+        "suite_id": "forgec-cre-golden-v1",
+        "suite_sha256": "e5bc1205c28e58cb2e8247717268c065ec7f096bd471396e2975782df6045a99"
+      }
+    },
+    {
+      "row": {
+        "run_id": "br-d0b04ac0827a0a550559",
+        "suite_sha256": "e5bc1205c28e58cb2e8247717268c065ec7f096bd471396e2975782df6045a99",
+        "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+        "at": "2026-11-05T19:33:36.745825Z"
+      },
+      "result": {
+        "model_tokens": 0,
+        "n": 9,
+        "passed": 9,
+        "results": [
+          {
+            "case_id": "BC-001",
+            "duration_s": 0.4,
+            "observed": {
+              "failed": 0,
+              "issues": [],
+              "passed": 1,
+              "status": "PASS"
+            },
+            "output_sha256": "b8a113dfdac10d21f9ee7a7322c85d862a3ce44986a68c2e4bf85e90451b8878",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-002",
+            "duration_s": 0.4,
+            "observed": {
+              "failure_class": "PRODUCT_QUALITY",
+              "issues": [
+                "BUILD_FAIL:test_forge_rcc_demo.c",
+                "software/src/forge_rcc_demo.c:6:32: error: expected expression"
+              ],
+              "route": "SWE_REWORK",
+              "status": "FAIL"
+            },
+            "output_sha256": "a645d7256239c9f1660c2dd8cea9633f5d9273cb70b2848aff55f835d9f00e97",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-003",
+            "duration_s": 0.32,
+            "observed": {
+              "issues": [
+                "error:arrayIndexOutOfBounds:array_oob.c:5",
+                "MISRA-8.4:array_oob.c:2"
+              ],
+              "status": "FAIL"
+            },
+            "output_sha256": "b6b0578d6c243a1d9e7fb4898b30d515437ab986af5502f7a67884923187acbc",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-004",
+            "duration_s": 0.26,
+            "observed": {
+              "admitted": 2,
+              "budget": 2,
+              "final_reason": "RETRY_BUDGET_EXHAUSTED"
+            },
+            "output_sha256": "12baad233479582afa050c419d9fecabd942be6d36fae7893459e641b744503d",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-005",
+            "duration_s": 0.3,
+            "observed": {
+              "final_state": "REQUIRES_OFFLINE_ATTENTION",
+              "transitions": 9,
+              "within_bound": true
+            },
+            "output_sha256": "fa50c447416722d61d2da32e75eff5a0e968a3f51f1179f44053d16568fc658f",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-006",
+            "duration_s": 0.36,
+            "observed": {
+              "failed": 0,
+              "issues": [],
+              "passed": 1,
+              "status": "PASS"
+            },
+            "output_sha256": "b8a113dfdac10d21f9ee7a7322c85d862a3ce44986a68c2e4bf85e90451b8878",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-007",
+            "duration_s": 0.49,
+            "observed": {
+              "failed": 1,
+              "issues": [
+                "TEST_FAIL:test_forge_uart_demo.c:exit1",
+                "CHECK_EXPR:test_forge_uart_demo.c#UT-012:forge_uart_available() == 2U",
+                "CHECK_EXPR:test_forge_uart_demo.c#UT-013:(forge_uart_read(&c) == FORGE_UART_OK) && (c == 0x30U)"
+              ],
+              "passed": 0,
+              "status": "FAIL"
+            },
+            "output_sha256": "1b50b44f117ad51c26f16bf96c99d288397a9545e2928292b70a90c909ec7119",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-008",
+            "duration_s": 1.03,
+            "observed": {
+              "gap_count": 2,
+              "gaps": [
+                "missing_or_empty_file:safety/software_safety_analysis.md",
+                "missing_or_empty_file:safety/tool_assurance_assessment.md"
+              ],
+              "gates": {
+                "SWE.1": "PASS",
+                "SWE.2": "PASS",
+                "SWE.3": "PASS",
+                "SWE.4": "PASS",
+                "SWE.5": "PASS",
+                "SWE.6": "PASS"
+              },
+              "gates_pass": 6,
+              "package_status": "BLOCKED"
+            },
+            "output_sha256": "9cc1d61db5eb5e9390d42a51ca3ed8e7b837617bcf3bb41f1c4b61cc8ee6d2a5",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "BC-009",
+            "duration_s": 0.9,
+            "observed": {
+              "gap_count": 7,
+              "gates_pass": 5,
+              "package_status": "BLOCKED",
+              "swe4": "REINSPECT"
+            },
+            "output_sha256": "da71b03d6558a38f3b6c27c052a351f85b755f2db2caac1a398900c09a7c17e9",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+        "run_at": "2026-11-05T19:33:36.745825Z",
+        "run_id": "br-d0b04ac0827a0a550559",
+        "suite_id": "forgec-cre-golden-v1",
+        "suite_sha256": "e5bc1205c28e58cb2e8247717268c065ec7f096bd471396e2975782df6045a99"
+      }
+    },
+    {
+      "row": {
+        "run_id": "br-a6e07728d555169d3783",
+        "suite_sha256": "c6dbb4cefc2c95400fde310de7668c016555cdb061c294e7a3267790e3f259ce",
+        "revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+        "at": "2026-11-05T19:33:37.525371Z"
+      },
+      "result": {
+        "model_tokens": 0,
+        "n": 4,
+        "passed": 4,
+        "results": [
+          {
+            "case_id": "HO-001",
+            "duration_s": 0.44,
+            "observed": {
+              "first": "FAIL",
+              "issues": [
+                "HOW_TO_DECLARE: edited after failing on the same code: report_defect kind TEST (quote, why) or restore it; re-run",
+                "UNDECLARED_TEST_CHANGE:software/tests/unit/test_bench.c"
+              ],
+              "second": "FAIL"
+            },
+            "output_sha256": "3ecf98a2c147213241f47cfec579307a1c06df25e0f1eeb847c6281a46f53e66",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "HO-002",
+            "duration_s": 0.07,
+            "observed": {
+              "accuracy": 1.0,
+              "correct": 20,
+              "n": 20,
+              "product_quality_routed_elsewhere": 0
+            },
+            "output_sha256": "9c0823d160189adbfcb2a300f47a393efa08eed9444e0820f421b4697764baa7",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "HO-003",
+            "duration_s": 0.16,
+            "observed": {
+              "result": "REQUIREMENT_QUOTE_REQUIRED"
+            },
+            "output_sha256": "4d752469bff4c7bec86dba23fe8a8acfe8ef68dcaf1284f2d5f76dab0b31e44c",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "HO-004",
+            "duration_s": 0.09,
+            "observed": {
+              "flagged": [
+                "TEST_CHANGED_AFTER_FAIL:software/tests/software/scn.c"
+              ]
+            },
+            "output_sha256": "4dd5935bca02d95a35f00724b440f5ab8cf6fc0b473ed78d16c74688143684e7",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+        "run_at": "2026-11-05T19:33:37.525371Z",
+        "run_id": "br-a6e07728d555169d3783",
+        "suite_id": "forgec-cre-holdout-v1",
+        "suite_sha256": "c6dbb4cefc2c95400fde310de7668c016555cdb061c294e7a3267790e3f259ce"
+      }
+    },
+    {
+      "row": {
+        "run_id": "br-0b3f9d6e29294f025aa6",
+        "suite_sha256": "c6dbb4cefc2c95400fde310de7668c016555cdb061c294e7a3267790e3f259ce",
+        "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+        "at": "2026-11-05T19:33:38.315698Z"
+      },
+      "result": {
+        "model_tokens": 0,
+        "n": 4,
+        "passed": 4,
+        "results": [
+          {
+            "case_id": "HO-001",
+            "duration_s": 0.45,
+            "observed": {
+              "first": "FAIL",
+              "issues": [
+                "HOW_TO_DECLARE: edited after failing on the same code: report_defect kind TEST (quote, why) or restore it; re-run",
+                "UNDECLARED_TEST_CHANGE:software/tests/unit/test_bench.c"
+              ],
+              "second": "FAIL"
+            },
+            "output_sha256": "3ecf98a2c147213241f47cfec579307a1c06df25e0f1eeb847c6281a46f53e66",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "HO-002",
+            "duration_s": 0.06,
+            "observed": {
+              "accuracy": 1.0,
+              "correct": 20,
+              "n": 20,
+              "product_quality_routed_elsewhere": 0
+            },
+            "output_sha256": "9c0823d160189adbfcb2a300f47a393efa08eed9444e0820f421b4697764baa7",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "HO-003",
+            "duration_s": 0.16,
+            "observed": {
+              "result": "REQUIREMENT_QUOTE_REQUIRED"
+            },
+            "output_sha256": "4d752469bff4c7bec86dba23fe8a8acfe8ef68dcaf1284f2d5f76dab0b31e44c",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "case_id": "HO-004",
+            "duration_s": 0.1,
+            "observed": {
+              "flagged": [
+                "TEST_CHANGED_AFTER_FAIL:software/tests/software/scn.c"
+              ]
+            },
+            "output_sha256": "4dd5935bca02d95a35f00724b440f5ab8cf6fc0b473ed78d16c74688143684e7",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+        "run_at": "2026-11-05T19:33:38.315698Z",
+        "run_id": "br-0b3f9d6e29294f025aa6",
+        "suite_id": "forgec-cre-holdout-v1",
+        "suite_sha256": "c6dbb4cefc2c95400fde310de7668c016555cdb061c294e7a3267790e3f259ce"
+      }
+    }
+  ],
+  "scope": "Deterministic isolated qualification only; not actual Omniverse activation, driver success or model competence",
+  "allowed_auto_deployment": false
+}

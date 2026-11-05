@@ -1,0 +1,30 @@
+{
+  "schema": "forge-c/actual-systemd-collected-unit-probe/1",
+  "host": "omniverse2@100.118.28.92",
+  "operation": "READ_ONLY_systemctl_--user_show",
+  "source_revision": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "root_exec_session": 56000,
+  "root_exec_exit_code": 0,
+  "cases": [
+    {
+      "unit": "forge-c-owner-guardian-dc27-bootstrap-20261105.service",
+      "returncode": 0,
+      "MainPID": "0",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "InvocationID": "",
+      "stderr": ""
+    },
+    {
+      "unit": "forge-c-owner-development-nonexistent-probe-20261105.service",
+      "returncode": 0,
+      "MainPID": "0",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "InvocationID": "",
+      "stderr": ""
+    }
+  ],
+  "claim": "Actual systemctl check_output compatibility for collected-unit validator branch confirmed. Not a service fault/recovery/endurance campaign.",
+  "mutations": false
+}

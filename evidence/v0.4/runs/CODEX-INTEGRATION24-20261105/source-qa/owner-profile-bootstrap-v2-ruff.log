@@ -1,0 +1,249 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> factory/python/forge_factory/afo/owner_bootstrap_history.py:7:1
+   |
+ 5 |   """
+ 6 |
+ 7 | / from pathlib import Path
+ 8 | | import hashlib
+ 9 | | import sqlite3
+10 | | import struct
+11 | | from .durable import Refused
+   | |____________________________^
+12 |
+13 |   HASH_CHUNK_BYTES = 65536
+   |
+help: Organize imports
+   |
+6  |
+   - from pathlib import Path
+7  | import hashlib
+8  | import sqlite3
+9  | import struct
+10 + from pathlib import Path
+11 +
+12 | from .durable import Refused
+   |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> factory/python/forge_factory/afo/owner_bootstrap_history.py:104:21
+    |
+102 |                   primary
+103 |                   and c.execute(
+104 | /                     "SELECT 1 FROM "
+105 | |                     + _quote(name)
+106 | |                     + " WHERE "
+107 | |                     + " OR ".join(_quote(col) + " IS NULL" for col in primary)
+108 | |                     + " LIMIT 1"
+    | |________________________________^
+109 |                   ).fetchone()
+110 |                   is None
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> factory/python/forge_factory/afo/owner_bootstrap_history.py:122:33
+    |
+120 |                 )
+121 |                 order_kind = "TYPE_AWARE_ALL_COLUMNS_BINARY"
+122 |             counted = c.execute("SELECT COUNT(*) FROM " + _quote(name)).fetchone()[0]
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+123 |             hasher = hashlib.sha256(b"forge-c/sqlite-logical-stream/1\0" + bytes.fromhex(schema_sha))
+124 |             seen = 0
+    |
+
+S608 Possible SQL injection vector through string-based query construction
+   --> factory/python/forge_factory/afo/owner_bootstrap_history.py:127:32
+    |
+125 |             encoded_bytes = 0
+126 |             max_row_bytes = 0
+127 |             cursor = c.execute("SELECT * FROM " + _quote(name) + " ORDER BY " + ordering)
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+128 |             for row in cursor:
+129 |                 size = _hash_row(hasher, row)
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> factory/python/forge_factory/afo/owner_profile_bootstrap.py:144:5
+    |
+142 |       new issuer can silently retry an unresolved bootstrap.
+143 |       """
+144 | /     from ..common import state_dir, sha256_file
+145 | |     from ..lrtx import stack
+146 | |     from . import line_recovery_control as C
+147 | |     from . import owner_supervised_development as D
+148 | |     from .authority import decide
+149 | |     from .line_launcher import LineConfig, ShellHost
+150 | |     from .operations import Intent
+151 | |     from .policy import load
+152 | |     from .owner_bootstrap_history import native_checkpoint, native_status
+    | |_________________________________________________________________________^
+153 |
+154 |       require(type(timeout_s) in (int, float) and math.isfinite(timeout_s) and 1 <= timeout_s <= 600, "BOUNDED_DEADLINE_REQUIRED")
+    |
+help: Organize imports
+    |
+143 |     """
+    -     from ..common import state_dir, sha256_file
+144 +     from ..common import sha256_file, state_dir
+145 |     from ..lrtx import stack
+--------------------------------------------------------------------------------
+150 |     from .operations import Intent
+151 +     from .owner_bootstrap_history import native_checkpoint, native_status
+152 |     from .policy import load
+    -     from .owner_bootstrap_history import native_checkpoint, native_status
+153 |
+    |
+
+F401 [*] `contextlib` imported but unused
+ --> factory/python/tests/test_owner_profile_bootstrap.py:3:8
+  |
+1 | """Private kernel/process/SQLite controls; not native/model role competence."""
+2 |
+3 | import contextlib
+  |        ^^^^^^^^^^
+4 | import copy
+5 | import fcntl
+  |
+help: Remove unused import: `contextlib`
+  |
+2 |
+  - import contextlib
+3 | import copy
+  |
+
+F401 [*] `pathlib.Path` imported but unused
+  --> factory/python/tests/test_owner_profile_bootstrap.py:11:21
+   |
+ 9 | import subprocess
+10 | import sys
+11 | from pathlib import Path
+   |                     ^^^^
+12 |
+13 | import pytest
+   |
+help: Remove unused import: `pathlib.Path`
+   |
+10 | import sys
+   - from pathlib import Path
+11 |
+   |
+
+F401 [*] `forge_factory.afo.durable.canonical` imported but unused
+  --> factory/python/tests/test_owner_profile_bootstrap.py:17:48
+   |
+15 | from forge_factory.afo import owner_profile_bootstrap as B
+16 | from forge_factory.afo import owner_supervised_development as D
+17 | from forge_factory.afo.durable import Refused, canonical, digest
+   |                                                ^^^^^^^^^
+18 | from forge_factory.afo.line_launcher import LineConfig, ShellHost
+19 | from forge_factory.afo.line_orders import Placer
+   |
+help: Remove unused import: `forge_factory.afo.durable.canonical`
+   |
+16 | from forge_factory.afo import owner_supervised_development as D
+   - from forge_factory.afo.durable import Refused, canonical, digest
+17 + from forge_factory.afo.durable import Refused, digest
+18 | from forge_factory.afo.line_launcher import LineConfig, ShellHost
+   |
+
+F811 Redefinition of unused `supervised` from line 22
+  --> factory/python/tests/test_owner_profile_bootstrap.py:62:10
+   |
+61 | @pytest.fixture
+62 | def boot(supervised, tmp_path, monkeypatch):
+   |          ^^^^^^^^^^ `supervised` redefined here
+63 |     store = supervised["store"]
+64 |     root = store.path.parents[2]
+   |
+  ::: factory/python/tests/test_owner_profile_bootstrap.py:22:47
+   |
+20 | from forge_factory.afo.mission_ledger import MissionLedger
+21 | from forge_factory.lrtx import stack
+22 | from test_owner_supervised_development import supervised  # noqa: F401 - real private guardian fixture
+   |                                               ---------- previous definition of `supervised` here
+help: Remove definition: `supervised`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> factory/python/tests/test_owner_profile_bootstrap.py:85:5
+   |
+83 |       monkeypatch.setattr(ShellHost, "_client", lambda self: NativeClient(native))
+84 |       # Fresh TEST-only metadata and own guardian, never rewrite the first immutable control.
+85 | /     from forge_factory import workorder
+86 | |     from forge_factory.afo import line_native_transport as T
+87 | |     from forge_factory.common import REPO_ROOT, sha256_file
+88 | |     from forge_factory.afo.durable import immutable_json
+   | |________________________________________________________^
+89 |
+90 |       revision = {"commit": "a" * 40, "dirty": False}
+   |
+help: Organize imports
+   |
+86 |     from forge_factory.afo import line_native_transport as T
+87 +     from forge_factory.afo.durable import immutable_json
+88 |     from forge_factory.common import REPO_ROOT, sha256_file
+   -     from forge_factory.afo.durable import immutable_json
+89 |
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> factory/python/tests/test_owner_profile_bootstrap.py:378:5
+    |
+376 |   @pytest.mark.parametrize("clock", ["monotonic", "boottime"])
+377 |   def test_effect_tail_catches_expiry_during_heavy_authorization(boot, monkeypatch, clock):
+378 | /     from types import SimpleNamespace
+379 | |     from forge_factory.afo import line_recovery_control as C
+380 | |     import time
+    | |_______________^
+381 |
+382 |       delta = [0]
+    |
+help: Organize imports
+    |
+377 | def test_effect_tail_catches_expiry_during_heavy_authorization(boot, monkeypatch, clock):
+378 +     import time
+379 |     from types import SimpleNamespace
+380 +
+381 |     from forge_factory.afo import line_recovery_control as C
+    -     import time
+382 |
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> factory/python/tests/test_owner_profile_bootstrap.py:454:5
+    |
+453 |   def test_unrecorded_owned_harmless_stack_process_is_not_absent(boot):
+454 | /     import time
+455 | |     from forge_factory.afo.line_launcher import ProcFS
+    | |______________________________________________________^
+456 |
+457 |       p = subprocess.Popen(["sleep", "infinity"], cwd=boot["root"])
+    |
+help: Organize imports
+    |
+454 |     import time
+455 +
+456 |     from forge_factory.afo.line_launcher import ProcFS
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> factory/python/tests/test_owner_profile_bootstrap.py:499:5
+    |
+498 |   def test_main_optional_stage_retains_actual_signal_cancellation_before_cycle(boot, monkeypatch):
+499 | /     from forge_factory.afo import line_orders
+500 | |     import signal
+    | |_________________^
+501 |
+502 |       record = D.current()
+    |
+help: Organize imports
+    |
+498 | def test_main_optional_stage_retains_actual_signal_cancellation_before_cycle(boot, monkeypatch):
+    -     from forge_factory.afo import line_orders
+499 |     import signal
+500 |
+501 +     from forge_factory.afo import line_orders
+502 +
+503 |     record = D.current()
+    |
+
+Found 13 errors.
+[*] 9 fixable with `--fix`.

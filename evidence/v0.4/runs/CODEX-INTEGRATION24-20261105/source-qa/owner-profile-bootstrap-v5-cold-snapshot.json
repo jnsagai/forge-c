@@ -1,0 +1,21 @@
+{
+  "source": "c757eef02db2c51faa3d4a65ab02aaf95ddc0bbd",
+  "base": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "status": "FROZEN_TWO_REAL_CONTROL_COMPOSITION_CASES_PASS_BROAD_AFFECTED_PENDING",
+  "files": [
+    {
+      "path": "factory/python/forge_factory/lrtx/stack.py",
+      "sha256": "4ab58c96d8d6c1b482ad87f4260189986f4365b686898f7cf655df4f142c1076"
+    },
+    {
+      "path": "factory/python/tests/test_owner_bootstrap_cold_start.py",
+      "sha256": "8d36deafa72db5a54b071582d1bd36026ea3186a64ca69e04080c1f342bf46d6"
+    }
+  ],
+  "test_xml": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-v5-cold-r3.xml",
+    "sha256": "bad632fe70a2e9e1b26df1c29d11863b64d1316b3cfaf60ab0f1e78301de4db5"
+  },
+  "private_effects": "Own harmless CPU HTTP server/sleep only; actual _start/_in_ns/Popen/probe and partial persistence; namespace/backend leaves simulated; no native/model competence claimed",
+  "remote_effects": false
+}

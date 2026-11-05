@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-causal-fix-root-v1.py",
+    "--candidate-worktree",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v7",
+    "--candidate",
+    "887820300340dcc31a03f3dc46c31107e9aef9f3",
+    "--receipt-prefix",
+    "owner-profile-bootstrap-v7-normal-fix-root-r1"
+  ],
+  "caller_revision": "74e44a1f23b01f3200350436df1691249b441292",
+  "cwd": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen36",
+  "provenance": "Root-confirmed source/arguments and frozen runner-enforced environment; shell layout below reconstructs the invocation rather than dumping the actual environment.",
+  "requirements": [
+    "Use an unchanged clean qualified caller and clean final candidate.",
+    "Provision all12 owner-supplied reference files with published hashes before any tests in caller/candidate/pooled baseline and candidate. No vendor text is distributed.",
+    "Preserve frozen protected manifests and scripts. The additional AFO reproducer remains external staged; no permanent registration is asserted.",
+    "Output prefixes are exclusive; a repeated evaluation requires a fresh audited prefix, not deletion or overwriting existing records.",
+    "Python environment must use the locked qualified dependencies and supported actual bubblewrap isolation. No model or production runtime is part of this command."
+  ],
+  "root_session": 62129,
+  "schema": "forge-c/root-fix-reproduction-command/1",
+  "shell_steps": [
+    "source scripts/forge-env.sh",
+    "export PYTHONPATH=\"$FORGE_REPO_ROOT/factory/python\"",
+    "export FORGE_CRE_ISOLATION=bubblewrap",
+    "export FORGE_CPU_JOBS=1",
+    "unset FORGE_OWNER_DEVELOPMENT_RECORD FORGE_OWNER_DEVELOPMENT_SHA256"
+  ],
+  "staged_manifest": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-cold-external-oracle/manifest.yaml",
+    "sha256": "ea6b4fac04f94d0f9bfef58fc7e6e5a9bf00246b57e5c97293b1017b31a785c3"
+  },
+  "terminal_exit_code": 0
+}

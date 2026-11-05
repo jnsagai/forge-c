@@ -1,0 +1,30 @@
+{
+  "baseline": {
+    "run_id": "rr-c1693abf0b1980cde220",
+    "reproducer_id": "AFO-OWNER-BOOTSTRAP-COLD-20261105",
+    "revision": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+    "role": "BASELINE",
+    "exit_code": 1,
+    "verdict": "SYMPTOM_PRESENT",
+    "signature": "owner bootstrap cold control process cannot persist provider identity",
+    "log_sha256": "138433eb11ad4e44c1eaf93796896661ebb7ade25eb924423816f688c0415300",
+    "at": "2026-11-05T19:30:21.909696Z"
+  },
+  "candidate": {
+    "run_id": "rr-859d4b77e1ffe26cc19b",
+    "reproducer_id": "AFO-OWNER-BOOTSTRAP-COLD-20261105",
+    "revision": "c757eef02db2c51faa3d4a65ab02aaf95ddc0bbd",
+    "role": "CANDIDATE",
+    "exit_code": 0,
+    "verdict": "SYMPTOM_ABSENT",
+    "signature": null,
+    "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+    "at": "2026-11-05T19:30:22.355096Z"
+  },
+  "causal": [
+    true,
+    "CAUSE_VERIFIED_BY_CONTRAST"
+  ],
+  "scope": "EXTERNAL_ORACLE_ONLY_NOT_FULL_FIX_QUALIFICATION",
+  "isolation": "bubblewrap"
+}

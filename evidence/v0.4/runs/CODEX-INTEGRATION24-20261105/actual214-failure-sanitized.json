@@ -1,0 +1,86 @@
+{
+  "canonical_bootstrap_metadata": [
+    {
+      "decision_id": "owner-profile-bootstrap-ebf51a9f255362b73856c3dee781f3fae70a81f89f72800d989915b5c71563a0",
+      "kind": "OWNER_PROFILE_BOOTSTRAP_INTENT",
+      "metadata": {
+        "acceptance": "UNACCEPTED",
+        "error_type": null,
+        "model_calls": 0,
+        "no_retry": null,
+        "placed_jobs": null,
+        "qualification_only": true,
+        "record_sha256": "ebf51a9f255362b73856c3dee781f3fae70a81f89f72800d989915b5c71563a0",
+        "root": "/mnt/data/forge-c/swe1-fabro-20261031/lrtx",
+        "status": null
+      },
+      "record_raw_sha256": "90f7174a3a0847243ef9e228d471a3ba3b7cc1809d0aa34e5a022ccfe599056b",
+      "record_sha256": "90f7174a3a0847243ef9e228d471a3ba3b7cc1809d0aa34e5a022ccfe599056b"
+    },
+    {
+      "decision_id": "owner-profile-bootstrap-ebf51a9f255362b73856c3dee781f3fae70a81f89f72800d989915b5c71563a0-result",
+      "kind": "OWNER_PROFILE_BOOTSTRAP_RESULT",
+      "metadata": {
+        "acceptance": "UNACCEPTED",
+        "error_type": "UnboundLocalError",
+        "model_calls": 0,
+        "no_retry": true,
+        "placed_jobs": null,
+        "qualification_only": true,
+        "record_sha256": "ebf51a9f255362b73856c3dee781f3fae70a81f89f72800d989915b5c71563a0",
+        "root": null,
+        "status": "UNKNOWN_REQUIRES_RECONCILIATION"
+      },
+      "record_raw_sha256": "e6532390ad226334c26dfd253007348ea8cdb136ffaca3adfaa9965069ad6259",
+      "record_sha256": "e6532390ad226334c26dfd253007348ea8cdb136ffaca3adfaa9965069ad6259"
+    }
+  ],
+  "excluded": [
+    "full private issuer record",
+    "raw environment/argv",
+    "foreign process inventories",
+    "live telemetry payloads"
+  ],
+  "journal_filtered": [
+    "Traceback (most recent call last):",
+    "  File \"/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-214c9668-review-20261105/newS/factory/python/forge_factory/afo/owner_supervised_development.py\", line 929, in <module>",
+    "  File \"/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-214c9668-review-20261105/newS/factory/python/forge_factory/afo/owner_supervised_development.py\", line 892, in main",
+    "  File \"/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-214c9668-review-20261105/newS/factory/python/forge_factory/afo/owner_profile_bootstrap.py\", line 333, in bootstrap",
+    "  File \"/mnt/data/forge-c/swe1-fabro-20261031/qualification/owner-profile-bootstrap-214c9668-review-20261105/newS/factory/python/forge_factory/lrtx/stack.py\", line 848, in _start",
+    "UnboundLocalError: cannot access local variable 'provider' where it is not associated with a value"
+  ],
+  "live_retry_or_cleanup": "NOT_CLAIMED_BY_THIS_PUBLICATION",
+  "mission_all_tables_exactly_unchanged": true,
+  "model_calls": 0,
+  "native_history_equal_original": true,
+  "resource_counts": {
+    "held_executions": 0,
+    "inference_owners": 0,
+    "nonquiescent_requests": 0
+  },
+  "schema": "forge-c/bootstrap-actual-failure-sanitized/1",
+  "source": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "source_observation_refs": [
+    {
+      "path": "owner-profile-bootstrap-214-partial-readonly.json",
+      "sha256": "41bebcad1baced3700adc33db9600835c0ef736985836ee1432b13e6ca32290f"
+    },
+    {
+      "path": "owner-profile-bootstrap-214-partial-ledger-readonly.json",
+      "sha256": "3f937273bd484aca547ebf42ebbc4c9e3bd530631d324154404f8143bed4bfa2"
+    }
+  ],
+  "unit": {
+    "ActiveState": "failed",
+    "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/forge-c-owner-development-214c9668-20261105.service",
+    "ExecMainCode": "1",
+    "ExecMainExitTimestampMonotonic": "3656629877850",
+    "ExecMainStartTimestampMonotonic": "3656627806365",
+    "ExecMainStatus": "1",
+    "InvocationID": "323f96d02a82433ba472249d275aeabd",
+    "MainPID": "0",
+    "Result": "exit-code",
+    "SubState": "failed"
+  },
+  "unknown_outcome": "PRESERVED_NOT_READY_NOT_RELABELED"
+}

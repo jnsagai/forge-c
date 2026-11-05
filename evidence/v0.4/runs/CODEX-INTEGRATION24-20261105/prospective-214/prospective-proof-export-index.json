@@ -1,0 +1,38 @@
+{
+  "schema": "forge-c/owner-bootstrap-prospective-proof-export/1",
+  "source": "214c9668c605a5bad690820cb1f6601bf9ccb935",
+  "scope": "PRIVATE_CPU_KERNEL_TRANSPORT_STUB_ONLY_NO_REAL_ROLE_COMPETENCE",
+  "files": [
+    {
+      "path": "staging-receipt.json",
+      "sha256": "773f90a0275ec5d40f2957a2e09bc3e288b097fbde52706d37383961fa1e5bbb",
+      "bytes": 8387
+    },
+    {
+      "path": "probe-summary.json",
+      "sha256": "4172c70bede4d601450dcaf733668f5eea0a43332a8ea3520aec94321ae6dd63",
+      "bytes": 633
+    },
+    {
+      "path": "bootstrap-affected-controls.xml",
+      "sha256": "f2ba53de9fa90ef6e12c6811991d728c548e0b53d20ea4c92df1cd7e697c484f",
+      "bytes": 24889
+    },
+    {
+      "path": "bootstrap-affected-controls.stdout.log",
+      "sha256": "632077e000ec3110031d124d34558cc1861fce1b3a7f170625cdb637b55adf6f",
+      "bytes": 240
+    },
+    {
+      "path": "cpu-preflight/preflight.json",
+      "sha256": "55331e0ca8f3109936b42bc7b4cfcd54ef8a59daabfc660e38ed9bd8ded32be2",
+      "bytes": 1167
+    },
+    {
+      "path": "native-header/measurement.json",
+      "sha256": "2be73328bfe92f33050c0cfa44de6271170fc8abcedab12117066f436d7fb681",
+      "bytes": 3173
+    }
+  ],
+  "credentials_prompts_vendor_contents_exported": false
+}

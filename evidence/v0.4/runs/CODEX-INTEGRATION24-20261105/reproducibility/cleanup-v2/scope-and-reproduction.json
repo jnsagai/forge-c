@@ -1,0 +1,37 @@
+{
+  "actual_remote_cleanup_claimed": false,
+  "authority": "Publication is reproducibility evidence only. Does not authorize real cleanup/start, create a guardian or claim native/model competence.",
+  "command": [
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/check-private-controls.py"
+  ],
+  "command_provenance": "Frozen script entrypoint supporting supplied actual raw report; original shell formatting is not claimed captured.",
+  "expectation_contents": "PID/start/boot/namespace/FD inode, process argv/environment HASHES ONLY, Intent/source/unit metadata, ledger/native HASHES ONLY; no environment bytes, credential, vendor text, request or model payload.",
+  "expectation_publication": "EXACT_METADATA_ONLY_COMPANION_HASH_VERIFIED_NO_SANITIZED_HASH_SUBSTITUTION",
+  "expectation_sha256": "07bf5790f02faccbb68ada34fbff224e6515b81ddbb27348c52260bde2f75322",
+  "frozen_absolute_layout_dependencies": [
+    {
+      "original": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-development-legacy-retirement-v9/retire-legacy-v9-DRAFT.py",
+      "published": "dependencies/retire-legacy-v9-DRAFT.py",
+      "sha256": "54d75f613cce2c72fff4291f3cc0281d2419b1317e08871efa8ae21267aa95b5"
+    },
+    {
+      "original": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-profile-bootstrap-v4",
+      "published_source": "Source bundle in original I24 export, prerequisite dc27; owner inputs distributed as hashes only",
+      "source_revision": "214c9668c605a5bad690820cb1f6601bf9ccb935"
+    }
+  ],
+  "helper_sha256": "6062de07287087f669ae52064f84ba7ddda4ed433e56b57db67d74912ca5df33",
+  "private_live_dependencies_not_exported": [
+    "Original private issuer/control/policy records and canonical runtime DB are intentionally not distributed. They are not necessary to run the harmless private32 controls but are required for any real cleanup.",
+    "Original v9 inactive-history live companion and other original VM artifacts are not part of a portable cleanup authorization."
+  ],
+  "schema": "forge-c/cleanup-private-control-publication/1",
+  "source_control_scripts_unchanged": true,
+  "test_report": {
+    "FAIL": 0,
+    "PASS": 32,
+    "sha256": "ae062ed887da2623cebfca5b7f77714849b735a310e98f1c197903dfab5404f4"
+  },
+  "test_scope": "Private authority/history/resource/Intent leaves for harmless sameNET PID graph; actual Runtime.signal, pidfd APIs, TERM/quiet sequencing executed. Normal SQL/resource primitives separately actual-private tested; no live owner authority claim."
+}

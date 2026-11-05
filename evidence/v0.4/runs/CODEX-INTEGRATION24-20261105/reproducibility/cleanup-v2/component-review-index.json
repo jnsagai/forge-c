@@ -1,0 +1,77 @@
+{
+  "evidence_bound_plan": {
+    "bytes": 2483,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-profile-bootstrap-214-partial-reconciliation-review-index.json",
+    "sha256": "376d9d83a578bf9255da33addfd8efba50b139bb3e0b211814cff185dae068ae"
+  },
+  "files": [
+    {
+      "bytes": 15114,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/check-private-controls.py",
+      "sha256": "01cb186be1522adbe10193173d232dbd1cbf7ece13cfbd71016a41d33b630e83"
+    },
+    {
+      "bytes": 20950,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/cleanup-exact-partial-bootstrap.py",
+      "sha256": "6062de07287087f669ae52064f84ba7ddda4ed433e56b57db67d74912ca5df33"
+    },
+    {
+      "bytes": 24193,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/exact-partial-expectation.json",
+      "sha256": "07bf5790f02faccbb68ada34fbff224e6515b81ddbb27348c52260bde2f75322"
+    },
+    {
+      "bytes": 1351,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/preservation-proof.json",
+      "sha256": "99ca44a907b07052a9eeae230ed39738f3ae245af0c03171489e3cc633b10eb1"
+    },
+    {
+      "bytes": 3587,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/private-controls-r1.json",
+      "sha256": "ae062ed887da2623cebfca5b7f77714849b735a310e98f1c197903dfab5404f4"
+    },
+    {
+      "bytes": 2860,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/private-controls-r1.log",
+      "sha256": "4c59be9dbe67ff89dfac4900238936323833c9661ba3edefe9171385041c4e8b"
+    },
+    {
+      "bytes": 3340,
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/review-notes.json",
+      "sha256": "48dbf6f54b73566c26ddb9bcf9e42c80df98ee95e1c0282b14dbc825f47b6020"
+    }
+  ],
+  "fresh_evidence_consumption_requirement": "Source887newissuer bootstrap must consume within60sM+B afterallmetadata/starter/sourcequalready. Do notcleanup early; no automaticevidence refresh/rewrite.",
+  "helper": {
+    "bytes": 20950,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/cleanup-exact-partial-bootstrap.py",
+    "sha256": "6062de07287087f669ae52064f84ba7ddda4ed433e56b57db67d74912ca5df33"
+  },
+  "independent_readonly_review": {
+    "blocking_findings": 0,
+    "child_tests_or_effects": false,
+    "helper_sha256": "6062de07287087f669ae52064f84ba7ddda4ed433e56b57db67d74912ca5df33"
+  },
+  "no_new_guardian_or_workauthority": true,
+  "no_remote_transfer_apply_or_canonical_mutations": true,
+  "own_handles": "ALL_CLOSED",
+  "predecessor_preserved": {
+    "bytes": 2843,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v1-preserved-index.json",
+    "sha256": "828f8760cc0589e74c425a02842d6b9e8fb4ab61d3e024c0ac1d4d1ac69a6a2c"
+  },
+  "private_controls": {
+    "FAIL": 0,
+    "PASS": 32,
+    "receipt": "private-controls-r1.json",
+    "scope": "CPU/privateSQL/temporaryprotectedfiles/actualharmlessmappedPIDgraph, noactualsource/runtimeeffects"
+  },
+  "required_companion": {
+    "bytes": 24193,
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/owner-bootstrap-partial-cleanup-v2-review-20261105/exact-partial-expectation.json",
+    "sha256": "07bf5790f02faccbb68ada34fbff224e6515b81ddbb27348c52260bde2f75322"
+  },
+  "reviewed_next_source": "887820300340dcc31a03f3dc46c31107e9aef9f3",
+  "schema": "forge-c/partial-bootstrap-cleanup-review-index/1",
+  "status": "V2_FROZEN_REVIEWED_LOCAL_ONLY_PENDING_ROOT_EXECUTION_REVIEW"
+}
