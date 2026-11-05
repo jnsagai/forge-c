@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-72bae1143955f261c43b",
+  "reproducer_id": "AFO-LAUNCH-REFUSAL-CAUSE-20261105",
+  "revision": "11dd97481907057174812ad26e109a506dfa3435",
+  "role": "CANDIDATE",
+  "exit_code": 0,
+  "verdict": "ERROR",
+  "signature": "TYPED_LAUNCH_CAUSE_PRESERVED",
+  "log_sha256": "5d19b5c18d394d863807cc40f570b061e524cc1e525d2b102558e3085df2e718",
+  "at": "2026-11-05T23:27:19.167707Z"
+}

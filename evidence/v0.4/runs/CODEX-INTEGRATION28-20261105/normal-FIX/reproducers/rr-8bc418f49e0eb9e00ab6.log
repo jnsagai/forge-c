@@ -1,0 +1,4 @@
+{"phase": "SWE.1", "decision": "BLOCKED", "reason": "STUCK: SAME_ITEM_FAILED_3X:SWE1-04; external diagnosis required", "failed_inspections": 3, "max_rework_cycles": 3, "development_ladder": [{"rung": "initial_engineering", "status": "UNKNOWN", "calls": {}}, {"rung": "bounded_phase_repair", "status": "RESERVED", "reason": {"at": "2026-11-05T23:37:04.787985Z", "origin": "phase_gate", "pass": 1}}, {"rung": "general_product_diagnosis", "status": "DEFERRED_BY_DEVELOPMENT_POLICY", "policy": "incremental-delivery-high-allowance-v2"}, {"rung": "advisory_relaunch", "status": "DEFERRED_BY_DEVELOPMENT_POLICY", "policy": "incremental-delivery-high-allowance-v2"}, {"rung": "factory_maintenance", "status": "DEFERRED_BY_DEVELOPMENT_POLICY", "policy": "incremental-delivery-high-allowance-v2"}], "repeated_finding": {"SWE1-04": "CPU constraint missing (wording 3)"}}
+SYMPTOM_ABSENT
+
+--- stderr ---

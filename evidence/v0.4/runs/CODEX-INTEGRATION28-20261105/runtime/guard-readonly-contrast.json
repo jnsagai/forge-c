@@ -1,0 +1,38 @@
+{
+  "schema": "forge-c/public-guard-readonly-summary/1",
+  "status": "ACTUAL_READONLY_CONTRAST_PASS",
+  "guard_artifact_revision": "686042292090e21c28c8e6509ee54b1abb09f748",
+  "unchanged_native_runtime_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "contrast": [
+    {
+      "case": "legacy_waiter",
+      "result": "FAIL:CONDUCTOR_HEARTBEAT_CHANGED:M3_NOT_HEALTHY_PILOT FOREIGN_GPU_PROCESS:3570112"
+    },
+    {
+      "case": "legacy_actual_worker",
+      "result": "FAIL:CONDUCTOR_HEARTBEAT_CHANGED:M3_NOT_HEALTHY_PILOT"
+    },
+    {
+      "case": "new_guard_waiter",
+      "result": "OK"
+    }
+  ],
+  "bounded_before_after_equal": true,
+  "accounting": {
+    "attempts": 2,
+    "jobs": 0,
+    "requests": 0,
+    "tools": 0,
+    "corrections": 0,
+    "charged_tokens": 2097152,
+    "usage_unknown": true
+  },
+  "firstB_state": "BLOCKED_PRODUCT_LAUNCH_NOT_STARTED_NO_NATIVE_RUN",
+  "new_guard_selected_in_live_producer": false,
+  "new_guardian_or_campaign_or_ticket": false,
+  "model_or_native_requests": false,
+  "raw_private_receipt_sha256": "6e1f005cc33bf373c87c5e2273866506621a59f03ca00d5027e043b1db731590",
+  "private_export_index_sha256": "4e8c81b8d24e488aff8648f4f574b475b6f2d04c2abc354e734c2c39794d406d",
+  "root_verification_sha256": "537135db414b5dc94c5b4104b74fae0591c336b79c16df47ca14b3b7f11e1d37",
+  "scope": "Read-only contrast of current running setup; no activation, role qualification or actual driver progress. Raw authority and socket records excluded."
+}

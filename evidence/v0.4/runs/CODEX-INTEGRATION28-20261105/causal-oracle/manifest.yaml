@@ -1,0 +1,17 @@
+schema_version: '1.0'
+reproducers:
+- id: AFO-LAUNCH-REFUSAL-CAUSE-20261105
+  script: reproduce_launch_refusal.py
+  sha256: 347182531eb84c1bd280cdf6f2b07fea0024c5664a0a391bb657bf56dcb5152e
+  symptom_signature: typed pre-native refusal cause erased as generic Refused
+  observed_in: Actual L90B attempt guard failed but LaunchNotStarted durable failure_type
+    only Refused; immutable attempt transcript retains GUARD_FAIL.
+  baseline_revision: f0c8fc5c8ae83952a05cea578d41e0ff06324afd
+  error_codes:
+  - TYPED_LAUNCH_CAUSE_ERASED
+  operations:
+  - afo.local_agent.LaunchNotStarted
+  root_cause: Wrapper replaces typed controller refusal code with exception class
+    name.
+  remedy: Retain bounded trusted Refused code, keep arbitrary details and unknown
+    exception types out of diagnosis key.

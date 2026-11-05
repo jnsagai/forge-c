@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-d4f195aaacfb43afdc63",
+  "reproducer_id": "RPR-163",
+  "revision": "f9078b699668b3f5ea21ecead7dc28078dd9f0b1",
+  "role": "PREVENTION",
+  "exit_code": 0,
+  "verdict": "SYMPTOM_ABSENT",
+  "signature": null,
+  "log_sha256": "6809da245cda1d736dafa3189fca88c71fdb6b8a38b0ebddea2f8d8b13999d26",
+  "at": "2026-11-05T23:37:44.180002Z"
+}

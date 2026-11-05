@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-f099759b1065d83380b2",
+  "reproducer_id": "AFO-LAUNCH-REFUSAL-CAUSE-20261105",
+  "revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "ERROR",
+  "signature": "TYPED_LAUNCH_CAUSE_ERASED:{\"failure_type\": \"Refused\"}",
+  "log_sha256": "e42acb932f83c108e3cc2005023f8fd99fd76f96437d9c9cf6f543dff7b52767",
+  "at": "2026-11-05T23:27:18.794128Z"
+}
