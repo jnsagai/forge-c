@@ -234,10 +234,12 @@ class Receipts:
             if time.time() >= snap["limits"]["deadline"] or snap["charged_tokens"] > snap["limits"]["max_tokens"]:
                 raise Refused("MISSION_ALLOWANCE_EXHAUSTED")
             proposal = self.proposal(rec)
+            from .diagnosis_packet import select_obligation
+
+            selected = select_obligation(packet, j.get("selected_obligations"))
             if (
-                j.get("selected_obligations")
-                and proposal["decision"] == "PROPOSE_REPAIR"
-                and not set(proposal["target_obligations"]) <= set(j["selected_obligations"])
+                proposal["decision"] == "PROPOSE_REPAIR"
+                and not set(proposal["target_obligations"]) <= set(selected)
             ):
                 raise Refused("PROPOSAL_OUTSIDE_COHERENT_OBJECTIVE")
             plan = semantic_proposal.bind(

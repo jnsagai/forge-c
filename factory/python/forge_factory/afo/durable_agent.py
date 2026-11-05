@@ -257,13 +257,12 @@ def request_material(job, step=None, prior=None):
     """
     from ..lrtx.structured import skill
     from .diagnosis_context import CONTEXT_RULES, context_contract
+    from .diagnosis_packet import select_obligation
     from .semantic_proposal import wire_schema
 
     case = json.loads(Path(job["case"]).read_text())
     packet = load(case["packet_ref"])
-    selected = job.get("selected_obligations") or sorted(packet["obligations"])[:1]
-    if len(selected) != 1:
-        raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+    selected = select_obligation(packet, job.get("selected_obligations"))
     obligation = packet["obligations"][selected[0]]
     view = {
         **packet,

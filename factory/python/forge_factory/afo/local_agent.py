@@ -269,9 +269,10 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         else:
             job["durable_protocol"] = "1.0"
             from .diagnosis_packet import load as load_packet
+            from .diagnosis_packet import select_obligation
 
             packet = load_packet(doc["packet_ref"])
-            job["selected_obligations"] = sorted(packet["obligations"])[:1]
+            job["selected_obligations"] = select_obligation(packet)
             fixture = doc.get("qualification_fixture") or {}
             seeded = fixture.get("source_kind") == "SEEDED_PROTOCOL_NOT_PRODUCT"
             job["work_class"] = "PROTOCOL_DIAGNOSIS" if seeded else "PRODUCT_DIAGNOSIS"
