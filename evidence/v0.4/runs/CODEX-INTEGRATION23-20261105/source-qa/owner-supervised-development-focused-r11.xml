@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="25" time="13.006" timestamp="2026-11-05T13:30:23.836919+00:00" hostname="master"><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_default_unsigned_production_still_observe" time="0.066" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_explicit_owner_context_is_unaccepted_not_auth_ok" time="0.460" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request0]" time="0.449" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request1]" time="0.449" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request2]" time="0.433" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request3]" time="0.443" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forbidden_action_never_admitted" time="0.437" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[hash]" time="0.425" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[source]" time="0.446" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[epoch]" time="0.435" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[guardian]" time="0.402" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[private_mode]" time="0.494" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_retry_and_restart_never_reset_accounting" time="0.480" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_control_binding_requires_exact_document" time="0.482" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_agent_context_cannot_issue_record" time="0.431" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_existing_role_request_ledger_and_nonce_integration" time="1.494" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_guardian_exit_between_reservation_and_effect_refuses_and_holds" time="0.956" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_wrong_nonce_and_changed_role_config_reserve_nothing" time="0.848" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_copied_forged_record_cannot_be_attested_by_real_guardian" time="0.414" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_actual_mapped_process_cannot_mint_even_with_both_forged_json_anchors" time="0.430" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_actual_compiled_host_artifact_cannot_write_host_or_connect_control_socket" time="0.483" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_missing_scoped_backend_never_uses_plain_host_subprocess" time="0.430" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_existing_default_placer_still_requires_signed_production_grant" time="0.455" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_native_stdio_config_explicitly_propagates_dev_confinement_marker" time="0.422" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_owner_development_uses_existing_placer_but_never_production_feed" time="0.512"><failure message="AttributeError: 'Line' object has no attribute 'launch_dir'">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388573...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-115/test_owner_development_uses_ex0/line.yaml'), ...}
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7e26267a7690&gt;
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-115/test_owner_development_uses_ex0')
+
+    def test_owner_development_uses_existing_placer_but_never_production_feed(supervised, monkeypatch, tmp_path):
+        from types import SimpleNamespace
+    
+        from forge_factory.afo import line_launcher as LL
+        from forge_factory.afo import line_orders as O
+        from forge_factory.afo.line_conductor import feed_path, heartbeat_path
+    
+        feed_path().write_text("PRIVATE EXISTING PRODUCTION OBSERVE FEED")
+        heartbeat_path().write_text("PRIVATE EXISTING PRODUCTION PID OBSERVE HEARTBEAT")
+        before = (feed_path().read_bytes(), heartbeat_path().read_bytes(), MissionLedger(supervised["store"]).snapshot(D.MISSION))
+        monkeypatch.setenv("FORGE_DURABLE_AUTONOMY", "1")
+        monkeypatch.setenv("FORGE_DURABLE_NATIVE_HEADER", "1")
+        cfg = SimpleNamespace(stack_root=tmp_path / "state", launch_dir=tmp_path / "launch")
+        monkeypatch.setattr(LL.LineConfig, "from_env", lambda: cfg)
+    
+        class Line:
+            def free_bytes(self):
+                return 100 * 1024**3
+    
+            def gpu_holders(self):
+                return []
+    
+            def live_runs(self):
+                return []
+    
+        monkeypatch.setattr(O, "RealLine", lambda _: Line())
+        campaigns = tmp_path / "campaigns"
+        campaigns.mkdir()
+        assert (
+&gt;           D.main(
+                [
+                    "--control",
+                    supervised["control_ref"]["path"],
+                    "--runtime-policy",
+                    str(supervised["runtime"]),
+                    "--line-policy",
+                    str(supervised["line"]),
+                    "--campaigns",
+                    str(campaigns),
+                    "--max-cycles",
+                    "1",
+                ]
+            )
+            == 0
+        )
+
+factory/python/tests/test_owner_supervised_development.py:502: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/owner_supervised_development.py:584: in main
+    result = placer.cycle()
+             ^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/line_orders.py:1056: in cycle
+    recs = self._records(now, capa_of)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/afo/line_orders.py:1153: in _records
+    return Records(self.line, self.queue_path, now, capa_of)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;forge_factory.afo.line_orders.Records object at 0x7e26263ea7b0&gt;
+line = &lt;test_owner_supervised_development.test_owner_development_uses_existing_placer_but_never_production_feed.&lt;locals&gt;.Line object at 0x7e26263e9d30&gt;
+queue_path = PosixPath('/tmp/pytest-of-jefferson/pytest-115/test_owner_development_uses_ex0/state/supervisor/line-queue.sqlite3')
+now = 1793885436.547138, capa_of = {}
+
+    def __init__(self, line, queue_path: Path, now: float, capa_of: dict | None = None):
+        from .line_conductor import scan_launches
+    
+        self.line, self.now = line, now
+        self.queue_rows = _queue_rows(queue_path)
+&gt;       self.legacy = {la["wo"]: la for la in scan_launches(line.launch_dir(), now, float("inf"))}
+                                                            ^^^^^^^^^^^^^^^
+E       AttributeError: 'Line' object has no attribute 'launch_dir'
+
+factory/python/forge_factory/afo/line_orders.py:457: AttributeError</failure></testcase></testsuite></testsuites>

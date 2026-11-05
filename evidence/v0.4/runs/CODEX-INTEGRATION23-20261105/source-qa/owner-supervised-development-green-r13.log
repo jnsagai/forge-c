@@ -1,0 +1,626 @@
+...............EEE.F.....FFF.F                                           [100%]
+==================================== ERRORS ====================================
+__ ERROR at setup of test_existing_role_request_ledger_and_nonce_integration ___
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_existing_role_request_led0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_existing_role_request_led0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b30026d0>
+
+    @pytest.fixture
+    def native_job(supervised, tmp_path, monkeypatch):
+        from forge_factory import workorder
+        from forge_factory.afo import line_product_context, product_job
+        from forge_factory.afo.execution_lifecycle import Executions
+        from forge_factory.lrtx.profile import load
+        from test_afo_m2_queue import _env
+    
+        store = supervised["store"]
+        control = supervised["control"]
+        eff = policy.load(supervised["runtime"])
+        repo = tmp_path / "input-repo"
+        (repo / "afo-manifests").mkdir(parents=True)
+        oid, _ = store.submit(
+            _env(repo, rid=D.ORDERS[0], model=control["profile"], driver_class=D.DRIVER, tenant_scope="line-local"),
+            repo=repo,
+            max_queued=10,
+        )
+        epoch = store.acquire_lease("line:local", "PRIVATE-TEST", 300)
+        aid = store.admit(
+            oid,
+            epoch=epoch,
+            scope="line:local",
+            policy_sha256=eff.sha256,
+            authorization_id="OWNER_SUPERVISED_DEVELOPMENT",
+            max_concurrent=1,
+        )
+        MissionLedger(store).link(D.MISSION, oid)
+        attempt = store.attempts(oid)[-1]
+        assert attempt["attempt_id"] == aid
+        attempt["record"]["workspace_ref"] = "workorder:" + D.ORDERS[0]
+        ws = tmp_path / "state/workorders" / D.ORDERS[0] / "workspace"
+        (ws / ".forge-run").mkdir(parents=True)
+        model = "qwen3.8:27b-q8_0"
+        monkeypatch.setattr(workorder, "factory_revision", lambda: dict(commit="a" * 40, dirty=False))
+        manifest = dict(
+            model=model,
+            profile=control["profile"],
+            operations_epoch=1,
+            line_role_authority_ref=supervised["control_ref"],
+            line_origin={},
+            product_attempt_token_reservations=[1048576] * 4,
+        )
+>       job = product_job.prepare(store, store.order(oid), attempt, "c" * 32, manifest, eff)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:245: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/product_job.py:94: in prepare
+    bind_trial(control["product_role_trial"] if manifest.get("line_role_authority_ref") is not None
+factory/python/forge_factory/afo/product_role_trial.py:127: in bind
+    trial = authorized(ref, job, eff)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ref = {'path': 'afo/product-role-trials/611420eea09d9f46dcb591c18ba668222f955cf298c75b2f4afe1660cd3a4ff0.json', 'sha256': '611420eea09d9f46dcb591c18ba668222f955cf298c75b2f4afe1660cd3a4ff0'}
+job = {'acceptance': 'UNACCEPTED', 'attempt_id': 'afo-549cc7bf17bcbd67-a1', 'binding': '/tmp/pytest-of-jefferson/pytest-117/...-F014-SWE6-AFOQUAL-20261104-L90B/workspace/.forge-run/durable-binding.json', 'deadline_epoch': 1793887111.3224456, ...}
+eff = Effective(mode='OWNER_SUPERVISED_DEVELOPMENT', requested_mode='PILOT', sha256='dcd4fc785e373058c7ec4979319540623bcd065...': True}}, issues=['OWNER_SUPERVISED_DEVELOPMENT_UNACCEPTED'], authorization_id='AUTH-AFO-REVIEW-20261104-LINE-FINITE')
+
+    def authorized(ref, job, eff, *, store=None, proposed_envelope=None):
+        from ..lrtx.role_capability import key
+        from . import authz
+        from .local_agent import request_for
+        from .queue import Store
+    
+        trial = resolve(ref)
+        if store is None:
+            store = Store(state_dir() / "supervisor/line-queue.sqlite3") if job.get("line_origin") else Store()
+        order = store.order(job["order_id"])
+        if proposed_envelope is None:
+            if not order:
+                raise Refused("PRODUCT_ROLE_TRIAL_BINDING_CHANGED")
+            request = request_for(order)
+        else:
+            # A read-only proposal is not a queue row or a dispatch receipt. Normal
+            # runtime callers never supply this optional input and still need order.
+            from .contracts import errors
+            from .queue import order_id_for
+    
+            if (order or errors("work-order", proposed_envelope)
+                    or proposed_envelope.get("tenant_scope") != "line-local"
+                    or order_id_for("line-local", proposed_envelope["request_id"]) != job["order_id"]):
+                raise Refused("PRODUCT_ROLE_TRIAL_PROPOSED_INTAKE_CHANGED")
+            request = {"order_id": proposed_envelope["request_id"], "driver_class": proposed_envelope["driver_class"],
+                       "model": proposed_envelope["model_profile"]}
+        if (
+            trial.get("qualification_only") is not True
+            or job["order_id"] not in trial.get("order_ids", [])
+            or trial.get("source_revision") != (job.get("factory_revision") or {}).get("commit")
+            or trial.get("profile") != job.get("profile")
+            or trial.get("model") != job.get("model")
+            or type(trial.get("deadline_epoch")) not in (int, float)
+            or not time.time() < trial["deadline_epoch"]
+        ):
+>           raise Refused("PRODUCT_ROLE_TRIAL_BINDING_CHANGED")
+E           forge_factory.afo.durable.Refused: PRODUCT_ROLE_TRIAL_BINDING_CHANGED:
+
+factory/python/forge_factory/afo/product_role_trial.py:64: Refused
+_ ERROR at setup of test_guardian_exit_between_reservation_and_effect_refuses_and_holds _
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_guardian_exit_between_res0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_guardian_exit_between_res0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b30bba70>
+
+    @pytest.fixture
+    def native_job(supervised, tmp_path, monkeypatch):
+        from forge_factory import workorder
+        from forge_factory.afo import line_product_context, product_job
+        from forge_factory.afo.execution_lifecycle import Executions
+        from forge_factory.lrtx.profile import load
+        from test_afo_m2_queue import _env
+    
+        store = supervised["store"]
+        control = supervised["control"]
+        eff = policy.load(supervised["runtime"])
+        repo = tmp_path / "input-repo"
+        (repo / "afo-manifests").mkdir(parents=True)
+        oid, _ = store.submit(
+            _env(repo, rid=D.ORDERS[0], model=control["profile"], driver_class=D.DRIVER, tenant_scope="line-local"),
+            repo=repo,
+            max_queued=10,
+        )
+        epoch = store.acquire_lease("line:local", "PRIVATE-TEST", 300)
+        aid = store.admit(
+            oid,
+            epoch=epoch,
+            scope="line:local",
+            policy_sha256=eff.sha256,
+            authorization_id="OWNER_SUPERVISED_DEVELOPMENT",
+            max_concurrent=1,
+        )
+        MissionLedger(store).link(D.MISSION, oid)
+        attempt = store.attempts(oid)[-1]
+        assert attempt["attempt_id"] == aid
+        attempt["record"]["workspace_ref"] = "workorder:" + D.ORDERS[0]
+        ws = tmp_path / "state/workorders" / D.ORDERS[0] / "workspace"
+        (ws / ".forge-run").mkdir(parents=True)
+        model = "qwen3.8:27b-q8_0"
+        monkeypatch.setattr(workorder, "factory_revision", lambda: dict(commit="a" * 40, dirty=False))
+        manifest = dict(
+            model=model,
+            profile=control["profile"],
+            operations_epoch=1,
+            line_role_authority_ref=supervised["control_ref"],
+            line_origin={},
+            product_attempt_token_reservations=[1048576] * 4,
+        )
+>       job = product_job.prepare(store, store.order(oid), attempt, "c" * 32, manifest, eff)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:245: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/product_job.py:94: in prepare
+    bind_trial(control["product_role_trial"] if manifest.get("line_role_authority_ref") is not None
+factory/python/forge_factory/afo/product_role_trial.py:127: in bind
+    trial = authorized(ref, job, eff)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ref = {'path': 'afo/product-role-trials/bfdeb987d2edf7a9d785874620296c6acb1e900dcbf4b55174246970a5e7962d.json', 'sha256': 'bfdeb987d2edf7a9d785874620296c6acb1e900dcbf4b55174246970a5e7962d'}
+job = {'acceptance': 'UNACCEPTED', 'attempt_id': 'afo-549cc7bf17bcbd67-a1', 'binding': '/tmp/pytest-of-jefferson/pytest-117/...-F014-SWE6-AFOQUAL-20261104-L90B/workspace/.forge-run/durable-binding.json', 'deadline_epoch': 1793887112.0610497, ...}
+eff = Effective(mode='OWNER_SUPERVISED_DEVELOPMENT', requested_mode='PILOT', sha256='dcd4fc785e373058c7ec4979319540623bcd065...': True}}, issues=['OWNER_SUPERVISED_DEVELOPMENT_UNACCEPTED'], authorization_id='AUTH-AFO-REVIEW-20261104-LINE-FINITE')
+
+    def authorized(ref, job, eff, *, store=None, proposed_envelope=None):
+        from ..lrtx.role_capability import key
+        from . import authz
+        from .local_agent import request_for
+        from .queue import Store
+    
+        trial = resolve(ref)
+        if store is None:
+            store = Store(state_dir() / "supervisor/line-queue.sqlite3") if job.get("line_origin") else Store()
+        order = store.order(job["order_id"])
+        if proposed_envelope is None:
+            if not order:
+                raise Refused("PRODUCT_ROLE_TRIAL_BINDING_CHANGED")
+            request = request_for(order)
+        else:
+            # A read-only proposal is not a queue row or a dispatch receipt. Normal
+            # runtime callers never supply this optional input and still need order.
+            from .contracts import errors
+            from .queue import order_id_for
+    
+            if (order or errors("work-order", proposed_envelope)
+                    or proposed_envelope.get("tenant_scope") != "line-local"
+                    or order_id_for("line-local", proposed_envelope["request_id"]) != job["order_id"]):
+                raise Refused("PRODUCT_ROLE_TRIAL_PROPOSED_INTAKE_CHANGED")
+            request = {"order_id": proposed_envelope["request_id"], "driver_class": proposed_envelope["driver_class"],
+                       "model": proposed_envelope["model_profile"]}
+        if (
+            trial.get("qualification_only") is not True
+            or job["order_id"] not in trial.get("order_ids", [])
+            or trial.get("source_revision") != (job.get("factory_revision") or {}).get("commit")
+            or trial.get("profile") != job.get("profile")
+            or trial.get("model") != job.get("model")
+            or type(trial.get("deadline_epoch")) not in (int, float)
+            or not time.time() < trial["deadline_epoch"]
+        ):
+>           raise Refused("PRODUCT_ROLE_TRIAL_BINDING_CHANGED")
+E           forge_factory.afo.durable.Refused: PRODUCT_ROLE_TRIAL_BINDING_CHANGED:
+
+factory/python/forge_factory/afo/product_role_trial.py:64: Refused
+__ ERROR at setup of test_wrong_nonce_and_changed_role_config_reserve_nothing __
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_wrong_nonce_and_changed_r0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_wrong_nonce_and_changed_r0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b1bd20d0>
+
+    @pytest.fixture
+    def native_job(supervised, tmp_path, monkeypatch):
+        from forge_factory import workorder
+        from forge_factory.afo import line_product_context, product_job
+        from forge_factory.afo.execution_lifecycle import Executions
+        from forge_factory.lrtx.profile import load
+        from test_afo_m2_queue import _env
+    
+        store = supervised["store"]
+        control = supervised["control"]
+        eff = policy.load(supervised["runtime"])
+        repo = tmp_path / "input-repo"
+        (repo / "afo-manifests").mkdir(parents=True)
+        oid, _ = store.submit(
+            _env(repo, rid=D.ORDERS[0], model=control["profile"], driver_class=D.DRIVER, tenant_scope="line-local"),
+            repo=repo,
+            max_queued=10,
+        )
+        epoch = store.acquire_lease("line:local", "PRIVATE-TEST", 300)
+        aid = store.admit(
+            oid,
+            epoch=epoch,
+            scope="line:local",
+            policy_sha256=eff.sha256,
+            authorization_id="OWNER_SUPERVISED_DEVELOPMENT",
+            max_concurrent=1,
+        )
+        MissionLedger(store).link(D.MISSION, oid)
+        attempt = store.attempts(oid)[-1]
+        assert attempt["attempt_id"] == aid
+        attempt["record"]["workspace_ref"] = "workorder:" + D.ORDERS[0]
+        ws = tmp_path / "state/workorders" / D.ORDERS[0] / "workspace"
+        (ws / ".forge-run").mkdir(parents=True)
+        model = "qwen3.8:27b-q8_0"
+        monkeypatch.setattr(workorder, "factory_revision", lambda: dict(commit="a" * 40, dirty=False))
+        manifest = dict(
+            model=model,
+            profile=control["profile"],
+            operations_epoch=1,
+            line_role_authority_ref=supervised["control_ref"],
+            line_origin={},
+            product_attempt_token_reservations=[1048576] * 4,
+        )
+>       job = product_job.prepare(store, store.order(oid), attempt, "c" * 32, manifest, eff)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_supervised_development.py:245: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/forge_factory/afo/product_job.py:94: in prepare
+    bind_trial(control["product_role_trial"] if manifest.get("line_role_authority_ref") is not None
+factory/python/forge_factory/afo/product_role_trial.py:127: in bind
+    trial = authorized(ref, job, eff)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ref = {'path': 'afo/product-role-trials/0746bd2076e4ec168843eb7e0ebf1821312777ad8a8bbcc9978b40008192828d.json', 'sha256': '0746bd2076e4ec168843eb7e0ebf1821312777ad8a8bbcc9978b40008192828d'}
+job = {'acceptance': 'UNACCEPTED', 'attempt_id': 'afo-549cc7bf17bcbd67-a1', 'binding': '/tmp/pytest-of-jefferson/pytest-117/...-F014-SWE6-AFOQUAL-20261104-L90B/workspace/.forge-run/durable-binding.json', 'deadline_epoch': 1793887112.6936893, ...}
+eff = Effective(mode='OWNER_SUPERVISED_DEVELOPMENT', requested_mode='PILOT', sha256='dcd4fc785e373058c7ec4979319540623bcd065...': True}}, issues=['OWNER_SUPERVISED_DEVELOPMENT_UNACCEPTED'], authorization_id='AUTH-AFO-REVIEW-20261104-LINE-FINITE')
+
+    def authorized(ref, job, eff, *, store=None, proposed_envelope=None):
+        from ..lrtx.role_capability import key
+        from . import authz
+        from .local_agent import request_for
+        from .queue import Store
+    
+        trial = resolve(ref)
+        if store is None:
+            store = Store(state_dir() / "supervisor/line-queue.sqlite3") if job.get("line_origin") else Store()
+        order = store.order(job["order_id"])
+        if proposed_envelope is None:
+            if not order:
+                raise Refused("PRODUCT_ROLE_TRIAL_BINDING_CHANGED")
+            request = request_for(order)
+        else:
+            # A read-only proposal is not a queue row or a dispatch receipt. Normal
+            # runtime callers never supply this optional input and still need order.
+            from .contracts import errors
+            from .queue import order_id_for
+    
+            if (order or errors("work-order", proposed_envelope)
+                    or proposed_envelope.get("tenant_scope") != "line-local"
+                    or order_id_for("line-local", proposed_envelope["request_id"]) != job["order_id"]):
+                raise Refused("PRODUCT_ROLE_TRIAL_PROPOSED_INTAKE_CHANGED")
+            request = {"order_id": proposed_envelope["request_id"], "driver_class": proposed_envelope["driver_class"],
+                       "model": proposed_envelope["model_profile"]}
+        if (
+            trial.get("qualification_only") is not True
+            or job["order_id"] not in trial.get("order_ids", [])
+            or trial.get("source_revision") != (job.get("factory_revision") or {}).get("commit")
+            or trial.get("profile") != job.get("profile")
+            or trial.get("model") != job.get("model")
+            or type(trial.get("deadline_epoch")) not in (int, float)
+            or not time.time() < trial["deadline_epoch"]
+        ):
+>           raise Refused("PRODUCT_ROLE_TRIAL_BINDING_CHANGED")
+E           forge_factory.afo.durable.Refused: PRODUCT_ROLE_TRIAL_BINDING_CHANGED:
+
+factory/python/forge_factory/afo/product_role_trial.py:64: Refused
+=================================== FAILURES ===================================
+__ test_actual_mapped_process_cannot_mint_even_with_both_forged_json_anchors ___
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_mapped_process_can0/line.yaml'), ...}
+
+    def test_actual_mapped_process_cannot_mint_even_with_both_forged_json_anchors(supervised):
+        import subprocess
+        import sys
+    
+        code = r"""
+    import os,json,sys
+    from pathlib import Path
+    from forge_factory.afo import owner_supervised_development as D
+    from forge_factory.afo.durable import canonical,digest,Refused
+    from forge_factory.lrtx.provider_process import identity,owner_view
+    original=Path(os.environ[D.FILE]);value=json.loads(original.read_text())
+    intent=Path(os.environ['FORGE_OPERATIONS_INTENT']);state=json.loads(intent.read_text())
+    ns=os.readlink('/proc/self/ns/user');mapping=owner_view(os.getpid())['uid_map']
+    state['control_context']['user_namespace']=ns;state['control_context']['uid_map']=mapping
+    intent.write_bytes(canonical(state))
+    value['control_context']['user_namespace']=ns;value['control_context']['uid_map']=mapping
+    value['guardian_pid']=os.getpid();value['guardian']={k:v for k,v in identity(os.getpid()).items()if k!='state'};value['guardian_view']=owner_view(os.getpid())
+    p=original.with_name(digest(value)+'.json');p.write_bytes(canonical(value));p.chmod(0o600)
+    os.environ[D.FILE]=str(p);os.environ[D.SHA]=__import__('hashlib').sha256(p.read_bytes()).hexdigest()
+    try:D.current()
+    except Refused as exc:
+     assert exc.code=='OWNER_DEVELOPMENT_GUARDIAN_NOT_LIVE',exc.code
+     print('ACTUAL_MAPPED_FAKE_GUARDIAN_REFUSED')
+    else:raise AssertionError('FORGED_AUTHORITY')
+    """
+        r = subprocess.run(
+            ["unshare", "--user", "--map-root-user", sys.executable, "-c", code], text=True, capture_output=True, timeout=10
+        )
+>       assert r.returncode == 0, r.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 16, in <module>
+E             try:D.current()
+E                 ~~~~~~~~~^^
+E           File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 424, in current
+E             return current(store=reader)
+E           File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 467, in current
+E             _fail("ISSUER_STORE_BINDING_REQUIRED")
+E             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/owner_supervised_development.py", line 56, in _fail
+E             raise Refused("OWNER_DEVELOPMENT_" + code)
+E         forge_factory.afo.durable.Refused: OWNER_DEVELOPMENT_ISSUER_STORE_BINDING_REQUIRED:
+E         
+E         During handling of the above exception, another exception occurred:
+E         
+E         Traceback (most recent call last):
+E           File "<string>", line 18, in <module>
+E             assert exc.code=='OWNER_DEVELOPMENT_GUARDIAN_NOT_LIVE',exc.code
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         AssertionError: OWNER_DEVELOPMENT_ISSUER_STORE_BINDING_REQUIRED
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['unshare', '--user', '--map-root-user', '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/...   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: OWNER_DEVELOPMENT_ISSUER_STORE_BINDING_REQUIRED\n').returncode
+
+factory/python/tests/test_owner_supervised_development.py:383: AssertionError
+______ test_actual_private_pid_accepts_only_pinned_kernel_and_store_view _______
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_private_pid_accept0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_private_pid_accept0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b1bdf700>
+
+    def test_actual_private_pid_accepts_only_pinned_kernel_and_store_view(supervised, tmp_path, monkeypatch):
+>       with private_provider(supervised, tmp_path, monkeypatch) as (record, instance, view):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_development_view.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_private_pid_accept0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_private_pid_accept0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b1bdf700>
+
+    @contextlib.contextmanager
+    def private_provider(supervised, tmp_path, monkeypatch, *, fake_proc=False, fake_socket=False):
+        root = Path(supervised["store"].path).parents[2]
+        record = D.current(store=supervised["store"])
+        command, view, handles = V.prepare(root, record)
+        handles = list(handles)
+        if fake_proc:
+            spoof = tmp_path / "fake-uid-map"
+            spoof.write_text("0 0 4294967295\n")
+            i = command.index(view["files"]["uid_map"]) - 1
+            fake_fd = os.open(spoof, os.O_RDONLY)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        socket_server = None
+        if fake_socket:
+            import socket
+    
+            socket_server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            fake = tmp_path / "fake.sock"
+            # Use short /proc/self/fd address for a legitimate private fixture socket.
+            with D._unix_path(fake) as address:
+                socket_server.bind(address)
+            socket_server.listen(1)
+            i = command.index(view["files"]["socket"]) - 1
+            fake_fd = os.open(fake, os.O_PATH)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        try:
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=tuple(handles))
+        finally:
+            V.close_handles(handles)
+        instance = None
+        try:
+            until = time.monotonic() + 5
+            while time.monotonic() < until:
+                if proc.poll() is not None:
+>                   raise AssertionError(proc.communicate()[1].decode())
+E                   AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory
+
+factory/python/tests/test_owner_development_view.py:57: AssertionError
+______________ test_actual_fake_proc_mount_refuses_in_private_pid ______________
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_fake_proc_mount_re0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_fake_proc_mount_re0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b1c27cb0>
+
+    def test_actual_fake_proc_mount_refuses_in_private_pid(supervised, tmp_path, monkeypatch):
+>       with private_provider(supervised, tmp_path, monkeypatch, fake_proc=True) as (_, instance, _):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_development_view.py:118: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_fake_proc_mount_re0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_fake_proc_mount_re0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b1c27cb0>
+
+    @contextlib.contextmanager
+    def private_provider(supervised, tmp_path, monkeypatch, *, fake_proc=False, fake_socket=False):
+        root = Path(supervised["store"].path).parents[2]
+        record = D.current(store=supervised["store"])
+        command, view, handles = V.prepare(root, record)
+        handles = list(handles)
+        if fake_proc:
+            spoof = tmp_path / "fake-uid-map"
+            spoof.write_text("0 0 4294967295\n")
+            i = command.index(view["files"]["uid_map"]) - 1
+            fake_fd = os.open(spoof, os.O_RDONLY)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        socket_server = None
+        if fake_socket:
+            import socket
+    
+            socket_server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            fake = tmp_path / "fake.sock"
+            # Use short /proc/self/fd address for a legitimate private fixture socket.
+            with D._unix_path(fake) as address:
+                socket_server.bind(address)
+            socket_server.listen(1)
+            i = command.index(view["files"]["socket"]) - 1
+            fake_fd = os.open(fake, os.O_PATH)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        try:
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=tuple(handles))
+        finally:
+            V.close_handles(handles)
+        instance = None
+        try:
+            until = time.monotonic() + 5
+            while time.monotonic() < until:
+                if proc.poll() is not None:
+>                   raise AssertionError(proc.communicate()[1].decode())
+E                   AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory
+
+factory/python/tests/test_owner_development_view.py:57: AssertionError
+_____________ test_actual_fake_socket_inode_refuses_in_private_pid _____________
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_fake_socket_inode_0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_fake_socket_inode_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b1aaeeb0>
+
+    def test_actual_fake_socket_inode_refuses_in_private_pid(supervised, tmp_path, monkeypatch):
+>       with private_provider(supervised, tmp_path, monkeypatch, fake_socket=True) as (_, instance, _):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_development_view.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_fake_socket_inode_0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_actual_fake_socket_inode_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b1aaeeb0>
+
+    @contextlib.contextmanager
+    def private_provider(supervised, tmp_path, monkeypatch, *, fake_proc=False, fake_socket=False):
+        root = Path(supervised["store"].path).parents[2]
+        record = D.current(store=supervised["store"])
+        command, view, handles = V.prepare(root, record)
+        handles = list(handles)
+        if fake_proc:
+            spoof = tmp_path / "fake-uid-map"
+            spoof.write_text("0 0 4294967295\n")
+            i = command.index(view["files"]["uid_map"]) - 1
+            fake_fd = os.open(spoof, os.O_RDONLY)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        socket_server = None
+        if fake_socket:
+            import socket
+    
+            socket_server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            fake = tmp_path / "fake.sock"
+            # Use short /proc/self/fd address for a legitimate private fixture socket.
+            with D._unix_path(fake) as address:
+                socket_server.bind(address)
+            socket_server.listen(1)
+            i = command.index(view["files"]["socket"]) - 1
+            fake_fd = os.open(fake, os.O_PATH)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        try:
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=tuple(handles))
+        finally:
+            V.close_handles(handles)
+        instance = None
+        try:
+            until = time.monotonic() + 5
+            while time.monotonic() < until:
+                if proc.poll() is not None:
+>                   raise AssertionError(proc.communicate()[1].decode())
+E                   AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory
+
+factory/python/tests/test_owner_development_view.py:57: AssertionError
+_______ test_guardian_shutdown_refuses_private_pid_without_new_authority _______
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_guardian_shutdown_refuses0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_guardian_shutdown_refuses0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b1aaf690>
+
+    def test_guardian_shutdown_refuses_private_pid_without_new_authority(supervised, tmp_path, monkeypatch):
+>       with private_provider(supervised, tmp_path, monkeypatch) as (_, instance, _):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_development_view.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388711...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_guardian_shutdown_refuses0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-117/test_guardian_shutdown_refuses0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f01b1aaf690>
+
+    @contextlib.contextmanager
+    def private_provider(supervised, tmp_path, monkeypatch, *, fake_proc=False, fake_socket=False):
+        root = Path(supervised["store"].path).parents[2]
+        record = D.current(store=supervised["store"])
+        command, view, handles = V.prepare(root, record)
+        handles = list(handles)
+        if fake_proc:
+            spoof = tmp_path / "fake-uid-map"
+            spoof.write_text("0 0 4294967295\n")
+            i = command.index(view["files"]["uid_map"]) - 1
+            fake_fd = os.open(spoof, os.O_RDONLY)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        socket_server = None
+        if fake_socket:
+            import socket
+    
+            socket_server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            fake = tmp_path / "fake.sock"
+            # Use short /proc/self/fd address for a legitimate private fixture socket.
+            with D._unix_path(fake) as address:
+                socket_server.bind(address)
+            socket_server.listen(1)
+            i = command.index(view["files"]["socket"]) - 1
+            fake_fd = os.open(fake, os.O_PATH)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        try:
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=tuple(handles))
+        finally:
+            V.close_handles(handles)
+        instance = None
+        try:
+            until = time.monotonic() + 5
+            while time.monotonic() < until:
+                if proc.poll() is not None:
+>                   raise AssertionError(proc.communicate()[1].decode())
+E                   AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory
+
+factory/python/tests/test_owner_development_view.py:57: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_owner_supervised_development.py::test_actual_mapped_process_cannot_mint_even_with_both_forged_json_anchors
+FAILED factory/python/tests/test_owner_development_view.py::test_actual_private_pid_accepts_only_pinned_kernel_and_store_view
+FAILED factory/python/tests/test_owner_development_view.py::test_actual_fake_proc_mount_refuses_in_private_pid
+FAILED factory/python/tests/test_owner_development_view.py::test_actual_fake_socket_inode_refuses_in_private_pid
+FAILED factory/python/tests/test_owner_development_view.py::test_guardian_shutdown_refuses_private_pid_without_new_authority
+ERROR factory/python/tests/test_owner_supervised_development.py::test_existing_role_request_ledger_and_nonce_integration
+ERROR factory/python/tests/test_owner_supervised_development.py::test_guardian_exit_between_reservation_and_effect_refuses_and_holds
+ERROR factory/python/tests/test_owner_supervised_development.py::test_wrong_nonce_and_changed_role_config_reserve_nothing

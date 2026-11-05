@@ -1,0 +1,15 @@
+
+==================================== ERRORS ====================================
+__ ERROR collecting factory/python/tests/test_owner_supervised_development.py __
+ImportError while importing test module '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/tests/test_owner_supervised_development.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/tests/test_owner_supervised_development.py:10: in <module>
+    from forge_factory.afo import owner_supervised_development as D
+E   ImportError: cannot import name 'owner_supervised_development' from 'forge_factory.afo' (/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-owner-supervised-development/factory/python/forge_factory/afo/__init__.py)
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_owner_supervised_development.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!

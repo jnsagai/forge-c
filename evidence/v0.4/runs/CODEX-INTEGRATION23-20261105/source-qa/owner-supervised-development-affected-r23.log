@@ -1,0 +1,31 @@
+.......................................F................................ [ 35%]
+........................................................................ [ 70%]
+................................................F..........              [100%]
+=================================== FAILURES ===================================
+_________________ test_suspend_cannot_extend_actual_utc_window _________________
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388959...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-127/test_suspend_cannot_extend_act0/line.yaml'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cedbf84f230>
+
+    def test_suspend_cannot_extend_actual_utc_window(supervised, monkeypatch):
+        record = D.current(store=supervised["store"])
+        monkeypatch.setattr(D.time, "clock_gettime", lambda clock: record["expiry_boottime_deadline"])
+>       with pytest.raises(Refused, match="ACTUAL_UTC_WINDOW_EXPIRED"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'forge_factory.afo.durable.Refused'>
+
+factory/python/tests/test_owner_supervised_development.py:664: Failed
+______________________ test_iwdg_unit_test_verifiers_run _______________________
+
+ws = PosixPath('/tmp/pytest-of-jefferson/pytest-127/test_iwdg_unit_test_verifiers_0/state/workorders/WO-IWDG-AS-1/workspace')
+
+    def test_iwdg_unit_test_verifiers_run(ws):
+        a = V.v_api_execution(ws)
+>       assert a["status"] in ("PASS", "NOT_SUPPORTED")  # NOT_SUPPORTED only where clang/llvm-cov are missing
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'NOT_RUN' in ('PASS', 'NOT_SUPPORTED')
+
+factory/python/tests/test_peripheral_assurance.py:112: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_owner_supervised_development.py::test_suspend_cannot_extend_actual_utc_window
+FAILED factory/python/tests/test_peripheral_assurance.py::test_iwdg_unit_test_verifiers_run

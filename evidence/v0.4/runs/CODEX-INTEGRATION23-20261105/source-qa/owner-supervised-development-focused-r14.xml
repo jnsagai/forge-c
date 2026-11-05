@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="30" time="16.821" timestamp="2026-11-05T13:56:28.240591+00:00" hostname="master"><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_default_unsigned_production_still_observe" time="0.058" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_explicit_owner_context_is_unaccepted_not_auth_ok" time="0.524" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request0]" time="0.515" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request1]" time="0.486" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request2]" time="0.485" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_empty_old_foreign_and_fifth_scope_refused[scope_request3]" time="0.511" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forbidden_action_never_admitted" time="0.496" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[hash]" time="0.475" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[source]" time="0.479" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[epoch]" time="0.477" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[guardian]" time="0.475" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_forged_stale_rebound_context_refuses[private_mode]" time="0.478" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_retry_and_restart_never_reset_accounting" time="0.528" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_control_binding_requires_exact_document" time="0.550" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_agent_context_cannot_issue_record" time="0.462" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_existing_role_request_ledger_and_nonce_integration" time="1.630" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_guardian_exit_between_reservation_and_effect_refuses_and_holds" time="1.037" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_wrong_nonce_and_changed_role_config_reserve_nothing" time="0.978" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_copied_forged_record_cannot_be_attested_by_real_guardian" time="0.469" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_actual_mapped_process_cannot_mint_even_with_both_forged_json_anchors" time="0.475" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_actual_compiled_host_artifact_cannot_write_host_or_connect_control_socket" time="0.542" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_missing_scoped_backend_never_uses_plain_host_subprocess" time="0.482" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_existing_default_placer_still_requires_signed_production_grant" time="0.487" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_native_stdio_config_explicitly_propagates_dev_confinement_marker" time="0.477" /><testcase classname="factory.python.tests.test_owner_supervised_development" name="test_owner_development_uses_existing_placer_but_never_production_feed" time="0.676" /><testcase classname="factory.python.tests.test_owner_development_view" name="test_actual_private_pid_accepts_only_pinned_kernel_and_store_view" time="0.440"><failure message="AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388730...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_private_pid_accept0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_private_pid_accept0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73ece5f6ab30&gt;
+
+    def test_actual_private_pid_accepts_only_pinned_kernel_and_store_view(supervised, tmp_path, monkeypatch):
+&gt;       with private_provider(supervised, tmp_path, monkeypatch) as (record, instance, view):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_development_view.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388730...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_private_pid_accept0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_private_pid_accept0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73ece5f6ab30&gt;
+
+    @contextlib.contextmanager
+    def private_provider(supervised, tmp_path, monkeypatch, *, fake_proc=False, fake_socket=False):
+        root = Path(supervised["store"].path).parents[2]
+        record = D.current(store=supervised["store"])
+        command, view, handles = V.prepare(root, record)
+        handles = list(handles)
+        if fake_proc:
+            spoof = tmp_path / "fake-uid-map"
+            spoof.write_text("0 0 4294967295\n")
+            i = command.index(view["files"]["uid_map"]) - 1
+            fake_fd = os.open(spoof, os.O_RDONLY)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        socket_server = None
+        if fake_socket:
+            import socket
+    
+            socket_server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            fake = tmp_path / "fake.sock"
+            # Use short /proc/self/fd address for a legitimate private fixture socket.
+            with D._unix_path(fake) as address:
+                socket_server.bind(address)
+            socket_server.listen(1)
+            i = command.index(view["files"]["socket"]) - 1
+            fake_fd = os.open(fake, os.O_PATH)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        try:
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=tuple(handles))
+        finally:
+            V.close_handles(handles)
+        instance = None
+        try:
+            until = time.monotonic() + 5
+            while time.monotonic() &lt; until:
+                if proc.poll() is not None:
+&gt;                   raise AssertionError(proc.communicate()[1].decode())
+E                   AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory
+
+factory/python/tests/test_owner_development_view.py:57: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_owner_development_view" name="test_actual_fake_proc_mount_refuses_in_private_pid" time="0.460"><failure message="AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388730...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_fake_proc_mount_re0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_fake_proc_mount_re0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73ece480e6d0&gt;
+
+    def test_actual_fake_proc_mount_refuses_in_private_pid(supervised, tmp_path, monkeypatch):
+&gt;       with private_provider(supervised, tmp_path, monkeypatch, fake_proc=True) as (_, instance, _):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_development_view.py:118: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388730...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_fake_proc_mount_re0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_fake_proc_mount_re0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73ece480e6d0&gt;
+
+    @contextlib.contextmanager
+    def private_provider(supervised, tmp_path, monkeypatch, *, fake_proc=False, fake_socket=False):
+        root = Path(supervised["store"].path).parents[2]
+        record = D.current(store=supervised["store"])
+        command, view, handles = V.prepare(root, record)
+        handles = list(handles)
+        if fake_proc:
+            spoof = tmp_path / "fake-uid-map"
+            spoof.write_text("0 0 4294967295\n")
+            i = command.index(view["files"]["uid_map"]) - 1
+            fake_fd = os.open(spoof, os.O_RDONLY)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        socket_server = None
+        if fake_socket:
+            import socket
+    
+            socket_server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            fake = tmp_path / "fake.sock"
+            # Use short /proc/self/fd address for a legitimate private fixture socket.
+            with D._unix_path(fake) as address:
+                socket_server.bind(address)
+            socket_server.listen(1)
+            i = command.index(view["files"]["socket"]) - 1
+            fake_fd = os.open(fake, os.O_PATH)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        try:
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=tuple(handles))
+        finally:
+            V.close_handles(handles)
+        instance = None
+        try:
+            until = time.monotonic() + 5
+            while time.monotonic() &lt; until:
+                if proc.poll() is not None:
+&gt;                   raise AssertionError(proc.communicate()[1].decode())
+E                   AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory
+
+factory/python/tests/test_owner_development_view.py:57: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_owner_development_view" name="test_actual_fake_socket_inode_refuses_in_private_pid" time="0.444"><failure message="AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388730...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_fake_socket_inode_0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_fake_socket_inode_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73ece4707e00&gt;
+
+    def test_actual_fake_socket_inode_refuses_in_private_pid(supervised, tmp_path, monkeypatch):
+&gt;       with private_provider(supervised, tmp_path, monkeypatch, fake_socket=True) as (_, instance, _):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_development_view.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388730...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_fake_socket_inode_0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_actual_fake_socket_inode_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73ece4707e00&gt;
+
+    @contextlib.contextmanager
+    def private_provider(supervised, tmp_path, monkeypatch, *, fake_proc=False, fake_socket=False):
+        root = Path(supervised["store"].path).parents[2]
+        record = D.current(store=supervised["store"])
+        command, view, handles = V.prepare(root, record)
+        handles = list(handles)
+        if fake_proc:
+            spoof = tmp_path / "fake-uid-map"
+            spoof.write_text("0 0 4294967295\n")
+            i = command.index(view["files"]["uid_map"]) - 1
+            fake_fd = os.open(spoof, os.O_RDONLY)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        socket_server = None
+        if fake_socket:
+            import socket
+    
+            socket_server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            fake = tmp_path / "fake.sock"
+            # Use short /proc/self/fd address for a legitimate private fixture socket.
+            with D._unix_path(fake) as address:
+                socket_server.bind(address)
+            socket_server.listen(1)
+            i = command.index(view["files"]["socket"]) - 1
+            fake_fd = os.open(fake, os.O_PATH)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        try:
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=tuple(handles))
+        finally:
+            V.close_handles(handles)
+        instance = None
+        try:
+            until = time.monotonic() + 5
+            while time.monotonic() &lt; until:
+                if proc.poll() is not None:
+&gt;                   raise AssertionError(proc.communicate()[1].decode())
+E                   AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory
+
+factory/python/tests/test_owner_development_view.py:57: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_owner_development_view" name="test_copied_store_even_with_exact_authority_rows_cannot_replace_canonical" time="0.473" /><testcase classname="factory.python.tests.test_owner_development_view" name="test_guardian_shutdown_refuses_private_pid_without_new_authority" time="0.473"><failure message="AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory">supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388730...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_guardian_shutdown_refuses0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_guardian_shutdown_refuses0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73ece4704280&gt;
+
+    def test_guardian_shutdown_refuses_private_pid_without_new_authority(supervised, tmp_path, monkeypatch):
+&gt;       with private_provider(supervised, tmp_path, monkeypatch) as (_, instance, _):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_owner_development_view.py:167: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+supervised = {'control': {'authorization_ref': 'AUTH-AFO-REVIEW-20261104-LINE-FINITE', 'mission': {'limits': {'deadline': 179388730...obs': 4, ...}, 'line': PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_guardian_shutdown_refuses0/line.yaml'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-118/test_guardian_shutdown_refuses0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x73ece4704280&gt;
+
+    @contextlib.contextmanager
+    def private_provider(supervised, tmp_path, monkeypatch, *, fake_proc=False, fake_socket=False):
+        root = Path(supervised["store"].path).parents[2]
+        record = D.current(store=supervised["store"])
+        command, view, handles = V.prepare(root, record)
+        handles = list(handles)
+        if fake_proc:
+            spoof = tmp_path / "fake-uid-map"
+            spoof.write_text("0 0 4294967295\n")
+            i = command.index(view["files"]["uid_map"]) - 1
+            fake_fd = os.open(spoof, os.O_RDONLY)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        socket_server = None
+        if fake_socket:
+            import socket
+    
+            socket_server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            fake = tmp_path / "fake.sock"
+            # Use short /proc/self/fd address for a legitimate private fixture socket.
+            with D._unix_path(fake) as address:
+                socket_server.bind(address)
+            socket_server.listen(1)
+            i = command.index(view["files"]["socket"]) - 1
+            fake_fd = os.open(fake, os.O_PATH)
+            handles.append(fake_fd)
+            command[i] = str(fake_fd)
+        try:
+            proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=tuple(handles))
+        finally:
+            V.close_handles(handles)
+        instance = None
+        try:
+            until = time.monotonic() + 5
+            while time.monotonic() &lt; until:
+                if proc.poll() is not None:
+&gt;                   raise AssertionError(proc.communicate()[1].decode())
+E                   AssertionError: bwrap: Can't find source path /proc/self/fd/14: No such file or directory
+
+factory/python/tests/test_owner_development_view.py:57: AssertionError</failure></testcase></testsuite></testsuites>

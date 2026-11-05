@@ -1,0 +1,15 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_iwdg_unit_test_verifiers_run _______________________
+
+ws = PosixPath('/tmp/pytest-of-jefferson/pytest-128/test_iwdg_unit_test_verifiers_0/state/workorders/WO-IWDG-AS-1/workspace')
+
+    def test_iwdg_unit_test_verifiers_run(ws):
+        a = V.v_api_execution(ws)
+>       assert a["status"] in ("PASS", "NOT_SUPPORTED")  # NOT_SUPPORTED only where clang/llvm-cov are missing
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'NOT_RUN' in ('PASS', 'NOT_SUPPORTED')
+
+factory/python/tests/test_peripheral_assurance.py:112: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_peripheral_assurance.py::test_iwdg_unit_test_verifiers_run
