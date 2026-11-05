@@ -3058,8 +3058,13 @@ reproducers:
   remedy: Respect completed calibration and immutable source-bound learning registrations while keeping unspent set members isolated. Record reviews as evidence and independently validate corrective lessons.
 
 - id: RPR-176
-  script: rpr176_dependent_objective_first.py
-  sha256: c51abf274b7e2d8b3217dbd418c46a4aa2901fe558a1c2d0cc8a17ce8ad1a760
+  script: rpr176v2_dependent_objective_first.py
+  sha256: 0d4cbd30576e0a35204c3efee3517732ce84e2074f4dbae077b03a7679aa8ec6
+  revision: 2
+  supersedes:
+    script: rpr176_dependent_objective_first.py
+    sha256: c51abf274b7e2d8b3217dbd418c46a4aa2901fe558a1c2d0cc8a17ce8ad1a760
+    reason: Initial normal baseline was ERROR because diagnostic context was appended to the exact symptom signature. Version2 moves context to its own line; all public request and negative graph assertions are unchanged. Original witness and failed raw runs remain preserved.
   symptom_signature: diagnosis serializes a dependent objective before its unresolved prerequisite
   observed_in: Actual provider request on packet AAA-DEPENDENT depending on ZZZ-PREREQUISITE chooses AAA lexically although partition orders ZZZ first.
   baseline_revision: 3e8936a27f847b32bb76eef4a24bc83cc2daad20
