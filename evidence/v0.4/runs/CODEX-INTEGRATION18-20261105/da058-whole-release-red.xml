@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="11" time="1.832" timestamp="2026-11-05T09:07:03.131063+00:00" hostname="master"><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_a_valid_patch_activates_after_its_local_checks_and_rolls_back" time="0.288" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_tampered_unsigned_and_foreign_signatures_are_refused" time="0.167" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_wrong_base_local_drift_protected_paths_and_missing_cre_decisions_are_refused" time="0.188" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_failing_preflight_or_regression_keeps_the_current_release" time="0.246" /><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_whole_base_drift_is_refused_before_any_check[unchanged]" time="0.108"><failure message="AssertionError: drifted base reached local checks">env = {'base': 'd84998958b5d7fc3d64be8c649a2a964794ce239', 'dec': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_b...ft_is_refus0/owner'), 'repo': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_base_drift_is_refus0/dev'), ...}
+drift = 'unchanged'
+
+    @pytest.mark.parametrize("drift", ["unchanged", "injected", "executable", "symlink"])
+    def test_whole_base_drift_is_refused_before_any_check(env, drift):
+        live = env["root"] / "current"
+        unchanged = live / "factory/python/pkg/__init__.py"
+        if drift == "unchanged":
+            unchanged.write_text("UNREVIEWED = True\n")
+        elif drift == "injected":
+            (live / "unreviewed.py").write_text("UNREVIEWED = True\n")
+        elif drift == "executable":
+            unchanged.chmod(0o755)
+        else:
+            unchanged.unlink()
+            unchanged.symlink_to("rule.py")
+    
+        def unexpected_checks(*args):
+            raise AssertionError("drifted base reached local checks")
+    
+&gt;       result = _import(env, _bundle(env), checks=unexpected_checks)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_offline_patch.py:186: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_offline_patch.py:80: in _import
+    return P.import_patch(bundle, install_root=env["root"], allowed_signers=env["signers"], checks=checks, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/offline/patch.py:229: in import_patch
+    results = checks(staged, patch["regression"]) if checks else \
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_base_drift_is_refus0/install/releases/.staging-a143c1a7b79a22b6c649e2e430b8be960f6c3bbd'), ['tests/test_rule.py'])
+
+    def unexpected_checks(*args):
+&gt;       raise AssertionError("drifted base reached local checks")
+E       AssertionError: drifted base reached local checks
+
+factory/python/tests/test_da014_offline_patch.py:184: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_whole_base_drift_is_refused_before_any_check[injected]" time="0.090"><failure message="AssertionError: drifted base reached local checks">env = {'base': 'd84998958b5d7fc3d64be8c649a2a964794ce239', 'dec': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_b...ft_is_refus1/owner'), 'repo': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_base_drift_is_refus1/dev'), ...}
+drift = 'injected'
+
+    @pytest.mark.parametrize("drift", ["unchanged", "injected", "executable", "symlink"])
+    def test_whole_base_drift_is_refused_before_any_check(env, drift):
+        live = env["root"] / "current"
+        unchanged = live / "factory/python/pkg/__init__.py"
+        if drift == "unchanged":
+            unchanged.write_text("UNREVIEWED = True\n")
+        elif drift == "injected":
+            (live / "unreviewed.py").write_text("UNREVIEWED = True\n")
+        elif drift == "executable":
+            unchanged.chmod(0o755)
+        else:
+            unchanged.unlink()
+            unchanged.symlink_to("rule.py")
+    
+        def unexpected_checks(*args):
+            raise AssertionError("drifted base reached local checks")
+    
+&gt;       result = _import(env, _bundle(env), checks=unexpected_checks)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_offline_patch.py:186: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_offline_patch.py:80: in _import
+    return P.import_patch(bundle, install_root=env["root"], allowed_signers=env["signers"], checks=checks, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/offline/patch.py:229: in import_patch
+    results = checks(staged, patch["regression"]) if checks else \
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_base_drift_is_refus1/install/releases/.staging-a143c1a7b79a22b6c649e2e430b8be960f6c3bbd'), ['tests/test_rule.py'])
+
+    def unexpected_checks(*args):
+&gt;       raise AssertionError("drifted base reached local checks")
+E       AssertionError: drifted base reached local checks
+
+factory/python/tests/test_da014_offline_patch.py:184: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_whole_base_drift_is_refused_before_any_check[executable]" time="0.102"><failure message="AssertionError: drifted base reached local checks">env = {'base': 'd84998958b5d7fc3d64be8c649a2a964794ce239', 'dec': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_b...ft_is_refus2/owner'), 'repo': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_base_drift_is_refus2/dev'), ...}
+drift = 'executable'
+
+    @pytest.mark.parametrize("drift", ["unchanged", "injected", "executable", "symlink"])
+    def test_whole_base_drift_is_refused_before_any_check(env, drift):
+        live = env["root"] / "current"
+        unchanged = live / "factory/python/pkg/__init__.py"
+        if drift == "unchanged":
+            unchanged.write_text("UNREVIEWED = True\n")
+        elif drift == "injected":
+            (live / "unreviewed.py").write_text("UNREVIEWED = True\n")
+        elif drift == "executable":
+            unchanged.chmod(0o755)
+        else:
+            unchanged.unlink()
+            unchanged.symlink_to("rule.py")
+    
+        def unexpected_checks(*args):
+            raise AssertionError("drifted base reached local checks")
+    
+&gt;       result = _import(env, _bundle(env), checks=unexpected_checks)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_offline_patch.py:186: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_offline_patch.py:80: in _import
+    return P.import_patch(bundle, install_root=env["root"], allowed_signers=env["signers"], checks=checks, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/offline/patch.py:229: in import_patch
+    results = checks(staged, patch["regression"]) if checks else \
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_base_drift_is_refus2/install/releases/.staging-a143c1a7b79a22b6c649e2e430b8be960f6c3bbd'), ['tests/test_rule.py'])
+
+    def unexpected_checks(*args):
+&gt;       raise AssertionError("drifted base reached local checks")
+E       AssertionError: drifted base reached local checks
+
+factory/python/tests/test_da014_offline_patch.py:184: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_whole_base_drift_is_refused_before_any_check[symlink]" time="0.069"><failure message="AssertionError: drifted base reached local checks">env = {'base': 'd84998958b5d7fc3d64be8c649a2a964794ce239', 'dec': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_b...ft_is_refus3/owner'), 'repo': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_base_drift_is_refus3/dev'), ...}
+drift = 'symlink'
+
+    @pytest.mark.parametrize("drift", ["unchanged", "injected", "executable", "symlink"])
+    def test_whole_base_drift_is_refused_before_any_check(env, drift):
+        live = env["root"] / "current"
+        unchanged = live / "factory/python/pkg/__init__.py"
+        if drift == "unchanged":
+            unchanged.write_text("UNREVIEWED = True\n")
+        elif drift == "injected":
+            (live / "unreviewed.py").write_text("UNREVIEWED = True\n")
+        elif drift == "executable":
+            unchanged.chmod(0o755)
+        else:
+            unchanged.unlink()
+            unchanged.symlink_to("rule.py")
+    
+        def unexpected_checks(*args):
+            raise AssertionError("drifted base reached local checks")
+    
+&gt;       result = _import(env, _bundle(env), checks=unexpected_checks)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+factory/python/tests/test_da014_offline_patch.py:186: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+factory/python/tests/test_da014_offline_patch.py:80: in _import
+    return P.import_patch(bundle, install_root=env["root"], allowed_signers=env["signers"], checks=checks, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+factory/python/forge_factory/offline/patch.py:229: in import_patch
+    results = checks(staged, patch["regression"]) if checks else \
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_whole_base_drift_is_refus3/install/releases/.staging-a143c1a7b79a22b6c649e2e430b8be960f6c3bbd'), ['tests/test_rule.py'])
+
+    def unexpected_checks(*args):
+&gt;       raise AssertionError("drifted base reached local checks")
+E       AssertionError: drifted base reached local checks
+
+factory/python/tests/test_da014_offline_patch.py:184: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_release_identity_requires_both_signed_cre_tree_hashes" time="0.216"><failure message="AssertionError: assert 'PATCH_OK' == 'PATCH_CRE_TREE_IDENTITY'&#10;  &#10;  - PATCH_CRE_TREE_IDENTITY&#10;  + PATCH_OK">env = {'base': 'd84998958b5d7fc3d64be8c649a2a964794ce239', 'dec': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_release...ty_requires0/owner'), 'repo': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_release_identity_requires0/dev'), ...}
+
+    def test_release_identity_requires_both_signed_cre_tree_hashes(env):
+        decision = json.loads(env["dec"].read_text())
+        del decision["baseline_sha256"]
+        env["dec"].write_text(json.dumps(decision))
+&gt;       assert _import(env, _bundle(env))["code"] == "PATCH_CRE_TREE_IDENTITY"
+E       AssertionError: assert 'PATCH_OK' == 'PATCH_CRE_TREE_IDENTITY'
+E         
+E         - PATCH_CRE_TREE_IDENTITY
+E         + PATCH_OK
+
+factory/python/tests/test_da014_offline_patch.py:196: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_check_cannot_mutate_the_reviewed_target" time="0.075"><failure message="AssertionError: assert ('PATCH_OK' == 'PATCH_TARGET_DRIFT'&#10;  &#10;  - PATCH_TARGET_DRIFT&#10;  + PATCH_OK)">env = {'base': 'd84998958b5d7fc3d64be8c649a2a964794ce239', 'dec': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_check_c...utate_the_r0/owner'), 'repo': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_check_cannot_mutate_the_r0/dev'), ...}
+
+    def test_check_cannot_mutate_the_reviewed_target(env):
+        def mutate(staged, regression):
+            (staged / "factory/python/pkg/__init__.py").write_text("UNREVIEWED = True\n")
+            return [{"check": "preflight", "exit_code": 0}, {"check": "regression", "exit_code": 0}]
+    
+        result = _import(env, _bundle(env), checks=mutate)
+&gt;       assert result["code"] == "PATCH_TARGET_DRIFT" and result["current"] == env["base"]
+E       AssertionError: assert ('PATCH_OK' == 'PATCH_TARGET_DRIFT'
+E         
+E         - PATCH_TARGET_DRIFT
+E         + PATCH_OK)
+
+factory/python/tests/test_da014_offline_patch.py:205: AssertionError</failure></testcase><testcase classname="factory.python.tests.test_da014_offline_patch" name="test_release_content_identity_matches_git_listing_for_paths_modes_and_links" time="0.050"><failure message="AttributeError: module 'forge_factory.offline.patch' has no attribute '_release_sha256'">env = {'base': 'd84998958b5d7fc3d64be8c649a2a964794ce239', 'dec': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_release...t_identity_0/owner'), 'repo': PosixPath('/tmp/pytest-of-jefferson/pytest-74/test_release_content_identity_0/dev'), ...}
+
+    def test_release_content_identity_matches_git_listing_for_paths_modes_and_links(env):
+        repo = env["repo"]
+        for name in ("space name", 'quote"name', "tab\tname", "line\nname", "nonascii-é", "back\\slash"):
+            (repo / name).write_text("bytes\n")
+        (repo / "exec").write_bytes(b"\0binary")
+        (repo / "exec").chmod(0o755)
+        (repo / "link").symlink_to("exec")
+        (repo / "dir.ext").write_text("sorting")
+        (repo / "dir").mkdir()
+        (repo / "dir/file").write_text("sorting")
+        _git(repo, "add", "-A")
+        _git(repo, "commit", "-qm", "identity fixture")
+        # The deployment is an archive, with no Git database or untracked metadata.
+        import tarfile
+        import io
+        installed = env["tmp"] / "identity-release"
+        installed.mkdir()
+        with tarfile.open(fileobj=io.BytesIO(subprocess.check_output(["git", "archive", "HEAD"], cwd=repo))) as archive:
+            archive.extractall(installed, filter="data")
+&gt;       assert P._release_sha256(installed) == _tree(repo, "HEAD")
+               ^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'forge_factory.offline.patch' has no attribute '_release_sha256'
+
+factory/python/tests/test_da014_offline_patch.py:227: AttributeError</failure></testcase></testsuite></testsuites>

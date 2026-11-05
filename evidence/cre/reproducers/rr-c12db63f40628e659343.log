@@ -1,0 +1,14 @@
+
+--- stderr ---
+No user exists for uid 2001
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-offline-release-oracle/tests/reliability/reproducers/rpr173_offline_whole_release.py", line 99, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-offline-release-oracle/tests/reliability/reproducers/rpr173_offline_whole_release.py", line 56, in main
+    subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-f", str(key)], check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-f', '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/podman/work/cre-repro-faaeb82ddcbf/rpr173-hvkcnanu/TEST-key']' returned non-zero exit status 255.

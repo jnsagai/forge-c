@@ -1,0 +1,74 @@
+[
+  {
+    "seq": 1302,
+    "capa_id": "CAPA-173",
+    "from_state": null,
+    "to_state": "OPEN",
+    "at": "2026-11-05T09:15:51.943063Z",
+    "reason": "Offline manual improvement round trip: existing public importer carries unrelated deployed source drift under the signed reviewed target despite truthful preflight and regression PASS.",
+    "evidence": "[\"DA058-UNCHANGED-RELEASE-DRIFT\"]"
+  },
+  {
+    "seq": 1303,
+    "capa_id": "CAPA-173",
+    "from_state": "OPEN",
+    "to_state": "TRIAGED",
+    "at": "2026-11-05T09:15:51.991868Z",
+    "reason": "triage by RULE",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1304,
+    "capa_id": "CAPA-173",
+    "from_state": "TRIAGED",
+    "to_state": "REPRODUCER_PENDING",
+    "at": "2026-11-05T09:15:52.166161Z",
+    "reason": "reproducer RPR-173 assigned",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1305,
+    "capa_id": "CAPA-173",
+    "from_state": "REPRODUCER_PENDING",
+    "to_state": "REPRODUCER_PENDING",
+    "at": "2026-11-05T09:18:43.636509Z",
+    "reason": "RPR173 v1 baseline and candidate both ERROR on missing UID2001 NSS entry before cryptographic fixture setup. Preserved runs and frozen v1. Version2 adds private NSS metadata only; no source/oracle-verdict weakening.",
+    "evidence": "[\"reproducer-run:rr-6274a0a846ad9ce772d7\", \"reproducer-run:rr-c12db63f40628e659343\"]"
+  },
+  {
+    "seq": 1306,
+    "capa_id": "CAPA-173",
+    "from_state": "REPRODUCER_PENDING",
+    "to_state": "CAUSE_VERIFIED",
+    "at": "2026-11-05T09:18:46.104910Z",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "evidence": "[\"reproducer-run:rr-76bf993c8267b7eb86f9\", \"reproducer-run:rr-b557ca28a85a5c07866a\"]"
+  },
+  {
+    "seq": 1307,
+    "capa_id": "CAPA-173",
+    "from_state": "CAUSE_VERIFIED",
+    "to_state": "FIX_CANDIDATE",
+    "at": "2026-11-05T09:18:46.137620Z",
+    "reason": "fix 63a3a91d1093 (patch 19059 bytes)",
+    "evidence": "[\"git:afa651a717f3..63a3a91d1093\"]"
+  },
+  {
+    "seq": 1308,
+    "capa_id": "CAPA-173",
+    "from_state": "FIX_CANDIDATE",
+    "to_state": "PREVENTION_TESTED",
+    "at": "2026-11-05T09:20:50.212022Z",
+    "reason": "prevention test prevention:RPR-173 absent at 63a3a91d1093",
+    "evidence": "[\"reproducer-run:rr-541e16775c4300967306\"]"
+  },
+  {
+    "seq": 1309,
+    "capa_id": "CAPA-173",
+    "from_state": "PREVENTION_TESTED",
+    "to_state": "EFFECTIVENESS_OBSERVING",
+    "at": "2026-11-05T09:20:50.236509Z",
+    "reason": "observation window opened",
+    "evidence": "[]"
+  }
+]
