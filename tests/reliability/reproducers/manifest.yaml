@@ -3007,8 +3007,13 @@ reproducers:
     cumulative counters, amendment integrity, historical accounting and per-job execution bounds.
 
 - id: RPR-173
-  script: rpr173_offline_whole_release.py
-  sha256: 0071c4fbb620c03e9b707cf572d671e09c91e100ac91a7de94c2bb64bca753b1
+  script: rpr173v2_offline_whole_release.py
+  sha256: ad007cdf5a59526146019c98e128c9b628e9b7264814032521ac7c8c69645d6a
+  revision: 2
+  supersedes:
+    script: rpr173_offline_whole_release.py
+    sha256: 0071c4fbb620c03e9b707cf572d671e09c91e100ac91a7de94c2bb64bca753b1
+    reason: Preserved first normal CRE runs both ERROR because verifier UID2001 has no NSS account for OpenSSH; v2 adds only a private read-only passwd fixture in a nested scoped namespace, retaining the exact normal clean and drift scenario, cryptography and verdict assertions.
   symptom_signature: offline signed patch carries unrelated deployed source drift into the reviewed target
   observed_in: DA058 clean archive installed release with unrelated tracked source drift; TEST-signed patch and real local preflight and regression still activate under the target revision.
   baseline_revision: afa651a717f391f4c1e689516c626141d0f205b1
