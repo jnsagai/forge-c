@@ -621,8 +621,8 @@ function stationTile(st) {
   if (st.kind === "cloud_api") return modeTile(st) + ((st.models || []).map(apiTile).join("") ||
     `<div class="kpi"><span class="label">Cloud APIs</span><span class="v" style="font-size:22px">no call today</span></div>`);
   const model = st.model ? (st.model.toLowerCase().includes("ornith") ? "Ornith 35B" : st.model.split(":")[0].replace("qwen", "Qwen")) : "—";
-  if (!st.available) return `<div class="kpi"><span class="label">GPU station</span><span class="v" style="font-size:22px">no reading</span><span class="n">loaded: ${esc(model)}${st.age_s != null ? ` · last sample ${Math.round(st.age_s / 60)} min ago` : ""}</span></div>`;
-  return `<div class="kpi station-kpi"><span class="label">GPU station · RTX 6000 Ada</span><div class="gauges">${gauge(Math.round(st.util_pct), 100, "load", "%")}${gauge(Math.round(st.power_w), 300, "power", "W")}</div><span class="n">${st.temp_c} °C · ${(st.mem_used_mib / 1024).toFixed(1)} of ${(st.mem_total_mib / 1024).toFixed(0)} GB · loaded: ${esc(model)}</span></div>`;
+  if (!st.available) return `<div class="kpi"><span class="label">GPU station</span><span class="v" style="font-size:22px">no reading</span><span class="n">last reported: ${esc(model)}${st.age_s != null ? ` · last sample ${Math.round(st.age_s / 60)} min ago` : ""}</span></div>`;
+  return `<div class="kpi station-kpi"><span class="label">GPU station · RTX 6000 Ada</span><div class="gauges">${gauge(Math.round(st.util_pct), 100, "load", "%")}${gauge(Math.round(st.power_w), 300, "power", "W")}</div><span class="n">${st.temp_c} °C · ${(st.mem_used_mib / 1024).toFixed(1)} of ${(st.mem_total_mib / 1024).toFixed(0)} GB · last reported: ${esc(model)}</span></div>`;
 }
 function renderHalls(d) {
   const HALL_STATE = {working: "working", history: "history", idle: "idle", out: "out", pending: "waiting", carried: "done",
