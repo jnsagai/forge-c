@@ -53,6 +53,8 @@ finally:D.close_guardian(ref)
 
 @pytest.fixture
 def pending(boot, monkeypatch, request):  # noqa: F811 - imported fixture
+    if getattr(request, "param", {}).get("historical_spend"):
+        private_extra_spend(boot["store"])
     current = D.current()
     cfg = dict(
         root=str(boot["root"]),
@@ -285,6 +287,105 @@ def change_row(c, key, update):
     update(value)
     c.execute("UPDATE afo_independent_decisions SET record=?,sha256=? WHERE decision_id=?",
               (canonical(value).decode(), digest(value), key))
+
+
+def private_extra_spend(store):
+    """Real ledger APIs, clearly private fixture accounting; no native/model job."""
+    from forge_factory.afo.mission_ledger import MissionLedger
+
+    ledger = MissionLedger(store)
+    ledger.execution(D.MISSION, "PRIVATE-HISTORICAL-PRODUCT", "PRODUCT", reserved_tokens=1048576,
+                     imported=True, evidence_refs=["PRIVATE-TEST-ACCOUNTING"],
+                     historical_counts=dict(requests=1, tools=1, corrections=1))
+    ledger.execution(D.MISSION, "PRIVATE-HISTORICAL-JOB", "DIAGNOSIS", reserved_tokens=0)
+
+
+def new_current_after_private_store_change(p, monkeypatch, request):
+    b = p["boot"]
+    current = D.current() if not p.get("old_guardian_closed") else p["prior_record"]
+    if not p.get("old_guardian_closed"):
+        D.close_guardian(dict(path=os.environ[D.FILE]))
+    ref = D.create(b["store"], control_ref=current["control_ref"], runtime_policy=b["original"]["runtime"],
+                   line_policy=b["original"]["line"], directive=D.DIRECTIVE, expiry_ticket=b["original"]["ticket"])
+    request.addfinalizer(lambda:D.close_guardian(ref))
+    monkeypatch.setenv(D.FILE, ref["path"])
+    monkeypatch.setenv(D.SHA, ref["sha256"])
+    return D.current()
+
+
+@pytest.mark.parametrize("pending", [{"historical_spend": True}], indirect=True)
+def test_real_same_inode_store_counter_regression_cannot_erase_historical_spend(pending, monkeypatch, request):
+    from forge_factory.afo.mission_ledger import MissionLedger
+
+    p = pending
+    token = reconcile(p)
+    B.bootstrap(p["boot"]["store"], p["boot"]["placer"], reconciliation_ref=token)
+    p["prior_record"] = D.current()
+    D.close_guardian(dict(path=os.environ[D.FILE]))
+    p["old_guardian_closed"] = True
+    path = p["boot"]["store"].path
+    before_inode = (path.stat().st_dev, path.stat().st_ino)
+    # Deliberate private RESTORE fault, not supported runtime recovery: remove
+    # newer accounting only; original 1attempt/1MiB and all canonical historical
+    # issuer/UNKNOWN/ack/consumed rows stay byte-exact.
+    with p["boot"]["store"].tx() as c:
+        c.execute("DELETE FROM afo_mission_executions WHERE identity IN (?,?)",
+                  ("PRIVATE-HISTORICAL-PRODUCT", "PRIVATE-HISTORICAL-JOB"))
+    assert (path.stat().st_dev, path.stat().st_ino) == before_inode
+    snapshot = MissionLedger(p["boot"]["store"]).snapshot(D.MISSION)
+    assert snapshot["attempts"] == 1 and snapshot["charged_tokens"] == 1048576 and snapshot["usage_unknown"]
+    current = new_current_after_private_store_change(p, monkeypatch, request)
+    # Normal NEW issuer sees its real lower snapshot; historical chain must
+    # additionally compare it with the old issuer, without rewriting either.
+    with p["boot"]["store"].tx() as c, pytest.raises(Refused, match="ACCOUNTING_REBOUND"):
+        R.historical_acknowledged(c, p["boot"]["store"], current, p["old"]["intent_id"])
+
+
+def test_real_unknown_erasure_in_new_issuer_cannot_clear_historical_unknown(acknowledged, monkeypatch, request):
+    from forge_factory.afo.mission_ledger import MissionLedger
+
+    p = acknowledged
+    p["prior_record"] = D.current()
+    D.close_guardian(dict(path=os.environ[D.FILE]))
+    p["old_guardian_closed"] = True
+    # The public ledger can learn usage; this private test supplies explicit
+    # TEST-only numbers, never fabricates a real model measurement.
+    MissionLedger(p["boot"]["store"]).execution(D.MISSION, "original-product-attempt", "PRODUCT",
+                                               reserved_tokens=1048576, reported_tokens=1048576)
+    current = new_current_after_private_store_change(p, monkeypatch, request)
+    assert current["mission_anchor"]["usage_unknown"] is False
+    with p["boot"]["store"].tx() as c, pytest.raises(Refused, match="HISTORICAL_UNKNOWN_USAGE_CHANGED"):
+        R.historical_acknowledged(c, p["boot"]["store"], current, p["old"]["intent_id"])
+
+
+def test_real_forward_higher_counters_preserve_historical_acknowledgement(acknowledged, monkeypatch, request):
+    p = acknowledged
+    prior = D.current()
+    private_extra_spend(p["boot"]["store"])
+    current = new_current_after_private_store_change(p, monkeypatch, request)
+    assert all(current["mission_anchor"]["counters"][k] > prior["mission_anchor"]["counters"][k] for k in R.COUNTER_KEYS)
+    with p["boot"]["store"].tx() as c:
+        assert R.historical_acknowledged(c, p["boot"]["store"], current, p["old"]["intent_id"])
+
+
+@pytest.mark.parametrize("bad", ["missing", "extra", "bool", "negative", "float", "unknown_type"])
+def test_accounting_anchor_has_exact_typed_counter_contract(bad):
+    anchor = dict(base_sha256="a" * 64, counters=dict.fromkeys(R.COUNTER_KEYS, 0), usage_unknown=True)
+    changed = copy.deepcopy(anchor)
+    if bad == "missing":
+        del changed["counters"]["requests"]
+    elif bad == "extra":
+        changed["counters"]["refill"] = 1
+    elif bad == "bool":
+        changed["counters"]["attempts"] = True
+    elif bad == "negative":
+        changed["counters"]["tools"] = -1
+    elif bad == "float":
+        changed["counters"]["charged_tokens"] = 1.0
+    else:
+        changed["usage_unknown"] = 1
+    with pytest.raises(Refused, match="ACCOUNTING_ANCHOR_INVALID"):
+        R._monotonic_accounting(anchor, changed)
 
 
 @pytest.mark.parametrize("mutation", ["consumed", "successor", "old_result", "ack_issuer", "issuer_missing", "unconsumed_new_format"])

@@ -23,6 +23,7 @@ SCOPE_FIELDS = (
     "intent_path", "intent_epoch", "store_path", "store_identity", "profile", "profile_sha256",
     "mission", "driver_class", "order_ids", "runtime_policy_sha256", "line_policy_sha256",
 )
+COUNTER_KEYS = {"attempts", "jobs", "requests", "tools", "corrections", "charged_tokens"}
 # Audited producer *formats*, not machine-specific records or source revisions.
 # Only this old coordinator could consume without an explicit durable receipt.
 LEGACY_FORMAT = {
@@ -68,10 +69,10 @@ def _issued(c, sha, current):
         digest(old) == sha and old.get("schema") == D.SCHEMA and old.get("mode") == D.MODE
         and old.get("qualification_only") is True and old.get("acceptance") == "UNACCEPTED"
         and old.get("directive_sha256") == digest(dict(external_directive=D.DIRECTIVE))
-        and all(old.get(k) == current[k] for k in SCOPE_FIELDS)
-        and old["mission_anchor"]["base_sha256"] == current["mission_anchor"]["base_sha256"],
+        and all(old.get(k) == current[k] for k in SCOPE_FIELDS),
         "RECONCILIATION_HISTORICAL_SCOPE_CHANGED",
     )
+    _monotonic_accounting(old.get("mission_anchor"), current.get("mission_anchor"))
     control = D._read_file(old["control_ref"])
     require(
         digest(control) == old["control_sha256"] and control["mission"] == old["mission"]
@@ -81,6 +82,25 @@ def _issued(c, sha, current):
     )
     D._trial_envelopes(control)
     return old
+
+
+def _monotonic_accounting(old, current):
+    """Same-base restore cannot erase historical spend or unknown usage."""
+    for anchor in (old, current):
+        require(
+            isinstance(anchor, dict) and set(anchor) == {"base_sha256", "counters", "usage_unknown"}
+            and isinstance(anchor["base_sha256"], str) and re.fullmatch("[0-9a-f]{64}", anchor["base_sha256"])
+            and isinstance(anchor["counters"], dict) and set(anchor["counters"]) == COUNTER_KEYS
+            and all(type(v) is int and v >= 0 for v in anchor["counters"].values())
+            and type(anchor["usage_unknown"]) is bool,
+            "RECONCILIATION_ACCOUNTING_ANCHOR_INVALID",
+        )
+    require(
+        old["base_sha256"] == current["base_sha256"]
+        and all(current["counters"][k] >= old["counters"][k] for k in COUNTER_KEYS),
+        "RECONCILIATION_ACCOUNTING_REBOUND",
+    )
+    require(not old["usage_unknown"] or current["usage_unknown"], "RECONCILIATION_HISTORICAL_UNKNOWN_USAGE_CHANGED")
 
 
 def _chain(c, current, intent_id, ack):
