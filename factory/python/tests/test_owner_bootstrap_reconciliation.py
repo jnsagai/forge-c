@@ -378,3 +378,33 @@ def test_explicit_reconcile_does_not_duplicate_same_issuer_receipt(pending):
         reconcile(p)
     with p["boot"]["store"].tx() as c:
         assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 1
+
+
+@pytest.mark.parametrize("clock", ["monotonic", "boottime"])
+def test_evidence_freshness_checked_after_heavy_validation(pending, monkeypatch, clock):
+    from types import SimpleNamespace
+
+    p = pending
+    delta = [0]
+    original = R.validate
+    real_mono, real_boot = time.monotonic, time.clock_gettime
+    monkeypatch.setattr(
+        R,
+        "time",
+        SimpleNamespace(
+            monotonic=lambda: real_mono() + (delta[0] if clock == "monotonic" else 0),
+            clock_gettime=lambda which: real_boot(which) + (delta[0] if clock == "boottime" else 0),
+            CLOCK_BOOTTIME=time.CLOCK_BOOTTIME,
+        ),
+    )
+
+    def delayed(*a, **k):
+        value = original(*a, **k)
+        delta[0] = 61
+        return value
+
+    monkeypatch.setattr(R, "validate", delayed)
+    with pytest.raises(Refused, match="FINAL_EVIDENCE_STALE"):
+        reconcile(p)
+    with p["boot"]["store"].tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 0

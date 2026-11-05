@@ -254,7 +254,19 @@ def validate(c, store, record, request, native):
         and old_intent["request"]["service_action"] == "line_stack_restart",
         "RECONCILIATION_OLD_SCOPE_CHANGED",
     )
-    return dict(bindings=bindings, evidence_ref=ref, owner_context=owner_context(), native=native, ledger=ledger)
+    return dict(
+        bindings=bindings,
+        evidence_ref=ref,
+        owner_context=owner_context(),
+        native=native,
+        ledger=ledger,
+        evidence_times={k: evidence[k] for k in ("observed_monotonic", "observed_boottime")},
+    )
+
+
+def _fresh_tail(value):
+    for field, now in (("observed_monotonic", time.monotonic()), ("observed_boottime", time.clock_gettime(time.CLOCK_BOOTTIME))):
+        require(0 <= now - value["evidence_times"][field] <= 60, "RECONCILIATION_FINAL_EVIDENCE_STALE")
 
 
 def append(c, store, record, request, native, guard):
@@ -276,7 +288,8 @@ def append(c, store, record, request, native, guard):
         c.execute("SELECT 1 FROM afo_independent_decisions WHERE decision_id=?", (key,)).fetchone() is None,
         "RECONCILIATION_ALREADY_APPENDED_NO_REPLAY",
     )
-    guard()  # fresh current issuer/Intent/action/both clocks last before append
+    guard()  # fresh current issuer/Intent/action/both clocks before small freshness tail
+    _fresh_tail(value)
     c.execute("INSERT INTO afo_independent_decisions VALUES (?,?,?,?)", (key, KIND, canonical(value).decode(), digest(value)))
     return dict(decision_id=key, sha256=digest(value))
 
@@ -295,7 +308,8 @@ def consume(c, store, record, ref, intent_id, native, guard):
     )
     require(
         validate(c, store, record, value["request"], native)
-        == {k: value[k] for k in ("bindings", "evidence_ref", "owner_context", "native", "ledger")},
+        == {k: value[k] for k in ("bindings", "evidence_ref", "owner_context", "native", "ledger", "evidence_times")},
         "RECONCILIATION_FRESH_QUIET_CHANGED",
     )
     guard()
+    _fresh_tail(value)
