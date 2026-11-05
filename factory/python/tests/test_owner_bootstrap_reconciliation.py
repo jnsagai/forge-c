@@ -227,15 +227,18 @@ def test_explicit_reconciliation_appends_exact_receipt_then_fresh_bootstrap(pend
         assert R.historical_acknowledged(c, b["store"], D.current(), p["old"]["intent_id"])
 
 
-def test_consumed_receipt_and_following_intent_rollback_together(pending):
+@pytest.mark.parametrize("reject", ["intent", "consumed"])
+def test_consumed_receipt_and_following_intent_rollback_together(pending, reject):
     p = pending
     b = p["boot"]
     key = "owner-profile-bootstrap-" + digest(D.current())
-    # Actual SQLite failure after receipt validation must roll back both rows.
+    # Reject either the first INTENT insert OR the second CONSUMED insert. The
+    # latter proves the already-inserted successor is rolled back as well.
+    condition = "NEW.decision_id='" + key + "'" if reject == "intent" else "NEW.kind='" + R.CONSUMED_KIND + "'"
     with b["store"].tx() as c:
         c.execute(
             "CREATE TRIGGER private_reject_bootstrap BEFORE INSERT ON afo_independent_decisions "
-            "WHEN NEW.decision_id='" + key + "' BEGIN SELECT RAISE(ABORT,'PRIVATE_INTENT_ABORT'); END"
+            "WHEN " + condition + " BEGIN SELECT RAISE(ABORT,'PRIVATE_INTENT_ABORT'); END"
         )
     p["evidence"]["ledger_before"] = p["evidence"]["ledger_after"] = R.ledger_checkpoint(b["store"].path)
     p["ref"] = p["write"](p["evidence"])
@@ -311,6 +314,57 @@ def test_unconsumed_future_acknowledgement_never_resolves_failure(pending):
         assert not R.historical_acknowledged(c, p["boot"]["store"], D.current(), p["old"]["intent_id"])
     with pytest.raises(Refused, match="PRIOR_ATTEMPT_UNRESOLVED"):
         B.bootstrap(p["boot"]["store"], p["boot"]["placer"])
+
+
+def test_normal_coordinator_never_skips_a_second_pending_failure(pending):
+    from forge_factory.afo.durable import canonical
+
+    p = pending
+    token = reconcile(p)
+    current = D.current()
+    b = p["boot"]
+    cfg = dict(root=str(b["root"]), gpu=str(b["lock"]), binary=str(b["binary"]), control_ref=current["control_ref"],
+               runtime=str(b["original"]["runtime"]), line=str(b["original"]["line"]), ticket=b["original"]["ticket"])
+    issue_only = OLD_ISSUER.split("\ndef fail(", 1)[0] + "\nprint(json.dumps(record),flush=True)\nD.close_guardian(ref)\n"
+    process = subprocess.run([sys.executable, "-c", issue_only, json.dumps(cfg)], capture_output=True, text=True, timeout=15)
+    assert process.returncode == 0, process.stderr[-2000:]
+    extra = json.loads(process.stdout.strip().splitlines()[-1])
+    key = "owner-profile-bootstrap-" + digest(extra)
+    # Deliberate private durable-history fault injection, not a claimed native
+    # event: a second unresolved pair appears after the first cleanup receipt.
+    # Its canonical issuer is real; no new process/native/charge is fabricated.
+    with p["boot"]["store"].tx() as c:
+        intent = copy.deepcopy(R._row(c, p["old"]["intent_id"], B.INTENT_KIND))
+        intent.update(record_sha256=digest(extra), control_ref=extra["control_ref"])
+        result = copy.deepcopy(R._row(c, p["old"]["intent_id"] + "-result", B.RESULT_KIND))
+        result["record_sha256"] = digest(extra)
+        for did, kind, value in ((key, B.INTENT_KIND, intent), (key + "-result", B.RESULT_KIND, result)):
+            c.execute("INSERT INTO afo_independent_decisions VALUES(?,?,?,?)", (did, kind, canonical(value).decode(), digest(value)))
+    with pytest.raises(Refused, match="PRIOR_ATTEMPT_UNRESOLVED"):
+        B.bootstrap(p["boot"]["store"], p["boot"]["placer"], reconciliation_ref=token)
+    assert p["boot"]["effects"] == []
+    with p["boot"]["store"].tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.CONSUMED_KIND,)).fetchone()[0] == 0
+
+
+@pytest.mark.parametrize("scope", ["mission", "store", "epoch", "orders", "driver", "policy"])
+def test_historical_receipts_cannot_rebind_current_mission_or_scope(acknowledged, scope):
+    p = acknowledged
+    current = copy.deepcopy(D.current())
+    if scope == "mission":
+        current["mission"]["limits"]["max_jobs"] += 1
+    elif scope == "store":
+        current["store_path"] += ".foreign"
+    elif scope == "epoch":
+        current["intent_epoch"] += 1
+    elif scope == "orders":
+        current["order_ids"].append("UNLISTED-FIFTH")
+    elif scope == "driver":
+        current["driver_class"] = "FOREIGN"
+    else:
+        current["runtime_policy_sha256"] = "0" * 64
+    with p["boot"]["store"].tx() as c, pytest.raises(Refused):
+        R.historical_acknowledged(c, p["boot"]["store"], current, p["old"]["intent_id"])
 
 
 def test_legacy_source_format_requires_actual_three_immutable_git_blobs():
