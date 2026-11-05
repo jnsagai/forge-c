@@ -1,0 +1,203 @@
+{
+  "schema": "forge-c/wwdg-timing-actual-retained-input-private-control/1",
+  "scope": "EXPLICIT_CPU_SIMULATED_CALLS_ONLY_NOT_PRODUCTION_PHASE_PASS_OR_MODEL_QUALIFICATION",
+  "workspace": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/wwdg-timing-actual-target-1793836750144740223/workspace",
+  "copy_source": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/WWDG4J-timing-capability-audit/workspace",
+  "effective_LL_approval": {
+    "schema": "forge-c/provided-effective-code/1",
+    "path": "software/ll/stm32n6xx_ll_wwdg.h",
+    "validator_sha256": "e438e4a5e79819cf919540cb62452786498e934b381eb61f8525695e8a2d08fb",
+    "original_sha256": "2053d68ffc48e9a8d05ac7297fdeb634a1c43363725227c115ec717b6e16ca2f",
+    "effective_sha256": "a43dfb46736ef69b163efb4e025a3ecbf8dfe7e8619d0662925bade6bef68ac4",
+    "source_work_order": "WO-F014-SWE6-WWDGL-20261103-L29",
+    "source_package": "archive:sha256:241f59111202d6fb73acf7640914156fb9769a8a6ca321aa5489990356950675",
+    "approval": {
+      "report_sha256": "a08d808cbe5abee6bc090c94cb591a7ad2b0d250bf71bfbbbdd5123b41059ca7",
+      "report_md_sha256": "5f674a7a95efc79b09c65128bb57da11647e9e6a82dfdd361ffd8aeae6c58c84",
+      "phase3_baseline_sha256": "79d1cbb64305d57d77114d3a4b80c5fd36dce591badf2556621c6f6a1274b178",
+      "phase3_inspection_sha256": "13750a7edc6f75ef34fcaa6784803e429f271fa33b43cb7dc3732c699da17d4a",
+      "defects": [
+        {
+          "id": "DEF-001",
+          "core_sha256": "a739d13b7a53315bfcd2a08d3f7b0dcfa29d879e57560a1793ab87f29d7c5fbf",
+          "fixed_event": {
+            "baseline_id": "BL-SWE.3-001",
+            "status": "FIXED",
+            "ts": "2026-11-04T22:08:51.431998Z"
+          },
+          "fixed_inspection_sha256": "13750a7edc6f75ef34fcaa6784803e429f271fa33b43cb7dc3732c699da17d4a",
+          "fixed_baseline_sha256": "79d1cbb64305d57d77114d3a4b80c5fd36dce591badf2556621c6f6a1274b178",
+          "fixed_report_sha256": "a08d808cbe5abee6bc090c94cb591a7ad2b0d250bf71bfbbbdd5123b41059ca7"
+        }
+      ]
+    }
+  },
+  "frozen_input_sha256": {
+    ".forge-run/manifest.json": "3bc7ac3e5e9515622264cc935fe996b7492a65fe54ab0e8e1da9ecbe6b38a3ad",
+    "workproducts/SWE.4/unit_test_plan.json": "1e021a845aecfd3fc9270d8296521be2b47a5449830dabd8b19d8bc0042c7aac",
+    "workproducts/SWE.3/unit_specifications.md": "871e9978c007846806b5738ddef76e7c6f494b679c38e1da9cb5a9a160fbbd5a",
+    "workproducts/SWE.2/api_calls.json": "7abe01eee96d94af42b56067345c6c4377f056c519df473f0fb0ba0a90acbf5e",
+    "workproducts/SWE.1/software_requirements.md": "a9bcfd10d147353c7174b4ab6964dabe47852be74c6190664d2de29900230484",
+    "software/hal/stm32n6xx_hal_wwdg.c": "53afabb4c0bc042047a8437702746c78e436bf5d456328334abd0fa6d625589b",
+    "software/hal/stm32n6xx_hal_wwdg.h": "dbf05b2ecafcd44b9a4f5ddd5e73185d1a5d6f57351de3fa135f2cc2299a50ef",
+    "software/ll/stm32n6xx_ll_wwdg.h": "a43dfb46736ef69b163efb4e025a3ecbf8dfe7e8619d0662925bade6bef68ac4"
+  },
+  "original_and_copied_engineering_inputs_unchanged": true,
+  "removed_unit_controls_private_only": [
+    {
+      "path": "software/tests/unit/test_wwdg.cpp",
+      "sha256": "471dcec477c28d6c57906dad67f5ea81e812ec2d1fc482b616702d2ad9de0500"
+    },
+    {
+      "path": "software/tests/unit/target_timing.json",
+      "sha256": "df33c138ed9efc2a45bec8c54c1afc6d4a17927c174bf124bd06d34411befa0e"
+    }
+  ],
+  "declaration": {
+    "schema": "forge-c/swe4-wwdg-target-timing/1",
+    "scenario": "wwdg-declared-per-call-v1",
+    "config": {
+      "prescaler": 0,
+      "window": 80,
+      "counter": 127,
+      "ewi_enable": 1
+    },
+    "refresh_counter": 127,
+    "query_initial": 0,
+    "cases": [
+      {
+        "ut": "UT-011",
+        "uspec": "USPEC-HAL-01-11",
+        "function": "HAL_WWDG_Init",
+        "expected_status": "HAL_OK"
+      },
+      {
+        "ut": "UT-016",
+        "uspec": "USPEC-HAL-02-05",
+        "function": "HAL_WWDG_Refresh",
+        "expected_status": "HAL_OK"
+      },
+      {
+        "ut": "UT-020",
+        "uspec": "USPEC-HAL-03-04",
+        "function": "HAL_WWDG_GetEarlyWakeupFlag",
+        "expected_status": "HAL_OK"
+      },
+      {
+        "ut": "UT-025",
+        "uspec": "USPEC-HAL-04-05",
+        "function": "HAL_WWDG_ClearEarlyWakeupFlag",
+        "expected_status": "HAL_OK"
+      }
+    ]
+  },
+  "public_unit_status": "PASS",
+  "public_unit_metrics": {
+    "passed": 0,
+    "failed": 0,
+    "executables": 0,
+    "environment": "host",
+    "target_evidence": false,
+    "unit_target_observation_report": "artifact:sha256:96e023ed1c873b99b8eae6a90876f8ba67c49caf8d240d97a1880d405ff5441b",
+    "observation_environment": "Renode simulated Cortex-M55 with existing WWDG model",
+    "observation_ut_passed": 1,
+    "observation_ut_failed": 0,
+    "silicon_verified": false,
+    "unit_target_wwdg_timing_report": "artifact:sha256:cf99e24b3653a81e9ec2e520ed70b8666eb5db7e27fabca2f256510d533b66ae",
+    "wwdg_timing_environment": "Renode simulated Cortex-M55",
+    "wwdg_timing_ut_passed": 4,
+    "wwdg_timing_ut_failed": 0
+  },
+  "public_unit_issues": [],
+  "actual_measured_cases": [
+    {
+      "id": "UT-011",
+      "uspec": "USPEC-HAL-01-11",
+      "function": "HAL_WWDG_Init",
+      "expected_status": "HAL_OK",
+      "observed_status_matches": true,
+      "status": "PASS",
+      "samples": [
+        {
+          "instructions": 40,
+          "virtual_nanoseconds": 400
+        }
+      ]
+    },
+    {
+      "id": "UT-016",
+      "uspec": "USPEC-HAL-02-05",
+      "function": "HAL_WWDG_Refresh",
+      "expected_status": "HAL_OK",
+      "observed_status_matches": true,
+      "status": "PASS",
+      "samples": [
+        {
+          "instructions": 12,
+          "virtual_nanoseconds": 120
+        }
+      ]
+    },
+    {
+      "id": "UT-020",
+      "uspec": "USPEC-HAL-03-04",
+      "function": "HAL_WWDG_GetEarlyWakeupFlag",
+      "expected_status": "HAL_OK",
+      "observed_status_matches": true,
+      "status": "PASS",
+      "samples": [
+        {
+          "instructions": 7,
+          "virtual_nanoseconds": 70
+        }
+      ]
+    },
+    {
+      "id": "UT-025",
+      "uspec": "USPEC-HAL-04-05",
+      "function": "HAL_WWDG_ClearEarlyWakeupFlag",
+      "expected_status": "HAL_OK",
+      "observed_status_matches": true,
+      "status": "PASS",
+      "samples": [
+        {
+          "instructions": 4,
+          "virtual_nanoseconds": 40
+        }
+      ]
+    }
+  ],
+  "matrix4_target_rows": [
+    {
+      "test": "UT-011",
+      "file": "software/tests/unit/target_wwdg_timing.json",
+      "uspec": "USPEC-HAL-01-11",
+      "result": "PASS",
+      "status": "VERIFIED"
+    },
+    {
+      "test": "UT-016",
+      "file": "software/tests/unit/target_wwdg_timing.json",
+      "uspec": "USPEC-HAL-02-05",
+      "result": "PASS",
+      "status": "VERIFIED"
+    },
+    {
+      "test": "UT-020",
+      "file": "software/tests/unit/target_wwdg_timing.json",
+      "uspec": "USPEC-HAL-03-04",
+      "result": "PASS",
+      "status": "VERIFIED"
+    },
+    {
+      "test": "UT-025",
+      "file": "software/tests/unit/target_wwdg_timing.json",
+      "uspec": "USPEC-HAL-04-05",
+      "result": "PASS",
+      "status": "VERIFIED"
+    }
+  ],
+  "actual_target_calls_verified": true,
+  "silicon_verified": false,
+  "full_phase_or_all_plan_PASS": "NOT_CLAIMED_OTHER_HOST_OBLIGATIONS_NOT_RUN"
+}

@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<edff27525b83"
+  ],
+  "candidate_patch_sha256": "7dbeb1b2cfe7a963df2cb169c92777e022c15c8292eb0fbfa501fd55fa73c066",
+  "capa_id": "CAPA-170",
+  "created_at": "2026-11-04T23:13:57.027813Z",
+  "event_ids": [],
+  "incident_ids": [
+    "CAPA-170"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-170",
+  "reproducer_id": "RPR-170",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-21412ca9cf2cc8529d87",
+    "reproducer-run:rr-9c0279c3daac0a36ec17"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Normal line-local product lifecycle requires payload-bound managed preparation; oracle v2 explicitly models external physical volume readiness under read-only verifier data-root, with real canonical ledger/intent/fences unchanged.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-04T23:54:42.330415Z"
+}

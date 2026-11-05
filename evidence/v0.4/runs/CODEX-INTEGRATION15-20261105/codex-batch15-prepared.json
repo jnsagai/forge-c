@@ -1,0 +1,13 @@
+{
+  "source": "bf6b7f53f1db466f16486c9a9c4b9000c73d0f67",
+  "base": "ba84311d611ef66faca0dafd11f40bbe9a6bdde9",
+  "qualified_equivalent": "edff27525b8331af7ce943de0490172c9fc180c5",
+  "increments": [
+    "7d3e328760e73a43b34e9b83d256ee342fd9544b",
+    "edff27525b8331af7ce943de0490172c9fc180c5"
+  ],
+  "all8ignoredrefs_hashverified": true,
+  "protected_source_edits": false,
+  "candidate_tests": "NOT_RUN",
+  "normal_CHANGE": "NOT_RUN"
+}

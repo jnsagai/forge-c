@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-04T23:46:28.281814Z",
+  "exit_code": 2,
+  "log_sha256": "1fcf1f2e4e53113c5333e3868db0d9bf677f203351f2dc6257358e2d8c0f140f",
+  "reproducer_id": "RPR-170",
+  "revision": "edff27525b8331af7ce943de0490172c9fc180c5",
+  "role": "CANDIDATE",
+  "run_id": "rr-86b94c3232c7af4bf343",
+  "signature": "REPRODUCER_ERROR:RuntimeError:NORMAL_REGISTERED_DISPATCH_SCENARIO_NOT_REACHED:[{'command_id': 'afo-cmd-cf3c0b9f1edec46c5b97', 'action': 'launch_outcome_unknown', 'error': 'QueueError: DURABLE_DATA_VOL",
+  "verdict": "ERROR"
+}

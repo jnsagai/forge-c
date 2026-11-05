@@ -1,0 +1,290 @@
+........F...F........................................................... [ 69%]
+................................                                         [100%]
+=================================== FAILURES ===================================
+_ test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_lease[True] _
+
+claimed = namespace(store=<forge_factory.afo.queue.Store object at 0x7e8e1a95cf30>, oid='afo-6c54e9a3baa836c2', aid='afo-6c54e9a...cc59afa.json', durable_sha256='58b3a70e50cad90b402239d0c2ab073929903cbe8b33ff76e4bd39d82118ed47', rework_context=None))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-31/test_prelaunch_serve_swaps_rea0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e8e1a34d400>
+
+    def test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_lease(claimed, tmp_path, monkeypatch):
+        """Transport substitute is an actual HTTP server; no model or GPU is emulated as qualification."""
+        import copy
+        import socket
+    
+        from forge_factory.afo.durable import digest, immutable_json
+        from forge_factory.lrtx import provider_process as provider
+        from test_da014_provider_process import provider as private_namespace
+    
+        p = claimed
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            port = listener.getsockname()[1]
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            gateway_port = listener.getsockname()[1]
+        script = tmp_path / "llama-server-control.py"
+        script.write_text("""
+    import argparse,json
+    from http.server import BaseHTTPRequestHandler,HTTPServer
+    ap=argparse.ArgumentParser();ap.add_argument('--alias');ap.add_argument('--port',type=int);ap.add_argument('--bad',action='store_true');a=ap.parse_args()
+    class Handler(BaseHTTPRequestHandler):
+     def do_GET(self):
+      body=json.dumps({'data':[{'id':'wrong-alias' if a.bad else a.alias}]} if self.path=='/v1/models' else {'admission':{'inflight':0,'waiting':0}}).encode()
+      self.send_response(200);self.end_headers();self.wfile.write(body)
+     def log_message(self,*args):pass
+    HTTPServer.allow_reuse_address=True
+    HTTPServer(('127.0.0.1',a.port),Handler).serve_forever()
+    """)
+        profile = copy.deepcopy(p.s["profile"])
+        first, second = "qwen3.6:35b-a3b", "gpt-oss:20b"
+        # CPU backend declarations only; real model pins/capabilities are not exercised by this test.
+        profile["runtime"]["llama_server"] = {"model": first, "vram_required_mib": 0}
+        profile["runtime"]["llama_server_alternates"] = {second: {"vram_required_mib": 0}}
+        p.s["profile"] = profile
+        p.s["ports"] = p.s["ports"] | {"llama": port, "gateway": gateway_port}
+        (p.s["root"] / "logs").mkdir()
+        monkeypatch.setattr(ST, "envmap", lambda s: dict(os.environ) | {"FORGE_VENV": str(Path(sys.executable).parent.parent)})
+        monkeypatch.setattr(ST, "_vram_free_mib", lambda: 100000)
+        bad_models = set()
+        monkeypatch.setattr(ST, "llama_server_spec", lambda r, prof, ports, env, model=None:
+                            ([sys.executable, str(script), "--alias", model or first, "--port", str(port)]
+                             + (["--bad"] if model in bad_models else []), dict(os.environ),
+                             f"http://127.0.0.1:{port}/health", [model or first]))
+        processes = []
+        original_spawn = ST._in_ns
+        expire_new_worker = [False]
+    
+        def actual_spawn(*args, **kwargs):
+            assert kwargs.get("serving"), "managed worker must enter private provider PID namespace"
+            child = original_spawn(*args, **kwargs)
+            processes.append(child)
+            if expire_new_worker[0]:
+                deadline = P.registered(p.store, P.job_id(p.aid))["deadline_epoch"]
+                monkeypatch.setattr(A.time, "time", lambda: deadline + 1)
+            return child
+    
+        monkeypatch.setattr(ST, "_in_ns", actual_spawn)
+        before = p.intent.path.read_bytes()
+        try:
+            with private_namespace(tmp_path, "managed-cpu-transport", network=True) as base:
+                instance = provider.capture(p.s["root"], profile=profile["id"], profile_sha256=profile["_sha256"],
+                                            parent_pid=base["parent_pid"])
+                subprocess.run(ST._nsenter(instance["init_pid"]) + ["ip", "link", "set", "lo", "up"], check=True,
+                               capture_output=True)
+                immutable_json(p.s["root"] / "run/provider-instances" / (digest(instance) + ".json"), instance)
+                ST._save_services(p.s["root"], {"processes": {}, "serving_instance": instance})
+                inner_code = """
+    import copy,json,os,sys
+    from pathlib import Path
+    from forge_factory.lrtx import provider_process as P
+    from forge_factory.afo.durable import Refused
+    v=json.loads(Path(sys.argv[1]).read_text());P.require_live_instance(v)
+    bad=copy.deepcopy(v);bad['init_owner_view']['uid_map'][0][1]+=1
+    try:P.require_live_instance(bad)
+    except Refused:pass
+    else:raise AssertionError('changed UID mapping accepted')
+    print(json.dumps({'mapped_owner_verified':True,'current_uid':os.getuid(),'captured_uid':v['init']['uid']}))
+    """
+>               inner = subprocess.run(ST._nsenter(instance["init_pid"]) + [sys.executable, "-c", inner_code,
+                                       str(p.s["root"] / "run/provider-instances" / (digest(instance) + ".json"))],
+                                       env=dict(os.environ), capture_output=True, text=True, check=True)
+
+factory/python/tests/test_line_stack_lifecycle.py:215: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = True, timeout = None, check = True
+popenargs = (['nsenter', '-t', '114753', '-U', '-n', '--preserve-credentials', ...],)
+kwargs = {'env': {'AMENT_PREFIX_PATH': '/opt/ros/iron', 'CARLA_DIR': '/home/jefferson/autoverse/temp/carla-src', 'CLANG_PATH': '/usr/bin/clang-12', 'CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS': '1', ...}, 'stderr': -1, 'stdout': -1, 'text': True}
+process = <Popen: returncode: 1 args: ['nsenter', '-t', '114753', '-U', '-n', '--prese...>
+stdout = ''
+stderr = 'Traceback (most recent call last):\n  File "<string>", line 4, in <module>\n    from forge_factory.lrtx import provid...ovider_process\' from \'forge_factory.lrtx\' (/home/jefferson/forge-c/factory/python/forge_factory/lrtx/__init__.py)\n'
+retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['nsenter', '-t', '114753', '-U', '-n', '--preserve-credentials', '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python', '-c', "\nimport copy,json,os,sys\nfrom pathlib import Path\nfrom forge_factory.lrtx import provider_process as P\nfrom forge_factory.afo.durable import Refused\nv=json.loads(Path(sys.argv[1]).read_text());P.require_live_instance(v)\nbad=copy.deepcopy(v);bad['init_owner_view']['uid_map'][0][1]+=1\ntry:P.require_live_instance(bad)\nexcept Refused:pass\nelse:raise AssertionError('changed UID mapping accepted')\nprint(json.dumps({'mapped_owner_verified':True,'current_uid':os.getuid(),'captured_uid':v['init']['uid']}))\n", '/tmp/pytest-of-jefferson/pytest-31/test_prelaunch_serve_swaps_rea0/lrtx/run/provider-instances/a7ad44470d06470de923c5c0c3d075759939816cebefc57cac1f2188b8f410d5.json']' returned non-zero exit status 1.
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py:577: CalledProcessError
+_______ test_inside_observer_uses_only_pinned_namespace_fabro_port[True] _______
+
+claimed = namespace(store=<forge_factory.afo.queue.Store object at 0x7e8e1a51e740>, oid='afo-6c54e9a3baa836c2', aid='afo-6c54e9a...cc59afa.json', durable_sha256='d7e569a5deb4f975b7f8c7cfb62b645f5ea63a85c9fa56880f09964f9f4c32fc', rework_context=None))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-31/test_inside_observer_uses_only0')
+
+    def test_inside_observer_uses_only_pinned_namespace_fabro_port(claimed, tmp_path):
+        from forge_factory.lrtx import provider_process as provider
+        from test_da014_provider_process import provider as private_namespace
+    
+        p = claimed
+        with private_namespace(tmp_path, "observer-net", network=True) as instance:
+            record = {"root": str(p.s["root"]), "profile": p.s["profile"]["id"],
+                      "profile_sha256": p.s["profile"]["_sha256"], "processes": {},
+                      "holder_pid": instance["init_pid"], "holder_identity": ST.process_identity(instance["init_pid"]),
+                      "netns": os.readlink(f"/proc/{instance['init_pid']}/ns/net")}
+            ST._save_services(p.s["root"], record)
+            assert A._observation_host(p.cfg, p.s).cfg.fabro_host_port == p.cfg.fabro_host_port
+            code = """
+    import json,sys
+    from pathlib import Path
+    from forge_factory.afo.line_launcher import LineConfig
+    from forge_factory.afo.line_stack_lifecycle import _observation_host
+    from forge_factory.lrtx.profile import load
+    root=Path(sys.argv[1]);profile=load(sys.argv[2]);s={'root':root,'profile':profile,'ports':profile['deployment']['ports']}
+    cfg=LineConfig(stack_root=root,fabro_host_port=43210)
+    assert _observation_host(cfg,s).cfg.fabro_host_port==s['ports']['fabro']
+    print(json.dumps({'inside_port':_observation_host(cfg,s).cfg.fabro_host_port,'host_port':cfg.fabro_host_port}))
+    """
+>           report = subprocess.run(ST._nsenter(instance["init_pid"]) + [sys.executable, "-c", code,
+                                    str(p.s["root"]), p.s["profile"]["id"]], env=dict(os.environ), capture_output=True,
+                                    text=True, check=True)
+
+factory/python/tests/test_line_stack_lifecycle.py:411: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = True, timeout = None, check = True
+popenargs = (['nsenter', '-t', '114774', '-U', '-n', '--preserve-credentials', ...],)
+kwargs = {'env': {'AMENT_PREFIX_PATH': '/opt/ros/iron', 'CARLA_DIR': '/home/jefferson/autoverse/temp/carla-src', 'CLANG_PATH': '/usr/bin/clang-12', 'CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS': '1', ...}, 'stderr': -1, 'stdout': -1, 'text': True}
+process = <Popen: returncode: 1 args: ['nsenter', '-t', '114774', '-U', '-n', '--prese...>
+stdout = ''
+stderr = 'Traceback (most recent call last):\n  File "<string>", line 4, in <module>\n    from forge_factory.afo.line_launcher import LineConfig\nModuleNotFoundError: No module named \'forge_factory.afo.line_launcher\'\n'
+retcode = 1
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['nsenter', '-t', '114774', '-U', '-n', '--preserve-credentials', '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python', '-c', "\nimport json,sys\nfrom pathlib import Path\nfrom forge_factory.afo.line_launcher import LineConfig\nfrom forge_factory.afo.line_stack_lifecycle import _observation_host\nfrom forge_factory.lrtx.profile import load\nroot=Path(sys.argv[1]);profile=load(sys.argv[2]);s={'root':root,'profile':profile,'ports':profile['deployment']['ports']}\ncfg=LineConfig(stack_root=root,fabro_host_port=43210)\nassert _observation_host(cfg,s).cfg.fabro_host_port==s['ports']['fabro']\nprint(json.dumps({'inside_port':_observation_host(cfg,s).cfg.fabro_host_port,'host_port':cfg.fabro_host_port}))\n", '/tmp/pytest-of-jefferson/pytest-31/test_inside_observer_uses_only0/lrtx', 'local-rtx-v2-omniverse2']' returned non-zero exit status 1.
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/subprocess.py:577: CalledProcessError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_line_stack_lifecycle.py::test_prelaunch_serve_swaps_real_cpu_workers_in_managed_namespace_under_own_lease[True]
+FAILED factory/python/tests/test_line_stack_lifecycle.py::test_inside_observer_uses_only_pinned_namespace_fabro_port[True]
+2 failed, 102 passed in 24.67s

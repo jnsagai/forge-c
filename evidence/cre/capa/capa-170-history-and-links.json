@@ -1,0 +1,138 @@
+{
+  "history": [
+    {
+      "at": "2026-11-04T23:13:57.027813Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[\"CAPA-170\"]",
+      "from_state": null,
+      "reason": "Actual owner-signed L90 first line-local native launch stopped before inference at generic managed lifecycle, preserving spent reservation and no-native evidence",
+      "seq": 1278,
+      "to_state": "OPEN"
+    },
+    {
+      "at": "2026-11-04T23:13:57.072296Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[]",
+      "from_state": "OPEN",
+      "reason": "triage by AGENT:Codex-actual-L90-stack-stop-witness",
+      "seq": 1279,
+      "to_state": "TRIAGED"
+    },
+    {
+      "at": "2026-11-04T23:13:57.281967Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[]",
+      "from_state": "TRIAGED",
+      "reason": "reproducer RPR-170 assigned",
+      "seq": 1280,
+      "to_state": "REPRODUCER_PENDING"
+    },
+    {
+      "at": "2026-11-04T23:46:28.300722Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[\"reproducer-run:rr-6c52c81c45fe6ffafe7d\", \"reproducer-run:rr-86b94c3232c7af4bf343\"]",
+      "from_state": "REPRODUCER_PENDING",
+      "reason": "CANDIDATE_NOT_FIXED:ERROR",
+      "seq": 1281,
+      "to_state": "UNRESOLVED"
+    },
+    {
+      "at": "2026-11-04T23:48:17.895452Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[]",
+      "from_state": "UNRESOLVED",
+      "reason": "triage by RULE",
+      "seq": 1282,
+      "to_state": "TRIAGED"
+    },
+    {
+      "at": "2026-11-04T23:48:18.107283Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[]",
+      "from_state": "TRIAGED",
+      "reason": "reproducer RPR-170 assigned",
+      "seq": 1283,
+      "to_state": "REPRODUCER_PENDING"
+    },
+    {
+      "at": "2026-11-04T23:48:21.579235Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[\"reproducer-run:rr-21412ca9cf2cc8529d87\", \"reproducer-run:rr-9c0279c3daac0a36ec17\"]",
+      "from_state": "REPRODUCER_PENDING",
+      "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+      "seq": 1284,
+      "to_state": "CAUSE_VERIFIED"
+    },
+    {
+      "at": "2026-11-04T23:48:21.612082Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[\"git:405ea04291ae..edff27525b83\"]",
+      "from_state": "CAUSE_VERIFIED",
+      "reason": "fix edff27525b83 (patch 86139 bytes)",
+      "seq": 1285,
+      "to_state": "FIX_CANDIDATE"
+    },
+    {
+      "at": "2026-11-04T23:54:42.316229Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[\"reproducer-run:rr-84639a84fdd0e35884c8\"]",
+      "from_state": "FIX_CANDIDATE",
+      "reason": "prevention test prevention:RPR-170 absent at edff27525b83",
+      "seq": 1286,
+      "to_state": "PREVENTION_TESTED"
+    },
+    {
+      "at": "2026-11-04T23:54:42.330415Z",
+      "capa_id": "CAPA-170",
+      "evidence": "[]",
+      "from_state": "PREVENTION_TESTED",
+      "reason": "observation window opened",
+      "seq": 1287,
+      "to_state": "EFFECTIVENESS_OBSERVING"
+    }
+  ],
+  "link_rows": [
+    {
+      "at": "2026-11-04T23:48:21.335159Z",
+      "capa_id": "CAPA-170",
+      "kind": "BASELINE_REVISION",
+      "ref": "405ea04291aea7250861f4d4a7f63749c017ab8d",
+      "seq": 729
+    },
+    {
+      "at": "2026-11-04T23:48:21.342542Z",
+      "capa_id": "CAPA-170",
+      "kind": "FIX_REVISION",
+      "ref": "edff27525b8331af7ce943de0490172c9fc180c5",
+      "seq": 730
+    },
+    {
+      "at": "2026-11-04T23:54:42.343791Z",
+      "capa_id": "CAPA-170",
+      "kind": "PROMOTION_DECISION",
+      "ref": "pd-2ce04b53dfb0f82027c2",
+      "seq": 731
+    },
+    {
+      "at": "2026-11-04T23:54:42.348773Z",
+      "capa_id": "CAPA-170",
+      "kind": "BASELINE_REVISION",
+      "ref": "826a8724e94229c7b8d3bde45909fa6f008251c6",
+      "seq": 732
+    },
+    {
+      "at": "2026-11-04T23:54:42.353972Z",
+      "capa_id": "CAPA-170",
+      "kind": "ACTUAL_NATIVE_BASELINE_RUN",
+      "ref": "rr-e14f1226e79d5865acdc",
+      "seq": 733
+    }
+  ],
+  "links": [
+    "405ea04291aea7250861f4d4a7f63749c017ab8d",
+    "edff27525b8331af7ce943de0490172c9fc180c5",
+    "pd-2ce04b53dfb0f82027c2",
+    "826a8724e94229c7b8d3bde45909fa6f008251c6",
+    "rr-e14f1226e79d5865acdc"
+  ]
+}

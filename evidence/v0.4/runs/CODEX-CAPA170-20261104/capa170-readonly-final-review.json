@@ -1,0 +1,32 @@
+{
+  "schema": "forge-c/capa170-independent-readonly-review/2",
+  "source_revision": "7d3e328760e73a43b34e9b83d256ee342fd9544b",
+  "status": "ONE_BLOCKING_MANAGED_TIMEOUT_CLEANUP_PATH",
+  "reviewer_effects": "READ_ONLY_NO_TESTS_OR_LIVE_ACTIONS",
+  "source_sha256": {
+    "factory/python/forge_factory/afo/line_stack_lifecycle.py": "66b72727e04e23431780b190cda78298bf22881bb7894151be650c290ebecee3",
+    "factory/python/forge_factory/lrtx/provider_process.py": "c6e94b601ff8a1e82f78c78d0c828f71e99066de287fa1c126b201e34549eb13",
+    "factory/python/forge_factory/lrtx/stack.py": "cdd20e2aa38671725dba483e07996682ae287977e7c73743d47750e5205970c6",
+    "factory/python/tests/test_line_stack_lifecycle.py": "c185a4999129f3d0c8254ef7e6666cf5d02f5d3e07e419321db6c72e26a11e0e"
+  },
+  "prior_findings": {
+    "nsenter_waiter": "Successful start/swap records actual private worker; guarded signal_worker validates immutable worker, current identity/argv and pidfd. Actual CPU namespace test asserts distinct waiter/worker and ends old worker.",
+    "mapped_uid": "require_owner_view accepts exact original or one-level map, retains PID/start/boot/private namespace identity and rejects changed map. Actual kernel mapped-owner test present. quiet/release remain host-only unchanged.",
+    "finite_effects": "ContextVar callback checks fresh deadline/intent/control/private signed LINE service permission before main spawn/signal/wait paths; try/finally reset and no legacy callback are tested. Remaining exception noted below.",
+    "action_scope": "_bound and effect_guard explicitly reverify launch_workorder + external WO/driver/profile/service_action=line_stack_restart; ReadSnapshot preserves read-only use inside write fence."
+  },
+  "adoption_review": "Initial serve uses actual source/nonce/agent/run state + submit intent/context and existing from_native adoption; then confirms unique native ID and caller descendant of pinned Fabro. No new blocker identified in this bounded read-only review. Host vs inner API selection requires pinned root/profile/hash/netns holder identity; actual own namespace test present.",
+  "findings": [
+    {
+      "severity": "BLOCKING_MANAGED_FAILURE_PATH",
+      "file": "factory/python/forge_factory/lrtx/stack.py",
+      "lines": "1045-1048",
+      "problem": "On health timeout, proc.kill() is unguarded and signals the nsenter host waiter instead of actual managed private-PID worker. Worker can survive the failed serve and retain GPU memory.",
+      "minimal_repair": "When serving is supplied, capture exact worker and signal_worker through fresh guard; preserve legacy cleanup for servingNone. Prove an actual CPU private worker with wrong health/model is gone while foreign worker stays alive; no model/GPU qualification claimed."
+    }
+  ],
+  "kernel_evidence": [
+    "ops/scratch/capa170-nsenter-waiter-control.json",
+    "ops/scratch/capa170-user-namespace-identity-control.json"
+  ]
+}

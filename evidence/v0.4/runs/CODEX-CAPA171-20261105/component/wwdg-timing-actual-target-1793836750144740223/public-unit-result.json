@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "summary": "unit: 0 passed, 0 failed (HOST); Renode observation UT: 1 passed, 0 failed; Renode wwdg_timing UT: 4 passed, 0 failed",
+  "artifact_refs": [
+    "artifact:sha256:bd02d402be252a16cded31ebbcd7fd282905da6ffbd0bfae6faa22de8737aa00",
+    "artifact:sha256:dfd6b6b4bbf033c7cdf4dab91ea9e47dcf6363f3ff2f0d0ea595601ac3f57140",
+    "artifact:sha256:ca56469ec3d60986c6cb98060435ec60221de3e656d5160fc6b723ba53a6429f",
+    "artifact:sha256:b07f036fbb011a6504fa96ee70f9a6fcc4c1ef501bbd35aff7183e6b48c2db76",
+    "artifact:sha256:22da6b48976460ce0507852ff1af64e9c134ecf220417ecb96d4aa6299bda34d",
+    "artifact:sha256:96e023ed1c873b99b8eae6a90876f8ba67c49caf8d240d97a1880d405ff5441b",
+    "artifact:sha256:aedb7e4c7c0b616ebbb8e50220e55a26ba62fd44f1e172dcb49b94ca1d27fa05",
+    "artifact:sha256:716a660da74a6d2c58d60a5db55138d0bfa2659794ae8f946cf6125c07d7a687",
+    "artifact:sha256:bb2c0e0e3227990a8cefd4b7eb66921426a1dac68785f62e44b7417ebbca6e07",
+    "artifact:sha256:cf99e24b3653a81e9ec2e520ed70b8666eb5db7e27fabca2f256510d533b66ae"
+  ],
+  "issues": [],
+  "provenance": {
+    "tool": "clang+self-checking tests",
+    "version": "clang version 19.1.7 (/home/runner/work/llvm-project/llvm-project/clang cd708029",
+    "invocation_id": "inv-f339bec9cd174fca",
+    "output_sha256": "bd02d402be252a16cded31ebbcd7fd282905da6ffbd0bfae6faa22de8737aa00",
+    "exit_code": 0,
+    "duration_ms": 0.0
+  },
+  "metrics": {
+    "passed": 0,
+    "failed": 0,
+    "executables": 0,
+    "environment": "host",
+    "target_evidence": false,
+    "unit_target_observation_report": "artifact:sha256:96e023ed1c873b99b8eae6a90876f8ba67c49caf8d240d97a1880d405ff5441b",
+    "observation_environment": "Renode simulated Cortex-M55 with existing WWDG model",
+    "observation_ut_passed": 1,
+    "observation_ut_failed": 0,
+    "silicon_verified": false,
+    "unit_target_wwdg_timing_report": "artifact:sha256:cf99e24b3653a81e9ec2e520ed70b8666eb5db7e27fabca2f256510d533b66ae",
+    "wwdg_timing_environment": "Renode simulated Cortex-M55",
+    "wwdg_timing_ut_passed": 4,
+    "wwdg_timing_ut_failed": 0
+  }
+}

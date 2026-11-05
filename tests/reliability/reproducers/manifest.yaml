@@ -2925,3 +2925,57 @@ reproducers:
     application volume, including native ABI and resources, while retaining normal
     intent, volume, policy authorization, unit-state and cooldown fences; qualify
     new artifacts before activation.
+- id: RPR-170
+  script: rpr170_v2_line_product_lifecycle.py
+  sha256: 1a16674aa473a038c2788a1373db892e03e851c6b40a4aee0bdd9b14a917b7e8
+  symptom_signature: line-local product launch cannot prepare its owned provider without
+    global shutdown
+  observed_in: '2026-11-04 owner-signed finite local trial L90: normal product job
+    on clean826/profile32ef reached M2 then STACK_STOP_INCOMPLETE / MANAGED_PROFILE_SCOPE_MISMATCH
+    before native dispatch. Original attempt, conservative 1Mi token charge, source/mission/expiry
+    and no-native evidence retained. Admission fenced OBSERVE, no bypass/reset.'
+  baseline_revision: 405ea04291aea7250861f4d4a7f63749c017ab8d
+  error_codes:
+  - MANAGED_PROFILE_SCOPE_MISMATCH
+  - STACK_STOP_INCOMPLETE
+  - PRODUCT_LAUNCH_NOT_STARTED
+  operations:
+  - line_recovery_product.execution_context
+  - line_launcher.launch
+  - lrtx.stack.stop
+  - lrtx.stack.start
+  - lrtx.stack.serve
+  root_cause: Normal line-local product carries durable policy/intent but M2 generic
+    managed lifecycle lacks a line-bound profile and uses the global Conductor shutdown/store
+    and unconditional managed serving refusal. That path cannot prepare its own already-held
+    line execution lease while preserving RUNNING intent and canonical line queue.
+  remedy: Use an explicitly payload/job/nonce/mission/intent/profile/root/lease-bound
+    line-local lifecycle adapter under existing M0 locks, no-native/request quiescence
+    and precise provider-process ownership. Preserve generic managed/legacy behavior,
+    current authority per effect, finite deadlines and source-role pins; no flag bypass,
+    parallel store, global shutdown or budget reset.
+- id: RPR-171
+  script: rpr171_wwdg_host_timing_false_credit.py
+  sha256: 8822d13a60663c91dafc4b8e54f1e729e8e303c21cf59081ed27d0123fbb2184
+  symptom_signature: WWDG frozen target instruction and virtual-time requirement receives
+    host-only verified credit
+  observed_in: Actual G31 WWDG4J frozen plan UT011/016/020/025 requires per-call 2000
+    target instructions and1000virtualus at100MIPS; normal SDK host-only HAL_Clear
+    clock test UT025/USPEC0405 receives PASS and Matrix4 VERIFIED with no target metrics
+    on qualified169/170. Actual4J terminal with noSWE4baseline/inspection, history
+    retained.
+  baseline_revision: edff27525b8331af7ce943de0490172c9fc180c5
+  error_codes:
+  - WWDG_TARGET_TIMING_HOST_FALSE_CREDIT
+  operations:
+  - forge-tests-mcp.run_unit
+  - inspection.swtrace.Matrix4
+  - workflow.unit_target_wwdg_timing
+  root_cause: Existing public unit and Matrix4 path accepts host PASS annotations
+    for frozen WWDG target timing requirements while the only real per-call timing
+    producer supports CRC; omission of target declaration permits false host timing
+    credit.
+  remedy: Recognize exact frozen approved WWDG obligations and require sealed real
+    Renode entry/caller-return metrics bound to compiled source/effective LL/arguments/scenario/current
+    budgets, even if declaration omitted. Preserve CRC/O semantics and simulation-only
+    scope; no plan/requirements weakening or hardware claim.

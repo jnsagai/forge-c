@@ -1,0 +1,49 @@
+{
+  "schema": "forge-c/integration15-validation/1",
+  "source": "0e81c597e26a69053712127cdbdb64820dd980e7",
+  "baseline": "ba84311d611ef66faca0dafd11f40bbe9a6bdde9",
+  "code_equivalent_to_qualified171": "12dbbed2d67484dc0271f0352ae4f01e0a9c372e",
+  "combined_CHANGE": "pd-86c5dab3bccd168270c3",
+  "hard_gates": "ALL_APPLICABLE_PASS",
+  "causal_reproducer": "NOT_RUN for combined CHANGE; separate170/171 formal FIX causal gates already PASS. Original engineering postcondition incorrectly demanded PASS for this deliberately omitted CHANGE causal gate; normal eligible decision is preserved without rerun.",
+  "full_frozen_prevention_count": 170,
+  "last_reproducer": "RPR-171",
+  "all_receipt_logs_hash_verified": true,
+  "published_old_manifest_prefix_byte_exact": true,
+  "affected_regression": {
+    "schema": "forge-c/integration15-affected-regression/1",
+    "source": "bf6b7f53f1db466f16486c9a9c4b9000c73d0f67",
+    "modules": 11,
+    "initial": {
+      "xml": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-batch15-delta.xml",
+      "sha256": "e202ef0750c6e9cfba3f7c558be0849266bdc7a51f4765aa14a8150d8bf257cb",
+      "passed": 102,
+      "failed": 2,
+      "skipped": 0
+    },
+    "failure_attribution": "Both child python -c namespace checks imported old editable /home/jefferson/forge-c source because root invocation had no explicit candidate PYTHONPATH and cwd was repo root. Recorded traceback shows missing candidate modules, before candidate behavior.",
+    "unchanged_correction": {
+      "xml": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-batch15-namespace-correct-import.xml",
+      "sha256": "0d75117c0a790b5402a5988ca65b66c1ac49104d66d75a9fda3aa8453a91ed33",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "invocation": "Same two tests, unchanged source/test bytes, cwd=factory/python and explicit candidate PYTHONPATH."
+    },
+    "composite": {
+      "unique_cases": 104,
+      "passed": 104,
+      "unresolved_failures": 0,
+      "skipped": 0
+    },
+    "full_gate": "NOT_RUN_ROOT_YET"
+  },
+  "timing_component_regression": "129PASS0FAIL0SKIP on qualified17112db, whose nonprotected code tree matches this integrated source. Design14/ruff and actual four explicit simulated calls measured; no false host timing credit.",
+  "broader_comparison": "Prior source7d regression2974PASS6baseline-identicalFAIL27SKIP/249modules plus clean rerunPASS of dirty-evidence skip; I14delta105PASS. This source has separate affected104cases and171component129 plus full171 normal gates, not a fresh full249-module run.",
+  "limits": [
+    "Local native1e6 qualified source includes170repair, remoteCPU+stub transport passed, but actual M6/M7 role qualification is unproven pending updated exact owner signature.",
+    "M5 one actual enabled-timer conductor recovery passed with unchanged mission/history/spend; other fault drills and long endurance NOT_RUN.",
+    "Current cloud4J phase4failed state preserved. Fresh productive verification on new qualified native171 source required.",
+    "No silicon/WCET, safety approval, main merge or automatic runtime promotion claim."
+  ]
+}
