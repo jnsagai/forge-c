@@ -1,0 +1,26 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> scripts/forge-offline-update.py:9:1
+   |
+ 7 |   This script does not install dependencies or execute code from the patch bundle.
+ 8 |   """
+ 9 | / from __future__ import annotations
+10 | |
+11 | | import argparse
+12 | | import json
+13 | | import os
+14 | | from pathlib import Path
+15 | | import subprocess
+16 | | import sys
+   | |__________^
+help: Organize imports
+   |
+13 | import os
+   - from pathlib import Path
+14 | import subprocess
+15 | import sys
+16 + from pathlib import Path
+17 |
+   |
+
+Found 1 error.
+[*] 1 fixable with `--fix`.

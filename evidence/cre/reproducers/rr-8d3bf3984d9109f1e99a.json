@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-8d3bf3984d9109f1e99a",
+  "reproducer_id": "RPR-174",
+  "revision": "03f968603369f7934fde478ae8fd107c40ecec8b",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "SYMPTOM_PRESENT",
+  "signature": "maintenance review rejects an owner-signed effective mission deadline amendment",
+  "log_sha256": "e0c3ab57bb48b7a58f5f8aa8faa632327b8fb290624ea9b608b549dd5bc45382",
+  "at": "2026-11-05T09:59:11.262186Z"
+}

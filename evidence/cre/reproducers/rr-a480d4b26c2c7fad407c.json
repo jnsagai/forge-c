@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-a480d4b26c2c7fad407c",
+  "reproducer_id": "RPR-174",
+  "revision": "03f968603369f7934fde478ae8fd107c40ecec8b",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "ERROR",
+  "signature": "--- stderr ---",
+  "log_sha256": "0902514f24d1ace6b7fa1e3b332aa2e6df6325e2da6e15f0a602f726c71264b8",
+  "at": "2026-11-05T09:55:24.184291Z"
+}

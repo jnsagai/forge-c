@@ -1,0 +1,26 @@
+{
+  "affected_versions": [
+    "forge-c@<d244e2dfbf01"
+  ],
+  "candidate_patch_sha256": "4c20c9ddd9e8e273fc33b089098f5ad139fb779c78e19aeca205ef7d25f6bf92",
+  "capa_id": "CAPA-174",
+  "created_at": "2026-11-05T09:55:21.148831Z",
+  "event_ids": [],
+  "incident_ids": [
+    "M7-RENEWED-MISSION-REVIEW-REFUSED"
+  ],
+  "lesson_ids": [],
+  "observation_window_end": null,
+  "policy_sha256": "eec25b1dd1c187947d690217397afa3e820f943e60e05ded33418a2ab7079c31",
+  "prevention_test_id": "prevention:RPR-174",
+  "reproducer_id": "RPR-174",
+  "root_cause_evidence_refs": [
+    "reproducer-run:rr-1309216f1b22a26fd312",
+    "reproducer-run:rr-8fd57705f545e23f2433"
+  ],
+  "root_cause_status": "VERIFIED",
+  "root_cause_summary": "Maintenance guard compares raw initial limits instead of validated effective snapshot. Compare exact effective limits while retaining immutable initial authority/lineage, current signatures/source/profile/intent and earlier per-job wall; never reset exposure.",
+  "schema_version": "1.0",
+  "state": "EFFECTIVENESS_OBSERVING",
+  "updated_at": "2026-11-05T10:01:06.040487Z"
+}

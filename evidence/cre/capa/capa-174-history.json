@@ -1,0 +1,74 @@
+[
+  {
+    "seq": 1310,
+    "capa_id": "CAPA-174",
+    "from_state": null,
+    "to_state": "OPEN",
+    "at": "2026-11-05T09:55:21.148831Z",
+    "reason": "Normal maintenance review refuses an otherwise valid renewed signed control because its effective mission deadline differs from immutable initial limits. Owner requests implementation continue, with clock synchronization ignored.",
+    "evidence": "[\"M7-RENEWED-MISSION-REVIEW-REFUSED\"]"
+  },
+  {
+    "seq": 1311,
+    "capa_id": "CAPA-174",
+    "from_state": "OPEN",
+    "to_state": "TRIAGED",
+    "at": "2026-11-05T09:55:21.209018Z",
+    "reason": "triage by RULE",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1312,
+    "capa_id": "CAPA-174",
+    "from_state": "TRIAGED",
+    "to_state": "REPRODUCER_PENDING",
+    "at": "2026-11-05T09:55:21.444518Z",
+    "reason": "reproducer RPR-174 assigned",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1313,
+    "capa_id": "CAPA-174",
+    "from_state": "REPRODUCER_PENDING",
+    "to_state": "REPRODUCER_PENDING",
+    "at": "2026-11-05T09:59:05.636635Z",
+    "reason": "First pair ERROR before maintenance predicate because scoped detached Git metadata unavailable. Preserve both runner errors and oracle versions; version3 declares source identity as isolated fixture leaf while CRE import preflight pins actual code and real signature/effective mission checks remain.",
+    "evidence": "[\"reproducer-run:rr-a480d4b26c2c7fad407c\", \"reproducer-run:rr-e97d1a258d7b13dea15a\"]"
+  },
+  {
+    "seq": 1314,
+    "capa_id": "CAPA-174",
+    "from_state": "REPRODUCER_PENDING",
+    "to_state": "CAUSE_VERIFIED",
+    "at": "2026-11-05T09:59:09.040396Z",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "evidence": "[\"reproducer-run:rr-1309216f1b22a26fd312\", \"reproducer-run:rr-8fd57705f545e23f2433\"]"
+  },
+  {
+    "seq": 1315,
+    "capa_id": "CAPA-174",
+    "from_state": "CAUSE_VERIFIED",
+    "to_state": "FIX_CANDIDATE",
+    "at": "2026-11-05T09:59:09.080657Z",
+    "reason": "fix d244e2dfbf01 (patch 45314 bytes)",
+    "evidence": "[\"git:03f968603369..d244e2dfbf01\"]"
+  },
+  {
+    "seq": 1316,
+    "capa_id": "CAPA-174",
+    "from_state": "FIX_CANDIDATE",
+    "to_state": "PREVENTION_TESTED",
+    "at": "2026-11-05T10:01:06.024269Z",
+    "reason": "prevention test prevention:RPR-174 absent at d244e2dfbf01",
+    "evidence": "[\"reproducer-run:rr-42d7a11cce725bbeb2b0\"]"
+  },
+  {
+    "seq": 1317,
+    "capa_id": "CAPA-174",
+    "from_state": "PREVENTION_TESTED",
+    "to_state": "EFFECTIVENESS_OBSERVING",
+    "at": "2026-11-05T10:01:06.040487Z",
+    "reason": "observation window opened",
+    "evidence": "[]"
+  }
+]
