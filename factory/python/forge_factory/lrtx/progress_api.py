@@ -263,9 +263,24 @@ def _line_floor(line: dict, query: dict, path: str = "/floor.json") -> bytes:
 
     qs = urllib.parse.urlencode({k: v[0] for k, v in query.items() if k != "line" and v})
     url = line["url"].rstrip("/") + path + ("?" + qs if qs else "")
+    started = time.monotonic()
     with urllib.request.urlopen(url, timeout=15) as r:  # noqa: S310 - operator-configured loopback floor server
-        data = r.read()
-    json.loads(data)  # only a JSON floor is passed on
+        data = r.read(2 * 1024 * 1024 + 1)
+    if len(data) > 2 * 1024 * 1024:
+        raise ValueError("LINE_FLOOR_REPLY_TOO_LARGE")
+    value = json.loads(data)  # only a JSON floor is passed on
+    if path == "/floor.json":
+        if not isinstance(value, dict):
+            raise ValueError("LINE_FLOOR_SHAPE_INVALID")
+        monitor = value.setdefault("monitor", {"available": False, "reason": "SOURCE_MONITOR_NOT_REPORTED"})
+        if not isinstance(monitor, dict):
+            raise ValueError("LINE_MONITOR_SHAPE_INVALID")
+        # Relay reachability is its own observation, never proof that the source
+        # feed, model or job is current. Keep the source's original timestamp.
+        monitor["connection"] = {**(monitor.get("connection") or {}), "reachable": True,
+                                 "received_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                                 "request_ms": round((time.monotonic() - started) * 1000)}
+        return json.dumps(value, ensure_ascii=False).encode()
     return data
 
 

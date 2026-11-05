@@ -59,6 +59,13 @@ h3 { font-size: 17px; text-transform: uppercase; letter-spacing: .04em; }
 .kpi.gauge-kpi { grid-template-columns: auto 1fr; align-items: center; gap: 10px; }
 .kpi.station-kpi .gauges { gap: 2px; }
 
+/* Existing factory runtime, distinct from product acceptance and shift KPIs. */
+.runtime .v { font-size: 20px; overflow-wrap: anywhere; }
+.runtime .runtime-jobs { overflow-x: auto; }
+.runtime table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.runtime th, .runtime td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--line); }
+.telemetry-stale .conveyor, .telemetry-stale .s-working * { animation-play-state: paused !important; }
+
 /* floor map */
 .floor { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 12px; }
 .floor-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
@@ -337,6 +344,7 @@ tr:last-child td { border-bottom: 0; }
   </header>
   <nav class="line-tabs" id="line-tabs" role="tablist" aria-label="Production line" hidden></nav>
   <div class="stale" id="stale" hidden></div>
+  <section class="floor runtime" id="runtime-monitor" aria-label="Factory runtime monitoring" aria-live="polite"></section>
   <section class="kpis" id="kpis" aria-label="Shift KPIs"></section>
   <section class="floor" aria-labelledby="floor-title">
     <div class="floor-head">
@@ -785,12 +793,51 @@ document.addEventListener("click", (e) => {
   const s = e.target.closest("[data-sup-issue]");
   if (s) { supSel = s.dataset.supIssue; if (DATA) renderSupervisor(DATA); }
 });
+function renderRuntime(d) {
+  const target = $("#runtime-monitor"), m = d.monitor || {};
+  const c = m.connection || {}, conductor = m.conductor || {}, ops = m.operations || {};
+  const work = m.work || {}, jobs = work.jobs || {}, speed = m.throughput || {}, model = m.model || {};
+  const known = (v) => v == null ? "UNKNOWN" : String(v);
+  const age = (v) => Number.isFinite(v) && v >= 0 ? `${Math.round(v)} s ago` : "age unknown";
+  const tile = (name, value, note, id = "") => `<div class="kpi"><span class="label">${esc(name)}</span><span class="v"${id ? ` id="${id}"` : ""}>${esc(known(value))}</span><span class="n">${esc(note)}</span></div>`;
+  const current = work.drivers || [];
+  const source = c.source_state || "UNKNOWN";
+  const connection = c.reachable ? `Connected · source ${source}` : `Reading source · ${source}`;
+  const readiness = conductor.readiness || "UNKNOWN";
+  const readinessNote = readiness === "OBSERVING" ? "Observing only; no orders are placed." :
+    readiness === "ACTING" ? "Conductor manages admission; product acceptance stays independent." : "No current admission-readiness claim.";
+  const measurement = speed.tok_s == null ? "UNKNOWN" : `${speed.tok_s} tok/s`;
+  const codes = (m.recovery || {}).issues || [];
+  target.innerHTML = `<div class="floor-head"><h2>Factory runtime</h2><span class="note">Observed service and execution state · read only</span></div>
+    <div class="kpis">${tile("Connection", connection, `Conductor feed ${age(c.feed_age_s)}`, "runtime-connection")}
+      ${tile("Operations intent", ops.desired, ops.epoch == null ? "Intent is not observed." : `Desired state · epoch ${ops.epoch}`)}
+      ${tile("Conductor requested / observed", `${conductor.requested_mode || "UNKNOWN"} / ${conductor.observed_mode || "UNKNOWN"}`, `Process ${(conductor.process || {}).state || "UNKNOWN"} · heartbeat ${conductor.heartbeat && conductor.heartbeat.fresh ? "fresh" : "not current"}`)}
+      ${tile("Admission", readiness, readinessNote)}
+      ${tile("Last reported model", model.last_reported_loaded, `${model.fresh ? "Recent successful swap" : "Current loaded model not verified"} · ${age(model.age_s)}`)}
+      ${tile("Recent throughput", measurement, speed.model ? `${speed.model} · completed-call measurement · ${age(speed.age_s)}` : "No recent completed-call measurement; not zero.")}
+      ${tile("Driver activity", work.driver_activity === "OBSERVED" ? `${current.length} observed` : work.driver_activity === "NO_CURRENT_DRIVER_OBSERVED" ? "No current driver observed" : "UNKNOWN", "Operations RUNNING does not imply a running job.")}
+      ${tile("Healthy model calls", conductor.model_calls_healthy, "Conductor monitoring; no model calls are made for health.")}</div>
+    <div>${current.map((j) => `<div><b>${esc(j.work_order || "UNKNOWN")}</b> · ${esc(j.phase || "UNKNOWN")} · ${esc(j.agent || "agent UNKNOWN")} · ${esc(j.observed_model || "actual model UNKNOWN")} · ${Number(j.reworks || 0)} recorded reworks</div>`).join("")}</div>
+    <div class="runtime-jobs"><div class="label">Durable product / repair jobs · ${jobs.available ? "observed records" : "UNKNOWN: queue not observed"}</div>
+      ${(jobs.items || []).length ? `<table><thead><tr><th>Job / phase</th><th>Role / requested model</th><th>Task outcome</th><th>Native liveness / lease</th></tr></thead><tbody>${jobs.items.map((j) =>
+        `<tr><td>${esc(j.work_order || j.job_id || "UNKNOWN")}<br>${esc(j.phase || "phase UNKNOWN")}</td><td>${esc(j.role || "PRODUCT")}<br>${esc(j.requested_model || "UNKNOWN")}</td><td>${esc(j.task_outcome || "UNKNOWN")}</td><td>${esc(j.execution_liveness || "UNKNOWN")} / ${esc(j.resource_lease || "UNKNOWN")}<br>${j.execution_fresh ? "fresh observation" : "last record; current liveness UNKNOWN"}</td></tr>`).join("")}</tbody></table>` : `<div class="note">${jobs.available ? "No durable job record in this observation." : "Missing observations never mean zero active executions."}</div>`}
+      ${jobs.inventory_complete === false ? `<div class="note">Bounded recent inventory; additional historical records are omitted.</div>` : ""}</div>
+    <div class="note">Recovery: ${codes.length ? codes.map((i) => `${esc(i.phase || "")} ${esc(i.status || "UNKNOWN")} · ${esc(i.error_code || i.class || "UNKNOWN")}`).join("; ") : source === "CURRENT" ? "No open issue in the current supervisor feed." : "UNKNOWN; supervisor feed is not current."}</div>`;
+}
+function disconnectedRuntime() {
+  document.body.classList.add("telemetry-stale");
+  if (!$("#runtime-connection")) renderRuntime({});
+  const connection = $("#runtime-connection");
+  if (connection) connection.textContent = "DISCONNECTED · last observation only";
+}
+
 function render() {
   if (!DATA) return;
   if (!selected) {
     const h = (location.hash || "").slice(1).toUpperCase().replace("-", ".");
     selected = DATA.halls.some((x) => x.id === h) ? h : (DATA.halls.find((x) => x.running.length) || DATA.halls[0]).id;
   }
+  renderRuntime(DATA);
   renderPicker(DATA); renderKpis(DATA); renderHalls(DATA); renderHall(DATA); renderOrders(DATA);
   try { renderSupervisor(DATA); } catch (err) { $("#sup-board").textContent = "The supervisor station could not be drawn (" + err.message + ")."; }
 }
@@ -833,8 +880,10 @@ async function load() {
       }
     }
     $("#stale").hidden = true;
+    document.body.classList.remove("telemetry-stale");
     render();
   } catch (e) {
+    disconnectedRuntime();
     if (DATA) {
       $("#stale").hidden = false;
       $("#stale").textContent = `The floor data is not updating (${e.message}); last update ${Math.round((Date.now() - lastOk) / 1000)} s ago. The values below are not live.`;

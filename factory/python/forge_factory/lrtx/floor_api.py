@@ -182,7 +182,7 @@ def recent_speed(now: float, window_s: float = 600, calls: int = 5) -> dict | No
     mine = [r for r in rows if r["model"] == model][-calls:]
     lat = sum(float(r["latency_ms"]) for r in mine) / 1000
     return {"model": model, "tok_s": round(sum(int(r["tokens_output"]) for r in mine) / lat) if lat else None,
-            "calls": len(mine), "basis": basis}
+            "calls": len(mine), "basis": basis, "age_s": round(now - mine[-1]["at"])}
 
 
 def native(stages: dict | None, now: float) -> dict:
@@ -362,17 +362,25 @@ def station(now: float) -> dict:
                     break
     except OSError:
         pass
-    model = None
+    model, model_at, model_verified = None, None, False
     try:
         last = (state_root().parent / "run/model-swaps.jsonl").read_text().strip().splitlines()[-1]
-        model = json.loads(last).get("to")
+        swap = json.loads(last)
+        if swap.get("result") in ("ALREADY_SERVED", "SWAPPED"):
+            model, model_at = swap.get("to"), swap.get("at")
+            model_verified = True
+        elif "result" not in swap:  # legacy report: retain its name without claiming a verified/current swap
+            model, model_at = swap.get("to"), swap.get("at")
     except (OSError, IndexError, ValueError):
         pass
     if sample is None:
-        return {"available": False, "model": model}
+        return {"available": False, "model": model, "model_at": model_at, "model_verified": model_verified}
     g = (sample.get("sample") or {}).get("gpu") or {}
     age = round(now - (sample["sample"].get("ts") or 0))
-    return {"available": age < 120, "age_s": age, "model": model, "util_pct": g.get("util_pct"), "power_w": g.get("power_w"),
+    return {"available": 0 <= age < 120, "age_s": age, "model": model, "model_at": model_at,
+            "model_verified": model_verified,
+            "model_age_s": round(now - _ts(model_at)) if _ts(model_at) is not None else None,
+            "util_pct": g.get("util_pct"), "power_w": g.get("power_w"),
             "temp_c": g.get("temp_c"), "mem_used_mib": g.get("mem_used_mib"), "mem_total_mib": g.get("mem_total_mib")}
 
 
@@ -942,14 +950,22 @@ def floor(now: float | None = None, since: float | None = None, focus: str | Non
         sup = supervisor_station(now)
     except Exception as exc:  # noqa: BLE001 - the supervisor station never hides the floor
         sup = {"available": False, "reason": f"STATION_ERROR:{type(exc).__name__}"}
+    from .factory_monitor import snapshot
+
+    resource_station = station(now)
+    try:
+        monitor = snapshot(sup, orders, resource_station, recent_speed(now), now=now)
+    except (OSError, ValueError, TypeError, KeyError):
+        monitor = {"available": False, "reason": "RUNTIME_OBSERVATION_UNKNOWN"}
     return {"schema": "forge-c/factory-floor/1", "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
             "supervisor": sup,
+            "monitor": monitor,
             "shift_start": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(start)),
             "kpis": {"on_floor": sum(1 for o in orders if o["state"] == "RUNNING"), "completed": len(done),
                      "orders": len(orders), "fpy_swe1": [h1["first_pass"], h1["inspected"]],
                      "reworks": sum(h["reworks"] for h in halls), "stopped": sum(1 for o in orders if o["state"] == "STOPPED"),
                      "model_hours": round(model_s / 3600, 1), "out_tokens": out_tokens, "line_tok_s": line,
-                     "station": station(now)},
+                     "station": resource_station},
             "halls": halls,
             "focus": None if sel is None else {
                 "wo": sel["wo"], "part": sel.get("part"), "target": sel.get("target"), "state": sel["state"],
