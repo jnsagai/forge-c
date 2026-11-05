@@ -1,0 +1,67 @@
+[
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-affected-v3.xml",
+    "path": "component/final-affected-v3.xml",
+    "sha256": "c18df70c3aa409307fefed1b9449024c6fa4c28794756c01018fbd88e285e78a"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-affected-v3.log",
+    "path": "component/final-affected-v3.log",
+    "sha256": "34bbfbb40b8ce46bb82b76b3266fb16122fa073f615df2579374733050a593c7"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-origin-controls.xml",
+    "path": "component/final-origin-controls.xml",
+    "sha256": "428af1e7d82eb33e46f6bdb34bd99a26adfb9a0f14a4121fe38fc6b388a773a0"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-origin-controls.log",
+    "path": "component/final-origin-controls.log",
+    "sha256": "4bed8cc624113743771e380f4fea7f09ec8586d03d46684c5c3a9889a2038305"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/intake-canonical-v2.xml",
+    "path": "component/intake-canonical-v2.xml",
+    "sha256": "f0c8d631baaef281d2e2d5b606ee8b05485d848716d00fd64b455728fed4dc34"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/intake-canonical-v2.log",
+    "path": "component/intake-canonical-v2.log",
+    "sha256": "8e0dd3e259f68c193f05e3e04acef6407a9ed36e5124438d9f9a04fbd0db33db"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-design.log",
+    "path": "component/final-design.log",
+    "sha256": "c133d1470d3e79a746b2b7f36c9247481dff54e276316d5f0da3c5a66fd802fe"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-development/final-ruff.log",
+    "path": "component/final-ruff.log",
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-final-inputs.json",
+    "path": "component/line-soak-prerequisite-final-inputs.json",
+    "sha256": "1b5f43d11962c0ac2177de41ceb4c5e1c6f5cff82ef5ca111008394c91143844"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-inputs.json",
+    "path": "component/line-soak-prerequisite-inputs.json",
+    "sha256": "408bf11c728ab9d3473a1fdb05d9e5f7e96dd7feb0b48a41db18de502fc138c8"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-10deps-recheck.json",
+    "path": "component/line-soak-prerequisite-10deps-recheck.json",
+    "sha256": "9b5772856fb385e1a89c5b3227aaff0a7276c02d0ad48e08c01ff148831d8b91"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/M9-queue-extraction-root-structural-review.json",
+    "path": "component/M9-queue-extraction-root-structural-review.json",
+    "sha256": "a4d8b165db4371f75fbf4e610cd56a66a80074796aef8e53c05344de41eb0239"
+  },
+  {
+    "original_path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/line-soak-prerequisite-source.bundle",
+    "path": "component/line-soak-prerequisite-source.bundle",
+    "sha256": "f993054b724cbc08099ce9297d8c61d9d90107fda81c39aedf7b1b368615f254"
+  }
+]
