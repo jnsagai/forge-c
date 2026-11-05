@@ -60,7 +60,9 @@ class NativeClient:
 def boot(supervised, tmp_path, monkeypatch):  # noqa: F811 - imported pytest fixture is requested by name
     store = supervised["store"]
     root = store.path.parents[2]
-    (root / "run").mkdir()
+    (root / "run").mkdir(mode=0o700)
+    (root / "run").chmod(0o700)
+    (root / "run/stack.lock").touch(mode=0o600)
     lock = root / "gpu.lock"
     lock.write_text("")
     lock.chmod(0o600)
@@ -540,6 +542,7 @@ def test_main_optional_stage_retains_actual_signal_cancellation_before_cycle(boo
 
 
 def test_missing_runtime_run_directory_cannot_skip_stack_fence(boot):
+    (boot["root"] / "run/stack.lock").unlink()
     (boot["root"] / "run").rmdir()
     with pytest.raises(Refused, match="STACK_RUN_DIRECTORY_UNKNOWN"):
         B.bootstrap(boot["store"], boot["placer"])
