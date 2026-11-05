@@ -5,14 +5,13 @@ model, native child, grant or product work. This does not qualify production dep
 """
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import time
 import uuid
+from pathlib import Path
 
 import pytest
-
 from forge_factory.afo import operations
 from forge_factory.afo.durable import immutable_json
 from forge_factory.common import REPO_ROOT
@@ -95,7 +94,7 @@ def test_private_public_line_boot_fence_and_explicit_os_stop(tmp_path):
             time.sleep(0.3)
             assert state(name)["ActiveState"] == "inactive" and state(name)["NRestarts"] == "0"
             # Replay the actual stopped state through the existing recipe. It must not undo the OS stop.
-            outcome = intent.start(intent.read()["epoch"], probe=lambda: stopped, authorize=lambda: True,
+            outcome = intent.start(intent.read()["epoch"], probe=lambda stopped=stopped: stopped, authorize=lambda: True,
                                    runner=lambda _argv: pytest.fail("explicit stop cannot recover"),
                                    unit="forge-line-conductor-local.service")
             assert outcome["action"] == "NO_APPROVED_RECOVERY"

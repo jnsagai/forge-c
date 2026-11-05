@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from forge_factory.afo import line_conductor, operations, services
 
 
