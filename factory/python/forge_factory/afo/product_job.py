@@ -43,6 +43,10 @@ def prepare(store, order, attempt, nonce, manifest, eff):
                               MissionLedger(store).snapshot(mission)["limits"]["deadline"]),
         "reserved_tokens": int(eff.get("budgets.max_model_tokens_per_order")),
     }
+    if eff.mode == "OWNER_SUPERVISED_DEVELOPMENT":
+        job["execution_scope"] = "OWNER_SUPERVISED_DEVELOPMENT"
+        job["qualification_only"] = True
+        job["acceptance"] = "UNACCEPTED"
     allocations = manifest.get("product_attempt_token_reservations")
     if allocations is not None:
         if (not isinstance(allocations, list) or not allocations
@@ -103,6 +107,10 @@ def prepare(store, order, attempt, nonce, manifest, eff):
             if manifest.get("line_role_authority_ref") is not None and any(prior.get(k) != job.get(k)
                     for k in ("line_role_authority_ref", "line_origin", "factory_revision", "model", "profile",
                               "role_capabilities", "product_role_trials", "qualified_local_alternatives")):
+                raise Refused("LINE_PRODUCT_JOB_REBOUND")
+            if eff.mode == "OWNER_SUPERVISED_DEVELOPMENT" and any(
+                    prior.get(k) != job.get(k)
+                    for k in ("native_context", "execution_scope", "qualification_only", "acceptance")):
                 raise Refused("LINE_PRODUCT_JOB_REBOUND")
             return prior
         c.execute("INSERT INTO afo_product_jobs VALUES (?,?)", (job_id, canonical(job).decode()))

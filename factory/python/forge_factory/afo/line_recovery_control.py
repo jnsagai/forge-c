@@ -90,6 +90,11 @@ def _configuration(ref, eff, *, request, actual):
     if (value["policy_sha256"] != eff.sha256 or value["authorization_ref"] != eff.get("authorization_ref")
             or profile_identity(value["profile"]) != value["profile_sha256"]):
         raise Refused("LINE_RECOVERY_CONTROL_BINDING_CHANGED")
+    from . import owner_supervised_development as development
+
+    if eff.mode == development.MODE:
+        development.control_authorized(ref, value, eff, request)
+        return value
     decision = authz.find(eff.mode, eff.sha256 or "", ref=value["authorization_ref"],
                           action="recover_workorder", request=request or {})
     if not decision.allow:
@@ -121,6 +126,10 @@ def require_job_binding(job, control, *, store=None):
         with ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=100, timeout_s=3) as reader:
             return require_job_binding(job, control, store=reader)
     native = job.get("native_context") or {}
+    from . import owner_supervised_development as development
+
+    if development.selected():
+        development.require_job_context(job)
     if (native.get("FORGE_OPERATIONS_INTENT") != control["operations_intent"]
             or native.get("FORGE_AFO_QUEUE_SCOPE") != "line-local"):
         raise Refused("LINE_ROLE_OPERATIONS_CONTEXT_MISMATCH")

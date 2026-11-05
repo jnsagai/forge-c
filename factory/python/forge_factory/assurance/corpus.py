@@ -18,6 +18,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+from ..afo.owner_supervised_development import native_process
 from . import formal, hardware, oracle_gen, shadow
 
 LL = "software/ll/stm32n6xx_ll_rcc.h"
@@ -59,7 +60,7 @@ def _factory_tests(ws: Path) -> list[str]:
             out.append(f"BUILD_FAIL:{tp.name}")
             continue
         try:
-            r = subprocess.run([str(exe)], capture_output=True, text=True, timeout=10)
+            r = native_process([str(exe)], directory=ws, capture_output=True, text=True, timeout=10)
             out += [f"{tp.name}:{ln.split()[0]}" for ln in r.stdout.splitlines() if ln.endswith(" FAIL")]
             if r.returncode and not any(x.startswith(tp.name) for x in out):
                 out.append(f"{tp.name}:exit {r.returncode}")

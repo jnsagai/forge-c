@@ -174,6 +174,7 @@ def envmap(s: dict) -> dict[str, str]:
             "FORGE_CONDUCTOR_UNIT",
             "FORGE_DURABLE_AUTONOMY",
             "FORGE_DURABLE_NATIVE_HEADER",
+            "FORGE_OWNER_DEVELOPMENT_RECORD", "FORGE_OWNER_DEVELOPMENT_SHA256",
             "FORGE_AFO_POLICY",
             "FORGE_AFO_QUEUE_SCOPE",
             "FORGE_CPU_JOBS",
@@ -362,7 +363,7 @@ def _wait(url: str, timeout: float) -> bool:
     return False
 
 
-def _in_ns(holder: int, argv: list[str], env: dict, log: Path, cwd: Path, *, serving=None) -> subprocess.Popen:
+def _in_ns(holder: int, argv: list[str], env: dict, log: Path, cwd: Path, *, serving=None, pass_fds=()) -> subprocess.Popen:
     enter = _nsenter(holder)
     if serving is not None:
         enter = ["nsenter", "-t", str(serving["init_pid"]), "-U", "-n", "-m", "-p", "--preserve-credentials"]
@@ -375,6 +376,7 @@ def _in_ns(holder: int, argv: list[str], env: dict, log: Path, cwd: Path, *, ser
             stdin=subprocess.DEVNULL,
             cwd=cwd,
             start_new_session=True,
+            pass_fds=pass_fds,
         )
 
 
@@ -685,6 +687,10 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
 
         if serving is not None:
             serving = serving_instance(s)
+            if not provider.quiet(serving) and os.environ.get("FORGE_OWNER_DEVELOPMENT_RECORD"):
+                from ..afo.owner_supervised_development import require_compatible_provider
+
+                require_compatible_provider(serving)
             if provider.quiet(serving):
                 serving = None
                 # nsenter waiters can briefly outlive the retired namespace.
@@ -708,15 +714,28 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
                 parent_pid = pending["pid"]
             else:
                 guard()
-                proc = _in_ns(
-                    holder,
-                    ["unshare", "--mount", "--pid", "--fork", "--mount-proc", "--kill-child=SIGKILL", "sleep", "infinity"],
-                    env,
-                    r / "logs/provider-holder.log",
-                    r,
-                )
+                provider_command = ["unshare", "--mount", "--pid", "--fork", "--mount-proc",
+                                    "--kill-child=SIGKILL", "sleep", "infinity"]
+                development_view = None
+                development_handles = ()
+                from ..afo import owner_supervised_development as owner_development
+
+                if owner_development.selected():
+                    from ..afo.owner_development_view import prepare
+
+                    provider_command, development_view, development_handles = prepare(r, owner_development.current())
+                try:
+                    proc = _in_ns(
+                        holder, provider_command, env, r / "logs/provider-holder.log", r,
+                        pass_fds=development_handles,
+                    )
+                finally:
+                    for fd in development_handles:
+                        os.close(fd)
                 parent_pid = proc.pid
                 rec["serving_holder"] = {"pid": proc.pid, "identity": process_identity(proc.pid)}
+                if development_view is not None:
+                    rec["serving_holder"]["owner_development_view"] = development_view
                 _save_services(r, {**rec, "processes": procs})
             deadline = time.monotonic() + 3
             while True:
@@ -727,6 +746,8 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
                     if time.monotonic() >= deadline:
                         raise
                     time.sleep(0.05)
+            if view := (rec.get("serving_holder") or {}).get("owner_development_view"):
+                serving["owner_development_view"] = view
             immutable_json(r / "run/provider-instances" / (digest(serving) + ".json"), serving)
             rec["serving_instance"] = serving
             _save_services(r, {**rec, "processes": procs})

@@ -102,6 +102,15 @@ def load(path: Path | None = None, *, auth_base: Path | None = None, now=None, l
         req = pol.get("mode") if isinstance(pol, dict) else None
         if issues:
             eff = Effective("DISABLED", req, sha, None, issues)
+        elif os.environ.get("FORGE_OWNER_DEVELOPMENT_RECORD") or os.environ.get("FORGE_OWNER_DEVELOPMENT_SHA256"):
+            from .owner_supervised_development import effective
+
+            try:
+                eff = effective(pol, sha, p)
+            except (ValueError, OSError, KeyError, TypeError) as exc:
+                # Invalid/revoked development authority cannot fall back to any
+                # older signed grant. Existing native settlement remains runnable.
+                eff = Effective('OBSERVE_ONLY', req, sha, pol, [getattr(exc, 'code', type(exc).__name__)])
         elif req in ("DISABLED", "OBSERVE_ONLY"):
             eff = Effective(req, req, sha, pol)
         else:

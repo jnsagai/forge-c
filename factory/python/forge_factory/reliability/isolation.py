@@ -234,6 +234,10 @@ def execute(role: str, cmd: list[str], *, cwd: Path, env: dict[str, str], writab
             readable: list[Path] = (), timeout: int = 1800) -> subprocess.CompletedProcess:
     """Run `cmd` as the role's OS identity when the sandbox is available, otherwise as a plain subprocess."""
     if not available():
+        if os.environ.get("FORGE_OWNER_DEVELOPMENT_RECORD") or os.environ.get("FORGE_OWNER_DEVELOPMENT_SHA256"):
+            from ..afo.durable import Refused
+
+            raise Refused("OWNER_DEVELOPMENT_SCOPED_EXECUTION_UNAVAILABLE")
         return subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, timeout=timeout)
     env = {**env, "HOME": str(writable[0]) if writable else "/tmp",
            "TMPDIR": str(writable[0]) if writable else "/tmp"}

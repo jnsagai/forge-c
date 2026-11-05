@@ -17,6 +17,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from ..afo.owner_supervised_development import native_process
 from . import contracts
 
 
@@ -50,7 +51,8 @@ def measure(sources: list[Path], test: Path, includes: list[Path], *, mcdc: bool
             if mcdc and "mcdc" in b.stderr.lower():
                 return measure(sources, test, includes, mcdc=False, defines=defines) | {"mcdc_build_error": b.stderr[-200:]}
             return {"status": "BUILD_FAILED", "reason": b.stderr[-300:], "records": []}
-        r = subprocess.run([str(t / "ut")], capture_output=True, text=True, timeout=120,
+        r = native_process([str(t / "ut")], directory=t, readable=[test.parent, *includes, *{p.parent for p in sources}],
+                           capture_output=True, text=True, timeout=120,
                            env={"LLVM_PROFILE_FILE": str(t / "ut.profraw")})
         subprocess.run([prof, "merge", "-sparse", str(t / "ut.profraw"), "-o", str(t / "ut.profdata")], check=True,
                        capture_output=True)

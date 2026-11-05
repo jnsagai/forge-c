@@ -1004,6 +1004,11 @@ def run(
         from .afo.product_job import install
 
         install(ws, durable_binding)
+        if __import__("os").environ.get("FORGE_OWNER_DEVELOPMENT_RECORD"):
+            manifest["execution_scope"] = "OWNER_SUPERVISED_DEVELOPMENT"
+            manifest["qualification_only"] = True
+            manifest["qualification_acceptance"] = "UNACCEPTED"
+            (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     if (labels or {}).get("afo_attempt") or recovery_exhausted:
         # DA-FR-054: the route gate reads here that the run executes under AFO (so a phase BLOCKs for AFO recovery
         # first) and for which phases AFO recovery was already exhausted (advisory continuation allowed)

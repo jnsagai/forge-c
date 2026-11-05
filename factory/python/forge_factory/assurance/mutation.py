@@ -18,6 +18,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from ..afo.owner_supervised_development import native_process
 from . import contracts
 
 OPS = [  # name, regex, replacement (None = computed)
@@ -194,7 +195,8 @@ def run_campaign(sw_dir: Path, target_rel: str, test_files: list[Path], *, used_
                     outcome, detail = "INVALID", b.stderr.strip().splitlines()[-1][:120] if b.stderr.strip() else "build"
                     break
                 try:
-                    r = subprocess.run([str(exe)], capture_output=True, text=True, timeout=timeout_s)
+                    r = native_process([str(exe)], directory=Path(td), readable=[tc.parent],
+                                       capture_output=True, text=True, timeout=timeout_s)
                     if r.returncode or re.search(r"\bFAIL\b", r.stdout):
                         outcome, detail = "KILLED", f"{tc.name}: " + next((x for x in r.stdout.splitlines() if "FAIL" in x),
                                                                         f"exit {r.returncode}")[:80]

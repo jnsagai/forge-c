@@ -26,6 +26,8 @@ from .queue import QueueError
 
 ROLES = {"afo-recovery-planner": "forge-afo-mcp", "afo-factory-maintainer": "forge-maintainer-mcp"}
 NATIVE_CONTEXT = (
+    "FORGE_OWNER_DEVELOPMENT_RECORD",
+    "FORGE_OWNER_DEVELOPMENT_SHA256",
     "FORGE_DATA_ROOT",
     "FORGE_AFO_POLICY",
     "FORGE_AFO_AUTH_DIR",
@@ -105,7 +107,7 @@ def local_order(ws) -> bool:
 
 def enabled(role: str, eff) -> bool:
     flag = "engineering.enable_recovery_planner" if role == "afo-recovery-planner" else "maintenance.enable_factory_maintainer"
-    return role in ROLES and eff.mode in ("PILOT", "ACTIVE") and bool(eff.get(flag))
+    return role in ROLES and eff.mode in ("PILOT", "ACTIVE", "OWNER_SUPERVISED_DEVELOPMENT") and bool(eff.get(flag))
 
 
 def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path, eff, *, qualification_manifest=None,
@@ -194,7 +196,10 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
     # into a fresh job or enlarge its original allowance, including legacy jobs.
     for prior in records(store, order["order_id"]):
         if prior["attempt_id"] == attempt_id and prior["role"] == role and (
-                prior["profile"] != profile or prior["model"] != model
+                eff.mode == "OWNER_SUPERVISED_DEVELOPMENT" and any(
+                    (prior.get("native_context") or {}).get(k) != os.environ.get(k)
+                    for k in ("FORGE_OWNER_DEVELOPMENT_RECORD", "FORGE_OWNER_DEVELOPMENT_SHA256"))
+                or prior["profile"] != profile or prior["model"] != model
                 or prior["case_sha256"] != sha256_file(case)
                 or prior.get("profile_sha256", selected["_sha256"]) != selected["_sha256"]
                 or prior.get("profile_initial_reservation") != profile_reservation
@@ -231,6 +236,8 @@ def prepare(store, order: dict, attempt_id: str, role: str, case: Path, ws: Path
         "reported_tokens": None,
         "run_id": None,
     }
+    if eff.mode == "OWNER_SUPERVISED_DEVELOPMENT":
+        job.update(execution_scope="OWNER_SUPERVISED_DEVELOPMENT", qualification_only=True, acceptance="UNACCEPTED")
     if profile_reservation is not None:
         job["profile_initial_reservation"] = profile_reservation
     if line_context is not None:
@@ -830,7 +837,8 @@ def make_planner(store, eff, *, line_origin=None, line_role_authority_ref=None):
 
 def sweep_maintenance(store, eff) -> list[dict]:
     """Dispatch the existing Maintainer and its independent evaluation outside the Conductor's health loop."""
-    if not eff.get("maintenance.enable_factory_maintainer") or eff.mode not in ("PILOT", "ACTIVE"):
+    if (not eff.get("maintenance.enable_factory_maintainer")
+            or eff.mode not in ("PILOT", "ACTIVE", "OWNER_SUPERVISED_DEVELOPMENT")):
         return []
     from . import maintainer, runtime
 

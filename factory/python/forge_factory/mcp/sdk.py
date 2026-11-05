@@ -228,9 +228,14 @@ def run_argv(argv: list[str], cwd: Path, timeout_s: int, allow: set[str], env_ex
         raise ToolDenied("EXECUTABLE_NOT_ALLOWED", argv[0][:60])
     env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
            "HOME": str(cwd), "TZ": "UTC", "SOURCE_DATE_EPOCH": "0", **(env_extra or {})}
+    execution_argv = [exe, *argv[1:]]
+    if os.environ.get("FORGE_OWNER_DEVELOPMENT_RECORD") or os.environ.get("FORGE_OWNER_DEVELOPMENT_SHA256"):
+        from ..afo.owner_supervised_development import contained_argv
+
+        execution_argv = contained_argv(execution_argv, cwd=cwd, env=env)
     t0 = time.monotonic()
     try:
-        p = subprocess.run([exe, *argv[1:]], cwd=cwd, env=env, capture_output=True, timeout=timeout_s,
+        p = subprocess.run(execution_argv, cwd=cwd, env=env, capture_output=True, timeout=timeout_s,
                            preexec_fn=_limits(mem_mb, timeout_s + 5, fsize_mb), check=False, stdin=subprocess.DEVNULL)
         return ProcResult(argv, p.returncode, p.stdout, p.stderr, (time.monotonic() - t0) * 1000, False)
     except subprocess.TimeoutExpired as exc:

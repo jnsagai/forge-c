@@ -64,6 +64,12 @@ def _decide(action: str, request: dict, afo, cre, authz) -> Decision:
         return Decision(True, "OBSERVE_ALLOWED", action, m)
     if m == "OBSERVE_ONLY":
         return Decision(False, "OBSERVE_ONLY_NO_SIDE_EFFECTS", action, m)
+    from . import owner_supervised_development as development
+
+    if m == development.MODE:
+        allowed = development.permit(afo, action, request)
+        return Decision(allowed, "OWNER_SUPERVISED_DEVELOPMENT_UNACCEPTED" if allowed
+                        else "OWNER_DEVELOPMENT_SCOPE_REFUSED", action, m)
     a = authz.find(m, afo.sha256 or "", ref=afo.get("authorization_ref"), action=action, request=request)
     if not a.allow:
         return Decision(False, f"AFO_{a.code}", action, m)

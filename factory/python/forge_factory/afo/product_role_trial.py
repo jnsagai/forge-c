@@ -107,6 +107,11 @@ def authorized(ref, job, eff, *, store=None, proposed_envelope=None):
                 or identity["context_tokens"] > context_ceiling
             ):
                 raise Refused("PRODUCT_ROLE_TRIAL_CONFIGURATION_CHANGED")
+    from . import owner_supervised_development as development
+
+    if eff.mode == development.MODE:
+        development.trial_authorized(ref, job, eff, request)
+        return trial
     authref = trial.get("authorization_ref")
     grant = authz.find(eff.mode, eff.sha256 or "", ref=authref, action="recover_workorder", request=request)
     if not grant.allow:

@@ -421,7 +421,8 @@ def serve_swaps(dot: str, structured: dict, nodes: dict | None = None) -> str:
         if os.environ.get("FORGE_LINE_STACK_PAYLOAD") or os.environ.get("FORGE_LINE_STACK_PAYLOAD_SHA256"):
             for key in ("FORGE_LINE_STACK_PAYLOAD", "FORGE_LINE_STACK_PAYLOAD_SHA256", "FORGE_OPERATIONS_PROFILE",
                         "FORGE_OPERATIONS_INTENT", "FORGE_DURABLE_AUTONOMY", "FORGE_AFO_QUEUE_SCOPE",
-                        "FORGE_AFO_POLICY", "FORGE_AFO_AUTH_DIR", "FORGE_AFO_ALLOWED_SIGNERS", "FORGE_DURABLE_NATIVE_HEADER",
+                        "FORGE_OWNER_DEVELOPMENT_RECORD", "FORGE_OWNER_DEVELOPMENT_SHA256",
+            "FORGE_AFO_POLICY", "FORGE_AFO_AUTH_DIR", "FORGE_AFO_ALLOWED_SIGNERS", "FORGE_DURABLE_NATIVE_HEADER",
                         "FORGE_LINE_STACK_ROOT", "FORGE_LINE_GPU_LOCK", "FORGE_LINE_FABRO_PORT", "FORGE_LINE_LAUNCH_DIR"):
                 if key in os.environ:
                     line_context += f" {key}={shlex.quote(os.environ[key])}"

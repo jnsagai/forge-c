@@ -1020,7 +1020,9 @@ class Placer:
     def __init__(self, line, *, line_id: str = "local", dry_run: bool = False, campaigns_dir: Path | None = None,
                  policy_path: Path | None = None, auth_base: Path | None = None, allowed_signers: Path | None = None,
                  unit: str = "manual", clock=time.time, require_approval: bool = True, capa_of: dict | None = None,
-                 cre_db: Path | None = None, recovery_config: Path | None = None):
+                 cre_db: Path | None = None, recovery_config: Path | None = None,
+                 owner_supervised_development: bool = False):
+        self.owner_supervised_development = owner_supervised_development
         self.line, self.line_id, self.dry_run = line, line_id, dry_run
         self.cre_db = cre_db
         self.recovery_config = recovery_config
@@ -1036,7 +1038,12 @@ class Placer:
     def cycle(self, now: float | None = None) -> dict:
         now = now or self.clock()
         policy = load_policy(self.policy_path)
-        grant = verify_grant(policy, now=now, base=self.auth_base, allowed_signers=self.allowed_signers)
+        if self.owner_supervised_development:
+            from .owner_supervised_development import DevelopmentGrant
+
+            grant = DevelopmentGrant(policy)
+        else:
+            grant = verify_grant(policy, now=now, base=self.auth_base, allowed_signers=self.allowed_signers)
         cdir = self.campaigns_dir or (Path(policy.get("campaigns_dir")) if policy.get("campaigns_dir") and
                                       Path(policy.get("campaigns_dir")).is_absolute() else
                                       REPO_ROOT / (policy.get("campaigns_dir") or "config/factory/campaigns"))
@@ -1055,14 +1062,15 @@ class Placer:
         plans = Planner(campaigns, recs, self.line, policy, now, durable_control=self.durable_control).run()
         locked = (grant.allow or self.durable_control is not None) and not self.dry_run and not self._take_act_lock()
         acting = grant.allow and not self.dry_run and not locked
-        mode = "ACTING" if acting else ("DRY_RUN" if self.dry_run else "OBSERVING")
+        mode = (("OWNER_SUPERVISED_DEVELOPMENT" if self.owner_supervised_development else "ACTING")
+                if acting else ("DRY_RUN" if self.dry_run else "OBSERVING"))
         actions: list[dict] = []
         free = self.line.free_bytes()
         min_gb = float(policy.get("disk.min_free_gb", FLOOR["min_free_gb"]))
         placing_ok = free >= min_gb * GB
         gpu = self._gpu(plans)
         esc = Escalator(self.line, str(policy.get("escalation.github_repo") or "jnsagai/forge-c"),
-                        dry_run=not acting, now=now)
+                        dry_run=not acting or self.owner_supervised_development, now=now)
         if acting:
             actions += self._reconcile(plans, policy, grant, campaigns, now)
         if self.durable_control is not None:
@@ -1190,6 +1198,10 @@ class Placer:
 
     def _execute(self, P: Plan, policy: LinePolicy, grant: Grant, campaigns, now: float, *, execute: bool) -> dict:
         o = P.order
+        if self.owner_supervised_development:
+            from .owner_supervised_development import validate_order
+
+            validate_order(o)
         act = {"action": P.action, "kind": o["kind"], "lineage": P.lineage.key, "wo": o["wo"], "phase": o["phase"],
                "revision": o["revision"], "resume_from": o["resume_from"], "provided_from": o["provided_from"],
                "resume_upto": o["resume_upto"]}

@@ -113,8 +113,13 @@ def bind_inputs(spec, envelope, *, campaign_path: Path, policy_path: Path | None
     _require(spec.get("run_model") == lin.run_model, "LINE_MODEL_MISMATCH")
     policy = orders.load_policy(policy_path)
     _require(policy.get("line") == "local", "LINE_POLICY_SCOPE_MISMATCH")
-    grant = orders.verify_grant(policy, now=time.time() if now is None else now, base=auth_base,
-                                allowed_signers=allowed_signers)
+    from . import owner_supervised_development as development
+
+    if str(spec.get("authorization_id", "")).startswith("owner-development-"):
+        grant = development.DevelopmentGrant(policy)
+    else:
+        grant = orders.verify_grant(policy, now=time.time() if now is None else now, base=auth_base,
+                                    allowed_signers=allowed_signers)
     _require(grant.allow, f"LINE_AUTH_REFUSED:{grant.code}")
     _require(grant.authorization_id == spec.get("authorization_id") == envelope.get("authorization_ref"),
              "LINE_AUTH_BINDING_MISMATCH")
