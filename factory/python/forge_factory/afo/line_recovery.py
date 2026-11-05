@@ -46,12 +46,18 @@ def _revision(root: Path, revision: str) -> str:
 
 def bind_order(store, order_id: str, attempt_id: str, *, campaign_path: Path,
                policy_path: Path | None = None, auth_base: Path | None = None, allowed_signers: Path | None = None,
-               now: float | None = None) -> dict:
-    """Read-only M3 identity/grant binding, also usable before a fresh product workspace exists."""
+               now: float | None = None, prospective_attempt_seq: int | None = None) -> dict:
+    """Read-only M3 binding; prospective checks never admit/charge/reserve an attempt."""
     row = store.order(order_id)
     _require(row is not None, "LINE_QUEUE_ORDER_ABSENT")
-    attempts = [a for a in store.attempts(order_id) if a["attempt_id"] == attempt_id]
-    _require(len(attempts) == 1, "LINE_QUEUE_ATTEMPT_MISMATCH")
+    history = store.attempts(order_id)
+    if prospective_attempt_seq is None:
+        _require(len([a for a in history if a["attempt_id"] == attempt_id]) == 1, "LINE_QUEUE_ATTEMPT_MISMATCH")
+    else:
+        _require(type(prospective_attempt_seq) is int and prospective_attempt_seq > 0
+                 and row["state"] == "QUEUED"
+                 and prospective_attempt_seq == max((a["seq"] for a in history), default=0) + 1
+                 and attempt_id == f"{order_id}-a{prospective_attempt_seq}", "LINE_PROSPECTIVE_ATTEMPT_MISMATCH")
     try:
         envelope = json.loads(row["envelope"])
     except (TypeError, ValueError):
@@ -65,6 +71,20 @@ def bind_order(store, order_id: str, attempt_id: str, *, campaign_path: Path,
     spec_path = root / "supervisor/line-orders" / f"{wo}.json"
     _require(spec_path.resolve().is_relative_to(root / "supervisor/line-orders"), "LINE_SPEC_PATH_ESCAPE")
     spec = _read(spec_path, "LINE_SPEC_ABSENT_OR_INVALID")
+    _require(row["manifest_sha256"] == envelope.get("manifest_sha256")
+             and row["input_manifest_ref"] == envelope.get("input_manifest_ref"), "LINE_CAMPAIGN_BINDING_MISMATCH")
+    data = bind_inputs(spec, envelope, campaign_path=campaign_path, policy_path=policy_path,
+                       auth_base=auth_base, allowed_signers=allowed_signers, now=now)
+    return {"row": row, **data,
+            **({"status": "PREVIEW_ONLY_NO_ADMISSION", "dispatch_authorized": False, "prospective_only": True}
+               if prospective_attempt_seq is not None else {})}
+
+
+def bind_inputs(spec, envelope, *, campaign_path: Path, policy_path: Path | None = None,
+                auth_base: Path | None = None, allowed_signers: Path | None = None, now: float | None = None):
+    """Shared pure spec/envelope/campaign/grant intersection, NOT observed intake or admission."""
+    wo = envelope.get("request_id")
+    _require(isinstance(wo, str) and campaign.RX["wo"].fullmatch(wo), "LINE_ORDER_NAME_INVALID")
     digest = orders._digest(spec)
     _require(spec.get("schema") == orders.ORDER_SCHEMA and spec.get("wo") == wo
              and spec.get("digest") == digest == envelope.get("payload_digest"), "LINE_SPEC_DIGEST_MISMATCH")
@@ -74,8 +94,7 @@ def bind_order(store, order_id: str, attempt_id: str, *, campaign_path: Path,
         raise BindingRefused("LINE_CAMPAIGN_UNAPPROVED_OR_INVALID") from None
     _require(camp.line == "local" and envelope.get("tenant_scope") == "line-local", "LINE_SCOPE_MISMATCH")
     _require(camp.sha256 == spec.get("campaign_sha256") == envelope.get("manifest_sha256")
-             == row["manifest_sha256"] and camp.rel == spec.get("campaign_file")
-             == envelope.get("input_manifest_ref") == row["input_manifest_ref"]
+             and camp.rel == spec.get("campaign_file") == envelope.get("input_manifest_ref")
              and camp.commit == spec.get("campaign_commit")
              and envelope.get("approved_by") == f"campaign-commit:{camp.commit}", "LINE_CAMPAIGN_BINDING_MISMATCH")
     candidates = [lin for lin in camp.lineages if lin.key == spec.get("lineage")]
@@ -101,8 +120,7 @@ def bind_order(store, order_id: str, attempt_id: str, *, campaign_path: Path,
              "LINE_AUTH_BINDING_MISMATCH")
     permission = grant.permit("recover_workorder", {"order_id": wo, "driver_class": lin.driver_class, "model": lin.profile})
     _require(permission.allow, f"LINE_AUTH_RECOVERY_REFUSED:{permission.code}")
-    return {"row": row, "spec": spec, "campaign": camp, "lineage": lin, "grant": grant,
-            "order_digest": digest}
+    return {"spec": spec, "campaign": camp, "lineage": lin, "grant": grant, "order_digest": digest}
 
 
 def bind(store, order_id: str, attempt_id: str, *, workspace: Path, campaign_path: Path,

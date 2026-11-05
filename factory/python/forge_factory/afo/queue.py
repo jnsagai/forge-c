@@ -144,6 +144,23 @@ def order_id_for(tenant: str, request_id: str) -> str:
     return "afo-" + hashlib.sha256(f"{tenant}|{request_id}".encode()).hexdigest()[:16]
 
 
+def validate_intake(env: dict, *, repo: Path, approve=None) -> str:
+    """Validate the normal intake material without writing queue state."""
+    errs = contracts.errors("work-order", env)
+    if errs:
+        raise QueueError("INTAKE_SCHEMA", errs[0])
+    mpath = (repo / env["input_manifest_ref"]).resolve()
+    if repo.resolve() not in mpath.parents or not mpath.is_file():
+        raise QueueError("INTAKE_MANIFEST_MISSING", env["input_manifest_ref"])
+    if hashlib.sha256(mpath.read_bytes()).hexdigest() != env["manifest_sha256"]:
+        raise QueueError("INTAKE_MANIFEST_HASH_MISMATCH", env["input_manifest_ref"])
+    if approve is not None:
+        ok, code = approve(env)
+        if not ok:
+            raise QueueError("INTAKE_NOT_APPROVED", code)
+    return order_id_for(env["tenant_scope"], env["request_id"])
+
+
 class Store:
     def __init__(self, path: Path | None = None, producer: str = "afo-conductor", *, must_exist: bool | None = None):
         import os
@@ -346,19 +363,7 @@ class Store:
     # -- intake (T017, T022) -------------------------------------------------------------------------------------
     def submit(self, env: dict, *, repo: Path, max_queued: int, approve=None) -> tuple[str, bool]:
         """Returns (order_id, created). Raises QueueError(REJECTED_INTAKE codes / CONFLICT)."""
-        errs = contracts.errors("work-order", env)
-        if errs:
-            raise QueueError("INTAKE_SCHEMA", errs[0])
-        mpath = (repo / env["input_manifest_ref"]).resolve()
-        if repo.resolve() not in mpath.parents or not mpath.is_file():
-            raise QueueError("INTAKE_MANIFEST_MISSING", env["input_manifest_ref"])
-        if hashlib.sha256(mpath.read_bytes()).hexdigest() != env["manifest_sha256"]:
-            raise QueueError("INTAKE_MANIFEST_HASH_MISMATCH", env["input_manifest_ref"])
-        if approve is not None:
-            ok, code = approve(env)
-            if not ok:
-                raise QueueError("INTAKE_NOT_APPROVED", code)
-        oid = order_id_for(env["tenant_scope"], env["request_id"])
+        oid = validate_intake(env, repo=repo, approve=approve)
         with self.tx() as c:
             row = c.execute("SELECT manifest_sha256 FROM afo_work_orders WHERE order_id=?", (oid,)).fetchone()
             if row is not None:

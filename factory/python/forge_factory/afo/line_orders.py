@@ -730,16 +730,11 @@ class Planner:
         L = self.plans[P.lineage.key].lineage
         n = max([a.n for a in self.recs.phase_attempts(L, phase)] + [0]) + 1
         ok, via = self._quality_ok(L)
-        order = {"schema": ORDER_SCHEMA, "wo": wo or L.wo(phase, n), "phase": phase, "kind": kind,
-                "lineage": L.key, "lineage_sha": L.sha256, "campaign_id": L.campaign_id, "example": L.example,
-                "driver_class": L.driver_class, "revision": L.factory_revision, "profile": L.profile,
-                "run_model": L.run_model, "purpose": L.purpose, "resume_from": resume_from,
-                "provided_from": P.provided_from, "resume_upto": resume_upto, "stop_after": phase,
-                "quality": L.quality, "quality_via": (via or None) if ok else None}
-        if self.durable_control is not None:
-            order["durable_control"] = self.durable_control
-            if P.prev and (P.prev.spec or {}).get("durable_recovery"):
-                order["durable_recovery"] = P.prev.spec["durable_recovery"]
+        order = phase_order(L, phase, kind, wo=wo or L.wo(phase, n), resume_from=resume_from,
+                            provided_from=P.provided_from, resume_upto=resume_upto,
+                            quality_via=(via or None) if ok else None, durable_control=self.durable_control)
+        if self.durable_control is not None and P.prev and (P.prev.spec or {}).get("durable_recovery"):
+            order["durable_recovery"] = P.prev.spec["durable_recovery"]
         return order
 
     def decide(self, P: Plan, campaign: LCMP.Campaign) -> None:
@@ -873,22 +868,57 @@ class Planner:
         P.reason = order["kind"]
 
     def _quality_ok(self, L: LCMP.Lineage) -> tuple[bool, str]:
-        """Decision 15: the order carries the campaign's quality block, or the revision already gives exactly it;
-        never an order whose effective quality differs from the campaign's."""
-        if L.quality is None:
-            return True, ""
-        from ..quality import defaults
+        return quality_delivery(L, self.line)
 
-        full = self.line.resolve(L.factory_revision)
-        readable, spec_q = self.line.spec_quality(full, L.example)
-        if not readable:
-            return False, "EXAMPLE_NOT_AT_REVISION"
-        effective = spec_q if spec_q is not None else defaults(L.purpose)
-        if effective == L.quality:
-            return True, "REVISION"
-        if self.line.quality_supported(full):
-            return True, "FLAG"
-        return False, "QUALITY_NOT_DELIVERABLE_AT_REVISION"
+
+def quality_delivery(L, line):
+    """The existing quality-source rule shared with read-only intake previews."""
+    if L.quality is None:
+        return True, ""
+    from ..quality import defaults
+
+    full = line.resolve(L.factory_revision)
+    readable, spec_q = line.spec_quality(full, L.example)
+    if not readable:
+        return False, "EXAMPLE_NOT_AT_REVISION"
+    effective = spec_q if spec_q is not None else defaults(L.purpose)
+    if effective == L.quality:
+        return True, "REVISION"
+    if line.quality_supported(full):
+        return True, "FLAG"
+    return False, "QUALITY_NOT_DELIVERABLE_AT_REVISION"
+
+
+def phase_order(L, phase, kind, *, wo, resume_from, provided_from, resume_upto=None,
+                quality_via=None, durable_control=None):
+    """Canonical launch identity; producing this dictionary does not place an order."""
+    order = {"schema": ORDER_SCHEMA, "wo": wo, "phase": phase, "kind": kind,
+             "lineage": L.key, "lineage_sha": L.sha256, "campaign_id": L.campaign_id, "example": L.example,
+             "driver_class": L.driver_class, "revision": L.factory_revision, "profile": L.profile,
+             "run_model": L.run_model, "purpose": L.purpose, "resume_from": resume_from,
+             "provided_from": provided_from, "resume_upto": resume_upto, "stop_after": phase,
+             "quality": L.quality, "quality_via": quality_via}
+    if durable_control is not None:
+        order["durable_control"] = durable_control
+    return order
+
+
+def placed_spec(order, campaign, grant, *, placed_at=None):
+    """Stable campaign/grant binding; an omitted timestamp is explicitly only a proposal."""
+    return {**order, **({"placed_at": placed_at} if placed_at is not None else {}),
+            "campaign_sha256": campaign.sha256, "campaign_commit": campaign.commit,
+            "campaign_file": campaign.rel, "authorization_id": grant.authorization_id}
+
+
+def envelope_for(order, lineage, campaign, grant, now, payload_digest, *, line_id):
+    """Existing normal intake envelope. submitted_utc here is proposed until Store.submit persists it."""
+    return {"schema_version": "1.0", "request_id": order["wo"], "tenant_scope": f"line-{line_id}",
+            "manifest_sha256": campaign.sha256, "input_manifest_ref": campaign.rel,
+            "approved_by": f"campaign-commit:{(campaign.commit or 'none')[:40]}",
+            "authorization_ref": grant.authorization_id or "-", "driver_class": lineage.driver_class,
+            "target": lineage.example, "safety_scope": lineage.purpose, "model_profile": lineage.profile,
+            "submitted_utc": _utc(now).replace("Z", "+00:00"), "priority": "NORMAL",
+            "git_revision": order.get("revision") or "unknown", "payload_digest": payload_digest}
 
 
 ORDER_KEYS = ("schema", "wo", "phase", "kind", "lineage", "lineage_sha", "campaign_id", "example", "driver_class",
@@ -1193,8 +1223,7 @@ class Placer:
         spec_path = supervisor_dir() / "line-orders" / f"{o['wo']}.json"
         spec = _load(spec_path) if P.action != "PLACE" else None
         if spec is None:
-            spec = {**o, "placed_at": _utc(now), "campaign_sha256": camp.sha256, "campaign_commit": camp.commit,
-                    "campaign_file": camp.rel, "authorization_id": grant.authorization_id}
+            spec = placed_spec(o, camp, grant, placed_at=_utc(now))
         if o["kind"] in ("RETRY_INFRA", "RELAUNCH_INFRA"):
             spec["infra_recoveries"] = (spec.get("infra_recoveries") or []) + [now]
         if o.get("quality") and o.get("quality_via") == "FLAG":
@@ -1224,13 +1253,7 @@ class Placer:
         return {**act, "outcome": "LAUNCHING", "attempt_id": aid, "pid": started.get("pid")}
 
     def _env(self, o: dict, P_lineage: LCMP.Lineage, camp: LCMP.Campaign, grant: Grant, now: float, digest: str) -> dict:
-        return {"schema_version": "1.0", "request_id": o["wo"], "tenant_scope": f"line-{self.line_id}",
-                "manifest_sha256": camp.sha256, "input_manifest_ref": camp.rel,
-                "approved_by": f"campaign-commit:{(camp.commit or 'none')[:40]}",
-                "authorization_ref": grant.authorization_id or "-", "driver_class": P_lineage.driver_class,
-                "target": P_lineage.example, "safety_scope": P_lineage.purpose, "model_profile": P_lineage.profile,
-                "submitted_utc": _utc(now).replace("Z", "+00:00"), "priority": "NORMAL",
-                "git_revision": o.get("revision") or "unknown", "payload_digest": digest}
+        return envelope_for(o, P_lineage, camp, grant, now, digest, line_id=self.line_id)
 
     def _admit(self, store, env: dict, camp: LCMP.Campaign, policy: LinePolicy, grant: Grant, why: str | None,
                *, recovery_plan_id=None) -> tuple[str, str]:

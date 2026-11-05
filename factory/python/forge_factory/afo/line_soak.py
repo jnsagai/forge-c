@@ -46,7 +46,8 @@ def validate_runtime(value, plan):
     if not isinstance(profile_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9.-]{0,120}", profile_id):
         raise Refused("LINE_SOAK_PROFILE_INVALID")
     profile = load_profile(profile_id)
-    if profile.get("local_only") is not True or profile.get("provider") != "ollama" or profile["_sha256"] != value["profile_sha256"]:
+    if (profile.get("local_only") is not True or profile.get("provider") != "ollama"
+            or profile["_sha256"] != value["profile_sha256"]):
         raise Refused("LINE_SOAK_LOCAL_PROFILE_CHANGED")
     if (type(value["fabro_host_port"]) is not int or not 1 <= value["fabro_host_port"] <= 65535
             or type(value["timeout_seconds"]) is not int or not 1 <= value["timeout_seconds"] <= 30):
@@ -71,9 +72,12 @@ def validate_runtime(value, plan):
 
 
 def observer_plan(*, data_root, launch_dir, intent, evidence_root, mount_uuid, profile,
-                  fabro_host_port=32397, interval_seconds=30, max_samples=50000, minimum_free_bytes=64 * 1024 * 1024):
+                  fabro_host_port=32397, interval_seconds=30, max_samples=50000, minimum_free_bytes=64 * 1024 * 1024,
+                  prerequisites_ref=None):
     """Build a reviewable input for qualification.freeze; no filesystem writes or service actions occur."""
-    from . import fault_observer as O, operational_collection as C, operational_facts as F
+    from . import fault_observer as O
+    from . import operational_collection as C
+    from . import operational_facts as F
     from . import operational_work, qualification_capture, queue
 
     selected = load_profile(profile)
@@ -96,6 +100,11 @@ def observer_plan(*, data_root, launch_dir, intent, evidence_root, mount_uuid, p
                              "timeout_seconds": 15, **runtime_sources()},
             "collection": {**C.source_hashes(), "interval_seconds": interval_seconds, "max_samples": max_samples,
                            "minimum_free_bytes": minimum_free_bytes}}
+    if prerequisites_ref is not None:
+        from .line_soak_prerequisites import reference
+
+        reference(prerequisites_ref)
+        plan["prerequisites_ref"] = prerequisites_ref
     validate_runtime(plan["line_runtime"], plan)
     C.configuration(plan["collection"])
     return plan
@@ -131,20 +140,21 @@ def health(frozen, bound):
 
 
 def preflight(manifest, plan_ref, *, live=False, authorization_ref=None):
-    from . import fault_observer as O, qualification as Q
+    from . import fault_observer as O
+    from . import qualification as Q
 
     plan = O.plan(manifest, plan_ref)
     if "line_runtime" not in plan:
         raise Refused("LINE_SOAK_FROZEN_RUNTIME_REQUIRED")
     validate_runtime(plan["line_runtime"], plan)
     result = Q.preflight(manifest, live=live, authorization_ref=authorization_ref)
+    from .line_soak_prerequisites import check
+
+    replay = check(manifest, plan)
     result.update(line="local", live_campaign="NOT_RUN", service_stop_at_end=False,
-                  prerequisite_status="SEPARATE_M5_M8_QUALIFICATION_EVIDENCE_REQUIRED")
-    if live:
-        # Preparation cannot attest future role/recovery qualification. Keep live
-        # admission closed until those authored evidence validators are integrated;
-        # even a signed campaign grant alone cannot turn this adapter into proof.
-        result.setdefault("blockers", []).append("LINE_AUTONOMY_PREREQUISITES_NOT_QUALIFIED")
+                  prerequisite_status=replay["status"], prerequisites=replay)
+    if replay["blockers"]:
+        result.setdefault("blockers", []).extend(replay["blockers"])
         result["status"] = "BLOCKED"
     return result
 
@@ -181,6 +191,8 @@ def main(argv=None):
     prepare.add_argument("--fabro-host-port", type=int, default=32397)
     prepare.add_argument("--interval-seconds", type=int, default=30)
     prepare.add_argument("--max-samples", type=int, default=50000)
+    prepare.add_argument("--prerequisites", type=Path,
+                         help="typed evidence index; freeze it and its policy in manifest.inputs too")
     prepare.add_argument("--out", type=Path, required=True)
     check = commands.add_parser("preflight", help="validate the frozen plan/source without granting live authority")
     check.add_argument("--manifest", type=Path, required=True)
@@ -190,6 +202,9 @@ def main(argv=None):
         values = vars(args).copy()
         destination = values.pop("out")
         values.pop("command")
+        prerequisites = values.pop("prerequisites")
+        if prerequisites is not None:
+            values["prerequisites_ref"] = reference(prerequisites.absolute())
         plan = observer_plan(**values)
         immutable_json(destination, plan)
         out = {"status": "PREPARED_NOT_RUN", "observer_plan": reference(destination.resolve()),

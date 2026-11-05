@@ -14,6 +14,7 @@ import math
 import socket
 import subprocess
 import time
+from contextlib import nullcontext
 from pathlib import Path
 
 from . import qualification, soak
@@ -28,8 +29,13 @@ def start(manifest, soak_id, authorization_ref, *, observer_plan_ref=None, host_
         return result
     if not manifest["stage"].startswith("operation-"):
         raise Refused("OPERATIONAL_STAGE_REQUIRED")
+    from .line_soak_prerequisites import line_plan_reference
+
+    observer_plan_ref = line_plan_reference(manifest, observer_plan_ref)
     hours = int(manifest["stage"].split("-")[1])
     interval = 30
+    line_plan = None
+    replay = None
     if host_plan_ref is not None and observer_plan_ref is None:
         raise Refused("OPERATIONAL_COLLECTION_OBSERVER_PLAN_REQUIRED")
     if observer_plan_ref is not None:
@@ -37,15 +43,33 @@ def start(manifest, soak_id, authorization_ref, *, observer_plan_ref=None, host_
 
         collector = Collector(manifest, soak_id, observer_plan_ref, host_plan_ref)
         if "line_runtime" in collector.frozen:
+            line_plan = collector.frozen
             from .line_soak import preflight
 
             result = preflight(manifest, observer_plan_ref, live=True, authorization_ref=authorization_ref)
             if result["blockers"]:
                 return result
+            replay = result["prerequisites"]
         interval = collector.config["interval_seconds"]
-    immutable_json(soak.path(soak_id).with_suffix(".manifest.json"), manifest)
-    head = soak.start(soak_id, hours, interval, authorization_ref)
-    return {"status": "STARTED_OBSERVATION_ONLY", "soak_id": soak_id, "head": head, "service_stop_at_end": False}
+    def begin():
+        immutable_json(soak.path(soak_id).with_suffix(".manifest.json"), manifest)
+        if line_plan is not None:
+            from .line_soak_prerequisites import admission_boundary
+
+            current = admission_boundary(manifest, line_plan, replay)
+            if current["blockers"]:
+                return current
+        head = soak.start(soak_id, hours, interval, authorization_ref)
+        return {"status": "STARTED_OBSERVATION_ONLY", "soak_id": soak_id, "head": head, "service_stop_at_end": False}
+
+    if line_plan is not None:
+        from .operations import Intent
+
+        with Intent(line_plan["intent"]).lock():
+            # Heavy proof replay ran outside this lock. begin() fences the actual
+            # append using its internal snapshot and current authority/intent.
+            return begin()
+    return begin()
 
 
 def sample(soak_id, *, probes=None):
@@ -65,34 +89,69 @@ def collect(manifest, soak_id, observer_plan_ref, *, host_plan_ref=None, max_sam
     return {"status": "COLLECTION_INVOCATION_ENDED", "samples": count, "service_stop_at_end": False}
 
 
-def fault(manifest, case, authorization_ref, destination):
+def fault(manifest, case, authorization_ref, destination, *, observer_plan_ref=None):
     if case not in SIGNALS:
         raise Refused("EXTERNAL_FAULT_FIXTURE_REQUIRED", case)
     result = qualification.preflight(manifest, live=True, authorization_ref=authorization_ref)
     if result["blockers"]:
         return result
     from . import authz
+    from .line_soak_prerequisites import fault_target
     from .operations import UNIT, Intent
     from .policy import load
 
-    eff = load()
-    action = "qualification-fault:" + case + ":" + UNIT
-    allowed = authz.find(
-        eff.mode, eff.sha256 or "", ref=authorization_ref, action="operate_service", request={"service_action": action}
-    )
-    if not allowed.allow:
-        raise Refused(allowed.code)
-    if Intent().read()["mode"] != "RUNNING":
-        raise Refused("FAULT_OPERATIONS_INTENT_NOT_RUNNING")
-    # No shell, no process-name matching, no other project's unit. This is an explicitly selected live fault.
-    command = ["systemctl", "--user", "kill", "--kill-who=main", "--signal=" + SIGNALS[case], UNIT]
-    at = time.time()
-    result = subprocess.run(command, capture_output=True, text=True, timeout=10)
+    target = fault_target(manifest, observer_plan_ref)
+    replay = None
+    if target:
+        from .line_soak_prerequisites import check
+        from .line_soak_snapshot import CURRENT
+
+        replay = check(manifest, target, purpose="fault")
+        if replay["blockers"]:
+            return replay
+        token = CURRENT.set(replay)
+        try:
+            from .line_soak_prerequisites import line_plan_reference, reference
+
+            reference(line_plan_reference(manifest, observer_plan_ref), decode=False)
+            replay.authority(authorization_ref)
+            eff = load()
+            action = "qualification-fault:" + case + ":" + UNIT
+            allowed = authz.find(eff.mode, eff.sha256 or "", ref=authorization_ref, action="operate_service",
+                                 request={"service_action": action})
+            if not allowed.allow:
+                raise Refused(allowed.code)
+        finally:
+            CURRENT.reset(token)
+    intent = Intent(target["intent"]) if target else Intent()
+    # The fixed local recipe shares the existing operator-intent serialization.
+    # Generic campaigns retain their prior recipe and default unit.
+    with intent.lock() if target else nullcontext():
+        if target:
+            from .line_soak_prerequisites import admission_boundary
+
+            boundary = admission_boundary(manifest, target, replay, fault=True)
+            if boundary["blockers"]:
+                return boundary
+        else:
+            eff = load()
+            action = "qualification-fault:" + case + ":" + UNIT
+            allowed = authz.find(eff.mode, eff.sha256 or "", ref=authorization_ref, action="operate_service",
+                                 request={"service_action": action})
+            if not allowed.allow:
+                raise Refused(allowed.code)
+        current = intent.read()
+        if current["mode"] != "RUNNING":
+            raise Refused("FAULT_OPERATIONS_INTENT_NOT_RUNNING")
+        command = ["systemctl", "--user", "kill", "--kill-who=main", "--signal=" + SIGNALS[case], UNIT]
+        at = time.time()
+        result = subprocess.run(command, capture_output=True, text=True, timeout=10)
     record = {
         "schema": "forge-c/operational-fault/1",
         "manifest_sha256": digest(manifest),
         "fault": case,
         "unit": UNIT,
+        **({"operations_epoch": current["epoch"]} if target else {}),
         "command": command,
         "at": at,
         "returncode": result.returncode,
@@ -340,7 +399,7 @@ def main(argv=None):
     elif a.command == "fault":
         if not a.out or not a.fault:
             ap.error("--fault and --out required")
-        out = fault(manifest, a.fault, a.authorization_ref, a.out)
+        out = fault(manifest, a.fault, a.authorization_ref, a.out, observer_plan_ref=refs["observer_plan_ref"])
     else:
         evidence = json.loads(a.evidence.read_text()) if a.evidence else {}
         out = report(manifest, a.soak_id, **{**evidence, **{k: v for k, v in refs.items() if v is not None}})
