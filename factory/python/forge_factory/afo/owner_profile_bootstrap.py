@@ -324,13 +324,14 @@ def _coordinate(
                     return token
                 consumed_reconciliation = None
                 for row in c.execute("SELECT decision_id FROM afo_independent_decisions WHERE kind=?", (INTENT_KIND,)):
-                    old = c.execute(
-                        "SELECT record FROM afo_independent_decisions WHERE decision_id=? AND kind=?",
-                        (row[0] + "-result", RESULT_KIND),
-                    ).fetchone()
-                    require(old is not None, "PRIOR_ATTEMPT_UNRESOLVED")
-                    if json.loads(old[0]).get("status") != "READY":
-                        from .owner_bootstrap_reconciliation import consume, historical_acknowledged
+                    from .owner_bootstrap_reconciliation import _row, consume, historical_acknowledged
+
+                    old_intent = _row(c, row[0], INTENT_KIND)
+                    require(c.execute("SELECT 1 FROM afo_independent_decisions WHERE decision_id=? AND kind=?",
+                                      (row[0] + "-result", RESULT_KIND)).fetchone() is not None, "PRIOR_ATTEMPT_UNRESOLVED")
+                    old = _row(c, row[0] + "-result", RESULT_KIND)
+                    require(old.get("record_sha256") == old_intent["record_sha256"], "PRIOR_ATTEMPT_UNRESOLVED")
+                    if old.get("status") != "READY":
 
                         if historical_acknowledged(c, store, record, row[0]):
                             continue

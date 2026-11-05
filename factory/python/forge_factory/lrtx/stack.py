@@ -374,18 +374,33 @@ def _wait(url: str, timeout: float) -> bool:
 def _in_ns(holder: int, argv: list[str], env: dict, log: Path, cwd: Path, *, serving=None, pass_fds=()) -> subprocess.Popen:
     enter = _nsenter(holder)
     if serving is not None:
-        from . import provider_process as provider
         from ..afo.durable import Refused
+        from . import provider_process as provider
 
         provider.validate(serving)
         init = serving["init_pid"]
+        provider.require_live_instance(serving)
         actual = provider.identity(init)
-        if not actual or actual.get("state") == "Z" or any(actual.get(k) != v for k, v in serving["init"].items()):
+        if not actual or actual.get("state") == "Z" or any(
+            actual.get(k) != v for k, v in serving["init"].items() if k != "uid"
+        ):
             raise Refused("PROVIDER_ENTRY_INIT_CHANGED")
         target_user = os.readlink(f"/proc/{init}/ns/user")
         outer_user = os.readlink(f"/proc/{holder}/ns/user")
         outer_net = os.readlink(f"/proc/{holder}/ns/net")
         current_user = os.readlink("/proc/self/ns/user")
+        if actual["uid"] != serving["init"]["uid"]:
+            # The trusted outer Fabro caller sees host owner1000 as mapped0.
+            # Normalize only this exact captured holder USER and full kernel
+            # one-UID map. A foreign mapped user cannot choose a numeric UID.
+            mapping = [list(map(int, line.split())) for line in Path("/proc/self/uid_map").read_text().splitlines()]
+            if not (
+                current_user == outer_user
+                and os.getuid() == actual["uid"] == 0
+                and mapping == [[0, serving["init"]["uid"], 1]]
+                and serving["init_owner_view"]["observer_uid"] == serving["init"]["uid"]
+            ):
+                raise Refused("PROVIDER_ENTRY_OWNER_CHANGED")
         if target_user != serving["init_owner_view"]["user_namespace"] or os.readlink(f"/proc/{init}/ns/net") != outer_net:
             raise Refused("PROVIDER_ENTRY_NAMESPACE_CHANGED")
         # A development provider owns a child USER/MNT/PID namespace but
@@ -776,7 +791,9 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
             deadline = time.monotonic() + 3
             while True:
                 try:
-                    serving = provider.capture(r, profile=prof["id"], profile_sha256=prof["_sha256"], parent_pid=parent_pid)
+                    serving = provider.capture(
+                        r, profile=prof["id"], profile_sha256=prof["_sha256"], parent_pid=parent_pid, outer_pid=holder
+                    )
                     break
                 except Refused:
                     if time.monotonic() >= deadline:

@@ -77,7 +77,7 @@ def require_owner_view(pid: int, expected_uid: int, captured: dict) -> None:
         raise Refused("PROVIDER_OWNER_VIEW_UNPROVEN")
 
 
-def capture(root: Path, *, profile: str, profile_sha256: str, parent_pid: int) -> dict:
+def capture(root: Path, *, profile: str, profile_sha256: str, parent_pid: int, outer_pid: int | None = None) -> dict:
     """Discover the private namespace init directly below our pinned unshare process."""
     parent = identity(parent_pid)
     if not parent or parent.get("state") == "Z" or parent["uid"] != os.getuid():
@@ -106,7 +106,7 @@ def capture(root: Path, *, profile: str, profile_sha256: str, parent_pid: int) -
     ):
         raise Refused("PROVIDER_PARENT_CHANGED_DURING_CAPTURE")
     pid, init = candidates[0]
-    return {
+    result = {
         "schema": "forge-c/managed-provider-instance/1",
         "root": str(root.resolve()),
         "profile": profile,
@@ -119,6 +119,22 @@ def capture(root: Path, *, profile: str, profile_sha256: str, parent_pid: int) -
         "init": {k: v for k, v in init.items() if k != "state"},
         "captured_at": utc_now(),
     }
+    if outer_pid is not None:
+        outer = identity(outer_pid)
+        view = owner_view(outer_pid)
+        net = os.readlink(f"/proc/{outer_pid}/ns/net")
+        if (
+            not outer or outer.get("state") == "Z" or outer["uid"] != init["uid"]
+            or view["uid_map"] != [[0, outer["uid"], 1]]
+            or os.readlink(f"/proc/{pid}/ns/net") != net
+            or identity(outer_pid) != outer
+        ):
+            raise Refused("PROVIDER_OUTER_HOLDER_UNPROVEN")
+        result.update(schema="forge-c/managed-provider-instance/2", outer_holder=dict(
+            pid=outer_pid, identity={k: v for k, v in outer.items() if k != "state"},
+            owner_view=view, net_namespace=net,
+        ))
+    return result
 
 
 def validate(instance: dict) -> None:
@@ -143,7 +159,7 @@ def validate(instance: dict) -> None:
         ):
             raise Refused("MANAGED_PROVIDER_IDENTITY_INVALID")
     if (
-        instance.get("schema") != "forge-c/managed-provider-instance/1"
+        instance.get("schema") not in ("forge-c/managed-provider-instance/1", "forge-c/managed-provider-instance/2")
         or type(instance.get("init_pid")) is not int
         or instance["init_pid"] <= 1
         or type(instance.get("parent_pid")) is not int
@@ -167,6 +183,50 @@ def validate(instance: dict) -> None:
         or init.get("boot_id") != parent.get("boot_id")
     ):
         raise Refused("MANAGED_PROVIDER_IDENTITY_INVALID")
+    if instance["schema"] == "forge-c/managed-provider-instance/2":
+        outer = instance.get("outer_holder") or {}
+        view = outer.get("owner_view") or {}
+        rec = outer.get("identity") or {}
+        if (
+            type(outer.get("pid")) is not int or outer["pid"] <= 1
+            or rec.get("boot_id") != init["boot_id"] or rec.get("uid") != init["uid"]
+            or not isinstance(rec.get("start_ticks"), str) or not rec["start_ticks"].isdigit()
+            or not re.fullmatch(r"pid:\[\d+\]", str(rec.get("pid_namespace")))
+            or type(rec.get("namespace_pid")) is not int or rec["namespace_pid"] < 1
+            or not re.fullmatch(r"user:\[\d+\]", str(view.get("user_namespace")))
+            or view.get("observer_user_namespace") != instance["observer_user_namespace"]
+            or view.get("observer_uid") != init["uid"] or view.get("uid_map") != [[0, init["uid"], 1]]
+            or not re.fullmatch(r"net:\[\d+\]", str(outer.get("net_namespace")))
+        ):
+            raise Refused("PROVIDER_OUTER_HOLDER_BINDING_INVALID")
+
+
+def require_instance_owner_view(instance: dict) -> None:
+    """Version2 also pins the outer mapped native caller, never arbitrary UID0."""
+    validate(instance)
+    outer = instance.get("outer_holder") if instance["schema"] == "forge-c/managed-provider-instance/2" else None
+    current_user = os.readlink("/proc/self/ns/user")
+    if not outer or current_user != outer["owner_view"]["user_namespace"]:
+        require_owner_view(instance["init_pid"], instance["init"]["uid"], instance.get("init_owner_view"))
+        return
+    expected = outer["identity"]
+    actual = identity(outer["pid"])
+    init = identity(instance["init_pid"])
+    mapping = owner_view(os.getpid())["uid_map"]
+    if (
+        not actual or actual.get("state") == "Z" or not init or init.get("state") == "Z"
+        or any(actual.get(k) != v for k, v in expected.items() if k != "uid")
+        or os.getuid() != 0 or actual["uid"] != 0 or init["uid"] != 0
+        or mapping != outer["owner_view"]["uid_map"]
+        or mapping != [[0, expected["uid"], 1]]
+        or os.readlink(f"/proc/{outer['pid']}/ns/user") != current_user
+        or os.readlink(f"/proc/{outer['pid']}/ns/net") != outer["net_namespace"]
+        or os.readlink("/proc/self/ns/net") != outer["net_namespace"]
+        or os.readlink("/proc/self/ns/pid") != expected["pid_namespace"]
+        or os.readlink(f"/proc/{instance['init_pid']}/ns/user") != instance["init_owner_view"]["user_namespace"]
+        or os.readlink(f"/proc/{instance['init_pid']}/ns/net") != outer["net_namespace"]
+    ):
+        raise Refused("PROVIDER_OUTER_OWNER_VIEW_UNPROVEN")
 
 
 def quiet(instance: dict) -> dict | None:
@@ -239,7 +299,7 @@ def require_live_instance(instance: dict) -> None:
     """
     validate(instance)
     actual = identity(instance["init_pid"])
-    require_owner_view(instance["init_pid"], instance["init"]["uid"], instance.get("init_owner_view"))
+    require_instance_owner_view(instance)
     if (not actual or actual.get("state") == "Z"
             or any(actual.get(k) != instance["init"].get(k)
                    for k in ("boot_id", "start_ticks", "pid_namespace", "namespace_pid"))):

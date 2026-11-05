@@ -250,6 +250,97 @@ def test_consumed_receipt_and_following_intent_rollback_together(pending):
     assert b["effects"] == []
 
 
+@pytest.fixture
+def acknowledged(pending):
+    p = pending
+    token = reconcile(p)
+    B.bootstrap(p["boot"]["store"], p["boot"]["placer"], reconciliation_ref=token)
+    p["token"] = token
+    p["successor_id"] = "owner-profile-bootstrap-" + digest(D.current())
+    return p
+
+
+def test_historical_consumption_never_refreshes_cleanup_or_attests_old_guardian(acknowledged, monkeypatch):
+    from types import SimpleNamespace
+
+    p = acknowledged
+
+    def unexpected(*_, **__):
+        raise AssertionError("HISTORICAL_DATA_MUST_NOT_REISSUE_OR_REFRESH_AUTHORITY")
+
+    monkeypatch.setattr(R, "validate", unexpected)
+    monkeypatch.setattr(R, "time", SimpleNamespace(monotonic=unexpected, clock_gettime=unexpected))
+    with p["boot"]["store"].tx() as c:
+        assert R.historical_acknowledged(c, p["boot"]["store"], D.current(), p["old"]["intent_id"])
+
+
+def change_row(c, key, update):
+    from forge_factory.afo.durable import canonical
+
+    row = c.execute("SELECT record FROM afo_independent_decisions WHERE decision_id=?", (key,)).fetchone()
+    value = json.loads(row[0])
+    update(value)
+    c.execute("UPDATE afo_independent_decisions SET record=?,sha256=? WHERE decision_id=?",
+              (canonical(value).decode(), digest(value), key))
+
+
+@pytest.mark.parametrize("mutation", ["consumed", "successor", "old_result", "ack_issuer", "issuer_missing", "unconsumed_new_format"])
+def test_historical_tamper_missing_wrong_issuer_and_new_unconsumed_ack_refuse(acknowledged, mutation):
+    p = acknowledged
+    with p["boot"]["store"].tx() as c:
+        if mutation == "consumed":
+            change_row(c, p["successor_id"] + "-reconciliation-consumed", lambda v:v.update(successor_intent_sha256="0"*64))
+        elif mutation == "successor":
+            change_row(c, p["successor_id"], lambda v:v["request"].update(order_id="FOREIGN"))
+        elif mutation == "old_result":
+            change_row(c, p["old"]["intent_id"] + "-result", lambda v:v.update(record_sha256="0"*64))
+        elif mutation == "ack_issuer":
+            change_row(c, p["token"]["decision_id"], lambda v:v.update(reconciler_record_sha256="0"*64))
+        elif mutation == "issuer_missing":
+            c.execute("DELETE FROM afo_independent_decisions WHERE decision_id=?", ("owner-development-" + p["old"]["intent_id"].removeprefix("owner-profile-bootstrap-"),))
+        else:
+            c.execute("DELETE FROM afo_independent_decisions WHERE decision_id=?", (p["successor_id"] + "-reconciliation-consumed",))
+        with pytest.raises(Refused):
+            R.historical_acknowledged(c, p["boot"]["store"], D.current(), p["old"]["intent_id"])
+
+
+def test_unconsumed_future_acknowledgement_never_resolves_failure(pending):
+    p = pending
+    reconcile(p)
+    with p["boot"]["store"].tx() as c:
+        assert not R.historical_acknowledged(c, p["boot"]["store"], D.current(), p["old"]["intent_id"])
+    with pytest.raises(Refused, match="PRIOR_ATTEMPT_UNRESOLVED"):
+        B.bootstrap(p["boot"]["store"], p["boot"]["placer"])
+
+
+def test_legacy_source_format_requires_actual_three_immutable_git_blobs():
+    assert R._legacy_format(["887820300340dcc31a03f3dc46c31107e9aef9f3"])
+    assert not R._legacy_format(["0" * 40])
+    assert not R._legacy_format(["6eeac5962a45e40ba39414eafa5dd612bd669d56"])
+    assert not R._legacy_format(["887820300340dcc31a03f3dc46c31107e9aef9f3", "0" * 40])
+
+
+@pytest.mark.parametrize("approved", [True, False])
+def test_legacy_receipt_chain_uses_format_proof_without_reaging_evidence(acknowledged, monkeypatch, approved):
+    p = acknowledged
+    called = []
+    # ONLY the fake fixture source 'a'*40 is overlaid. The preceding test checks
+    # real Git objects; all canonical issuer/control/role/receipt checks stay real.
+    monkeypatch.setattr(R, "_legacy_format", lambda rev:called.append(rev) or approved)
+    with p["boot"]["store"].tx() as c:
+        c.execute("DELETE FROM afo_independent_decisions WHERE decision_id=?", (p["successor_id"] + "-reconciliation-consumed",))
+        def legacy(v):
+            v["schema"] = "forge-c/owner-profile-bootstrap-intent/1"
+            del v["reconciliation_ref"]
+        change_row(c, p["successor_id"], legacy)
+        if approved:
+            assert R.historical_acknowledged(c, p["boot"]["store"], D.current(), p["old"]["intent_id"])
+        else:
+            with pytest.raises(Refused, match="LEGACY_FORMAT_UNPROVEN"):
+                R.historical_acknowledged(c, p["boot"]["store"], D.current(), p["old"]["intent_id"])
+    assert called == [["a" * 40]]
+
+
 @pytest.mark.parametrize(
     "field,value",
     [

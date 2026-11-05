@@ -43,10 +43,14 @@ def _legacy_format(revisions):
         for name, expected in LEGACY_FORMAT.items():
             obj = revision + ":factory/python/forge_factory/afo/" + name
             try:
-                size = int(subprocess.check_output(["git", "-C", str(REPO_ROOT), "cat-file", "-s", obj], timeout=3, stderr=subprocess.DEVNULL))
+                size = int(subprocess.check_output(
+                    ["git", "-C", str(REPO_ROOT), "cat-file", "-s", obj], timeout=3, stderr=subprocess.DEVNULL
+                ))
                 if not 0 < size <= 128 * 1024:
                     return False
-                raw = subprocess.check_output(["git", "-C", str(REPO_ROOT), "cat-file", "blob", obj], timeout=3, stderr=subprocess.DEVNULL)
+                raw = subprocess.check_output(
+                    ["git", "-C", str(REPO_ROOT), "cat-file", "blob", obj], timeout=3, stderr=subprocess.DEVNULL
+                )
             except (OSError, ValueError, subprocess.SubprocessError):
                 return False
             if hashlib.sha256(raw).hexdigest() != expected:
@@ -88,6 +92,13 @@ def _chain(c, current, intent_id, ack):
     successor_id = "owner-profile-bootstrap-" + digest(reconciler)
     successor = _row(c, successor_id, INTENT_KIND)
     bindings = ack.get("bindings") or {}
+    def scoped_request(value):
+        request = value.get("request", {})
+        return request == dict(
+            order_id=request.get("order_id"), driver_class=current["driver_class"],
+            model=current["profile"], service_action="line_stack_restart",
+        ) and request.get("order_id") in current["order_ids"]
+
     require(
         intent_id == "owner-profile-bootstrap-" + digest(old)
         and intent_id != successor_id
@@ -102,7 +113,8 @@ def _chain(c, current, intent_id, ack):
             old_intent_id=intent_id, bootstrap_nonce=intent_id, old_intent_sha256=digest(intent),
             old_result_sha256=digest(result), old_record_sha256=digest(old), old_source_revisions=old["source_revisions"],
             old_control_ref=old["control_ref"], profile=old["profile"], profile_sha256=old["profile_sha256"],
-            mission=old["mission"], store_path=old["store_path"], store_identity=old["store_identity"], intent_epoch=old["intent_epoch"],
+            mission=old["mission"], store_path=old["store_path"], store_identity=old["store_identity"],
+            intent_epoch=old["intent_epoch"],
         )
         and ack.get("reconciler_source_revisions") == reconciler["source_revisions"]
         and successor.get("record_sha256") == digest(reconciler)
@@ -110,8 +122,7 @@ def _chain(c, current, intent_id, ack):
         and successor.get("root") == intent.get("root") == str(Path(current["store_path"]).parents[2])
         and successor.get("qualification_only") is True and successor.get("acceptance") == "UNACCEPTED"
         and successor.get("model_calls") == 0
-        and successor.get("request", {}).get("order_id") in current["order_ids"]
-        and successor.get("request", {}).get("service_action") == "line_stack_restart",
+        and scoped_request(intent) and scoped_request(successor),
         "RECONCILIATION_HISTORICAL_CHAIN_CHANGED",
     )
     return reconciler, successor_id, successor
@@ -130,8 +141,15 @@ def historical_acknowledged(c, store, current, intent_id):
         ack = _row(c, key, KIND)
         if ack.get("request", {}).get("intent_id") != intent_id:
             continue
+        require(
+            key == intent_id + "-reconciliation-" + digest(dict(request=ack["request"], issuer=ack["reconciler_record_sha256"])),
+            "RECONCILIATION_HISTORICAL_KEY_CHANGED",
+        )
         successor_id = "owner-profile-bootstrap-" + str(ack.get("reconciler_record_sha256"))
-        if c.execute("SELECT 1 FROM afo_independent_decisions WHERE decision_id=? AND kind=?", (successor_id, INTENT_KIND)).fetchone() is None:
+        exists = c.execute(
+            "SELECT 1 FROM afo_independent_decisions WHERE decision_id=? AND kind=?", (successor_id, INTENT_KIND)
+        ).fetchone()
+        if exists is None:
             continue  # An unconsumed or future acknowledgement is not history.
         reconciler, successor_id, successor = _chain(c, current, intent_id, ack)
         token = dict(decision_id=key, sha256=digest(ack))
@@ -140,7 +158,9 @@ def historical_acknowledged(c, store, current, intent_id):
         if exists:
             consumed = _row(c, consumed_id, CONSUMED_KIND)
             require(
-                consumed == _consumption_value(intent_id, token, current=reconciler, successor_id=successor_id, successor=successor)
+                consumed == _consumption_value(
+                    intent_id, token, current=reconciler, successor_id=successor_id, successor=successor
+                )
                 and successor.get("schema") == "forge-c/owner-profile-bootstrap-intent/2"
                 and successor.get("reconciliation_ref") == token,
                 "RECONCILIATION_CONSUMPTION_CHANGED",
