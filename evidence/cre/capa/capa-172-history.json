@@ -1,0 +1,65 @@
+[
+  {
+    "seq": 1295,
+    "capa_id": "CAPA-172",
+    "from_state": null,
+    "to_state": "OPEN",
+    "at": "2026-11-05T05:53:38.736354Z",
+    "reason": "Owner approved two-week replacement window; qualified I16 public deadline extension cannot admit next finite LINE product/M9 intake without attempting immutable mission reset. No production retry, signature or exposure reset.",
+    "evidence": "[\"CAPA-172\"]"
+  },
+  {
+    "seq": 1296,
+    "capa_id": "CAPA-172",
+    "from_state": "OPEN",
+    "to_state": "TRIAGED",
+    "at": "2026-11-05T05:53:38.813057Z",
+    "reason": "triage by RULE",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1297,
+    "capa_id": "CAPA-172",
+    "from_state": "TRIAGED",
+    "to_state": "REPRODUCER_PENDING",
+    "at": "2026-11-05T05:53:39.028496Z",
+    "reason": "reproducer RPR-172 assigned",
+    "evidence": "[]"
+  },
+  {
+    "seq": 1298,
+    "capa_id": "CAPA-172",
+    "from_state": "REPRODUCER_PENDING",
+    "to_state": "CAUSE_VERIFIED",
+    "at": "2026-11-05T05:53:41.162069Z",
+    "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+    "evidence": "[\"reproducer-run:rr-4cb198250899a4411a20\", \"reproducer-run:rr-7c38a94df2c41e0f39af\"]"
+  },
+  {
+    "seq": 1299,
+    "capa_id": "CAPA-172",
+    "from_state": "CAUSE_VERIFIED",
+    "to_state": "FIX_CANDIDATE",
+    "at": "2026-11-05T05:53:41.188877Z",
+    "reason": "fix 84a35ccb3533 (patch 24327 bytes)",
+    "evidence": "[\"git:2035280de096..84a35ccb3533\"]"
+  },
+  {
+    "seq": 1300,
+    "capa_id": "CAPA-172",
+    "from_state": "FIX_CANDIDATE",
+    "to_state": "PREVENTION_TESTED",
+    "at": "2026-11-05T06:02:15.579030Z",
+    "reason": "prevention test prevention:RPR-172 absent at 84a35ccb3533",
+    "evidence": "[\"reproducer-run:rr-e9b7336c075562cb2bde\"]"
+  },
+  {
+    "seq": 1301,
+    "capa_id": "CAPA-172",
+    "from_state": "PREVENTION_TESTED",
+    "to_state": "EFFECTIVENESS_OBSERVING",
+    "at": "2026-11-05T06:02:15.635311Z",
+    "reason": "observation window opened",
+    "evidence": "[]"
+  }
+]

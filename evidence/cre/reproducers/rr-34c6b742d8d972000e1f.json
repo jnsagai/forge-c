@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-34c6b742d8d972000e1f",
+  "reproducer_id": "RPR-172",
+  "revision": "2035280de096a6f1107aa052db196c0a6c091ffc",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "SYMPTOM_PRESENT",
+  "signature": "owner-signed time-only mission renewal cannot link the next normal line order without re-registering immutable limits",
+  "log_sha256": "ae2dab2c23f4371fcc80fa995580d2e0d4e7e0608383cfc85661d0e2af528e30",
+  "at": "2026-11-05T05:53:42.656324Z"
+}

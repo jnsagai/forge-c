@@ -2979,3 +2979,29 @@ reproducers:
     Renode entry/caller-return metrics bound to compiled source/effective LL/arguments/scenario/current
     budgets, even if declaration omitted. Preserve CRC/O semantics and simulation-only
     scope; no plan/requirements weakening or hardware claim.
+
+- id: RPR-172
+  script: rpr172_mission_deadline_continuation.py
+  sha256: 8e045780fc11647d6e46dbf02f104a20795dc1cff2f34faca1f24684053baa88
+  symptom_signature: owner-signed time-only mission renewal cannot link the next normal line order without
+    re-registering immutable limits
+  observed_in: 'Qualified I16 a856/203 existing mission deadline renewal path: normal MissionDeadline.extend
+    appends a separate signed authority and effective deadline; next normal LINE product registration
+    refuses the immutable base envelope; M9 independently rejects effective deadline authority against
+    initial CONTROL.'
+  baseline_revision: 2035280de096a6f1107aa052db196c0a6c091ffc
+  error_codes:
+  - MISSION_ALLOWANCE_RESET_FORBIDDEN
+  - LINE_SOAK_JOB_MISSION_AUTHORITY_CHANGED
+  - LINE_SOAK_PENDING_MISSION_CHANGED
+  operations:
+  - afo.mission_deadline.extend
+  - afo.line_recovery_product.link_mission
+  - afo.line_soak_prerequisites
+  - afo.line_soak_intake
+  root_cause: LINE product admission tries to register amended effective limits as a replacement initial
+    immutable record. M9 compares the current deadline-grant identity to CONTROL despite existing append-only
+    mission amendments preserving original authority.
+  remedy: Validate immutable original CONTROL identity and replayed effective mission limits and lineage,
+    then link a new accounted order without re-registration; retain current crypto control verification,
+    cumulative counters, amendment integrity, historical accounting and per-job execution bounds.

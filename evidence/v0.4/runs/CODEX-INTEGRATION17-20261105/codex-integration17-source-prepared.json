@@ -1,0 +1,72 @@
+{
+  "schema": "forge-c/codex-integration17-source-preparation/1",
+  "at": "2026-11-05T05:45:32.330815+00:00",
+  "candidate": "84a35ccb3533488be2ec81a40c6b375c72dccf4d",
+  "baseline": "2035280de096a6f1107aa052db196c0a6c091ffc",
+  "component": "6d69dfb65a6336e3a554641c75e430eca3c5f82e",
+  "changed": [
+    "factory/python/forge_factory/afo/line_recovery_product.py",
+    "factory/python/forge_factory/afo/line_soak_intake.py",
+    "factory/python/forge_factory/afo/line_soak_prerequisites.py",
+    "factory/python/tests/test_line_mission_renewal.py",
+    "factory/python/tests/test_line_soak_mission_renewal.py"
+  ],
+  "source_files": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/forge_factory/afo/line_recovery_product.py",
+      "sha256": "7698ce47f664d965c557554d066eac18dea261d44e4fc78207aec6ace7b2e05c",
+      "bytes": 28406
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/forge_factory/afo/line_soak_intake.py",
+      "sha256": "1fb8deca5e0d6f59d16d4558130e028e465a1a5e022c7d701c7061ab636ac304",
+      "bytes": 11749
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/forge_factory/afo/line_soak_prerequisites.py",
+      "sha256": "904d83ec10d195c96b10ec8505bceed07900ac8f4b04befa6bd1dd85fdabc6ff",
+      "bytes": 38568
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/tests/test_line_mission_renewal.py",
+      "sha256": "45daa5d415742e7ad753295d2fbef9c0503cec74cbb6a13d9e3ca504fcd4e70c",
+      "bytes": 5788
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-mission-renewal/factory/python/tests/test_line_soak_mission_renewal.py",
+      "sha256": "346296d4788be83964c5dece46a4048e603ea08432cab9a7bf3f3155e8248bd6",
+      "bytes": 9735
+    }
+  ],
+  "inputs_verified_before_any_root_test": true,
+  "pretest_inputs_receipt_sha256": "336103968dda6556f21c4c34deeed01c36cf682284fdabf302ac24a1710ab1d2",
+  "argv": [
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_afo_m2_queue.py",
+    "factory/python/tests/test_da014_learning.py",
+    "factory/python/tests/test_da014_operational_collection.py",
+    "factory/python/tests/test_da014_operational_report.py",
+    "factory/python/tests/test_da014_operational_work.py",
+    "factory/python/tests/test_da014_product_outcomes.py",
+    "factory/python/tests/test_da014_product_role_trial.py",
+    "factory/python/tests/test_line_conductor_m3.py",
+    "factory/python/tests/test_line_lessons.py",
+    "factory/python/tests/test_line_mission_renewal.py",
+    "factory/python/tests/test_line_product_context.py",
+    "factory/python/tests/test_line_recovery_binding.py",
+    "factory/python/tests/test_line_recovery_control.py",
+    "factory/python/tests/test_line_recovery_product_bridge.py",
+    "factory/python/tests/test_line_soak.py",
+    "factory/python/tests/test_line_soak_claims.py",
+    "factory/python/tests/test_line_soak_intake.py",
+    "factory/python/tests/test_line_soak_mission_renewal.py",
+    "factory/python/tests/test_line_soak_prerequisites.py",
+    "factory/python/tests/test_mission_capacity.py",
+    "factory/python/tests/test_mission_deadline.py",
+    "--junitxml=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/codex-integration17-independent.xml"
+  ],
+  "scope": "Independent normal unit/integration tests; no actual role/runtime qualification."
+}

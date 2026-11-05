@@ -1,0 +1,48 @@
+{
+  "schema": "forge-c/local-gen35-controller-preparation/1",
+  "at": "2026-11-05T05:56:35.139833+00:00",
+  "candidate": "62fce0a4b2dbcae8dbcd7e5f5952d5ee8acb7fa9",
+  "base": "84a35ccb3533488be2ec81a40c6b375c72dccf4d",
+  "native": "38acc88c549e3713665542474385999822cdd3d4",
+  "worktree": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen35-controller",
+  "status": "SOURCE_PAYLOAD_PREPARED_NOT_CRE_QUALIFIED",
+  "source_clean": true,
+  "only_changes": [
+    "config/factory/campaigns/qualification-local-20261104/finite-crc-swe6-qualification.yaml"
+  ],
+  "campaign": {
+    "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-local-gen35-controller/config/factory/campaigns/qualification-local-20261104/finite-crc-swe6-qualification.yaml",
+    "sha256": "f12dff1b846e03c742c9d8a38444646b1bb3a73d254d83520812ad406bec5ccc",
+    "bytes": 1512
+  },
+  "evidence": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-controller-before-tests-inputs.json",
+      "sha256": "e4fed4458d1c3debabe55aef080e87851e35eb384b09fc8a5dd7e18c89ac16ca",
+      "bytes": 824
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-controller-payload-validation.json",
+      "sha256": "d65cae5e268c1bad6aea0b89360053b35b596936b591360b7a5e5a5da54ba911",
+      "bytes": 422
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-controller-design.log",
+      "sha256": "f8d8da5467efe30ca8673da3318165f8f5d7b89ce7dfd7a68e38482392c83139",
+      "bytes": 1514
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/local-gen35-controller-source.bundle",
+      "sha256": "772672a563ee51e552676b1f0c45e24fead9ed3b578c9c8e091aa10fd83489f7",
+      "bytes": 1561
+    }
+  ],
+  "checks": {
+    "actual_LC_validate": [],
+    "actual_committed_LC_parse_require_approval": true,
+    "design": 14,
+    "all8_10_before_any_tests": true,
+    "normal_CHANGE": "NOT_RUN_ROOT_OWNS"
+  },
+  "zero_production_effects": true
+}

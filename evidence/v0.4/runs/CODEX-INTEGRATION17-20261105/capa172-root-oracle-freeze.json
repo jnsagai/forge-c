@@ -1,0 +1,13 @@
+{
+  "schema": "forge-c/capa172-root-oracle-freeze/1",
+  "at": "2026-11-05T05:46:45.183969+00:00",
+  "caller": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-014-capa172-oracle",
+  "baseline": "2035280de096a6f1107aa052db196c0a6c091ffc",
+  "candidate": "84a35ccb3533488be2ec81a40c6b375c72dccf4d",
+  "reproducer_sha256": "8e045780fc11647d6e46dbf02f104a20795dc1cff2f34faca1f24684053baa88",
+  "manifest_sha256": "a38af4f2cc017b35ac6303e20dbb763ad2e3a6f3a78eda027e3508f625e92da6",
+  "records": 171,
+  "previous170_records_unchanged": true,
+  "authorization_fixture": "Only detached signature_valid leaf. Actual auth schema/time/scope/policy/revocation4negativecontrols retained. No real owner signature/authority claim.",
+  "source_range_protected_changes": false
+}
