@@ -1,0 +1,278 @@
+FFFFFFFFF..FFF..                                                         [100%]
+=================================== FAILURES ===================================
+_ test_actual_request_selects_prerequisite_and_preserves_global_inventory[None] _
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3e073a10>, {'admitted_utc': '2026-11-05T11:32:39.232628Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr0/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr0')
+step = None
+
+    @pytest.mark.parametrize("step", [None, 1, 2, 3, 4])
+    def test_actual_request_selects_prerequisite_and_preserves_global_inventory(local, tmp_path, step):
+        job, packet, case = graph_case(local, tmp_path)
+        before = canonical(packet), case.read_bytes()
+        prior = {"question_1_answer": {"conflict": "YES", "evidence_refs": ["F1"], "rationale": "Effect conflict."},
+                 "question_2_answer": {"technique_id": "repair-implementation"},
+                 "question_3_answer": {"strategy": "REWORK_LOCAL", "owner_phase": "SWE.3"}}
+        body, measured = D.request_material(job, step=step, prior=prior)
+        doc = json.loads(body["messages"][1]["content"])
+        context = doc["diagnosis_context"]
+>       assert context["selected_incident_unit_ids"] == ["ZZZ-PREREQUISITE"]
+E       AssertionError: assert ['AAA-DEPENDENT'] == ['ZZZ-PREREQUISITE']
+E         
+E         At index 0 diff: 'AAA-DEPENDENT' != 'ZZZ-PREREQUISITE'
+E         Use -v to get more diff
+
+factory/python/tests/test_da014_dependency_selection.py:46: AssertionError
+__ test_actual_request_selects_prerequisite_and_preserves_global_inventory[1] __
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3e83dbd0>, {'admitted_utc': '2026-11-05T11:32:39.716197Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr1/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr1')
+step = 1
+
+    @pytest.mark.parametrize("step", [None, 1, 2, 3, 4])
+    def test_actual_request_selects_prerequisite_and_preserves_global_inventory(local, tmp_path, step):
+        job, packet, case = graph_case(local, tmp_path)
+        before = canonical(packet), case.read_bytes()
+        prior = {"question_1_answer": {"conflict": "YES", "evidence_refs": ["F1"], "rationale": "Effect conflict."},
+                 "question_2_answer": {"technique_id": "repair-implementation"},
+                 "question_3_answer": {"strategy": "REWORK_LOCAL", "owner_phase": "SWE.3"}}
+        body, measured = D.request_material(job, step=step, prior=prior)
+        doc = json.loads(body["messages"][1]["content"])
+        context = doc["diagnosis_context"]
+>       assert context["selected_incident_unit_ids"] == ["ZZZ-PREREQUISITE"]
+E       AssertionError: assert ['AAA-DEPENDENT'] == ['ZZZ-PREREQUISITE']
+E         
+E         At index 0 diff: 'AAA-DEPENDENT' != 'ZZZ-PREREQUISITE'
+E         Use -v to get more diff
+
+factory/python/tests/test_da014_dependency_selection.py:46: AssertionError
+__ test_actual_request_selects_prerequisite_and_preserves_global_inventory[2] __
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3d1b3c50>, {'admitted_utc': '2026-11-05T11:32:40.003558Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr2/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr2')
+step = 2
+
+    @pytest.mark.parametrize("step", [None, 1, 2, 3, 4])
+    def test_actual_request_selects_prerequisite_and_preserves_global_inventory(local, tmp_path, step):
+        job, packet, case = graph_case(local, tmp_path)
+        before = canonical(packet), case.read_bytes()
+        prior = {"question_1_answer": {"conflict": "YES", "evidence_refs": ["F1"], "rationale": "Effect conflict."},
+                 "question_2_answer": {"technique_id": "repair-implementation"},
+                 "question_3_answer": {"strategy": "REWORK_LOCAL", "owner_phase": "SWE.3"}}
+        body, measured = D.request_material(job, step=step, prior=prior)
+        doc = json.loads(body["messages"][1]["content"])
+        context = doc["diagnosis_context"]
+>       assert context["selected_incident_unit_ids"] == ["ZZZ-PREREQUISITE"]
+E       AssertionError: assert ['AAA-DEPENDENT'] == ['ZZZ-PREREQUISITE']
+E         
+E         At index 0 diff: 'AAA-DEPENDENT' != 'ZZZ-PREREQUISITE'
+E         Use -v to get more diff
+
+factory/python/tests/test_da014_dependency_selection.py:46: AssertionError
+__ test_actual_request_selects_prerequisite_and_preserves_global_inventory[3] __
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3d1cf820>, {'admitted_utc': '2026-11-05T11:32:40.290324Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr3/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr3')
+step = 3
+
+    @pytest.mark.parametrize("step", [None, 1, 2, 3, 4])
+    def test_actual_request_selects_prerequisite_and_preserves_global_inventory(local, tmp_path, step):
+        job, packet, case = graph_case(local, tmp_path)
+        before = canonical(packet), case.read_bytes()
+        prior = {"question_1_answer": {"conflict": "YES", "evidence_refs": ["F1"], "rationale": "Effect conflict."},
+                 "question_2_answer": {"technique_id": "repair-implementation"},
+                 "question_3_answer": {"strategy": "REWORK_LOCAL", "owner_phase": "SWE.3"}}
+        body, measured = D.request_material(job, step=step, prior=prior)
+        doc = json.loads(body["messages"][1]["content"])
+        context = doc["diagnosis_context"]
+>       assert context["selected_incident_unit_ids"] == ["ZZZ-PREREQUISITE"]
+E       AssertionError: assert ['AAA-DEPENDENT'] == ['ZZZ-PREREQUISITE']
+E         
+E         At index 0 diff: 'AAA-DEPENDENT' != 'ZZZ-PREREQUISITE'
+E         Use -v to get more diff
+
+factory/python/tests/test_da014_dependency_selection.py:46: AssertionError
+__ test_actual_request_selects_prerequisite_and_preserves_global_inventory[4] __
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3d1cfa80>, {'admitted_utc': '2026-11-05T11:32:40.578464Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr4/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_request_selects_pr4')
+step = 4
+
+    @pytest.mark.parametrize("step", [None, 1, 2, 3, 4])
+    def test_actual_request_selects_prerequisite_and_preserves_global_inventory(local, tmp_path, step):
+        job, packet, case = graph_case(local, tmp_path)
+        before = canonical(packet), case.read_bytes()
+        prior = {"question_1_answer": {"conflict": "YES", "evidence_refs": ["F1"], "rationale": "Effect conflict."},
+                 "question_2_answer": {"technique_id": "repair-implementation"},
+                 "question_3_answer": {"strategy": "REWORK_LOCAL", "owner_phase": "SWE.3"}}
+        body, measured = D.request_material(job, step=step, prior=prior)
+        doc = json.loads(body["messages"][1]["content"])
+        context = doc["diagnosis_context"]
+>       assert context["selected_incident_unit_ids"] == ["ZZZ-PREREQUISITE"]
+E       AssertionError: assert ['AAA-DEPENDENT'] == ['ZZZ-PREREQUISITE']
+E         
+E         At index 0 diff: 'AAA-DEPENDENT' != 'ZZZ-PREREQUISITE'
+E         Use -v to get more diff
+
+factory/python/tests/test_da014_dependency_selection.py:46: AssertionError
+_ test_actual_prepare_persists_same_prerequisite_without_resetting_original_reservation _
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3d0f8050>, {'admitted_utc': '2026-11-05T11:32:40.863403Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_prepare_persists_s0/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_actual_prepare_persists_s0')
+
+    def test_actual_prepare_persists_same_prerequisite_without_resetting_original_reservation(local, tmp_path):
+        store, order, bundle, eff, ws, _ = local
+        _, packet, case = graph_case(local, tmp_path)
+        ledger = MissionLedger(store)
+        deadline = time.time() + 600
+        limits = dict(max_attempts=3, max_jobs=2, max_requests=8, max_tokens=64000, max_tools=4,
+                      max_corrections=1, deadline=deadline)
+        ledger.register("dependency-control", "dependency-control-lineage", limits, "TEST-AUTH",
+                        authorize=lambda *a: True)
+        ledger.link("dependency-control", order["order_id"])
+        job = L.prepare(store, order, bundle["attempt_id"], "afo-recovery-planner", case, ws, eff)
+>       assert job["selected_obligations"] == ["ZZZ-PREREQUISITE"]
+E       AssertionError: assert ['AAA-DEPENDENT'] == ['ZZZ-PREREQUISITE']
+E         
+E         At index 0 diff: 'AAA-DEPENDENT' != 'ZZZ-PREREQUISITE'
+E         Use -v to get more diff
+
+factory/python/tests/test_da014_dependency_selection.py:68: AssertionError
+______ test_explicit_invalid_or_unready_scope_never_serializes[selected0] ______
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3d0cc8d0>, {'admitted_utc': '2026-11-05T11:32:41.271845Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_explicit_invalid_or_unrea0/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_explicit_invalid_or_unrea0')
+selected = ['AAA-DEPENDENT']
+
+    @pytest.mark.parametrize("selected", [["AAA-DEPENDENT"], ["UNKNOWN"], [], "ZZZ-PREREQUISITE",
+                                          ["AAA-DEPENDENT", "ZZZ-PREREQUISITE"]])
+    def test_explicit_invalid_or_unready_scope_never_serializes(local, tmp_path, selected):
+        job, _, _ = graph_case(local, tmp_path)
+>       with pytest.raises(Refused):
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'forge_factory.afo.durable.Refused'>
+
+factory/python/tests/test_da014_dependency_selection.py:82: Failed
+______ test_explicit_invalid_or_unready_scope_never_serializes[selected1] ______
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3d0cd6a0>, {'admitted_utc': '2026-11-05T11:32:41.560688Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_explicit_invalid_or_unrea1/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_explicit_invalid_or_unrea1')
+selected = ['UNKNOWN']
+
+    @pytest.mark.parametrize("selected", [["AAA-DEPENDENT"], ["UNKNOWN"], [], "ZZZ-PREREQUISITE",
+                                          ["AAA-DEPENDENT", "ZZZ-PREREQUISITE"]])
+    def test_explicit_invalid_or_unready_scope_never_serializes(local, tmp_path, selected):
+        job, _, _ = graph_case(local, tmp_path)
+        with pytest.raises(Refused):
+>           D.request_material({**job, "selected_obligations": selected,
+                                "completed_obligations": {"ZZZ-PREREQUISITE": {"result": "PASS"}}})
+
+factory/python/tests/test_da014_dependency_selection.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+job = {'case': '/tmp/pytest-of-jefferson/pytest-95/test_explicit_invalid_or_unrea1/dependency-case.json', 'completed_obligations': {'ZZZ-PREREQUISITE': {'result': 'PASS'}}, 'model': 'qwen3.6:35b-a3b', 'profile': 'local-rtx-v2-omniverse2', ...}
+step = None, prior = None
+
+    def request_material(job, step=None, prior=None):
+        """Build raw transport and measure the actual profile-transformed provider request.
+    
+        Measurement is not permission to send. request_body and gateway admission
+        retain their independent finite-envelope checks. Never apply the gateway's
+        output extension twice by sending its transformed measurement copy.
+        """
+        from ..lrtx.structured import skill
+        from .diagnosis_context import CONTEXT_RULES, context_contract
+        from .semantic_proposal import wire_schema
+    
+        case = json.loads(Path(job["case"]).read_text())
+        packet = load(case["packet_ref"])
+        selected = job.get("selected_obligations") or sorted(packet["obligations"])[:1]
+        if len(selected) != 1:
+            raise Refused("COHERENT_OBJECTIVE_REQUIRED")
+>       obligation = packet["obligations"][selected[0]]
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'UNKNOWN'
+
+factory/python/forge_factory/afo/durable_agent.py:267: KeyError
+______ test_explicit_invalid_or_unready_scope_never_serializes[selected2] ______
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3d071c50>, {'admitted_utc': '2026-11-05T11:32:41.830596Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_explicit_invalid_or_unrea2/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_explicit_invalid_or_unrea2')
+selected = []
+
+    @pytest.mark.parametrize("selected", [["AAA-DEPENDENT"], ["UNKNOWN"], [], "ZZZ-PREREQUISITE",
+                                          ["AAA-DEPENDENT", "ZZZ-PREREQUISITE"]])
+    def test_explicit_invalid_or_unready_scope_never_serializes(local, tmp_path, selected):
+        job, _, _ = graph_case(local, tmp_path)
+>       with pytest.raises(Refused):
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'forge_factory.afo.durable.Refused'>
+
+factory/python/tests/test_da014_dependency_selection.py:82: Failed
+_ test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready[dependencies0] _
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3cff0500>, {'admitted_utc': '2026-11-05T11:32:42.644372Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_disconnected_invalid_grap0/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_disconnected_invalid_grap0')
+dependencies = {'CYCLE-A': ['CYCLE-B'], 'CYCLE-B': ['CYCLE-A'], 'READY': []}
+
+    @pytest.mark.parametrize("dependencies", [
+        {"READY": [], "CYCLE-A": ["CYCLE-B"], "CYCLE-B": ["CYCLE-A"]},
+        {"READY": [], "LATER": ["MISSING"]},
+        {"READY": [], "SELF": ["SELF"]},
+    ])
+    def test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready(local, tmp_path, dependencies):
+        job, packet, _ = graph_case(local, tmp_path, dependencies)
+>       with pytest.raises(Refused, match="OBLIGATION_DEPENDENCY_MISSING_OR_CYCLIC"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'forge_factory.afo.durable.Refused'>
+
+factory/python/tests/test_da014_dependency_selection.py:94: Failed
+_ test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready[dependencies1] _
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3d06bbd0>, {'admitted_utc': '2026-11-05T11:32:42.924338Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_disconnected_invalid_grap1/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_disconnected_invalid_grap1')
+dependencies = {'LATER': ['MISSING'], 'READY': []}
+
+    @pytest.mark.parametrize("dependencies", [
+        {"READY": [], "CYCLE-A": ["CYCLE-B"], "CYCLE-B": ["CYCLE-A"]},
+        {"READY": [], "LATER": ["MISSING"]},
+        {"READY": [], "SELF": ["SELF"]},
+    ])
+    def test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready(local, tmp_path, dependencies):
+        job, packet, _ = graph_case(local, tmp_path, dependencies)
+>       with pytest.raises(Refused, match="OBLIGATION_DEPENDENCY_MISSING_OR_CYCLIC"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'forge_factory.afo.durable.Refused'>
+
+factory/python/tests/test_da014_dependency_selection.py:94: Failed
+_ test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready[dependencies2] _
+
+local = (<forge_factory.afo.queue.Store object at 0x758d3d111fd0>, {'admitted_utc': '2026-11-05T11:32:43.185813Z', 'authorizat...'), PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_disconnected_invalid_grap2/state/afo/cases/afo-fb-1/case.json'))
+tmp_path = PosixPath('/tmp/pytest-of-jefferson/pytest-95/test_disconnected_invalid_grap2')
+dependencies = {'READY': [], 'SELF': ['SELF']}
+
+    @pytest.mark.parametrize("dependencies", [
+        {"READY": [], "CYCLE-A": ["CYCLE-B"], "CYCLE-B": ["CYCLE-A"]},
+        {"READY": [], "LATER": ["MISSING"]},
+        {"READY": [], "SELF": ["SELF"]},
+    ])
+    def test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready(local, tmp_path, dependencies):
+        job, packet, _ = graph_case(local, tmp_path, dependencies)
+>       with pytest.raises(Refused, match="OBLIGATION_DEPENDENCY_MISSING_OR_CYCLIC"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE <class 'forge_factory.afo.durable.Refused'>
+
+factory/python/tests/test_da014_dependency_selection.py:94: Failed
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_actual_request_selects_prerequisite_and_preserves_global_inventory[None]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_actual_request_selects_prerequisite_and_preserves_global_inventory[1]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_actual_request_selects_prerequisite_and_preserves_global_inventory[2]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_actual_request_selects_prerequisite_and_preserves_global_inventory[3]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_actual_request_selects_prerequisite_and_preserves_global_inventory[4]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_actual_prepare_persists_same_prerequisite_without_resetting_original_reservation
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_explicit_invalid_or_unready_scope_never_serializes[selected0]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_explicit_invalid_or_unready_scope_never_serializes[selected1]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_explicit_invalid_or_unready_scope_never_serializes[selected2]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready[dependencies0]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready[dependencies1]
+FAILED factory/python/tests/test_da014_dependency_selection.py::test_disconnected_invalid_graph_refuses_even_when_one_root_is_ready[dependencies2]

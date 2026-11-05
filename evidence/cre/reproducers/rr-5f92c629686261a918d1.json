@@ -1,0 +1,11 @@
+{
+  "run_id": "rr-5f92c629686261a918d1",
+  "reproducer_id": "RPR-176",
+  "revision": "3e8936a27f847b32bb76eef4a24bc83cc2daad20",
+  "role": "BASELINE",
+  "exit_code": 1,
+  "verdict": "ERROR",
+  "signature": "SYMPTOM_PRESENT:diagnosis serializes a dependent objective before its unresolved prerequisite:unconfigured-provider-scope",
+  "log_sha256": "6d73e7b9c8c38da41fca7ae68c8a90667a320eabae3616076264628913a8c479",
+  "at": "2026-11-05T11:47:04.679322Z"
+}

@@ -1,0 +1,11 @@
+factory/python/tests/test_afo_local_autonomy.py: 43
+factory/python/tests/test_da014_dependency_selection.py: 20
+factory/python/tests/test_da014_diagnosis_context_contract.py: 12
+factory/python/tests/test_da014_proposal_diagnostics.py: 10
+factory/python/tests/test_da014_protocol.py: 25
+factory/python/tests/test_da014_protocol_faults.py: 31
+factory/python/tests/test_da014_qualification_inputs.py: 18
+factory/python/tests/test_da014_qualification_reservations.py: 14
+factory/python/tests/test_da014_role_envelopes.py: 25
+factory/python/tests/test_da014_two_step.py: 10
+

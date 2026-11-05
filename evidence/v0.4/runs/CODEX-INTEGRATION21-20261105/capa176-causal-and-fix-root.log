@@ -1,0 +1,7 @@
+{"phase": "BASELINE", "record": {"run_id": "rr-5f92c629686261a918d1", "reproducer_id": "RPR-176", "revision": "3e8936a27f847b32bb76eef4a24bc83cc2daad20", "role": "BASELINE", "exit_code": 1, "verdict": "ERROR", "signature": "SYMPTOM_PRESENT:diagnosis serializes a dependent objective before its unresolved prerequisite:unconfigured-provider-scope", "log_sha256": "6d73e7b9c8c38da41fca7ae68c8a90667a320eabae3616076264628913a8c479", "at": "2026-11-05T11:47:04.679322Z"}}
+{"phase": "CANDIDATE", "record": {"run_id": "rr-b616ba7edead7c4a85bd", "reproducer_id": "RPR-176", "revision": "740858e65117993bf2341186f23c86b91b57b068", "role": "CANDIDATE", "exit_code": 0, "verdict": "SYMPTOM_ABSENT", "signature": null, "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce", "at": "2026-11-05T11:47:05.167198Z"}}
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/ops/scratch/capa176-causal-and-fix-root.py", line 54, in <module>
+    assert baseline['verdict'] == 'SYMPTOM_PRESENT' and candidate['verdict'] == 'SYMPTOM_ABSENT'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

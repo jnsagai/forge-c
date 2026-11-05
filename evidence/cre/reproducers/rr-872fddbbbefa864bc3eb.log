@@ -1,0 +1,4 @@
+CONTROL_PATH:unconfigured-provider-scope
+SYMPTOM_PRESENT:diagnosis serializes a dependent objective before its unresolved prerequisite
+
+--- stderr ---
