@@ -3056,3 +3056,18 @@ reproducers:
   - offline.disposition.route
   root_cause: Membership reads the original F011 selection without replaying protected source-bound post-calibration learning registrations.
   remedy: Respect completed calibration and immutable source-bound learning registrations while keeping unspent set members isolated. Record reviews as evidence and independently validate corrective lessons.
+
+- id: RPR-176
+  script: rpr176_dependent_objective_first.py
+  sha256: c51abf274b7e2d8b3217dbd418c46a4aa2901fe558a1c2d0cc8a17ce8ad1a760
+  symptom_signature: diagnosis serializes a dependent objective before its unresolved prerequisite
+  observed_in: Actual provider request on packet AAA-DEPENDENT depending on ZZZ-PREREQUISITE chooses AAA lexically although partition orders ZZZ first.
+  baseline_revision: 3e8936a27f847b32bb76eef4a24bc83cc2daad20
+  error_codes:
+  - OBLIGATION_DEPENDENCY_UNSATISFIED
+  operations:
+  - afo.durable_agent.request_material
+  - afo.local_agent.prepare
+  - afo.completion_receipt.admit
+  root_cause: Production preparation and serialization bypass the packet topological graph and explicit scopes reach the broker without unresolved dependency validation.
+  remedy: Validate all graph components and select one dependency-free unresolved objective at preparation, request and pending receipt admission; preserve global coverage, primary evidence and original mission accounting.
