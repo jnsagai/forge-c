@@ -40,6 +40,18 @@ CAPS = dict(max_attempts=2, max_jobs=2, max_requests=32, max_tokens=8388608, max
 PRIOR_MISSION = "line-local-role-trial-20261104"
 PRIOR_RECORD_SHA256 = "81325abb4b67c6cdacdfcbbf9c1f51e111ae4a5735f32182347f929d4e7e4e01"
 PRIOR_SPENT = dict(attempts=4, jobs=0, requests=0, tools=0, corrections=0, charged_tokens=4194304)
+# Issuer history of that mission is read against how it ended, never against this allowance.
+PRIOR_SCOPE = dict(
+    mission=dict(
+        mission_id=PRIOR_MISSION,
+        lineage="owner-review:local-role-trial-20261104",
+        limits=dict(
+            deadline=DEADLINE, max_attempts=4, max_jobs=4, max_requests=32, max_tokens=8388608, max_tools=256, max_corrections=4
+        ),
+    ),
+    order_ids=["WO-F014-SWE6-AFOQUAL-20261104-L90" + c for c in "BCD"],
+    mission_anchor=dict(base_sha256=PRIOR_RECORD_SHA256, counters=PRIOR_SPENT, usage_unknown=True),
+)
 PROFILE = "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104"
 PROFILE_SHA = "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c"
 RUNTIME_POLICY_SHA = "dcd4fc785e373058c7ec4979319540623bcd06537c37baa1d68607850d21b17e"

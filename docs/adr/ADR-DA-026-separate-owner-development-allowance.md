@@ -26,6 +26,11 @@ The spent mission is read, never written. `prior_conserved` pins its registratio
 digest, its counters and its unknown usage on every authority check, so a change to it
 stops the lane. Spent orders L90B to L90D no longer authorize anything.
 
+Reconciled bootstrap history stays valid. Issuers of the closed mission are compared
+with how that mission ended, in `PRIOR_SCOPE`, and not with the allowance. Without this
+a new guardian would refuse real reconciled rows as a scope change. Rehearsal removes
+those rows from its private copy, so this is proven read-only on the real rows instead.
+
 The mission records `OWNER-DEVELOPMENT-ALLOWANCE-20261106-NOT-A-GRANT`, not the policy's
 signed grant reference. `mission_authority` keeps that distinction at the two places
 that compare a mission with its control, because the pinned policy still names the

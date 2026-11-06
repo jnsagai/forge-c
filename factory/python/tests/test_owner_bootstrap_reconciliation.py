@@ -13,7 +13,7 @@ from forge_factory.afo import owner_bootstrap_history as H
 from forge_factory.afo import owner_bootstrap_reconciliation as R
 from forge_factory.afo import owner_profile_bootstrap as B
 from forge_factory.afo import owner_supervised_development as D
-from forge_factory.afo.durable import Refused, digest
+from forge_factory.afo.durable import Refused, canonical, digest
 from forge_factory.common import sha256_file
 from test_owner_profile_bootstrap import boot  # noqa: F401 - real private canonical fixture
 from test_owner_supervised_development import supervised  # noqa: F401 - transitive guardian fixture
@@ -689,3 +689,42 @@ def test_evidence_freshness_checked_after_heavy_validation(pending, monkeypatch,
         reconcile(p)
     with p["boot"]["store"].tx() as c:
         assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.KIND,)).fetchone()[0] == 0
+
+
+def closed_mission_issuer(p, tmp_path, **change):
+    """A real-shaped issuer row of the closed mission, in the real store, read by the real check."""
+    current = D.current()
+    control = copy.deepcopy(D._read_file(current["control_ref"]))
+    control["mission"] = D.PRIOR_SCOPE["mission"]
+    path = tmp_path / "closed-control.json"
+    path.write_text(json.dumps(control))
+    old = {**current, **copy.deepcopy(D.PRIOR_SCOPE), "control_ref": dict(path=str(path), sha256=sha256_file(path)),
+           "control_sha256": digest(control), **change}
+    old["mission_anchor"] = {**old["mission_anchor"], "counters": dict(old["mission_anchor"]["counters"], attempts=3)}
+    if "counters" in change:
+        old["mission_anchor"]["counters"].update(old.pop("counters"))
+    sha = digest(old)
+    with p["boot"]["store"].tx() as c:
+        c.execute("INSERT INTO afo_independent_decisions VALUES (?,?,?,?)",
+                  ("owner-development-" + sha, D.MODE, canonical(old).decode(), sha))
+    return sha, current
+
+
+def test_closed_mission_history_is_read_against_how_it_ended(pending, tmp_path, monkeypatch):
+    monkeypatch.setattr(D, "_trial_envelopes", lambda control: None)  # Fixture trial deadline is not the fixed one.
+    sha, current = closed_mission_issuer(pending, tmp_path)
+    with pending["boot"]["store"].tx() as c:
+        assert R._issued(c, sha, current)["mission"]["mission_id"] == D.PRIOR_MISSION
+
+
+@pytest.mark.parametrize(("change", "code"), [
+    (dict(order_ids=["WO-F014-SWE6-AFOQUAL-20261104-L90E"]), "HISTORICAL_SCOPE_CHANGED"),
+    (dict(mission={**D.PRIOR_SCOPE["mission"], "lineage": "foreign"}), "HISTORICAL_SCOPE_CHANGED"),
+    (dict(counters=dict(attempts=5)), "ACCOUNTING_REBOUND"),
+    (dict(counters=dict(requests=1)), "ACCOUNTING_REBOUND"),
+])
+def test_closed_mission_history_cannot_widen(pending, tmp_path, monkeypatch, change, code):
+    monkeypatch.setattr(D, "_trial_envelopes", lambda control: None)
+    sha, current = closed_mission_issuer(pending, tmp_path, **change)
+    with pending["boot"]["store"].tx() as c, pytest.raises(Refused, match=code):
+        R._issued(c, sha, current)

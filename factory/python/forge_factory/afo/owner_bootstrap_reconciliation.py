@@ -59,20 +59,30 @@ def _legacy_format(revisions):
     return True
 
 
+def _scope(old, current):
+    """An issuer of the closed mission is compared with how that mission ended."""
+    from . import owner_supervised_development as D
+
+    if (old.get("mission") or {}).get("mission_id") == D.PRIOR_MISSION:
+        return {**current, **D.PRIOR_SCOPE}
+    return current
+
+
 def _issued(c, sha, current):
     """Authenticate historical data only; never attest an expired/dead guardian."""
     from . import owner_supervised_development as D
 
     require(isinstance(sha, str) and re.fullmatch("[0-9a-f]{64}", sha), "RECONCILIATION_ISSUER_INVALID")
     old = _row(c, "owner-development-" + sha, D.MODE)
+    scope = _scope(old, current)
     require(
         digest(old) == sha and old.get("schema") == D.SCHEMA and old.get("mode") == D.MODE
         and old.get("qualification_only") is True and old.get("acceptance") == "UNACCEPTED"
         and old.get("directive_sha256") == digest(dict(external_directive=D.DIRECTIVE))
-        and all(old.get(k) == current[k] for k in SCOPE_FIELDS),
+        and all(old.get(k) == scope[k] for k in SCOPE_FIELDS),
         "RECONCILIATION_HISTORICAL_SCOPE_CHANGED",
     )
-    _monotonic_accounting(old.get("mission_anchor"), current.get("mission_anchor"))
+    _monotonic_accounting(old.get("mission_anchor"), scope.get("mission_anchor"))
     control = D._read_file(old["control_ref"])
     require(
         digest(control) == old["control_sha256"] and control["mission"] == old["mission"]
@@ -112,12 +122,12 @@ def _chain(c, current, intent_id, ack):
     successor_id = "owner-profile-bootstrap-" + digest(reconciler)
     successor = _row(c, successor_id, INTENT_KIND)
     bindings = ack.get("bindings") or {}
-    def scoped_request(value):
+    def scoped_request(value, issuer):
         request = value.get("request", {})
         return request == dict(
             order_id=request.get("order_id"), driver_class=current["driver_class"],
             model=current["profile"], service_action="line_stack_restart",
-        ) and request.get("order_id") in current["order_ids"]
+        ) and request.get("order_id") in _scope(issuer, current)["order_ids"]
 
     require(
         intent_id == "owner-profile-bootstrap-" + digest(old)
@@ -142,7 +152,7 @@ def _chain(c, current, intent_id, ack):
         and successor.get("root") == intent.get("root") == str(Path(current["store_path"]).parents[2])
         and successor.get("qualification_only") is True and successor.get("acceptance") == "UNACCEPTED"
         and successor.get("model_calls") == 0
-        and scoped_request(intent) and scoped_request(successor),
+        and scoped_request(intent, old) and scoped_request(successor, reconciler),
         "RECONCILIATION_HISTORICAL_CHAIN_CHANGED",
     )
     return reconciler, successor_id, successor
