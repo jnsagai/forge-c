@@ -453,6 +453,11 @@ def wire(respond):
         protocol_version = "HTTP/1.1"
 
         def do_GET(self):
+            # Loopback ephemeral ports receive stray local probes on a busy host. Only catalog
+            # reads count, so a stray cannot shift the request numbers these faults depend on.
+            if urlsplit(self.path).path != "/api/v1/runs":
+                self.send_error(404)
+                return
             self.headers.add_header("X-Rehearsal-Path", self.path)
             seen.append(self.headers)
             q = parse_qs(urlsplit(self.path).query)
@@ -656,8 +661,7 @@ def test_listening_environment_proxy_cannot_answer_for_the_catalog(monkeypatch):
         set_environment_proxy(monkeypatch, proxy)
         with FabroClient(base_url=url) as c:
             assert len(c.run_inventory().rows) == 149
-    # Ephemeral ports can receive stray local connections; only a catalog read would be the defect.
-    assert not [h for h in intercepted if h["X-Rehearsal-Path"].startswith("/api/v1/runs")] and len(seen) == 4
+    assert not intercepted and len(seen) == 4
 
 
 def test_genuine_closed_port_stays_initial_absence_with_environment_proxy_set(monkeypatch):
