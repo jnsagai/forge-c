@@ -56,6 +56,8 @@ def managed_cpu(boot, monkeypatch):  # noqa:F811
     settings = stack.settings(D.PROFILE)
     # New private NET namespace makes these local ports independent of host ports.
     settings["ports"] = dict(settings["ports"], fabro=32391, ollama=32435, gateway=32436, llama=32437)
+    settings["root"].joinpath("fabro").mkdir(exist_ok=True)
+    settings["root"].joinpath("fabro/settings.toml").write_text(stack.fabro_config(settings))
     monkeypatch.setattr(stack, "settings", lambda _: settings)
     monkeypatch.setattr(stack, "_start", REAL_START)
     monkeypatch.setattr(stack, "serving_instance", REAL_SERVING)
