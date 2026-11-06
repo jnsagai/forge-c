@@ -1,7 +1,7 @@
 """External operator only: opens the finite owner-development allowance authorized on 2026-11-06.
 
-It adds one separate mission row beside the exhausted original. It never amends, refills,
-resets or relabels that mission, is not a production grant, and admits no work by itself.
+It adds one separate mission row beside the two earlier ones, after the spent order is closed.
+It never amends, refills, resets or relabels them, is not a production grant, and admits no work.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from . import owner_supervised_development as D
 from .durable import Refused
 from .mission_ledger import MissionLedger
 
-DIRECTIVE = "propose something and go"
+DIRECTIVE = "Raise limits, unsigned"
 CLOSE_DIRECTIVE = "go with all"
 
 
@@ -30,6 +30,9 @@ def open_allowance(store, *, directive):
     if time.time() >= D.DEADLINE:
         raise Refused("OWNER_DEVELOPMENT_ALLOWANCE_EXPIRED")
     D.prior_conserved(store)
+    spent = [r for r in store.orders() if r["request_id"] == D.SPENT_ORDER]
+    if len(spent) != 1 or spent[0]["state"] != "BLOCKED" or spent[0]["terminal_reason"] != D.SOURCE_FIX_CLOSED:
+        raise Refused("OWNER_DEVELOPMENT_SPENT_ORDER_NOT_CLOSED")
     limits = {**D.CAPS, "deadline": D.DEADLINE}
     return MissionLedger(store).register(
         D.MISSION,
@@ -52,7 +55,7 @@ def close_for_source_fix(store, *, directive):
     ):
         raise Refused("OWNER_DEVELOPMENT_EXTERNAL_OPERATOR_REQUIRED")
     D.prior_conserved(store)
-    rows = [r for r in store.orders() if r["request_id"] == D.ORDERS[0]]
+    rows = [r for r in store.orders() if r["request_id"] == D.SPENT_ORDER]
     if len(rows) != 1:
         raise Refused("OWNER_DEVELOPMENT_SPENT_ORDER_UNKNOWN")
     order = rows[0]
@@ -64,7 +67,7 @@ def close_for_source_fix(store, *, directive):
         or len(attempts) != 1
         or attempts[0]["state"] != "FAILED"
         or not attempts[0]["record"].get("fabro_run_id")
-        or MissionLedger(store).for_order(order["order_id"]) != D.MISSION
+        or MissionLedger(store).for_order(order["order_id"]) != D.CLOSED_ALLOWANCE
     ):
         raise Refused("OWNER_DEVELOPMENT_SPENT_ORDER_NOT_CLOSABLE")
     store.transition(

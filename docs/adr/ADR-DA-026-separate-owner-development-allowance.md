@@ -56,3 +56,15 @@ A new source means a new control, and recovery would have left L90E waiting unde
 one for good. `close_for_source_fix` closes it once, keeping its attempt, charge and plan,
 and the Planner's normal retry places L90F. Rehearsal now starts from the real retained
 settings and a copy of the real store after L90E.
+
+Before L90F, a comparison with real history showed that a real SWE.6 run makes 48 to 218
+model calls. Each call is one mission request, and the mission and policy allowed 32, so
+L90F could not have finished. No earlier attempt had made a request, so this limit was
+never reached. The owner chose to raise the limits unsigned, in this lane only.
+
+A third mission, `line-local-role-trial-20261106b`, takes the last attempt, order L90F:
+1 attempt, 2 jobs, 256 requests, 512 tools, 16,777,216 tokens. A product job reserves its
+whole budget of 8,388,608, so the mission total also covers one recovery job. The policy
+copy changes only `max_model_tokens_per_order` and `max_inference_requests_per_order`, and
+the pin moves with it. Both earlier missions stay closed and are pinned on every authority
+check, and the signed grant the policy names is not changed.

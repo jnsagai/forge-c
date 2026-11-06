@@ -27,12 +27,12 @@ budgets:
   max_order_attempts: 3
   max_strategy_variants_per_phase: 2
   max_recovery_model_calls_per_order: 4
-  max_model_tokens_per_order: 1048576
+  max_model_tokens_per_order: 8388608
   max_gpu_seconds_per_order: 43200
   max_recovery_wall_seconds: 3600
   max_order_wall_seconds: 86400
   max_retries_per_transient_operation: 2
-  max_inference_requests_per_order: 32
+  max_inference_requests_per_order: 256
 engineering:
   allow_scoped_product_draft_rework: false
   enable_recovery_planner: true

@@ -13,7 +13,6 @@ from forge_factory.afo.mission_ledger import MissionLedger
 from forge_factory.afo.queue import Store
 from forge_factory.common import canonical_json, sha256_file
 
-
 PRIOR_RECORD = (
     '{"authorization_ref":"AUTH-AFO-REVIEW-20261104-LINE-FINITE","created_at":"2026-11-04T22:50:57.061356Z",'
     '"limits":{"deadline":1793848026.0,"max_attempts":4,"max_corrections":4,"max_jobs":4,"max_requests":32,'
@@ -22,8 +21,16 @@ PRIOR_RECORD = (
 )
 
 
+CLOSED_ALLOWANCE_RECORD = (
+    '{"authorization_ref":"OWNER-DEVELOPMENT-ALLOWANCE-20261106-NOT-A-GRANT","created_at":"2026-11-06T12:35:53.378181Z",'
+    '"limits":{"deadline":1795057626.0,"max_attempts":2,"max_corrections":4,"max_jobs":2,"max_requests":32,'
+    '"max_tokens":8388608,"max_tools":256},"lineage":"owner-review:local-role-trial-20261106",'
+    '"mission_id":"line-local-role-trial-20261106"}'
+)
+
+
 def seed_spent_original(store):
-    """The exact real row and four unknown-usage attempts the allowance must sit beside."""
+    """The exact real rows and spent, unknown-usage attempts the allowance must sit beside."""
     with store.tx() as c:
         c.execute(
             "INSERT INTO afo_missions VALUES (?,?,?)", (D.PRIOR_MISSION, json.loads(PRIOR_RECORD)["lineage"], PRIOR_RECORD)
@@ -38,6 +45,18 @@ def seed_spent_original(store):
                 "INSERT INTO afo_mission_executions VALUES (?,?,?,?)",
                 (identity, D.PRIOR_MISSION, "PRODUCT", json.dumps(record)),
             )
+        c.execute(
+            "INSERT INTO afo_missions VALUES (?,?,?)",
+            (D.CLOSED_ALLOWANCE, json.loads(CLOSED_ALLOWANCE_RECORD)["lineage"], CLOSED_ALLOWANCE_RECORD),
+        )
+        spent = dict(
+            charge=1048576, created_at="2026-11-06T12:37:49Z", evidence_refs=[], identity="afo-product-spent-e",
+            imported=False, kind="PRODUCT", reported_tokens=None,
+        )
+        c.execute(
+            "INSERT INTO afo_mission_executions VALUES (?,?,?,?)",
+            ("afo-product-spent-e", D.CLOSED_ALLOWANCE, "PRODUCT", json.dumps(spent)),
+        )
 
 
 @pytest.fixture
@@ -53,11 +72,11 @@ def supervised(tmp_path, monkeypatch):
     operations.Intent().set("RUNNING", actor="PRIVATE-TEST-OWNER", reason="Private control", initialize=True)
     store = Store(tmp_path / "state/supervisor/line-queue.sqlite3")
     limits = dict(
-        max_attempts=2,
+        max_attempts=1,
         max_jobs=2,
-        max_requests=32,
-        max_tokens=8388608,
-        max_tools=256,
+        max_requests=256,
+        max_tokens=16777216,
+        max_tools=512,
         max_corrections=4,
         deadline=time.time() + 300,
     )
@@ -589,14 +608,13 @@ def test_owner_development_uses_existing_placer_but_never_production_feed(superv
 
 def test_real_mission_exhaustion_refuses_before_any_new_execution(supervised):
     ledger = MissionLedger(supervised["store"])
-    for i in range(2):
-        ledger.execution(D.MISSION, "private-remaining-" + str(i), "PRODUCT", reserved_tokens=1)
+    ledger.execution(D.MISSION, "private-remaining", "PRODUCT", reserved_tokens=1)
     before = ledger.snapshot(D.MISSION)
-    assert before["attempts"] == 2
-    # The last execution can still settle; it never mints a third.
+    assert before["attempts"] == 1
+    # The last execution can still settle; it never mints another.
     D.current(store=supervised["store"])
     with pytest.raises(Refused, match="MISSION_ALLOWANCE_EXHAUSTED"):
-        ledger.execution(D.MISSION, "FORBIDDEN-THIRD", "PRODUCT", reserved_tokens=1)
+        ledger.execution(D.MISSION, "FORBIDDEN-SECOND", "PRODUCT", reserved_tokens=1)
     assert ledger.snapshot(D.MISSION) == before
 
 

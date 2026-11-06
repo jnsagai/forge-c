@@ -28,20 +28,27 @@ FILE = "FORGE_OWNER_DEVELOPMENT_RECORD"
 SHA = "FORGE_OWNER_DEVELOPMENT_SHA256"
 SCHEMA = "forge-c/owner-supervised-development/1"
 DIRECTIVE = "for now go on without needing signatures"
-MISSION = "line-local-role-trial-20261106"
-LINEAGE = "owner-review:local-role-trial-20261106"
+MISSION = "line-local-role-trial-20261106b"
+LINEAGE = "owner-review:local-role-trial-20261106b"
 INITIAL_AUTHORITY = "AUTH-AFO-REVIEW-20261104-LINE-FINITE"  # named by the pinned runtime policy
-ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261106-NOT-A-GRANT"
-ORDERS = tuple("WO-F014-SWE6-AFOQUAL-20261104-L90" + c for c in "EF")
+ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261106B-NOT-A-GRANT"
+ORDERS = ("WO-F014-SWE6-AFOQUAL-20261104-L90F",)
+SPENT_ORDER = "WO-F014-SWE6-AFOQUAL-20261104-L90E"
 DRIVER = "STM32N6_CRC_HAL"
 DEADLINE = 1795057626.0
-CAPS = dict(max_attempts=2, max_jobs=2, max_requests=32, max_tokens=8388608, max_tools=256, max_corrections=4)
+# Real SWE.6 runs used 48 to 218 model calls. A product job reserves its whole 8,388,608 token budget,
+# so the mission total also covers one recovery job.
+CAPS = dict(max_attempts=1, max_jobs=2, max_requests=256, max_tokens=16777216, max_tools=512, max_corrections=4)
 # The spent mission stays closed exactly as it ended; this lane never reads it as capacity.
 ENVELOPE_REFUSED = "OWNER_DEVELOPMENT_ORIGINAL_ORDER_ENVELOPE_REQUIRED"
 SOURCE_FIX_CLOSED = "CLOSED_FOR_SOURCE_FIX:ALLOWANCE_20261106"
 PRIOR_MISSION = "line-local-role-trial-20261104"
 PRIOR_RECORD_SHA256 = "81325abb4b67c6cdacdfcbbf9c1f51e111ae4a5735f32182347f929d4e7e4e01"
+ORIGINAL_RUNTIME_POLICY_SHA = "dcd4fc785e373058c7ec4979319540623bcd06537c37baa1d68607850d21b17e"
 PRIOR_SPENT = dict(attempts=4, jobs=0, requests=0, tools=0, corrections=0, charged_tokens=4194304)
+CLOSED_ALLOWANCE = "line-local-role-trial-20261106"
+CLOSED_ALLOWANCE_RECORD_SHA256 = "7803ee8afa1a61259c83f195dfca410b4e591875dd4f863e774245e1b410b3f4"
+CLOSED_ALLOWANCE_SPENT = dict(attempts=1, jobs=0, requests=0, tools=0, corrections=0, charged_tokens=1048576)
 # Issuer history of that mission is read against how it ended, never against this allowance.
 PRIOR_SCOPE = dict(
     mission=dict(
@@ -53,10 +60,11 @@ PRIOR_SCOPE = dict(
     ),
     order_ids=["WO-F014-SWE6-AFOQUAL-20261104-L90" + c for c in "BCD"],
     mission_anchor=dict(base_sha256=PRIOR_RECORD_SHA256, counters=PRIOR_SPENT, usage_unknown=True),
+    runtime_policy_sha256=ORIGINAL_RUNTIME_POLICY_SHA,
 )
 PROFILE = "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104"
 PROFILE_SHA = "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c"
-RUNTIME_POLICY_SHA = "dcd4fc785e373058c7ec4979319540623bcd06537c37baa1d68607850d21b17e"
+RUNTIME_POLICY_SHA = "bc778f70a44a52ac4f6837766c17ef09184a98feb755b01b604cfb2cfde5485f"
 LINE_POLICY_SHA = "c44a5ddf14b54740ee986fe1cf9a767957353b70e19fd66ab8ef5a12588c7740"
 RUN_MODEL = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
 
@@ -368,18 +376,18 @@ def _attest(record, socket_path, *, private_view=False, mapped_host=False):
 
 
 def prior_conserved(store):
-    """The separate allowance exists only beside the unchanged, exhausted original mission."""
+    """The raised allowance exists only beside both earlier missions, each unchanged and closed."""
     from .mission_ledger import MissionLedger
 
-    prior = MissionLedger(store).snapshot(PRIOR_MISSION)
-    with store.tx() as c:
-        base = json.loads(c.execute("SELECT record FROM afo_missions WHERE mission_id=?", (PRIOR_MISSION,)).fetchone()[0])
-    if (
-        digest(base) != PRIOR_RECORD_SHA256
-        or any(prior[k] != v for k, v in PRIOR_SPENT.items())
-        or prior["usage_unknown"] is not True
+    for mission_id, record_sha, spent in (
+        (PRIOR_MISSION, PRIOR_RECORD_SHA256, PRIOR_SPENT),
+        (CLOSED_ALLOWANCE, CLOSED_ALLOWANCE_RECORD_SHA256, CLOSED_ALLOWANCE_SPENT),
     ):
-        _fail("PRIOR_MISSION_NOT_CONSERVED")
+        prior = MissionLedger(store).snapshot(mission_id)
+        with store.tx() as c:
+            base = json.loads(c.execute("SELECT record FROM afo_missions WHERE mission_id=?", (mission_id,)).fetchone()[0])
+        if digest(base) != record_sha or any(prior[k] != v for k, v in spent.items()) or prior["usage_unknown"] is not True:
+            _fail("PRIOR_MISSION_NOT_CONSERVED")
 
 
 def mission_authority(control):
