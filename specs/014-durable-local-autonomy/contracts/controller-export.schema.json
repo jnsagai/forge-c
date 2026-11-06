@@ -93,7 +93,7 @@
         },
         "failure_type": {
           "type": "string",
-          "pattern": "^[A-Z][A-Z0-9_]{0,127}$"
+          "pattern": "^[A-Za-z][A-Za-z0-9_]{0,127}$"
         },
         "source_revision": {
           "type": "string",

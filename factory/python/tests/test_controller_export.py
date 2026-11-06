@@ -102,3 +102,14 @@ def test_unsafe_failure_types_still_refuse(value):
     from forge_factory.afo.controller_escalation import failure_type_ok
 
     assert not failure_type_ok(value)
+
+
+def test_contract_and_capture_agree_on_recorded_failure_types():
+    """The check and the contract must not drift: L90's real proof recorded `Refused`."""
+    from forge_factory.afo.controller_escalation import failure_type_ok
+
+    for value in ("Refused", "STACK_STOP_FAILED"):
+        assert failure_type_ok(value)
+        assert C.render({**case(), "failure_type": value})["archive"]
+    with pytest.raises(ValueError, match="CONTROLLER_EXPORT_SCHEMA_INVALID"):
+        C.render({**case(), "failure_type": "free text"})

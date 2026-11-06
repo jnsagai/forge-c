@@ -89,3 +89,7 @@ old or unreadable, well inside the guard's 180 second limit, and in the backgrou
 Controller capture then pinned on the first real failure. The original L90's proof recorded the
 exception class `Refused`, and the check demanded an upper-case code, so every later report sat
 behind that event. The check now accepts a typed code or a class name, and still refuses free text.
+
+The controller-export contract had the same upper-case rule, so the case sealed and publication
+then failed with `CONTROLLER_EXPORT_SCHEMA_INVALID`. The contract now matches the capture check,
+and a test keeps the two aligned.
