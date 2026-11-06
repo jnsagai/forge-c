@@ -371,7 +371,6 @@ def test_real_outer_observer_worker_proof_is_readonly_on_host(tmp_path, monkeypa
             "--unshare-pid",
             "--as-pid-1",
             "--new-session",
-            "--die-with-parent",
             "--proc",
             "/proc",
             "--",

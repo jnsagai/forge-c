@@ -61,7 +61,8 @@ def prepare(root, record):
         "--unshare-pid",
         "--as-pid-1",
         "--new-session",
-        "--die-with-parent",
+        # No --die-with-parent: the line launcher starts this from a short-lived
+        # `stack start` process. Retirement is by exact instance, as without a view.
     ]
     handles = []
     try:
