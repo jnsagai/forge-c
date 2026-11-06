@@ -631,6 +631,18 @@ def test_actual_durable_launch_claim_refuses_foreign_or_unknown_native_before_wo
     from forge_factory.fabro.client import FabroClient
     from test_afo_line_launcher import FakeProcs
     p = product
+    # Public M2 owns more paths than the narrower lifecycle fixture. Configure
+    # its complete private layout through the existing bootstrap API.
+    from forge_factory.afo import line_recovery_worker as W
+    p.cfg.launch_dir = tmp_path / "line"
+    p.cfg.runs_root = tmp_path / "runs"
+    p.cfg.repo = Path(__file__).resolve().parents[3]
+    p.cfg.python = Path(sys.executable)
+    p.cfg.inputs_cache = None
+    p.cfg.references = ()
+    p.cfg.log = None
+    for key, value in W.config_environment(p.cfg).items():
+        monkeypatch.setenv(key, value)
     monkeypatch.setattr(operations, "configured", lambda: True)
     monkeypatch.setattr(local_agent, "authorized", lambda *a, **kw: True)
     monkeypatch.setattr(C, "require_native_transport", lambda *a, **kw: {"measured_fixture": True})
