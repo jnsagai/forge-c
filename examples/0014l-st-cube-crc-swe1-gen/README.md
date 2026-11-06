@@ -1,0 +1,1 @@
+# 0014l - CRC LL of ST's real stm32n6xx_ll_crc.h, the 10-function delivery scope of 0014c (of 24 public functions), FROZEN, SWE.1, zero human input. As ../0014c-st-cube-crc plus development_execution_policy high-allowance-v2 and generate_obligations: true; the scope is the delivery's function list (selector only); the generator makes one interface obligation per scoped function.

@@ -29,6 +29,13 @@
   "stack_bytes": 128,
   "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25) and the feature 014 operation-24 campaign (2026-10-27)"
  },
+ "simulation_performance": {
+  "schema": "forge-c/simulation-performance-budget/1",
+  "instructions_per_call": 64,
+  "microseconds_per_call": 100,
+  "performance_mips": 100,
+  "test_source": "software/tests/target/test_performance.c"
+ },
  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
  "inputs": [
   {
@@ -179,5 +186,7 @@
    "secure": true
   }
  },
- "peripheral": "wwdg"
+ "peripheral": "wwdg",
+ "generate_obligations": true,
+ "development_execution_policy": "incremental-delivery-high-allowance-v2"
 }
