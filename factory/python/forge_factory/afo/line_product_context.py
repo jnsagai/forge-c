@@ -25,7 +25,8 @@ def _attrs(raw):
         if not sep or key.strip() in values:
             raise Refused("LINE_PRODUCT_GRAPH_ATTRIBUTE_INVALID")
         value = value.strip()
-        values[key.strip()] = json.loads(value) if value.startswith('"') else value
+        # Workflow prompts carry real line breaks; only the string form differs from strict JSON.
+        values[key.strip()] = json.loads(value, strict=False) if value.startswith('"') else value
     return values
 
 

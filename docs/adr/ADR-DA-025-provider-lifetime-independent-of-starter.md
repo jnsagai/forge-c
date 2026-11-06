@@ -61,3 +61,8 @@ up the factory commit in the campaign's repository, which assumed the campaign l
 factory repository. The real campaign lives in its own data repository, so this could never
 resolve. It now resolves against the running source. An unknown or malformed revision still
 refuses, and the manifest provenance check that follows is unchanged.
+
+The rehearsal then failed in role-context capture with `JSONDecodeError`. Generated workflow
+prompts carry real line breaks, which strict `json.loads` refuses, so `_attrs` could not read
+any real graph. Control characters are now accepted inside graph strings. All 86 statements of
+the generated SWE.6 workflow parse. Duplicate attributes and unterminated values still refuse.
