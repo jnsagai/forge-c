@@ -1014,6 +1014,11 @@ def serve(s: dict, model: str, workspace: Path | None = None) -> dict:
     if line_stack_lifecycle.selected():
         return line_stack_lifecycle.serve(s, model, workspace)
     if managed_serving():
+        # Nothing to swap, so nothing to refuse. A real swap still needs the line payload.
+        saved = s["root"] / "run/services.json"
+        current = ((json.loads(saved.read_text()) if saved.is_file() else {}).get("processes") or {}).get("llama_server") or {}
+        if current.get("model") == model:
+            return {"model_swap": "NOT_NEEDED", "model": model}
         raise RuntimeError("MODEL_SWAP_REFUSED_MANAGED_SERVING")
     return _serve_model(s, model, workspace)
 

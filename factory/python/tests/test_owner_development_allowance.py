@@ -217,6 +217,22 @@ def test_recovery_planner_uses_the_lane_grant_not_a_signed_file():
     assert "development.DevelopmentGrant(policy)" in source and "eff.mode == development.MODE" in source
 
 
+@pytest.mark.parametrize(("served", "ok"), [("model-a", True), ("model-b", False)])
+def test_managed_serve_is_a_no_op_only_for_the_served_model(tmp_path, monkeypatch, served, ok):
+    from forge_factory.afo import line_stack_lifecycle
+
+    monkeypatch.setattr(line_stack_lifecycle, "selected", lambda: False)
+    monkeypatch.setattr(stack, "managed_serving", lambda: True)
+    monkeypatch.setattr(stack, "_serve_model", lambda *a, **k: pytest.fail("NO_SWAP_ALLOWED"))
+    (tmp_path / "run").mkdir()
+    (tmp_path / "run/services.json").write_text(json.dumps(dict(processes=dict(llama_server=dict(model=served)))))
+    if ok:
+        assert stack.serve(dict(root=tmp_path), "model-a")["model_swap"] == "NOT_NEEDED"
+    else:
+        with pytest.raises(RuntimeError, match="MODEL_SWAP_REFUSED_MANAGED_SERVING"):
+            stack.serve(dict(root=tmp_path), "model-a")
+
+
 def test_api_bridge_waits_past_a_cold_integrity_check():
     assert stack.API_READY_SECONDS >= 120
 
