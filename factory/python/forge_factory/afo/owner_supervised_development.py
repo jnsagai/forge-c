@@ -28,13 +28,18 @@ FILE = "FORGE_OWNER_DEVELOPMENT_RECORD"
 SHA = "FORGE_OWNER_DEVELOPMENT_SHA256"
 SCHEMA = "forge-c/owner-supervised-development/1"
 DIRECTIVE = "for now go on without needing signatures"
-MISSION = "line-local-role-trial-20261104"
-LINEAGE = "owner-review:local-role-trial-20261104"
-INITIAL_AUTHORITY = "AUTH-AFO-REVIEW-20261104-LINE-FINITE"
-ORDERS = tuple("WO-F014-SWE6-AFOQUAL-20261104-L90" + c for c in "BCD")
+MISSION = "line-local-role-trial-20261106"
+LINEAGE = "owner-review:local-role-trial-20261106"
+INITIAL_AUTHORITY = "AUTH-AFO-REVIEW-20261104-LINE-FINITE"  # named by the pinned runtime policy
+ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261106-NOT-A-GRANT"
+ORDERS = tuple("WO-F014-SWE6-AFOQUAL-20261104-L90" + c for c in "EF")
 DRIVER = "STM32N6_CRC_HAL"
 DEADLINE = 1795057626.0
-CAPS = dict(max_attempts=4, max_jobs=4, max_requests=32, max_tokens=8388608, max_tools=256, max_corrections=4)
+CAPS = dict(max_attempts=2, max_jobs=2, max_requests=32, max_tokens=8388608, max_tools=256, max_corrections=4)
+# The spent mission stays closed exactly as it ended; this lane never reads it as capacity.
+PRIOR_MISSION = "line-local-role-trial-20261104"
+PRIOR_RECORD_SHA256 = "81325abb4b67c6cdacdfcbbf9c1f51e111ae4a5735f32182347f929d4e7e4e01"
+PRIOR_SPENT = dict(attempts=4, jobs=0, requests=0, tools=0, corrections=0, charged_tokens=4194304)
 PROFILE = "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104"
 PROFILE_SHA = "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c"
 RUNTIME_POLICY_SHA = "dcd4fc785e373058c7ec4979319540623bcd06537c37baa1d68607850d21b17e"
@@ -348,9 +353,30 @@ def _attest(record, socket_path, *, private_view=False, mapped_host=False):
         raise Refused("OWNER_DEVELOPMENT_GUARDIAN_ATTESTATION_UNAVAILABLE") from exc
 
 
+def prior_conserved(store):
+    """The separate allowance exists only beside the unchanged, exhausted original mission."""
+    from .mission_ledger import MissionLedger
+
+    prior = MissionLedger(store).snapshot(PRIOR_MISSION)
+    with store.tx() as c:
+        base = json.loads(c.execute("SELECT record FROM afo_missions WHERE mission_id=?", (PRIOR_MISSION,)).fetchone()[0])
+    if (
+        digest(base) != PRIOR_RECORD_SHA256
+        or any(prior[k] != v for k, v in PRIOR_SPENT.items())
+        or prior["usage_unknown"] is not True
+    ):
+        _fail("PRIOR_MISSION_NOT_CONSERVED")
+
+
+def mission_authority(control):
+    """A registered allowance states its own provenance, never the pinned policy's signed grant."""
+    return ALLOWANCE_REF if selected() else control["authorization_ref"]
+
+
 def _mission(store, control, *, anchor=None):
     from .mission_ledger import MissionLedger
 
+    prior_conserved(store)
     mission = MissionLedger(store).snapshot(MISSION)
     limits = mission["limits"]
     if (
@@ -358,21 +384,19 @@ def _mission(store, control, *, anchor=None):
         or mission["lineage"] != LINEAGE
         or any(limits.get(k) != v for k, v in CAPS.items())
         or not time.time() < limits["deadline"] <= DEADLINE
-        or mission.get("initial_authorization_ref", mission["authorization_ref"]) != INITIAL_AUTHORITY
+        or mission.get("initial_authorization_ref", mission["authorization_ref"]) != ALLOWANCE_REF
         or mission["unbounded_historical_usage"]
     ):
-        _fail("ORIGINAL_MISSION_REQUIRED")
+        _fail("ALLOWANCE_MISSION_REQUIRED")
     with store.tx() as c:
         base = json.loads(c.execute("SELECT record FROM afo_missions WHERE mission_id=?", (MISSION,)).fetchone()[0])
-    if base["authorization_ref"] != INITIAL_AUTHORITY:
-        _fail("ORIGINAL_MISSION_REQUIRED")
+    if base["authorization_ref"] != ALLOWANCE_REF:
+        _fail("ALLOWANCE_MISSION_REQUIRED")
     if anchor:
         if digest(base) != anchor["base_sha256"] or any(mission[k] < anchor["counters"][k] for k in anchor["counters"]):
             _fail("ACCOUNTING_REBOUND")
         if anchor["usage_unknown"] and not mission["usage_unknown"]:
             _fail("HISTORICAL_UNKNOWN_USAGE_CHANGED")
-    if mission["attempts"] < 1 or mission["charged_tokens"] < 1048576:
-        _fail("ORIGINAL_SPEND_REQUIRED")
     return mission, base
 
 

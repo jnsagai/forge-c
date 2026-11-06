@@ -326,14 +326,14 @@ def test_real_same_inode_store_counter_regression_cannot_erase_historical_spend(
     path = p["boot"]["store"].path
     before_inode = (path.stat().st_dev, path.stat().st_ino)
     # Deliberate private RESTORE fault, not supported runtime recovery: remove
-    # newer accounting only; original 1attempt/1MiB and all canonical historical
+    # newer accounting only; the separate spent mission and all canonical historical
     # issuer/UNKNOWN/ack/consumed rows stay byte-exact.
     with p["boot"]["store"].tx() as c:
         c.execute("DELETE FROM afo_mission_executions WHERE identity IN (?,?)",
                   ("PRIVATE-HISTORICAL-PRODUCT", "PRIVATE-HISTORICAL-JOB"))
     assert (path.stat().st_dev, path.stat().st_ino) == before_inode
     snapshot = MissionLedger(p["boot"]["store"]).snapshot(D.MISSION)
-    assert snapshot["attempts"] == 1 and snapshot["charged_tokens"] == 1048576 and snapshot["usage_unknown"]
+    assert snapshot["attempts"] == 0 and snapshot["charged_tokens"] == 0 and not snapshot["usage_unknown"]
     current = new_current_after_private_store_change(p, monkeypatch, request)
     # Normal NEW issuer sees its real lower snapshot; historical chain must
     # additionally compare it with the old issuer, without rewriting either.
@@ -341,6 +341,7 @@ def test_real_same_inode_store_counter_regression_cannot_erase_historical_spend(
         R.historical_acknowledged(c, p["boot"]["store"], current, p["old"]["intent_id"])
 
 
+@pytest.mark.parametrize("pending", [{"historical_spend": True}], indirect=True)
 def test_real_unknown_erasure_in_new_issuer_cannot_clear_historical_unknown(acknowledged, monkeypatch, request):
     from forge_factory.afo.mission_ledger import MissionLedger
 
@@ -350,8 +351,9 @@ def test_real_unknown_erasure_in_new_issuer_cannot_clear_historical_unknown(ackn
     p["old_guardian_closed"] = True
     # The public ledger can learn usage; this private test supplies explicit
     # TEST-only numbers, never fabricates a real model measurement.
-    MissionLedger(p["boot"]["store"]).execution(D.MISSION, "original-product-attempt", "PRODUCT",
-                                               reserved_tokens=1048576, reported_tokens=1048576)
+    ledger = MissionLedger(p["boot"]["store"])
+    ledger.execution(D.MISSION, "PRIVATE-HISTORICAL-PRODUCT", "PRODUCT", reserved_tokens=1048576, reported_tokens=1048576)
+    ledger.execution(D.MISSION, "PRIVATE-HISTORICAL-JOB", "DIAGNOSIS", reserved_tokens=0, reported_tokens=0)
     current = new_current_after_private_store_change(p, monkeypatch, request)
     assert current["mission_anchor"]["usage_unknown"] is False
     with p["boot"]["store"].tx() as c, pytest.raises(Refused, match="HISTORICAL_UNKNOWN_USAGE_CHANGED"):

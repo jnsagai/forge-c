@@ -19,6 +19,7 @@ from pathlib import Path
 from ..common import REPO_ROOT, sha256_file, state_dir
 from . import line_maintenance as binding
 from . import line_recovery
+from . import owner_supervised_development as development
 from . import local_agent as L
 from . import maintainer as M
 from .durable import Refused, digest
@@ -90,7 +91,7 @@ def _authorized(store, job, eff):
                 # The snapshot replays validated amendments. The raw registration
                 # continues to bind the original authority and lineage below.
                 or mission.get('limits') != control['mission']['limits']
-                or registered.get('authorization_ref') != control['authorization_ref']):
+                or registered.get('authorization_ref') != development.mission_authority(control)):
             raise Refused('LINE_MAINTENANCE_CONTROL_MISSION_OR_INTENT_CHANGED')
     if time.time() >= _review_deadline(store, job, mission=mission):
         raise Refused('LINE_MAINTENANCE_DEADLINE')

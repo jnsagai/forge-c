@@ -426,8 +426,9 @@ def test_guardian_loss_in_authorization_is_seen_before_spawn(boot, monkeypatch):
     assert not boot["effects"]
 
 
-@pytest.mark.parametrize("order", ["WO-F014-SWE6-AFOQUAL-20261104-L90", "WO-F014-SWE6-AFOQUAL-20261104-L90E"])
-def test_original_spent_and_fifth_orders_cannot_authorize_service(boot, order):
+@pytest.mark.parametrize("order", ["WO-F014-SWE6-AFOQUAL-20261104-L90", "WO-F014-SWE6-AFOQUAL-20261104-L90D",
+                                   "WO-F014-SWE6-AFOQUAL-20261104-L90G"])
+def test_spent_and_beyond_allowance_orders_cannot_authorize_service(boot, order):
     with pytest.raises(Refused, match="BCD_SERVICE_ACTION_REFUSED"):
         B.bootstrap(boot["store"], boot["placer"], order_wo=order)
     assert not boot["effects"]

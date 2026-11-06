@@ -14,6 +14,32 @@ from forge_factory.afo.queue import Store
 from forge_factory.common import canonical_json, sha256_file
 
 
+PRIOR_RECORD = (
+    '{"authorization_ref":"AUTH-AFO-REVIEW-20261104-LINE-FINITE","created_at":"2026-11-04T22:50:57.061356Z",'
+    '"limits":{"deadline":1793848026.0,"max_attempts":4,"max_corrections":4,"max_jobs":4,"max_requests":32,'
+    '"max_tokens":8388608,"max_tools":256},"lineage":"owner-review:local-role-trial-20261104",'
+    '"mission_id":"line-local-role-trial-20261104"}'
+)
+
+
+def seed_spent_original(store):
+    """The exact real row and four unknown-usage attempts the allowance must sit beside."""
+    with store.tx() as c:
+        c.execute(
+            "INSERT INTO afo_missions VALUES (?,?,?)", (D.PRIOR_MISSION, json.loads(PRIOR_RECORD)["lineage"], PRIOR_RECORD)
+        )
+        for i in range(4):
+            identity = "afo-product-spent-" + str(i)
+            record = dict(
+                charge=1048576, created_at="2026-11-04T22:50:57Z", evidence_refs=[], identity=identity,
+                imported=False, kind="PRODUCT", reported_tokens=None,
+            )
+            c.execute(
+                "INSERT INTO afo_mission_executions VALUES (?,?,?,?)",
+                (identity, D.PRIOR_MISSION, "PRODUCT", json.dumps(record)),
+            )
+
+
 @pytest.fixture
 def supervised(tmp_path, monkeypatch):
     from forge_factory.afo import line_recovery_control as C
@@ -27,16 +53,16 @@ def supervised(tmp_path, monkeypatch):
     operations.Intent().set("RUNNING", actor="PRIVATE-TEST-OWNER", reason="Private control", initialize=True)
     store = Store(tmp_path / "state/supervisor/line-queue.sqlite3")
     limits = dict(
-        max_attempts=4,
-        max_jobs=4,
+        max_attempts=2,
+        max_jobs=2,
         max_requests=32,
         max_tokens=8388608,
         max_tools=256,
         max_corrections=4,
         deadline=time.time() + 300,
     )
-    MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.INITIAL_AUTHORITY, authorize=lambda *_: True)
-    MissionLedger(store).execution(D.MISSION, "original-product-attempt", "PRODUCT", reserved_tokens=1048576)
+    seed_spent_original(store)
+    MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.ALLOWANCE_REF, authorize=lambda *_: True)
     from forge_factory.common import load_yaml
 
     fixtures = Path(__file__).parent / "fixtures/owner-supervised-development"
@@ -148,7 +174,8 @@ def test_explicit_owner_context_is_unaccepted_not_auth_ok(supervised):
     assert D.permit(
         eff, "recover_workorder", dict(order_id=D.ORDERS[0], driver_class=D.DRIVER, model=supervised["control"]["profile"])
     )
-    assert MissionLedger(supervised["store"]).snapshot(D.MISSION)["charged_tokens"] == 1048576
+    assert MissionLedger(supervised["store"]).snapshot(D.MISSION)["charged_tokens"] == 0
+    assert MissionLedger(supervised["store"]).snapshot(D.PRIOR_MISSION)["charged_tokens"] == 4194304
 
 
 @pytest.mark.parametrize(
@@ -198,8 +225,8 @@ def test_retry_and_restart_never_reset_accounting(supervised):
     assert ledger.snapshot(D.MISSION) == before
     ledger.execution(D.MISSION, "next-product", "PRODUCT", reserved_tokens=100)
     assert D.current(store=supervised["store"])["mission"]["limits"] == before["limits"]
-    assert ledger.snapshot(D.MISSION)["attempts"] == 2
-    assert ledger.snapshot(D.MISSION)["charged_tokens"] == 1048676
+    assert ledger.snapshot(D.MISSION)["attempts"] == 1
+    assert ledger.snapshot(D.MISSION)["charged_tokens"] == 100
 
 
 def test_control_binding_requires_exact_document(supervised):
@@ -329,7 +356,7 @@ def test_existing_role_request_ledger_and_nonce_integration(native_job):
     with pytest.raises(Refused, match="GENERATION_ALREADY_RESERVED_OR_SENT"):
         A.reserve(store, binding, body, measurement=measure)
     assert p["execution"].get(job["job_id"])["resource_lease"] == "HELD"
-    assert MissionLedger(store).snapshot(D.MISSION)["attempts"] == 2
+    assert MissionLedger(store).snapshot(D.MISSION)["attempts"] == 1
 
 
 def test_guardian_exit_between_reservation_and_effect_refuses_and_holds(native_job):
@@ -562,14 +589,14 @@ def test_owner_development_uses_existing_placer_but_never_production_feed(superv
 
 def test_real_mission_exhaustion_refuses_before_any_new_execution(supervised):
     ledger = MissionLedger(supervised["store"])
-    for i in range(3):
+    for i in range(2):
         ledger.execution(D.MISSION, "private-remaining-" + str(i), "PRODUCT", reserved_tokens=1)
     before = ledger.snapshot(D.MISSION)
-    assert before["attempts"] == 4
-    # Existing fourth execution can still settle; it never mints a fifth.
+    assert before["attempts"] == 2
+    # The last execution can still settle; it never mints a third.
     D.current(store=supervised["store"])
     with pytest.raises(Refused, match="MISSION_ALLOWANCE_EXHAUSTED"):
-        ledger.execution(D.MISSION, "FORBIDDEN-FIFTH", "PRODUCT", reserved_tokens=1)
+        ledger.execution(D.MISSION, "FORBIDDEN-THIRD", "PRODUCT", reserved_tokens=1)
     assert ledger.snapshot(D.MISSION) == before
 
 

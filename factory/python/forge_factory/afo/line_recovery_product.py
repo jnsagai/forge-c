@@ -35,6 +35,7 @@ def registered(store, jid):
 
 def link_mission(store, row, control, spec):
     """Register finite authority before the first inference, never import old work as zero usage."""
+    from . import owner_supervised_development as development
     from .line_orders import _load, supervisor_dir
 
     ledger = MissionLedger(store)
@@ -69,7 +70,7 @@ def link_mission(store, row, control, spec):
         if base_row:
             base = json.loads(base_row[0])
             snapshot = MissionLedger._snapshot(c, control["mission"]["mission_id"])
-            if base["authorization_ref"] != control["authorization_ref"]:
+            if base["authorization_ref"] != development.mission_authority(control):
                 raise Refused("LINE_PRODUCT_MISSION_AUTHORITY_CHANGED")
             if any(snapshot[k] != control["mission"][k] for k in ("mission_id", "lineage", "limits")):
                 raise Refused("LINE_ROLE_SIGNED_MISSION_LIMITS_MISMATCH")
