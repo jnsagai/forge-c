@@ -97,7 +97,8 @@ def _private(path, *, create=False):
         except FileExistsError:
             pass
     s = path.lstat()
-    if not stat.S_ISDIR(s.st_mode) or s.st_uid != os.getuid() or stat.S_IMODE(s.st_mode) != 0o700:
+    # Setgid is inherited on the data volume and grants nothing; setuid and sticky are unexpected.
+    if not stat.S_ISDIR(s.st_mode) or s.st_uid != os.getuid() or stat.S_IMODE(s.st_mode) & ~stat.S_ISGID != 0o700:
         raise Refused("CONTROLLER_EXPORT_DIRECTORY_UNSAFE")
 
 

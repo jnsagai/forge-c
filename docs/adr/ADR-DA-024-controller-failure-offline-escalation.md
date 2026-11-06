@@ -127,3 +127,12 @@ reporting does not delete it or infer a manufacturing outcome. The canonical
 sealed publisher intent records the publication directory and all final physical
 refs before any staging file is created. Future retirement integration must use
 those already-declared refs; artifact names/typed exporter contracts stay unchanged.
+
+## Setgid data volume
+
+The first private launch rehearsal on Omniverse2 returned
+`CONTROLLER_EXPORT_DIRECTORY_UNSAFE` for every case, so no report could publish. The
+data tree is setgid and `mkdir(0o700)` yields mode 2700 there, while the check required
+exactly 0700. Offline temporary directories are not setgid. The check now ignores only
+the setgid bit, which grants no access. Group or world access, setuid and sticky still
+refuse.

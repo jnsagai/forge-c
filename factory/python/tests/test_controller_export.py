@@ -61,3 +61,29 @@ def test_tampered_archive_is_detected():
         for name in src.namelist():
             dst.writestr(name, src.read(name) + (b"tamper" if name == "CASE.json" else b""))
     assert C.verify(buf.getvalue())
+
+
+def test_private_directory_accepts_inherited_setgid_but_not_group_access(tmp_path):
+    """The Omniverse2 data tree is setgid, so mkdir(0o700) yields 2700 there. It grants nothing extra."""
+    import os
+    import stat
+
+    import pytest
+    from forge_factory.afo.controller_escalation import _private
+    from forge_factory.afo.durable import Refused
+
+    parent = tmp_path / "setgid-parent"
+    parent.mkdir()
+    parent.chmod(0o2775)
+    if not parent.stat().st_mode & stat.S_ISGID:
+        pytest.skip("filesystem does not retain setgid")
+    created = parent / "controller-exports"
+    _private(created, create=True)
+    assert stat.S_IMODE(created.stat().st_mode) == 0o2700
+    _private(created)
+    os.chmod(created, 0o2750)
+    with pytest.raises(Refused, match="CONTROLLER_EXPORT_DIRECTORY_UNSAFE"):
+        _private(created)
+    os.chmod(created, 0o4700)
+    with pytest.raises(Refused, match="CONTROLLER_EXPORT_DIRECTORY_UNSAFE"):
+        _private(created)
