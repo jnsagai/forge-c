@@ -43,13 +43,36 @@ class _Budget:
 
 @contextmanager
 def _tx(store, budget):
-    with store.tx() as c:
-        c.set_progress_handler(budget.progress, 1000)
-        c.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, MAX_RECORD * 4)
-        try:
-            yield c
-        finally:
-            c.set_progress_handler(None, 0)
+    # Store.tx sets a ten-second busy timeout before BEGIN. Reporting uses a
+    # bounded existing-only connection to the SAME pinned canonical Store,
+    # with no constructor, migration, mkdir or journal conversion.
+    store._check_existing()
+    left = budget.until - time.monotonic()
+    if left <= 0:
+        raise Refused("CONTROLLER_EXPORT_TIME_BOUND")
+    c = sqlite3.connect(store.path.absolute().as_uri() + "?mode=rw", uri=True, timeout=min(left, 0.1), isolation_level=None)
+    c.row_factory = sqlite3.Row
+    c.set_progress_handler(budget.progress, 1000)
+    c.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, MAX_RECORD * 4)
+    try:
+        c.execute("PRAGMA busy_timeout=" + str(max(1, min(100, int(left * 1000)))))
+        c.execute("PRAGMA synchronous=FULL")
+        c.execute("PRAGMA foreign_keys=ON")
+        if c.execute("PRAGMA journal_mode").fetchone()[0].lower() != "wal":
+            raise Refused("CONTROLLER_EXPORT_EXISTING_WAL_REQUIRED")
+        c.execute("BEGIN IMMEDIATE")
+        store._check_existing()
+        yield c
+        if time.monotonic() > budget.until:
+            raise Refused("CONTROLLER_EXPORT_TIME_BOUND")
+        c.execute("COMMIT")
+    except BaseException:
+        c.set_progress_handler(None, 0)
+        if c.in_transaction:
+            c.execute("ROLLBACK")
+        raise
+    finally:
+        c.close()
 
 
 def _store(store, identity):
@@ -348,6 +371,15 @@ def _transcript(case, cfg):
         if any(not isinstance(step, dict) for step in steps):
             raise Refused("LAUNCH_TRANSCRIPT_METADATA_INVALID")
         case["records"]["launcher"]["steps"] = [metadata(step) for step in steps]
+        observed = {step["step"] for step in case["records"]["launcher"]["steps"] if "step" in step}
+        phases = {"guard", "run_live", "revision", "worktree", "inputs", "stack_stop", "stack_start", "smoke", "workorder_launch"}
+        case["records"]["steps_recorded"] = sorted(observed)
+        case["records"]["steps_not_recorded"] = sorted(phases - observed)
+        logdir = cfg.runs_root / ".launch" / wo / path.stem
+        if rec.get("step_logs") != str(logdir):
+            case["gaps"].append("STOP_LOG_TRANSCRIPT_PATH_UNCONFIRMED")
+        else:
+            _stop_log(case, logdir / "stack-stop.log", cfg.runs_root)
         case["artifacts"].append(
             dict(
                 kind="LAUNCH_TRANSCRIPT",
@@ -358,6 +390,84 @@ def _transcript(case, cfg):
         )
     except (OSError, ValueError, Refused) as exc:
         case["gaps"].append(getattr(exc, "code", "LAUNCH_TRANSCRIPT_UNREADABLE"))
+
+
+STOP_CODES = {
+    "LINE_STACK_NATIVE_NOT_QUIESCENT",
+    "LINE_STACK_NATIVE_OBSERVATION_UNKNOWN",
+    "LINE_STACK_NATIVE_INVENTORY_UNKNOWN",
+    "LINE_STACK_AUTHORITY_OR_EXECUTION_FENCED",
+    "EFFECT_AUTHORITY_EXPIRED_OR_CHANGED",
+    "PROVIDER_WORKER_PARENT_UNPROVEN",
+    "PROVIDER_OWNER_VIEW_UNPROVEN",
+    "OPERATIONS_ADMISSION_FENCED",
+}
+
+
+def _stop_log(case, path, runs_root):
+    if path.resolve().is_relative_to(runs_root.resolve()) is not True or any(
+        p.is_symlink() for p in [path, *path.parents] if p != runs_root and runs_root in p.parents
+    ):
+        case["gaps"].append("STOP_LOG_PATH_UNSAFE")
+        return
+    try:
+        info = path.lstat()
+        if not stat.S_ISREG(info.st_mode):
+            case["gaps"].append("STOP_LOG_TYPE_UNSAFE")
+            return
+        if info.st_size > MAX_RECORD:
+            case["records"]["stop_log"] = dict(bytes=info.st_size, sha256=None, content="OVERSIZE_NOT_READ", observed_codes=[])
+            case["gaps"].append("STOP_LOG_OVERSIZE")
+            return
+        raw = _read(path)
+        words = set(re.findall(rb"\b[A-Z][A-Z0-9_]{1,127}\b", raw))
+        codes = sorted(code for code in STOP_CODES if code.encode() in words)
+        case["records"]["stop_log"] = dict(
+            bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest(), content="KNOWN_TYPED_CODES_ONLY", observed_codes=codes
+        )
+        case["artifacts"].append(
+            dict(kind="STACK_STOP_LOG", bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest(), content="KNOWN_TYPED_CODES_ONLY")
+        )
+        if not codes:
+            case["gaps"].append("STOP_LOG_NO_RECOGNIZED_TYPED_CODE")
+    except FileNotFoundError:
+        case["gaps"].append("STOP_LOG_MISSING")
+    except (OSError, Refused):
+        case["gaps"].append("STOP_LOG_UNREADABLE")
+
+
+def _verify_receipt(root, payload):
+    if not isinstance(payload, dict) or not re.fullmatch(r"case-[0-9a-f]{24}", str(payload.get("case_id", ""))):
+        raise Refused("CONTROLLER_EXPORT_RECEIPT_INVALID")
+    directory = root / payload["case_id"]
+    _private(directory)
+    for key, name, sha in (
+        ("case_json", "case.json", "case_sha256"),
+        ("bundle", "export.zip", "sha256"),
+        ("report", "REPORT.md", "report_sha256"),
+    ):
+        if payload.get(key) != str(directory / name):
+            raise Refused("CONTROLLER_EXPORT_RECEIPT_PATH_CHANGED")
+        raw = _read(directory / name, controller_export.MAX_BYTES)
+        if hashlib.sha256(raw).hexdigest() != payload.get(sha):
+            raise Refused("CONTROLLER_EXPORT_RECEIPT_ARTIFACT_CHANGED")
+        if key == "bundle" and controller_export.verify(raw):
+            raise Refused("CONTROLLER_EXPORT_RECEIPT_ARCHIVE_INVALID")
+
+
+def observe(store, cfg, *, store_identity):
+    """Reporting failures remain explicit telemetry, never kill a healthy owner.
+
+    Normal current()/Store/Intent/admission guards remain unconditional on every
+    production cycle; this does not permit placement on unavailable storage.
+    """
+    try:
+        return cycle(store, cfg, store_identity=store_identity)
+    except Exception as exc:  # noqa: BLE001 - telemetry containment, not manufacturing authority
+        code = getattr(exc, "code", type(exc).__name__)
+        if not isinstance(code, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,127}", code):
+            code = "CONTROLLER_EXPORT_FAILED"
+        return dict(status="CAPTURE_FAILED", code=code, exports=[], model_calls=0)
 
 
 def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: None):
@@ -376,14 +486,19 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
     for forbidden in (cfg.runs_root.absolute(), state_dir() / "workorders"):
         if archive.resolve().is_relative_to(forbidden.resolve()) or forbidden.resolve().is_relative_to(archive.resolve()):
             raise Refused("CONTROLLER_EXPORT_ARCHIVE_IN_RECLAIMABLE_TREE")
-    if archive.is_symlink() or not archive.parent.is_dir():
+    if archive != archive.resolve() or not archive.parent.is_dir():
         raise Refused("CONTROLLER_EXPORT_ARCHIVE_ROOT_UNSAFE")
     try:
         archive.mkdir(mode=0o700)
     except FileExistsError:
         pass
     anchor = archive.stat()
-    if not stat.S_ISDIR(anchor.st_mode) or anchor.st_uid != os.getuid() or anchor.st_mode & 0o022:
+    if (
+        not stat.S_ISDIR(anchor.st_mode)
+        or anchor.st_uid != os.getuid()
+        or anchor.st_mode & 0o022
+        or anchor.st_dev != store.path.stat().st_dev
+    ):
         raise Refused("CONTROLLER_EXPORT_ARCHIVE_ROOT_UNSAFE")
     root = archive / "controller-exports"
     _private(root, create=True)
@@ -405,8 +520,14 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
         for row in rows:
             event = _json(row["record"])
             examined += 1
-            if event.get("type") in ("afo.controller_escalation_cursor", "afo.controller_exported", "afo.dead_letter"):
+            # Ignore only our cursor markers without manufacturing a new
+            # cursor for them. Ordinary dead letters must advance the stream.
+            if event.get("type") == "afo.controller_escalation_cursor":
                 continue
+            if event.get("type") == "afo.controller_exported":
+                _verify_receipt(root, event.get("payload"))
+                advanced = row["seq"]
+                break  # one bounded artifact verification/output per cycle
             with _tx(store, budget) as c:
                 case = _case(c, event)
             if case == "PENDING_SETTLEMENT":

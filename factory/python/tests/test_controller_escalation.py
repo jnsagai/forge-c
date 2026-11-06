@@ -197,8 +197,7 @@ def test_deadletter_batch_cannot_pin_cursor_ahead_of_late_settlement(product):
         for i in range(E.MAX_EVENTS):
             p.store._event(c, "dead_letter", p.oid, payload=dict(private_event=i))
     assert drain(p)["examined_events"] == E.MAX_EVENTS
-    P.dispatch(p.store, p.cmd, p.worker, p.spec, p.eff, p.client, cfg=p.cfg,
-               launch=lambda *a: dict(outcome="STACK_STOP_FAILED"))
+    P.dispatch(p.store, p.cmd, p.worker, p.spec, p.eff, p.client, cfg=p.cfg, launch=lambda *a: dict(outcome="STACK_STOP_FAILED"))
     results = [drain(p) for _ in range(3)]
     assert sum(len(r["exports"]) for r in results) == 1
     with p.store.tx() as c:
@@ -211,16 +210,26 @@ def test_deadletter_batch_cannot_pin_cursor_ahead_of_late_settlement(product):
 
 def test_positive_transcript_and_exact_bound_stop_log_explain_recorded_guard(settled):
     import hashlib
+
     p = settled
     base = p.cfg.runs_root / ".launch" / p.spec["wo"]
     logs = base / "attempt-1"
     logs.mkdir(parents=True)
     raw = b"Refused: LINE_STACK_NATIVE_NOT_QUIESCENT\nNEVER_RAW_PROMPT token=NEVER_SECRET\n"
     (logs / "stack-stop.log").write_bytes(raw)
-    (base / "attempt-1.json").write_text(json.dumps(dict(
-        schema="forge-c/line-launch-attempt/1", work_order=p.spec["wo"], revision="a" * 40,
-        fabro_run_id=None, outcome="STACK_STOP_FAILED", step_logs=str(logs),
-        steps=[dict(step="guard",outcome="OK"),dict(step="stack_stop",outcome="RC_1",rc=1)])))
+    (base / "attempt-1.json").write_text(
+        json.dumps(
+            dict(
+                schema="forge-c/line-launch-attempt/1",
+                work_order=p.spec["wo"],
+                revision="a" * 40,
+                fabro_run_id=None,
+                outcome="STACK_STOP_FAILED",
+                step_logs=str(logs),
+                steps=[dict(step="guard", outcome="OK"), dict(step="stack_stop", outcome="RC_1", rc=1)],
+            )
+        )
+    )
     result = drain(p)
     case = json.loads(Path(result["exports"][0]["case"]).read_text())
     assert case["records"]["stop_log"]["observed_codes"] == ["LINE_STACK_NATIVE_NOT_QUIESCENT"]
@@ -235,10 +244,106 @@ def test_positive_transcript_and_exact_bound_stop_log_explain_recorded_guard(set
 def test_reporting_errors_are_contained_without_authorizing_or_changing_execution(settled, monkeypatch):
     p = settled
     before = Executions(p.store).get(P.job_id(p.aid))
+
     def unavailable(*a, **kw):
         from forge_factory.afo.durable import Refused
+
         raise Refused("CONTROLLER_EXPORT_ARTIFACT_REBOUND", "NEVER_DETAIL")
+
     monkeypatch.setattr(E, "cycle", unavailable)
-    result = E.observe(p.pinned,p.cfg,store_identity=p.identity)
-    assert result == dict(status="CAPTURE_FAILED",code="CONTROLLER_EXPORT_ARTIFACT_REBOUND",exports=[],model_calls=0)
+    result = E.observe(p.pinned, p.cfg, store_identity=p.identity)
+    assert result == dict(status="CAPTURE_FAILED", code="CONTROLLER_EXPORT_ARTIFACT_REBOUND", exports=[], model_calls=0)
     assert Executions(p.store).get(P.job_id(p.aid)) == before
+
+
+@pytest.mark.parametrize("fault", ["proof-sha", "nonce", "native"])
+def test_tampered_or_contradicted_unsent_proof_never_exports(settled, fault):
+    from forge_factory.afo.durable import canonical, digest
+
+    p = settled
+    jid = P.job_id(p.aid)
+    with p.store.tx() as c:
+        if fault in ("proof-sha", "nonce"):
+            raw = c.execute(
+                "SELECT record FROM afo_execution_evidence WHERE job_id=? AND kind='LAUNCH_NOT_STARTED'", (jid,)
+            ).fetchone()[0]
+            record = json.loads(raw)
+            record["launch_nonce"] = "FOREIGN_NONCE"
+            sha = digest(record) if fault == "nonce" else "0" * 64
+            c.execute(
+                "UPDATE afo_execution_evidence SET record=?,sha256=? WHERE job_id=? AND kind='LAUNCH_NOT_STARTED'",
+                (canonical(record).decode(), sha, jid),
+            )
+        else:
+            record = json.loads(c.execute("SELECT record FROM afo_execution_liveness WHERE job_id=?", (jid,)).fetchone()[0])
+            record["native_run_ids"] = ["ACTUAL_UNKNOWN_NATIVE"]
+            c.execute("UPDATE afo_execution_liveness SET record=? WHERE job_id=?", (canonical(record).decode(), jid))
+    with pytest.raises(Exception):
+        drain(p)
+    assert not list((E.archive_root() / "controller-exports").glob("case-*/export.zip"))
+
+
+def test_writer_contention_is_bounded_and_observed_not_a_controller_exit(settled, monkeypatch):
+    import sqlite3
+    import time
+
+    p = settled
+    monkeypatch.setattr(E, "MAX_SECONDS", 0.2)
+    lock = sqlite3.connect(p.store.path, isolation_level=None)
+    lock.execute("BEGIN IMMEDIATE")
+    start = time.monotonic()
+    try:
+        result = E.observe(p.pinned, p.cfg, store_identity=p.identity)
+    finally:
+        lock.execute("ROLLBACK")
+        lock.close()
+    assert time.monotonic() - start < 0.8
+    assert result["status"] == "CAPTURE_FAILED" and result["exports"] == []
+    assert Executions(p.store).get(P.job_id(p.aid))["task_outcome"] == "BLOCKED"
+
+
+def test_archive_ancestor_alias_refuses_before_publication(settled, monkeypatch, tmp_path):
+    p = settled
+    target = tmp_path / "real-archive"
+    target.mkdir()
+    alias = tmp_path / "alias-archive"
+    alias.symlink_to(target, target_is_directory=True)
+    monkeypatch.setenv("FORGE_ARCHIVE_DIR", str(alias / "exports"))
+    with pytest.raises(Exception):
+        drain(p)
+    assert not (target / "exports").exists()
+
+
+def test_acknowledged_artifact_is_verified_on_restart(settled):
+    p = settled
+    result = drain(p)
+    report = Path(result["exports"][0]["report"])
+    report.write_text("FOREIGN_REPORT")
+    with pytest.raises(Exception):
+        drain(p)
+    assert report.read_text() == "FOREIGN_REPORT"
+
+
+def test_unsafe_stop_log_path_cannot_include_external_body(settled, tmp_path):
+    p = settled
+    base = p.cfg.runs_root / ".launch" / p.spec["wo"]
+    base.mkdir(parents=True)
+    foreign = tmp_path / "foreign"
+    foreign.mkdir()
+    (foreign / "stack-stop.log").write_text("NEVER_EXTERNAL_BODY")
+    (base / "attempt-1.json").write_text(
+        json.dumps(
+            dict(
+                work_order=p.spec["wo"],
+                revision="a" * 40,
+                fabro_run_id=None,
+                outcome="STACK_STOP_FAILED",
+                step_logs=str(foreign),
+                steps=[],
+            )
+        )
+    )
+    result = drain(p)
+    case = json.loads(Path(result["exports"][0]["case"]).read_text())
+    assert "STOP_LOG_TRANSCRIPT_PATH_UNCONFIRMED" in case["gaps"]
+    assert "NEVER_EXTERNAL_BODY" not in Path(result["exports"][0]["report"]).read_text()

@@ -1019,7 +1019,7 @@ def main(argv=None):
             _publish_heartbeat(live_record, cycle=n)
             readiness = provider_preflight(cfg.stack_root)
             result = placer.cycle() if readiness["placing"] else dict(mode=MODE, actions=[], readiness=readiness)
-            from .controller_escalation import cycle as controller_escalation
+            from .controller_escalation import observe as controller_escalation
 
             escalation = controller_escalation(store, cfg, store_identity=live_record["store_identity"])
             # No submit/admission or PRODUCT reservation occurs while replacement

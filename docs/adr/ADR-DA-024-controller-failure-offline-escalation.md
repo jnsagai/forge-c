@@ -14,7 +14,7 @@ blocks the job/order and quarantines the command. The owner-supervised Placer
 captures factual learning but does not run the generic conductor's dead-letter
 sweep. Maintainer repair intentionally denies afo/**. Neither that denial nor
 the protected production policy is relaxed. auto_merge_source and
- auto_promote_factory_code remain false; the report is no promotion authority.
+auto_promote_factory_code remain false; the report is no promotion authority.
 
 Add controller_escalation.cycle to the existing owner loop after its placement
 cycle. It receives the already-open existing-only canonical Store and the
@@ -63,3 +63,27 @@ require_available(c, refs) writer fence must be wired during qualified integrati
 no unqualified SQL or optional import fallback is introduced here. Independent
 archive containment already excludes these outputs from this component's job
 reclamation roots. Full continuous-operation/retention acceptance remains separate.
+
+Independent review controls preserved a real cursor defect in the first candidate:
+a page of32 dead-letter events was ignored without advancing. The corrected reader
+advances ordinary events, ignores only its own cursor markers without creating
+self-write churn, and verifies completed-artifact receipts as it advances.
+A reporting failure becomes a bounded CAPTURE_FAILED record in the existing owner
+audit and does not kill an otherwise healthy guardian. It supplies no placement
+authority: current()/Intent and pinned storage guards remain unconditional before
+every normal cycle. The direct strict cycle API retains errors for verification.
+
+Writer acquisition uses an existing-only connection to the same pinned canonical
+Store with a100ms busy bound and the shared SQL VM/elapsed budget in place before
+BEGIN IMMEDIATE. There is no DB initialization, WAL conversion or replacement
+Store. Committing files remains subject to normal filesystem scheduling; no hard
+realtime fsync guarantee is claimed. Archive ancestry must be canonical and its
+device must equal the pinned Store's data volume.
+
+A transcript's stop log is derived from its exact attempt basename beneath the
+configured launch root and must match the transcript's step_logs identity.
+Bounded complete files get a whole-file digest and byte count. Only a finite
+source-owned typed-code set is extracted; unknown text, tracebacks and bodies
+remain excluded. Missing, oversize, unsafe or unrecognized logs are explicit gaps.
+Recorded and not-recorded steps are distinct from proven reached/not-reached
+execution boundaries: the local no-submit proof remains mandatory.
