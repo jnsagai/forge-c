@@ -27,7 +27,7 @@ def placed(env, monkeypatch):
                             "config_sha256": profile["_sha256"]}
     p.write_text(json.dumps(man))
     (ws / ".forge-run/model-profile.json").write_text(json.dumps({"default": profile["structured"]["role_models"]["author"]}))
-    monkeypatch.setattr(R, "_revision", lambda root, revision: REV1)
+    monkeypatch.setattr(R, "_revision", lambda revision: REV1)
     return {"store": store, "order_id": order["order_id"], "attempt_id": attempt["attempt_id"],
             "workspace": ws, "campaign_path": path, "policy_path": env["tmp"] / "line-policy.yaml",
             "auth_base": env["tmp"] / "auth", "allowed_signers": env["signers"], "now": env["clock"]()}
