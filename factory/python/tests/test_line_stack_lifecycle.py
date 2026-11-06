@@ -622,3 +622,41 @@ def test_only_initial_refusal_without_response_can_use_no_process_allowance(clai
     assert len(calls) == (1 if when in ("first", "after-headers") else 2)
     assert MissionLedger(p.store).snapshot("fixture-mission") == before
     assert Executions(p.store).get(P.job_id(p.aid))["resource_lease"] == "HELD"
+
+
+@pytest.mark.parametrize("source", ["/foreign-project/workspace", None, ""])
+@pytest.mark.parametrize("kind", ["running", "runnable", "starting", "blocked", "removing"])
+def test_actual_durable_launch_claim_refuses_foreign_or_unknown_native_before_worktree_stack(product, monkeypatch, tmp_path, source, kind):
+    import httpx
+    from forge_factory.fabro.client import FabroClient
+    from test_afo_line_launcher import FakeProcs
+    p = product
+    monkeypatch.setattr(operations, "configured", lambda: True)
+    monkeypatch.setattr(local_agent, "authorized", lambda *a, **kw: True)
+    monkeypatch.setattr(C, "require_native_transport", lambda *a, **kw: {"measured_fixture": True})
+    p.cfg.gpu_lock = tmp_path / "gpu.lock"
+    (p.cfg.stack_root / "run").mkdir(parents=True)
+    monkeypatch.setenv("FORGE_LINE_STACK_ROOT", str(p.cfg.stack_root))
+    monkeypatch.setenv("FORGE_LINE_GPU_LOCK", str(p.cfg.gpu_lock))
+    monkeypatch.setenv("FORGE_DURABLE_NATIVE_HEADER", "1")
+    captured = []
+    def transport(order, cfg):
+        captured.append(order)
+        raise TimeoutError("private preparation boundary; no native submission")
+    P.dispatch(p.store, p.cmd, p.worker, p.spec, p.eff, p.client, cfg=p.cfg, launch=transport)
+    assert len(captured) == 1
+    order = captured[0]
+    assert order.durable_file and not Executions(p.store)._evidence(P.job_id(p.aid), "LINE_LOCAL_LAUNCH_CLAIM")
+    row = {"id": "FOREIGN-UNSAFE", "source_directory": source, "lifecycle": {"status": {"kind": kind}}}
+    def response(request):
+        return httpx.Response(200, json={"data": [row], "meta": {"has_more": False, "total": 1}})
+    host = LL.ShellHost(p.cfg)
+    monkeypatch.setattr(host, "_client", lambda: FabroClient(transport=httpx.MockTransport(response)))
+    monkeypatch.setattr(host, "stack", lambda *a, **kw: pytest.fail("foreign unsafe run reached stack effect"))
+    before = MissionLedger(p.store).snapshot("fixture-mission")
+    result = LL.launch(order, p.cfg, host=host, procs=FakeProcs())
+    assert result["outcome"] == "RUN_LIVE" and "FOREIGN-UNSAFE" in result["detail"]
+    assert not (p.cfg.runs_root / order.wo).exists()
+    assert MissionLedger(p.store).snapshot("fixture-mission") == before
+    assert Executions(p.store)._evidence(P.job_id(p.aid), "LINE_LOCAL_LAUNCH_CLAIM")
+    assert Executions(p.store).get(P.job_id(p.aid))["resource_lease"] == "HELD"

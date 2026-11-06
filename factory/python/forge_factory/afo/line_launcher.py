@@ -911,7 +911,8 @@ def _reason(run: dict) -> str | None:
     return st.get("reason") if isinstance(st, dict) else None
 
 
-def live_runs(cfg: LineConfig, host, procs=None, ports: dict | None = None, *, durable_exclusion=None) -> dict:
+def live_runs(cfg: LineConfig, host, procs=None, ports: dict | None = None, *, durable_exclusion=None,
+              whole_server: bool = False) -> dict:
     """Live Forge-C runs of this stack root (the M0 rule: lifecycle running/submitted/queued/pending/paused and a
     source_directory under <root>/state/). Fails closed: an API that does not answer while a Fabro of the live stack
     is alive is FABRO_API_UNREACHABLE. Fabro servers outside the live stack (orphans) are asked in their own
@@ -924,9 +925,13 @@ def live_runs(cfg: LineConfig, host, procs=None, ports: dict | None = None, *, d
     except Refused as exc:
         raise LaunchError("DURABLE_EXECUTION_BUSY", exc.code) from None
     procs = procs or ProcFS()
+    prefix = str(cfg.stack_root).rstrip("/") + "/state/"
+    # A validated durable launch claim cannot be downgraded by a caller flag.
+    whole_server = whole_server or durable_exclusion is not None
 
     def live(runs):
-        return [r["id"] for r in runs or [] if _kind(r) in LIVE_KINDS]
+        return [r["id"] for r in runs or [] if _kind(r) in LIVE_KINDS
+                and (whole_server or str(r.get("source_directory", "")).startswith(prefix))]
 
     out = {"api": "UP", "live": [], "orphan_fabro": []}
     try:
@@ -1150,7 +1155,8 @@ def launch(order: Order, cfg: LineConfig | None = None, *, host=None, procs=None
 def _launch_locked(att: Attempt, cfg: LineConfig, order: Order, host, procs, say) -> dict:
     # 2 RUN_LIVE: first, before any worktree or stack action
     exclusion = getattr(att, "durable_exclusion", None)
-    lr = live_runs(cfg, host, procs, **({"durable_exclusion": exclusion} if exclusion else {}))
+    lr = live_runs(cfg, host, procs, whole_server=order.durable_file is not None,
+                   **({"durable_exclusion": exclusion} if exclusion else {}))
     att.step("run_live", api=lr["api"], orphan_fabro=lr["orphan_fabro"])
     say(f"step run_live ok: no live run on {cfg.stack_root} (api {lr['api'].lower()})")
     sha = resolve_rev(cfg.repo, order.rev)  # read only (git objects of the line repo)
@@ -1303,7 +1309,7 @@ def _plan(att: Attempt, cfg: LineConfig, order: Order, host, procs, say) -> dict
     att.step("gpu_lock", "WOULD_REFUSE:GPU_LOCK_HELD" if holders else "FREE", holders=holders, lock=str(cfg.gpu_lock))
     say(f"plan gpu_lock: {cfg.gpu_lock} {'held by ' + str(holders) + ' -> would refuse GPU_LOCK_HELD' if holders else 'free'}")
     try:
-        lr = live_runs(cfg, host, procs)
+        lr = live_runs(cfg, host, procs, whole_server=order.durable_file is not None)
         att.step("run_live", "NONE", api=lr["api"], orphan_fabro=lr["orphan_fabro"])
         say(f"plan run_live: none (api {lr['api'].lower()})")
     except LaunchError as exc:

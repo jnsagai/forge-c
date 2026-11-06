@@ -78,3 +78,14 @@ attempts and receipt of headers. ECONNREFUSED is an initial-absence fact only fo
 request one before any response starts. A later page, second pass, or body error
 after headers is partial/unknown observation even if no body bytes were retained.
 Normal private prelaunch controls exercise all four cases with the actual SDK.
+
+M2 compatibility has an explicit context split. Ordinary non-durable callers
+retain the existing per-stack-root live-run rule. A validated durable exclusion
+or the stricter-only whole-server keyword from a durable Order makes every unsafe
+canonical-server run occupied, including foreign or missing source directories.
+Both launch and read-only plan paths derive this scope from the Order, never from
+an environment flag alone. M3 admission and lifecycle guards remain globally
+conservative. The prior V4 broad regression caught an unintended unconditional
+change to the legacy M2 scope; it is preserved rather than waived. Normal private
+durable-launch controls verify the exact claim and block before worktree/stack
+operations, while the inherited legacy other-root test retains its old result.
