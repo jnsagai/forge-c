@@ -11,7 +11,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from ..common import state_dir
+from ..common import REPO_ROOT, state_dir
 from . import line_campaign as campaign
 from . import line_orders as orders
 
@@ -35,10 +35,11 @@ def _require(condition, code: str) -> None:
         raise BindingRefused(code)
 
 
-def _revision(root: Path, revision: str) -> str:
+def _revision(revision: str) -> str:
+    """Resolve against the running source; a campaign may live in its own data repository."""
     if not isinstance(revision, str) or not campaign.RX["factory_revision"].fullmatch(revision):
         raise BindingRefused("SOURCE_REVISION_INVALID")
-    result = subprocess.run(["git", "rev-parse", "--verify", revision + "^{commit}"], cwd=root,
+    result = subprocess.run(["git", "rev-parse", "--verify", revision + "^{commit}"], cwd=REPO_ROOT,
                             capture_output=True, text=True, timeout=30)
     _require(result.returncode == 0, "SOURCE_REVISION_UNRESOLVED")
     return result.stdout.strip()
@@ -145,7 +146,7 @@ def bind(store, order_id: str, attempt_id: str, *, workspace: Path, campaign_pat
     for relative in (".forge-run/manifest.json", ".forge-run/model-profile.json"):
         _require((ws / relative).resolve().is_relative_to(ws), "SOURCE_PROVENANCE_PATH_ESCAPE")
     man = _read(ws / ".forge-run/manifest.json", "SOURCE_MANIFEST_INVALID")
-    revision = _revision(camp.root, lin.factory_revision)
+    revision = _revision(lin.factory_revision)
     provenance = man.get("factory_revision") or {}
     _require(man.get("work_order") == wo and isinstance(provenance, dict)
              and provenance.get("commit") == revision and provenance.get("dirty") is False,

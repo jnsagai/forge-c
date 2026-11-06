@@ -55,3 +55,9 @@ its authority first.
 `L/archives` is group-writable on Omniverse2, and the controller export correctly refuses a
 group-writable anchor. As with `lrtx/run`, the host needs a one-time `g-w` hardening before
 reports can publish. The check is not weakened.
+
+The next rehearsal stage refused with `SOURCE_REVISION_UNRESOLVED`. `line_recovery.bind` looked
+up the factory commit in the campaign's repository, which assumed the campaign lived in the
+factory repository. The real campaign lives in its own data repository, so this could never
+resolve. It now resolves against the running source. An unknown or malformed revision still
+refuses, and the manifest provenance check that follows is unchanged.
