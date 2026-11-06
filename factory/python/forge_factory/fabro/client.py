@@ -10,6 +10,7 @@ No undocumented DB access, no UI scraping.
 from __future__ import annotations
 
 import hashlib
+import asyncio
 import errno
 import json
 import os
@@ -103,6 +104,7 @@ class FabroClient:
             {"url": url, "netns": namespace, "boot": boot}, sort_keys=True,
         ).encode()).hexdigest()
         headers = {"Authorization": f"Bearer {token}"} if token else {}
+        self._inventory_transport = transport
         self._http = httpx.Client(base_url=url, headers=headers, timeout=timeout, transport=transport)
 
     def close(self):
@@ -139,6 +141,47 @@ class FabroClient:
     def run_inventory(self, *, statuses: tuple[str, ...] | None = None, include_archived: bool = True,
                       page_size: int = 100, max_pages: int = 64, max_runs: int = 6400,
                       timeout_s: float = 5.0, max_bytes: int = 16 * 1024 * 1024) -> RunInventory:
+        """Synchronous complete inventory with a cancellable total network deadline.
+
+        This new API is intentionally refused within an existing event loop;
+        lifecycle/admission/stack CLI consumers are synchronous. Legacy
+        `list_runs` remains unchanged. JSON work is byte-bounded and clocks are
+        checked after it; this is not a hard realtime scheduling guarantee.
+        """
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            pass
+        else:
+            raise FabroUnavailable("RUN_INVENTORY_SYNC_IN_ASYNC_CONTEXT")
+        if type(timeout_s) not in (int, float) or not 0 < timeout_s <= 10:
+            raise FabroUnavailable("RUN_INVENTORY_BOUNDS_INVALID")
+        if self._inventory_transport is not None and not isinstance(self._inventory_transport, httpx.AsyncBaseTransport):
+            raise FabroUnavailable("RUN_INVENTORY_ASYNC_TRANSPORT_UNSUPPORTED")
+        started = (time.monotonic(), time.clock_gettime(time.CLOCK_BOOTTIME))
+
+        async def observe():
+            async with httpx.AsyncClient(base_url=self._http.base_url, headers=self._http.headers,
+                                         timeout=self._http.timeout, transport=self._inventory_transport) as transport:
+                return await self._run_inventory(statuses=statuses, include_archived=include_archived,
+                    page_size=page_size, max_pages=max_pages, max_runs=max_runs, timeout_s=timeout_s,
+                    max_bytes=max_bytes, _http=transport, _started=started)
+
+        async def bounded():
+            left = timeout_s - max(time.monotonic() - started[0],
+                                   time.clock_gettime(time.CLOCK_BOOTTIME) - started[1])
+            if left <= 0:
+                raise FabroUnavailable("RUN_INVENTORY_TIMEOUT")
+            return await asyncio.wait_for(observe(), timeout=left)
+
+        try:
+            return asyncio.run(bounded())
+        except TimeoutError as exc:
+            raise FabroUnavailable("RUN_INVENTORY_TIMEOUT") from exc
+
+    async def _run_inventory(self, *, statuses: tuple[str, ...] | None = None, include_archived: bool = True,
+                      page_size: int = 100, max_pages: int = 64, max_runs: int = 6400,
+                      timeout_s: float = 5.0, max_bytes: int = 16 * 1024 * 1024, _http=None, _started=None) -> RunInventory:
         """Two agreeing complete passes over the pinned 0.362 pagination API.
 
         `total` is optional in that API; `has_more` is mandatory. A bound,
@@ -157,8 +200,7 @@ class FabroClient:
                  or len(set(statuses)) != len(statuses))):
             raise FabroUnavailable("RUN_INVENTORY_BOUNDS_INVALID")
         statuses = ALL_RUN_COLUMNS if statuses is None else statuses
-        start = time.monotonic()
-        boot_start = time.clock_gettime(time.CLOCK_BOOTTIME)
+        start, boot_start = _started
         boot_identity = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
         network_namespace = os.readlink("/proc/self/ns/net")
         retained_bytes = 0
@@ -170,19 +212,28 @@ class FabroClient:
                 raise FabroUnavailable("RUN_INVENTORY_TIMEOUT")
             return value
 
-        def page(offset):
+        async def page(offset):
             nonlocal retained_bytes
             params = {"page[limit]": page_size, "page[offset]": offset, "sort": "created_at", "direction": "asc",
                       "include_archived": str(include_archived).lower()}
             if statuses is not None:
                 params["status"] = list(statuses)  # OpenAPI form/explode=true: repeated query keys.
             try:
-                with self._http.stream("GET", "/api/v1/runs", params=params, timeout=remaining()) as response:
+                async with _http.stream("GET", "/api/v1/runs", params=params, timeout=remaining()) as response:
                     if response.status_code >= 500:
                         raise FabroUnavailable(f"http_{response.status_code}")
                     response.raise_for_status()
                     raw = bytearray()
-                    for chunk in response.iter_bytes(chunk_size=65536):
+                    async def chunks():
+                        # Injected transports may supply an already materialized
+                        # response. Validate its bound before making any copy;
+                        # real streamed HTTP responses always take the raw path.
+                        if response.is_stream_consumed:
+                            yield response.content
+                        else:
+                            async for item in response.aiter_raw():
+                                yield item
+                    async for chunk in chunks():
                         remaining()
                         if len(raw) + len(chunk) > 4 * 1024 * 1024 or retained_bytes + len(chunk) > max_bytes:
                             raise FabroUnavailable("RUN_INVENTORY_PAGE_BYTES_EXCEEDED")
@@ -222,11 +273,11 @@ class FabroClient:
                                "archived": row.get("archived")},
                               sort_keys=True, separators=(",", ":"), allow_nan=False)
 
-        def collect(*, keep_rows):
+        async def collect(*, keep_rows):
             rows, identities, total, pages = [], {}, None, 0
             for _ in range(max_pages):
                 remaining()
-                value = page(len(identities)); pages += 1
+                value = await page(len(identities)); pages += 1
                 part, meta = value["data"], value["meta"]
                 if type(meta.get("has_more")) is not bool or len(part) > page_size:
                     raise FabroUnavailable("RUN_INVENTORY_METADATA_INVALID")
@@ -254,8 +305,8 @@ class FabroClient:
                     raise FabroUnavailable("RUN_INVENTORY_NO_PROGRESS")
             raise FabroUnavailable("RUN_INVENTORY_PAGE_BOUND")
 
-        _, first_identity, first_pages, first_total = collect(keep_rows=False)
-        second, second_identity, second_pages, second_total = collect(keep_rows=True)
+        _, first_identity, first_pages, first_total = await collect(keep_rows=False)
+        second, second_identity, second_pages, second_total = await collect(keep_rows=True)
         if first_identity != second_identity or first_total != second_total:
             raise FabroUnavailable("RUN_INVENTORY_CHANGED")
         if (Path("/proc/sys/kernel/random/boot_id").read_text().strip() != boot_identity

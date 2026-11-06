@@ -44,7 +44,7 @@ still treats paused/blocked/removing as unsafe and unknown as UNKNOWN.
 
 Bounds are 100 rows/page, 64 pages and 6,400 rows per pass, a shared five-second
 MONOTONIC/BOOTTIME deadline, four MiB/page, and sixteen MiB wire bytes across both
-passes. Streaming stops before retaining an oversized body. Completed observations
+passes. Async raw streaming stops before retaining an oversized body; stdlib asyncio cancellation bounds the whole network operation, including slow headers and slow body trickles. Byte-bounded JSON work is followed by clock checks. This is not a hard realtime scheduling or interpreter-CPU preemption guarantee. Completed observations
 bind boot and network namespace and both clocks; suspend, observer or boot change
 invalidates freshness. Hitting a bound produces UNKNOWN rather than truncation.
 The safety query avoids ever-growing ordinary unarchived terminal history;
@@ -58,3 +58,16 @@ criteria are changed, and no new inference is authorized by inventory evidence.
 Validation uses HTTP transport, bounded streamed bodies, metadata/race/error
 controls, actual normal private order/claim/lease/Intent fixtures and own-native
 adoption. Harmless transport fixtures do not establish model or product competence.
+
+The new synchronous inventory API refuses an already-running event loop rather
+than starting an unbounded helper thread or silently changing transports. Its
+internal async client preserves the same endpoint/authentication/observer and
+accepts an injected transport only when it supports the async protocol; it never
+falls through from an unsupported test transport to real networking. Existing
+synchronous admission/lifecycle/stack CLI consumers remain synchronous.
+
+Admission and M2 live checks conservatively treat every unsafe run on the
+canonical server as occupied, including foreign or missing source directories.
+Exact own-run labels/source/nonce are still mandatory at model handoff. Private
+normal-Placer/TEST-signature controls verify no attempt/outbox/order/mission
+counter changes when a foreign unsafe run prevents admission.

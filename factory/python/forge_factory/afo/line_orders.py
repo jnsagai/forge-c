@@ -268,9 +268,9 @@ class RealLine:
             runs = self.host.fabro_runs()
         except self.LL.FabroUnavailable:
             return None
-        prefix = str(self.cfg.stack_root).rstrip("/") + "/state/"
-        return [r.get("id") for r in runs if self.LL._kind(r) in self.LL.LIVE_KINDS
-                and str(r.get("source_directory", "")).startswith(prefix)]
+        # Admission occupies this canonical server, including foreign/unknown
+        # source directories. Exact own-native identity is checked at handoff.
+        return [r["id"] for r in runs if self.LL._kind(r) in self.LL.LIVE_KINDS]
 
     def verdict(self, wo: str, phase: str) -> dict:
         return self.LL.order_verdict(self.cfg, wo, phase)

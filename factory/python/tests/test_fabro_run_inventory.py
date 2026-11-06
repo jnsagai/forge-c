@@ -107,17 +107,17 @@ def test_explicit_scale_bounds_refuse_instead_of_truncating(kwargs):
             c.run_inventory(**kwargs)
 
 
-class Chunks(httpx.SyncByteStream):
+class Chunks(httpx.AsyncByteStream):
     def __init__(self):
         self.produced = 0
         self.closed = False
 
-    def __iter__(self):
+    async def __aiter__(self):
         for _ in range(10000):
             self.produced += 1
             yield b"x" * 65536
 
-    def close(self):
+    async def aclose(self):
         self.closed = True
 
 
@@ -196,8 +196,8 @@ def test_suspend_or_boot_change_invalidates_complete_observation(monkeypatch):
 
 
 def test_partial_transport_failure_never_becomes_absence():
-    class Partial(httpx.SyncByteStream):
-        def __iter__(self):
+    class Partial(httpx.AsyncByteStream):
+        async def __aiter__(self):
             yield b'{"data":['
             raise httpx.ReadError("private interrupted body")
     with FabroClient(transport=httpx.MockTransport(lambda r: httpx.Response(200, stream=Partial()))) as c:
@@ -316,3 +316,101 @@ def test_m3_unknown_lifecycle_is_unknown_not_empty(tmp_path, monkeypatch):
     line = RealLine(LL.LineConfig.from_env(stack_root=tmp_path, log=False))
     monkeypatch.setattr(line.host, "_client", lambda: client(Pages([row])))
     assert line.live_runs() is None
+
+
+@pytest.mark.parametrize("mode", ["slow-headers", "slow-trickle-body"])
+def test_real_http_total_deadline_cancels_header_and_raw_body_waits(mode):
+    import time
+    stop = threading.Event()
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            if mode == "slow-headers" and stop.wait(3):
+                return
+            try:
+                self.send_response(200)
+                self.send_header("Content-Length", "10000"); self.end_headers()
+                while not stop.wait(0.03):
+                    self.wfile.write(b" "); self.wfile.flush()
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+        def log_message(self, *_):
+            pass
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
+    try:
+        before = time.monotonic()
+        with FabroClient(base_url=f"http://127.0.0.1:{server.server_port}") as c:
+            with pytest.raises(FabroUnavailable, match="TIMEOUT"):
+                c.run_inventory(timeout_s=0.3)
+        assert time.monotonic() - before < 1.5
+    finally:
+        stop.set(); server.shutdown(); server.server_close(); thread.join(timeout=3)
+
+
+def test_sync_inventory_refuses_running_event_loop_without_network():
+    import asyncio
+    pages = Pages([])
+    async def check():
+        with client(pages) as c:
+            with pytest.raises(FabroUnavailable, match="SYNC_IN_ASYNC"):
+                c.run_inventory()
+    asyncio.run(check())
+    assert pages.calls == []
+
+
+def test_sync_only_mock_transport_is_refused_without_real_network_fallback():
+    class SyncOnly(httpx.BaseTransport):
+        def handle_request(self, request):
+            pytest.fail("unsupported transport was used")
+    with FabroClient(transport=SyncOnly()) as c:
+        with pytest.raises(FabroUnavailable, match="TRANSPORT_UNSUPPORTED"):
+            c.run_inventory()
+
+
+def test_async_transport_keeps_exact_authentication_endpoint_and_subject():
+    pages = Pages([])
+    with FabroClient(base_url="http://private-fixture.invalid:12345", token="TEST_ONLY_NOT_OWNER_TOKEN",
+                     transport=httpx.MockTransport(pages)) as c:
+        observation = c.run_inventory()
+        assert observation.observation_identity == c.observation_identity
+    assert len(pages.calls) == 2
+    assert all(r.url.host == "private-fixture.invalid" and r.url.port == 12345
+               and r.headers["Authorization"] == "Bearer TEST_ONLY_NOT_OWNER_TOKEN" for r in pages.calls)
+
+
+@pytest.mark.parametrize("source", ["/another-project/workspace", None, ""])
+@pytest.mark.parametrize("kind", ["runnable", "starting", "blocked", "removing"])
+def test_actual_pre_admission_retains_all_counters_when_foreign_or_unknown_source_is_unsafe(tmp_path, monkeypatch, source, kind):
+    # Real TEST signatures, normal Placer.cycle and actual private SQLite. The
+    # fixture substitutes only normal line workproduct/backend leaves and HTTP.
+    from test_line_conductor_m3 import env as env_fixture, write_campaign, lineage, grant, placer
+    from forge_factory.afo import line_orders as LO
+    from forge_factory.afo.queue import Store
+    from forge_factory.afo.mission_ledger import MissionLedger
+    from contextlib import closing
+    import sqlite3
+    generator = env_fixture.__wrapped__(tmp_path, monkeypatch)
+    environment = generator
+    write_campaign(environment, [lineage("crc-ll", "CRCL", "20261103-L30")])
+    grant(environment)
+    cfg = LL.LineConfig.from_env(stack_root=tmp_path, log=False)
+    actual = LO.RealLine(cfg)
+    row = run(1, kind); row["source_directory"] = source
+    monkeypatch.setattr(actual.host, "_client", lambda: client(Pages([row])))
+    environment["line"].live_runs = actual.live_runs
+    p = placer(environment)
+    store = Store(p.queue_path)
+    limits = {"deadline": environment["clock"]() + 300, "max_attempts": 4, "max_jobs": 4, "max_requests": 32,
+              "max_tokens": 8388608, "max_tools": 256, "max_corrections": 4}
+    ledger = MissionLedger(store)
+    ledger.register("private-no-admission-mission", "private-lineage", limits, "TEST_ONLY", authorize=lambda *_: True)
+    snapshot = ledger.snapshot("private-no-admission-mission")
+    def counts():
+        with closing(sqlite3.connect(p.queue_path)) as c:
+            return {t: c.execute("SELECT COUNT(*) FROM " + t).fetchone()[0] for t in
+                    ("afo_attempts", "afo_work_orders", "afo_commands_outbox", "afo_product_jobs", "afo_mission_executions")}
+    before = counts()
+    result = p.cycle()
+    assert result["gpu"]["busy"] and result["gpu"]["reason"] == "RUN_LIVE_NOT_IN_CAMPAIGN"
+    assert counts() == before and ledger.snapshot("private-no-admission-mission") == snapshot
+    assert environment["line"].launched == []

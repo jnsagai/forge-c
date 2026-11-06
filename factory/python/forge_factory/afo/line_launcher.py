@@ -927,8 +927,7 @@ def live_runs(cfg: LineConfig, host, procs=None, ports: dict | None = None, *, d
     prefix = str(cfg.stack_root).rstrip("/") + "/state/"
 
     def live(runs):
-        return [r.get("id") for r in runs or [] if _kind(r) in LIVE_KINDS
-                and str(r.get("source_directory", "")).startswith(prefix)]
+        return [r["id"] for r in runs or [] if _kind(r) in LIVE_KINDS]
 
     out = {"api": "UP", "live": [], "orphan_fabro": []}
     try:
