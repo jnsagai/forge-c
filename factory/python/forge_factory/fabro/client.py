@@ -222,11 +222,18 @@ class FabroClient:
                 params["status"] = list(statuses)  # OpenAPI form/explode=true: repeated query keys.
             try:
                 requests_started += 1
-                async with _http.stream("GET", "/api/v1/runs", params=params, timeout=remaining()) as response:
+                async with _http.stream("GET", "/api/v1/runs", params=params, timeout=remaining(),
+                                        headers={"Accept-Encoding": "identity"}) as response:
                     responses_started += 1
                     if response.status_code >= 500:
                         raise FabroUnavailable(f"http_{response.status_code}")
                     response.raise_for_status()
+                    # Raw bytes are only the JSON document under identity. The
+                    # byte bounds below never apply to inflated data, so a server
+                    # ignoring the negotiation is refused, never decompressed.
+                    coding = response.headers.get("Content-Encoding")
+                    if coding is not None and coding.strip().lower() != "identity":
+                        raise FabroUnavailable("RUN_INVENTORY_CONTENT_ENCODING_UNEXPECTED")
                     raw = bytearray()
                     async def chunks():
                         # Injected transports may supply an already materialized

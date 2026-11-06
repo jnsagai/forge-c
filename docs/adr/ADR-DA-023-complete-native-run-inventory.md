@@ -89,3 +89,35 @@ conservative. The prior V4 broad regression caught an unintended unconditional
 change to the legacy M2 scope; it is preserved rather than waived. Normal private
 durable-launch controls verify the exact claim and block before worktree/stack
 operations, while the inherited legacy other-root test retains its old result.
+
+## Wire encoding (source after 6274e536)
+
+Every offline control for 6274e536 passed and its first real host read still
+refused: `RUN_INVENTORY_PAGE_UNAVAILABLE:UnicodeDecodeError`. The collector reads
+`aiter_raw()` and parses it as JSON, httpx advertises `gzip, deflate` by default,
+and the pinned server honours that. No fixture ever compressed a response, so the
+gap was invisible. Measured on the canonical server: the default request returned
+`Content-Encoding: gzip`, an explicit `identity` request returned an unencoded
+236,005-byte page of the same 100 rows with meta total 149.
+
+The inventory now requests `Accept-Encoding: identity` per request, and any
+`Content-Encoding` other than absent or a single `identity` token is refused as
+`RUN_INVENTORY_CONTENT_ENCODING_UNEXPECTED` before the body is read. The refusal is
+a partial observation, so it never reaches the initial-absence path. Legacy
+`_get`/`list_runs` keep httpx's transparent decoding.
+
+Decompression was rejected rather than deferred: the byte bounds exist to bound
+memory and JSON work, and `aiter_bytes` or an eager inflate would apply them to the
+wire size while an attacker-sized or merely corrupt stream expands. A bounded
+incremental decoder is unnecessary while the pinned server honours identity; adding
+one needs its own decoded-byte, CPU and evidence controls.
+
+Consequence: the sixteen MiB shared bound is now spent on uncompressed JSON. At the
+measured 2.36 KiB/row, the two passes of an all-columns inventory reach it near
+3,500 rows, below the nominal 6,400-row bound. That refuses as UNKNOWN rather than
+truncating, and it is part of the archive-growth limit above, not a fix for it.
+
+Real HTTP/1.1 controls now cover the measured negotiation, a server ignoring identity
+on the first page, a later page and both second-pass pages, every other coding
+including repeated headers, a compression bomb, chunked framing, a truncated body
+and identity-wire byte bounds.

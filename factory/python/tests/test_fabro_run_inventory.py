@@ -1,14 +1,17 @@
 """HTTP enumeration completeness; no model, canonical store or native mutation."""
+import contextlib
 import copy
+import gzip
 import json
 import threading
+import tracemalloc
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
 import httpx
 import pytest
 from forge_factory.afo import line_launcher as LL
-from forge_factory.fabro.client import FabroClient, FabroUnavailable
+from forge_factory.fabro.client import FabroClient, FabroConnectionUnavailable, FabroUnavailable
 
 
 def run(i, kind="succeeded"):
@@ -435,3 +438,193 @@ def test_actual_pre_admission_retains_all_counters_when_foreign_or_unknown_sourc
     assert result["gpu"]["busy"] and result["gpu"]["reason"] == "RUN_LIVE_NOT_IN_CAMPAIGN"
     assert counts() == before and ledger.snapshot("private-no-admission-mission") == snapshot
     assert environment["line"].launched == []
+
+
+# Real HTTP/1.1 wire controls. The original fixtures never compressed anything,
+# so the measured gzip default of the pinned server escaped every offline check.
+@contextlib.contextmanager
+def wire(respond):
+    """`respond(handler, request_number, rows_page)` owns the whole response."""
+    seen = []
+    rows = [run(i) for i in range(149)]
+
+    class Handler(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def do_GET(self):
+            seen.append(self.headers)
+            q = parse_qs(urlsplit(self.path).query)
+            offset, limit = int(q.get("page[offset]", [0])[0]), int(q["page[limit]"][0])
+            data = rows[offset:offset + limit]
+            raw = json.dumps({"data": data, "meta": {"total": len(rows), "has_more": offset + len(data) < len(rows)}}).encode()
+            try:
+                respond(self, len(seen), raw)
+            except (BrokenPipeError, ConnectionResetError):
+                self.close_connection = True
+
+        def log_message(self, *_):
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    server.daemon_threads = True
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}", seen
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
+
+
+def send(handler, raw, *headers):
+    handler.send_response(200)
+    handler.send_header("Content-Type", "application/json")
+    for name, value in headers:
+        handler.send_header(name, value)
+    handler.send_header("Content-Length", str(len(raw)))
+    handler.end_headers()
+    handler.wfile.write(raw)
+
+
+def measured_negotiation(handler, _, raw):
+    """The pinned 0.362 server: gzip when offered, otherwise honest identity."""
+    accepted = handler.headers.get("Accept-Encoding", "")
+    if "gzip" in accepted:
+        send(handler, gzip.compress(raw), ("Content-Encoding", "gzip"))
+    else:
+        send(handler, raw)
+
+
+def test_real_http_measured_negotiation_observes_complete_catalog_with_identity():
+    with wire(measured_negotiation) as (url, seen):
+        with FabroClient(base_url=url, token="PRIVATE_TEST_ONLY") as c:
+            observation = c.run_inventory()
+    assert observation.complete and len(observation.rows) == 149 and observation.pages == 4
+    assert [h["Accept-Encoding"] for h in seen] == ["identity"] * 4
+    assert {h["Authorization"] for h in seen} == {"Bearer PRIVATE_TEST_ONLY"}
+
+
+def test_identity_negotiation_is_inventory_scoped_and_leaves_legacy_decoding_alone():
+    with wire(measured_negotiation) as (url, seen):
+        with FabroClient(base_url=url) as c:
+            assert len(c.list_runs(limit=100)) == 100
+    assert "gzip" in seen[0]["Accept-Encoding"]
+
+
+@pytest.mark.parametrize(("position", "first_bad", "expected_requests"),
+                         [("first-page", 1, 1), ("later-page", 2, 2), ("second-pass", 3, 3), ("second-pass-later", 4, 4)])
+def test_real_http_server_ignoring_identity_is_typed_unknown_never_absent(position, first_bad, expected_requests):
+    def ignoring(handler, number, raw):
+        if number >= first_bad:
+            send(handler, gzip.compress(raw), ("Content-Encoding", "gzip"))
+        else:
+            send(handler, raw)
+    with wire(ignoring) as (url, seen):
+        with FabroClient(base_url=url) as c:
+            with pytest.raises(FabroUnavailable, match="^RUN_INVENTORY_CONTENT_ENCODING_UNEXPECTED$") as failure:
+                c.run_inventory()
+    assert not isinstance(failure.value, FabroConnectionUnavailable)
+    assert len(seen) == expected_requests, position
+
+
+@pytest.mark.parametrize("values", [("br",), ("deflate",), ("GZIP",), ("gzip, identity",), ("identity, gzip",),
+                                    ("",), ("identity", "gzip"), ("gzip", "identity")])
+def test_real_http_any_non_identity_coding_refuses_before_json(values):
+    def coded(handler, _, raw):
+        send(handler, raw, *[("Content-Encoding", value) for value in values])
+    with wire(coded) as (url, _):
+        with FabroClient(base_url=url) as c:
+            with pytest.raises(FabroUnavailable, match="CONTENT_ENCODING_UNEXPECTED"):
+                c.run_inventory()
+
+
+@pytest.mark.parametrize("value", ["identity", "IDENTITY", " Identity "])
+def test_real_http_explicit_identity_coding_is_the_same_as_none(value):
+    with wire(lambda handler, _, raw: send(handler, raw, ("Content-Encoding", value))) as (url, _):
+        with FabroClient(base_url=url) as c:
+            assert len(c.run_inventory().rows) == 149
+
+
+def test_real_http_compression_bomb_is_refused_without_inflating():
+    bomb = gzip.compress(b"\0" * (64 * 1024 * 1024), compresslevel=9)
+    assert len(bomb) < 128 * 1024
+    with wire(lambda handler, _, raw: send(handler, bomb, ("Content-Encoding", "gzip"))) as (url, _):
+        before = tracemalloc_peak()
+        with FabroClient(base_url=url) as c:
+            with pytest.raises(FabroUnavailable, match="CONTENT_ENCODING_UNEXPECTED"):
+                c.run_inventory()
+        assert tracemalloc_peak(before) < 8 * 1024 * 1024
+
+
+def tracemalloc_peak(started=None):
+    if started is None:
+        tracemalloc.start()
+        return True
+    peak = tracemalloc.get_traced_memory()[1]
+    tracemalloc.stop()
+    return peak
+
+
+def test_unexpected_coding_closes_stream_before_reading_any_body():
+    chunks = Chunks()
+    transport = httpx.MockTransport(lambda request: httpx.Response(200, headers={"Content-Encoding": "gzip"}, stream=chunks))
+    with FabroClient(transport=transport) as c:
+        with pytest.raises(FabroUnavailable, match="CONTENT_ENCODING_UNEXPECTED"):
+            c.run_inventory()
+    assert chunks.closed and chunks.produced == 0
+
+
+def test_materialized_coded_response_is_refused_by_the_same_rule():
+    body = gzip.compress(b'{"data":[],"meta":{"has_more":false,"total":0}}')
+    transport = httpx.MockTransport(lambda request: httpx.Response(200, headers={"Content-Encoding": "gzip"}, content=body))
+    with FabroClient(transport=transport) as c:
+        with pytest.raises(FabroUnavailable, match="CONTENT_ENCODING_UNEXPECTED"):
+            c.run_inventory()
+
+
+def test_real_http_chunked_framing_is_not_a_content_coding():
+    def chunked(handler, _, raw):
+        handler.send_response(200)
+        handler.send_header("Transfer-Encoding", "chunked")
+        handler.end_headers()
+        for start in range(0, len(raw), 4096):
+            part = raw[start:start + 4096]
+            handler.wfile.write(b"%x\r\n%s\r\n" % (len(part), part))
+        handler.wfile.write(b"0\r\n\r\n")
+    with wire(chunked) as (url, _):
+        with FabroClient(base_url=url) as c:
+            assert len(c.run_inventory().rows) == 149
+
+
+@pytest.mark.parametrize("first_bad", [1, 2, 3])
+def test_real_http_truncated_identity_body_is_unknown_never_absent(first_bad):
+    def truncated(handler, number, raw):
+        if number < first_bad:
+            return send(handler, raw)
+        handler.send_response(200)
+        handler.send_header("Content-Length", str(len(raw)))
+        handler.end_headers()
+        handler.wfile.write(raw[:len(raw) // 2])
+        handler.wfile.flush()
+        handler.close_connection = True
+    with wire(truncated) as (url, _):
+        with FabroClient(base_url=url) as c:
+            with pytest.raises(FabroUnavailable, match="PAGE_UNAVAILABLE") as failure:
+                c.run_inventory()
+    assert not isinstance(failure.value, FabroConnectionUnavailable)
+
+
+def test_real_http_page_and_shared_byte_bounds_apply_to_identity_wire_bytes():
+    oversized = b" " * (4 * 1024 * 1024 + 1)
+    with wire(lambda handler, _, raw: send(handler, oversized)) as (url, _):
+        with FabroClient(base_url=url) as c:
+            with pytest.raises(FabroUnavailable, match="BYTES"):
+                c.run_inventory()
+    with wire(measured_negotiation) as (url, seen):
+        with FabroClient(base_url=url) as c:
+            one_pass = c.run_inventory().pages // 2
+            assert one_pass == 2
+            with pytest.raises(FabroUnavailable, match="BYTES"):
+                c.run_inventory(max_bytes=34 * 1024)  # Both 149-row passes cannot fit on the identity wire.
+    assert 2 < len(seen) - 4 <= 4
