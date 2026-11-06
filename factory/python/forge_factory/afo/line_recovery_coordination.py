@@ -333,7 +333,9 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
             and (a.spec or {}).get("lineage_sha") == p.lineage.sha256
             and (a.queue or {}).get("terminal_reason") != "SUPERSEDED_BY_CAMPAIGN_CHANGE"
         ]
-        if closed and not development.selected():
+        # Closed means closed without a run. Retrying those would spend every order name in minutes,
+        # so this stop holds in every lane. Only an order whose run ended retries from the seed.
+        if closed:
             p.state, p.reason, p.order, p.action = "WAITING", "DURABLE_SOURCE_CLOSED_REQUIRES_OWNER_CHANGE", None, None
             continue
         if p.state in ("ESCALATED", "PARKED", "ON_HOLD", "DONE"):

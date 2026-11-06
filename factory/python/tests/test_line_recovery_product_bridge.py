@@ -373,6 +373,27 @@ def test_unchanged_hard_refusal_does_not_allocate_a_fresh_order_identity(product
     assert plan.reason == "DURABLE_SOURCE_CLOSED_REQUIRES_OWNER_CHANGE"
 
 
+def test_owner_lane_hard_refusal_also_stops_and_allocates_nothing(product, monkeypatch):
+    from forge_factory.afo import owner_supervised_development as D
+
+    monkeypatch.setenv(D.FILE, "x")
+
+    p = product
+    W.record_refusal(p.cmd["command_id"], Refused("LINE_NATIVE_TRANSPORT_MEASUREMENT_REQUIRED"))
+    a = SimpleNamespace(
+        status="CLOSED",
+        spec={"durable_control": p.worker["control_ref"], "lineage_sha": "same"},
+        queue={"terminal_reason": "LINE_NATIVE_TRANSPORT_MEASUREMENT_REQUIRED"},
+    )
+    plan = SimpleNamespace(
+        atts={"SWE.3": [a]}, lineage=SimpleNamespace(sha256="same"), order={"wo": "WO-WOULD-ALLOCATE"}, action="PLACE"
+    )
+    placer = SimpleNamespace(queue_path=p.store.path, durable_control=p.worker["control_ref"])
+    assert K.coordinate(placer, [plan], None, SimpleNamespace(allow=True), [], time.time(), execute=True) == []
+    assert plan.action is None and plan.order is None
+    assert plan.reason == "DURABLE_SOURCE_CLOSED_REQUIRES_OWNER_CHANGE"
+
+
 def test_external_worker_execs_exact_run_checkout_with_the_actual_fixed_line_configuration(product, tmp_path, monkeypatch):
     from forge_factory.afo import line_launcher as LL
 
