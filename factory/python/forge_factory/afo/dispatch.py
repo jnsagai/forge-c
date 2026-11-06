@@ -174,7 +174,8 @@ def dispatch_pending(store: Store, launcher, *, decide=None, now: float | None =
             from .policy import load
 
             try:
-                job = product_job.prepare(store, order, _attempt(store, att["attempt_id"]), nonce, manifest, load())
+                job = product_job.prepare(store, order, _attempt(store, att["attempt_id"]), nonce, manifest, load(),
+                                          work_order=name)
             except (Refused, ValueError, KeyError, TypeError) as exc:
                 # The external launcher has not been called. Preserve its spent
                 # reservation/history, quarantine this command and continue peers.

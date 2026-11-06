@@ -3,20 +3,36 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from pathlib import Path
 
+from ..common import state_dir
 from .durable import Refused, canonical, digest, immutable_json
 from .execution_lifecycle import Executions
 from .mission_ledger import MissionLedger
 
 
-def prepare(store, order, attempt, nonce, manifest, eff):
+def product_workspace(attempt, work_order):
+    """The workspace the launcher will create. Attempts stay `pending:` until after launch."""
     from .runtime import workspace_of
 
+    ref = attempt["record"].get("workspace_ref", "")
+    if ref.startswith("workorder:"):
+        if work_order is not None and work_order != ref.removeprefix("workorder:"):
+            raise Refused("PRODUCT_WORKSPACE_REBOUND")
+        return workspace_of(attempt)
+    if work_order is None:
+        raise Refused("PRODUCT_WORKSPACE_NAME_REQUIRED")
+    if not isinstance(work_order, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", work_order):
+        raise Refused("PRODUCT_WORKSPACE_NAME_INVALID")
+    return state_dir() / "workorders" / work_order / "workspace"
+
+
+def prepare(store, order, attempt, nonce, manifest, eff, *, work_order=None):
     mission = MissionLedger(store).for_order(order["order_id"])
     job_id = "afo-product-" + digest(attempt["attempt_id"])[:24]
-    ws = workspace_of(attempt)
+    ws = product_workspace(attempt, work_order)
     binding = {
         "job_id": job_id,
         "nonce": nonce,

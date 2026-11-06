@@ -596,7 +596,9 @@ def native_parameters(path, sha256, expected):
                 Executions(store)._save_evidence(
                     job["job_id"],
                     "PRODUCT_NATIVE_ADMISSION_REFUSAL",
-                    {"job_id": job["job_id"], "nonce": job["nonce"], "failure_type": getattr(exc, "code", type(exc).__name__)},
+                    {"job_id": job["job_id"], "nonce": job["nonce"],
+                     "failure_type": getattr(exc, "code", None) or (str(exc)[:96] if isinstance(exc, R.BindingRefused)
+                                                                    else type(exc).__name__)},
                 )
             if isinstance(exc, Refused):
                 raise

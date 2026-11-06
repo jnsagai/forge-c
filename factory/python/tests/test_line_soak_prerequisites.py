@@ -245,6 +245,8 @@ def pending(env, monkeypatch, request):
         raise QueueError("CAPACITY", "CONTROL no admission")
     real_admit = Store.admit
     monkeypatch.setattr(Store, "admit", busy)
+    # A durable recovery configuration never initializes authority: the queue must already exist.
+    Store(O.supervisor_dir() / "line-queue.sqlite3")
     result = placer(env, recovery_config=Path(ctl_ref["path"])).cycle()
     store = Store(O.supervisor_dir() / "line-queue.sqlite3")
     assert len(store.orders()) == 1, result

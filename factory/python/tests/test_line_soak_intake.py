@@ -82,7 +82,7 @@ def admit_planned(p, monkeypatch):
     monkeypatch.setenv("FORGE_AFO_QUEUE_SCOPE", "line-local")
     manifest = {"model": ORN, "profile": PROFILE, "operations_epoch": 1,
                 "line_role_authority_ref": p.planned["control_ref"], "line_origin": p.planned["line_origin"]}
-    job = product_job.prepare(p.store, row, attempt, "a" * 32, manifest, p.eff)
+    job = product_job.prepare(p.store, row, attempt, "a" * 32, manifest, p.eff, work_order=row["request_id"])
     assert job["job_id"] == p.future_binding["job_id"]
     return job, row, before_charge
 

@@ -37,3 +37,21 @@ the serve loop, and an fsync over two seconds spent the caller's attestation tim
 published before the acknowledgement, because the host guard reads it after `current()`.
 Later publications now run on one background thread at a time. A failed publication
 leaves the heartbeat stale, which the guard still refuses.
+
+The rehearsal then reached the workorder CLI and refused every durable product at native
+admission with `SOURCE_WORKSPACE_MISMATCH`. `product_job.prepare` took its path from the
+attempt, which stays `pending:<id>` until after launch, so every job recorded
+`workorders/pending:<id>/workspace`, including L90, L90B and L90C. `job["binding"]` pointed
+into the same missing path. `dispatch` already knows the launch name, so it now passes it
+and the job binds the real work-order workspace. A pending attempt without a safe name
+refuses rather than binding the placeholder, and a launched attempt cannot be rebound.
+Historic job records are left as they are. Admission refusals keep the binding reason
+instead of the bare exception class.
+
+Merging storage identity exposed a soak fixture that relied on a durable recovery cycle
+creating its queue. That refusal is the storage fix working, so the fixture now creates
+its authority first.
+
+`L/archives` is group-writable on Omniverse2, and the controller export correctly refuses a
+group-writable anchor. As with `lrtx/run`, the host needs a one-time `g-w` hardening before
+reports can publish. The check is not weakened.
