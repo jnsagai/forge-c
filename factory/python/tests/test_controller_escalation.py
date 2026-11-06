@@ -347,3 +347,25 @@ def test_unsafe_stop_log_path_cannot_include_external_body(settled, tmp_path):
     case = json.loads(Path(result["exports"][0]["case"]).read_text())
     assert "STOP_LOG_TRANSCRIPT_PATH_UNCONFIRMED" in case["gaps"]
     assert "NEVER_EXTERNAL_BODY" not in Path(result["exports"][0]["report"]).read_text()
+
+
+def test_large_backlog_cannot_generate_a_self_cursor_tail_hiding_later_failure(product):
+    p = product
+    p.cfg.runs_root = p.store.path.parent.parent.parent / "runs"
+    p.pinned = Store(p.store.path,must_exist=True)
+    st=p.store.path.stat();p.identity=dict(device=st.st_dev,inode=st.st_ino)
+    drain(p)
+    with p.store.tx() as c:
+        for i in range(E.MAX_EVENTS * (E.MAX_EVENTS + 2)):
+            p.store._event(c,"private_backlog",p.oid,payload=dict(i=i))
+    for _ in range(E.MAX_EVENTS + 5):
+        drain(p)
+    P.dispatch(p.store,p.cmd,p.worker,p.spec,p.eff,p.client,cfg=p.cfg,launch=lambda *a:dict(outcome="STACK_STOP_FAILED"))
+    results=[drain(p) for _ in range(4)]
+    assert sum(len(x["exports"]) for x in results)==1
+    with p.store.tx() as c:
+        count=c.execute("SELECT COUNT(*) FROM afo_lifecycle_events").fetchone()[0]
+    for _ in range(5):
+        drain(p)
+    with p.store.tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_lifecycle_events").fetchone()[0]==count
