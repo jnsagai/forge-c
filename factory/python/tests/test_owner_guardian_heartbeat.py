@@ -2,6 +2,7 @@
 # ruff: noqa: F811
 import json
 import os
+import socket
 import time
 from pathlib import Path
 from types import SimpleNamespace
@@ -138,6 +139,50 @@ def test_same_guardian_cannot_reset_completed_cycle_observation(supervised):
     with pytest.raises(Refused, match="HEARTBEAT_PROGRESS_REBOUND"):
         D._publish_heartbeat(record, cycle=0)
     assert heartbeat.read_bytes() == before
+
+
+def test_completed_cycle_cannot_be_reopened_under_same_number(supervised):
+    record, heartbeat = record_and_heartbeat(supervised)
+    D._publish_heartbeat(record, cycle=2, completed=True)
+    before = heartbeat.read_bytes()
+    with pytest.raises(Refused, match="HEARTBEAT_PROGRESS_REBOUND"):
+        D._publish_heartbeat(record, cycle=2)
+    assert heartbeat.read_bytes() == before
+
+
+def test_repeated_completion_refreshes_only_liveness_not_progress_timestamp(supervised, monkeypatch):
+    record, heartbeat = record_and_heartbeat(supervised)
+    D._publish_heartbeat(record, cycle=2, completed=True)
+    before = json.loads(heartbeat.read_bytes())
+    real_clock = D.time
+    monkeypatch.setattr(D, "time", SimpleNamespace(time=lambda: real_clock.time() + 10))
+    D._publish_heartbeat(record, cycle=2, completed=True)
+    after = json.loads(heartbeat.read_bytes())
+    assert after["at"] > before["at"]
+    assert after["last_cycle_completed_at"] == before["last_cycle_completed_at"]
+
+
+@pytest.mark.parametrize("cycle,completed", [(None, True), (0, 1), (0, "yes"), (0, None)])
+def test_invalid_completion_shape_never_publishes_progress(supervised, cycle, completed):
+    record, heartbeat = record_and_heartbeat(supervised)
+    with pytest.raises(Refused, match="HEARTBEAT_PROGRESS_INVALID"):
+        D._publish_heartbeat(record, cycle=cycle, completed=completed)
+    assert not heartbeat.exists()
+
+
+@pytest.mark.parametrize("raw", [b"[]", b"null", b"42", b'"scalar"'])
+def test_nonobject_nonce_is_refused_without_heartbeat_or_losing_server(supervised, raw):
+    record, heartbeat = record_and_heartbeat(supervised)
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+        client.settimeout(2)
+        with D._unix_path(Path(record["guardian_socket"])) as address:
+            client.connect(address)
+        client.sendall(raw)
+        assert client.recv(4096) == b""
+    assert not heartbeat.exists()
+    assert D._GUARDIANS[supervised["ref"]["sha256"]][2].is_alive()
+    D._attest(record, record["guardian_socket"])
+    G.heartbeat(heartbeat, os.getpid(), D.MODE, "at", "PRIVATE_VALID_NONCE_AFTER_REFUSAL", time.time())
 
 
 def test_corrupt_metadata_refuses_nonce_without_killing_existing_guardian_thread(supervised):

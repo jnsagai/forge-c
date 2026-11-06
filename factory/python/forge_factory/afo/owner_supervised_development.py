@@ -147,7 +147,8 @@ def _publish_heartbeat(record, *, cycle=None, completed=False):
     sha = digest(record)
     parent = Path(record["intent_path"]).parent / "owner-supervised-development"
     path = parent / (sha + ".heartbeat.json")
-    if cycle is not None and (type(cycle) is not int or cycle < 0):
+    if (cycle is not None and (type(cycle) is not int or cycle < 0)
+            or type(completed) is not bool or completed and cycle is None):
         _fail("HEARTBEAT_PROGRESS_INVALID")
     with _HEARTBEAT_LOCK:
         _private(parent, directory=True)
@@ -189,7 +190,7 @@ def _publish_heartbeat(record, *, cycle=None, completed=False):
                         or (last >= 0 and type(completed_at) in (int, float) and math.isfinite(completed_at)))
             ):
                 _fail("HEARTBEAT_METADATA_INVALID")
-            if cycle is not None and cycle < prior_cycle:
+            if cycle is not None and (cycle < prior_cycle or not completed and cycle <= last):
                 _fail("HEARTBEAT_PROGRESS_REBOUND")
         now = time.time()
         value = dict(
@@ -203,7 +204,9 @@ def _publish_heartbeat(record, *, cycle=None, completed=False):
         if cycle is not None:
             value.update(cycle=cycle, cycle_state="COMPLETE" if completed else "IN_PROGRESS")
             if completed:
-                value.update(last_completed_cycle=cycle, last_cycle_completed_at=now)
+                value.update(last_completed_cycle=cycle,
+                             last_cycle_completed_at=(previous["last_cycle_completed_at"]
+                                                      if previous.get("last_completed_cycle") == cycle else now))
         fd, temp = tempfile.mkstemp(prefix=".heartbeat-", dir=parent)
         try:
             with os.fdopen(fd, "wb") as stream:
@@ -258,6 +261,8 @@ def _serve_guardian(record, server):
                 try:
                     data = client.recv(4097)
                     value = strict_json(data, 4096)
+                    if not isinstance(value, dict):
+                        continue
                     nonce = value.get("nonce")
                     if (
                         set(value) != {"record_sha256", "nonce"}
