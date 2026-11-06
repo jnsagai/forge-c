@@ -1019,6 +1019,9 @@ def main(argv=None):
             _publish_heartbeat(live_record, cycle=n)
             readiness = provider_preflight(cfg.stack_root)
             result = placer.cycle() if readiness["placing"] else dict(mode=MODE, actions=[], readiness=readiness)
+            from .controller_escalation import cycle as controller_escalation
+
+            escalation = controller_escalation(store, cfg, store_identity=live_record["store_identity"])
             # No submit/admission or PRODUCT reservation occurs while replacement
             # or observation is unknown. Guardian stays live for normal M0 work.
             row = dict(
@@ -1031,6 +1034,7 @@ def main(argv=None):
                 at=time.time(),
                 placement=result,
                 provider_readiness=readiness,
+                controller_escalation=escalation,
             )
             with audit.open("ab") as stream:
                 stream.write(canonical(row) + b"\n")

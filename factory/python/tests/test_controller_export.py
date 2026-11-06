@@ -6,12 +6,25 @@ from forge_factory.offline import controller_export as C
 
 
 def case():
-    return dict(schema="forge-c/controller-case/1", case_id="case-" + "a" * 24,
-                classification="CONTROLLER_FAILURE_UNDIAGNOSED", native_run="NOT_RECORDED",
-                order_id="afo-private", attempt_id="afo-private-a1", job_id="afo-product-private",
-                failure_type="STACK_STOP_FAILED", source_revision="b" * 40,
-                gaps=["LAUNCH_TRANSCRIPT_MISSING"], records={"prompt":"NEVER_PROMPT", "reasoning":"NEVER_REASON",
-                    "api_key":"NEVER_SECRET", "observed":{"status":"BLOCKED"}}, artifacts=[])
+    return dict(
+        schema="forge-c/controller-case/1",
+        case_id="case-" + "a" * 24,
+        classification="CONTROLLER_FAILURE_UNDIAGNOSED",
+        native_run="NOT_RECORDED",
+        order_id="afo-private",
+        attempt_id="afo-private-a1",
+        job_id="afo-product-private",
+        failure_type="STACK_STOP_FAILED",
+        source_revision="b" * 40,
+        gaps=["LAUNCH_TRANSCRIPT_MISSING"],
+        records={
+            "prompt": "NEVER_PROMPT",
+            "reasoning": "NEVER_REASON",
+            "api_key": "NEVER_SECRET",
+            "observed": {"status": "BLOCKED"},
+        },
+        artifacts=[],
+    )
 
 
 def test_typed_controller_export_is_deterministic_redacted_and_not_a_product_run():
@@ -22,7 +35,7 @@ def test_typed_controller_export_is_deterministic_redacted_and_not_a_product_run
         names = z.namelist()
         raw = b"".join(z.read(n) for n in names)
         assert "REPORT.md" in names and "CASE.json" in names
-        for secret in (b"NEVER_PROMPT",b"NEVER_REASON",b"NEVER_SECRET"):
+        for secret in (b"NEVER_PROMPT", b"NEVER_REASON", b"NEVER_SECRET"):
             assert secret not in raw
         manifest = json.loads(z.read("MANIFEST.json"))
         assert manifest["schema"] == "forge-c/controller-export/1"
@@ -31,18 +44,20 @@ def test_typed_controller_export_is_deterministic_redacted_and_not_a_product_run
     assert C.verify(one["archive"]) == []
 
 
-@pytest.mark.parametrize("bad", [{}, {"case_id":"../escape"}, {"native_run":"FAKE-NATIVE"}])
+@pytest.mark.parametrize("bad", [{}, {"case_id": "../escape"}, {"native_run": "FAKE-NATIVE"}])
 def test_bad_controller_identity_refuses(bad):
-    value = case(); value.update(bad) if bad else value.clear()
+    value = case()
+    value.update(bad) if bad else value.clear()
     with pytest.raises(ValueError):
         C.render(value)
 
 
 def test_tampered_archive_is_detected():
-    out=C.render(case())
+    out = C.render(case())
     import io
-    buf=io.BytesIO()
-    with zipfile.ZipFile(io.BytesIO(out["archive"])) as src, zipfile.ZipFile(buf,"w") as dst:
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(io.BytesIO(out["archive"])) as src, zipfile.ZipFile(buf, "w") as dst:
         for name in src.namelist():
-            dst.writestr(name,src.read(name)+(b"tamper" if name=="CASE.json" else b""))
+            dst.writestr(name, src.read(name) + (b"tamper" if name == "CASE.json" else b""))
     assert C.verify(buf.getvalue())
