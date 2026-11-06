@@ -87,3 +87,18 @@ def test_private_directory_accepts_inherited_setgid_but_not_group_access(tmp_pat
     os.chmod(created, 0o4700)
     with pytest.raises(Refused, match="CONTROLLER_EXPORT_DIRECTORY_UNSAFE"):
         _private(created)
+
+
+@pytest.mark.parametrize("value", ["Refused", "TimeoutError", "GUARD_FAIL", "WORKORDER_LAUNCH_FAILED"])
+def test_recorded_failure_types_are_accepted(value):
+    """The first real failure in the canonical store recorded the exception class `Refused`."""
+    from forge_factory.afo.controller_escalation import failure_type_ok
+
+    assert failure_type_ok(value)
+
+
+@pytest.mark.parametrize("value", ["", "1BAD", "two words", "a/b", "x" * 129, None, 7, "REPORT\nINJECT"])
+def test_unsafe_failure_types_still_refuse(value):
+    from forge_factory.afo.controller_escalation import failure_type_ok
+
+    assert not failure_type_ok(value)

@@ -130,8 +130,19 @@ def mapped_host_guardian_alive(record):
         return False
 
 
+HEARTBEAT_SYNC_AGE_SECONDS = 120  # Well inside the guard's 180 second limit.
 _GUARDIANS = {}  # External guardian memory, never reconstructed from an agent-writable record.
 _HEARTBEAT_LOCK = threading.Lock()
+
+
+def _heartbeat_age(record):
+    """Seconds since the published heartbeat, or None when it cannot be read."""
+    path = Path(record["intent_path"]).parent / "owner-supervised-development" / (digest(record) + ".heartbeat.json")
+    try:
+        at = json.loads(path.read_bytes())["at"]
+        return time.time() - at if type(at) in (int, float) else None
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
 
 
 def _publish_heartbeat(record, *, cycle=None, completed=False):
@@ -283,10 +294,12 @@ def _serve_guardian(record, server):
                     # Publish before acknowledging the first challenge. The host
                     # launch guard calls current() before reading this heartbeat.
                     # Do not renew completed-cycle progress from an attestation.
-                    # Later publications run aside: an fsync stall must not spend
-                    # the caller's short attestation timeout during a launch.
+                    # While the published heartbeat is recent, refresh aside so an fsync stall
+                    # cannot spend the caller's attestation timeout. An old one is refreshed
+                    # first: the host guard reads it straight after this acknowledgement.
                     now = time.monotonic()
-                    if last_heartbeat is None:
+                    age = _heartbeat_age(record)
+                    if last_heartbeat is None or age is None or age >= HEARTBEAT_SYNC_AGE_SECONDS:
                         _publish_heartbeat(record)
                         last_heartbeat = now
                     elif now - last_heartbeat >= 15 and not publishing.is_set():

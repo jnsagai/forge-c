@@ -21,6 +21,7 @@ def challenge(path):
 
 
 RECORD = dict(fixture="guardian-attestation-stall")
+ages = [20.0]  # A recent heartbeat on disk.
 
 
 @pytest.fixture
@@ -39,6 +40,7 @@ def guardian(tmp_path, monkeypatch):
             finished.set()
 
     monkeypatch.setattr(D, "_publish_heartbeat", publish)
+    monkeypatch.setattr(D, "_heartbeat_age", lambda record: ages[0])
     D._serve_guardian(RECORD, server)
     yield tmp_path / "g.sock", clock, calls, finished
     stop = D._GUARDIANS.pop(digest(RECORD))
@@ -74,3 +76,17 @@ def test_only_one_background_publication_runs_at_a_time(guardian):
     challenge(path)
     assert len(calls) == 2
     assert finished.wait(5)
+
+
+def test_stale_heartbeat_on_disk_publishes_before_acknowledging(guardian):
+    """A late guard reads the heartbeat straight after attesting, so it must not race a background write."""
+    path, clock, calls, finished = guardian
+    challenge(path)
+    ages[0] = 121.0
+    try:
+        clock[0] += 16
+        with pytest.raises(socket.timeout):
+            challenge(path)  # The synchronous publication outlasts the short client timeout.
+        assert finished.wait(5) and calls == ["owner-development-guardian", "owner-development-guardian"]
+    finally:
+        ages[0] = 20.0

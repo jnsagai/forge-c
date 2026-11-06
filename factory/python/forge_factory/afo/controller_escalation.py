@@ -253,6 +253,11 @@ def _deliver_pending(store, budget, root):
     return [notice]
 
 
+def failure_type_ok(value):
+    """A typed code or exception class name; early attempts recorded `Refused`. No free text."""
+    return isinstance(value, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,127}", value) is not None
+
+
 def _case(c, event):
     if event.get("type") != "afo.attempt_failed" or not event.get("attempt_id"):
         return None
@@ -297,7 +302,7 @@ def _case(c, event):
         or execution.get("execution_liveness") != "NOT_STARTED"
         or len(cmds) != 1
         or cmds[0]["state"] != "QUARANTINED"
-        or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,127}", str(proof.get("failure_type", "")))
+        or not failure_type_ok(proof.get("failure_type"))
     ):
         raise Refused("CONTROLLER_EXPORT_LOCAL_PROOF_UNCONFIRMED")
     mission = c.execute("SELECT mission_id FROM afo_mission_orders WHERE order_id=?", (oid,)).fetchone()
