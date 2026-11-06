@@ -9,14 +9,14 @@ No undocumented DB access, no UI scraping.
 
 from __future__ import annotations
 
-import hashlib
 import asyncio
 import errno
+import hashlib
 import json
 import os
 import time
-from dataclasses import dataclass
 from collections.abc import Iterator
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -204,6 +204,8 @@ class FabroClient:
         boot_identity = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
         network_namespace = os.readlink("/proc/self/ns/net")
         retained_bytes = 0
+        requests_started = 0
+        responses_started = 0
 
         def remaining():
             value = timeout_s - max(time.monotonic() - start,
@@ -213,13 +215,15 @@ class FabroClient:
             return value
 
         async def page(offset):
-            nonlocal retained_bytes
+            nonlocal retained_bytes, requests_started, responses_started
             params = {"page[limit]": page_size, "page[offset]": offset, "sort": "created_at", "direction": "asc",
                       "include_archived": str(include_archived).lower()}
             if statuses is not None:
                 params["status"] = list(statuses)  # OpenAPI form/explode=true: repeated query keys.
             try:
+                requests_started += 1
                 async with _http.stream("GET", "/api/v1/runs", params=params, timeout=remaining()) as response:
+                    responses_started += 1
                     if response.status_code >= 500:
                         raise FabroUnavailable(f"http_{response.status_code}")
                     response.raise_for_status()
@@ -249,9 +253,11 @@ class FabroClient:
                     cause = pending.pop()
                     if id(cause) in seen:
                         continue
-                    seen.add(id(cause)); causes.append(cause)
+                    seen.add(id(cause))
+                    causes.append(cause)
                     pending.extend(x for x in (cause.__cause__, cause.__context__) if x is not None)
-                if any(isinstance(cause, OSError) and cause.errno == errno.ECONNREFUSED for cause in causes):
+                if (requests_started == 1 and responses_started == 0
+                        and any(isinstance(cause, OSError) and cause.errno == errno.ECONNREFUSED for cause in causes)):
                     raise FabroConnectionUnavailable("CONNECTION_REFUSED") from exc
                 raise FabroUnavailable("RUN_INVENTORY_CONNECTION_UNKNOWN") from exc
             except (httpx.HTTPError, ValueError, UnicodeError, RecursionError) as exc:
@@ -277,7 +283,8 @@ class FabroClient:
             rows, identities, total, pages = [], {}, None, 0
             for _ in range(max_pages):
                 remaining()
-                value = await page(len(identities)); pages += 1
+                value = await page(len(identities))
+                pages += 1
                 part, meta = value["data"], value["meta"]
                 if type(meta.get("has_more")) is not bool or len(part) > page_size:
                     raise FabroUnavailable("RUN_INVENTORY_METADATA_INVALID")

@@ -4,13 +4,12 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 from forge_factory.afo import line_launcher as LL
-from forge_factory.fabro.client import ALL_RUN_COLUMNS, RunInventory
-import time
 from forge_factory.afo import line_recovery_control as C
 from forge_factory.afo import line_recovery_product as P
 from forge_factory.afo import line_stack_lifecycle as A
@@ -18,8 +17,11 @@ from forge_factory.afo import local_agent, operations
 from forge_factory.afo.durable import Refused
 from forge_factory.afo.execution_lifecycle import Executions
 from forge_factory.afo.mission_ledger import MissionLedger
+from forge_factory.fabro.client import ALL_RUN_COLUMNS, RunInventory
 from forge_factory.lrtx import stack as ST
 from test_line_recovery_product_bridge import product  # noqa: F401
+
+REAL_RUN_INVENTORY = LL.ShellHost.fabro_run_inventory
 
 pytestmark = pytest.mark.parametrize("product", [True], indirect=True)
 
@@ -572,4 +574,51 @@ def test_active_or_unknown_after149terminal_refuses_before_effect(claimed, monke
     with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
         with pytest.raises(Refused, match="NATIVE_NOT_QUIESCENT"):
             ST._locked_stop(p.s)
+    assert Executions(p.store).get(P.job_id(p.aid))["resource_lease"] == "HELD"
+
+
+@pytest.mark.parametrize("when", ["first", "later-page", "second-pass", "after-headers"])
+def test_only_initial_refusal_without_response_can_use_no_process_allowance(claimed, monkeypatch, when):
+    import errno
+
+    import httpx
+    from forge_factory.fabro.client import FabroClient
+    p = claimed
+    calls = []
+    def refuse(request):
+        try:
+            raise ConnectionRefusedError(errno.ECONNREFUSED, "private fixture")
+        except ConnectionRefusedError as exc:
+            raise httpx.ConnectError("private refusal", request=request) from exc
+    class HeadersThenRefusal(httpx.AsyncByteStream):
+        async def __aiter__(self):
+            refuse(None)
+            yield b""  # async-generator protocol; never reached
+    def response(request):
+        calls.append(request)
+        if when == "first" or len(calls) == 2:
+            refuse(request)
+        if when == "after-headers":
+            return httpx.Response(200, stream=HeadersThenRefusal())
+        rows = [{"id": "observed-running", "lifecycle": {"status": {"kind": "running"}}}] if when == "second-pass" else [
+            {"id": f"terminal-{i}", "lifecycle": {"status": {"kind": "succeeded"}}} for i in range(100)]
+        return httpx.Response(200, json={"data": rows, "meta":
+                              {"has_more": when == "later-page", "total": 149 if when == "later-page" else len(rows)}})
+    monkeypatch.setattr(LL.ShellHost, "fabro_run_inventory", REAL_RUN_INVENTORY)
+    # claimed's harmless complete observation is replaced with the actual SDK
+    # and HTTP transport here, retaining real persisted claim/locks/authority.
+    monkeypatch.setattr(LL.ShellHost, "_client", lambda self:
+                        FabroClient(transport=httpx.MockTransport(response)))
+    effects = []
+    monkeypatch.setattr(ST, "_stop", lambda *a, **kw: effects.append("stop") or {"stopped": []})
+    before = MissionLedger(p.store).snapshot("fixture-mission")
+    with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
+        if when == "first":
+            assert ST._locked_stop(p.s) == {"stopped": []}
+        else:
+            with pytest.raises(Refused, match="NATIVE_OBSERVATION_UNKNOWN"):
+                ST._locked_stop(p.s)
+    assert effects == (["stop"] if when == "first" else [])
+    assert len(calls) == (1 if when in ("first", "after-headers") else 2)
+    assert MissionLedger(p.store).snapshot("fixture-mission") == before
     assert Executions(p.store).get(P.job_id(p.aid))["resource_lease"] == "HELD"

@@ -924,7 +924,6 @@ def live_runs(cfg: LineConfig, host, procs=None, ports: dict | None = None, *, d
     except Refused as exc:
         raise LaunchError("DURABLE_EXECUTION_BUSY", exc.code) from None
     procs = procs or ProcFS()
-    prefix = str(cfg.stack_root).rstrip("/") + "/state/"
 
     def live(runs):
         return [r["id"] for r in runs or [] if _kind(r) in LIVE_KINDS]

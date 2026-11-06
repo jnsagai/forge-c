@@ -7,9 +7,8 @@ from urllib.parse import parse_qs, urlsplit
 
 import httpx
 import pytest
-
-from forge_factory.fabro.client import FabroClient, FabroUnavailable
 from forge_factory.afo import line_launcher as LL
+from forge_factory.fabro.client import FabroClient, FabroUnavailable
 
 
 def run(i, kind="succeeded"):
@@ -131,8 +130,9 @@ def test_streaming_byte_bound_closes_before_reading_unbounded_body():
 
 
 def test_shared_deadline_catches_late_final_pass(monkeypatch):
-    from forge_factory.fabro import client as module
     from types import SimpleNamespace
+
+    from forge_factory.fabro import client as module
     clock = [0.0]
     pages = Pages([run(1)])
     def changed(value, call, request):
@@ -170,22 +170,29 @@ def test_real_http_transport_shellhost_observes_all149_terminal_and_active():
             offset, limit = int(q.get("page[offset]", [0])[0]), int(q.get("page[limit]", [50])[0])
             data = rows[offset:offset + limit]
             raw = json.dumps({"data": data, "meta": {"total": len(rows), "has_more": offset + len(data) < len(rows)}}).encode()
-            self.send_response(200); self.send_header("Content-Length", str(len(raw))); self.end_headers(); self.wfile.write(raw)
+            self.send_response(200)
+            self.send_header("Content-Length", str(len(raw)))
+            self.end_headers()
+            self.wfile.write(raw)
         def log_message(self, *_):
             pass
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
     try:
         host = LL.ShellHost(LL.LineConfig.from_env(fabro_host_port=server.server_port, log=False))
         observed = host.fabro_runs()
         assert len(observed) == 150 and observed[-1]["lifecycle"]["status"]["kind"] == "running"
     finally:
-        server.shutdown(); server.server_close(); thread.join(timeout=3)
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
 
 
 def test_suspend_or_boot_change_invalidates_complete_observation(monkeypatch):
-    from forge_factory.fabro import client as module
     from types import SimpleNamespace
+
+    from forge_factory.fabro import client as module
     with client(Pages([])) as c:
         observation = c.run_inventory()
     monkeypatch.setattr(module, "time", SimpleNamespace(monotonic=lambda: observation.observed_monotonic,
@@ -207,6 +214,7 @@ def test_partial_transport_failure_never_becomes_absence():
 
 def test_only_kernel_connection_refusal_has_absent_server_type():
     import errno
+
     from forge_factory.fabro.client import FabroConnectionUnavailable
     def refused(request):
         try:
@@ -227,6 +235,7 @@ def test_only_kernel_connection_refusal_has_absent_server_type():
 
 def test_real_closed_loopback_port_is_initial_connection_refusal():
     import socket
+
     from forge_factory.fabro.client import FabroConnectionUnavailable
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
@@ -277,6 +286,7 @@ def test_safety_query_omits_ordinary_terminal_history_but_retains_archived_unsaf
 @pytest.mark.parametrize("change", ["filter", "archives", "subject", "stale", "unknown-kind"])
 def test_shellhost_rejects_inappropriate_complete_inventory(monkeypatch, change):
     from dataclasses import replace
+
     from forge_factory.fabro.client import UNSAFE_RUN_COLUMNS
     pages = Pages([run(1)])
     c = client(pages)
@@ -302,7 +312,8 @@ def test_shellhost_rejects_inappropriate_complete_inventory(monkeypatch, change)
 def test_m3_live_runs_recognizes_all_pinned_nonterminal_lifecycles(tmp_path, monkeypatch, kind):
     from forge_factory.afo.line_orders import RealLine
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
-    row = run(1, kind); row["source_directory"] = str(tmp_path / "state/workorders/private/workspace")
+    row = run(1, kind)
+    row["source_directory"] = str(tmp_path / "state/workorders/private/workspace")
     cfg = LL.LineConfig.from_env(stack_root=tmp_path, log=False)
     line = RealLine(cfg)
     monkeypatch.setattr(line.host, "_client", lambda: client(Pages([row])))
@@ -312,7 +323,8 @@ def test_m3_live_runs_recognizes_all_pinned_nonterminal_lifecycles(tmp_path, mon
 def test_m3_unknown_lifecycle_is_unknown_not_empty(tmp_path, monkeypatch):
     from forge_factory.afo.line_orders import RealLine
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
-    row = run(1, "future-unknown"); row["source_directory"] = str(tmp_path / "state/workorders/private/workspace")
+    row = run(1, "future-unknown")
+    row["source_directory"] = str(tmp_path / "state/workorders/private/workspace")
     line = RealLine(LL.LineConfig.from_env(stack_root=tmp_path, log=False))
     monkeypatch.setattr(line.host, "_client", lambda: client(Pages([row])))
     assert line.live_runs() is None
@@ -328,15 +340,18 @@ def test_real_http_total_deadline_cancels_header_and_raw_body_waits(mode):
                 return
             try:
                 self.send_response(200)
-                self.send_header("Content-Length", "10000"); self.end_headers()
+                self.send_header("Content-Length", "10000")
+                self.end_headers()
                 while not stop.wait(0.03):
-                    self.wfile.write(b" "); self.wfile.flush()
+                    self.wfile.write(b" ")
+                    self.wfile.flush()
             except (BrokenPipeError, ConnectionResetError):
                 pass
         def log_message(self, *_):
             pass
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
     try:
         before = time.monotonic()
         with FabroClient(base_url=f"http://127.0.0.1:{server.server_port}") as c:
@@ -344,7 +359,10 @@ def test_real_http_total_deadline_cancels_header_and_raw_body_waits(mode):
                 c.run_inventory(timeout_s=0.3)
         assert time.monotonic() - before < 1.5
     finally:
-        stop.set(); server.shutdown(); server.server_close(); thread.join(timeout=3)
+        stop.set()
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
 
 
 def test_sync_inventory_refuses_running_event_loop_without_network():
@@ -383,19 +401,22 @@ def test_async_transport_keeps_exact_authentication_endpoint_and_subject():
 def test_actual_pre_admission_retains_all_counters_when_foreign_or_unknown_source_is_unsafe(tmp_path, monkeypatch, source, kind):
     # Real TEST signatures, normal Placer.cycle and actual private SQLite. The
     # fixture substitutes only normal line workproduct/backend leaves and HTTP.
-    from test_line_conductor_m3 import env as env_fixture, write_campaign, lineage, grant, placer
-    from forge_factory.afo import line_orders as LO
-    from forge_factory.afo.queue import Store
-    from forge_factory.afo.mission_ledger import MissionLedger
-    from contextlib import closing
     import sqlite3
+    from contextlib import closing
+
+    from forge_factory.afo import line_orders as LO
+    from forge_factory.afo.mission_ledger import MissionLedger
+    from forge_factory.afo.queue import Store
+    from test_line_conductor_m3 import env as env_fixture
+    from test_line_conductor_m3 import grant, lineage, placer, write_campaign
     generator = env_fixture.__wrapped__(tmp_path, monkeypatch)
     environment = generator
     write_campaign(environment, [lineage("crc-ll", "CRCL", "20261103-L30")])
     grant(environment)
     cfg = LL.LineConfig.from_env(stack_root=tmp_path, log=False)
     actual = LO.RealLine(cfg)
-    row = run(1, kind); row["source_directory"] = source
+    row = run(1, kind)
+    row["source_directory"] = source
     monkeypatch.setattr(actual.host, "_client", lambda: client(Pages([row])))
     environment["line"].live_runs = actual.live_runs
     p = placer(environment)

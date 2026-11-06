@@ -71,3 +71,10 @@ canonical server as occupied, including foreign or missing source directories.
 Exact own-run labels/source/nonce are still mandatory at model handoff. Private
 normal-Placer/TEST-signature controls verify no attempt/outbox/order/mission
 counter changes when a foreign unsafe run prevents admission.
+
+An independently retained V3 counterexample exposed a later-request refusal
+being mislabeled as initial absence. The final collector tracks both request
+attempts and receipt of headers. ECONNREFUSED is an initial-absence fact only for
+request one before any response starts. A later page, second pass, or body error
+after headers is partial/unknown observation even if no body bytes were retained.
+Normal private prelaunch controls exercise all four cases with the actual SDK.
