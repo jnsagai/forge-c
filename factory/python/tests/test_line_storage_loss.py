@@ -11,8 +11,10 @@ import pytest
 from forge_factory.afo import host
 from forge_factory.afo.durable import digest
 from forge_factory.afo.queue import QueueError, Store
+from test_line_conductor_m3 import env as _m3_env
+from test_line_conductor_m3 import grant, placer
 
-from test_line_conductor_m3 import env, grant, placer  # noqa: F401
+env = _m3_env
 
 
 def test_durable_empty_campaign_cycle_cannot_reinitialize_a_lost_known_queue(env, monkeypatch):
