@@ -487,3 +487,39 @@ def test_held_event_lock_is_bounded_releases_writer_and_own_notice_retries(settl
     assert len(restarted["deliveries"]) == 1 and restarted["deliveries"][0]["status"] == "DELIVERED"
     assert len(list((E.archive_root() / "controller-exports").glob("case-*/export.zip"))) == 1
     assert MissionLedger(p.store).snapshot("fixture-mission") == before
+
+
+def test_hard_process_exit_before_atomic_link_recovers_without_partial_final_or_new_charge(settled):
+    import multiprocessing
+
+    from forge_factory.afo import durable
+
+    p = settled
+    before = MissionLedger(p.store).snapshot("fixture-mission")
+
+    def child():
+        def crash_before_link(*a, **kw):
+            os._exit(71)
+
+        durable.os.link = crash_before_link
+        drain(p)
+
+    process = multiprocessing.get_context("fork").Process(target=child)
+    process.start()
+    process.join(timeout=5)
+    timed_out = process.is_alive()
+    if timed_out:
+        process.terminate()
+        process.join(timeout=2)  # own harmless fixture only
+    assert not timed_out and process.exitcode == 71
+    directories = list((E.archive_root() / "controller-exports").glob("case-*"))
+    assert len(directories) == 1 and not (directories[0] / "case.json").exists()
+    staged = list(directories[0].glob(".publish-*"))
+    assert len(staged) == 1 and staged[0].is_file()
+    result = drain(p)
+    assert len(result["exports"]) == 1
+    assert (directories[0] / "case.json").is_file() and staged[0].exists()
+    assert MissionLedger(p.store).snapshot("fixture-mission") == before
+    with p.store.tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_lifecycle_events WHERE type='afo.controller_exported'").fetchone()[0] == 1
+    assert drain(p)["exports"] == []

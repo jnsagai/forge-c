@@ -54,7 +54,7 @@ Seal the case first; write/verify identical archive and report before a single
 canonical transaction appends the receipt, advances the telemetry pointer and
 queues its exact local notification in the existing outbox.
 A crash before acknowledgment verifies the same immutable bytes on restart;
-a divergent partial or foreign artifact refuses rather than being overwritten.
+a divergent existing final artifact refuses rather than being overwritten.
 The existing local notification log supplies manual handoff refs. There is no
 network sender, new product queue, repair job, model request, budget reset,
 automatic order reopen or acceptance/release claim. Manual development repair
@@ -116,3 +116,14 @@ selected payload is checked again before acknowledgment. A held event lock
 therefore cannot retain that writer. Restoration retries the exact pending local
 notice without a new export, model call or mission debit. This bounds controllable
 lock waits, not operating-system fsync latency or arbitrary scheduler stalls.
+
+Reuse durable.immutable_bytes for publication rather than writing final names
+directly: fsync a private .publish-* staging file, atomic no-overwrite hardlink,
+then fsync the directory. Existing final files first undergo strict owner/type/
+no-symlink/hash checks. A real harmless child exits immediately before linking
+and proves restart publishes a complete final artifact with one receipt and no
+extra charge. Abruptly orphaned unpublished staging remains private evidence;
+reporting does not delete it or infer a manufacturing outcome. The canonical
+sealed publisher intent records the publication directory and all final physical
+refs before any staging file is created. Future retirement integration must use
+those already-declared refs; artifact names/typed exporter contracts stay unchanged.

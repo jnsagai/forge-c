@@ -22,7 +22,7 @@ from ..common import state_dir, utc_now
 from ..offline import controller_export
 from ..release.finalize import archive_root
 from . import alerts
-from .durable import Refused, canonical, digest
+from .durable import Refused, canonical, digest, immutable_bytes
 from .line_recovery_product import job_id
 from .mission_ledger import MissionLedger
 
@@ -116,27 +116,20 @@ def _read(path, limit=MAX_RECORD):
 
 
 def _immutable(path, raw):
-    # A crash during write leaves a divergent file and refuses; it never causes
-    # a reporting callback to overwrite a possibly consumed artifact.
-    try:
-        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
-    except FileExistsError:
+    _private(path.parent)
+    if path.exists() or path.is_symlink():
+        info = path.lstat()
+        if info.st_mode & 0o077:
+            raise Refused("CONTROLLER_EXPORT_ARTIFACT_PERMISSIONS")
         if _read(path, controller_export.MAX_BYTES) != raw:
-            raise Refused("CONTROLLER_EXPORT_ARTIFACT_REBOUND") from None
+            raise Refused("CONTROLLER_EXPORT_ARTIFACT_REBOUND")
         return
-    try:
-        with os.fdopen(fd, "wb") as stream:
-            stream.write(raw)
-            stream.flush()
-            os.fsync(stream.fileno())
-        parent_fd = os.open(path.parent, os.O_DIRECTORY | os.O_NOFOLLOW)
-        try:
-            os.fsync(parent_fd)
-        finally:
-            os.close(parent_fd)
-    except BaseException:
-        # Preserve partial evidence, never truncate/reset it.
-        raise
+    # Reuse the broker's crash-safe fsync staging + atomic exclusive hardlink.
+    # Private case directory/root lock fence concurrent publishers; never repair
+    # or overwrite an unknown existing final artifact.
+    immutable_bytes(path, raw, mode=0o600)
+    if _read(path, controller_export.MAX_BYTES) != raw:
+        raise Refused("CONTROLLER_EXPORT_ARTIFACT_REBOUND")
 
 
 def _json(raw):
@@ -627,6 +620,7 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
                     or record.get("case_json") != str(sealed)
                     or record.get("bundle") != str(directory / "export.zip")
                     or record.get("report") != str(directory / "REPORT.md")
+                    or record.get("publication_directory") != str(directory)
                 ):
                     raise Refused("CONTROLLER_EXPORT_SEAL_CHANGED")
                 if any(old.get(k) != case[k] for k in ("case_id", "job_id", "order_id", "attempt_id", "source_revision")):
@@ -644,6 +638,7 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
                     case_json=str(sealed),
                     bundle=str(directory / "export.zip"),
                     report=str(directory / "REPORT.md"),
+                    publication_directory=str(directory),
                 )
                 with _tx(store, budget) as c:
                     c.execute(
