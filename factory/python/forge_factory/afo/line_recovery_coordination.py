@@ -266,7 +266,10 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
 
     if not execute:
         return []  # dry-run never creates a queue, worker cursor, outbox intent or job
-    store = Store(placer.queue_path, producer="line-recovery-coordination")
+    # Normal Placer retains the established Store identity. Explicit callers
+    # outside that controller are consumers too, never implicit bootstrap.
+    store = (placer._store(producer="line-recovery-coordination") if callable(getattr(placer, "_store", None)) else
+             Store(placer.queue_path, producer="line-recovery-coordination", must_exist=True))
     actions = []
     spawned = False
     # Supervise existing resource holders even after expiry, campaign hold, or a

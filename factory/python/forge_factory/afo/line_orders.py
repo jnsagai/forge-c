@@ -1031,8 +1031,74 @@ class Placer:
         self.policy_path, self.auth_base, self.allowed_signers = policy_path, auth_base, allowed_signers
         self.unit, self.clock, self.require_approval, self.capa_of = unit, clock, require_approval, capa_of
         self.queue_path = supervisor_dir() / "line-queue.sqlite3"
+        # This is an observation of the existing authority, never a request to
+        # restore it. Once seen, its inode cannot be replaced by a new empty
+        # database through a later explicit-path Store constructor.
+        self._queue_identity = None
+        self._queue_unknown = False
+        try:
+            info = self.queue_path.lstat()
+            self._queue_identity = info.st_dev, info.st_ino
+        except FileNotFoundError:
+            pass  # explicit legacy first bootstrap remains supported below
+        except OSError:
+            self._queue_unknown = True
+        self._store_handle = None
         self._act_lock = None
         self._logged: set = set()
+
+    def _storage_ready(self):
+        """No initialization: fence known/durable authority before cycle writes."""
+        from .operations import configured
+        from .queue import QueueError
+
+        required = (self._queue_identity is not None or self._queue_unknown
+                    or self.owner_supervised_development or self.recovery_config is not None
+                    or os.environ.get("FORGE_DURABLE_AUTONOMY") == "1"
+                    or os.environ.get("FORGE_AFO_QUEUE_SCOPE") == "line-local" or configured())
+        if not required:
+            return
+        if os.environ.get("FORGE_DURABLE_AUTONOMY") == "1":
+            from .host import preflight
+
+            if not preflight()["ok"]:
+                raise QueueError("DURABLE_DATA_VOLUME_NOT_READY")
+        if self._queue_unknown:
+            raise QueueError("AUTHORITATIVE_DATABASE_UNAVAILABLE")
+        # Existing-only mode checks the actual SQLite header, schema and path
+        # identity without mkdir/migration/empty fallback. Its connect() keeps
+        # enforcing that same identity at every subsequent transaction.
+        if self._store_handle is None:
+            from .queue import Store
+
+            handle = Store(self.queue_path, producer=f"line-conductor:{self.line_id}", must_exist=True)
+            if self._queue_identity is not None and handle._existing_identity != self._queue_identity:
+                raise QueueError("AUTHORITATIVE_DATABASE_IDENTITY_CHANGED")
+            self._queue_identity = handle._existing_identity
+            self._store_handle = handle
+        self._store_handle._check_existing()
+
+    def _store(self, *, producer=None):
+        """The existing controller Store, with one explicit legacy bootstrap."""
+        from .queue import Store
+
+        self._storage_ready()
+        if self._store_handle is None:
+            # Reached only before any authority has been observed, with no
+            # durable/Intent/development runtime configured. This is the old
+            # explicit M3 bootstrap, not restoration after storage loss.
+            initial = Store(self.queue_path, producer=f"line-conductor:{self.line_id}")
+            self._store_handle = Store(initial.path, producer=initial.producer, must_exist=True)
+            self._queue_identity = self._store_handle._existing_identity
+        self._store_handle._check_existing()
+        if producer is not None and producer != self._store_handle.producer:
+            consumer = Store(self.queue_path, producer=producer, must_exist=True)
+            if consumer._existing_identity != self._queue_identity:
+                from .queue import QueueError
+
+                raise QueueError("AUTHORITATIVE_DATABASE_IDENTITY_CHANGED")
+            return consumer
+        return self._store_handle
 
     # ------------------------------------------------------------------------------------------------ the cycle
     def cycle(self, now: float | None = None) -> dict:
@@ -1044,6 +1110,21 @@ class Placer:
             grant = DevelopmentGrant(policy)
         else:
             grant = verify_grant(policy, now=now, base=self.auth_base, allowed_signers=self.allowed_signers)
+        try:
+            self._storage_ready()
+        except (OSError, ValueError) as exc:
+            from .queue import QueueError
+
+            # This check precedes ACT locks, recovery, learning and local
+            # status/spec/log publication. Unknown storage cannot gain an
+            # apparently fresh allowance from a newly initialized queue.
+            if not isinstance(exc, (OSError, QueueError)):
+                raise
+            return {"mode": "OBSERVING", "authorization": grant.view(), "policy_issues": policy.issues[:6],
+                    "error": getattr(exc, "code", "AUTHORITATIVE_STORAGE_UNKNOWN"),
+                    "storage": {"status": "BLOCKED", "initialized": False}, "lineages": [],
+                    "gpu": {"busy": True, "reason": "AUTHORITATIVE_STORAGE_UNKNOWN", "wo": None},
+                    "campaigns": [], "rejected": [], "actions": [], "quality_gaps": []}
         cdir = self.campaigns_dir or (Path(policy.get("campaigns_dir")) if policy.get("campaigns_dir") and
                                       Path(policy.get("campaigns_dir")).is_absolute() else
                                       REPO_ROOT / (policy.get("campaigns_dir") or "config/factory/campaigns"))
@@ -1118,10 +1199,9 @@ class Placer:
             import sqlite3
 
             from .line_lessons import capture
-            from .queue import Store
 
             try:
-                learning = capture(Store(self.queue_path, producer=f"line-learning:{self.line_id}"), limit=8)
+                learning = capture(self._store(producer=f"line-learning:{self.line_id}"), limit=8)
             except (OSError, ValueError, sqlite3.Error) as exc:
                 learning = {"schema": "forge-c/line-learning-capture/1", "status": "CAPTURE_FAILED",
                             "code": getattr(exc, "code", type(exc).__name__), "model_calls": 0, "new_lessons": 0}
@@ -1222,9 +1302,9 @@ class Placer:
                 return {**act, "outcome": "SWEEP_REFUSED"}
         camp = next(c for c in campaigns if c.campaign_id == P.lineage.campaign_id)
         superseded = P.superseded
-        from .queue import QueueError, Store
+        from .queue import QueueError
 
-        store = Store(self.queue_path, producer=f"line-conductor:{self.line_id}")
+        store = self._store()
         if superseded and superseded in _queue_rows(self.queue_path):
             oid = _queue_rows(self.queue_path)[superseded]["order_id"]
             try:
@@ -1334,7 +1414,7 @@ class Placer:
     def _reconcile(self, plans: list[Plan], policy: LinePolicy, grant: Grant, campaigns, now: float) -> list[dict]:
         """The queue follows the records: launched -> RUNNING, launch failed -> PAUSED, run ended -> terminal; a live
         run of a lineage that the queue does not hold yet is adopted (submitted and admitted as RUNNING)."""
-        from .queue import QueueError, Store
+        from .queue import QueueError
 
         out = []
         rows = _queue_rows(self.queue_path)
@@ -1346,7 +1426,7 @@ class Placer:
                     visited.add(a.wo)
                     row = rows.get(a.wo)
                     try:
-                        store = store or Store(self.queue_path, producer=f"line-conductor:{self.line_id}")
+                        store = store or self._store()
                         ev = self._sync(store, P, a, row, policy, grant, campaigns, now)
                     except QueueError as exc:
                         ev = {"action": "QUEUE_SYNC", "wo": a.wo, "outcome": "QUEUE_REFUSED", "detail": str(exc)[:160]}
@@ -1382,7 +1462,7 @@ class Placer:
                     or not row.get("authorization_id")
                     or row["authorization_id"] != env.get("authorization_ref")):
                 continue
-            store = store or Store(self.queue_path, producer=f"line-conductor:{self.line_id}")
+            store = store or self._store()
             attempts = store.attempts(row["order_id"])
             live = attempts[-1] if attempts else None
             rid = (live or {}).get("record", {}).get("fabro_run_id")
