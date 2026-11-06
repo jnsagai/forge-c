@@ -141,6 +141,7 @@ def _publish_heartbeat(record, *, cycle=None, completed=False):
     a model/stack. That proves guardian liveness, never product or cycle progress.
     Atomic replacement prevents the host guard observing a half-written JSON.
     """
+    import stat
     import tempfile
 
     sha = digest(record)
@@ -153,7 +154,17 @@ def _publish_heartbeat(record, *, cycle=None, completed=False):
         previous = {}
         if path.exists() or path.is_symlink():
             _private(path)
-            previous = strict_json(path.read_bytes(), 16384)
+            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
+            try:
+                observed = os.fstat(fd)
+                if (not stat.S_ISREG(observed.st_mode) or observed.st_uid != os.getuid()
+                        or observed.st_mode & 0o077 or observed.st_size > 16384):
+                    _fail("HEARTBEAT_METADATA_INVALID")
+                previous = strict_json(os.read(fd, 16385), 16384)
+            finally:
+                os.close(fd)
+            if not isinstance(previous, dict):
+                _fail("HEARTBEAT_METADATA_INVALID")
             if (
                 previous.get("record_sha256") != sha
                 or previous.get("pid") != record["guardian_pid"]
@@ -161,6 +172,25 @@ def _publish_heartbeat(record, *, cycle=None, completed=False):
                 or previous.get("acceptance") != "UNACCEPTED"
             ):
                 _fail("HEARTBEAT_IDENTITY_CHANGED")
+            prior_cycle, last = previous.get("cycle"), previous.get("last_completed_cycle")
+            completed_at = previous.get("last_cycle_completed_at")
+            state = previous.get("cycle_state")
+            if (
+                set(previous) != {"schema", "mode", "acceptance", "record_sha256", "pid", "at", "liveness",
+                                  "cycle", "cycle_state", "last_completed_cycle", "last_cycle_completed_at"}
+                or previous["schema"] != "forge-c/owner-guardian-heartbeat/1"
+                or previous["liveness"] != "GUARDIAN_RESPONSIVE_NOT_ENGINEERING_PROGRESS"
+                or type(previous["at"]) not in (int, float) or not math.isfinite(previous["at"])
+                or type(prior_cycle) is not int or type(last) is not int or not -1 <= last <= prior_cycle
+                or not ((state == "NOT_STARTED" and prior_cycle == last == -1)
+                        or (state == "IN_PROGRESS" and prior_cycle >= 0 and last < prior_cycle)
+                        or (state == "COMPLETE" and prior_cycle >= 0 and last == prior_cycle))
+                or not ((last == -1 and completed_at is None)
+                        or (last >= 0 and type(completed_at) in (int, float) and math.isfinite(completed_at)))
+            ):
+                _fail("HEARTBEAT_METADATA_INVALID")
+            if cycle is not None and cycle < prior_cycle:
+                _fail("HEARTBEAT_PROGRESS_REBOUND")
         now = time.time()
         value = dict(
             schema="forge-c/owner-guardian-heartbeat/1", mode=MODE, acceptance="UNACCEPTED",

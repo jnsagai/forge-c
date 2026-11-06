@@ -101,6 +101,59 @@ def test_changed_heartbeat_identity_is_not_overwritten(supervised, field, value)
     assert heartbeat.read_bytes() == before
 
 
+@pytest.mark.parametrize("raw", [b"[]", b"null", b"42", b'"scalar"', b"x" * 16385])
+def test_nonobject_or_oversized_heartbeat_refuses_without_replacement(supervised, raw):
+    record, heartbeat = record_and_heartbeat(supervised)
+    heartbeat.write_bytes(raw)
+    heartbeat.chmod(0o600)
+    with pytest.raises(Refused, match="HEARTBEAT_METADATA_INVALID"):
+        D._publish_heartbeat(record)
+    assert heartbeat.read_bytes() == raw
+
+
+@pytest.mark.parametrize("change", ["state", "counter", "timestamp", "schema"])
+def test_damaged_progress_is_not_preserved_as_valid_observation(supervised, change):
+    record, heartbeat = record_and_heartbeat(supervised)
+    D._publish_heartbeat(record, cycle=0)
+    bad = json.loads(heartbeat.read_bytes())
+    if change == "state":
+        bad["cycle_state"] = "COMPLETE"
+    elif change == "counter":
+        bad["last_completed_cycle"] = True
+    elif change == "timestamp":
+        bad["last_cycle_completed_at"] = 1
+    else:
+        bad["schema"] = "UNKNOWN"
+    heartbeat.write_text(json.dumps(bad))
+    before = heartbeat.read_bytes()
+    with pytest.raises(Refused, match="HEARTBEAT_METADATA_INVALID"):
+        D._publish_heartbeat(record)
+    assert heartbeat.read_bytes() == before
+
+
+def test_same_guardian_cannot_reset_completed_cycle_observation(supervised):
+    record, heartbeat = record_and_heartbeat(supervised)
+    D._publish_heartbeat(record, cycle=2, completed=True)
+    before = heartbeat.read_bytes()
+    with pytest.raises(Refused, match="HEARTBEAT_PROGRESS_REBOUND"):
+        D._publish_heartbeat(record, cycle=0)
+    assert heartbeat.read_bytes() == before
+
+
+def test_corrupt_metadata_refuses_nonce_without_killing_existing_guardian_thread(supervised):
+    record, heartbeat = record_and_heartbeat(supervised)
+    D._publish_heartbeat(record, cycle=0)
+    valid_private_fixture = heartbeat.read_bytes()
+    heartbeat.write_bytes(b"[]")
+    with pytest.raises(Refused, match="GUARDIAN_ATTESTATION_UNAVAILABLE"):
+        D._attest(record, record["guardian_socket"])
+    assert D._GUARDIANS[supervised["ref"]["sha256"]][2].is_alive()
+    assert heartbeat.read_bytes() == b"[]"  # no automatic metadata repair
+    heartbeat.write_bytes(valid_private_fixture)  # explicit private test-owner repair
+    D._attest(record, record["guardian_socket"])
+    assert json.loads(heartbeat.read_bytes())["last_completed_cycle"] == -1
+
+
 def test_main_first_cycle_can_run_existing_heartbeat_guard_before_any_completion(supervised, monkeypatch, tmp_path):
     from forge_factory.afo import line_launcher as LL
     from forge_factory.afo import line_orders as O
