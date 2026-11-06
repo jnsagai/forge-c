@@ -791,6 +791,10 @@ class FabroUnavailable(RuntimeError):
     pass
 
 
+class FabroInventoryUnknown(FabroUnavailable):
+    """A connected/partial/invalid observation cannot prove native absence."""
+
+
 class ShellHost:
     """Real side effects: the run worktree's `python -m forge_factory.lrtx.stack ...` and the local Fabro API."""
 
@@ -825,16 +829,22 @@ class ShellHost:
         return FabroClient(base_url=f"http://127.0.0.1:{self.cfg.fabro_host_port}",
                            token=load_token(str(self.cfg.stack_root / "fabro/storage")), timeout=10)
 
-    def fabro_runs(self) -> list[dict]:
-        from ..fabro.client import FabroUnavailable as FU
+    def fabro_run_inventory(self, *, active_only=False):
+        """Explicit completeness boundary; filtered lifecycle contract remains opt-in."""
+        from ..fabro.client import FabroConnectionUnavailable
 
         try:
-            with self._client() as c:
-                return c.list_runs(limit=100)
-        except (FU, OSError, ValueError) as exc:
+            with self._client() as client:
+                # Until the installed API's exhaustive nonterminal mapping is
+                # independently measured, use bounded verified full enumeration.
+                return client.run_inventory(include_archived=True)
+        except FabroConnectionUnavailable as exc:
             raise FabroUnavailable(type(exc).__name__) from None
-        except Exception as exc:  # noqa: BLE001 - httpx status errors: the API did not answer usefully
-            raise FabroUnavailable(type(exc).__name__) from None
+        except Exception as exc:  # noqa: BLE001 - partial/invalid observations never prove absence
+            raise FabroInventoryUnknown(type(exc).__name__) from None
+
+    def fabro_runs(self) -> list[dict]:
+        return list(self.fabro_run_inventory().rows)
 
     def fabro_run(self, run_id: str) -> dict:
         try:
@@ -915,6 +925,8 @@ def live_runs(cfg: LineConfig, host, procs=None, ports: dict | None = None, *, d
     out = {"api": "UP", "live": [], "orphan_fabro": []}
     try:
         out["live"] = live(host.fabro_runs())
+    except FabroInventoryUnknown as exc:
+        raise LaunchError("FABRO_API_UNREACHABLE", type(exc).__name__) from None
     except FabroUnavailable as exc:
         out["api"] = f"UNREACHABLE:{exc}"
     cands, _holder = survey(cfg.stack_root, procs, cfg.uid)

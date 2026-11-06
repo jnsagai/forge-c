@@ -152,10 +152,19 @@ def _observation_host(cfg, s):
     return ShellHost(cfg)
 
 
+def _complete_runs(host):
+    from ..fabro.client import RunInventory
+
+    observation = host.fabro_run_inventory(active_only=True)
+    if not isinstance(observation, RunInventory) or not observation.fresh():
+        raise Refused("LINE_STACK_NATIVE_INVENTORY_UNKNOWN")
+    return observation.rows
+
+
 def _prelaunch(cfg, store, job, execution, s):
     from ..lrtx.stack import lock_path
     from .execution_lifecycle import Executions
-    from .line_launcher import ProcFS, flock_holders, survey
+    from .line_launcher import FabroInventoryUnknown, FabroUnavailable, ProcFS, flock_holders, survey
     from .line_liveness import KIND
     from .line_orders import _proc_start
 
@@ -170,14 +179,18 @@ def _prelaunch(cfg, store, job, execution, s):
     # The ordinary M2 API/PID rule: unavailable is allowed only when this root has no Fabro process.
     host = _observation_host(cfg, s)
     try:
-        runs = host.fabro_runs()
-    except Exception as exc:
+        runs = _complete_runs(host)
+    except (FabroInventoryUnknown, Refused) as exc:
+        raise Refused("LINE_STACK_NATIVE_OBSERVATION_UNKNOWN") from exc
+    except FabroUnavailable as exc:
         candidates, _ = survey(cfg.stack_root, ProcFS(), cfg.uid)
         if any(p["kind"] == "fabro" for p in candidates):
             raise Refused("LINE_STACK_NATIVE_OBSERVATION_UNKNOWN") from exc
         runs = []
-    if len(runs) >= 100 or any((r.get("lifecycle", {}).get("status", {}).get("kind") or "").lower()
-                             not in ("succeeded", "failed", "cancelled", "canceled", "dead", "aborted", "error", "timeout")
+    except Exception as exc:
+        raise Refused("LINE_STACK_NATIVE_OBSERVATION_UNKNOWN") from exc
+    if any((r.get("lifecycle", {}).get("status", {}).get("kind") or "").lower()
+                             not in ("succeeded", "failed", "cancelled", "canceled", "dead")
                              for r in runs):
         raise Refused("LINE_STACK_NATIVE_NOT_QUIESCENT")
 
@@ -195,10 +208,10 @@ def _native_handoff(cfg, store, job, execution, workspace, model, s):
             or model not in {m for models in context["role_models"].values() for m in models}):
         raise Refused("LINE_STACK_NATIVE_MODEL_CONTEXT_UNCONFIRMED")
     host = _observation_host(cfg, s)
-    runs = host.fabro_runs()
+    runs = _complete_runs(host)
     live = [r for r in runs if r.get("lifecycle", {}).get("status", {}).get("kind") not in
-            ("succeeded", "failed", "cancelled", "canceled", "dead", "aborted", "error", "timeout")]
-    if len(runs) >= 100 or len(live) != 1:
+            ("succeeded", "failed", "cancelled", "canceled", "dead")]
+    if len(live) != 1:
         raise Refused("LINE_STACK_NATIVE_IDENTITY_UNCONFIRMED")
     native = live[0]
     labels = native.get("labels") or {}

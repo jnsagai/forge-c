@@ -9,6 +9,8 @@ from types import SimpleNamespace
 
 import pytest
 from forge_factory.afo import line_launcher as LL
+from forge_factory.fabro.client import RunInventory
+import time
 from forge_factory.afo import line_recovery_control as C
 from forge_factory.afo import line_recovery_product as P
 from forge_factory.afo import line_stack_lifecycle as A
@@ -52,7 +54,7 @@ def claimed(product, monkeypatch, tmp_path):
     profile = load(p.spec["profile"])
     s = {"root": p.cfg.stack_root, "profile": profile, "ports": profile["deployment"]["ports"]}
     # The real API leaf is intentionally absent; normal M2 permits this only with no current Fabro PID.
-    monkeypatch.setattr(LL.ShellHost, "fabro_runs", lambda self: [])
+    monkeypatch.setattr(LL.ShellHost, "fabro_run_inventory", lambda self, **kw: RunInventory((), True, "fixture", None, time.monotonic(), 1, time.clock_gettime(time.CLOCK_BOOTTIME), Path("/proc/sys/kernel/random/boot_id").read_text().strip()))
     p.s, p.intent, p.order = s, intent, order
     return p
 
@@ -122,7 +124,7 @@ def test_line_preparation_refuses_changed_authority_before_any_process_effect(cl
         with p.store.tx() as c:
             c.execute("UPDATE afo_resource_ownership SET holder='foreign' WHERE resource='inference'")
     elif change == "unknown-native":
-        monkeypatch.setattr(LL.ShellHost, "fabro_runs", lambda self: [{"id": "unknown", "lifecycle": {}}])
+        monkeypatch.setattr(LL.ShellHost, "fabro_run_inventory", lambda self, **kw: RunInventory(({"id": "unknown", "lifecycle": {}},), True, "fixture", None, time.monotonic(), 1, time.clock_gettime(time.CLOCK_BOOTTIME), Path("/proc/sys/kernel/random/boot_id").read_text().strip()))
     monkeypatch.setattr(ST, "_stop", lambda *a, **kw: pytest.fail("refusal reached a service effect"))
     before = p.intent.path.read_bytes()
     with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
@@ -361,7 +363,10 @@ def test_first_graph_serve_uses_existing_authoritative_nonce_adoption_before_det
     native = {"id": "OWN-NATIVE", "labels": {"afo_agent": job["job_id"],
               "afo_nonce": "foreign-nonce" if wrong_nonce else job["nonce"]}, "source_directory": str(ws),
               "lifecycle": {"status": {"kind": "running"}}}
-    monkeypatch.setattr(LL.ShellHost, "fabro_runs", lambda self: [native])
+    # Retained terminal history must not prevent the normal own-native handoff.
+    history = [{"id": f"OLD-{i}", "lifecycle": {"status": {"kind": "succeeded"}}} for i in range(149)]
+    monkeypatch.setattr(LL.ShellHost, "fabro_run_inventory", lambda self, **kw:
+                        RunInventory(tuple(history + [native]), True, "fixture", None, time.monotonic(), 4, time.clock_gettime(time.CLOCK_BOOTTIME), Path("/proc/sys/kernel/random/boot_id").read_text().strip()))
     from contextlib import contextmanager
 
     @contextmanager
@@ -513,3 +518,58 @@ def test_malformed_or_foreign_startup_hold_never_releases_on_native_terminal(cla
     ex.adopt(job["job_id"], ["OWN-NATIVE"])
     terminal = SimpleNamespace(get_run=lambda rid: {"lifecycle": {"status": {"kind": "succeeded"}}})
     assert ex.reconcile(job["job_id"], terminal)["resource_lease"] == "HELD"
+
+
+@pytest.mark.parametrize("observation", ["stale", "partial", "programmer-error"])
+def test_incomplete_inventory_never_uses_absent_server_fallback(claimed, monkeypatch, observation):
+    p = claimed
+    effects = []
+    if observation == "programmer-error":
+        def broken(*args, **kwargs):
+            raise AttributeError("private invalid observation implementation")
+        monkeypatch.setattr(LL.ShellHost, "fabro_run_inventory", broken)
+    else:
+        captured = time.monotonic() - 10 if observation == "stale" else time.monotonic()
+        monkeypatch.setattr(LL.ShellHost, "fabro_run_inventory", lambda self, **kw:
+                            RunInventory((), observation != "partial", "fixture", None, captured, 1,
+                                         time.clock_gettime(time.CLOCK_BOOTTIME),
+                                         Path("/proc/sys/kernel/random/boot_id").read_text().strip()))
+    monkeypatch.setattr(ST, "_stop", lambda *a, **kw: effects.append("stop"))
+    with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
+        with pytest.raises(Refused, match="NATIVE_OBSERVATION_UNKNOWN"):
+            ST._locked_stop(p.s)
+    assert effects == []
+    assert p.intent.read()["mode"] == "RUNNING"
+    assert Executions(p.store).get(P.job_id(p.aid))["resource_lease"] == "HELD"
+
+
+def test_149_terminal_prelaunch_reaches_backend_without_releasing_lease(claimed, monkeypatch):
+    p = claimed
+    history = tuple({"id": f"terminal-{i}", "lifecycle": {"status": {"kind": "succeeded"}}} for i in range(149))
+    monkeypatch.setattr(LL.ShellHost, "fabro_run_inventory", lambda self, **kw:
+                        RunInventory(history, True, "fixture", None, time.monotonic(), 4,
+                                     time.clock_gettime(time.CLOCK_BOOTTIME),
+                                     Path("/proc/sys/kernel/random/boot_id").read_text().strip()))
+    effects = []
+    monkeypatch.setattr(ST, "_stop", lambda *a, **kw: effects.append("stop") or {"stopped": []})
+    before = MissionLedger(p.store).snapshot("fixture-mission")
+    with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
+        assert ST._locked_stop(p.s) == {"stopped": []}
+    assert effects == ["stop"] and MissionLedger(p.store).snapshot("fixture-mission") == before
+    assert Executions(p.store).get(P.job_id(p.aid))["resource_lease"] == "HELD"
+
+
+@pytest.mark.parametrize("kind", ["running", "paused", "removing", "future-unknown", "error", "timeout"])
+def test_active_or_unknown_after149terminal_refuses_before_effect(claimed, monkeypatch, kind):
+    p = claimed
+    rows = tuple([{"id": f"terminal-{i}", "lifecycle": {"status": {"kind": "succeeded"}}} for i in range(149)]
+                 + [{"id": "unsafe-tail", "lifecycle": {"status": {"kind": kind}}}])
+    monkeypatch.setattr(LL.ShellHost, "fabro_run_inventory", lambda self, **kw:
+                        RunInventory(rows, True, "fixture", None, time.monotonic(), 4,
+                                     time.clock_gettime(time.CLOCK_BOOTTIME),
+                                     Path("/proc/sys/kernel/random/boot_id").read_text().strip()))
+    monkeypatch.setattr(ST, "_stop", lambda *a, **kw: pytest.fail("unsafe observation reached stop"))
+    with LL.gpu_lock(p.cfg.gpu_lock), LL.held_stack_lock(p.s["root"]):
+        with pytest.raises(Refused, match="NATIVE_NOT_QUIESCENT"):
+            ST._locked_stop(p.s)
+    assert Executions(p.store).get(P.job_id(p.aid))["resource_lease"] == "HELD"
