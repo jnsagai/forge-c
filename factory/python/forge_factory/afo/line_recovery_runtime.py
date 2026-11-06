@@ -84,10 +84,11 @@ class Journal:
     def __init__(self, path):
         self.path = path
 
-    def step(self, step, result=None, **details):
+    def step(self, step, outcome="OK", **details):
+        """Same shape as line_launcher.Attempt.step: _guard passes the guard's text as `result`."""
         from .line_conductor import append_jsonl
 
-        append_jsonl(self.path, {"step": step, "result": result, **details})
+        append_jsonl(self.path, {"step": step, "outcome": outcome, **details})
 
 
 def launch(job, *, cfg=None, host=None, procs=None, authorization=None):

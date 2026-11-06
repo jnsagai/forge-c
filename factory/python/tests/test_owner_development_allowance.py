@@ -217,6 +217,25 @@ def test_recovery_planner_uses_the_lane_grant_not_a_signed_file():
     assert "development.DevelopmentGrant(policy)" in source and "eff.mode == development.MODE" in source
 
 
+def test_recovery_journal_accepts_the_real_launch_guard(tmp_path):
+    from types import SimpleNamespace as NS
+
+    from forge_factory.afo import line_launcher as LL
+    from forge_factory.afo.line_recovery_runtime import Journal
+
+    log = tmp_path / "steps.jsonl"
+    cfg = NS(guard=True, stack_root=tmp_path, uid=1000)
+    procs = NS()
+    real = LL.survey
+    LL.survey = lambda *_: ([], None)
+    try:
+        LL._guard(Journal(log), NS(guard=lambda own: "OK"), procs, cfg, lambda _: None)
+    finally:
+        LL.survey = real
+    row = json.loads(log.read_text())
+    assert (row["step"], row["outcome"], row["result"]) == ("guard", "OK", "OK")
+
+
 def test_tool_charge_reaches_the_line_queue_under_the_hook_scope(store, tmp_path, monkeypatch):
     from forge_factory.afo.tool_accounting import charge
 
