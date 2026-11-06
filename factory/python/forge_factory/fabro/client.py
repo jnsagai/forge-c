@@ -161,8 +161,11 @@ class FabroClient:
         started = (time.monotonic(), time.clock_gettime(time.CLOCK_BOOTTIME))
 
         async def observe():
+            # trust_env=False: a refusal from an environment proxy is not a fact
+            # about this server, and only the server may answer for its catalog.
             async with httpx.AsyncClient(base_url=self._http.base_url, headers=self._http.headers,
-                                         timeout=self._http.timeout, transport=self._inventory_transport) as transport:
+                                         timeout=self._http.timeout, transport=self._inventory_transport,
+                                         trust_env=False) as transport:
                 return await self._run_inventory(statuses=statuses, include_archived=include_archived,
                     page_size=page_size, max_pages=max_pages, max_runs=max_runs, timeout_s=timeout_s,
                     max_bytes=max_bytes, _http=transport, _started=started)

@@ -98,7 +98,7 @@ refused: `RUN_INVENTORY_PAGE_UNAVAILABLE:UnicodeDecodeError`. The collector read
 and the pinned server honours that. No fixture ever compressed a response, so the
 gap was invisible. Measured on the canonical server: the default request returned
 `Content-Encoding: gzip`, an explicit `identity` request returned an unencoded
-236,005-byte page of the same 100 rows with meta total 149.
+236,005-byte page of 100 rows with the same meta total of 149.
 
 The inventory now requests `Accept-Encoding: identity` per request, and any
 `Content-Encoding` other than absent or a single `identity` token is refused as
@@ -113,11 +113,23 @@ incremental decoder is unnecessary while the pinned server honours identity; add
 one needs its own decoded-byte, CPU and evidence controls.
 
 Consequence: the sixteen MiB shared bound is now spent on uncompressed JSON. At the
-measured 2.36 KiB/row, the two passes of an all-columns inventory reach it near
-3,500 rows, below the nominal 6,400-row bound. That refuses as UNKNOWN rather than
+measured 2.3 KiB/row (2.36 KB), the two passes of an all-columns inventory reach it
+near 3,500 rows, below the nominal 6,400-row bound. That refuses as UNKNOWN rather than
 truncating, and it is part of the archive-growth limit above, not a fix for it.
 
 Real HTTP/1.1 controls now cover the measured negotiation, a server ignoring identity
 on the first page, a later page and both second-pass pages, every other coding
 including repeated headers, a compression bomb, chunked framing, a truncated body
 and identity-wire byte bounds.
+
+## Environment proxies
+
+Independent review of 7127a94d found a false absent path that predates the wire
+change. The inventory client honoured `HTTP_PROXY`, so ECONNREFUSED from a dead
+proxy classified as `FabroConnectionUnavailable` and the target was never
+contacted. The lifecycle check could then read that as an absent server and an
+empty catalog. Omniverse2 units carry no proxy variables today; the guarantee that
+only a first-request kernel refusal proves absence must not depend on that. The
+inventory client now sets `trust_env=False`, so it always connects to the configured
+server. Legacy `_http` calls are unchanged. Real-socket controls cover a dead proxy,
+a listening proxy offering an empty catalog, and a genuinely closed target.

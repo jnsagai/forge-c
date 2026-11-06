@@ -3,6 +3,7 @@ import contextlib
 import copy
 import gzip
 import json
+import socket
 import threading
 import tracemalloc
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -550,20 +551,15 @@ def test_real_http_compression_bomb_is_refused_without_inflating():
     bomb = gzip.compress(b"\0" * (64 * 1024 * 1024), compresslevel=9)
     assert len(bomb) < 128 * 1024
     with wire(lambda handler, _, raw: send(handler, bomb, ("Content-Encoding", "gzip"))) as (url, _):
-        before = tracemalloc_peak()
-        with FabroClient(base_url=url) as c:
-            with pytest.raises(FabroUnavailable, match="CONTENT_ENCODING_UNEXPECTED"):
-                c.run_inventory()
-        assert tracemalloc_peak(before) < 8 * 1024 * 1024
-
-
-def tracemalloc_peak(started=None):
-    if started is None:
         tracemalloc.start()
-        return True
-    peak = tracemalloc.get_traced_memory()[1]
-    tracemalloc.stop()
-    return peak
+        try:
+            with FabroClient(base_url=url) as c:
+                with pytest.raises(FabroUnavailable, match="CONTENT_ENCODING_UNEXPECTED"):
+                    c.run_inventory()
+            peak = tracemalloc.get_traced_memory()[1]
+        finally:
+            tracemalloc.stop()
+    assert peak < 8 * 1024 * 1024
 
 
 def test_unexpected_coding_closes_stream_before_reading_any_body():
@@ -628,3 +624,42 @@ def test_real_http_page_and_shared_byte_bounds_apply_to_identity_wire_bytes():
             with pytest.raises(FabroUnavailable, match="BYTES"):
                 c.run_inventory(max_bytes=34 * 1024)  # Both 149-row passes cannot fit on the identity wire.
     assert 2 < len(seen) - 4 <= 4
+
+
+def set_environment_proxy(monkeypatch, url):
+    for name in ("NO_PROXY", "no_proxy"):
+        monkeypatch.delenv(name, raising=False)
+    for name in ("HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"):
+        monkeypatch.setenv(name, url)
+
+
+def closed_port():
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]
+
+
+def test_dead_environment_proxy_refusal_is_never_read_as_absent_server(monkeypatch):
+    """Otherwise ECONNREFUSED from the proxy proves nothing about the server."""
+    with wire(measured_negotiation) as (url, seen):
+        set_environment_proxy(monkeypatch, f"http://127.0.0.1:{closed_port()}")
+        with FabroClient(base_url=url) as c:
+            assert len(c.run_inventory().rows) == 149
+    assert len(seen) == 4
+
+
+def test_listening_environment_proxy_cannot_answer_for_the_catalog(monkeypatch):
+    def empty(handler, _, raw):
+        send(handler, b'{"data":[],"meta":{"has_more":false,"total":0}}')
+    with wire(empty) as (proxy, intercepted), wire(measured_negotiation) as (url, seen):
+        set_environment_proxy(monkeypatch, proxy)
+        with FabroClient(base_url=url) as c:
+            assert len(c.run_inventory().rows) == 149
+    assert not intercepted and len(seen) == 4
+
+
+def test_genuine_closed_port_stays_initial_absence_with_environment_proxy_set(monkeypatch):
+    set_environment_proxy(monkeypatch, f"http://127.0.0.1:{closed_port()}")
+    with FabroClient(base_url=f"http://127.0.0.1:{closed_port()}") as c:
+        with pytest.raises(FabroConnectionUnavailable):
+            c.run_inventory()
