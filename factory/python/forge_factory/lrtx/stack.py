@@ -195,6 +195,9 @@ def envmap(s: dict) -> dict[str, str]:
     return env
 
 
+API_READY_SECONDS = 180
+
+
 def fabro_config(s: dict) -> str:
     r, p = s["root"], s["ports"]
     runtime = s["profile"].get("runtime") or {}
@@ -1329,7 +1332,8 @@ def expose_api(s: dict, host_port: int | None = None) -> dict:
         "started_at": utc_now(),
     }
     f.write_text(pretty_json(rec))
-    ok = _wait(f"http://127.0.0.1:{port}/health", 15)
+    # Fabro's startup integrity check took 29 s on a cold 400 MB database.
+    ok = _wait(f"http://127.0.0.1:{port}/health", API_READY_SECONDS)
     return {"api_bridge": "UP" if ok else "NOT_HEALTHY", "url": f"http://127.0.0.1:{port}/api/v1"}
 
 

@@ -217,6 +217,10 @@ def test_recovery_planner_uses_the_lane_grant_not_a_signed_file():
     assert "development.DevelopmentGrant(policy)" in source and "eff.mode == development.MODE" in source
 
 
+def test_api_bridge_waits_past_a_cold_integrity_check():
+    assert stack.API_READY_SECONDS >= 120
+
+
 def test_recovery_journal_accepts_the_real_launch_guard(tmp_path):
     from types import SimpleNamespace as NS
 
