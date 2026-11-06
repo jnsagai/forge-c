@@ -74,3 +74,10 @@ was rejected because it is owner-pinned scope. The frozen role context now holds
 the order's bound phase plus unphased roles. All nodes are still validated. An excluded role is
 refused at `request_job`, so this tightens the runtime: a graph path reaching an earlier phase's
 model node gets no model.
+
+With that, the rehearsal reached a real native run, and every model request failed with
+`database is locked`. `reserve_request` holds `BEGIN IMMEDIATE` and calls `authorize()`, which
+reaches `valid_job`. That built a second writer `Store`, and even plain `Store` reads take
+`BEGIN IMMEDIATE`, so the process waited on itself. It also created an empty database when the
+queue was missing. `valid_job` now reads through `ReadSnapshot`, as `current()` already does.
+It takes no write lock, creates nothing, and any snapshot failure refuses.

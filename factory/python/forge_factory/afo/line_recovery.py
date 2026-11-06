@@ -7,6 +7,7 @@ budget admission and the existing locked SKILL/MCP protocol; a valid driver run 
 from __future__ import annotations
 
 import json
+import sqlite3
 import subprocess
 import time
 from pathlib import Path
@@ -196,13 +197,20 @@ def valid_job(job, store=None):
     if "line_origin" not in job:
         return True
     from ..common import canonical_json, sha256_bytes
-    from .queue import Store
+    from .queue import QueueError, ReadSnapshot
+
+    def verify(reader):
+        current = context(reader, job["order_id"], job["attempt_id"], Path(job["source_workspace"]), job["line_origin"])
+        return sha256_bytes(canonical_json(current)) == job.get("line_context_sha256")
 
     try:
-        current = context(store or Store(state_dir() / "supervisor/line-queue.sqlite3"), job["order_id"],
-                          job["attempt_id"], Path(job["source_workspace"]), job["line_origin"])
-        return sha256_bytes(canonical_json(current)) == job.get("line_context_sha256")
-    except (BindingRefused, OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+        if store is not None:
+            return verify(store)
+        # Callers can hold the mission writer: a second writer connection would wait on itself.
+        with ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=10000, timeout_s=3) as reader:
+            return verify(reader)
+    except (BindingRefused, QueueError, sqlite3.Error, OSError, ValueError, KeyError, TypeError,
+            subprocess.SubprocessError):
         return False
 
 
