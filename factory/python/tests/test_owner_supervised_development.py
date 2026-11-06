@@ -28,6 +28,13 @@ CLOSED_ALLOWANCE_RECORD = (
     '"mission_id":"line-local-role-trial-20261106"}'
 )
 
+RAISED_ALLOWANCE_RECORD = (
+    '{"authorization_ref":"OWNER-DEVELOPMENT-ALLOWANCE-20261106B-NOT-A-GRANT","created_at":"2026-11-06T15:32:34.487049Z",'
+    '"limits":{"deadline":1795057626.0,"max_attempts":1,"max_corrections":4,"max_jobs":2,"max_requests":256,'
+    '"max_tokens":16777216,"max_tools":512},"lineage":"owner-review:local-role-trial-20261106b",'
+    '"mission_id":"line-local-role-trial-20261106b"}'
+)
+
 
 def seed_spent_original(store):
     """The exact real rows and spent, unknown-usage attempts the allowance must sit beside."""
@@ -57,6 +64,25 @@ def seed_spent_original(store):
             "INSERT INTO afo_mission_executions VALUES (?,?,?,?)",
             ("afo-product-spent-e", D.CLOSED_ALLOWANCE, "PRODUCT", json.dumps(spent)),
         )
+        c.execute(
+            "INSERT INTO afo_missions VALUES (?,?,?)",
+            (D.RAISED_ALLOWANCE, json.loads(RAISED_ALLOWANCE_RECORD)["lineage"], RAISED_ALLOWANCE_RECORD),
+        )
+        for identity, kind, tokens in (("afo-product-spent-f", "PRODUCT", 8388608), ("afo-agent-spent-f", "DIAGNOSIS", 1048576)):
+            spent = dict(
+                charge=tokens, created_at="2026-11-06T15:33:00Z", evidence_refs=[], identity=identity,
+                imported=False, kind=kind, reported_tokens=None,
+            )
+            c.execute(
+                "INSERT INTO afo_mission_executions VALUES (?,?,?,?)",
+                (identity, D.RAISED_ALLOWANCE, kind, json.dumps(spent)),
+            )
+        for i in range(41):
+            row = dict(job_id="afo-product-spent-f", charge=1000, reported_tokens=1000, state="QUIESCENT")
+            c.execute(
+                "INSERT INTO afo_request_ledger VALUES (?,?,?,?,?)",
+                ("spent-" + str(i), D.RAISED_ALLOWANCE, "afo-product-spent-f", "QUIESCENT", json.dumps(row)),
+            )
 
 
 @pytest.fixture
@@ -71,15 +97,7 @@ def supervised(tmp_path, monkeypatch):
     monkeypatch.setenv("FORGE_AFO_QUEUE_SCOPE", "line-local")
     operations.Intent().set("RUNNING", actor="PRIVATE-TEST-OWNER", reason="Private control", initialize=True)
     store = Store(tmp_path / "state/supervisor/line-queue.sqlite3")
-    limits = dict(
-        max_attempts=1,
-        max_jobs=2,
-        max_requests=256,
-        max_tokens=16777216,
-        max_tools=512,
-        max_corrections=4,
-        deadline=time.time() + 300,
-    )
+    limits = dict(D.CAPS, deadline=time.time() + 300)
     seed_spent_original(store)
     MissionLedger(store).register(D.MISSION, D.LINEAGE, limits, D.ALLOWANCE_REF, authorize=lambda *_: True)
     from forge_factory.common import load_yaml
@@ -608,9 +626,10 @@ def test_owner_development_uses_existing_placer_but_never_production_feed(superv
 
 def test_real_mission_exhaustion_refuses_before_any_new_execution(supervised):
     ledger = MissionLedger(supervised["store"])
-    ledger.execution(D.MISSION, "private-remaining", "PRODUCT", reserved_tokens=1)
+    for i in range(D.ATTEMPTS):
+        ledger.execution(D.MISSION, "private-remaining-" + str(i), "PRODUCT", reserved_tokens=1)
     before = ledger.snapshot(D.MISSION)
-    assert before["attempts"] == 1
+    assert before["attempts"] == D.ATTEMPTS
     # The last execution can still settle; it never mints another.
     D.current(store=supervised["store"])
     with pytest.raises(Refused, match="MISSION_ALLOWANCE_EXHAUSTED"):

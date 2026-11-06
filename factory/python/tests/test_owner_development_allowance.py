@@ -1,5 +1,6 @@
 """The 2026-11-06 allowance is separate, finite and leaves the spent mission untouched."""
 
+import inspect
 import json
 from types import SimpleNamespace
 
@@ -8,10 +9,15 @@ from forge_factory.afo import owner_supervised_development as D
 from forge_factory.afo.durable import Refused, digest
 from forge_factory.afo.line_orders import Placer
 from forge_factory.afo.mission_ledger import MissionLedger
-from forge_factory.afo.owner_development_allowance import CLOSE_DIRECTIVE, DIRECTIVE, close_for_source_fix, open_allowance
+from forge_factory.afo.owner_development_allowance import DIRECTIVE, open_allowance
 from forge_factory.afo.queue import Store
 from forge_factory.lrtx import stack
-from test_owner_supervised_development import CLOSED_ALLOWANCE_RECORD, PRIOR_RECORD, seed_spent_original
+from test_owner_supervised_development import (
+    CLOSED_ALLOWANCE_RECORD,
+    PRIOR_RECORD,
+    RAISED_ALLOWANCE_RECORD,
+    seed_spent_original,
+)
 
 
 @pytest.fixture
@@ -29,10 +35,16 @@ def row(store, mission):
         return c.execute("SELECT record FROM afo_missions WHERE mission_id=?", (mission,)).fetchone()[0]
 
 
-def close_first(store):
-    oid = waiting_order(store)
-    close_for_source_fix(store, directive=CLOSE_DIRECTIVE)
-    return oid
+def close_first(store, state="BLOCKED"):
+    with store.tx() as c:
+        for i, order in enumerate(D.SPENT_ORDERS):
+            c.execute(
+                "INSERT INTO afo_work_orders (order_id,tenant_scope,request_id,manifest_sha256,input_manifest_ref,envelope,"
+                "priority,state,version,created_utc,created_epoch,policy_sha256,fencing_epoch) VALUES "
+                "(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                ("afo-spent-" + str(i), "line-local", order, "a" * 64, "ref", "{}", 40, state, 1,
+                 "2026-11-06T00:00:00Z", 1.0, "b" * 64, 0),
+            )
 
 
 def test_opens_a_separate_finite_mission_without_touching_the_spent_one(store):
@@ -48,18 +60,20 @@ def test_opens_a_separate_finite_mission_without_touching_the_spent_one(store):
     assert MissionLedger(store).snapshot(D.CLOSED_ALLOWANCE) == closed
     assert row(store, D.PRIOR_MISSION) == PRIOR_RECORD
     assert row(store, D.CLOSED_ALLOWANCE) == CLOSED_ALLOWANCE_RECORD
+    assert row(store, D.RAISED_ALLOWANCE) == RAISED_ALLOWANCE_RECORD
 
 
-def test_cannot_open_before_the_spent_order_is_closed(store):
-    waiting_order(store)
+def test_cannot_open_before_the_spent_orders_are_finished(store):
+    close_first(store, state="WAITING_RECOVERY")
     with pytest.raises(Refused, match="SPENT_ORDER_NOT_CLOSED"):
         open_allowance(store, directive=DIRECTIVE)
 
 
-def test_allowance_is_the_owner_decision_and_no_more():
-    assert D.CAPS == dict(
-        max_attempts=1, max_jobs=2, max_requests=256, max_tokens=16777216, max_tools=512, max_corrections=4
-    )
+def test_allowance_is_finite_and_covers_every_reservation():
+    assert D.ATTEMPTS == 32 and len(D.ORDERS) == 32
+    assert D.CAPS["max_attempts"] == 32 and D.CAPS["max_jobs"] == 64
+    assert D.CAPS["max_requests"] == 32 * 256 and D.CAPS["max_tools"] == 32 * 512
+    assert D.CAPS["max_tokens"] == 32 * 8388608 + 64 * 1048576
     assert D.DEADLINE == 1795057626.0
 
 
@@ -70,7 +84,7 @@ def test_real_run_fits_and_policy_changed_only_two_budgets():
 
     raised = yaml.safe_load((Path(__file__).parent / "fixtures/owner-supervised-development/afo-policy.proposed.yaml").read_text())
     assert digest(raised) == D.RUNTIME_POLICY_SHA
-    assert D.CAPS["max_requests"] >= 218 and raised["budgets"]["max_inference_requests_per_order"] == D.CAPS["max_requests"]
+    assert raised["budgets"]["max_inference_requests_per_order"] == 256
     assert raised["budgets"]["max_model_tokens_per_order"] == 8388608
     original = yaml.safe_load(yaml.safe_dump(raised))
     original["budgets"].update(max_model_tokens_per_order=1048576, max_inference_requests_per_order=32)
@@ -162,58 +176,62 @@ def test_expired_allowance_cannot_open(store, monkeypatch):
         open_allowance(store, directive=DIRECTIVE)
 
 
-def test_only_the_last_order_is_in_scope():
-    assert D.ORDERS == ("WO-F014-SWE6-AFOQUAL-20261104-L90F",)
+def test_orders_continue_the_series_after_the_spent_ones():
+    assert D.ORDERS[0].endswith("L90G") and D.ORDERS[19].endswith("L90Z") and D.ORDERS[20].endswith("L90AA")
+    assert not set(D.ORDERS) & set(D.SPENT_ORDERS)
 
 
+@pytest.mark.parametrize(
+    ("request_id", "state", "expected"),
+    [
+        (D.SPENT_ORDERS[1], "BLOCKED", True),
+        (D.ORDERS[0], "BLOCKED", True),
+        (D.ORDERS[0], "WAITING_RECOVERY", False),
+        (D.SERIES + "D", "BLOCKED", False),
+    ],
+)
+def test_only_finished_orders_of_this_series_retry_from_the_seed(monkeypatch, request_id, state, expected):
+    monkeypatch.setenv(D.FILE, "x")
+    assert D.retries_from_seed(dict(request_id=request_id, state=state)) is expected
 
 
-def waiting_order(store, *, state="WAITING_RECOVERY", attempt="FAILED", run="native-run"):
-    oid = "afo-spent-order"
-    with store.tx() as c:
-        c.execute(
-            "INSERT INTO afo_work_orders (order_id,tenant_scope,request_id,manifest_sha256,input_manifest_ref,envelope,"
-            "priority,state,version,created_utc,created_epoch,policy_sha256,fencing_epoch) VALUES "
-            "(?,?,?,?,?,?,?,?,?,?,?,?,?)",
-            (oid, "line-local", D.SPENT_ORDER, "a" * 64, "ref", "{}", 40, state, 1, "2026-11-06T00:00:00Z", 1.0, "b" * 64, 0),
-        )
-        c.execute(
-            "INSERT INTO afo_attempts (attempt_id,order_id,seq,state,record,created_utc) VALUES (?,?,1,?,?,?)",
-            (oid + "-a1", oid, attempt, json.dumps(dict(state=attempt, fabro_run_id=run)), "2026-11-06T00:00:00Z"),
-        )
-    MissionLedger(store).link(D.CLOSED_ALLOWANCE, oid)
-    return oid
+def test_outside_the_lane_nothing_retries_from_the_seed(monkeypatch):
+    monkeypatch.delenv(D.FILE, raising=False)
+    monkeypatch.delenv(D.SHA, raising=False)
+    assert not D.retries_from_seed(dict(request_id=D.ORDERS[0], state="BLOCKED"))
 
 
-def test_closes_only_the_spent_first_order_and_keeps_its_charge(store):
-    oid = waiting_order(store)
-    before = MissionLedger(store).snapshot(D.CLOSED_ALLOWANCE)
-    closed = close_for_source_fix(store, directive=CLOSE_DIRECTIVE)
-    assert (closed["order_id"], closed["state"], closed["terminal_reason"]) == (oid, "BLOCKED", D.SOURCE_FIX_CLOSED)
-    assert MissionLedger(store).snapshot(D.CLOSED_ALLOWANCE) == before
-    assert close_for_source_fix(store, directive=CLOSE_DIRECTIVE)["version"] == closed["version"]
+def test_tool_hook_carries_the_queue_scope(tmp_path, monkeypatch):
+    from forge_factory.fabro import runconfig
+
+    monkeypatch.setenv("FORGE_AFO_QUEUE_SCOPE", "line-local")
+    text = runconfig.render_run_toml("g.fabro", "goal", tmp_path / "b.json")
+    hooks = [line for line in text.splitlines() if line.startswith("script = ")]
+    assert hooks and all("FORGE_AFO_QUEUE_SCOPE=line-local" in line for line in hooks)
 
 
-@pytest.mark.parametrize("change", [dict(state="RUNNING"), dict(attempt="RUNNING"), dict(run=None)])
-def test_refuses_any_other_order_state(store, change):
-    oid = waiting_order(store, **change)
-    with pytest.raises(Refused, match="SPENT_ORDER_NOT_CLOSABLE"):
-        close_for_source_fix(store, directive=CLOSE_DIRECTIVE)
-    assert store.order(oid)["state"] == change.get("state", "WAITING_RECOVERY")
+def test_recovery_planner_uses_the_lane_grant_not_a_signed_file():
+    from forge_factory.afo import line_recovery_runtime
+
+    source = inspect.getsource(line_recovery_runtime.authorize)
+    assert "development.DevelopmentGrant(policy)" in source and "eff.mode == development.MODE" in source
 
 
-@pytest.mark.parametrize("key", ["FORGE_AGENT_ROLE", D.FILE])
-def test_agent_or_issued_context_cannot_close(store, monkeypatch, key):
-    waiting_order(store)
-    monkeypatch.setenv(key, "x")
-    with pytest.raises(Refused, match="EXTERNAL_OPERATOR_REQUIRED"):
-        close_for_source_fix(store, directive=CLOSE_DIRECTIVE)
+def test_tool_charge_reaches_the_line_queue_under_the_hook_scope(store, tmp_path, monkeypatch):
+    from forge_factory.afo.tool_accounting import charge
 
-
-def test_close_requires_the_exact_directive(store):
-    waiting_order(store)
-    with pytest.raises(Refused, match="EXTERNAL_OPERATOR_REQUIRED"):
-        close_for_source_fix(store, directive=DIRECTIVE)
+    close_first(store)
+    open_allowance(store, directive=DIRECTIVE)
+    MissionLedger(store).execution(D.MISSION, "job", "PRODUCT", reserved_tokens=1)
+    binding = tmp_path / ".forge-run/durable-binding.json"
+    binding.parent.mkdir()
+    binding.write_text(json.dumps(dict(mission_id=D.MISSION, job_id="job")))
+    monkeypatch.delenv("FORGE_AFO_QUEUE_SCOPE", raising=False)
+    with pytest.raises(Refused, match="MISSION_NOT_REGISTERED"):
+        charge(tmp_path, "event-before")
+    monkeypatch.setenv("FORGE_AFO_QUEUE_SCOPE", "line-local")
+    assert charge(tmp_path, "event-after")["job_id"] == "job"
+    assert MissionLedger(store).snapshot(D.MISSION)["tools"] == 1
 
 
 def execute_with(monkeypatch, failure):

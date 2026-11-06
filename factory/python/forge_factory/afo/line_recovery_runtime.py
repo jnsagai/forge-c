@@ -69,9 +69,14 @@ def authorize(job, store=None):
     elif not job.get("qualification_manifest_sha256") and not job.get("product_role_trial"):
         return False
     origin = job["line_origin"]
-    grant = LO.verify_grant(LO.load_policy(Path(origin["policy_path"]) if origin.get("policy_path") else None),
-                            now=time.time(), base=Path(origin["auth_base"]) if origin.get("auth_base") else None,
-                            allowed_signers=Path(origin["allowed_signers"]) if origin.get("allowed_signers") else None)
+    policy = LO.load_policy(Path(origin["policy_path"]) if origin.get("policy_path") else None)
+    from . import owner_supervised_development as development
+
+    if eff.mode == development.MODE:  # This lane has no signed grant file, by the owner's directive.
+        grant = development.DevelopmentGrant(policy)
+    else:
+        grant = LO.verify_grant(policy, now=time.time(), base=Path(origin["auth_base"]) if origin.get("auth_base") else None,
+                                allowed_signers=Path(origin["allowed_signers"]) if origin.get("allowed_signers") else None)
     return grant.permit("launch_workorder", {**L.request_for(order), "service_action": "line_stack_restart"}).allow
 
 

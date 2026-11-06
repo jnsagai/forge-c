@@ -68,3 +68,15 @@ whole budget of 8,388,608, so the mission total also covers one recovery job. Th
 copy changes only `max_model_tokens_per_order` and `max_inference_requests_per_order`, and
 the pin moves with it. Both earlier missions stay closed and are pinned on every authority
 check, and the signed grant the policy names is not changed.
+
+L90F made 41 real model calls, but most tool calls were denied. The tool hook lacked the
+queue scope, so accounting opened a different store that held no mission. Recovery could
+not launch either, because its authorization asked for a signed grant file this lane
+does not have. Stub rehearsals made no tool calls, so neither showed. Both are fixed.
+
+The owner then asked for as many attempts as required. The ledger only accepts finite
+limits, so a fourth mission, `line-local-role-trial-20261106c`, allows 32 attempts with
+one attempt's budget multiplied through, orders L90G onward and the same deadline. A
+blocked order of this series now ends in the Planner's own retry from the original seed
+instead of waiting for an owner change. The rule that stops a lineage on a repeated issue
+is unchanged, and the seed stays the only resume point.

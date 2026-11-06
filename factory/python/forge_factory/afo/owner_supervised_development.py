@@ -22,26 +22,36 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from .durable import Refused, canonical, digest, strict_json
+from .line_campaign import retry_suffix
 
 MODE = "OWNER_SUPERVISED_DEVELOPMENT"
 FILE = "FORGE_OWNER_DEVELOPMENT_RECORD"
 SHA = "FORGE_OWNER_DEVELOPMENT_SHA256"
 SCHEMA = "forge-c/owner-supervised-development/1"
 DIRECTIVE = "for now go on without needing signatures"
-MISSION = "line-local-role-trial-20261106b"
-LINEAGE = "owner-review:local-role-trial-20261106b"
+MISSION = "line-local-role-trial-20261106c"
+LINEAGE = "owner-review:local-role-trial-20261106c"
 INITIAL_AUTHORITY = "AUTH-AFO-REVIEW-20261104-LINE-FINITE"  # named by the pinned runtime policy
-ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261106B-NOT-A-GRANT"
-ORDERS = ("WO-F014-SWE6-AFOQUAL-20261104-L90F",)
-SPENT_ORDER = "WO-F014-SWE6-AFOQUAL-20261104-L90E"
+ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261106C-NOT-A-GRANT"
+SERIES = "WO-F014-SWE6-AFOQUAL-20261104-L90"
+ATTEMPTS = 32
+ORDERS = tuple(SERIES + retry_suffix(n) for n in range(7, 7 + ATTEMPTS))
+SPENT_ORDERS = (SERIES + "E", SERIES + "F")
 DRIVER = "STM32N6_CRC_HAL"
 DEADLINE = 1795057626.0
-# Real SWE.6 runs used 48 to 218 model calls. A product job reserves its whole 8,388,608 token budget,
-# so the mission total also covers one recovery job.
-CAPS = dict(max_attempts=1, max_jobs=2, max_requests=256, max_tokens=16777216, max_tools=512, max_corrections=4)
+# Owner: as many attempts as required. The ledger is finite, so each limit is one attempt's budget times
+# ATTEMPTS. Reservations stay charged, so tokens cover 8,388,608 per attempt and 1,048,576 per recovery job.
+CAPS = dict(
+    max_attempts=ATTEMPTS,
+    max_jobs=ATTEMPTS * 2,
+    max_requests=ATTEMPTS * 256,
+    max_tokens=ATTEMPTS * 8388608 + ATTEMPTS * 2 * 1048576,
+    max_tools=ATTEMPTS * 512,
+    max_corrections=ATTEMPTS * 4,
+)
 # The spent mission stays closed exactly as it ended; this lane never reads it as capacity.
 ENVELOPE_REFUSED = "OWNER_DEVELOPMENT_ORIGINAL_ORDER_ENVELOPE_REQUIRED"
-SOURCE_FIX_CLOSED = "CLOSED_FOR_SOURCE_FIX:ALLOWANCE_20261106"
+SOURCE_FIX_CLOSED = "CLOSED_FOR_SOURCE_FIX:ALLOWANCE_20261106"  # Recorded on L90E.
 PRIOR_MISSION = "line-local-role-trial-20261104"
 PRIOR_RECORD_SHA256 = "81325abb4b67c6cdacdfcbbf9c1f51e111ae4a5735f32182347f929d4e7e4e01"
 ORIGINAL_RUNTIME_POLICY_SHA = "dcd4fc785e373058c7ec4979319540623bcd06537c37baa1d68607850d21b17e"
@@ -49,6 +59,9 @@ PRIOR_SPENT = dict(attempts=4, jobs=0, requests=0, tools=0, corrections=0, charg
 CLOSED_ALLOWANCE = "line-local-role-trial-20261106"
 CLOSED_ALLOWANCE_RECORD_SHA256 = "7803ee8afa1a61259c83f195dfca410b4e591875dd4f863e774245e1b410b3f4"
 CLOSED_ALLOWANCE_SPENT = dict(attempts=1, jobs=0, requests=0, tools=0, corrections=0, charged_tokens=1048576)
+RAISED_ALLOWANCE = "line-local-role-trial-20261106b"
+RAISED_ALLOWANCE_RECORD_SHA256 = "4e612370f07747589f38135357038ee762493635a3360425eaad3ccaf5f9852c"
+RAISED_ALLOWANCE_SPENT = dict(attempts=1, jobs=1, requests=41, tools=0, corrections=0, charged_tokens=9437184)
 # Issuer history of that mission is read against how it ended, never against this allowance.
 PRIOR_SCOPE = dict(
     mission=dict(
@@ -376,18 +389,24 @@ def _attest(record, socket_path, *, private_view=False, mapped_host=False):
 
 
 def prior_conserved(store):
-    """The raised allowance exists only beside both earlier missions, each unchanged and closed."""
+    """This allowance exists only beside the three earlier missions, each unchanged and closed."""
     from .mission_ledger import MissionLedger
 
     for mission_id, record_sha, spent in (
         (PRIOR_MISSION, PRIOR_RECORD_SHA256, PRIOR_SPENT),
         (CLOSED_ALLOWANCE, CLOSED_ALLOWANCE_RECORD_SHA256, CLOSED_ALLOWANCE_SPENT),
+        (RAISED_ALLOWANCE, RAISED_ALLOWANCE_RECORD_SHA256, RAISED_ALLOWANCE_SPENT),
     ):
         prior = MissionLedger(store).snapshot(mission_id)
         with store.tx() as c:
             base = json.loads(c.execute("SELECT record FROM afo_missions WHERE mission_id=?", (mission_id,)).fetchone()[0])
         if digest(base) != record_sha or any(prior[k] != v for k, v in spent.items()) or prior["usage_unknown"] is not True:
             _fail("PRIOR_MISSION_NOT_CONSERVED")
+
+
+def retries_from_seed(row):
+    """A blocked order of this series is finished: the Planner's own next order retries from the seed."""
+    return selected() and row["state"] == "BLOCKED" and row["request_id"] in (*SPENT_ORDERS, *ORDERS)
 
 
 def mission_authority(control):

@@ -11,8 +11,8 @@ import json
 from pathlib import Path
 
 from . import line_orders as O
+from . import owner_supervised_development as development
 from .durable import Refused, canonical, digest
-from .owner_supervised_development import SOURCE_FIX_CLOSED
 
 REQUEST_SCHEMA = "forge-c/line-recovery-worker-request/1"
 
@@ -333,7 +333,7 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
             and (a.spec or {}).get("lineage_sha") == p.lineage.sha256
             and (a.queue or {}).get("terminal_reason") != "SUPERSEDED_BY_CAMPAIGN_CHANGE"
         ]
-        if closed:
+        if closed and not development.selected():
             p.state, p.reason, p.order, p.action = "WAITING", "DURABLE_SOURCE_CLOSED_REQUIRES_OWNER_CHANGE", None, None
             continue
         if p.state in ("ESCALATED", "PARKED", "ON_HOLD", "DONE"):
@@ -342,8 +342,8 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
         if not a or a.status != "ENDED" or a.verdict == "PASS":
             continue
         rows = [r for r in store.orders() if r["request_id"] == a.wo]
-        if len(rows) == 1 and rows[0]["terminal_reason"] == SOURCE_FIX_CLOSED:
-            continue  # Closed by the owner step: the Planner's own retry stands, from the original seed.
+        if len(rows) == 1 and development.retries_from_seed(rows[0]):
+            continue  # The Planner's own retry stands, from the original seed.
         if len(rows) != 1 or (a.spec or {}).get("durable_control") != placer.durable_control:
             p.state, p.reason, p.order = "WAITING", "DURABLE_SOURCE_ACCOUNTING_REQUIRED", None
             continue
@@ -374,8 +374,9 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
                 phase=owner,
                 stop_after=owner,
                 kind="RETRY",
-                resume_from=a.wo,
-                resume_upto=owner,
+                # The owner lane has one resume point, the original seed.
+                resume_from=(a.spec or {}).get("resume_from") if development.selected() else a.wo,
+                resume_upto=(a.spec or {}).get("resume_upto") if development.selected() else owner,
                 durable_control=placer.durable_control,
                 durable_recovery={
                     "source_order_id": row["order_id"],
