@@ -23,6 +23,11 @@ import httpx
 
 DEFAULT_URL = "http://127.0.0.1:32290"
 
+# Pinned 0.362 BoardColumn selectors. Archived summaries retain their original
+# lifecycle, so archived must remain in the safety query even for live checks.
+ALL_RUN_COLUMNS = ("pending", "runnable", "initializing", "running", "blocked", "succeeded", "failed", "archived", "removing")
+UNSAFE_RUN_COLUMNS = ("pending", "runnable", "initializing", "running", "blocked", "archived", "removing")
+
 
 class FabroUnavailable(RuntimeError):
     pass
@@ -45,13 +50,17 @@ class RunInventory:
     pages: int
     observed_boottime: float
     boot_identity: str
+    include_archived: bool
+    network_namespace: str
 
     def fresh(self, max_age_s: float = 1.0) -> bool:
         try:
             boot = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
             age = time.monotonic() - self.observed_monotonic
             boot_age = time.clock_gettime(time.CLOCK_BOOTTIME) - self.observed_boottime
-            return self.complete and boot == self.boot_identity and 0 <= max(age, boot_age) <= max_age_s
+            return (self.complete and boot == self.boot_identity
+                    and os.readlink("/proc/self/ns/net") == self.network_namespace
+                    and 0 <= age <= max_age_s and 0 <= boot_age <= max_age_s)
         except (OSError, TypeError, ValueError):
             return False
 
@@ -137,8 +146,7 @@ class FabroClient:
         never an empty catalog. This is not a transactional server snapshot:
         the caller must retain its normal one-placer/lease/effect fences.
         """
-        columns = {"pending", "runnable", "initializing", "running", "blocked", "succeeded", "failed",
-                   "archived", "removing"}
+        columns = set(ALL_RUN_COLUMNS)
         if (type(page_size) is not int or not 1 <= page_size <= 100 or type(max_pages) is not int
                 or not 1 <= max_pages <= 64 or type(max_runs) is not int or not 1 <= max_runs <= 6400
                 or type(timeout_s) not in (int, float) or not 0 < timeout_s <= 10
@@ -148,9 +156,11 @@ class FabroClient:
                  or any(type(s) is not str or s not in columns for s in statuses)
                  or len(set(statuses)) != len(statuses))):
             raise FabroUnavailable("RUN_INVENTORY_BOUNDS_INVALID")
+        statuses = ALL_RUN_COLUMNS if statuses is None else statuses
         start = time.monotonic()
         boot_start = time.clock_gettime(time.CLOCK_BOOTTIME)
         boot_identity = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
+        network_namespace = os.readlink("/proc/self/ns/net")
         retained_bytes = 0
 
         def remaining():
@@ -207,7 +217,9 @@ class FabroClient:
                     or not row["lifecycle"]["status"]["kind"]):
                 raise FabroUnavailable("RUN_INVENTORY_RUN_INVALID")
             return json.dumps({"id": row["id"], "source_directory": row.get("source_directory"),
-                               "labels": row.get("labels"), "status": row["lifecycle"]["status"]},
+                               "labels": row.get("labels"), "status": row["lifecycle"]["status"],
+                               "created_at": row.get("created_at"), "archived_at": row.get("archived_at"),
+                               "archived": row.get("archived")},
                               sort_keys=True, separators=(",", ":"), allow_nan=False)
 
         def collect(*, keep_rows):
@@ -246,10 +258,12 @@ class FabroClient:
         second, second_identity, second_pages, second_total = collect(keep_rows=True)
         if first_identity != second_identity or first_total != second_total:
             raise FabroUnavailable("RUN_INVENTORY_CHANGED")
-        if Path("/proc/sys/kernel/random/boot_id").read_text().strip() != boot_identity:
-            raise FabroUnavailable("RUN_INVENTORY_BOOT_CHANGED")
+        if (Path("/proc/sys/kernel/random/boot_id").read_text().strip() != boot_identity
+                or os.readlink("/proc/self/ns/net") != network_namespace):
+            raise FabroUnavailable("RUN_INVENTORY_OBSERVER_CHANGED")
         result = RunInventory(tuple(second), True, self.observation_identity, statuses, time.monotonic(),
-                              first_pages + second_pages, time.clock_gettime(time.CLOCK_BOOTTIME), boot_identity)
+                              first_pages + second_pages, time.clock_gettime(time.CLOCK_BOOTTIME), boot_identity,
+                              include_archived, network_namespace)
         remaining()
         return result
 

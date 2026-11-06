@@ -234,3 +234,85 @@ def test_real_closed_loopback_port_is_initial_connection_refusal():
     with FabroClient(base_url=f"http://127.0.0.1:{port}") as c:
         with pytest.raises(FabroConnectionUnavailable):
             c.run_inventory()
+
+
+def test_default_complete_query_includes_every_board_column():
+    from forge_factory.fabro.client import ALL_RUN_COLUMNS
+    pages = Pages([])
+    with client(pages) as c:
+        observation = c.run_inventory()
+    assert observation.statuses == ALL_RUN_COLUMNS
+    assert pages.calls[0].url.params.get_list("status") == list(ALL_RUN_COLUMNS)
+
+
+def test_safety_query_omits_ordinary_terminal_history_but_retains_archived_unsafe_and_removing(monkeypatch):
+    from forge_factory.fabro.client import UNSAFE_RUN_COLUMNS
+    rows = [run(i) for i in range(20000)]
+    # The pinned actual-server mapping is independently measured. This HTTP
+    # transport fixture exercises the consumer query/coverage contract only.
+    special = [run(30000, "paused"), run(30001, "removing"), run(30002, "succeeded")]
+    for row in special:
+        row["archived"] = row["id"] != "run-30001"
+    rows.extend(special)
+    calls = []
+    def filtered(request):
+        calls.append(request)
+        selected = request.url.params.get_list("status")
+        def board(row):
+            if row.get("archived"):
+                return "archived"
+            return {"paused": "running"}.get(row["lifecycle"]["status"]["kind"], row["lifecycle"]["status"]["kind"])
+        values = [row for row in rows if board(row) in selected]
+        offset = int(request.url.params["page[offset]"])
+        limit = int(request.url.params["page[limit]"])
+        data = values[offset:offset + limit]
+        return httpx.Response(200, json={"data": data, "meta": {"total": len(values), "has_more": offset + len(data) < len(values)}})
+    host = LL.ShellHost(LL.LineConfig.from_env(log=False))
+    monkeypatch.setattr(host, "_client", lambda: FabroClient(transport=httpx.MockTransport(filtered)))
+    observed = host.fabro_runs()
+    assert {row["id"] for row in observed} == {row["id"] for row in special}
+    assert len(calls) == 2 and calls[0].url.params.get_list("status") == list(UNSAFE_RUN_COLUMNS)
+
+
+@pytest.mark.parametrize("change", ["filter", "archives", "subject", "stale", "unknown-kind"])
+def test_shellhost_rejects_inappropriate_complete_inventory(monkeypatch, change):
+    from dataclasses import replace
+    from forge_factory.fabro.client import UNSAFE_RUN_COLUMNS
+    pages = Pages([run(1)])
+    c = client(pages)
+    observation = c.run_inventory(statuses=UNSAFE_RUN_COLUMNS)
+    if change == "filter":
+        observation = replace(observation, statuses=("running",))
+    elif change == "archives":
+        observation = replace(observation, include_archived=False)
+    elif change == "subject":
+        observation = replace(observation, observation_identity="foreign")
+    elif change == "stale":
+        observation = replace(observation, observed_boottime=observation.observed_boottime - 60)
+    else:
+        observation = replace(observation, rows=(run(1, "future-unknown"),))
+    monkeypatch.setattr(c, "run_inventory", lambda **kw: observation)
+    host = LL.ShellHost(LL.LineConfig.from_env(log=False))
+    monkeypatch.setattr(host, "_client", lambda: c)
+    with pytest.raises(LL.FabroInventoryUnknown):
+        host.fabro_runs()
+
+
+@pytest.mark.parametrize("kind", ["runnable", "starting", "running", "blocked", "paused", "removing"])
+def test_m3_live_runs_recognizes_all_pinned_nonterminal_lifecycles(tmp_path, monkeypatch, kind):
+    from forge_factory.afo.line_orders import RealLine
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    row = run(1, kind); row["source_directory"] = str(tmp_path / "state/workorders/private/workspace")
+    cfg = LL.LineConfig.from_env(stack_root=tmp_path, log=False)
+    line = RealLine(cfg)
+    monkeypatch.setattr(line.host, "_client", lambda: client(Pages([row])))
+    assert line.live_runs() == [row["id"]]
+
+
+def test_m3_unknown_lifecycle_is_unknown_not_empty(tmp_path, monkeypatch):
+    from forge_factory.afo.line_orders import RealLine
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    row = run(1, "future-unknown"); row["source_directory"] = str(tmp_path / "state/workorders/private/workspace")
+    line = RealLine(LL.LineConfig.from_env(stack_root=tmp_path, log=False))
+    monkeypatch.setattr(line.host, "_client", lambda: client(Pages([row])))
+    assert line.live_runs() is None

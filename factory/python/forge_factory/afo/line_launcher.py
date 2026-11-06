@@ -57,7 +57,7 @@ from ..lrtx import stack as ST
 
 SCHEMA = "forge-c/line-launch-attempt/1"
 PHASES = ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6")
-LIVE_KINDS = ("running", "submitted", "queued", "pending", "paused")  # the M0 bash list
+LIVE_KINDS = ("submitted", "pending", "runnable", "starting", "running", "blocked", "paused", "removing", "queued")
 ENDED_KINDS = ("succeeded", "failed", "cancelled", "canceled", "aborted", "dead", "timeout", "error")
 GPU_LOCK_EXIT = 75  # `flock -n -E 75` of the M0 bash launcher
 
@@ -830,21 +830,29 @@ class ShellHost:
                            token=load_token(str(self.cfg.stack_root / "fabro/storage")), timeout=10)
 
     def fabro_run_inventory(self, *, active_only=False):
-        """Explicit completeness boundary; filtered lifecycle contract remains opt-in."""
-        from ..fabro.client import FabroConnectionUnavailable
+        """Complete pinned unsafe-or-all selection; no terminal-history first-page guess."""
+        from ..fabro.client import ALL_RUN_COLUMNS, UNSAFE_RUN_COLUMNS, FabroConnectionUnavailable, RunInventory
 
         try:
             with self._client() as client:
-                # Until the installed API's exhaustive nonterminal mapping is
-                # independently measured, use bounded verified full enumeration.
-                return client.run_inventory(include_archived=True)
+                expected = UNSAFE_RUN_COLUMNS if active_only else ALL_RUN_COLUMNS
+                result = client.run_inventory(statuses=expected, include_archived=True)
+                if (not isinstance(result, RunInventory) or not result.fresh()
+                        or result.observation_identity != client.observation_identity
+                        or result.statuses != expected or result.include_archived is not True):
+                    raise ValueError("RUN_INVENTORY_SUBJECT_OR_SCOPE_CHANGED")
+                known = {"submitted", "pending", "runnable", "starting", "running", "blocked", "paused", "removing",
+                         "succeeded", "failed", "dead", "queued", "cancelled", "canceled"}
+                if any(r["lifecycle"]["status"]["kind"] not in known for r in result.rows):
+                    raise ValueError("RUN_INVENTORY_LIFECYCLE_UNKNOWN")
+                return result
         except FabroConnectionUnavailable as exc:
             raise FabroUnavailable(type(exc).__name__) from None
         except Exception as exc:  # noqa: BLE001 - partial/invalid observations never prove absence
             raise FabroInventoryUnknown(type(exc).__name__) from None
 
     def fabro_runs(self) -> list[dict]:
-        return list(self.fabro_run_inventory().rows)
+        return list(self.fabro_run_inventory(active_only=True).rows)
 
     def fabro_run(self, run_id: str) -> dict:
         try:

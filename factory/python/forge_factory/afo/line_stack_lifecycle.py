@@ -153,10 +153,12 @@ def _observation_host(cfg, s):
 
 
 def _complete_runs(host):
-    from ..fabro.client import RunInventory
+    from ..fabro.client import ALL_RUN_COLUMNS, UNSAFE_RUN_COLUMNS, RunInventory
 
     observation = host.fabro_run_inventory(active_only=True)
-    if not isinstance(observation, RunInventory) or not observation.fresh():
+    if (not isinstance(observation, RunInventory) or not observation.fresh()
+            or observation.include_archived is not True
+            or observation.statuses not in (ALL_RUN_COLUMNS, UNSAFE_RUN_COLUMNS)):
         raise Refused("LINE_STACK_NATIVE_INVENTORY_UNKNOWN")
     return observation.rows
 
