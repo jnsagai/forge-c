@@ -12,6 +12,7 @@ from pathlib import Path
 
 from . import line_orders as O
 from .durable import Refused, canonical, digest
+from .owner_supervised_development import SOURCE_FIX_CLOSED
 
 REQUEST_SCHEMA = "forge-c/line-recovery-worker-request/1"
 
@@ -341,6 +342,8 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
         if not a or a.status != "ENDED" or a.verdict == "PASS":
             continue
         rows = [r for r in store.orders() if r["request_id"] == a.wo]
+        if len(rows) == 1 and rows[0]["terminal_reason"] == SOURCE_FIX_CLOSED:
+            continue  # Closed by the owner step: the Planner's own retry stands, from the original seed.
         if len(rows) != 1 or (a.spec or {}).get("durable_control") != placer.durable_control:
             p.state, p.reason, p.order = "WAITING", "DURABLE_SOURCE_ACCOUNTING_REQUIRED", None
             continue

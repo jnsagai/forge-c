@@ -37,6 +37,8 @@ DRIVER = "STM32N6_CRC_HAL"
 DEADLINE = 1795057626.0
 CAPS = dict(max_attempts=2, max_jobs=2, max_requests=32, max_tokens=8388608, max_tools=256, max_corrections=4)
 # The spent mission stays closed exactly as it ended; this lane never reads it as capacity.
+ENVELOPE_REFUSED = "OWNER_DEVELOPMENT_ORIGINAL_ORDER_ENVELOPE_REQUIRED"
+SOURCE_FIX_CLOSED = "CLOSED_FOR_SOURCE_FIX:ALLOWANCE_20261106"
 PRIOR_MISSION = "line-local-role-trial-20261104"
 PRIOR_RECORD_SHA256 = "81325abb4b67c6cdacdfcbbf9c1f51e111ae4a5735f32182347f929d4e7e4e01"
 PRIOR_SPENT = dict(attempts=4, jobs=0, requests=0, tools=0, corrections=0, charged_tokens=4194304)

@@ -40,3 +40,19 @@ Consequence: this allowance is unsigned, under the owner's standing "for now go 
 without needing signatures" directive for this lane. It stays OWNER_SUPERVISED_DEVELOPMENT,
 UNACCEPTED and qualification-only, and signed production rules are unchanged. An
 exhausted allowance needs a new owner decision and a new source; nothing renews it.
+
+L90E, the first allowance attempt, reached a native run and failed before any model
+answered. The retained `fabro/settings.toml` came from an older profile and did not list
+the run model, so Fabro sent no output limit and the gateway refused every call. Private
+rehearsal runs a fresh `stack init`, which hid this. The owner lane now refuses to start
+on any mismatch with `fabro_config`, and the transition regenerates the file.
+
+Recovery then planned a continuation from L90E. The order envelope refused it, which is
+correct, but the refusal was uncaught and ended the guardian. That refusal now stays an
+outcome. Authority failures still stop the guardian. The envelope itself did not change,
+so the only resume point stays L34G.
+
+A new source means a new control, and recovery would have left L90E waiting under the old
+one for good. `close_for_source_fix` closes it once, keeping its attempt, charge and plan,
+and the Planner's normal retry places L90F. Rehearsal now starts from the real retained
+settings and a copy of the real store after L90E.

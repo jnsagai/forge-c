@@ -672,11 +672,22 @@ def serving_instance(s: dict) -> dict:
     return instance
 
 
+def require_current_fabro_settings(s: dict) -> None:
+    """A retained root can hold settings from an older profile. Fabro then omits the output
+    limit for any model that file does not list, and the gateway refuses every request."""
+    path = s["root"] / "fabro/settings.toml"
+    if not path.is_file() or path.read_text() != fabro_config(s):
+        raise ValueError("FABRO_SETTINGS_STALE")
+
+
 def _start(s: dict, *, recovery=False, control_only=False) -> dict:
+    from ..afo import owner_supervised_development as development
     from . import provider_process as provider
 
     guard = _guard_effect
     guard()
+    if development.selected():
+        require_current_fabro_settings(s)
     r, p, prof = s["root"], s["ports"], s["profile"]
     env = envmap(s)
     if not (r / "venv/bin/python").exists():

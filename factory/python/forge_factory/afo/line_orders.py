@@ -1279,9 +1279,16 @@ class Placer:
     def _execute(self, P: Plan, policy: LinePolicy, grant: Grant, campaigns, now: float, *, execute: bool) -> dict:
         o = P.order
         if self.owner_supervised_development:
-            from .owner_supervised_development import validate_order
+            from .durable import Refused
+            from .owner_supervised_development import ENVELOPE_REFUSED, validate_order
 
-            validate_order(o)
+            try:
+                validate_order(o)
+            except Refused as exc:
+                if exc.code != ENVELOPE_REFUSED:
+                    raise
+                # An order outside the lane is not placed. It must not end the guardian either.
+                return {"action": P.action, "kind": o["kind"], "wo": o["wo"], "outcome": "REFUSED", "detail": exc.code}
         act = {"action": P.action, "kind": o["kind"], "lineage": P.lineage.key, "wo": o["wo"], "phase": o["phase"],
                "revision": o["revision"], "resume_from": o["resume_from"], "provided_from": o["provided_from"],
                "resume_upto": o["resume_upto"]}

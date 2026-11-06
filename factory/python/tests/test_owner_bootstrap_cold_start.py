@@ -30,6 +30,8 @@ def cold(boot, monkeypatch):  # noqa: F811 - imported pytest fixture requested b
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
     settings = stack.settings(D.PROFILE)
+    settings["root"].joinpath("fabro").mkdir(exist_ok=True)
+    settings["root"].joinpath("fabro/settings.toml").write_text(stack.fabro_config(settings))
     settings["ports"] = {**settings["ports"], "fabro": port}
     monkeypatch.setattr(stack, "settings", lambda _: settings)
     # Only the transport/namespace leaves are simulated: real _start, _in_ns,
