@@ -168,7 +168,8 @@ def deliver(
                         and hashlib.sha256(canonical_json(payload)).hexdigest() != expected_payload_sha256[r["notification_id"]]
                     ):
                         raise ValueError("ALERT_DELIVERY_PAYLOAD_CHANGED")
-                    local_notice()
+                # File-lock waits never retain the manufacturing writer.
+                local_notice()
         failed = []
         for name, send in (adapters or {}).items():
             try:
@@ -178,6 +179,12 @@ def deliver(
         attempts = r["attempts"] + 1
         state = "DELIVERED" if not failed else ("RETRY" if attempts < MAX_ATTEMPTS else "DELIVERED_LOCAL_ONLY")
         with tx() as c:
+            if notification_ids is not None:
+                current = c.execute(
+                    "SELECT payload FROM afo_notifications WHERE notification_id=?", (r["notification_id"],)
+                ).fetchone()
+                if not current or current["payload"] != r["payload"]:
+                    raise ValueError("ALERT_DELIVERY_ROW_CHANGED_BEFORE_ACK")
             c.execute(
                 "UPDATE afo_notifications SET delivery_state=?, attempts=?, next_epoch=?, delivered_utc=? "
                 "WHERE notification_id=?",

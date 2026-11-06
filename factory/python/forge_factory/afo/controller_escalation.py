@@ -222,9 +222,18 @@ def _deliver_pending(store, budget, root):
             raise Refused("CONTROLLER_EXPORT_NOTICE_PAYLOAD_CHANGED")
         _verify_receipt(root, payload)
     # Exact own notice only; never configure adapters or drain other tenants.
+    from ..events.emit import emit as local_event_emit
+
+    def bounded_emit(*args, **fields):
+        left = budget.until - time.monotonic()
+        if left < 0:
+            raise Refused("CONTROLLER_EXPORT_TIME_BOUND")
+        return local_event_emit(*args, lock_timeout_s=left, **fields)
+
     alerts.deliver(
         store,
         adapters={},
+        emit=bounded_emit,
         notification_ids=(nid,),
         limit=1,
         transaction=lambda: _tx(store, budget),

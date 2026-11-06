@@ -104,3 +104,15 @@ capacity. The existing notice log and human event-ledger payload reference are
 recorded only after the real outbox row acknowledges local delivery. As with the
 existing outbox, a crash between append and acknowledgment can repeat a local
 notice; this at-least-once delivery is not exactly-once external messaging.
+
+A further real private control observed that the legacy event logger's blocking
+flock can outlast reporting's SQL budget. Preserve that V6 evidence. The event
+append API now has an optional finite nonnegative lock timeout; default callers
+keep their old behavior. This component passes only the remaining shared
+monotonic budget, uses nonblocking acquisition with bounded retry, and receives
+typed EVENT_LOCK_TIMEOUT on contention. File publication occurs outside the
+canonical manufacturing writer after immutable receipt/outbox validation; the
+selected payload is checked again before acknowledgment. A held event lock
+therefore cannot retain that writer. Restoration retries the exact pending local
+notice without a new export, model call or mission debit. This bounds controllable
+lock waits, not operating-system fsync latency or arbitrary scheduler stalls.

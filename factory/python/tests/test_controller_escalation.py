@@ -442,3 +442,48 @@ def test_wrong_device_parent_refuses_before_mkdir(settled, monkeypatch):
         with pytest.raises(Exception):
             drain(p)
         assert not target.exists()
+
+
+def test_held_event_lock_is_bounded_releases_writer_and_own_notice_retries(settled, monkeypatch, tmp_path):
+    import fcntl
+    import sqlite3
+    import threading
+    import time
+
+    p = settled
+    eventdir = tmp_path / "events"
+    eventdir.mkdir(mode=0o700)
+    eventfile = eventdir / "factory-events.jsonl"
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(eventdir))
+    monkeypatch.setattr(E, "MAX_SECONDS", 1.5)
+    before = MissionLedger(p.store).snapshot("fixture-mission")
+    fd = os.open(eventfile, os.O_CREAT | os.O_RDWR, 0o600)
+    fcntl.flock(fd, fcntl.LOCK_EX)
+    results = []
+    worker = threading.Thread(target=lambda: results.append(E.observe(p.pinned, p.cfg, store_identity=p.identity)))
+    worker.start()
+    try:
+        until = time.monotonic() + 2.0
+        notice = E.alerts.notice_log()
+        while not notice.exists() and worker.is_alive() and time.monotonic() < until:
+            time.sleep(0.005)
+        assert notice.exists(), results
+        # Reporting has reached file publication, but holds no manufacturing writer.
+        with sqlite3.connect(p.store.path, timeout=0.08, isolation_level=None) as c:
+            c.execute("BEGIN IMMEDIATE")
+            c.execute("ROLLBACK")
+        worker.join(timeout=2.2)
+        assert not worker.is_alive()
+        assert results[0]["status"] == "CAPTURE_FAILED"
+        assert results[0]["code"] == "EVENT_LOCK_TIMEOUT"
+    finally:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        os.close(fd)
+        worker.join(timeout=2)
+    assert not worker.is_alive()
+    monkeypatch.setattr(E, "MAX_SECONDS", 3.0)
+    restarted = E.observe(p.pinned, p.cfg, store_identity=p.identity)
+    assert restarted["status"] == "OBSERVED" and restarted["exports"] == []
+    assert len(restarted["deliveries"]) == 1 and restarted["deliveries"][0]["status"] == "DELIVERED"
+    assert len(list((E.archive_root() / "controller-exports").glob("case-*/export.zip"))) == 1
+    assert MissionLedger(p.store).snapshot("fixture-mission") == before
