@@ -27,7 +27,7 @@ from .line_recovery_product import job_id
 from .mission_ledger import MissionLedger
 
 CURSOR = "controller_escalation_event_cursor"
-CURSOR_SCHEMA = "forge-c/controller-escalation-cursor/1"
+CURSOR_SCHEMA = "forge-c/controller-escalation-cursor/2"
 MAX_EVENTS, MAX_RECORD = 32, 65536
 MAX_SQL_STEPS, MAX_SECONDS = 500000, 3.0
 
@@ -148,40 +148,106 @@ def _json(raw):
 def _cursor(c):
     row = c.execute("SELECT value,actor FROM afo_control WHERE key=?", (CURSOR,)).fetchone()
     if not row:
-        return 0
+        return dict(through_seq=0, pending_delivery=None)
     if row["actor"] != "controller-escalation":
         raise Refused("CONTROLLER_EXPORT_CURSOR_REBOUND")
     value = _json(row["value"])
     if (
         not isinstance(value, dict)
-        or set(value) != {"schema", "through_seq", "event_seq", "event_sha256"}
+        or set(value) != {"schema", "through_seq", "event_seq", "event_sha256", "pending_delivery"}
         or value["schema"] != CURSOR_SCHEMA
-        or any(type(value[k]) is not int or value[k] < 1 for k in ("through_seq", "event_seq"))
+        or type(value["through_seq"]) is not int
+        or value["through_seq"] < 1
+        or type(value["event_seq"]) is not int
+        or value["through_seq"] != value["event_seq"]
     ):
         raise Refused("CONTROLLER_EXPORT_CURSOR_INVALID")
     event = c.execute("SELECT record FROM afo_lifecycle_events WHERE seq=?", (value["event_seq"],)).fetchone()
     if not event or hashlib.sha256(event[0].encode()).hexdigest() != value["event_sha256"]:
         raise Refused("CONTROLLER_EXPORT_CURSOR_EVENT_CHANGED")
-    rec = _json(event[0])
-    if rec.get("type") != "afo.controller_escalation_cursor" or rec.get("payload") != {"through_seq": value["through_seq"]}:
-        raise Refused("CONTROLLER_EXPORT_CURSOR_INVALID")
-    return value["through_seq"]
+    _json(event[0])  # bounded authentic existing source/receipt event, not a new marker
+    pending = value["pending_delivery"]
+    if pending is not None:
+        if (
+            not isinstance(pending, dict)
+            or set(pending) != {"notification_id", "receipt_seq", "receipt_sha256"}
+            or type(pending["receipt_seq"]) is not int
+            or pending["receipt_seq"] < 1
+        ):
+            raise Refused("CONTROLLER_EXPORT_DELIVERY_POINTER_INVALID")
+        receipt = c.execute("SELECT record FROM afo_lifecycle_events WHERE seq=?", (pending["receipt_seq"],)).fetchone()
+        if not receipt or hashlib.sha256(receipt[0].encode()).hexdigest() != pending["receipt_sha256"]:
+            raise Refused("CONTROLLER_EXPORT_DELIVERY_RECEIPT_CHANGED")
+        rec = _json(receipt[0])
+        if (
+            rec.get("type") != "afo.controller_exported"
+            or rec.get("payload", {}).get("notification_id") != pending["notification_id"]
+        ):
+            raise Refused("CONTROLLER_EXPORT_DELIVERY_RECEIPT_CHANGED")
+    return value
 
 
-def _advance(store, c, through):
-    store._event(c, "controller_escalation_cursor", "controller-escalation", payload=dict(through_seq=through))
-    event = c.execute("SELECT seq,record FROM afo_lifecycle_events ORDER BY seq DESC LIMIT 1").fetchone()
+def _advance(store, c, through, pending_delivery=None):
+    event = c.execute("SELECT record FROM afo_lifecycle_events WHERE seq=?", (through,)).fetchone()
+    if not event:
+        raise Refused("CONTROLLER_EXPORT_CURSOR_SOURCE_MISSING")
+    # Directly bind the consumed existing append-only event. No self-generated
+    # cursor markers can accumulate ahead of later settlements.
     value = dict(
         schema=CURSOR_SCHEMA,
         through_seq=through,
-        event_seq=event["seq"],
-        event_sha256=hashlib.sha256(event["record"].encode()).hexdigest(),
+        event_seq=through,
+        event_sha256=hashlib.sha256(event[0].encode()).hexdigest(),
+        pending_delivery=pending_delivery,
     )
     c.execute(
         "INSERT INTO afo_control VALUES (?,?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,"
         "updated_utc=excluded.updated_utc,actor=excluded.actor",
         (CURSOR, canonical(value).decode(), utc_now(), "controller-escalation"),
     )
+
+
+def _deliver_pending(store, budget, root):
+    with _tx(store, budget) as c:
+        pointer = _cursor(c)
+    pending = pointer["pending_delivery"]
+    if pending is None:
+        return []
+    nid = pending["notification_id"]
+    with _tx(store, budget) as c:
+        receipt = c.execute("SELECT record FROM afo_lifecycle_events WHERE seq=?", (pending["receipt_seq"],)).fetchone()
+        payload = _json(receipt[0])["payload"]
+        row = c.execute("SELECT payload FROM afo_notifications WHERE notification_id=?", (nid,)).fetchone()
+        if not row or digest(_json(row[0])) != digest(payload):
+            raise Refused("CONTROLLER_EXPORT_NOTICE_PAYLOAD_CHANGED")
+        _verify_receipt(root, payload)
+    # Exact own notice only; never configure adapters or drain other tenants.
+    alerts.deliver(
+        store,
+        adapters={},
+        notification_ids=(nid,),
+        limit=1,
+        transaction=lambda: _tx(store, budget),
+        expected_payload_sha256={nid: digest(payload)},
+    )
+    with _tx(store, budget) as c:
+        row = c.execute("SELECT delivery_state FROM afo_notifications WHERE notification_id=?", (nid,)).fetchone()
+        if not row:
+            raise Refused("CONTROLLER_EXPORT_NOTIFICATION_MISSING")
+        if row[0] not in ("DELIVERED", "DELIVERED_LOCAL_ONLY"):
+            raise Refused("CONTROLLER_EXPORT_NOTICE_PENDING")
+        from ..events.emit import events_dir
+
+        notice = dict(
+            notification_id=nid,
+            status=row[0],
+            notice_log=str(alerts.notice_log()),
+            event_ledger=str(events_dir() / "factory-events.jsonl"),
+            event_payload_ref=nid,
+        )
+        store._event(c, "controller_notice_delivered", "controller-escalation", payload=notice)
+        _advance(store, c, pointer["through_seq"], None)
+    return [notice]
 
 
 def _case(c, event):
@@ -488,6 +554,9 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
             raise Refused("CONTROLLER_EXPORT_ARCHIVE_IN_RECLAIMABLE_TREE")
     if archive != archive.resolve() or not archive.parent.is_dir():
         raise Refused("CONTROLLER_EXPORT_ARCHIVE_ROOT_UNSAFE")
+    parent = archive.parent.stat()
+    if parent.st_dev != store.path.stat().st_dev:
+        raise Refused("CONTROLLER_EXPORT_ARCHIVE_DEVICE_CHANGED")
     try:
         archive.mkdir(mode=0o700)
     except FileExistsError:
@@ -509,8 +578,10 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
             fcntl.flock(lockfd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             return dict(status="REPORTER_BUSY", exports=[], model_calls=0)
+        deliveries = _deliver_pending(store, budget, root)
         with _tx(store, budget) as c:
-            through = _cursor(c)
+            pointer = _cursor(c)
+            through = pointer["through_seq"]
             rows = c.execute(
                 "SELECT seq,CASE WHEN length(record)<=? THEN record END AS record "
                 "FROM afo_lifecycle_events WHERE seq>? ORDER BY seq LIMIT ?",
@@ -520,10 +591,8 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
         for row in rows:
             event = _json(row["record"])
             examined += 1
-            # Ignore only our cursor markers without manufacturing a new
-            # cursor for them. Ordinary dead letters must advance the stream.
-            if event.get("type") == "afo.controller_escalation_cursor":
-                continue
+            # Every existing event (including inert legacy telemetry) advances
+            # the bounded source cursor; we never append cursor markers.
             if event.get("type") == "afo.controller_exported":
                 _verify_receipt(root, event.get("payload"))
                 advanced = row["seq"]
@@ -544,7 +613,12 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
             if known:
                 record = _json(known[0])
                 old = record["case"]
-                if record.get("sha256") != digest(old):
+                if (
+                    record.get("sha256") != digest(old)
+                    or record.get("case_json") != str(sealed)
+                    or record.get("bundle") != str(directory / "export.zip")
+                    or record.get("report") != str(directory / "REPORT.md")
+                ):
                     raise Refused("CONTROLLER_EXPORT_SEAL_CHANGED")
                 if any(old.get(k) != case[k] for k in ("case_id", "job_id", "order_id", "attempt_id", "source_revision")):
                     raise Refused("CONTROLLER_EXPORT_CASE_REBOUND")
@@ -555,7 +629,13 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
                 # intent before artifact creation. It is not a new work queue.
                 if len(canonical(case)) > MAX_RECORD // 2:
                     raise Refused("CONTROLLER_EXPORT_CASE_BOUND")
-                record = dict(case=case, sha256=digest(case))
+                record = dict(
+                    case=case,
+                    sha256=digest(case),
+                    case_json=str(sealed),
+                    bundle=str(directory / "export.zip"),
+                    report=str(directory / "REPORT.md"),
+                )
                 with _tx(store, budget) as c:
                     c.execute(
                         "INSERT INTO afo_recovery_incidents VALUES (?,?,?,?)",
@@ -583,10 +663,13 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
                     report=str(directory / "REPORT.md"),
                     status="NEEDS_EXTERNAL_ENGINEERING",
                     classification=case["classification"],
+                    notification_id="afo-ntf-"
+                    + hashlib.sha256(("controller-export:" + case["case_id"]).encode()).hexdigest()[:20],
                 )
                 # artifact-before-ack, receipt and local notification share tx;
                 # no new product command, admission or inference allocation.
-                store._event(c, "controller_exported", case["order_id"], case["attempt_id"], payload, "WARN")
+                receipt_id = store._event(c, "controller_exported", case["order_id"], case["attempt_id"], payload, "WARN")
+                receipt = c.execute("SELECT seq,record FROM afo_lifecycle_events WHERE event_id=?", (receipt_id,)).fetchone()
                 # Existing immutable BLOCKED case + local alert outbox contract.
                 from .deadletter import reason_code, required_action
 
@@ -634,9 +717,17 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
                 )
                 # Existing earlier deadletter remains immutable; a single
                 # controller-case notice carries its new exact evidence ref.
-                alerts.enqueue(c, "controller-export:" + case["case_id"], "WARN", payload)
-                _advance(store, c, advanced)
+                nid, _ = alerts.enqueue(c, "controller-export:" + case["case_id"], "WARN", payload)
+                if nid != payload["notification_id"]:
+                    raise Refused("CONTROLLER_EXPORT_NOTIFICATION_REBOUND")
+                pending = dict(
+                    notification_id=nid,
+                    receipt_seq=receipt["seq"],
+                    receipt_sha256=hashlib.sha256(receipt["record"].encode()).hexdigest(),
+                )
+                _advance(store, c, advanced, pending)
             _checkpoint("receipt_committed")
+            deliveries += _deliver_pending(store, budget, root)
             exports.append(dict(**payload, case=str(sealed)))
             through = advanced
             break
@@ -644,6 +735,6 @@ def cycle(store, cfg, *, store_identity, max_cases=1, _checkpoint=lambda phase: 
             _store(store, store_identity)
             with _tx(store, budget) as c:
                 _advance(store, c, advanced)
-        return dict(status="OBSERVED", exports=exports, examined_events=examined, model_calls=0)
+        return dict(status="OBSERVED", exports=exports, deliveries=deliveries, examined_events=examined, model_calls=0)
     finally:
         os.close(lockfd)

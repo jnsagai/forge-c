@@ -352,20 +352,93 @@ def test_unsafe_stop_log_path_cannot_include_external_body(settled, tmp_path):
 def test_large_backlog_cannot_generate_a_self_cursor_tail_hiding_later_failure(product):
     p = product
     p.cfg.runs_root = p.store.path.parent.parent.parent / "runs"
-    p.pinned = Store(p.store.path,must_exist=True)
-    st=p.store.path.stat();p.identity=dict(device=st.st_dev,inode=st.st_ino)
+    p.pinned = Store(p.store.path, must_exist=True)
+    st = p.store.path.stat()
+    p.identity = dict(device=st.st_dev, inode=st.st_ino)
     drain(p)
     with p.store.tx() as c:
         for i in range(E.MAX_EVENTS * (E.MAX_EVENTS + 2)):
-            p.store._event(c,"private_backlog",p.oid,payload=dict(i=i))
+            p.store._event(c, "private_backlog", p.oid, payload=dict(i=i))
     for _ in range(E.MAX_EVENTS + 5):
         drain(p)
-    P.dispatch(p.store,p.cmd,p.worker,p.spec,p.eff,p.client,cfg=p.cfg,launch=lambda *a:dict(outcome="STACK_STOP_FAILED"))
-    results=[drain(p) for _ in range(4)]
-    assert sum(len(x["exports"]) for x in results)==1
+    P.dispatch(p.store, p.cmd, p.worker, p.spec, p.eff, p.client, cfg=p.cfg, launch=lambda *a: dict(outcome="STACK_STOP_FAILED"))
+    results = [drain(p) for _ in range(4)]
+    assert sum(len(x["exports"]) for x in results) == 1
     with p.store.tx() as c:
-        count=c.execute("SELECT COUNT(*) FROM afo_lifecycle_events").fetchone()[0]
+        count = c.execute("SELECT COUNT(*) FROM afo_lifecycle_events").fetchone()[0]
     for _ in range(5):
         drain(p)
     with p.store.tx() as c:
-        assert c.execute("SELECT COUNT(*) FROM afo_lifecycle_events").fetchone()[0]==count
+        assert c.execute("SELECT COUNT(*) FROM afo_lifecycle_events").fetchone()[0] == count
+
+
+def test_exact_own_notice_is_delivered_locally_and_unrelated_outbox_is_not_drained(settled, monkeypatch, tmp_path):
+    from forge_factory.afo import alerts
+    from forge_factory.events.emit import events_dir
+
+    p = settled
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "events"))
+    with p.store.tx() as c:
+        foreign, _ = alerts.enqueue(c, "UNRELATED_PRIVATE_NOTICE", "WARN", dict(kind="UNRELATED"))
+    before = MissionLedger(p.store).snapshot("fixture-mission")
+    result = drain(p)
+    assert len(result["deliveries"]) == 1
+    notice = result["deliveries"][0]
+    assert notice["status"] == "DELIVERED" and Path(notice["notice_log"]).is_file()
+    lines = [json.loads(x) for x in Path(notice["notice_log"]).read_text().splitlines()]
+    assert len(lines) == 1 and lines[0]["notification_id"] == notice["notification_id"]
+    ledger = (events_dir() / "factory-events.jsonl").read_text()
+    assert notice["notification_id"] in ledger and foreign not in ledger
+    with p.store.tx() as c:
+        assert (
+            c.execute("SELECT delivery_state FROM afo_notifications WHERE notification_id=?", (foreign,)).fetchone()[0]
+            == "PENDING"
+        )
+    assert MissionLedger(p.store).snapshot("fixture-mission") == before
+
+
+def test_delivery_refusal_retries_own_pending_notice_after_cursor_advanced_without_new_export(settled, monkeypatch, tmp_path):
+    p = settled
+    monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "events"))
+    normal = E.alerts.deliver
+
+    def unavailable(*a, **kw):
+        assert kw["adapters"] == {} and kw["limit"] == 1 and len(kw["notification_ids"]) == 1
+        raise OSError("PRIVATE_LOCAL_DELIVERY_UNAVAILABLE")
+
+    monkeypatch.setattr(E.alerts, "deliver", unavailable)
+    before = MissionLedger(p.store).snapshot("fixture-mission")
+    result = E.observe(p.pinned, p.cfg, store_identity=p.identity)
+    assert result["status"] == "CAPTURE_FAILED"
+    with p.store.tx() as c:
+        pointer = json.loads(c.execute("SELECT value FROM afo_control WHERE key=?", (E.CURSOR,)).fetchone()[0])
+        nid = pointer["pending_delivery"]["notification_id"]
+        assert (
+            c.execute("SELECT delivery_state FROM afo_notifications WHERE notification_id=?", (nid,)).fetchone()[0] == "PENDING"
+        )
+    monkeypatch.setattr(E.alerts, "deliver", normal)
+    restarted = E.cycle(Store(p.store.path, must_exist=True), p.cfg, store_identity=p.identity)
+    assert restarted["exports"] == [] and restarted["deliveries"][0]["notification_id"] == nid
+    with p.store.tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_lifecycle_events WHERE type='afo.controller_exported'").fetchone()[0] == 1
+        assert (
+            json.loads(c.execute("SELECT value FROM afo_control WHERE key=?", (E.CURSOR,)).fetchone()[0])["pending_delivery"]
+            is None
+        )
+    assert len(list((E.archive_root() / "controller-exports").glob("case-*/export.zip"))) == 1
+    assert MissionLedger(p.store).snapshot("fixture-mission") == before
+
+
+def test_wrong_device_parent_refuses_before_mkdir(settled, monkeypatch):
+    import tempfile
+
+    p = settled
+    shared = Path("/dev/shm")
+    if not shared.is_dir() or shared.stat().st_dev == p.store.path.stat().st_dev:
+        pytest.skip("real independent tmpfs device unavailable")
+    with tempfile.TemporaryDirectory(dir=shared, prefix="forge-private-export-") as tmp:
+        target = Path(tmp) / "not-created"
+        monkeypatch.setenv("FORGE_ARCHIVE_DIR", str(target))
+        with pytest.raises(Exception):
+            drain(p)
+        assert not target.exists()
