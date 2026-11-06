@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import pytest
 from forge_factory.afo import owner_supervised_development as D
 from forge_factory.afo.durable import Refused, digest
-from forge_factory.afo.mission_ledger import MissionLedger
 from forge_factory.afo.line_orders import Placer
+from forge_factory.afo.mission_ledger import MissionLedger
 from forge_factory.afo.owner_development_allowance import CLOSE_DIRECTIVE, DIRECTIVE, close_for_source_fix, open_allowance
 from forge_factory.afo.queue import Store
 from forge_factory.lrtx import stack
