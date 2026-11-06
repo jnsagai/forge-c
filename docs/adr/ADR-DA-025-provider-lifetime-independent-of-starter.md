@@ -28,3 +28,12 @@ Process lesson: offline qualification and host proofs covered components, and ea
 four spent attempts died at a stage no earlier attempt had reached. The launcher path
 under owner-development authority needs a private end-to-end rehearsal before another
 real attempt is spent.
+
+## Findings from the private launch rehearsal
+
+The first rehearsal stalled the guardian: `_publish_heartbeat` runs synchronously inside
+the serve loop, and an fsync over two seconds spent the caller's attestation timeout.
+`guard()` then refused during bootstrap. Only the first challenge needs the heartbeat
+published before the acknowledgement, because the host guard reads it after `current()`.
+Later publications now run on one background thread at a time. A failed publication
+leaves the heartbeat stale, which the guard still refuses.

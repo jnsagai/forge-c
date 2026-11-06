@@ -246,6 +246,15 @@ def _serve_guardian(record, server):
     server.settimeout(0.2)
     stop = threading.Event()
     sha = digest(record)
+    publishing = threading.Event()
+
+    def publish_in_background():
+        try:
+            _publish_heartbeat(record)
+        except (OSError, ValueError, Refused):
+            pass  # A stale heartbeat refuses at the guard; it is never silently fresh.
+        finally:
+            publishing.clear()
 
     def serve():
         last_heartbeat = None
@@ -274,10 +283,17 @@ def _serve_guardian(record, server):
                     # Publish before acknowledging the first challenge. The host
                     # launch guard calls current() before reading this heartbeat.
                     # Do not renew completed-cycle progress from an attestation.
+                    # Later publications run aside: an fsync stall must not spend
+                    # the caller's short attestation timeout during a launch.
                     now = time.monotonic()
-                    if last_heartbeat is None or now - last_heartbeat >= 15:
+                    if last_heartbeat is None:
                         _publish_heartbeat(record)
                         last_heartbeat = now
+                    elif now - last_heartbeat >= 15 and not publishing.is_set():
+                        publishing.set()
+                        last_heartbeat = now
+                        threading.Thread(target=publish_in_background, name="owner-development-heartbeat",
+                                         daemon=True).start()
                     client.sendall(canonical(dict(record_sha256=sha, nonce=nonce, scope=MODE)))
                 except (OSError, ValueError, Refused):
                     continue
