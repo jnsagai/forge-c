@@ -184,3 +184,61 @@ def test_oversize_and_unsafe_transcripts_are_gaps_not_bodies(settled):
     case = json.loads(Path(result["exports"][0]["case"]).read_text())
     assert "CONTROLLER_EXPORT_FILE_BOUND_OR_TYPE" in case["gaps"]
     assert "NEVER_BODY" not in Path(result["exports"][0]["report"]).read_text()
+
+
+def test_deadletter_batch_cannot_pin_cursor_ahead_of_late_settlement(product):
+    p = product
+    p.cfg.runs_root = p.store.path.parent.parent.parent / "runs"
+    p.pinned = Store(p.store.path, must_exist=True)
+    s = p.store.path.stat()
+    p.identity = dict(device=s.st_dev, inode=s.st_ino)
+    assert drain(p)["exports"] == []
+    with p.store.tx() as c:
+        for i in range(E.MAX_EVENTS):
+            p.store._event(c, "dead_letter", p.oid, payload=dict(private_event=i))
+    assert drain(p)["examined_events"] == E.MAX_EVENTS
+    P.dispatch(p.store, p.cmd, p.worker, p.spec, p.eff, p.client, cfg=p.cfg,
+               launch=lambda *a: dict(outcome="STACK_STOP_FAILED"))
+    results = [drain(p) for _ in range(3)]
+    assert sum(len(r["exports"]) for r in results) == 1
+    with p.store.tx() as c:
+        before = c.execute("SELECT COUNT(*) FROM afo_lifecycle_events").fetchone()[0]
+    drain(p)
+    drain(p)
+    with p.store.tx() as c:
+        assert c.execute("SELECT COUNT(*) FROM afo_lifecycle_events").fetchone()[0] == before
+
+
+def test_positive_transcript_and_exact_bound_stop_log_explain_recorded_guard(settled):
+    import hashlib
+    p = settled
+    base = p.cfg.runs_root / ".launch" / p.spec["wo"]
+    logs = base / "attempt-1"
+    logs.mkdir(parents=True)
+    raw = b"Refused: LINE_STACK_NATIVE_NOT_QUIESCENT\nNEVER_RAW_PROMPT token=NEVER_SECRET\n"
+    (logs / "stack-stop.log").write_bytes(raw)
+    (base / "attempt-1.json").write_text(json.dumps(dict(
+        schema="forge-c/line-launch-attempt/1", work_order=p.spec["wo"], revision="a" * 40,
+        fabro_run_id=None, outcome="STACK_STOP_FAILED", step_logs=str(logs),
+        steps=[dict(step="guard",outcome="OK"),dict(step="stack_stop",outcome="RC_1",rc=1)])))
+    result = drain(p)
+    case = json.loads(Path(result["exports"][0]["case"]).read_text())
+    assert case["records"]["stop_log"]["observed_codes"] == ["LINE_STACK_NATIVE_NOT_QUIESCENT"]
+    assert case["records"]["stop_log"]["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert "stack_stop" in case["records"]["steps_recorded"]
+    assert "workorder_launch" in case["records"]["steps_not_recorded"]
+    report = Path(result["exports"][0]["report"]).read_text()
+    assert "LINE_STACK_NATIVE_NOT_QUIESCENT" in report
+    assert "NEVER_SECRET" not in report and "NEVER_RAW_PROMPT" not in report
+
+
+def test_reporting_errors_are_contained_without_authorizing_or_changing_execution(settled, monkeypatch):
+    p = settled
+    before = Executions(p.store).get(P.job_id(p.aid))
+    def unavailable(*a, **kw):
+        from forge_factory.afo.durable import Refused
+        raise Refused("CONTROLLER_EXPORT_ARTIFACT_REBOUND", "NEVER_DETAIL")
+    monkeypatch.setattr(E, "cycle", unavailable)
+    result = E.observe(p.pinned,p.cfg,store_identity=p.identity)
+    assert result == dict(status="CAPTURE_FAILED",code="CONTROLLER_EXPORT_ARTIFACT_REBOUND",exports=[],model_calls=0)
+    assert Executions(p.store).get(P.job_id(p.aid)) == before
