@@ -86,3 +86,9 @@ is unchanged, and the seed stays the only resume point.
 Recovery launches, but the planner role is not in the approved role list, so the gateway
 refuses it. Retries run without a diagnosis. Adding that role would widen the approved
 scope and is left to the owner.
+
+L90G proved the path with real tools, then `run_robot` failed 21 times before any test ran.
+Contained tools recheck the guardian through the operations Intent, and the tool server's
+environment did not carry its path. Run by hand with the path added, the same call ran
+Renode and passed 13 of 24 tests. The tool environment now carries it, and the mission and
+its limits are unchanged.

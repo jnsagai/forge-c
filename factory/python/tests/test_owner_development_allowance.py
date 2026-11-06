@@ -205,9 +205,14 @@ def test_tool_hook_carries_the_queue_scope(tmp_path, monkeypatch):
     from forge_factory.fabro import runconfig
 
     monkeypatch.setenv("FORGE_AFO_QUEUE_SCOPE", "line-local")
-    text = runconfig.render_run_toml("g.fabro", "goal", tmp_path / "b.json")
+    monkeypatch.setenv("FORGE_OPERATIONS_INTENT", "/private/intent.json")
+    servers = dict(forge_tests_mcp=dict(module="forge_factory.mcp.servers.tests"))
+    text = runconfig.render_run_toml("g.fabro", "goal", tmp_path / "b.json", servers)
     hooks = [line for line in text.splitlines() if line.startswith("script = ")]
     assert hooks and all("FORGE_AFO_QUEUE_SCOPE=line-local" in line for line in hooks)
+    assert all("FORGE_OPERATIONS_INTENT=/private/intent.json" in line for line in hooks)
+    assert 'FORGE_OPERATIONS_INTENT = "/private/intent.json"' in text
+    assert 'FORGE_AFO_QUEUE_SCOPE = "line-local"' in text
 
 
 def test_recovery_planner_uses_the_lane_grant_not_a_signed_file():
