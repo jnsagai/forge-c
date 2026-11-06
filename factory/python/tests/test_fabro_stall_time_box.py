@@ -6,7 +6,6 @@ from __future__ import annotations
 import re
 
 import yaml
-
 from forge_factory.lrtx import profile
 from forge_factory.workflow.builder import build
 from forge_factory.workorder import MAX_VISIT_TIME_S, local_profile_structured
