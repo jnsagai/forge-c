@@ -66,3 +66,11 @@ The rehearsal then failed in role-context capture with `JSONDecodeError`. Genera
 prompts carry real line breaks, which strict `json.loads` refuses, so `_attrs` could not read
 any real graph. Control characters are now accepted inside graph strings. All 86 statements of
 the generated SWE.6 workflow parse. Duplicate attributes and unterminated values still refuse.
+
+The rehearsal then refused with `LINE_PRODUCT_ROLE_TRIAL_UNDECLARED`. The generated graph holds
+every phase, and admission required every graph role to be declared in the role trial, while
+the owner-approved trial covers only SWE.6 and the release and recovery roles. Widening the trial
+was rejected because it is owner-pinned scope. The frozen role context now holds only the roles of
+the order's bound phase plus unphased roles. All nodes are still validated. An excluded role is
+refused at `request_job`, so this tightens the runtime: a graph path reaching an earlier phase's
+model node gets no model.

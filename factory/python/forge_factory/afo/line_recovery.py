@@ -172,7 +172,7 @@ def bind(store, order_id: str, attempt_id: str, *, workspace: Path, campaign_pat
             "attempt_id": attempt_id, "work_order": wo, "source_workspace": str(ws), "source_revision": revision,
             "order_digest": digest, "campaign_sha256": camp.sha256, "campaign_commit": camp.commit,
             "lineage_sha256": lin.sha256, "profile_sha256": profile["_sha256"], "profile": lin.profile,
-            "model": lin.run_model, "authorization": grant.view()}
+            "model": lin.run_model, "phase": spec.get("phase"), "authorization": grant.view()}
 
 
 ORIGIN_KEYS = {"campaign_path", "policy_path", "auth_base", "allowed_signers"}

@@ -348,7 +348,8 @@ def bind_native(store, jid):
         raise Refused("LINE_PRODUCT_NATIVE_ADMISSION_FENCED")
     context = R.context(store, order["order_id"], job["attempt_id"], Path(job["workspace"]), job["line_origin"])
     profile = load_profile(job["profile"])
-    reference = capture(Path(job["workspace"]), job, profile)
+    # The graph holds every phase; a resumed order acts only in its bound phase.
+    reference = capture(Path(job["workspace"]), job, profile, phase=context["phase"])
     candidate = {**job, "line_context_sha256": digest(context), "line_product_context": reference}
     # Every actual role/model needs measured objective proof, or its separately
     # signed finite experiment. No semantic complexity is invented for a phase.

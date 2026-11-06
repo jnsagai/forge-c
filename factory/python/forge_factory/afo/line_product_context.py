@@ -40,7 +40,18 @@ def _command_model(script, module):
         return None
 
 
-def capture(workspace, job, profile):
+def role_in_phase(role, phase):
+    """Whether a role may act in a bound phase. Unphased roles such as release-manager always may."""
+    if phase is None:
+        return True
+    if not isinstance(phase, str) or not re.fullmatch(r"SWE\.[0-9]+", phase):
+        raise Refused("LINE_PRODUCT_PHASE_SCOPE_INVALID")
+    numbered = re.fullmatch(r"swe([0-9]+)-.+", role)
+    return numbered is None or "SWE." + numbered[1] == phase
+
+
+def capture(workspace, job, profile, *, phase=None):
+    """Freeze the graph's model nodes. Every node is validated; only in-phase roles may later obtain a model."""
     from .fault_observer import read_bytes, read_json
 
     ws = Path(workspace).resolve()
@@ -96,8 +107,9 @@ def capture(workspace, job, profile):
         if set(incoming) != {name + "_serve"}:
             raise Refused("LINE_PRODUCT_MODEL_SERVE_BYPASS", name)
         nodes[name] = {"role": role, "model": model, "served_model": served, "native": native}
-        roles.setdefault(role, set()).add(model)
-    if not nodes:
+        if role_in_phase(role, phase):
+            roles.setdefault(role, set()).add(model)
+    if not nodes or not roles:
         raise Refused("LINE_PRODUCT_MODEL_CONTEXT_EMPTY")
     value = {
         "schema": SCHEMA,
