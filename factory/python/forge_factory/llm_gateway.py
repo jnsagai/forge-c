@@ -612,6 +612,9 @@ def create_app(
         except (Refused, KeyError, ValueError) as exc:
             code = exc.code if isinstance(exc, Refused) else "INVALID_DURABLE_BINDING"
             meter.refusal(body.get("model"), code)
+            # The same body is refused again, so this one is not a rate limit.
+            if code == "CAPABILITY_LIMIT":
+                return JSONResponse({"error": {"type": code, "message": code}}, status_code=400)
             return JSONResponse({"error": {"type": code}}, status_code=429)
         # No transparent retry: each new generation needs its own durable reservation.
         usage, completed, started = None, False, False

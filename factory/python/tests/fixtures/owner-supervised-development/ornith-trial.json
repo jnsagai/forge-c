@@ -3,7 +3,7 @@
   "qualification_only": true,
   "source_revision": "74e44a1f23b01f3200350436df1691249b441292",
   "profile": "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104",
-  "profile_sha256": "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c",
+  "profile_sha256": "882ec6295088fe57ee4d53609abf220411bb5e0204b1fbfc952a1755773d4da8",
   "model": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0",
   "order_ids": [
     "afo-549cc7bf17bcbd67",

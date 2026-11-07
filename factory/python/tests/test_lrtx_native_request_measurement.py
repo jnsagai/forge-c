@@ -179,3 +179,34 @@ def test_real_role_context_and_mission_admission_use_native_count_with_exact_bou
         evidence = Executions(p.store)._evidence(job["job_id"], "REQUEST_METADATA:" + rec["request_id"])
         assert evidence["measurement"] == measured
         assert p.ledger.snapshot(job["mission_id"])["requests"] == before["requests"] + 1
+
+
+TRIAL_PROFILE = "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104"
+ORNITH = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
+
+
+def test_trial_profile_measures_the_author_natively_and_leaves_its_limits_alone():
+    selected = profile.load(TRIAL_PROFILE)
+    assert M.policy(selected) == {ORNITH: M.METHOD}
+    assert selected["runtime"]["context_limit_tokens"] == 262144
+    assert selected["runtime"]["fabro_max_output_tokens"] == 16384
+    assert selected["gateway"]["reasoning"][ORNITH]["extra_output_tokens"] == 131072
+
+
+def test_durable_capability_refusal_is_not_reported_as_a_rate_limit(tmp_path, monkeypatch):
+    monkeypatch.setenv("FORGE_GATEWAY_ROUTES", json.dumps({MODEL: "http://native"}))
+    monkeypatch.setenv("FORGE_GATEWAY_REQUEST_MEASUREMENT", json.dumps({MODEL: M.METHOD}))
+    monkeypatch.setattr(queue, "Store", lambda: object())
+    monkeypatch.setattr(provider_recovery, "current_instance", lambda: None)
+
+    def reserve(*_args, **_kwargs):
+        raise Refused("CAPABILITY_LIMIT", "complete serialized request exceeds qualified context allowance")
+
+    monkeypatch.setattr(request_admission, "reserve", reserve)
+    request = body()
+    request["forge_execution"] = {"job_id": "fixture", "nonce": "n", "request_id": "r", "role": "swe6-author"}
+    seen = []
+    with TestClient(G.create_app("http://ollama", tmp_path / "meter", transport=transport(seen))) as client:
+        response = client.post("/chat/completions", json=request)
+    assert response.status_code == 400 and response.json()["error"]["type"] == "CAPABILITY_LIMIT"
+    assert all(path != "/chat/completions" for path, _ in seen)

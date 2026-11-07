@@ -121,6 +121,8 @@ structured:
     author: hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0
     inspector: qwen3.8:27b-q8_0
 gateway:
+  request_measurement:
+    hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0: native_template_plus_serialized
   drop_retries: 0
   live_tap: true
   request_timeout_s: 21600
