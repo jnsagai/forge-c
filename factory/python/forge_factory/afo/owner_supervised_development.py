@@ -51,10 +51,10 @@ RETRYING_CAPS = dict(
     max_tools=RETRYING_ATTEMPTS * 512,
     max_corrections=RETRYING_ATTEMPTS * 4,
 )
-RETRYING_LAST = 27  # n of C's last placed order (27 = L90AA); re-read when C is closed
+RETRYING_LAST = 29  # n of C's last placed order: L90AC (PHASE_VERDICT:PASS:SWE.6, 2026-11-07 14:13 UTC)
 RETRYING_ALLOWANCE_RECORD_SHA256 = "8d10bfe98aefd8918375b40bb94aac9430e97c969df7693cf02f2303cf424c34"
-# C's final spend, read from the ledger once its last order closed.
-RETRYING_ALLOWANCE_SPENT = dict(attempts=18, jobs=9, requests=1149, tools=1856, corrections=0, charged_tokens=160432128)
+# C's final spend, read from the ledger after its last order closed (2026-11-07 14:13 UTC).
+RETRYING_ALLOWANCE_SPENT = dict(attempts=20, jobs=10, requests=1324, tools=2091, corrections=0, charged_tokens=178257920)
 RETRYING_ORDERS = tuple(SERIES + retry_suffix(n) for n in range(7, RETRYING_LAST + 1))
 ATTEMPTS = 256
 ORDERS = tuple(SERIES + retry_suffix(n) for n in range(RETRYING_LAST + 1, RETRYING_LAST + 1 + ATTEMPTS))
