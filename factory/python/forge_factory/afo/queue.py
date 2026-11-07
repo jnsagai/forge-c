@@ -187,7 +187,7 @@ class Store:
             # is the already initialized M3 store. A lookalike empty SQLite DB
             # cannot acquire authority through a consumer constructor.
             try:
-                c = sqlite3.connect(self.path.absolute().as_uri() + "?mode=ro", uri=True, timeout=2)
+                c = sqlite3.connect(self.path.absolute().as_uri() + "?mode=ro", uri=True, timeout=15)
                 try:
                     have = c.execute("SELECT MAX(version) FROM afo_schema_version").fetchone()[0]
                 finally:
@@ -195,6 +195,11 @@ class Store:
                 self._check_existing()
                 if type(have) is not int or have < len(MIGRATIONS):
                     raise QueueError("AUTHORITATIVE_DATABASE_SCHEMA_UNAVAILABLE")
+            except sqlite3.OperationalError as exc:
+                # CAPA-187 (2026-11-07, SPI L41B): a writer holding the lock is not a missing schema; the caller retries.
+                if any(w in str(exc).lower() for w in ("locked", "busy")):
+                    raise QueueError("AUTHORITATIVE_DATABASE_BUSY") from exc
+                raise QueueError("AUTHORITATIVE_DATABASE_SCHEMA_UNAVAILABLE") from exc
             except sqlite3.Error as exc:
                 raise QueueError("AUTHORITATIVE_DATABASE_SCHEMA_UNAVAILABLE") from exc
             return

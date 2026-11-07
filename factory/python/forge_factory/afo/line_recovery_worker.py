@@ -350,6 +350,8 @@ def record_refusal(cid, exc):
 
     if getattr(exc, "code", "") == "LINE_RECOVERY_WORKER_LOCK_HELD":
         return {"action": "existing_worker_owns_command", "inference_release": False}
+    if getattr(exc, "code", "") == "AUTHORITATIVE_DATABASE_BUSY":  # CAPA-187: transient; the next cycle supervises again
+        return {"action": "store_busy_retry_next_cycle", "inference_release": False}
     store = Store(state_dir() / "supervisor/line-queue.sqlite3", must_exist=True)
     cmd, value, _, row = metadata(store, cid)
     job = existing_job(store, value)
