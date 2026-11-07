@@ -567,6 +567,30 @@ def test_infra_sweeps_and_relaunches_with_backoff(env):
     assert line.launched[-1]["--resume-from"] == "WO-F014-SWE1-CRCL-20261103-L30"
 
 
+def test_capa185_a_launch_the_queue_closed_retries_under_the_next_name(env):
+    """L40/L41 2026-11-07: a refused launch left the order BLOCKED; RELAUNCH of the same name was refused forever."""
+    from forge_factory.afo.queue import Store
+
+    write_campaign(env, [lineage("crc-ll", "CRCL", "20261103-L30")])
+    grant(env)
+    line, clock = env["line"], env["clock"]
+    wo = "WO-F014-SWE1-CRCL-20261103-L30"
+    line.fail_launch[wo] = ["INPUT_UNAVAILABLE"]
+    pl = placer(env)
+    pl.cycle()
+    store = Store(LO.supervisor_dir() / "line-queue.sqlite3")
+    row = next(o for o in store.orders() if o["request_id"] == wo)
+    if row["state"] != "BLOCKED":
+        store.transition(row["order_id"], "BLOCKED", "product launch not started",
+                         terminal_reason="PRODUCT_LAUNCH_NOT_STARTED")
+    clock.tick(900)
+    for _ in range(3):
+        pl.cycle()
+        clock.tick(60)
+    launched = [x["wo"] for x in line.launched]
+    assert launched[0] == wo and wo + "B" in launched and launched.count(wo) == 1
+
+
 def test_model_convergence_retries_from_the_last_passed_order_and_upstream_defects_take_the_defect_route(env):
     write_campaign(env, [lineage("crc-ll", "CRCL", "20261103-L30")])
     grant(env)

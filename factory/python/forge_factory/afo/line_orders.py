@@ -805,6 +805,13 @@ class Planner:
                 self._place(P, self._order(P, ph, "RETRY", resume_from=base.get("resume_from"),
                                            resume_upto=base.get("resume_upto")), "PLACE")
                 return
+            if a.queue and a.queue["state"] in ("BLOCKED", "READY_FOR_OFFLINE_REVIEW", "REJECTED_INTAKE"):
+                # CAPA-185 (2026-11-07, L40/L41 INPUT_UNAVAILABLE): the queue closed the order after its launch was
+                # refused, so the same name can never relaunch. The next name retries; the strikes still count.
+                P.not_before = last["at"] + infra_backoff(P.strikes, self.policy)
+                self._place(P, self._order(P, ph, "RETRY", resume_from=base.get("resume_from"),
+                                           resume_upto=base.get("resume_upto")), "PLACE")
+                return
             o = self._order(P, ph, "RELAUNCH_INFRA" if last["class"] == "INFRA" else "RELAUNCH",
                             resume_from=base.get("resume_from"), resume_upto=base.get("resume_upto"), wo=a.wo)
             if last["class"] == "REFUSED":
