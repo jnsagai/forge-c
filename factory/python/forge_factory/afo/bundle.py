@@ -6,7 +6,10 @@ classified by the 004 CRE importer (`reliability.observe.from_workspace`: failur
 fingerprint). An agent's own "PASS" text is never a verdict. The AFO class adds what CRE's five classes do not:
   * POLICY_SECURITY -> SECURITY;  * a missing authoritative input (HSI, manual, approval) -> SPECIFICATION_GAP;
   * a fingerprint owned by an OPEN/TRIAGED/REOPENED... CAPA (a factory defect under investigation) ->
-    FACTORY_CODE_DEFECT - rework would only meet the same defect.
+    FACTORY_CODE_DEFECT - rework would only meet the same defect;
+  * a refusal the factory raises itself before any model call (CAPA-190: inventory section missing, runner or
+    semantic engine fault, unsupported layer) -> FACTORY_CODE_DEFECT. It dominates the phase's missing-output
+    observations it caused, so the line sends it to isolated maintenance instead of rework or a dead end.
 Agent-written text (inspector findings, author replies) enters only as a bounded, secret-redacted excerpt tagged
 untrusted (`untrusted_source_refs`): it is data for the planner, never instructions.
 F015 (2026-10-25/26): an agent backend that refuses its turns (ACP `prompt_error`, e.g. Codex unavailable at sign-in)
@@ -26,6 +29,9 @@ from . import contracts
 
 PHASES = ("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6")
 SPEC_GAP = re.compile(r"MISSING_(AUTHORITATIVE|INPUT)|HSI_(MISSING|CONFLICT)|UPSTREAM_.*NOT_PROVIDED|NOT_APPROVED", re.I)
+# CAPA-190: deterministic (GATE) task refusals of factory code that precede every model call of the visit.
+FACTORY_REFUSAL = re.compile(r"LRTX_TASK_INVALID:(LRTX_(?:INVENTORY_SECTION_MISSING|RUNNER_ERROR|SEMANTIC_ENGINE_FAULT|"
+                             r"SWE\d_LAYER_NOT_SUPPORTED_YET))\b")
 SECRET = re.compile(r"(?i)(api[_-]?key|token|secret|password|bearer)\s*[:=]\s*\S+|sk-[A-Za-z0-9]{12,}|fabro_dev_[0-9a-f]+")
 MAX_SUMMARY = 1500
 CAPA_OPEN = {"OPEN", "TRIAGED", "REPRODUCER_PENDING", "CAUSE_VERIFIED", "FIX_CANDIDATE", "PREVENTION_TESTED",
@@ -106,12 +112,20 @@ def _capa_fingerprints() -> set[str]:
         return set()
 
 
+def factory_refusal(obs: dict) -> str | None:
+    """The factory's own pre-model refusal code of a deterministic gate observation that CRE left UNKNOWN."""
+    if obs.get("source_kind") != "GATE" or obs.get("failure_class") != "UNKNOWN":
+        return None
+    m = FACTORY_REFUSAL.match(str(obs.get("excerpt") or ""))
+    return m.group(1) if m else None
+
+
 def afo_class(obs: dict, open_capa: set[str]) -> str:
     if obs["failure_class"] == "POLICY_SECURITY":
         return "SECURITY"
     if SPEC_GAP.search(obs.get("error_code", "")):
         return "SPECIFICATION_GAP"
-    if obs["fingerprint"] in open_capa:
+    if obs["fingerprint"] in open_capa or factory_refusal(obs):
         return "FACTORY_CODE_DEFECT"
     return obs["failure_class"] if obs["failure_class"] in ("INFRASTRUCTURE", "TRANSIENT_DEPENDENCY", "PRODUCT_QUALITY") \
         else "UNKNOWN"
@@ -155,7 +169,8 @@ def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | Non
                  key=lambda o: (o.get("ts_utc", ""), o["obs_id"]))  # the latest failure dominates
     route = [o for o in obs if o["operation"].endswith("/route")]
     work = [o for o in obs if not o["operation"].endswith("/route")]
-    dom = (work or route or [None])[-1]
+    refused = [o for o in work if factory_refusal(o)]  # CAPA-190: the refusal caused the missing outputs beside it
+    dom = (refused or work or route or [None])[-1]
     if dom is None:
         return None
     open_capa = _capa_fingerprints() if open_capa is None else open_capa
@@ -181,7 +196,7 @@ def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | Non
             continue
     rec = {"schema_version": "1.0", "order_id": order_id, "attempt_id": attempt_id, "phase": phase,
            "failure_class": cls, "fingerprint": dom["fingerprint"], "gate_result": "BLOCKED",
-           "error_code": dom["error_code"][:200], "artifact_refs": [f"workspace:{p.relative_to(ws)}" for p in ins[-1:]],
+           "error_code": (factory_refusal(dom) or dom["error_code"])[:200], "artifact_refs": [f"workspace:{p.relative_to(ws)}" for p in ins[-1:]],
            "evidence_refs": [f"cre-observation:{o['obs_id']}" for o in (work + route)[-5:]], "input_digests": digests,
            "tool_versions": {k: v for k, v in list(tools.items())[:20] if v}, "requirements_refs": sorted(reqs)[:20],
            "redacted_summary": summary[:MAX_SUMMARY], "context_truncated": len(summary) > MAX_SUMMARY,
