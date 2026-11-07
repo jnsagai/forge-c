@@ -334,7 +334,8 @@ def inventory(ws: Path) -> dict:
         from .obligations import scope_sections
 
         selected = scope_sections(manifest["scope"], prof["rm"]["doc"], selected)
-    regs, missing = [], []
+    regs, missing, context = [], [], []
+    seeds = set(prof["rm"]["key_sections"])
     for num in selected:
         s = secs.get(num)
         if s is None:
@@ -343,7 +344,10 @@ def inventory(ws: Path) -> dict:
         text = (ws / s["file"]).read_text(errors="replace")
         r = parse_section(text, pfx)
         if r is None:
-            missing.append(num)
+            # CAPA-186 (2026-11-07, GPIO L40B): an owner scope also cites functional sections (GPIO 15.3.3-15.3.5,
+            # "I/O port control registers") that describe registers without a register layout. Only a catalog
+            # register section must parse; a cited functional section is recorded as context, never dropped.
+            (missing if num in seeds else context).append(num)
             continue
         pages = _file_pages(text, s["page"])
         desc = {m.group(3): " ".join(m.group(4).split())[:120] for m in re.finditer(
@@ -355,6 +359,8 @@ def inventory(ws: Path) -> dict:
     items = [f"{r['register']}.{f}" for r in regs for f in r["fields"]]
     inv = {"schema": "forge-c/lrtx-swe1-inventory/1", "registers": regs, "items": items, "missing_sections": missing,
            "generated_at": utc_now()}
+    if context:
+        inv["context_sections"] = context
     if structured.get("complete_scope_sections") is True:
         inv["scope_sections"] = {"document": prof["rm"]["doc"], "catalog_seeds": prof["rm"]["key_sections"],
                                  "required_sections": selected, "basis": "LITERAL_OWNER_REFERENCES_AND_CATALOG"}

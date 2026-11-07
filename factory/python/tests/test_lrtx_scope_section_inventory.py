@@ -98,3 +98,24 @@ def test_invalid_profile_call_limits_cannot_expand_admission(tmp_path, monkeypat
     monkeypatch.setattr(profile, "load", lambda name: {"structured": {"author_max_calls_by_phase": {"SWE.1": value}}})
     with pytest.raises(ValueError, match="PROFILE_AUTHOR_CALL_LIMIT_INVALID"):
         visit.author_call_limit(tmp_path, "SWE.1", 35)
+
+
+def test_capa186_cited_functional_section_is_context_not_missing(tmp_path, monkeypatch):
+    """GPIO L40B (2026-11-07): the scope cited RM0486 15.3.3-15.3.5, functional sections with no register layout;
+    the inventory reported them missing and SWE.1 failed before any model call."""
+    from forge_factory import workorder
+    from forge_factory.assurance.hardware import parse_section
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    ws, manifest = workorder.prepare(REPO_ROOT / "examples/0002a-arm_55_rcc_ll", "WO-SCOPE-FUNCTIONAL",
+                                    purpose="ASPICE_ONLY")
+    manifest["local_profile"] = {"id": "local-rtx-v2-omniverse2-q38-aspice-stepwise-medium"}
+    files = swe1._section_files(ws)
+    functional = next(n for n, s in sorted(files.items()) if n.startswith("14.") and n.count(".") >= 2
+                      and parse_section((ws / s["file"]).read_text(errors="replace"), "RCC") is None)
+    manifest["scope"] = [*manifest["scope"], f"Functional context: RM0486 {functional}."]
+    (ws / ".forge-run/manifest.json").write_text(json.dumps(manifest))
+    inv = swe1.inventory(ws)
+    assert functional in inv["scope_sections"]["required_sections"]
+    assert not inv["missing_sections"] and inv["context_sections"] == [functional]
+    assert len(inv["registers"]) == 25
