@@ -117,3 +117,18 @@ upstream phase. Stopped lineages and low disk now raise a real GitHub issue in t
 once per cause and with no mention. The repository is public, so those issues hold only
 order names and failure codes. The 35-call limit, the same-issue rule and the policy files
 are unchanged.
+
+L90Z started from L90V's tests at 15 of 24 and reached 24 of 24 tests and 22 of 24
+requirements, then broke the build trying the last two and ended at 18 of 24. Choosing by an
+attempt's last result would have carried that broken state. A retry now restores the files of
+the single best robot run of any earlier attempt, most tests then most requirements, from the
+SHA-256 snapshots each run already records, and refuses a run whose bytes do not match.
+
+Owner, 2026-11-07: raise every limit that can stop autonomous operation. Each author stage
+had 35 tool calls, set on 2026-10-15 for qwen3:8b, and L90X lost a whole attempt to it. Authors
+now have 100,000 calls per visit and every other role 200; inspectors still keep their last 4
+calls for the verdict. The skill text also told agents to stop near a 32,000 or 16,000 token
+stage budget, which only the v0.4 supervisor enforces; it is now 50,000,000 for authors and
+5,000,000 otherwise. Stage timeouts, the per-order token envelope and the mission limits still
+bound every visit. The AFO planner and maintainer skills are left as committed: regenerating
+them would also rewrite unrelated text.

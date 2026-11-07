@@ -9,8 +9,8 @@ metadata:
   readonly: true
   output_contract: specs/002-self-healing-factory/contracts/agent-output.schema.json
   model: qwen3:8b
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200
   max_mcp_output_bytes: 2048
 ---
 
@@ -52,7 +52,7 @@ Native Fabro tools (`shell`, `web_*`, sub-agents) are denied by the Forge policy
 1. When `.forge-run/manifest.json` has a `delivery` block, the SWE.3 checklist is `v0.4-brownfield` (read `.forge-run/checklists/SWE.3.json`): SWE3-07..09 are decided by deterministic checks of the DELIVERED code (reports `verification/static/delivered_*.json`); a delivered-code finding recorded in `.forge-run/delivery/code_findings.json` is an owner finding (package gap), not a reason to fail the author in FROZEN mode.
 
 ## Constraints
-Read-only inspection: never modify author-owned artifact revisions. Report factual findings with severity, evidence ref and owner. Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 16000-token / 20-turn budget is near.
+Read-only inspection: never modify author-owned artifact revisions. Report factual findings with severity, evidence ref and owner. Use only declared MCP operations, persist full engineering evidence in files, and reference artifact IDs in your response. No extra explanations, no speculation, no verbose status narrative. Do not override deterministic gates or claim ASPICE/ASIL B compliance. Stop and report BLOCKED when the 5000000-token / 200-turn budget is near.
 
 ## Mandatory compact exit format
 Output only valid JSON matching `specs/002-self-healing-factory/contracts/agent-output.schema.json`:

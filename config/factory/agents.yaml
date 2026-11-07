@@ -8,8 +8,8 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.freeze_baseline
@@ -28,8 +28,8 @@ agents:
   phase: SWE.1
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 32000
-  max_turns: 35  # autonomy-window decision 2026-10-16 (r77: 2 of 3 SWE.1 cycles lost to the 20-call budget)
+  max_stage_tokens: 50000000
+  max_turns: 100000  # owner 2026-11-07: raise every limit on autonomy; stage timeouts still bound a visit
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.freeze_baseline
@@ -48,8 +48,8 @@ agents:
   phase: SWE.1
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.check_inspection
@@ -69,8 +69,8 @@ agents:
   phase: SWE.2
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 32000
-  max_turns: 35  # owner decision 2026-10-15 (r70: 5 of 7 rejections were turn budget)
+  max_stage_tokens: 50000000
+  max_turns: 100000  # owner 2026-11-07: raise every limit on autonomy; stage timeouts still bound a visit
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.freeze_baseline
@@ -89,8 +89,8 @@ agents:
   phase: SWE.2
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.check_inspection
@@ -110,8 +110,8 @@ agents:
   phase: SWE.3
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 32000
-  max_turns: 35  # owner decision 2026-10-15
+  max_stage_tokens: 50000000
+  max_turns: 100000  # owner 2026-11-07: raise every limit on autonomy; stage timeouts still bound a visit
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.freeze_baseline
@@ -139,8 +139,8 @@ agents:
   phase: SWE.3
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.check_inspection
@@ -164,8 +164,8 @@ agents:
   phase: SWE.4
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 32000
-  max_turns: 35  # owner decision 2026-10-15 (r71)
+  max_stage_tokens: 50000000
+  max_turns: 100000  # owner 2026-11-07: raise every limit on autonomy; stage timeouts still bound a visit
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.freeze_baseline
@@ -193,8 +193,8 @@ agents:
   phase: SWE.4
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.check_inspection
@@ -218,8 +218,8 @@ agents:
   phase: SWE.5
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 32000
-  max_turns: 35  # owner decision 2026-10-15 (r71)
+  max_stage_tokens: 50000000
+  max_turns: 100000  # owner 2026-11-07: raise every limit on autonomy; stage timeouts still bound a visit
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.freeze_baseline
@@ -249,8 +249,8 @@ agents:
   phase: SWE.5
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.check_inspection
@@ -274,8 +274,8 @@ agents:
   phase: SWE.6
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 32000
-  max_turns: 35  # owner decision 2026-10-15
+  max_stage_tokens: 50000000
+  max_turns: 100000  # owner 2026-11-07: raise every limit on autonomy; stage timeouts still bound a visit
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.freeze_baseline
@@ -305,8 +305,8 @@ agents:
   phase: SWE.6
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.check_inspection
@@ -329,8 +329,8 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-analysis-mcp.cppcheck
@@ -349,8 +349,8 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-build-mcp.configure
@@ -373,8 +373,8 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.validate_trace
@@ -392,8 +392,8 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-evidence-mcp.validate_trace
@@ -413,8 +413,8 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-observer-mcp.get_incident
@@ -437,8 +437,8 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-knowledge-mcp.find_lessons
@@ -455,8 +455,8 @@ agents:
   phase: null
   model: qwen3:8b
   model_provider: ollama
-  max_stage_tokens: 16000
-  max_turns: 20
+  max_stage_tokens: 5000000
+  max_turns: 200  # owner 2026-11-07; inspectors keep their last 4 calls for the verdict
   max_mcp_output_bytes: 2048
   allowed_tools:
   - forge-observer-mcp.get_status

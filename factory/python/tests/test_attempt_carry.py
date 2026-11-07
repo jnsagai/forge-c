@@ -9,62 +9,86 @@ from forge_factory.afo import line_orders as LO
 ORDERS = ("WO-A", "WO-B", "WO-C", "WO-D")
 
 
-def attempt(root, name, *scores, suite=True):
+def attempt(root, name, *runs, suite=True, skew=0.0):
+    """runs: (passed, verified) per robot run, each with its own file versions."""
+    import hashlib
     ws = root / name / "workspace"
-    tests = ws / C.TESTS
-    tests.mkdir(parents=True)
-    (tests / "scn_init.c").write_text(name)
-    if suite:
-        (tests / "test_crc_requirements.robot").write_text(name)
-    (tests / "notes.txt").write_text("not a test")
+    (ws / C.SNAPSHOTS).mkdir(parents=True)
     (ws / "evidence").mkdir()
-    rows = [{"op": "run_robot", "phase": "SWE.6", "result": {"summary": f"robot: {s}/24 tests passed; 1/24 requirements"}}
-            for s in scores]
-    (ws / C.RESULTS).write_text("not json\n" + "".join(json.dumps(r) + "\n" for r in rows))
+    (ws / C.TESTS).mkdir(parents=True)
+    results, integrity = ["not json"], []
+    for i, (passed, verified) in enumerate(runs):
+        files = {}
+        for leaf in ["scn_init.c"] + (["test_crc_requirements.robot"] if suite else []):
+            data = f"{name}:{i}:{leaf}".encode()
+            sha = hashlib.sha256(data).hexdigest()
+            (ws / C.SNAPSHOTS / sha).write_bytes(data)
+            files[f"{C.TESTS}/{leaf}"] = sha
+            (ws / C.TESTS / leaf).write_bytes(data)
+        files["software/tests/target/test_x.c"] = "0" * 64
+        t = f"2026-11-07T10:{i:02d}:00Z"
+        results.append(json.dumps({"op": "run_robot", "phase": "SWE.6", "ts_utc": t, "result": {
+            "summary": f"robot: {passed}/24 tests passed; {verified}/24 requirements verified (Renode)"}}))
+        integrity.append(json.dumps({"op": "run_robot", "phase": "SWE.6", "files": files,
+                                     "ts_utc": f"2026-11-07T10:{i:02d}:{int(skew):02d}Z"}))
+    (ws / C.RESULTS).write_text("\n".join(results) + "\n")
+    (ws / C.INTEGRITY).write_text("\n".join(integrity) + "\n")
     return ws
 
 
-def test_best_earlier_attempt_wins_by_its_last_result_and_later_wins_a_tie(tmp_path):
-    attempt(tmp_path, "WO-A", 20, 9)
-    attempt(tmp_path, "WO-B", 15)
-    attempt(tmp_path, "WO-C", 15)
-    attempt(tmp_path, "WO-D", 24)
-    chosen = C.select("WO-D", ORDERS, tmp_path)
-    assert (chosen["source_work_order"], chosen["passed"], chosen["total"]) == ("WO-C", 15, 24)
-
-
-def test_only_tests_are_copied_and_stay_a_recorded_draft(tmp_path):
-    attempt(tmp_path, "WO-A", 15)
+def test_best_run_wins_even_when_its_attempt_ended_worse(tmp_path):
+    attempt(tmp_path, "WO-A", (15, 13), (15, 13))
+    attempt(tmp_path, "WO-B", (15, 13), (24, 22), (18, 18))
+    chosen = C.select("WO-C", ORDERS, tmp_path)
+    assert (chosen["source_work_order"], chosen["passed"], chosen["verified"]) == ("WO-B", 24, 22)
     ws = tmp_path / "new"
     ws.mkdir()
-    carried = C.install(ws, "WO-B", ORDERS, tmp_path)
-    assert sorted(p.name for p in (ws / C.TESTS).iterdir()) == ["scn_init.c", "test_crc_requirements.robot"]
-    assert carried["source_work_order"] == "WO-A" and carried["phase"] == "SWE.6"
-    assert {f["path"] for f in carried["files"]} == {f"{C.TESTS}/scn_init.c", f"{C.TESTS}/test_crc_requirements.robot"}
-    assert "verdict" not in {k.lower() for k in carried}
+    carried = C.install(ws, "WO-C", ORDERS, tmp_path)
+    assert (ws / C.TESTS / "scn_init.c").read_text() == "WO-B:1:scn_init.c"
+    assert sorted(f["path"].rsplit("/", 1)[1] for f in carried["files"]) == ["scn_init.c", "test_crc_requirements.robot"]
+    assert not (ws / "software/tests/target").exists() and "verdict" not in carried
 
 
-@pytest.mark.parametrize("scores", [(), (0,)])
-def test_no_result_or_no_pass_carries_nothing(tmp_path, scores):
-    attempt(tmp_path, "WO-A", *scores)
+def test_requirements_break_a_tie_in_tests_and_later_wins_a_full_tie(tmp_path):
+    attempt(tmp_path, "WO-A", (24, 20))
+    attempt(tmp_path, "WO-B", (24, 22))
+    attempt(tmp_path, "WO-C", (24, 22))
+    assert C.select("WO-D", ORDERS, tmp_path)["source_work_order"] == "WO-C"
+    assert C.select("WO-C", ORDERS, tmp_path)["source_work_order"] == "WO-B"
+
+
+@pytest.mark.parametrize("runs", [(), ((0, 0),)])
+def test_no_run_or_no_pass_carries_nothing(tmp_path, runs):
+    attempt(tmp_path, "WO-A", *runs)
     assert C.install(tmp_path / "new", "WO-B", ORDERS, tmp_path) is None
 
 
-def test_attempt_without_a_suite_carries_nothing(tmp_path):
-    attempt(tmp_path, "WO-A", 15, suite=False)
+def test_run_without_a_suite_carries_nothing(tmp_path):
+    attempt(tmp_path, "WO-A", (15, 13), suite=False)
     assert C.select("WO-B", ORDERS, tmp_path) is None
 
 
-def test_a_symlinked_test_refuses_the_source(tmp_path):
-    ws = attempt(tmp_path, "WO-A", 15)
-    secret = tmp_path / "secret"
-    secret.write_text("x")
-    (ws / C.TESTS / "scn_link.c").symlink_to(secret)
+def test_changed_snapshot_or_unaligned_logs_refuse_the_run(tmp_path):
+    ws = attempt(tmp_path, "WO-A", (15, 13))
+    snap = next((ws / C.SNAPSHOTS).iterdir())
+    snap.write_bytes(b"tampered")
+    assert C.select("WO-B", ORDERS, tmp_path) is None
+    attempt(tmp_path, "WO-C", (15, 13), skew=30)
+    assert C.runs(tmp_path / "WO-C" / "workspace") == []
+
+
+def test_a_symlinked_snapshot_refuses_the_run(tmp_path):
+    ws = attempt(tmp_path, "WO-A", (15, 13))
+    snap = next(p for p in (ws / C.SNAPSHOTS).iterdir())
+    target = tmp_path / "elsewhere"
+    target.write_bytes(snap.read_bytes())
+    snap.unlink()
+    snap.symlink_to(target)
     assert C.select("WO-B", ORDERS, tmp_path) is None
 
 
 def test_existing_target_refuses(tmp_path):
-    attempt(tmp_path, "WO-A", 15)
+    attempt(tmp_path, "WO-A", (15, 13))
     ws = tmp_path / "new"
     (ws / C.TESTS).mkdir(parents=True)
     (ws / C.TESTS / "scn_init.c").write_text("authored")
@@ -73,8 +97,9 @@ def test_existing_target_refuses(tmp_path):
 
 
 def test_prompt_note_only_for_its_phase():
-    manifest = {"attempt_carry": {"phase": "SWE.6", "passed": 15, "total": 24}}
-    assert "15 of 24" in C.prompt_note(manifest, "SWE.6")[0]
+    manifest = {"attempt_carry": {"phase": "SWE.6", "passed": 24, "verified": 22, "total": 24}}
+    note = C.prompt_note(manifest, "SWE.6")[0]
+    assert "24 of 24 tests" in note and "22 of 24 requirements" in note
     assert C.prompt_note(manifest, "SWE.5") == [] and C.prompt_note(None, "SWE.6") == []
 
 
@@ -86,7 +111,7 @@ def test_prompts_gain_the_note_only_with_a_carry():
     try:
         P.ASSESSMENT["manifest"] = None
         assert P._rework_steps("SWE.6", steps) == steps
-        P.ASSESSMENT["manifest"] = {"attempt_carry": {"phase": "SWE.6", "passed": 15, "total": 24}}
+        P.ASSESSMENT["manifest"] = {"attempt_carry": {"phase": "SWE.6", "passed": 15, "verified": 13, "total": 24}}
         assert "run_robot first" in P._rework_steps("SWE.6", steps)[2]
     finally:
         P.ASSESSMENT["manifest"] = saved

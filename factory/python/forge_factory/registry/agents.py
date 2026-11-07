@@ -31,8 +31,8 @@ class AgentDefinition(BaseModel):
     phase: str | None
     model: str
     model_provider: str
-    max_stage_tokens: int = Field(gt=0, le=200_000)
-    max_turns: int = Field(gt=0, le=200)
+    max_stage_tokens: int = Field(gt=0, le=1_000_000_000)
+    max_turns: int = Field(gt=0, le=1_000_000)
     max_mcp_output_bytes: int = Field(gt=0, le=65_536)
     allowed_tools: list[str] = Field(min_length=1)
     readonly: bool

@@ -77,11 +77,13 @@ def test_forge_mcp_operations_need_the_role_grant_and_are_ticketed(ws):
     assert "NO_BINDING" not in text and "TICKET" not in text.upper()      # reached the server with a valid ticket
 
 
-def test_turn_budget_applies_per_node_visit(ws):
+def test_turn_budget_applies_per_node_visit(ws, monkeypatch):
     from forge_factory.policy import governor as GV
 
+    assert GV.turn_limit("swe2-author", str(ws)) == 100000  # owner 2026-11-07: authored budget no longer binds
+    limit = 12  # the gate enforces whatever budget applies; 100000 real calls would take hours here
+    monkeypatch.setattr(GV, "turn_limit", lambda role, workspace=None: limit)
     g = _fs(ws)
-    limit = GV.turn_limit("swe2-author", str(ws))
     for _ in range(limit):
         assert g.call("list_dir", {"path": "."})[0] is False
     assert g.call("list_dir", {"path": "."})[1].startswith("FORGE_POLICY:TURN_BUDGET_EXHAUSTED")
