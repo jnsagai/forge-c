@@ -23,7 +23,7 @@ def test_native_author_can_pass_the_observed_35_call_boundary_without_granting_i
         allowed, count, limit, reserved = G.count_tool_call("capacity", "run", "author", "swe1-author", "read_file", str(ws))
         assert allowed and not reserved
     assert count == 40 and limit == 4096
-    assert G.turn_limit("swe1-inspector", str(ws)) == 20
+    assert G.turn_limit("swe1-inspector", str(ws)) == 200  # registry (owner 2026-11-07)
     # Reach the finite boundary without performing thousands of artificial file writes.
     G._update("capacity", lambda st: st.update({"run:author": 4095}))
     assert G.count_tool_call("capacity", "run", "author", "swe1-author", "read_file", str(ws))[:3] == (True, 4096, 4096)
@@ -48,7 +48,7 @@ def test_legacy_and_qwen_jobs_keep_their_existing_governor_selection(tmp_path):
     ws, manifest = native_ws(tmp_path)
     manifest.pop("native_aspice_backends")
     (ws / ".forge-run/manifest.json").write_text(json.dumps(manifest))
-    assert G.turn_limit("swe1-author", str(ws)) == 35
+    assert G.turn_limit("swe1-author", str(ws)) == 4096  # registry (owner 2026-11-07)
 
 
 def test_first_prompt_starts_one_visit_and_subsequent_prompts_do_not_refill_it(tmp_path, monkeypatch):

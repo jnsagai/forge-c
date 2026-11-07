@@ -36,7 +36,7 @@
     },
     "swe1-author": {
       "path": ".fabro/skills/swe1-author/SKILL.md",
-      "sha256": "efba6af5829e6b299bfef7d3be1724f6c784636eefa400e4552045456e08241b"
+      "sha256": "b3a33693071fc130ed9bf6f3eb94cb1eaf6372f841b12dc9dfddf5623723922e"
     },
     "swe1-inspector": {
       "path": ".fabro/skills/swe1-inspector/SKILL.md",
@@ -44,7 +44,7 @@
     },
     "swe2-author": {
       "path": ".fabro/skills/swe2-author/SKILL.md",
-      "sha256": "f02544c7a741a00ce8106e39dce5f15cdd155787b9c668b5a32e95781dd0c713"
+      "sha256": "b040c4060b9ec6440aa999cbe659f16f49213c2046137640d90a83775b4f3acd"
     },
     "swe2-inspector": {
       "path": ".fabro/skills/swe2-inspector/SKILL.md",
@@ -52,7 +52,7 @@
     },
     "swe3-author": {
       "path": ".fabro/skills/swe3-author/SKILL.md",
-      "sha256": "1c496a5c8bd223e8592fb1a7f1c07c3e4665cf49a6e64e384a3ab762dbf1221d"
+      "sha256": "30bb8d92220141064caf73298ef8b311851d7a05c86c294e0aae9a7664d50023"
     },
     "swe3-inspector": {
       "path": ".fabro/skills/swe3-inspector/SKILL.md",
@@ -60,7 +60,7 @@
     },
     "swe4-author": {
       "path": ".fabro/skills/swe4-author/SKILL.md",
-      "sha256": "9eb115a4cd3eb69b97e879c7454abb1ec8e5cc95d20b32ed33b6ad246531e96a"
+      "sha256": "971af43f911d30d128dd3f6ca2644a701715c6e5a71adf91ef487bcc2216cb28"
     },
     "swe4-inspector": {
       "path": ".fabro/skills/swe4-inspector/SKILL.md",
@@ -68,7 +68,7 @@
     },
     "swe5-author": {
       "path": ".fabro/skills/swe5-author/SKILL.md",
-      "sha256": "9aaaf2e6c1dcda603f31a8256e4139450c17794cd5997902a396f30a986fea4c"
+      "sha256": "e27dd9df1adc6ed7c8d1d65a2a40025ef03739135b4409604b1d2f1e2d43e919"
     },
     "swe5-inspector": {
       "path": ".fabro/skills/swe5-inspector/SKILL.md",
@@ -76,7 +76,7 @@
     },
     "swe6-author": {
       "path": ".fabro/skills/swe6-author/SKILL.md",
-      "sha256": "39e719e1370945371d424e36b1bf310c50132cd6cd589bbdb3e4450e8fa1d954"
+      "sha256": "c9481e5d1798f5385bbce327990b512e52c66563f4593a0fedb534a0e9594813"
     },
     "swe6-inspector": {
       "path": ".fabro/skills/swe6-inspector/SKILL.md",

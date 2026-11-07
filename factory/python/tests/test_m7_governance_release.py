@@ -44,11 +44,11 @@ def test_t042_turn_budget_blocks_and_resets_per_visit(env):
     from forge_factory.registry.agents import load_agents
 
     limit = {a.id: a.max_turns for a in load_agents()[0]}
-    assert limit["swe3-author"] == 100000 and limit["swe3-inspector"] == 200  # owner 2026-11-07
+    assert limit["swe3-author"] == 4096 and limit["swe3-inspector"] == 200  # owner 2026-11-07
     for _ in range(1000):
         ok, n, lim, _ = G.count_tool_call("b", "R", "swe3_author", "swe3-author")
         assert ok
-    assert lim == 100000
+    assert lim == 4096
     G.reset_node("b", "R", "swe3_author")
     for _ in range(196):
         assert G.count_tool_call("b", "R", "swe3_inspector", "swe3-inspector", "read_file")[0]

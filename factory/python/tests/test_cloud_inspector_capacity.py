@@ -38,9 +38,9 @@ def test_inspector_can_read_past_16_but_verdict_reservation_and_finite_ceiling_r
 
 def test_old_jobs_authors_and_local_profile_retain_existing_limits(tmp_path):
     ws, _ = workspace(tmp_path, bound=False)
-    assert G.turn_limit("swe2-inspector", str(ws)) == 20
+    assert G.turn_limit("swe2-inspector", str(ws)) == 200  # registry (owner 2026-11-07)
     ws, _ = workspace(tmp_path / "new")
-    assert G.turn_limit("swe2-author", str(ws)) == 35
+    assert G.turn_limit("swe2-author", str(ws)) == 4096  # registry (owner 2026-11-07)
     assert G.profile_inspector_capacity_binding(P.load("local-rtx-v2-omniverse2-ornith-think-author-q38-inspector")) is None
 
 

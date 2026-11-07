@@ -126,7 +126,7 @@ SHA-256 snapshots each run already records, and refuses a run whose bytes do not
 
 Owner, 2026-11-07: raise every limit that can stop autonomous operation. Each author stage
 had 35 tool calls, set on 2026-10-15 for qwen3:8b, and L90X lost a whole attempt to it. Authors
-now have 100,000 calls per visit and every other role 200; inspectors still keep their last 4
+now have 4,096 calls per visit (the structured-visit ceiling) and every other role 200; inspectors still keep their last 4
 calls for the verdict. The skill text also told agents to stop near a 32,000 or 16,000 token
 stage budget, which only the v0.4 supervisor enforces; it is now 50,000,000 for authors and
 5,000,000 otherwise. Stage timeouts, the per-order token envelope and the mission limits still

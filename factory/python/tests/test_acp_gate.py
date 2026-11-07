@@ -80,8 +80,8 @@ def test_forge_mcp_operations_need_the_role_grant_and_are_ticketed(ws):
 def test_turn_budget_applies_per_node_visit(ws, monkeypatch):
     from forge_factory.policy import governor as GV
 
-    assert GV.turn_limit("swe2-author", str(ws)) == 100000  # owner 2026-11-07: authored budget no longer binds
-    limit = 12  # the gate enforces whatever budget applies; 100000 real calls would take hours here
+    assert GV.turn_limit("swe2-author", str(ws)) == 4096  # owner 2026-11-07: authored budget no longer binds
+    limit = 12  # the gate enforces whatever budget applies; 4096 real calls would take hours here
     monkeypatch.setattr(GV, "turn_limit", lambda role, workspace=None: limit)
     g = _fs(ws)
     for _ in range(limit):

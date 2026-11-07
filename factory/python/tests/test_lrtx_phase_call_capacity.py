@@ -49,7 +49,7 @@ def test_existing_profile_without_later_phase_overrides_keeps_registry_default(
     manifest(tmp_path, CURRENT)
     loaded = importlib.import_module("forge_factory.lrtx." + module)
     monkeypatch.setattr(loaded, worker, lambda ws, model, budget, findings: budget)
-    assert getattr(loaded, entry)(tmp_path, "unused")["max_calls"] == 35
+    assert getattr(loaded, entry)(tmp_path, "unused")["max_calls"] == 4096  # registry default (owner 2026-11-07)
 
 
 def test_larger_phase_allowance_runs_every_coherent_obligation_without_refilling_on_continue(tmp_path, monkeypatch):
