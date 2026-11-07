@@ -544,7 +544,7 @@ class Records:
 
     def phase_attempts(self, L: LCMP.Lineage, phase: str) -> list[Att]:
         out, n, misses = [], 1, 0
-        while misses < 3 and n < 200:  # names are dense; tolerate gaps of 2
+        while misses < 3 and n < 100000:  # names are dense; tolerate gaps of 2 (owner 2026-11-07: no 200 cap)
             wo = L.wo(phase, n)
             if self.exists(wo):
                 out.append(self.attempt(wo, phase, n))

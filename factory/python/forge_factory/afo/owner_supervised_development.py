@@ -29,24 +29,45 @@ FILE = "FORGE_OWNER_DEVELOPMENT_RECORD"
 SHA = "FORGE_OWNER_DEVELOPMENT_SHA256"
 SCHEMA = "forge-c/owner-supervised-development/1"
 DIRECTIVE = "for now go on without needing signatures"
-MISSION = "line-local-role-trial-20261106c"
-LINEAGE = "owner-review:local-role-trial-20261106c"
+# Owner 2026-11-07: "increase all the limits that can impact the autonomous operation of omniverse".
+# A fourth separate allowance, beside the closed retrying allowance C; nothing earlier is refilled or reset.
+MISSION = "line-local-role-trial-20261107d"
+LINEAGE = "owner-review:local-role-trial-20261107d"
 INITIAL_AUTHORITY = "AUTH-AFO-REVIEW-20261104-LINE-FINITE"  # named by the pinned runtime policy
-ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261106C-NOT-A-GRANT"
+ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261107D-NOT-A-GRANT"
 SERIES = "WO-F014-SWE6-AFOQUAL-20261104-L90"
-ATTEMPTS = 32
-ORDERS = tuple(SERIES + retry_suffix(n) for n in range(7, 7 + ATTEMPTS))
-SPENT_ORDERS = (SERIES + "E", SERIES + "F")
 DRIVER = "STM32N6_CRC_HAL"
 DEADLINE = 1795057626.0
-# Owner: as many attempts as required. The ledger is finite, so each limit is one attempt's budget times
-# ATTEMPTS. Reservations stay charged, so tokens cover 8,388,608 per attempt and 1,048,576 per recovery job.
+# The closed retrying allowance C, exactly as it ended. Its order names are L90G (n=7) up to the last one placed.
+RETRYING_ALLOWANCE = "line-local-role-trial-20261106c"
+RETRYING_LINEAGE = "owner-review:local-role-trial-20261106c"
+RETRYING_ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261106C-NOT-A-GRANT"
+RETRYING_ATTEMPTS = 32
+RETRYING_CAPS = dict(
+    max_attempts=RETRYING_ATTEMPTS,
+    max_jobs=RETRYING_ATTEMPTS * 2,
+    max_requests=RETRYING_ATTEMPTS * 256,
+    max_tokens=RETRYING_ATTEMPTS * 8388608 + RETRYING_ATTEMPTS * 2 * 1048576,
+    max_tools=RETRYING_ATTEMPTS * 512,
+    max_corrections=RETRYING_ATTEMPTS * 4,
+)
+RETRYING_LAST = 27  # n of C's last placed order (27 = L90AA); re-read when C is closed
+RETRYING_ALLOWANCE_RECORD_SHA256 = "8d10bfe98aefd8918375b40bb94aac9430e97c969df7693cf02f2303cf424c34"
+# C's final spend, read from the ledger once its last order closed.
+RETRYING_ALLOWANCE_SPENT = dict(attempts=18, jobs=9, requests=1149, tools=1856, corrections=0, charged_tokens=160432128)
+RETRYING_ORDERS = tuple(SERIES + retry_suffix(n) for n in range(7, RETRYING_LAST + 1))
+ATTEMPTS = 256
+ORDERS = tuple(SERIES + retry_suffix(n) for n in range(RETRYING_LAST + 1, RETRYING_LAST + 1 + ATTEMPTS))
+SPENT_ORDERS = (SERIES + "E", SERIES + "F", *RETRYING_ORDERS)
+CARRY_ORDERS = RETRYING_ORDERS + ORDERS  # a retry restores the best robot run of either allowance
+# Each limit is one attempt's budget times ATTEMPTS. Reservations stay charged: 67,108,864 tokens per attempt
+# (the raised max_model_tokens_per_order) and 1,048,576 per recovery job, up to 8 recovery jobs per attempt.
 CAPS = dict(
     max_attempts=ATTEMPTS,
-    max_jobs=ATTEMPTS * 2,
-    max_requests=ATTEMPTS * 256,
-    max_tokens=ATTEMPTS * 8388608 + ATTEMPTS * 2 * 1048576,
-    max_tools=ATTEMPTS * 512,
+    max_jobs=ATTEMPTS * 8,
+    max_requests=ATTEMPTS * 4096,
+    max_tokens=ATTEMPTS * 67108864 + ATTEMPTS * 8 * 1048576,
+    max_tools=ATTEMPTS * 16384,
     max_corrections=ATTEMPTS * 4,
 )
 # The spent mission stays closed exactly as it ended; this lane never reads it as capacity.
@@ -77,7 +98,9 @@ PRIOR_SCOPE = dict(
 )
 PROFILE = "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104"
 PROFILE_SHA = "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c"
-RUNTIME_POLICY_SHA = "bc778f70a44a52ac4f6837766c17ef09184a98feb755b01b604cfb2cfde5485f"
+# Owner 2026-11-07: per-order budgets raised (attempts, variants, planner calls, tokens, requests, wall/GPU time, retries).
+RUNTIME_POLICY_SHA = "2b04da13cf739fcc869217b4acf245c4c1eae242cf59116fdf9c344e3d87d1c6"
+RETRYING_RUNTIME_POLICY_SHA = "bc778f70a44a52ac4f6837766c17ef09184a98feb755b01b604cfb2cfde5485f"  # allowance C
 LINE_POLICY_SHA = "c44a5ddf14b54740ee986fe1cf9a767957353b70e19fd66ab8ef5a12588c7740"
 RUN_MODEL = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
 
@@ -389,13 +412,14 @@ def _attest(record, socket_path, *, private_view=False, mapped_host=False):
 
 
 def prior_conserved(store):
-    """This allowance exists only beside the three earlier missions, each unchanged and closed."""
+    """This allowance exists only beside the four earlier missions, each unchanged and closed."""
     from .mission_ledger import MissionLedger
 
     for mission_id, record_sha, spent in (
         (PRIOR_MISSION, PRIOR_RECORD_SHA256, PRIOR_SPENT),
         (CLOSED_ALLOWANCE, CLOSED_ALLOWANCE_RECORD_SHA256, CLOSED_ALLOWANCE_SPENT),
         (RAISED_ALLOWANCE, RAISED_ALLOWANCE_RECORD_SHA256, RAISED_ALLOWANCE_SPENT),
+        (RETRYING_ALLOWANCE, RETRYING_ALLOWANCE_RECORD_SHA256, RETRYING_ALLOWANCE_SPENT),
     ):
         prior = MissionLedger(store).snapshot(mission_id)
         with store.tx() as c:

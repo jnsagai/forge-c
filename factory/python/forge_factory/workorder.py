@@ -1055,12 +1055,12 @@ def run(
 
         install(ws, manifest, rework_context, stop_after)
     if resume and stop_after == "SWE.6":
-        from .afo.owner_supervised_development import ORDERS
+        from .afo.owner_supervised_development import CARRY_ORDERS
 
-        if wo in ORDERS:
+        if wo in CARRY_ORDERS:
             from .attempt_carry import install as carry_attempt
 
-            carried = carry_attempt(ws, wo, ORDERS)
+            carried = carry_attempt(ws, wo, CARRY_ORDERS)
             if carried:
                 manifest["attempt_carry"] = carried
                 (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))

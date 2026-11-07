@@ -1,6 +1,6 @@
-"""External operator only: opens the finite owner-development allowance authorized on 2026-11-06.
+"""External operator only: opens the finite owner-development allowance D authorized on 2026-11-07.
 
-It adds one separate mission row beside the three earlier ones, once their orders are finished.
+It adds one separate mission row beside the four earlier ones, once their orders are finished.
 It never amends, refills, resets or relabels them, is not a production grant, and admits no work.
 """
 
@@ -16,7 +16,7 @@ from . import owner_supervised_development as D
 from .durable import Refused
 from .mission_ledger import MissionLedger
 
-DIRECTIVE = "have as many attempts as required"
+DIRECTIVE = "increase all the limits that can impact the autonomous operation of omniverse"  # owner 2026-11-07
 
 
 def open_allowance(store, *, directive):

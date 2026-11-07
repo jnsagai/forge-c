@@ -16,6 +16,7 @@ from test_owner_supervised_development import (
     CLOSED_ALLOWANCE_RECORD,
     PRIOR_RECORD,
     RAISED_ALLOWANCE_RECORD,
+    RETRYING_ALLOWANCE_RECORD,
     seed_spent_original,
 )
 
@@ -61,6 +62,7 @@ def test_opens_a_separate_finite_mission_without_touching_the_spent_one(store):
     assert row(store, D.PRIOR_MISSION) == PRIOR_RECORD
     assert row(store, D.CLOSED_ALLOWANCE) == CLOSED_ALLOWANCE_RECORD
     assert row(store, D.RAISED_ALLOWANCE) == RAISED_ALLOWANCE_RECORD
+    assert row(store, D.RETRYING_ALLOWANCE) == RETRYING_ALLOWANCE_RECORD
 
 
 def test_cannot_open_before_the_spent_orders_are_finished(store):
@@ -70,22 +72,40 @@ def test_cannot_open_before_the_spent_orders_are_finished(store):
 
 
 def test_allowance_is_finite_and_covers_every_reservation():
-    assert D.ATTEMPTS == 32 and len(D.ORDERS) == 32
-    assert D.CAPS["max_attempts"] == 32 and D.CAPS["max_jobs"] == 64
-    assert D.CAPS["max_requests"] == 32 * 256 and D.CAPS["max_tools"] == 32 * 512
-    assert D.CAPS["max_tokens"] == 32 * 8388608 + 64 * 1048576
+    assert D.ATTEMPTS == 256 and len(D.ORDERS) == 256
+    assert D.CAPS["max_attempts"] == 256 and D.CAPS["max_jobs"] == 256 * 8
+    assert D.CAPS["max_requests"] == 256 * 4096 and D.CAPS["max_tools"] == 256 * 16384
+    assert D.CAPS["max_tokens"] == 256 * 67108864 + 256 * 8 * 1048576
+    assert D.CAPS["max_corrections"] == 256 * 4
     assert D.DEADLINE == 1795057626.0
+    # Allowance C stays exactly as registered.
+    assert json.loads(RETRYING_ALLOWANCE_RECORD)["limits"] == {**D.RETRYING_CAPS, "deadline": D.DEADLINE}
+    assert digest(json.loads(RETRYING_ALLOWANCE_RECORD)) == D.RETRYING_ALLOWANCE_RECORD_SHA256
 
 
-def test_real_run_fits_and_policy_changed_only_two_budgets():
+def test_policy_changed_only_budgets():
     from pathlib import Path
 
     import yaml
 
     raised = yaml.safe_load((Path(__file__).parent / "fixtures/owner-supervised-development/afo-policy.proposed.yaml").read_text())
     assert digest(raised) == D.RUNTIME_POLICY_SHA
-    assert raised["budgets"]["max_inference_requests_per_order"] == 256
-    assert raised["budgets"]["max_model_tokens_per_order"] == 8388608
+    assert raised["budgets"] == dict(
+        max_order_attempts=100, max_strategy_variants_per_phase=100, max_recovery_model_calls_per_order=64,
+        max_model_tokens_per_order=67108864, max_gpu_seconds_per_order=604800, max_recovery_wall_seconds=21600,
+        max_order_wall_seconds=604800, max_retries_per_transient_operation=20, max_inference_requests_per_order=4096,
+    )
+    # Every attempt's reservation fits the allowance.
+    assert D.CAPS["max_tokens"] >= D.ATTEMPTS * raised["budgets"]["max_model_tokens_per_order"]
+    assert D.CAPS["max_requests"] >= D.ATTEMPTS * raised["budgets"]["max_inference_requests_per_order"]
+    retrying = yaml.safe_load(yaml.safe_dump(raised))
+    retrying["budgets"] = dict(
+        max_order_attempts=3, max_strategy_variants_per_phase=2, max_recovery_model_calls_per_order=4,
+        max_model_tokens_per_order=8388608, max_gpu_seconds_per_order=43200, max_recovery_wall_seconds=3600,
+        max_order_wall_seconds=86400, max_retries_per_transient_operation=2, max_inference_requests_per_order=256,
+    )
+    assert digest(retrying) == D.RETRYING_RUNTIME_POLICY_SHA
+    raised = retrying
     original = yaml.safe_load(yaml.safe_dump(raised))
     original["budgets"].update(max_model_tokens_per_order=1048576, max_inference_requests_per_order=32)
     assert digest(original) == D.ORIGINAL_RUNTIME_POLICY_SHA
@@ -177,8 +197,19 @@ def test_expired_allowance_cannot_open(store, monkeypatch):
 
 
 def test_orders_continue_the_series_after_the_spent_ones():
-    assert D.ORDERS[0].endswith("L90G") and D.ORDERS[19].endswith("L90Z") and D.ORDERS[20].endswith("L90AA")
-    assert not set(D.ORDERS) & set(D.SPENT_ORDERS)
+    from forge_factory.afo.line_campaign import retry_suffix
+
+    assert D.RETRYING_ORDERS[0].endswith("L90G") and D.RETRYING_ORDERS[-1] == D.SERIES + retry_suffix(D.RETRYING_LAST)
+    assert D.ORDERS[0] == D.SERIES + retry_suffix(D.RETRYING_LAST + 1)
+    assert D.CARRY_ORDERS == D.RETRYING_ORDERS + D.ORDERS and len(set(D.CARRY_ORDERS)) == len(D.CARRY_ORDERS)
+    assert not set(D.ORDERS) & set(D.SPENT_ORDERS) and set(D.RETRYING_ORDERS) <= set(D.SPENT_ORDERS)
+
+
+def test_changed_retrying_allowance_spend_refuses(store):
+    with store.tx() as c:
+        c.execute("DELETE FROM afo_mission_executions WHERE identity='afo-retrying-spent-0'")
+    with pytest.raises(Refused, match="PRIOR_MISSION_NOT_CONSERVED"):
+        open_allowance(store, directive=DIRECTIVE)
 
 
 @pytest.mark.parametrize(

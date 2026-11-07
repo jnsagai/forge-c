@@ -35,6 +35,35 @@ RAISED_ALLOWANCE_RECORD = (
     '"mission_id":"line-local-role-trial-20261106b"}'
 )
 
+RETRYING_ALLOWANCE_RECORD = (
+    '{"authorization_ref":"OWNER-DEVELOPMENT-ALLOWANCE-20261106C-NOT-A-GRANT","created_at":"2026-11-06T16:54:19.446989Z",'
+    '"limits":{"deadline":1795057626.0,"max_attempts":32,"max_corrections":128,"max_jobs":64,"max_requests":8192,'
+    '"max_tokens":335544320,"max_tools":16384},"lineage":"owner-review:local-role-trial-20261106c",'
+    '"mission_id":"line-local-role-trial-20261106c"}'
+)
+
+
+def seed_retrying_allowance(c, spent=None):
+    """Allowance C as it ended: its exact real row and counters (attempts and jobs as executions, the rest as
+    imported aggregates on the first execution), usage unknown."""
+    spent = dict(D.RETRYING_ALLOWANCE_SPENT if spent is None else spent)
+    c.execute(
+        "INSERT INTO afo_missions VALUES (?,?,?)",
+        (D.RETRYING_ALLOWANCE, json.loads(RETRYING_ALLOWANCE_RECORD)["lineage"], RETRYING_ALLOWANCE_RECORD),
+    )
+    kinds = ["PRODUCT"] * spent["attempts"] + ["DIAGNOSIS"] * spent["jobs"]
+    assert kinds, "allowance C ended with spend"
+    share, rest = divmod(spent["charged_tokens"], len(kinds))
+    for i, kind in enumerate(kinds):
+        identity = "afo-retrying-spent-" + str(i)
+        record = dict(
+            charge=share + (rest if i == 0 else 0), created_at="2026-11-06T17:00:00Z", evidence_refs=[],
+            identity=identity, imported=False, kind=kind, reported_tokens=None,
+        )
+        if i == 0:
+            record.update(requests=spent["requests"], tools=spent["tools"], corrections=spent["corrections"])
+        c.execute("INSERT INTO afo_mission_executions VALUES (?,?,?,?)", (identity, D.RETRYING_ALLOWANCE, kind, json.dumps(record)))
+
 
 def seed_spent_original(store):
     """The exact real rows and spent, unknown-usage attempts the allowance must sit beside."""
@@ -83,6 +112,7 @@ def seed_spent_original(store):
                 "INSERT INTO afo_request_ledger VALUES (?,?,?,?,?)",
                 ("spent-" + str(i), D.RAISED_ALLOWANCE, "afo-product-spent-f", "QUIESCENT", json.dumps(row)),
             )
+        seed_retrying_allowance(c)
 
 
 @pytest.fixture

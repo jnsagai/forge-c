@@ -132,3 +132,16 @@ stage budget, which only the v0.4 supervisor enforces; it is now 50,000,000 for 
 5,000,000 otherwise. Stage timeouts, the per-order token envelope and the mission limits still
 bound every visit. The AFO planner and maintainer skills are left as committed: regenerating
 them would also rewrite unrelated text.
+
+Allowance D, same owner decision. Lifting the per-stage call limit alone changed little: every
+request reserves its input plus output cap against the 8,388,608-token job envelope, so a SWE.6
+job stopped after roughly 60 to 80 model turns. The recovery planner was refused on every plan
+because its variant budget (2) counts the whole mission. Allowance C is closed exactly as it
+ended, sealed in `prior_conserved` by its row digest and final counters, and a fourth separate
+mission D opens beside it with 256 attempts. The runtime policy copy raises only budgets: 64M
+tokens, 4,096 requests, 100 attempts, 100 variants and 64 planner calls per order, 7 days of wall
+and GPU time, 6 hours of recovery and 20 transient retries. D's caps are those per-attempt
+budgets times 256. D's order names continue from C's last placed name, and a retry restores the
+best robot run of either allowance. The placer's scan of retry names is no longer cut at 200.
+Unchanged: the signed production rules, the line policy (same_issue_limit 3 is a floor), the
+Nov 19 deadline, capacity amendments (still owner-signed only) and every earlier mission.
