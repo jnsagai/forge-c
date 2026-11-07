@@ -307,11 +307,26 @@ def obligation_order(packet: dict) -> list[str]:
     return ordered
 
 
+# The deterministic gate steps whose findings ended the attempt (the bundle's own rejection).
+TERMINAL_STEPS = ("author", "route", "gate")
+
+
+def _terminal(packet: dict, key: str) -> bool:
+    refs = set(packet["obligations"][key].get("finding_refs") or [])
+    return any(f.get("ref") in refs and str(f.get("id", "")).split(":", 1)[0] in TERMINAL_STEPS
+               for f in packet.get("findings") or [])
+
+
 def select_obligation(packet: dict, selected: list[str] | None = None) -> list[str]:
-    """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite."""
+    """Select one ready unit; planned ordering and model/local PASS claims prove no prerequisite.
+
+    CAPA-184 (L90Y..L90AA): ready units were taken in hash order, so the planner was handed an old SWE.4 run_unit
+    failure while the attempt had ended on SWE.6 gate findings, and it answered NEEDS_EVIDENCE every time. A ready
+    unit carrying the gate's own rejection is chosen first; the dependency rule is unchanged."""
     ordered = obligation_order(packet)
     if selected is None:
-        selected = ordered[:1]
+        ready = [key for key in ordered if not packet["obligations"][key]["dependencies"]]
+        selected = ([key for key in ready if _terminal(packet, key)] or ready or ordered)[:1]
     if not isinstance(selected, list) or len(selected) != 1 or not isinstance(selected[0], str):
         raise Refused("COHERENT_OBJECTIVE_REQUIRED")
     key = selected[0]
