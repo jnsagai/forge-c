@@ -354,6 +354,18 @@
       "schema": "runtime/owner-obligations.schema.json",
       "expected_valid": false,
       "purpose": "A declared obligations input names at least one obligation."
+    },
+    {
+      "file": "controller-export.valid.json",
+      "schema": "controller-export.schema.json",
+      "expected_valid": true,
+      "purpose": "A bounded controller-failure export: hashes and counts only, no native run claim."
+    },
+    {
+      "file": "controller-export-raw-content.invalid.json",
+      "schema": "controller-export.schema.json",
+      "expected_valid": false,
+      "purpose": "An export claiming a recorded native run and carrying raw content is refused."
     }
   ]
 }
