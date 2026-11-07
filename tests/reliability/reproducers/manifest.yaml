@@ -3076,3 +3076,69 @@ reproducers:
   - afo.completion_receipt.admit
   root_cause: Production preparation and serialization bypass the packet topological graph and explicit scopes reach the broker without unresolved dependency validation.
   remedy: Validate all graph components and select one dependency-free unresolved objective at preparation, request and pending receipt admission; preserve global coverage, primary evidence and original mission accounting.
+- id: RPR-177
+  script: rpr177_think_author_byte_bound.py
+  sha256: 24b19315bb487d4d303ea0de44ffa4e5871f8362adbc109f6b39cbd8d93a7a87
+  symptom_signature: the pinned think-AFO profile measures the Ornith author by byte count instead of native tokens
+  observed_in: 'Omniverse2 owner lane 2026-11-06/07: L90 SWE.6 author and recovery planner requests of 115-123 k bytes refused
+    as CAPABILITY_LIMIT'
+  baseline_revision: b7d1013bd4d21ef00a108f2a4b7a26e437591e24
+  fix_revision: 5cba4795f46c0a813b83fccb1e9a8bbd81d14ec2
+  error_codes:
+  - CAPABILITY_LIMIT
+  operations:
+  - lrtx.llm_gateway.durable_admitted
+  - lrtx.request_measurement.policy
+  root_cause: The mission-bound think-AFO profile file could not be edited (its sha is history scope), so its Ornith route
+    kept utf8_byte_upper_bound, which counts bytes as tokens.
+  remedy: Name the pinned profile route in code (PINNED_PROFILE_ROUTES) so the gateway measures it natively with llama-server
+    /apply-template and /tokenize; profile bytes unchanged.
+- id: RPR-178
+  script: rpr178_retry_starts_empty.py
+  sha256: ed371b3b3cc7fb44cab5692e391abf75b2e1c6b3f5ee04fa32ae3963a7d5b899
+  symptom_signature: a SWE.6 retry of the owner series starts with none of the earlier attempt's tests
+  observed_in: 'Omniverse2 owner lane 2026-11-07: L90W reached 15/24 tests; L90X re-seeded from L34G and started from 0/24'
+  baseline_revision: 5cba4795f46c0a813b83fccb1e9a8bbd81d14ec2
+  fix_revision: a32c7c31b03d297eab41442c46d565f67e7a6beb
+  error_codes:
+  - MISSING_REQUIRED_OUTPUT
+  operations:
+  - workorder.resume
+  - SWE.6/author
+  root_cause: Every owner-lane retry resumes from the frozen L34G SWE.5 baseline; nothing carried the robot suite and scenario
+    files of the earlier attempt.
+  remedy: attempt_carry installs the earlier attempt tests uncommitted for owner-series SWE.6 retries, records attempt_carry
+    in the manifest and adds a prompt note.
+- id: RPR-179
+  script: rpr179_carry_restores_last_not_best.py
+  sha256: 642862e55d7b6f93dfcd8df642e6f39ee8063fce3ac192436af79480e78a62a1
+  symptom_signature: a SWE.6 retry restores the attempt's last broken tests instead of its best robot run
+  observed_in: 'Omniverse2 owner lane 2026-11-07: L90Z reached 24/24 tests, 22/24 requirements at 09:56:59, then invented
+    register names broke the build'
+  baseline_revision: a32c7c31b03d297eab41442c46d565f67e7a6beb
+  fix_revision: b13eeaf334709d3f78bad4ad06e973d3bb73008b
+  error_codes:
+  - ROBOT_BUILD_FAILED
+  operations:
+  - attempt_carry.install
+  - SWE.6/author
+  root_cause: The V18 carry copied the attempt workspace files as they ended, not the files of its best robot run.
+  remedy: Pair each run_robot result with its test-integrity row and restore that run snapshot by SHA-256; most passed, then
+    most verified, later wins a tie.
+- id: RPR-180
+  script: rpr180_swe6_author_35_calls.py
+  sha256: 50e85156affcdeaaf20bab6f42a224011006185bd9fd90f5f7746156a0a0641e
+  symptom_signature: the SWE.6 author's per-visit tool budget is still the 35-call limit L90X exhausted
+  observed_in: 'Omniverse2 owner lane 2026-11-07: L90X (V17) spent about 30 of 35 author calls on glob/read, TURN_BUDGET_EXHAUSTED,
+    0/24'
+  baseline_revision: a32c7c31b03d297eab41442c46d565f67e7a6beb
+  fix_revision: b13eeaf334709d3f78bad4ad06e973d3bb73008b
+  error_codes:
+  - TURN_BUDGET_EXHAUSTED
+  operations:
+  - policy.governor.turn_limit
+  - SWE.6/author
+  root_cause: The author max_turns of 35 dates from 2026-10-15 (qwen3:8b); the Ornith author needs more calls to read the
+    HAL before writing.
+  remedy: 'Owner 2026-11-07: authors 4096 calls per visit (the structured-visit ceiling), other roles 200, inspectors keep
+    4 reserved; node timeouts still bound a visit.'
