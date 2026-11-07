@@ -145,3 +145,15 @@ budgets times 256. D's order names continue from C's last placed name, and a ret
 best robot run of either allowance. The placer's scan of retry names is no longer cut at 200.
 Unchanged: the signed production rules, the line policy (same_issue_limit 3 is a floor), the
 Nov 19 deadline, capacity amendments (still owner-signed only) and every earlier mission.
+
+Allowance E, owner 2026-11-07 ("i accept and approve all"). The CRC HAL SWE.6 lineage is
+finished, so the lane widens from one order envelope to campaign `CMP-OMNI2-ST-LL-20261107`:
+four ST LL lineages (GPIO, SPI, USART, TIM; series 20261107-L40..L43), SWE.1 to SWE.6 each,
+64 order names per phase, every name bound to its own example and driver class. D was never
+registered or deployed and is dropped rather than kept as a dormant second mission; E has D's
+caps (256 attempts) and the same deadline, profile, runtime and line policies. `validate_order`
+accepts exactly the resume shapes the Planner and durable recovery produce; campaign orders use
+the normal durable recovery, and only the finished AFOQUAL names keep their single seed. Issuer
+history of mission 20261104 is read against how it was issued (CRC HAL driver, its runtime and
+line policies, its orders and role envelopes); only host identity comes from the current
+record. E's role envelopes are pinned after its preflight trials; until then nothing issues.

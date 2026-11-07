@@ -16,7 +16,10 @@ from forge_factory.afo import owner_supervised_development as D
 from forge_factory.afo.durable import Refused, canonical, digest
 from forge_factory.common import sha256_file
 from test_owner_profile_bootstrap import boot  # noqa: F401 - real private canonical fixture
-from test_owner_supervised_development import supervised  # noqa: F401 - transitive guardian fixture
+from test_owner_supervised_development import (
+    PINNED_ROLE_ENVELOPES_E,
+    supervised,  # noqa: F401 - transitive guardian fixture
+)
 
 OLD_ISSUER = r"""
 import json,os,sys
@@ -29,6 +32,7 @@ from forge_factory.afo.durable import digest
 from forge_factory.lrtx import stack
 from forge_factory import workorder
 workorder.factory_revision=lambda:dict(commit='a'*40,dirty=False)
+D.ROLE_ENVELOPES_E=dict(D.LEGACY_ROLE_ENVELOPES)
 cfg=json.loads(sys.argv[1]);root=Path(cfg['root'])
 C.revision=lambda:dict(commit='a'*40,dirty=False)
 host.preflight=lambda:dict(ok=True)
@@ -450,7 +454,7 @@ def test_normal_coordinator_never_skips_a_second_pending_failure(pending):
         assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (R.CONSUMED_KIND,)).fetchone()[0] == 0
 
 
-@pytest.mark.parametrize("scope", ["mission", "store", "epoch", "orders", "driver", "policy"])
+@pytest.mark.parametrize("scope", ["mission", "store", "epoch", "orders", "driver", "order_driver", "policy"])
 def test_historical_receipts_cannot_rebind_current_mission_or_scope(acknowledged, scope):
     p = acknowledged
     current = copy.deepcopy(D.current())
@@ -464,6 +468,8 @@ def test_historical_receipts_cannot_rebind_current_mission_or_scope(acknowledged
         current["order_ids"].append("UNLISTED-FIFTH")
     elif scope == "driver":
         current["driver_class"] = "FOREIGN"
+    elif scope == "order_driver":
+        current["order_drivers"][D.ORDERS[0]] = "STM32N6_SPI_LL_ST"
     else:
         current["runtime_policy_sha256"] = "0" * 64
     with p["boot"]["store"].tx() as c, pytest.raises(Refused):
@@ -720,6 +726,10 @@ def test_closed_mission_history_is_read_against_how_it_ended(pending, tmp_path, 
 @pytest.mark.parametrize(("change", "code"), [
     (dict(order_ids=["WO-F014-SWE6-AFOQUAL-20261104-L90E"]), "HISTORICAL_SCOPE_CHANGED"),
     (dict(mission={**D.PRIOR_SCOPE["mission"], "lineage": "foreign"}), "HISTORICAL_SCOPE_CHANGED"),
+    (dict(driver_class=sorted(set(D.ORDER_DRIVERS.values()))), "HISTORICAL_SCOPE_CHANGED"),
+    (dict(order_drivers=D.ORDER_DRIVERS), "HISTORICAL_SCOPE_CHANGED"),
+    (dict(line_policy_sha256="0" * 64), "HISTORICAL_SCOPE_CHANGED"),
+    (dict(profile_sha256="0" * 64), "HISTORICAL_SCOPE_CHANGED"),
     (dict(counters=dict(attempts=5)), "ACCOUNTING_REBOUND"),
     (dict(counters=dict(requests=1)), "ACCOUNTING_REBOUND"),
 ])
@@ -728,3 +738,68 @@ def test_closed_mission_history_cannot_widen(pending, tmp_path, monkeypatch, cha
     sha, current = closed_mission_issuer(pending, tmp_path, **change)
     with pending["boot"]["store"].tx() as c, pytest.raises(Refused, match=code):
         R._issued(c, sha, current)
+
+
+def real_20261104_issuer(p, tmp_path, monkeypatch):
+    """The 20261104 issuer as issued (CRC HAL, its policies, no order_drivers), beside a mission E current record."""
+    from forge_factory.afo import product_role_trial as T
+
+    current = D.current()
+    control = copy.deepcopy(D._read_file(current["control_ref"]))
+    control["mission"] = D.PRIOR_SCOPE["mission"]
+    path = tmp_path / "issued-20261104-control.json"
+    path.write_text(json.dumps(control))
+    host = {k: current[k] for k in R.HOST_FIELDS}
+    old = {k: v for k, v in current.items() if k not in ("order_drivers", *R.SCOPE_FIELDS, "mission_anchor")}
+    old.update(
+        host, mission=D.PRIOR_SCOPE["mission"], order_ids=["WO-F014-SWE6-AFOQUAL-20261104-L90" + c for c in "BCD"],
+        driver_class="STM32N6_CRC_HAL", profile=D.PROFILE,
+        profile_sha256="32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c",
+        runtime_policy_sha256="dcd4fc785e373058c7ec4979319540623bcd06537c37baa1d68607850d21b17e",
+        line_policy_sha256="c44a5ddf14b54740ee986fe1cf9a767957353b70e19fd66ab8ef5a12588c7740",
+        mission_anchor=dict(base_sha256=D.PRIOR_RECORD_SHA256, counters=dict(D.PRIOR_SPENT, attempts=3), usage_unknown=True),
+        control_ref=dict(path=str(path), sha256=sha256_file(path)), control_sha256=digest(control),
+    )
+    assert "order_drivers" not in old
+    sha = digest(old)
+    with p["boot"]["store"].tx() as c:
+        c.execute("INSERT INTO afo_independent_decisions VALUES (?,?,?,?)",
+                  ("owner-development-" + sha, D.MODE, canonical(old).decode(), sha))
+    # Real envelope check: the fixture trials carry the fixture deadline, the issued control the fixed one.
+    real = T.resolve
+    monkeypatch.setattr(T, "resolve", lambda ref: {**real(ref), "deadline_epoch": D.DEADLINE})
+    monkeypatch.setattr(D, "ROLE_ENVELOPES_E", PINNED_ROLE_ENVELOPES_E)  # E unpinned: only legacy envelopes can pass
+    return sha, old, current
+
+
+def test_20261104_issuer_still_reconciles_when_current_is_mission_e(pending, tmp_path, monkeypatch):
+    sha, old, current = real_20261104_issuer(pending, tmp_path, monkeypatch)
+    assert current["mission"]["mission_id"] == D.MISSION and current["driver_class"] == sorted(set(D.ORDER_DRIVERS.values()))
+    with pending["boot"]["store"].tx() as c:
+        assert R._issued(c, sha, current) == old
+    request = dict(order_id=old["order_ids"][0], driver_class="STM32N6_CRC_HAL", model=D.PROFILE,
+                   service_action="line_stack_restart")
+    assert R._scoped_request(dict(request=request), old, current)
+    for foreign in (dict(driver_class=D.ORDER_DRIVERS[D.ORDERS[0]]), dict(order_id=D.ORDERS[0]),
+                    dict(order_id=D.ORDERS[0], driver_class=D.ORDER_DRIVERS[D.ORDERS[0]])):
+        assert not R._scoped_request(dict(request={**request, **foreign}), old, current)
+
+
+def test_mission_e_issuer_requests_name_each_order_driver(pending):
+    current = D.current()
+    request = dict(order_id=D.ORDERS[-1], driver_class="STM32N6_TIM_LL_ST", model=D.PROFILE,
+                   service_action="line_stack_restart")
+    assert R._scoped_request(dict(request=request), current, current)
+    assert not R._scoped_request(dict(request={**request, "driver_class": "STM32N6_GPIO_LL_ST"}), current, current)
+    assert not R._scoped_request(dict(request={**request, "driver_class": current["driver_class"]}), current, current)
+
+
+def test_20261104_issuer_never_validates_with_mission_e_envelopes(pending, tmp_path, monkeypatch):
+    sha, old, current = real_20261104_issuer(pending, tmp_path, monkeypatch)
+    calls = []
+    real = D._trial_envelopes
+    monkeypatch.setattr(D, "_trial_envelopes", lambda control, envelopes=None: calls.append(control["mission"]) or real(
+        control, envelopes=D.ROLE_ENVELOPES_E))
+    with pending["boot"]["store"].tx() as c, pytest.raises(Refused, match="ORIGINAL_ROLE_ENVELOPES_REQUIRED"):
+        R._issued(c, sha, current)
+    assert calls == [D.PRIOR_SCOPE["mission"]]

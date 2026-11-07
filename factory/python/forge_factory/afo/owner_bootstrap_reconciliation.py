@@ -21,8 +21,9 @@ CONSUMED_KIND = "OWNER_PROFILE_BOOTSTRAP_RECONCILIATION_CONSUMED"
 SCHEMA = "forge-c/owner-bootstrap-cleanup-evidence/1"
 SCOPE_FIELDS = (
     "intent_path", "intent_epoch", "store_path", "store_identity", "profile", "profile_sha256",
-    "mission", "driver_class", "order_ids", "runtime_policy_sha256", "line_policy_sha256",
+    "mission", "driver_class", "order_ids", "order_drivers", "runtime_policy_sha256", "line_policy_sha256",
 )
+HOST_FIELDS = ("intent_path", "intent_epoch", "store_path", "store_identity")
 COUNTER_KEYS = {"attempts", "jobs", "requests", "tools", "corrections", "charged_tokens"}
 # Audited producer *formats*, not machine-specific records or source revisions.
 # Only this old coordinator could consume without an explicit durable receipt.
@@ -60,12 +61,17 @@ def _legacy_format(revisions):
 
 
 def _scope(old, current):
-    """An issuer of the closed mission is compared with how that mission ended."""
+    """An issuer of the closed mission is compared with how that mission ended; only host identity is current."""
     from . import owner_supervised_development as D
 
     if (old.get("mission") or {}).get("mission_id") == D.PRIOR_MISSION:
-        return {**current, **D.PRIOR_SCOPE}
+        return {**{k: current[k] for k in HOST_FIELDS}, **D.PRIOR_SCOPE}
     return current
+
+
+def _driver(scope, order_id):
+    drivers = scope.get("order_drivers")
+    return scope["driver_class"] if drivers is None else drivers.get(order_id)
 
 
 def _issued(c, sha, current):
@@ -79,7 +85,7 @@ def _issued(c, sha, current):
         digest(old) == sha and old.get("schema") == D.SCHEMA and old.get("mode") == D.MODE
         and old.get("qualification_only") is True and old.get("acceptance") == "UNACCEPTED"
         and old.get("directive_sha256") == digest(dict(external_directive=D.DIRECTIVE))
-        and all(old.get(k) == scope[k] for k in SCOPE_FIELDS),
+        and all(old.get(k) == scope.get(k) for k in SCOPE_FIELDS),
         "RECONCILIATION_HISTORICAL_SCOPE_CHANGED",
     )
     _monotonic_accounting(old.get("mission_anchor"), scope.get("mission_anchor"))
@@ -113,6 +119,16 @@ def _monotonic_accounting(old, current):
     require(not old["usage_unknown"] or current["usage_unknown"], "RECONCILIATION_HISTORICAL_UNKNOWN_USAGE_CHANGED")
 
 
+def _scoped_request(value, issuer, current):
+    """A bootstrap request names one order of its issuer's scope, with that order's driver class."""
+    request = value.get("request", {})
+    scope = _scope(issuer, current)
+    return request == dict(
+        order_id=request.get("order_id"), driver_class=_driver(scope, request.get("order_id")),
+        model=scope["profile"], service_action="line_stack_restart",
+    ) and request.get("order_id") in scope["order_ids"]
+
+
 def _chain(c, current, intent_id, ack):
     """Check immutable old failure -> acknowledgement -> issuing successor data."""
     intent = _row(c, intent_id, INTENT_KIND)
@@ -122,13 +138,6 @@ def _chain(c, current, intent_id, ack):
     successor_id = "owner-profile-bootstrap-" + digest(reconciler)
     successor = _row(c, successor_id, INTENT_KIND)
     bindings = ack.get("bindings") or {}
-    def scoped_request(value, issuer):
-        request = value.get("request", {})
-        return request == dict(
-            order_id=request.get("order_id"), driver_class=current["driver_class"],
-            model=current["profile"], service_action="line_stack_restart",
-        ) and request.get("order_id") in _scope(issuer, current)["order_ids"]
-
     require(
         intent_id == "owner-profile-bootstrap-" + digest(old)
         and intent_id != successor_id
@@ -152,7 +161,7 @@ def _chain(c, current, intent_id, ack):
         and successor.get("root") == intent.get("root") == str(Path(current["store_path"]).parents[2])
         and successor.get("qualification_only") is True and successor.get("acceptance") == "UNACCEPTED"
         and successor.get("model_calls") == 0
-        and scoped_request(intent, old) and scoped_request(successor, reconciler),
+        and _scoped_request(intent, old, current) and _scoped_request(successor, reconciler, current),
         "RECONCILIATION_HISTORICAL_CHAIN_CHANGED",
     )
     return reconciler, successor_id, successor
@@ -312,7 +321,7 @@ def validate(c, store, record, request, native):
     require(old_sha != digest(record) and old["guardian_pid"] != record["guardian_pid"], "RECONCILIATION_NEW_ISSUER_REQUIRED")
     require(
         all(
-            old[k] == record[k]
+            old.get(k) == record.get(k)
             for k in (
                 "intent_path",
                 "intent_epoch",
@@ -324,6 +333,7 @@ def validate(c, store, record, request, native):
                 "mission_anchor",
                 "driver_class",
                 "order_ids",
+                "order_drivers",
                 "runtime_policy_sha256",
                 "line_policy_sha256",
             )

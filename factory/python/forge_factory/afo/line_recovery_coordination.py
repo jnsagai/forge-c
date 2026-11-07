@@ -376,9 +376,9 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
                 phase=owner,
                 stop_after=owner,
                 kind="RETRY",
-                # The owner lane has one resume point, the original seed.
-                resume_from=(a.spec or {}).get("resume_from") if development.selected() else a.wo,
-                resume_upto=(a.spec or {}).get("resume_upto") if development.selected() else owner,
+                # The finished AFOQUAL series has one resume point, the original seed.
+                resume_from=(a.spec or {}).get("resume_from") if development.one_resume_point(a.wo) else a.wo,
+                resume_upto=(a.spec or {}).get("resume_upto") if development.one_resume_point(a.wo) else owner,
                 durable_control=placer.durable_control,
                 durable_recovery={
                     "source_order_id": row["order_id"],

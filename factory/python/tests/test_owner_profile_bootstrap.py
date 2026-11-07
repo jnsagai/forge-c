@@ -210,6 +210,12 @@ def test_supported_bootstrap_canonical_store_real_locks_guardian_and_processes(b
     with store.tx() as c:
         assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (B.INTENT_KIND,)).fetchone()[0] == 1
         assert c.execute("SELECT COUNT(*) FROM afo_independent_decisions WHERE kind=?", (B.RESULT_KIND,)).fetchone()[0] == 1
+        intent = json.loads(
+            c.execute("SELECT record FROM afo_independent_decisions WHERE kind=?", (B.INTENT_KIND,)).fetchone()[0]
+        )
+    # The first SWE.1 order of the first campaign lineage, with its own driver class.
+    assert intent["request"]["order_id"] == D.ORDERS[0] == "WO-F014-SWE1-GPIOL-20261107-L40"
+    assert intent["request"]["driver_class"] == "STM32N6_GPIO_LL_ST"
     fd = os.open(boot["lock"], os.O_RDWR)
     try:
         fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)  # temporary GPU fence released, ACT retained
@@ -426,20 +432,20 @@ def test_guardian_loss_in_authorization_is_seen_before_spawn(boot, monkeypatch):
     assert not boot["effects"]
 
 
-def _beyond_allowance():
-    from forge_factory.afo import owner_supervised_development as OSD
-    from forge_factory.afo.line_campaign import retry_suffix
-
-    return OSD.SERIES + retry_suffix(OSD.RETRYING_LAST + 1 + OSD.ATTEMPTS)
-
-
 @pytest.mark.parametrize("order", ["WO-F014-SWE6-AFOQUAL-20261104-L90", "WO-F014-SWE6-AFOQUAL-20261104-L90D",
                                    "WO-F014-SWE6-AFOQUAL-20261104-L90AA",  # allowance C, closed
-                                   _beyond_allowance()])
+                                   "WO-F014-SWE6-AFOQUAL-20261104-L90AD",  # allowance D, never registered
+                                   "WO-F014-SWE1-GPIOL-20261107-L40BM"])  # beyond 64 per phase
 def test_spent_and_beyond_allowance_orders_cannot_authorize_service(boot, order):
     with pytest.raises(Refused, match="BCD_SERVICE_ACTION_REFUSED"):
         B.bootstrap(boot["store"], boot["placer"], order_wo=order)
     assert not boot["effects"]
+
+
+def test_any_campaign_order_bootstraps_with_its_own_driver(boot):
+    order = "WO-F014-SWE3-SPIL-20261107-L41C"
+    assert D.ORDER_DRIVERS[order] == "STM32N6_SPI_LL_ST"
+    assert B.bootstrap(boot["store"], boot["placer"], order_wo=order)["status"] == "READY"
 
 
 @pytest.mark.parametrize("value", ["foreign-profile", None])

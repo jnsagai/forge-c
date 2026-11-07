@@ -213,7 +213,8 @@ def _coordinate(
         "STACK_RUN_DIRECTORY_UNKNOWN",
     )
     request = dict(
-        order_id=order_wo or D.ORDERS[0], driver_class=D.DRIVER, model=record["profile"], service_action="line_stack_restart"
+        order_id=order_wo or D.ORDERS[0], driver_class=D.ORDER_DRIVERS.get(order_wo or D.ORDERS[0]),
+        model=record["profile"], service_action="line_stack_restart",
     )
     from .line_native_transport import require_context
 

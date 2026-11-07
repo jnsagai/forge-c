@@ -1,4 +1,4 @@
-"""The 2026-11-06 allowance is separate, finite and leaves the spent mission untouched."""
+"""Allowance E (ST LL campaign) is separate, finite and leaves the spent missions untouched."""
 
 import inspect
 import json
@@ -72,7 +72,7 @@ def test_cannot_open_before_the_spent_orders_are_finished(store):
 
 
 def test_allowance_is_finite_and_covers_every_reservation():
-    assert D.ATTEMPTS == 256 and len(D.ORDERS) == 256
+    assert D.ATTEMPTS == 256 and len(D.ORDERS) == len(set(D.ORDERS)) == 4 * 6 * 64
     assert D.CAPS["max_attempts"] == 256 and D.CAPS["max_jobs"] == 256 * 8
     assert D.CAPS["max_requests"] == 256 * 4096 and D.CAPS["max_tools"] == 256 * 16384
     assert D.CAPS["max_tokens"] == 256 * 67108864 + 256 * 8 * 1048576
@@ -196,13 +196,40 @@ def test_expired_allowance_cannot_open(store, monkeypatch):
         open_allowance(store, directive=DIRECTIVE)
 
 
-def test_orders_continue_the_series_after_the_spent_ones():
-    from forge_factory.afo.line_campaign import retry_suffix
+def test_campaign_orders_are_the_campaign_lineage_names():
+    from forge_factory.afo.line_campaign import PHASES, Lineage, retry_suffix
 
     assert D.RETRYING_ORDERS[0].endswith("L90G") and D.RETRYING_ORDERS[-1] == D.SERIES + retry_suffix(D.RETRYING_LAST)
-    assert D.ORDERS[0] == D.SERIES + retry_suffix(D.RETRYING_LAST + 1)
-    assert D.CARRY_ORDERS == D.RETRYING_ORDERS + D.ORDERS and len(set(D.CARRY_ORDERS)) == len(D.CARRY_ORDERS)
-    assert not set(D.ORDERS) & set(D.SPENT_ORDERS) and set(D.RETRYING_ORDERS) <= set(D.SPENT_ORDERS)
+    assert set(D.RETRYING_ORDERS) <= set(D.SPENT_ORDERS) and not set(D.ORDERS) & set(D.SPENT_ORDERS)
+    assert not any("AFOQUAL" in wo for wo in D.ORDERS)  # allowance D's L90AD.. names are gone
+    assert [L["id"] for L in D.LINEAGES] == ["gpio-ll", "spi-ll", "usart-ll", "tim-ll"]
+    expected = {}
+    for spec in D.LINEAGES:
+        L = Lineage(campaign_id=D.CAMPAIGN, id=spec["id"], status="ACTIVE", example=spec["example"], tag=spec["tag"],
+                    series=spec["series"], driver_class=spec["driver_class"], factory_revision=None,
+                    profile=D.PROFILE, run_model=D.RUN_MODEL, purpose="ASPICE_ONLY", phases=PHASES, priority=50)
+        assert spec["phases"] == PHASES and "start" not in spec and "depends_on" not in spec
+        for phase in PHASES:
+            for k in range(1, 65):
+                expected[L.wo(phase, k)] = (spec["id"], phase, spec["example"])
+                assert D.ORDER_DRIVERS[L.wo(phase, k)] == spec["driver_class"]
+    assert D.ORDER_SCOPE == expected and D.ORDERS == tuple(expected)
+    assert D.ORDERS[0] == "WO-F014-SWE1-GPIOL-20261107-L40" and D.ORDER_DRIVERS[D.ORDERS[0]] == "STM32N6_GPIO_LL_ST"
+    assert D.ORDERS[-1] == "WO-F014-SWE6-TIML-20261107-L43" + retry_suffix(64)
+
+
+def test_carry_stays_inside_one_lineage_phase():
+    gpio6 = [wo for wo, s in D.ORDER_SCOPE.items() if s[:2] == ("gpio-ll", "SWE.6")]
+    assert D.carry_orders(gpio6[3]) == tuple(gpio6) and len(gpio6) == 64
+    assert D.carry_orders(D.RETRYING_ORDERS[-1]) == D.RETRYING_ORDERS  # allowance C keeps its own tuple
+    assert D.carry_orders(D.ORDERS[0]) == ()  # SWE.1: only SWE.6 carries tests
+    assert D.carry_orders(D.SERIES + "E") == () and D.carry_orders("WO-F014-SWE6-GPIOL-20261107-L40BM") == ()
+
+
+def test_only_the_owner_sentence_opens_mission_e():
+    assert DIRECTIVE == "i accept and approve all"
+    assert D.MISSION == "line-local-st-ll-campaign-20261107e" and D.LINEAGE == "owner-review:local-st-ll-campaign-20261107e"
+    assert D.ALLOWANCE_REF == "OWNER-DEVELOPMENT-ALLOWANCE-20261107E-NOT-A-GRANT"
 
 
 def test_changed_retrying_allowance_spend_refuses(store):
@@ -216,20 +243,24 @@ def test_changed_retrying_allowance_spend_refuses(store):
     ("request_id", "state", "expected"),
     [
         (D.SPENT_ORDERS[1], "BLOCKED", True),
-        (D.ORDERS[0], "BLOCKED", True),
-        (D.ORDERS[0], "WAITING_RECOVERY", False),
+        (D.SPENT_ORDERS[-1], "BLOCKED", True),
+        (D.SPENT_ORDERS[-1], "WAITING_RECOVERY", False),
+        (D.ORDERS[0], "BLOCKED", False),  # campaign orders take the normal durable recovery
+        (D.SERIES + "AD", "BLOCKED", False),
         (D.SERIES + "D", "BLOCKED", False),
     ],
 )
 def test_only_finished_orders_of_this_series_retry_from_the_seed(monkeypatch, request_id, state, expected):
     monkeypatch.setenv(D.FILE, "x")
     assert D.retries_from_seed(dict(request_id=request_id, state=state)) is expected
+    assert D.one_resume_point(request_id) is (request_id in D.SPENT_ORDERS)
 
 
 def test_outside_the_lane_nothing_retries_from_the_seed(monkeypatch):
     monkeypatch.delenv(D.FILE, raising=False)
     monkeypatch.delenv(D.SHA, raising=False)
-    assert not D.retries_from_seed(dict(request_id=D.ORDERS[0], state="BLOCKED"))
+    assert not D.retries_from_seed(dict(request_id=D.SPENT_ORDERS[0], state="BLOCKED"))
+    assert not D.one_resume_point(D.SPENT_ORDERS[0])
 
 
 def test_tool_hook_carries_the_queue_scope(tmp_path, monkeypatch):

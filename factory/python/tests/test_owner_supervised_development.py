@@ -13,6 +13,9 @@ from forge_factory.afo.mission_ledger import MissionLedger
 from forge_factory.afo.queue import Store
 from forge_factory.common import canonical_json, sha256_file
 
+PINNED_ROLE_ENVELOPES_E = dict(D.ROLE_ENVELOPES_E)
+DRIVER = D.ORDER_DRIVERS[D.ORDERS[0]]
+
 PRIOR_RECORD = (
     '{"authorization_ref":"AUTH-AFO-REVIEW-20261104-LINE-FINITE","created_at":"2026-11-04T22:50:57.061356Z",'
     '"limits":{"deadline":1793848026.0,"max_attempts":4,"max_corrections":4,"max_jobs":4,"max_requests":32,'
@@ -126,6 +129,8 @@ def supervised(tmp_path, monkeypatch):
     monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
     monkeypatch.setenv("FORGE_AFO_QUEUE_SCOPE", "line-local")
     operations.Intent().set("RUNNING", actor="PRIVATE-TEST-OWNER", reason="Private control", initialize=True)
+    # The private fixture trials stand in for mission E's preflight trials.
+    monkeypatch.setattr(D, "ROLE_ENVELOPES_E", dict(D.LEGACY_ROLE_ENVELOPES))
     store = Store(tmp_path / "state/supervisor/line-queue.sqlite3")
     limits = dict(D.CAPS, deadline=time.time() + 300)
     seed_spent_original(store)
@@ -153,14 +158,12 @@ def supervised(tmp_path, monkeypatch):
         product_role_trial=None,
         product_role_trials={},
     )
-    from forge_factory.afo.queue import order_id_for
-
     trials = {}
     for name in ("qwen-trial.json", "ornith-trial.json"):
         trial = json.loads((fixtures / name).read_text())
         trial["source_revision"] = "a" * 40
         trial["deadline_epoch"] = limits["deadline"]
-        trial["order_ids"] = [order_id_for("line-local", x) for x in D.ORDERS]
+        trial["order_ids"] = D.trial_order_ids()
         for identities in trial["roles"].values():
             for identity in identities:
                 identity["adapter_revision"] = "a" * 40
@@ -239,7 +242,7 @@ def test_explicit_owner_context_is_unaccepted_not_auth_ok(supervised):
     assert r["acceptance"] == "UNACCEPTED" and r["qualification_only"] is True
     assert r["control_context"]["authentication"]["method"] == "PRIVATE_INTENT_DIRECTORY_OWNER"
     assert D.permit(
-        eff, "recover_workorder", dict(order_id=D.ORDERS[0], driver_class=D.DRIVER, model=supervised["control"]["profile"])
+        eff, "recover_workorder", dict(order_id=D.ORDERS[0], driver_class=DRIVER, model=supervised["control"]["profile"])
     )
     assert MissionLedger(supervised["store"]).snapshot(D.MISSION)["charged_tokens"] == 0
     assert MissionLedger(supervised["store"]).snapshot(D.PRIOR_MISSION)["charged_tokens"] == 4194304
@@ -249,9 +252,9 @@ def test_explicit_owner_context_is_unaccepted_not_auth_ok(supervised):
     "scope_request",
     [
         {},
-        dict(order_id="WO-F014-SWE6-AFOQUAL-20261104-L90", driver_class=D.DRIVER, model="x"),
+        dict(order_id="WO-F014-SWE6-AFOQUAL-20261104-L90", driver_class=DRIVER, model="x"),
         dict(order_id=D.ORDERS[0], driver_class="FOREIGN", model="x"),
-        dict(order_id=D.ORDERS[-1] + "E", driver_class=D.DRIVER, model="x"),
+        dict(order_id=D.ORDERS[-1] + "E", driver_class=DRIVER, model="x"),
     ],
 )
 def test_empty_old_foreign_and_fifth_scope_refused(supervised, scope_request):
@@ -300,7 +303,7 @@ def test_control_binding_requires_exact_document(supervised):
     from forge_factory.afo import line_recovery_control as C
 
     eff = policy.load(supervised["runtime"])
-    req = dict(order_id=D.ORDERS[0], driver_class=D.DRIVER, model=supervised["control"]["profile"])
+    req = dict(order_id=D.ORDERS[0], driver_class=DRIVER, model=supervised["control"]["profile"])
     assert C.configuration(supervised["control_ref"], eff, request=req) == supervised["control"]
     changed = copy.deepcopy(supervised["control"])
     changed["mission"]["limits"]["max_attempts"] += 1
@@ -337,7 +340,7 @@ def native_job(supervised, tmp_path, monkeypatch):
     repo = tmp_path / "input-repo"
     (repo / "afo-manifests").mkdir(parents=True)
     oid, _ = store.submit(
-        _env(repo, rid=D.ORDERS[0], model=control["profile"], driver_class=D.DRIVER, tenant_scope="line-local"),
+        _env(repo, rid=D.ORDERS[0], model=control["profile"], driver_class=DRIVER, tenant_scope="line-local"),
         repo=repo,
         max_queued=10,
     )
@@ -815,3 +818,168 @@ def test_suspend_between_sample_and_issuance_never_stretches_ticket(supervised, 
     monkeypatch.setattr(D.time, "clock_gettime", lambda clock: ticket["remote_boottime"] + 61)
     with pytest.raises(Refused, match="ACTUAL_UTC_EXPIRY_TICKET_INVALID"):
         D.validate_expiry_ticket(ticket, supervised["limits"]["deadline"])
+
+
+def _wo(lineage, phase, k=1):
+    return D._name(D._LINEAGE[lineage], phase, k)
+
+
+@pytest.mark.parametrize(
+    ("order_id", "driver_class"),
+    [
+        (_wo("gpio-ll", "SWE.1"), "STM32N6_SPI_LL_ST"),
+        (_wo("spi-ll", "SWE.6", 64), "STM32N6_GPIO_LL_ST"),
+        (_wo("tim-ll", "SWE.3"), sorted(set(D.ORDER_DRIVERS.values()))),
+        ("WO-F014-SWE6-AFOQUAL-20261104-L90AC", D.LEGACY_DRIVER),  # allowance C, closed
+        ("WO-F014-SWE6-AFOQUAL-20261104-L90AD", D.LEGACY_DRIVER),  # allowance D, never registered
+        ("WO-F014-SWE1-GPIOL-20261107-L40BM", "STM32N6_GPIO_LL_ST"),  # k = 65
+        ("WO-F014-SWE7-GPIOL-20261107-L40", "STM32N6_GPIO_LL_ST"),
+    ],
+)
+def test_permit_refuses_cross_pairs_closed_and_beyond_orders(supervised, order_id, driver_class):
+    eff = policy.load(supervised["runtime"])
+    request = dict(order_id=order_id, driver_class=driver_class, model=supervised["control"]["profile"])
+    assert not D.permit(eff, "recover_workorder", request)
+
+
+def test_permit_admits_every_lineage_with_its_own_driver(supervised):
+    eff = policy.load(supervised["runtime"])
+    record = D.current(store=supervised["store"])
+    assert record["order_ids"] == list(D.ORDERS) and record["order_drivers"] == D.ORDER_DRIVERS
+    assert record["driver_class"] == ["STM32N6_GPIO_LL_ST", "STM32N6_SPI_LL_ST", "STM32N6_TIM_LL_ST", "STM32N6_USART_LL_ST"]
+    for L in D.LINEAGES:
+        for order_id in (_wo(L["id"], "SWE.1"), _wo(L["id"], "SWE.6", 64)):
+            request = dict(order_id=order_id, driver_class=L["driver_class"], model=supervised["control"]["profile"])
+            assert D.permit(eff, "launch_workorder", request)
+
+
+def _lineage(spec):
+    from forge_factory.afo.line_campaign import PHASES, Lineage
+    from forge_factory.quality import defaults
+
+    return Lineage(campaign_id=D.CAMPAIGN, id=spec["id"], status="ACTIVE", example=spec["example"], tag=spec["tag"],
+                   series=spec["series"], driver_class=spec["driver_class"], factory_revision="a" * 40,
+                   profile=D.PROFILE, run_model=D.RUN_MODEL, purpose="ASPICE_ONLY", phases=PHASES, priority=50,
+                   quality=defaults("ASPICE_ONLY"))
+
+
+def _planner_order(supervised, phase, kind, k, resume_from=None, resume_upto=None, lineage="usart-ll"):
+    """The Planner's own order builder (line_orders.phase_order), as Planner._order calls it."""
+    from forge_factory.afo.line_orders import phase_order
+
+    L = _lineage(D._LINEAGE[lineage])
+    return phase_order(L, phase, kind, wo=L.wo(phase, k), resume_from=resume_from, provided_from=None,
+                       resume_upto=resume_upto, quality_via="REVISION", durable_control=supervised["control_ref"])
+
+
+# (phase, kind, k, resume_from, resume_upto) as line_orders.Planner.decide and line_recovery_coordination produce them.
+PLANNER_SHAPES = {
+    "START": ("SWE.1", "START", 1, None, None),
+    "START_RETRY": ("SWE.1", "RETRY", 2, None, None),
+    "START_RELAUNCH_INFRA": ("SWE.1", "RELAUNCH_INFRA", 1, None, None),
+    "CHAIN": ("SWE.3", "CHAIN", 1, ("SWE.2", 4), None),
+    "CHAIN_RETRY": ("SWE.3", "RETRY", 2, ("SWE.2", 4), None),
+    "CHAIN_RETRY_INFRA": ("SWE.6", "RETRY_INFRA", 64, ("SWE.5", 1), None),
+    "CHAIN_RELAUNCH": ("SWE.4", "RELAUNCH", 3, ("SWE.3", 1), None),
+    "UPSTREAM": ("SWE.2", "UPSTREAM", 2, ("SWE.5", 1), "SWE.2"),
+    "UPSTREAM_RETRY": ("SWE.2", "RETRY", 3, ("SWE.5", 1), "SWE.2"),
+    "RECOVERY_SAME_PHASE": ("SWE.4", "RETRY", 2, ("SWE.4", 1), "SWE.4"),
+    "RECOVERY_OWNER_PHASE": ("SWE.2", "RETRY", 2, ("SWE.4", 1), "SWE.2"),
+    "RECOVERY_SWE1": ("SWE.1", "RETRY", 3, ("SWE.1", 2), "SWE.1"),
+}
+
+
+def _shape(supervised, name, lineage="usart-ll"):
+    phase, kind, k, source, upto = PLANNER_SHAPES[name]
+    resume_from = _wo(lineage, *source) if source else None
+    return _planner_order(supervised, phase, kind, k, resume_from, upto, lineage=lineage)
+
+
+@pytest.mark.parametrize("name", sorted(PLANNER_SHAPES))
+def test_validate_order_accepts_every_planner_and_recovery_shape(supervised, name):
+    for lineage in ("gpio-ll", "tim-ll"):
+        D.validate_order(_shape(supervised, name, lineage))
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        dict(provided_from="WO-F014-SWE6-CRCL-20261103-L24"),
+        dict(phase="SWE.4"),
+        dict(stop_after="SWE.4"),
+        dict(example="0011l-st-cube-spi-swe1-gen"),
+        dict(example="0014m-crc-hal"),
+        dict(driver_class="STM32N6_SPI_LL_ST"),
+        dict(revision="b" * 40),
+        dict(profile="foreign-profile"),
+        dict(run_model="qwen3.8:27b-q8_0"),
+        dict(purpose="QM"),
+        dict(campaign_id="CMP-FOREIGN"),
+        dict(lineage="CMP-OMNI2-ST-LL-20261107/spi-ll"),
+        dict(durable_control=None),
+        dict(quality=None),
+        dict(wo="WO-F014-SWE3-USARTL-20261107-L42BM"),  # k = 65
+        dict(wo="WO-F014-SWE6-AFOQUAL-20261104-L90AD"),
+        dict(resume_from=None),  # only SWE.1 starts from nothing
+        dict(resume_from="WO-F014-SWE2-GPIOL-20261107-L40"),  # another lineage
+        dict(resume_from="WO-F014-SWE1-USARTL-20261107-L42"),  # skips SWE.2
+        dict(resume_from="WO-F014-SWE5-CRCHAL-20261104-L34G"),  # the old seed
+        dict(resume_from="WO-F014-SWE3-USARTL-20261107-L42"),  # same phase without resume_upto
+        dict(kind="UPSTREAM"),
+        dict(kind="START"),
+        dict(resume_upto="SWE.2"),
+    ],
+)
+def test_validate_order_refuses_outside_the_campaign_envelope(supervised, change):
+    order = {**_shape(supervised, "CHAIN"), **change}
+    with pytest.raises(Refused, match=D.ENVELOPE_REFUSED):
+        D.validate_order(order)
+
+
+@pytest.mark.parametrize(
+    ("name", "change"),
+    [
+        ("START", dict(wo="WO-F014-SWE2-USARTL-20261107-L42", phase="SWE.2", stop_after="SWE.2")),
+        ("START", dict(kind="CHAIN")),
+        ("START", dict(resume_upto="SWE.1")),
+        ("UPSTREAM", dict(resume_upto=None)),
+        ("UPSTREAM", dict(resume_upto="SWE.3")),
+        ("UPSTREAM", dict(kind="CHAIN")),
+        ("RECOVERY_SAME_PHASE", dict(kind="UPSTREAM")),
+        ("RECOVERY_OWNER_PHASE", dict(resume_from="WO-F014-SWE1-USARTL-20261107-L42")),
+    ],
+)
+def test_validate_order_refuses_shapes_the_planner_never_makes(supervised, name, change):
+    with pytest.raises(Refused, match=D.ENVELOPE_REFUSED):
+        D.validate_order({**_shape(supervised, name), **change})
+
+
+def test_historical_control_validates_only_with_legacy_envelopes(supervised, monkeypatch):
+    monkeypatch.setattr(D, "ROLE_ENVELOPES_E", PINNED_ROLE_ENVELOPES_E)
+    assert set(PINNED_ROLE_ENVELOPES_E) == set(D.LEGACY_ROLE_ENVELOPES)
+    assert set(PINNED_ROLE_ENVELOPES_E.values()) == {"@PIN-AFTER-PREFLIGHT"}
+    historical = copy.deepcopy(supervised["control"])
+    historical["mission"]["mission_id"] = D.PRIOR_MISSION
+    D._trial_envelopes(historical)
+    D._trial_envelopes(historical, envelopes=D.LEGACY_ROLE_ENVELOPES)
+    with pytest.raises(Refused, match="ORIGINAL_ROLE_ENVELOPES_REQUIRED"):
+        D._trial_envelopes(historical, envelopes=D.ROLE_ENVELOPES_E)
+    for envelopes in (None, D.LEGACY_ROLE_ENVELOPES, D.ROLE_ENVELOPES_E):
+        with pytest.raises(Refused, match="ORIGINAL_ROLE_ENVELOPES_REQUIRED"):
+            D._trial_envelopes(supervised["control"], envelopes=envelopes)
+
+
+def test_mission_e_cannot_issue_before_its_envelopes_are_pinned(supervised, monkeypatch):
+    monkeypatch.setattr(D, "ROLE_ENVELOPES_E", PINNED_ROLE_ENVELOPES_E)
+    with pytest.raises(Refused, match="ORIGINAL_ROLE_ENVELOPES_REQUIRED"):
+        D.create(
+            supervised["store"], control_ref=supervised["control_ref"], runtime_policy=supervised["runtime"],
+            line_policy=supervised["line"], directive=D.DIRECTIVE, expiry_ticket=supervised["ticket"],
+        )
+
+
+def test_trial_order_ids_name_every_campaign_order():
+    from forge_factory.afo.queue import order_id_for
+
+    ids = D.trial_order_ids()
+    assert len(ids) == len(set(ids)) == len(D.ORDERS) and ids[0] == order_id_for("line-local", D.ORDERS[0])

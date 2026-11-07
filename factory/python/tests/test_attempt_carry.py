@@ -135,3 +135,23 @@ def test_owner_lane_raises_a_real_alert_once(tmp_path, monkeypatch):
 def test_owner_lane_is_no_longer_forced_to_dry_run():
     source = Path(LO.__file__).read_text()
     assert "dry_run=not acting or self.owner_supervised_development" not in source
+
+
+def test_campaign_retry_carries_only_its_own_lineage_and_phase(tmp_path):
+    from forge_factory.afo import owner_supervised_development as D
+
+    gpio = D.carry_orders("WO-F014-SWE6-GPIOL-20261107-L40C")
+    attempt(tmp_path, gpio[0], (10, 8))
+    attempt(tmp_path, gpio[1], (12, 9))
+    attempt(tmp_path, "WO-F014-SWE6-SPIL-20261107-L41", (24, 24))  # another lineage
+    attempt(tmp_path, "WO-F014-SWE5-GPIOL-20261107-L40", (24, 24))  # another phase
+    chosen = C.select(gpio[2], gpio, tmp_path)
+    assert (chosen["source_work_order"], chosen["passed"]) == (gpio[1], 12)
+    assert len(gpio) == 64 and all(wo.startswith("WO-F014-SWE6-GPIOL-20261107-L40") for wo in gpio)
+
+
+def test_workorder_carry_hook_asks_the_lane_for_the_lineage_phase_orders():
+    from forge_factory import workorder
+
+    source = Path(workorder.__file__).read_text()
+    assert 'stop_after == "SWE.6"' in source and "carry_orders(wo)" in source and "CARRY_ORDERS" not in source

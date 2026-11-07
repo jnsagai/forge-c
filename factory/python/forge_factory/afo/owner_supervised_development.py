@@ -22,21 +22,22 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from .durable import Refused, canonical, digest, strict_json
-from .line_campaign import retry_suffix
+from .line_campaign import PHASES, retry_suffix
 
 MODE = "OWNER_SUPERVISED_DEVELOPMENT"
 FILE = "FORGE_OWNER_DEVELOPMENT_RECORD"
 SHA = "FORGE_OWNER_DEVELOPMENT_SHA256"
 SCHEMA = "forge-c/owner-supervised-development/1"
 DIRECTIVE = "for now go on without needing signatures"
-# Owner 2026-11-07: "increase all the limits that can impact the autonomous operation of omniverse".
-# A fourth separate allowance, beside the closed retrying allowance C; nothing earlier is refilled or reset.
-MISSION = "line-local-role-trial-20261107d"
-LINEAGE = "owner-review:local-role-trial-20261107d"
+# Owner 2026-11-07: "i accept and approve all" - the lane widened to campaign E, four full-lifecycle ST LL
+# lineages. A separate allowance beside the closed C; nothing earlier is refilled or reset. Allowance D was never
+# registered and is dropped.
+MISSION = "line-local-st-ll-campaign-20261107e"
+LINEAGE = "owner-review:local-st-ll-campaign-20261107e"
 INITIAL_AUTHORITY = "AUTH-AFO-REVIEW-20261104-LINE-FINITE"  # named by the pinned runtime policy
-ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261107D-NOT-A-GRANT"
-SERIES = "WO-F014-SWE6-AFOQUAL-20261104-L90"
-DRIVER = "STM32N6_CRC_HAL"
+ALLOWANCE_REF = "OWNER-DEVELOPMENT-ALLOWANCE-20261107E-NOT-A-GRANT"
+SERIES = "WO-F014-SWE6-AFOQUAL-20261104-L90"  # the finished CRC HAL SWE.6 lineage of the earlier allowances
+LEGACY_DRIVER = "STM32N6_CRC_HAL"
 DEADLINE = 1795057626.0
 # The closed retrying allowance C, exactly as it ended. Its order names are L90G (n=7) up to the last one placed.
 RETRYING_ALLOWANCE = "line-local-role-trial-20261106c"
@@ -56,20 +57,7 @@ RETRYING_ALLOWANCE_RECORD_SHA256 = "8d10bfe98aefd8918375b40bb94aac9430e97c969df7
 # C's final spend, read from the ledger after its last order closed (2026-11-07 14:13 UTC).
 RETRYING_ALLOWANCE_SPENT = dict(attempts=20, jobs=10, requests=1324, tools=2091, corrections=0, charged_tokens=178257920)
 RETRYING_ORDERS = tuple(SERIES + retry_suffix(n) for n in range(7, RETRYING_LAST + 1))
-ATTEMPTS = 256
-ORDERS = tuple(SERIES + retry_suffix(n) for n in range(RETRYING_LAST + 1, RETRYING_LAST + 1 + ATTEMPTS))
 SPENT_ORDERS = (SERIES + "E", SERIES + "F", *RETRYING_ORDERS)
-CARRY_ORDERS = RETRYING_ORDERS + ORDERS  # a retry restores the best robot run of either allowance
-# Each limit is one attempt's budget times ATTEMPTS. Reservations stay charged: 67,108,864 tokens per attempt
-# (the raised max_model_tokens_per_order) and 1,048,576 per recovery job, up to 8 recovery jobs per attempt.
-CAPS = dict(
-    max_attempts=ATTEMPTS,
-    max_jobs=ATTEMPTS * 8,
-    max_requests=ATTEMPTS * 4096,
-    max_tokens=ATTEMPTS * 67108864 + ATTEMPTS * 8 * 1048576,
-    max_tools=ATTEMPTS * 16384,
-    max_corrections=ATTEMPTS * 4,
-)
 # The spent mission stays closed exactly as it ended; this lane never reads it as capacity.
 ENVELOPE_REFUSED = "OWNER_DEVELOPMENT_ORIGINAL_ORDER_ENVELOPE_REQUIRED"
 SOURCE_FIX_CLOSED = "CLOSED_FOR_SOURCE_FIX:ALLOWANCE_20261106"  # Recorded on L90E.
@@ -83,7 +71,15 @@ CLOSED_ALLOWANCE_SPENT = dict(attempts=1, jobs=0, requests=0, tools=0, correctio
 RAISED_ALLOWANCE = "line-local-role-trial-20261106b"
 RAISED_ALLOWANCE_RECORD_SHA256 = "4e612370f07747589f38135357038ee762493635a3360425eaad3ccaf5f9852c"
 RAISED_ALLOWANCE_SPENT = dict(attempts=1, jobs=1, requests=41, tools=0, corrections=0, charged_tokens=9437184)
-# Issuer history of that mission is read against how it ended, never against this allowance.
+PROFILE = "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104"
+PROFILE_SHA = "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c"
+# Owner 2026-11-07: per-order budgets raised (attempts, variants, planner calls, tokens, requests, wall/GPU time, retries).
+RUNTIME_POLICY_SHA = "2b04da13cf739fcc869217b4acf245c4c1eae242cf59116fdf9c344e3d87d1c6"
+RETRYING_RUNTIME_POLICY_SHA = "bc778f70a44a52ac4f6837766c17ef09184a98feb755b01b604cfb2cfde5485f"  # allowance C
+LINE_POLICY_SHA = "c44a5ddf14b54740ee986fe1cf9a767957353b70e19fd66ab8ef5a12588c7740"
+RUN_MODEL = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
+# Issuer history of that mission is read against how it ended, never against this allowance. Every scope
+# field except host identity (Intent, store) is the issued one.
 PRIOR_SCOPE = dict(
     mission=dict(
         mission_id=PRIOR_MISSION,
@@ -93,20 +89,63 @@ PRIOR_SCOPE = dict(
         ),
     ),
     order_ids=["WO-F014-SWE6-AFOQUAL-20261104-L90" + c for c in "BCD"],
+    order_drivers=None,
+    driver_class=LEGACY_DRIVER,
+    profile=PROFILE,
+    profile_sha256=PROFILE_SHA,
     mission_anchor=dict(base_sha256=PRIOR_RECORD_SHA256, counters=PRIOR_SPENT, usage_unknown=True),
     runtime_policy_sha256=ORIGINAL_RUNTIME_POLICY_SHA,
+    line_policy_sha256=LINE_POLICY_SHA,
 )
-PROFILE = "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104"
-PROFILE_SHA = "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c"
-# Owner 2026-11-07: per-order budgets raised (attempts, variants, planner calls, tokens, requests, wall/GPU time, retries).
-RUNTIME_POLICY_SHA = "2b04da13cf739fcc869217b4acf245c4c1eae242cf59116fdf9c344e3d87d1c6"
-RETRYING_RUNTIME_POLICY_SHA = "bc778f70a44a52ac4f6837766c17ef09184a98feb755b01b604cfb2cfde5485f"  # allowance C
-LINE_POLICY_SHA = "c44a5ddf14b54740ee986fe1cf9a767957353b70e19fd66ab8ef5a12588c7740"
-RUN_MODEL = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
 
-ROLE_ENVELOPES = {
+# Campaign E: SWE.1..SWE.6 of four ST LL lineages, PER_PHASE order names per phase (line_campaign.Lineage.wo).
+CAMPAIGN = "CMP-OMNI2-ST-LL-20261107"
+PER_PHASE = 64
+LINEAGES = tuple(
+    dict(id=i, tag=t, series=s, example=e, driver_class=d, phases=PHASES, purpose="ASPICE_ONLY",
+         profile=PROFILE, run_model=RUN_MODEL)
+    for i, t, s, e, d in (
+        ("gpio-ll", "GPIOL", "20261107-L40", "0010l-st-cube-gpio-swe1-gen", "STM32N6_GPIO_LL_ST"),
+        ("spi-ll", "SPIL", "20261107-L41", "0011l-st-cube-spi-swe1-gen", "STM32N6_SPI_LL_ST"),
+        ("usart-ll", "USARTL", "20261107-L42", "0012l-st-cube-usart-swe1-gen", "STM32N6_USART_LL_ST"),
+        ("tim-ll", "TIML", "20261107-L43", "0013l-st-cube-tim-swe1-gen", "STM32N6_TIM_LL_ST"),
+    )
+)
+_LINEAGE = {L["id"]: L for L in LINEAGES}
+
+
+def _name(lineage, phase, k):
+    return f"WO-F014-SWE{phase[-1]}-{lineage['tag']}-{lineage['series']}{retry_suffix(k)}"
+
+
+ORDER_SCOPE = {
+    _name(L, phase, k): (L["id"], phase, L["example"])
+    for L in LINEAGES for phase in L["phases"] for k in range(1, PER_PHASE + 1)
+}  # wo -> (lineage id, phase, example)
+ORDERS = tuple(ORDER_SCOPE)
+ORDER_DRIVERS = {wo: _LINEAGE[scope[0]]["driver_class"] for wo, scope in ORDER_SCOPE.items()}
+ATTEMPTS = 256
+# Each limit is one attempt's budget times ATTEMPTS. Reservations stay charged: 67,108,864 tokens per attempt
+# (the raised max_model_tokens_per_order) and 1,048,576 per recovery job, up to 8 recovery jobs per attempt.
+CAPS = dict(
+    max_attempts=ATTEMPTS,
+    max_jobs=ATTEMPTS * 8,
+    max_requests=ATTEMPTS * 4096,
+    max_tokens=ATTEMPTS * 67108864 + ATTEMPTS * 8 * 1048576,
+    max_tools=ATTEMPTS * 16384,
+    max_corrections=ATTEMPTS * 4,
+)
+_RESUMING = ("RETRY", "RETRY_INFRA", "RELAUNCH", "RELAUNCH_INFRA")  # line_orders RETRY_KINDS without UPSTREAM
+
+# The role envelopes the earlier missions were issued under; their history validates only against these.
+LEGACY_ROLE_ENVELOPES = {
     "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": "979be0ef65f688365747ec27ee06ccecf572779d53ff3424124e3f1c852b9af8",
     "qwen3.8:27b-q8_0": "0106c39092d46d07a2f15688dcde404e3212134ba629a858af48474b8353ae5f",
+}
+# Mission E envelopes, pinned from its preflight trials; a placeholder never matches a digest.
+ROLE_ENVELOPES_E = {
+    "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": "@PIN-AFTER-PREFLIGHT",
+    "qwen3.8:27b-q8_0": "@PIN-AFTER-PREFLIGHT",
 }
 QUALITY_SHA = "4fcd28818fd411e3aaddf347e372487c694a6bf3ea88b07f1cc00d9ee1594b6b"
 
@@ -429,8 +468,34 @@ def prior_conserved(store):
 
 
 def retries_from_seed(row):
-    """A blocked order of this series is finished: the Planner's own next order retries from the seed."""
-    return selected() and row["state"] == "BLOCKED" and row["request_id"] in (*SPENT_ORDERS, *ORDERS)
+    """A blocked order of the finished AFOQUAL series: the Planner's own next order retries from the seed.
+
+    Campaign orders take the normal durable recovery instead.
+    """
+    return selected() and row["state"] == "BLOCKED" and row["request_id"] in SPENT_ORDERS
+
+
+def one_resume_point(wo):
+    """Only the finished AFOQUAL series resumed every retry from its original seed."""
+    return selected() and wo in SPENT_ORDERS
+
+
+def carry_orders(wo):
+    """Earlier attempts a SWE.6 retry may carry tests from: same lineage and phase, in name order."""
+    if wo in RETRYING_ORDERS:
+        return RETRYING_ORDERS
+    scope = ORDER_SCOPE.get(wo)
+    if scope is None or scope[1] != "SWE.6":
+        return ()
+    L = _LINEAGE[scope[0]]
+    return tuple(_name(L, scope[1], k) for k in range(1, PER_PHASE + 1))
+
+
+def trial_order_ids(tenant_scope="line-local"):
+    """The queue order ids a mission E product-role trial names."""
+    from .queue import order_id_for
+
+    return [order_id_for(tenant_scope, wo) for wo in ORDERS]
 
 
 def mission_authority(control):
@@ -485,12 +550,16 @@ def _read_file(ref):
     return bound_json(ref)
 
 
-def _trial_envelopes(control):
+def _trial_envelopes(control, envelopes=None):
+    """Historical controls validate only against the legacy envelopes, a mission E control only against E's."""
     from .product_role_trial import resolve
 
+    expected = ROLE_ENVELOPES_E if (control.get("mission") or {}).get("mission_id") == MISSION else LEGACY_ROLE_ENVELOPES
+    envelopes = expected if envelopes is None else envelopes
     refs = control.get("product_role_trials") or {}
     if (
-        set(refs) != set(ROLE_ENVELOPES)
+        envelopes != expected
+        or set(refs) != set(envelopes)
         or control.get("role_capabilities")
         or control.get("qualified_local_alternatives")
         or control.get("product_role_trial") != refs.get(RUN_MODEL)
@@ -503,7 +572,7 @@ def _trial_envelopes(control):
             for role, identities in trial["roles"].items()
         }
         if (
-            digest(normalized) != ROLE_ENVELOPES[model]
+            digest(normalized) != envelopes[model]
             or trial.get("model") != model
             or trial.get("profile") != PROFILE
             or trial.get("source_revision") != control["source_revision"]
@@ -517,21 +586,42 @@ def _trial_envelopes(control):
             _fail("ORIGINAL_ROLE_ENVELOPES_REQUIRED")
 
 
+def _resume_shape(order, lineage_id, phase):
+    """Exactly the resume shapes line_orders.Planner.decide and line_recovery_coordination produce."""
+    kind, source, upto = order.get("kind"), order.get("resume_from"), order.get("resume_upto")
+    if source is None:  # START, and its retries/relaunches, at the first phase
+        return phase == PHASES[0] and upto is None and kind in ("START", *_RESUMING)
+    scope = ORDER_SCOPE.get(source)
+    if scope is None or scope[0] != lineage_id:
+        return False
+    at, src = PHASES.index(phase), PHASES.index(scope[1])
+    if upto is None:  # CHAIN from the passed previous phase, and its retries/relaunches
+        return src == at - 1 and kind in ("CHAIN", *_RESUMING)
+    # UPSTREAM to an earlier owning phase; recovery RETRY at its owner phase (resume_from=a.wo, resume_upto=owner)
+    return upto == phase and (src > at and kind in ("UPSTREAM", *_RESUMING) or src == at and kind in _RESUMING)
+
+
 def validate_order(order):
     record = current()
     control = _read_file(record["control_ref"])
+    scope = ORDER_SCOPE.get(order.get("wo"))
+    if scope is None:
+        _fail("ORIGINAL_ORDER_ENVELOPE_REQUIRED")
+    lineage_id, phase, example = scope
+    L = _LINEAGE[lineage_id]
     if (
-        order.get("wo") not in ORDERS
+        order.get("phase") != phase
+        or order.get("stop_after") != phase
+        or order.get("campaign_id") != CAMPAIGN
+        or order.get("lineage") != f"{CAMPAIGN}/{lineage_id}"
+        or order.get("example") != example
+        or order.get("driver_class") != L["driver_class"]
         or order.get("revision") != control["source_revision"]
         or order.get("profile") != PROFILE
-        or order.get("driver_class") != DRIVER
-        or order.get("purpose") != "ASPICE_ONLY"
-        or order.get("example") != "0014m-crc-hal"
-        or order.get("phase") != "SWE.6"
-        or order.get("stop_after") != "SWE.6"
         or order.get("run_model") != RUN_MODEL
-        or order.get("resume_from") != "WO-F014-SWE5-CRCHAL-20261104-L34G"
-        or order.get("provided_from") != "WO-F014-SWE6-CRCL-20261103-L24"
+        or order.get("purpose") != "ASPICE_ONLY"
+        or order.get("provided_from") is not None
+        or not _resume_shape(order, lineage_id, phase)
         or order.get("durable_control") != record["control_ref"]
         or digest(order.get("quality")) != QUALITY_SHA
     ):
@@ -649,7 +739,7 @@ def create(store, *, control_ref, runtime_policy, line_policy, directive, expiry
             or raw.get("authorization_ref") != INITIAL_AUTHORITY
         ):
             _fail("POLICY_INVALID")
-        _trial_envelopes(control)
+        _trial_envelopes(control, envelopes=ROLE_ENVELOPES_E)
         mission, base = _mission(store, control)
         validate_expiry_ticket(expiry_ticket, mission["limits"]["deadline"])
         parent = intent.path.parent / "owner-supervised-development"
@@ -697,7 +787,8 @@ def create(store, *, control_ref, runtime_policy, line_policy, directive, expiry
                 usage_unknown=mission["usage_unknown"],
             ),
             order_ids=list(ORDERS),
-            driver_class=DRIVER,
+            driver_class=sorted(set(ORDER_DRIVERS.values())),
+            order_drivers=ORDER_DRIVERS,
             profile=control["profile"],
             profile_sha256=control["profile_sha256"],
             trial_refs=control.get("product_role_trials") or {},
@@ -815,10 +906,13 @@ def permit(eff, action, request):
     record = current()
     control = _read_file(record["control_ref"])
     models = {record["profile"], *record["trial_refs"]}
+    drivers = record.get("order_drivers")
+    driver = record["driver_class"] if drivers is None else drivers.get(request.get("order_id"))
     return (
         action in ACTIONS
         and request.get("order_id") in record["order_ids"]
-        and request.get("driver_class") == record["driver_class"]
+        and driver is not None
+        and request.get("driver_class") == driver
         and request.get("model") in models
         and set(request) <= {"order_id", "driver_class", "model", "service_action"}
         and request.get("service_action") in (None, "line_stack_restart", "line_orphan_sweep")
