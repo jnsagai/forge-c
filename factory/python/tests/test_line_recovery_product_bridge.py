@@ -523,3 +523,36 @@ def test_accepted_semantic_receipt_creates_fresh_attempt_then_requires_independe
     with p.store.tx() as c:
         assert c.execute("SELECT COUNT(*) FROM afo_durable_effects").fetchone()[0] == 1
     assert len(L.records(p.store, p.order["order_id"])) == 1  # one durable planner identity
+
+
+def _ended_plan(p, *, lineage_sha, control):
+    a = SimpleNamespace(status="ENDED", verdict="FAIL", wo=p.store.order(p.oid)["request_id"], n=1,
+                        spec={"durable_control": control, "lineage_sha": lineage_sha})
+    return SimpleNamespace(atts={"SWE.1": [a]}, current=a, lineage=SimpleNamespace(sha256="new", status="ACTIVE"),
+                           order={"wo": "WO-PLANNER-RETRY"}, action="PLACE", state="QUEUED", reason="RETRY")
+
+
+def test_capa188_an_earlier_revision_order_keeps_the_planners_retry(product):
+    """GPIO L40B after the V21.2 deploy: the ended order carried the previous control; the lineage changed."""
+    p = product
+    plan = _ended_plan(p, lineage_sha="old", control="previous-control-ref")
+    placer = SimpleNamespace(queue_path=p.store.path, durable_control=p.worker["control_ref"])
+    K.coordinate(placer, [plan], None, SimpleNamespace(allow=True), [], time.time(), execute=True)
+    assert plan.action == "PLACE" and plan.order == {"wo": "WO-PLANNER-RETRY"}
+
+
+def test_capa188_a_withdrawn_order_never_keeps_its_launch_action(product):
+    p = product
+    plan = _ended_plan(p, lineage_sha="new", control="previous-control-ref")
+    placer = SimpleNamespace(queue_path=p.store.path, durable_control=p.worker["control_ref"])
+    K.coordinate(placer, [plan], None, SimpleNamespace(allow=True), [], time.time(), execute=True)
+    assert plan.reason == "DURABLE_SOURCE_ACCOUNTING_REQUIRED" and plan.order is None and plan.action is None
+
+
+def test_capa188_execute_refuses_a_plan_without_an_order():
+    from forge_factory.afo import line_orders as LO
+
+    placer = LO.Placer.__new__(LO.Placer)
+    plan = SimpleNamespace(order=None, action="PLACE", lineage=SimpleNamespace(key="CMP/x"))
+    out = LO.Placer._execute(placer, plan, None, None, [], time.time(), execute=True)
+    assert out == {"action": "PLACE", "lineage": "CMP/x", "outcome": "REFUSED", "detail": "ORDER_WITHDRAWN"}

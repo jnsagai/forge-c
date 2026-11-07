@@ -1285,6 +1285,8 @@ class Placer:
 
     def _execute(self, P: Plan, policy: LinePolicy, grant: Grant, campaigns, now: float, *, execute: bool) -> dict:
         o = P.order
+        if o is None:  # CAPA-188: a plan whose order was withdrawn is never executed and never ends the guardian
+            return {"action": P.action, "lineage": P.lineage.key, "outcome": "REFUSED", "detail": "ORDER_WITHDRAWN"}
         if self.owner_supervised_development:
             from .durable import Refused
             from .owner_supervised_development import ENVELOPE_REFUSED, validate_order

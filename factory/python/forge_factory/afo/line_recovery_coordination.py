@@ -346,8 +346,13 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
         rows = [r for r in store.orders() if r["request_id"] == a.wo]
         if len(rows) == 1 and development.retries_from_seed(rows[0]):
             continue  # The Planner's own retry stands, from the original seed.
+        if (len(rows) == 1 and (a.spec or {}).get("lineage_sha") not in (None, p.lineage.sha256)
+                and (a.spec or {}).get("durable_control") != placer.durable_control):
+            # CAPA-188: an order of an earlier lineage revision (an earlier deployed source) ended under another
+            # control; the owner's lineage change is the decision, so the Planner's own retry stands.
+            continue
         if len(rows) != 1 or (a.spec or {}).get("durable_control") != placer.durable_control:
-            p.state, p.reason, p.order = "WAITING", "DURABLE_SOURCE_ACCOUNTING_REQUIRED", None
+            p.state, p.reason, p.order, p.action = "WAITING", "DURABLE_SOURCE_ACCOUNTING_REQUIRED", None, None
             continue
         row = rows[0]
         if row["state"] in ("BLOCKED", "WAITING_EXTERNAL_CHANGE") and not str(row.get("terminal_reason")).startswith(
@@ -357,11 +362,11 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
             continue
         cmds = [c for c in store.commands() if c["kind"] == "REPLAN" and c["order_id"] == row["order_id"]]
         if not cmds:
-            p.state, p.reason, p.order = "WAITING", "DURABLE_REPLAN_NOT_RECORDED", None
+            p.state, p.reason, p.order, p.action = "WAITING", "DURABLE_REPLAN_NOT_RECORDED", None, None
             continue
         cmd = cmds[-1]
         if cmd["state"] != "ACKED":
-            p.state, p.reason, p.order = "WAITING", "DURABLE_PLANNER_" + cmd["state"], None
+            p.state, p.reason, p.order, p.action = "WAITING", "DURABLE_PLANNER_" + cmd["state"], None, None
             if not spawned and cmd["state"] in ("PENDING", "IN_FLIGHT"):
                 actions.append({"action": "DURABLE_RECOVERY", "wo": a.wo, **_spawn(placer, store, cmd, a.wo, now)})
                 spawned = True
@@ -398,5 +403,5 @@ def coordinate(placer, plans, policy, grant, campaigns, now, *, execute):
                 "VALIDATED_DURABLE_RECOVERY",
             )
         except (Refused, KeyError, ValueError) as exc:
-            p.state, p.reason, p.order = "WAITING", getattr(exc, "code", "DURABLE_DECISION_INVALID"), None
+            p.state, p.reason, p.order, p.action = "WAITING", getattr(exc, "code", "DURABLE_DECISION_INVALID"), None, None
     return actions
