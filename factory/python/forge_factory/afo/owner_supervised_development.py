@@ -142,10 +142,10 @@ LEGACY_ROLE_ENVELOPES = {
     "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": "979be0ef65f688365747ec27ee06ccecf572779d53ff3424124e3f1c852b9af8",
     "qwen3.8:27b-q8_0": "0106c39092d46d07a2f15688dcde404e3212134ba629a858af48474b8353ae5f",
 }
-# Mission E envelopes, pinned from its preflight trials; a placeholder never matches a digest.
-ROLE_ENVELOPES_E = {
-    "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": "@PIN-AFTER-PREFLIGHT",
-    "qwen3.8:27b-q8_0": "@PIN-AFTER-PREFLIGHT",
+# Mission E envelopes: digests of the normalized roles of its two trial assets (adapter_revision excluded).
+ROLE_ENVELOPES_E = {  # authors swe1..6 (tool + json_schema), release, planner, maintainer; inspectors swe1..6
+    "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": "b1e6c9c97394e64afa2b7b63ad57789684240b55659b68050ac2bbca83ce605d",
+    "qwen3.8:27b-q8_0": "64e20f79a75c10515331af72273b1df8221576b22e1682629b38480a582bc69b",
 }
 QUALITY_SHA = "4fcd28818fd411e3aaddf347e372487c694a6bf3ea88b07f1cc00d9ee1594b6b"
 

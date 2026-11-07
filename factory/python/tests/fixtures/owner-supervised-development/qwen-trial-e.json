@@ -1,0 +1,191 @@
+{
+  "schema": "forge-c/product-role-trial/1",
+  "qualification_only": true,
+  "source_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+  "profile": "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104",
+  "profile_sha256": "32ef6621ebc44b3532e0d0c870493eb36c7d7a35e7b0f570224b5a32393f883c",
+  "model": "qwen3.8:27b-q8_0",
+  "order_ids": [],
+  "roles": {
+    "swe1-inspector": [
+      {
+        "role": "swe1-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null
+        },
+        "task_class": "PRODUCT"
+      },
+      {
+        "role": "swe1-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": 0.2,
+          "seed": 1
+        },
+        "task_class": "PRODUCT"
+      }
+    ],
+    "swe2-inspector": [
+      {
+        "role": "swe2-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null
+        },
+        "task_class": "PRODUCT"
+      },
+      {
+        "role": "swe2-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": 0.2,
+          "seed": 1
+        },
+        "task_class": "PRODUCT"
+      }
+    ],
+    "swe3-inspector": [
+      {
+        "role": "swe3-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null
+        },
+        "task_class": "PRODUCT"
+      },
+      {
+        "role": "swe3-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": 0.2,
+          "seed": 1
+        },
+        "task_class": "PRODUCT"
+      }
+    ],
+    "swe4-inspector": [
+      {
+        "role": "swe4-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null
+        },
+        "task_class": "PRODUCT"
+      },
+      {
+        "role": "swe4-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": 0.2,
+          "seed": 1
+        },
+        "task_class": "PRODUCT"
+      }
+    ],
+    "swe5-inspector": [
+      {
+        "role": "swe5-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null
+        },
+        "task_class": "PRODUCT"
+      },
+      {
+        "role": "swe5-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": 0.2,
+          "seed": 1
+        },
+        "task_class": "PRODUCT"
+      }
+    ],
+    "swe6-inspector": [
+      {
+        "role": "swe6-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "tool",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": null
+        },
+        "task_class": "PRODUCT"
+      },
+      {
+        "role": "swe6-inspector",
+        "model_digest": "8f5fb6b71ea00052cbe8545738c55ce61112c4e571cb60ca4dad00b131766039",
+        "precision": "Q8_0",
+        "reasoning": "medium",
+        "schema_mode": "json_schema",
+        "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
+        "context_tokens": 262144,
+        "sampling": {
+          "temperature": 0.2,
+          "seed": 1
+        },
+        "task_class": "PRODUCT"
+      }
+    ]
+  },
+  "deadline_epoch": 1795057626.0,
+  "authorization_ref": "OWNER-SUPERVISED-DEVELOPMENT-UNACCEPTED-NOT-A-GRANT",
+  "context_allocation_ref": {
+    "path": "/mnt/data/forge-c/swe1-fabro-20261031/qualification/allocation-gen24-20261104/qwen-allocation.json",
+    "sha256": "39a26886777561768ba62929a33c2f288072bf6797a55a062857529c1644cd25"
+  }
+}

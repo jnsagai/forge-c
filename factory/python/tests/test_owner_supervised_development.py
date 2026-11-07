@@ -957,7 +957,7 @@ def test_validate_order_refuses_shapes_the_planner_never_makes(supervised, name,
 def test_historical_control_validates_only_with_legacy_envelopes(supervised, monkeypatch):
     monkeypatch.setattr(D, "ROLE_ENVELOPES_E", PINNED_ROLE_ENVELOPES_E)
     assert set(PINNED_ROLE_ENVELOPES_E) == set(D.LEGACY_ROLE_ENVELOPES)
-    assert set(PINNED_ROLE_ENVELOPES_E.values()) == {"@PIN-AFTER-PREFLIGHT"}
+    assert all(len(v) == 64 for v in PINNED_ROLE_ENVELOPES_E.values())
     historical = copy.deepcopy(supervised["control"])
     historical["mission"]["mission_id"] = D.PRIOR_MISSION
     D._trial_envelopes(historical)
@@ -983,3 +983,14 @@ def test_trial_order_ids_name_every_campaign_order():
 
     ids = D.trial_order_ids()
     assert len(ids) == len(set(ids)) == len(D.ORDERS) and ids[0] == order_id_for("line-local", D.ORDERS[0])
+
+
+@pytest.mark.parametrize("name", ["ornith-trial-e.json", "qwen-trial-e.json"])
+def test_mission_e_trial_assets_hash_to_the_pinned_envelopes(name):
+    trial = json.loads((Path(__file__).parent / "fixtures/owner-supervised-development" / name).read_text())
+    normalized = {role: [{k: v for k, v in i.items() if k != "adapter_revision"} for i in ids]
+                  for role, ids in trial["roles"].items()}
+    assert digest(normalized) == D.ROLE_ENVELOPES_E[trial["model"]]
+    roles = set(trial["roles"])
+    assert roles == ({f"swe{n}-author" for n in range(1, 7)} | {"release-manager", "afo-recovery-planner",
+                     "afo-factory-maintainer"} if "ornith" in trial["model"] else {f"swe{n}-inspector" for n in range(1, 7)})
