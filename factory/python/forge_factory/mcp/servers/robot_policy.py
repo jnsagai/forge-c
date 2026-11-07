@@ -167,6 +167,33 @@ def observed_checks(suite: Path) -> dict[str, list[tuple[str, str | None]]]:
     return res
 
 
+_DEFINE = re.compile(r"^\s*#\s*define\s+([A-Za-z_][A-Za-z0-9_]*)", re.M)
+_HEADER_ROOTS = ("software", "inputs")  # the product, its delivered HAL/LL and the vendor device header
+
+
+def defined_names(ws: Path | None) -> frozenset[str]:
+    """Every macro #define'd in the work order's C headers (product, delivered LL/HAL, vendor), read on each call
+    because an author may add headers during the visit. CAPA-183."""
+    names: set[str] = set()
+    for root in _HEADER_ROOTS if ws is not None else ():
+        folder = Path(ws) / root
+        for h in sorted(folder.rglob("*.h")) if folder.is_dir() else []:
+            if h.is_file() and not h.is_symlink() and h.stat().st_size <= 8 * 1024 * 1024:
+                names.update(_DEFINE.findall(h.read_text(errors="replace")))
+    return frozenset(names)
+
+
+def _nameable(ws: Path | None, reg: str, field: str, pr: dict) -> str:
+    """CAPA-183 (L90Z..L90AC, 22/24): the issue named LL_CRC_POL_POL_MSK, which no header defines; authors wrote it
+    anyway and broke the build. Name the LL mask only when it exists, else the CMSIS mask the check also accepts."""
+    ll = f"{pr['ll']['function_prefix']}{reg}_{field}_MSK"
+    cmsis = f"{pr['register_prefix']}_{reg}_{field}"
+    names = defined_names(ws)
+    if not names or ll in names or cmsis not in names:
+        return ll
+    return cmsis
+
+
 def unobserved_requirements(suite: Path, scenario_dir: Path, requirements: dict[str, str]) -> list[str]:
     issues = []
     obs = observed_checks(suite)
@@ -186,7 +213,8 @@ def unobserved_requirements(suite: Path, scenario_dir: Path, requirements: dict[
         rx = re.compile(rf"\b{pr['register_prefix']}_([A-Z0-9]+)\.([A-Z][A-Z0-9_]+)\b")
         vendor = {f"{pr['register_prefix']}_{r}_{f}" for r, f in rx.findall(text)}  # CMSIS mask names (ST pilot)
         field_seen = any(f in blob or f.split("_")[-2] in blob for f in fields) or any(v in blob for v in vendor)
-        missing = sorted(h for h in hal if h not in blob) if hal else ([] if field_seen else sorted(fields))
+        missing = sorted(h for h in hal if h not in blob) if hal else ([] if field_seen else sorted(
+            _nameable(ws, r, f, pr) for r, f in rx.findall(text)))
         if missing:
             scn = ",".join(sorted({s for s, _ in obs[rid]})) or "a scenario"
             issues.append(f"REQUIREMENT_NOT_OBSERVED:{rid}:needs TCHECK on {'|'.join(missing)} in {scn}")
