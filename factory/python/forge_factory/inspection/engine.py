@@ -80,6 +80,16 @@ def load_checklist(phase: str, root: Path = REPO_ROOT, brownfield: bool = False)
             "sha256": sha256_bytes(canonical_json({"base": base, "overlay": overlay}))}
 
 
+
+def _admission_refused(reply: dict) -> bool:
+    """CAPA-191: every issue of the inspector reply is a gateway admission refusal ("<item>: CALL_REFUSED:<CODE>"),
+    so no question reached the model. A model-service outage refusal does not count."""
+    from .outage import call_outage
+
+    issues = [str(i) for i in reply.get("issues") or []]
+    errors = [i.split(": ", 1)[1] if ": " in i else i for i in issues]
+    return bool(errors) and all(e.startswith("CALL_REFUSED:") and call_outage([e]) is None for e in errors)
+
 @dataclass
 class Store:
     workspace: Path
@@ -372,7 +382,12 @@ class Store:
         any model call (calls 0) with the same issues on its last REFUSAL_LIMIT replies. Such a refusal is
         deterministic, records no inspection and so never counts as a rework cycle; re-inspecting repeats it without
         bound (166 cycles in 4 min). Returns the first issue, else None. Failures after a model call (timeouts,
-        incomplete answers) keep the existing re-inspection path."""
+        incomplete answers) keep the existing re-inspection path.
+
+        CAPA-191 (WO-F014-SWE1-SPIL-20261107-L41C): a call the gateway refused never reached the model, yet the visit
+        counts it (calls 18, every issue "<item>: CALL_REFUSED:PRODUCT_ROLE_TRIAL_CONFIGURATION_UNDECLARED"); 160
+        re-inspections in 47 min. A reply whose every issue is such an admission refusal is a zero-call refusal too.
+        Model-service outages (outage.call_outage) are not: they keep the bounded wait and re-inspection."""
         p = self.workspace / ".forge-run/lrtx" / phase / "inspections.jsonl"
         if not p.is_file():
             return None
@@ -380,7 +395,9 @@ class Store:
         rows = [json.loads(x) for x in p.read_text().splitlines() if x.strip()]
         rows = [r for r in rows if str(r.get("at") or "") >= since]
         tail = rows[-self.REFUSAL_LIMIT:]
-        if len(tail) < self.REFUSAL_LIMIT or any(r.get("status") != "FAILED" or r.get("calls") != 0 for r in tail):
+        if len(tail) < self.REFUSAL_LIMIT or any(r.get("status") != "FAILED" or not (r.get("calls") == 0
+                                                                                    or _admission_refused(r))
+                                                 for r in tail):
             return None
         if len({json.dumps(r.get("issues") or [], sort_keys=True) for r in tail}) != 1 or not tail[0].get("issues"):
             return None

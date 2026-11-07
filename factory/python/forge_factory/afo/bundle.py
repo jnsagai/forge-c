@@ -9,7 +9,9 @@ fingerprint). An agent's own "PASS" text is never a verdict. The AFO class adds 
     FACTORY_CODE_DEFECT - rework would only meet the same defect;
   * a refusal the factory raises itself before any model call (CAPA-190: inventory section missing, runner or
     semantic engine fault, unsupported layer) -> FACTORY_CODE_DEFECT. It dominates the phase's missing-output
-    observations it caused, so the line sends it to isolated maintenance instead of rework or a dead end.
+    observations it caused, so the line sends it to isolated maintenance instead of rework or a dead end;
+  * a route BLOCKED because the gateway refused every inspector call on the factory's own trial binding (CAPA-191:
+    INSPECTOR_REFUSED_REPEATEDLY ... CALL_REFUSED:PRODUCT_ROLE_TRIAL_*) -> FACTORY_CODE_DEFECT, not product quality.
 Agent-written text (inspector findings, author replies) enters only as a bounded, secret-redacted excerpt tagged
 untrusted (`untrusted_source_refs`): it is data for the planner, never instructions.
 F015 (2026-10-25/26): an agent backend that refuses its turns (ACP `prompt_error`, e.g. Codex unavailable at sign-in)
@@ -32,6 +34,8 @@ SPEC_GAP = re.compile(r"MISSING_(AUTHORITATIVE|INPUT)|HSI_(MISSING|CONFLICT)|UPS
 # CAPA-190: deterministic (GATE) task refusals of factory code that precede every model call of the visit.
 FACTORY_REFUSAL = re.compile(r"LRTX_TASK_INVALID:(LRTX_(?:INVENTORY_SECTION_MISSING|RUNNER_ERROR|SEMANTIC_ENGINE_FAULT|"
                              r"SWE\d_LAYER_NOT_SUPPORTED_YET))\b")
+# CAPA-191: the route blocked because the gateway refused every inspector call on the factory's own role/trial binding
+INSPECTOR_REFUSAL = re.compile(r"INSPECTOR_REFUSED_REPEATEDLY:[A-Z0-9_.-]+: CALL_REFUSED:(PRODUCT_ROLE_TRIAL_[A-Z_]+)\b")
 SECRET = re.compile(r"(?i)(api[_-]?key|token|secret|password|bearer)\s*[:=]\s*\S+|sk-[A-Za-z0-9]{12,}|fabro_dev_[0-9a-f]+")
 MAX_SUMMARY = 1500
 CAPA_OPEN = {"OPEN", "TRIAGED", "REPRODUCER_PENDING", "CAUSE_VERIFIED", "FIX_CANDIDATE", "PREVENTION_TESTED",
@@ -113,10 +117,18 @@ def _capa_fingerprints() -> set[str]:
 
 
 def factory_refusal(obs: dict) -> str | None:
-    """The factory's own pre-model refusal code of a deterministic gate observation that CRE left UNKNOWN."""
-    if obs.get("source_kind") != "GATE" or obs.get("failure_class") != "UNKNOWN":
+    """The factory's own pre-model refusal code of a deterministic gate observation that CRE left UNKNOWN, or of a
+    route that blocked on repeated gateway refusals of the factory's trial binding (CAPA-191, CRE reads that route as
+    REWORK_BUDGET_EXHAUSTED)."""
+    if obs.get("source_kind") != "GATE":
         return None
-    m = FACTORY_REFUSAL.match(str(obs.get("excerpt") or ""))
+    excerpt = str(obs.get("excerpt") or "")
+    if str(obs.get("operation") or "").endswith("/route"):
+        m = INSPECTOR_REFUSAL.search(excerpt)
+        return m.group(1) if m else None
+    if obs.get("failure_class") != "UNKNOWN":
+        return None
+    m = FACTORY_REFUSAL.match(excerpt)
     return m.group(1) if m else None
 
 
@@ -169,7 +181,7 @@ def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | Non
                  key=lambda o: (o.get("ts_utc", ""), o["obs_id"]))  # the latest failure dominates
     route = [o for o in obs if o["operation"].endswith("/route")]
     work = [o for o in obs if not o["operation"].endswith("/route")]
-    refused = [o for o in work if factory_refusal(o)]  # CAPA-190: the refusal caused the missing outputs beside it
+    refused = [o for o in work + route if factory_refusal(o)]  # CAPA-190/191: the refusal caused the outputs beside it
     dom = (refused or work or route or [None])[-1]
     if dom is None:
         return None
@@ -196,7 +208,8 @@ def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | Non
             continue
     rec = {"schema_version": "1.0", "order_id": order_id, "attempt_id": attempt_id, "phase": phase,
            "failure_class": cls, "fingerprint": dom["fingerprint"], "gate_result": "BLOCKED",
-           "error_code": (factory_refusal(dom) or dom["error_code"])[:200], "artifact_refs": [f"workspace:{p.relative_to(ws)}" for p in ins[-1:]],
+           "error_code": (factory_refusal(dom) or dom["error_code"])[:200],
+           "artifact_refs": [f"workspace:{p.relative_to(ws)}" for p in ins[-1:]],
            "evidence_refs": [f"cre-observation:{o['obs_id']}" for o in (work + route)[-5:]], "input_digests": digests,
            "tool_versions": {k: v for k, v in list(tools.items())[:20] if v}, "requirements_refs": sorted(reqs)[:20],
            "redacted_summary": summary[:MAX_SUMMARY], "context_truncated": len(summary) > MAX_SUMMARY,

@@ -145,7 +145,13 @@ LEGACY_ROLE_ENVELOPES = {
 # Mission E envelopes: digests of the normalized roles of its two trial assets (adapter_revision excluded).
 ROLE_ENVELOPES_E = {  # authors swe1..6 (tool + json_schema), release, planner, maintainer; inspectors swe1..6
     "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": "b1e6c9c97394e64afa2b7b63ad57789684240b55659b68050ac2bbca83ce605d",
-    "qwen3.8:27b-q8_0": "64e20f79a75c10515331af72273b1df8221576b22e1682629b38480a582bc69b",
+    "qwen3.8:27b-q8_0": "28d2407f5124900ca483b9d6fa757da22ba4f65bf4da7cb6ca54d8849c5e69e8",
+}
+# CAPA-191: E's first qwen envelope declared the inspectors' json_schema sampling as the profile default (0.2, seed 1)
+# but the stepwise inspector sends temperature 0; every SWE.1 inspection call was refused. Controls issued before the
+# fix (V21.1..V21.4) still validate as history; a new issuance requires the corrected envelope.
+ROLE_ENVELOPES_E_HISTORY = {
+    "qwen3.8:27b-q8_0": frozenset({"64e20f79a75c10515331af72273b1df8221576b22e1682629b38480a582bc69b"}),
 }
 QUALITY_SHA = "4fcd28818fd411e3aaddf347e372487c694a6bf3ea88b07f1cc00d9ee1594b6b"
 
@@ -554,7 +560,9 @@ def _trial_envelopes(control, envelopes=None):
     """Historical controls validate only against the legacy envelopes, a mission E control only against E's."""
     from .product_role_trial import resolve
 
-    expected = ROLE_ENVELOPES_E if (control.get("mission") or {}).get("mission_id") == MISSION else LEGACY_ROLE_ENVELOPES
+    mission_e = (control.get("mission") or {}).get("mission_id") == MISSION
+    expected = ROLE_ENVELOPES_E if mission_e else LEGACY_ROLE_ENVELOPES
+    history = ROLE_ENVELOPES_E_HISTORY if mission_e and envelopes is None else {}  # historical validation only
     envelopes = expected if envelopes is None else envelopes
     refs = control.get("product_role_trials") or {}
     if (
@@ -572,7 +580,7 @@ def _trial_envelopes(control, envelopes=None):
             for role, identities in trial["roles"].items()
         }
         if (
-            digest(normalized) != envelopes[model]
+            (digest(normalized) != envelopes[model] and digest(normalized) not in history.get(model, ()))
             or trial.get("model") != model
             or trial.get("profile") != PROFILE
             or trial.get("source_revision") != control["source_revision"]

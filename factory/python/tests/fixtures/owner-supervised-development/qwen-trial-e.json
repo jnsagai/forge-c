@@ -30,7 +30,7 @@
         "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
         "context_tokens": 262144,
         "sampling": {
-          "temperature": 0.2,
+          "temperature": 0,
           "seed": 1
         },
         "task_class": "PRODUCT"
@@ -59,7 +59,7 @@
         "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
         "context_tokens": 262144,
         "sampling": {
-          "temperature": 0.2,
+          "temperature": 0,
           "seed": 1
         },
         "task_class": "PRODUCT"
@@ -88,7 +88,7 @@
         "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
         "context_tokens": 262144,
         "sampling": {
-          "temperature": 0.2,
+          "temperature": 0,
           "seed": 1
         },
         "task_class": "PRODUCT"
@@ -117,7 +117,7 @@
         "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
         "context_tokens": 262144,
         "sampling": {
-          "temperature": 0.2,
+          "temperature": 0,
           "seed": 1
         },
         "task_class": "PRODUCT"
@@ -146,7 +146,7 @@
         "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
         "context_tokens": 262144,
         "sampling": {
-          "temperature": 0.2,
+          "temperature": 0,
           "seed": 1
         },
         "task_class": "PRODUCT"
@@ -175,7 +175,7 @@
         "adapter_revision": "f0c8fc5c8ae83952a05cea578d41e0ff06324afd",
         "context_tokens": 262144,
         "sampling": {
-          "temperature": 0.2,
+          "temperature": 0,
           "seed": 1
         },
         "task_class": "PRODUCT"
