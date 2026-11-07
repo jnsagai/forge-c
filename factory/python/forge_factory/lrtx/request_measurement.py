@@ -19,10 +19,19 @@ from ..afo.durable import Refused, canonical
 
 METHOD = "native_template_plus_serialized"
 MAX_REQUEST_BYTES = 8 * 1024 * 1024
+# This profile's checksum is bound into issued guardian history, so its file stays fixed.
+PINNED_PROFILE_ROUTES = {
+    "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104": {
+        "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": METHOD,
+    },
+}
 
 
 def policy(prof: dict) -> dict:
     configured = (prof.get("gateway") or {}).get("request_measurement", {})
+    pinned = PINNED_PROFILE_ROUTES.get(prof.get("id"))
+    if pinned and isinstance(configured, dict):
+        configured = {**configured, **pinned}
     allowed = (prof.get("models") or {}).get("allowed", {})
     if not isinstance(configured, dict) or any(m not in allowed or value != METHOD for m, value in configured.items()):
         raise ValueError("PROFILE_REQUEST_MEASUREMENT_INVALID")

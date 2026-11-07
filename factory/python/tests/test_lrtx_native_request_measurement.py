@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 from forge_factory import llm_gateway as G
 from forge_factory import workorder
 from forge_factory.afo import local_agent as L
+from forge_factory.afo import owner_supervised_development as D
 from forge_factory.afo import policy as P
 from forge_factory.afo import provider_recovery, queue, request_admission
 from forge_factory.afo.durable import Refused, canonical, digest
@@ -191,6 +192,12 @@ def test_trial_profile_measures_the_author_natively_and_leaves_its_limits_alone(
     assert selected["runtime"]["context_limit_tokens"] == 262144
     assert selected["runtime"]["fabro_max_output_tokens"] == 16384
     assert selected["gateway"]["reasoning"][ORNITH]["extra_output_tokens"] == 131072
+    assert selected["_sha256"] == D.PROFILE_SHA
+
+
+def test_other_profiles_keep_their_own_measurement_policy():
+    assert M.policy(profile.load(PROFILE)) == {MODEL: M.METHOD}
+    assert M.policy({"id": "other", "gateway": {}}) == {}
 
 
 def test_durable_capability_refusal_is_not_reported_as_a_rate_limit(tmp_path, monkeypatch):

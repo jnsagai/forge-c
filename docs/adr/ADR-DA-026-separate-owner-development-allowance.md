@@ -97,8 +97,13 @@ L90T to L90W each ended the same way. The gateway refused the author with
 `CAPABILITY_LIMIT`, and the same-issue rule stopped the line after four runs. The refusal
 records show `utf8_byte_upper_bound`: this profile had no `request_measurement` entry, so
 serialized bytes were counted as tokens, about three times the real prompt. Refusals came
-at about 38,000 real tokens of a 262,144 limit. The profile now measures its Ornith route
-natively, and a measuring failure refuses the request. No limit changes, including the
-131,072 reasoning allowance, and the Qwen route stays on the byte bound because it was
-never refused. A durable `CAPABILITY_LIMIT` now returns 400, since repeating the same body
-cannot help. The new profile checksum replaces the old one and the mission is unchanged.
+at about 38,000 real tokens of a 262,144 limit. The Ornith route is now measured natively, and a
+measuring failure refuses the request. No limit changes, including the 131,072 reasoning
+allowance, and the Qwen route stays on the byte bound because it was never refused. A
+durable `CAPABILITY_LIMIT` now returns 400, since repeating the same body cannot help.
+
+The route is named in `request_measurement.py`, not in the profile file. That checksum is
+bound into issued guardian records and `services.json`, and a review showed a changed file
+would refuse the next guardian after the old stack had stopped. So the file does not fully
+describe this profile's gateway behaviour until a migration moves the entry into it. The
+mission is unchanged.
