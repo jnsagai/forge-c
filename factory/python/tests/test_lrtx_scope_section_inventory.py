@@ -112,10 +112,45 @@ def test_capa186_cited_functional_section_is_context_not_missing(tmp_path, monke
     manifest["local_profile"] = {"id": "local-rtx-v2-omniverse2-q38-aspice-stepwise-medium"}
     files = swe1._section_files(ws)
     functional = next(n for n, s in sorted(files.items()) if n.startswith("14.") and n.count(".") >= 2
-                      and parse_section((ws / s["file"]).read_text(errors="replace"), "RCC") is None)
+                      and parse_section((ws / s["file"]).read_text(errors="replace"), "RCC") is None
+                      and "address offset" not in (ws / s["file"]).read_text(errors="replace").lower())
     manifest["scope"] = [*manifest["scope"], f"Functional context: RM0486 {functional}."]
     (ws / ".forge-run/manifest.json").write_text(json.dumps(manifest))
     inv = swe1.inventory(ws)
     assert functional in inv["scope_sections"]["required_sections"]
     assert not inv["missing_sections"] and inv["context_sections"] == [functional]
     assert len(inv["registers"]) == 25
+
+
+def _rcc_ws(tmp_path, monkeypatch, name):
+    from forge_factory import workorder
+
+    monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+    ws, manifest = workorder.prepare(REPO_ROOT / "examples/0002a-arm_55_rcc_ll", name, purpose="ASPICE_ONLY")
+    return ws
+
+
+def test_capa189_a_functional_catalog_section_is_context(tmp_path, monkeypatch):
+    """GPIO L40C (2026-11-07): the GPIO catalog itself names 15.3.3-15.3.5, functional sections without a layout."""
+    from forge_factory import layer
+    from forge_factory.assurance.hardware import parse_section
+
+    ws = _rcc_ws(tmp_path, monkeypatch, "WO-CATALOG-FUNCTIONAL")
+    files = swe1._section_files(ws)
+    functional = next(n for n, s in sorted(files.items()) if n.startswith("14.") and n.count(".") >= 2
+                      and parse_section((ws / s["file"]).read_text(errors="replace"), "RCC") is None
+                      and "address offset" not in (ws / s["file"]).read_text(errors="replace").lower())
+    real = layer.profile(ws)
+    prof = {**real, "rm": {**real["rm"], "key_sections": [*real["rm"]["key_sections"], functional]}}
+    monkeypatch.setattr("forge_factory.layer.profile", lambda w=None: prof)
+    inv = swe1.inventory(ws)
+    assert not inv["missing_sections"] and inv["context_sections"] == [functional]
+
+
+def test_capa189_a_register_layout_that_does_not_parse_stays_missing(tmp_path, monkeypatch):
+    ws = _rcc_ws(tmp_path, monkeypatch, "WO-CATALOG-BROKEN")
+    files = swe1._section_files(ws)
+    num, s = next((n, s) for n, s in sorted(files.items()) if n == "14.10.1")
+    (ws / s["file"]).write_text("#### 14.10.1 RCC control register\nAddress offset: 0x000\nno parsable layout here\n")
+    inv = swe1.inventory(ws)
+    assert num in inv["missing_sections"]

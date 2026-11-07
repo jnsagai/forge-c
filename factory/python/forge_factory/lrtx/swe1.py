@@ -335,7 +335,6 @@ def inventory(ws: Path) -> dict:
 
         selected = scope_sections(manifest["scope"], prof["rm"]["doc"], selected)
     regs, missing, context = [], [], []
-    seeds = set(prof["rm"]["key_sections"])
     for num in selected:
         s = secs.get(num)
         if s is None:
@@ -344,10 +343,11 @@ def inventory(ws: Path) -> dict:
         text = (ws / s["file"]).read_text(errors="replace")
         r = parse_section(text, pfx)
         if r is None:
-            # CAPA-186 (2026-11-07, GPIO L40B): an owner scope also cites functional sections (GPIO 15.3.3-15.3.5,
-            # "I/O port control registers") that describe registers without a register layout. Only a catalog
-            # register section must parse; a cited functional section is recorded as context, never dropped.
-            (missing if num in seeds else context).append(num)
+            # CAPA-186/189 (2026-11-07, GPIO L40B/L40C): the GPIO catalog and the delivery scope also name functional
+            # sections (15.3.3-15.3.5, "I/O port control registers") that describe registers without a register
+            # layout. Such a section is recorded as context, never dropped; a section that states a register layout
+            # ("Address offset") and still does not parse stays missing.
+            (missing if re.search(r"address\s+offset", text, re.I) else context).append(num)
             continue
         pages = _file_pages(text, s["page"])
         desc = {m.group(3): " ".join(m.group(4).split())[:120] for m in re.finditer(
