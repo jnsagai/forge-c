@@ -1054,6 +1054,16 @@ def run(
         from .rework_context import install
 
         install(ws, manifest, rework_context, stop_after)
+    if resume and stop_after == "SWE.6":
+        from .afo.owner_supervised_development import ORDERS
+
+        if wo in ORDERS:
+            from .attempt_carry import install as carry_attempt
+
+            carried = carry_attempt(ws, wo, ORDERS)
+            if carried:
+                manifest["attempt_carry"] = carried
+                (ws / ".forge-run/manifest.json").write_text(pretty_json(manifest))
     from .inspection.provided_early_code import enabled as early_provided_code_enabled
 
     graph, nodes = build(

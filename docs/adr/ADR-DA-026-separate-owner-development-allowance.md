@@ -107,3 +107,13 @@ bound into issued guardian records and `services.json`, and a review showed a ch
 would refuse the next guardian after the old stack had stopped. So the file does not fully
 describe this profile's gateway behaviour until a migration moves the entry into it. The
 mission is unchanged.
+
+L90X was not refused, and it scored 0 of 24. Each stage has 35 tool calls, and the agents
+spent nearly all of them searching, so the test bodies were never written. A retry also
+started empty, which threw away L90V's 15 of 24. A retry in this series now copies the test
+files of the earlier attempt that passed the most. They stay a draft: uncommitted, retested
+and reinspected, and no earlier verdict carries over. The seed stays L34G for every
+upstream phase. Stopped lineages and low disk now raise a real GitHub issue in this lane,
+once per cause and with no mention. The repository is public, so those issues hold only
+order names and failure codes. The 35-call limit, the same-issue rule and the policy files
+are unchanged.

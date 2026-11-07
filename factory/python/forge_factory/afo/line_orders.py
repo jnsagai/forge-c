@@ -1151,7 +1151,7 @@ class Placer:
         placing_ok = free >= min_gb * GB
         gpu = self._gpu(plans)
         esc = Escalator(self.line, str(policy.get("escalation.github_repo") or "jnsagai/forge-c"),
-                        dry_run=not acting or self.owner_supervised_development, now=now)
+                        dry_run=not acting, now=now)
         if acting:
             actions += self._reconcile(plans, policy, grant, campaigns, now)
         if self.durable_control is not None:

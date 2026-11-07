@@ -46,9 +46,10 @@ PROVIDED_HAL_SWE6_PLAN = (
 
 
 def _rework_steps(phase: str, steps: list[str]) -> list[str]:
+    from ..attempt_carry import prompt_note as carry_note
     from ..rework_context import prompt_note
 
-    note = prompt_note(ASSESSMENT["manifest"], phase)
+    note = prompt_note(ASSESSMENT["manifest"], phase) + carry_note(ASSESSMENT["manifest"], phase)
     if not note:
         return steps
     # Retain SWE.6 evidence-first ordering while loading the data before author edits.
