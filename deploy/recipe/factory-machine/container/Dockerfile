@@ -31,6 +31,8 @@ ARG FORGE_PIN_GNU_ARM_URL=
 ARG FORGE_PIN_GNU_ARM_SHA256=
 ARG FORGE_PIN_FABRO_URL=
 ARG FORGE_PIN_FABRO_SHA256=
+ARG FORGE_PIN_FORMAL_URL=
+ARG FORGE_PIN_FORMAL_SHA256=
 
 COPY recipe.lock.json /opt/forge-c/recipe/recipe.lock.json
 COPY factory-machine/provision.sh /opt/forge-c/recipe/factory-machine/provision.sh

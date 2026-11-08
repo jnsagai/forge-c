@@ -195,8 +195,9 @@ def _provision(tmp: Path, *args: str, **env: str) -> subprocess.CompletedProcess
 
 
 def _all_pins(tmp: Path) -> dict[str, str]:
-    env = {f"FORGE_PIN_{n}_SHA256": f"{i + 1:x}" * 64 for i, n in enumerate(("UV", "LLVM", "GNU_ARM", "FABRO"))}
-    env |= {"FORGE_PIN_FABRO_URL": "https://example.invalid/fabro-0.362.0.tar.gz", "FORGE_REPO_URL": "https://git.example.invalid/forge-c.git",
+    env = {f"FORGE_PIN_{n}_SHA256": f"{i + 1:x}" * 64 for i, n in enumerate(("UV", "LLVM", "GNU_ARM", "FABRO", "FORMAL"))}
+    env |= {"FORGE_PIN_FABRO_URL": "https://example.invalid/fabro-0.362.0.tar.gz",
+            "FORGE_PIN_FORMAL_URL": "http://127.0.0.1:18490/formal-frama-c-33.0-opam-switch.tar.gz", "FORGE_REPO_URL": "https://git.example.invalid/forge-c.git",
             "FORGE_REVISION": "a" * 40, "FORGE_LOCK_FILE": str(_lock(tmp))}
     return env
 
@@ -210,7 +211,8 @@ def test_provision_is_valid_bash_with_modes_and_no_gpu_software():
     pkgs = re.search(r"APT_PACKAGES=\(([^)]*)\)", code, re.S).group(1).split()
     assert pkgs and not [p for p in pkgs if re.search(r"nvidia|cuda", p, re.I)]
     assert not re.search(r"(apt-get|apt|pip|uv)\s+(install|add)\b[^\n]*(nvidia|cuda)", code, re.I)
-    for comp in ("19.1.7", "10.3-2021.07", "0.362.0", "3.13", "frama-c-base", "cbmc", "gcovr", "cppcheck", "nginx"):
+    assert "frama-c-base" not in code  # not in the Ubuntu 22.04 archive: Frama-C comes as the pinned `formal` archive
+    for comp in ("19.1.7", "10.3-2021.07", "0.362.0", "3.13", "frama-c-33.0", "install_tarball formal", "cbmc", "gcovr", "cppcheck", "nginx"):
         assert comp in text, comp
     assert "sha256sum -c" in code and "enable-linger" in code
 
@@ -235,7 +237,7 @@ def test_provision_container_mode_skips_systemd_and_mount(tmp_path):
 
 
 @pytest.mark.parametrize("drop", ["FORGE_PIN_LLVM_SHA256", "FORGE_PIN_GNU_ARM_SHA256", "FORGE_PIN_FABRO_SHA256",
-                                  "FORGE_PIN_UV_SHA256", "FORGE_REVISION"])
+                                  "FORGE_PIN_UV_SHA256", "FORGE_PIN_FORMAL_SHA256", "FORGE_PIN_FORMAL_URL", "FORGE_REVISION"])
 def test_provision_refuses_missing_checksum_before_any_change(tmp_path, drop):
     env = _all_pins(tmp_path)
     env.pop(drop)
@@ -254,9 +256,10 @@ def test_provision_refuses_placeholder_and_malformed_checksums(tmp_path):
 
 def test_provision_reads_pins_from_lock_and_stops_after_verification(tmp_path):
     env = _all_pins(tmp_path)
-    shas = {n: env.pop(f"FORGE_PIN_{n.upper()}_SHA256") for n in ("uv", "llvm", "gnu_arm", "fabro")}
+    shas = {n: env.pop(f"FORGE_PIN_{n.upper()}_SHA256") for n in ("uv", "llvm", "gnu_arm", "fabro", "formal")}
     tc = {n: {"sha256": s} for n, s in shas.items()}
     tc["fabro"]["url"] = env.pop("FORGE_PIN_FABRO_URL")
+    tc["formal"]["url"] = env.pop("FORGE_PIN_FORMAL_URL")
     env["FORGE_LOCK_FILE"] = str(_lock(tmp_path, **tc))
     r = _provision(tmp_path, FORGE_PROVISION_STOP_AFTER="pins", **env)
     assert r.returncode == 0, r.stdout + r.stderr

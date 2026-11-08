@@ -68,6 +68,8 @@ FORGE_UV_VERSION="${FORGE_UV_VERSION:-0.12.17}"
 FORGE_LLVM_VERSION="${FORGE_LLVM_VERSION:-19.1.7}"
 FORGE_GNU_ARM_VERSION="${FORGE_GNU_ARM_VERSION:-10.3-2021.07}"
 FORGE_FABRO_VERSION="${FORGE_FABRO_VERSION:-0.362.0}"
+FORGE_FORMAL_VERSION="${FORGE_FORMAL_VERSION:-frama-c-33.0}"
+FORGE_FORMAL_PREFIX="${FORGE_FORMAL_PREFIX:-/mnt/data/forge-c/toolchains/opam/root/forge-c}"
 FORGE_REPO_URL="${FORGE_REPO_URL:-}"
 FORGE_REVISION="${FORGE_REVISION:-}"
 FORGE_REPO_DIR="${FORGE_REPO_DIR:-$FORGE_PREFIX/forge-c}"
@@ -84,7 +86,9 @@ FORGE_LOCK_FILE="${FORGE_LOCK_FILE:-}"
 # Ubuntu 22.04 packages from "Software on the VM" plus what this script needs (curl, xz, bzip2, jq, socat for the
 # in-container model-channel relay). Renode is not in the Ubuntu 22.04 archive: it is not installed here.
 APT_PACKAGES=(ca-certificates curl xz-utils bzip2 jq git socat util-linux
-  gcc g++ make cmake ninja-build cppcheck gcovr cbmc frama-c-base nginx python3 python3-venv)
+  gcc g++ make cmake ninja-build cppcheck gcovr cbmc nginx python3 python3-venv libgmp10 zlib1g)
+# Frama-C is not in the Ubuntu 22.04 archive: it comes as the pinned `formal` archive (Frama-C 33.0 + Alt-Ergo from
+# the factory's opam switch, unpacked at the same absolute prefix it was built for), like on the factory host.
 if [ -n "$FORGE_EXTRA_APT" ]; then
   # shellcheck disable=SC2206
   APT_PACKAGES+=($FORGE_EXTRA_APT)
@@ -121,18 +125,19 @@ missing_pin() { case "$1" in ""|None|null|TODO_PIN*) return 0 ;; *) return 1 ;; 
 
 declare -A PIN_URL PIN_SHA PIN_VER
 PIN_VER[uv]="$FORGE_UV_VERSION"; PIN_VER[llvm]="$FORGE_LLVM_VERSION"
-PIN_VER[gnu_arm]="$FORGE_GNU_ARM_VERSION"; PIN_VER[fabro]="$FORGE_FABRO_VERSION"
+PIN_VER[gnu_arm]="$FORGE_GNU_ARM_VERSION"; PIN_VER[fabro]="$FORGE_FABRO_VERSION"; PIN_VER[formal]="$FORGE_FORMAL_VERSION"
 DEFAULT_URL_uv="https://github.com/astral-sh/uv/releases/download/$FORGE_UV_VERSION/uv-x86_64-unknown-linux-gnu.tar.gz"
 DEFAULT_URL_llvm="https://github.com/llvm/llvm-project/releases/download/llvmorg-$FORGE_LLVM_VERSION/LLVM-$FORGE_LLVM_VERSION-Linux-X64.tar.xz"
 DEFAULT_URL_gnu_arm="https://developer.arm.com/-/media/Files/downloads/gnu-rm/$FORGE_GNU_ARM_VERSION/gcc-arm-none-eabi-$FORGE_GNU_ARM_VERSION-x86_64-linux.tar.bz2"
 DEFAULT_URL_fabro=""   # no verified upstream URL recorded yet: must come from the lock (TODO_PIN)
+DEFAULT_URL_formal=""  # built from the factory opam switch: lock or mirror only
 
 problems=()
 lock_fabro="$(lock_get fabro_version)"
 if ! missing_pin "$lock_fabro" && [ "$lock_fabro" != "$FORGE_FABRO_VERSION" ]; then
   problems+=("fabro_version: lock says $lock_fabro, script pins $FORGE_FABRO_VERSION")
 fi
-for name in uv llvm gnu_arm fabro; do
+for name in uv llvm gnu_arm fabro formal; do
   NAME="$(echo "$name" | tr '[:lower:]' '[:upper:]')"
   env_url_var="FORGE_PIN_${NAME}_URL"; env_sha_var="FORGE_PIN_${NAME}_SHA256"
   lock_ver="$(lock_get "toolchain.$name.version")"
@@ -237,7 +242,7 @@ fetch_verified() {  # fetch_verified <name> -> sets FETCHED to the verified cach
     log "ok: $name cached and verified"; return 0
   fi
   run mkdir -p "$FORGE_CACHE_DIR"
-  run curl -fsSL --proto '=https' --retry 3 -o "$file.part" "$url"
+  run curl -fsSL --proto '=https,http' --retry 3 -o "$file.part" "$url"   # http only for a local mirror: the SHA-256 is the check
   if [ "$DRY_RUN" = 1 ]; then log "PLAN: verify sha256 $sha of $file.part, then rename"; return 0; fi
   if ! echo "$sha  $file.part" | sha256sum -c --status; then
     rm -f "$file.part"; refuse "$name: SHA-256 mismatch for $url (expected $sha)"
@@ -264,6 +269,11 @@ install_tarball fabro "$FORGE_PREFIX/fabro-$FORGE_FABRO_VERSION" 0   # keeps fab
 FABRO_BIN="$FORGE_PREFIX/fabro-$FORGE_FABRO_VERSION/fabro-x86_64-unknown-linux-musl/fabro"
 run ln -sfn "$FORGE_PREFIX/uv-$FORGE_UV_VERSION/uv" "$FORGE_PREFIX/bin/uv"
 run ln -sfn "$FABRO_BIN" "$FORGE_PREFIX/bin/fabro"
+install_tarball formal "$FORGE_FORMAL_PREFIX" 1   # Frama-C + Alt-Ergo at the prefix their absolute paths expect
+for t in frama-c frama-c-script alt-ergo; do run ln -sfn "$FORGE_FORMAL_PREFIX/bin/$t" "$FORGE_PREFIX/bin/$t"; done
+if [ "$DRY_RUN" = 0 ]; then
+  "$FORGE_FORMAL_PREFIX/bin/frama-c" -version 2>&1 | grep -q "${FORGE_FORMAL_VERSION#frama-c-}" || refuse "frama-c -version is not $FORGE_FORMAL_VERSION"
+fi
 if [ "$DRY_RUN" = 0 ]; then
   FABRO_NO_UPGRADE_CHECK=1 "$FABRO_BIN" --version 2>&1 | grep -q "$FORGE_FABRO_VERSION" || refuse "fabro --version is not $FORGE_FABRO_VERSION"
 fi

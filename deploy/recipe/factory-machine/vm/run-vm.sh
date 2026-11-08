@@ -54,6 +54,7 @@ FORGE_VM_BASE_IMAGE="${FORGE_VM_BASE_IMAGE:-/mnt/data/forge-c/model-service/imag
 FORGE_VM_VCPU="${FORGE_VM_VCPU:-16}"
 FORGE_VM_RAM_GIB="${FORGE_VM_RAM_GIB:-64}"
 FORGE_VM_DATA_SIZE="${FORGE_VM_DATA_SIZE:-250G}"
+FORGE_VM_ROOT_SIZE="${FORGE_VM_ROOT_SIZE:-50G}"   # ONPREM "OS disk 50 GB"; cloud-init grows the root partition to it
 FORGE_VM_SSH_PORT="${FORGE_VM_SSH_PORT:-2222}"
 FORGE_VM_SSH_PUBKEY_FILE="${FORGE_VM_SSH_PUBKEY_FILE:-$HOME/.ssh/id_ed25519.pub}"
 FORGE_VM_CHANNEL_ADDR="${FORGE_VM_CHANNEL_ADDR:-10.0.2.100}"
@@ -114,7 +115,7 @@ QEMU_CMD=("$FORGE_QEMU" -name forge-factory -machine q35,accel=kvm -cpu host
   -netdev "$NETDEV" -device virtio-net-pci,netdev=n0
   -display none -serial "file:$FORGE_VM_DIR/console.log" -pidfile "$FORGE_VM_DIR/qemu.pid" -daemonize)
 SEED_CMD=(genisoimage -quiet -output "$SEED_ISO" -volid cidata -joliet -rock "$SEED_DIR/user-data" "$SEED_DIR/meta-data")
-OVERLAY_CMD=(qemu-img create -f qcow2 -F qcow2 -b "$FORGE_VM_BASE_IMAGE" "$OVERLAY")
+OVERLAY_CMD=(qemu-img create -f qcow2 -F qcow2 -b "$FORGE_VM_BASE_IMAGE" "$OVERLAY" "$FORGE_VM_ROOT_SIZE")
 DATA_CMD=(qemu-img create -f qcow2 "$DATA_DISK" "$FORGE_VM_DATA_SIZE")
 
 if [ "$DRY_RUN" = 1 ]; then

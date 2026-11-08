@@ -72,6 +72,14 @@
       "url": "mirror:fabro-x86_64-unknown-linux-musl.tar.gz",
       "version": "0.362.0"
     },
+    "formal": {
+      "file": "formal-frama-c-33.0-opam-switch.tar.gz",
+      "note": "Frama-C 33.0 + Alt-Ergo, runtime part of the factory opam switch (not in the Ubuntu 22.04 archive); unpacked at the prefix its absolute paths expect",
+      "prefix": "/mnt/data/forge-c/toolchains/opam/root/forge-c",
+      "sha256": "e0f6d182b55e226ce7e525d44c5ce02494882c2e7117ced5b6f290816fa0f521",
+      "url": "mirror:formal-frama-c-33.0-opam-switch.tar.gz",
+      "version": "frama-c-33.0"
+    },
     "gnu_arm": {
       "file": "gcc-arm-none-eabi-10.3-2021.07-x86_64-linux.tar.bz2",
       "sha256": "8c5b8de344e23cd035ca2b53bbf2075c58131ad61223cae48510641d3e556cea",
