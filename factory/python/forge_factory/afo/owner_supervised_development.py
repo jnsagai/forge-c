@@ -1246,24 +1246,25 @@ def main(argv=None):
             else:
                 bootstrap(store, placer, cancelled=stop.is_set, reconciliation_ref=reconciled)
         while not stop.is_set() and (a.max_cycles is None or n < a.max_cycles):
-            live_record = current(store=store)
-            _publish_heartbeat(live_record, cycle=n)
-            readiness = provider_preflight(cfg.stack_root)
             from .controller_escalation import observe as controller_escalation
 
             try:
+                live_record = current(store=store)
+                _publish_heartbeat(live_record, cycle=n)
+                readiness = provider_preflight(cfg.stack_root)
                 result = placer.cycle() if readiness["placing"] else dict(mode=MODE, actions=[], readiness=readiness)
                 escalation = controller_escalation(store, cfg, store_identity=live_record["store_identity"])
                 busy = 0
             except sqlite3.OperationalError as e:
-                # CAPA-192: another writer held the line queue past the busy timeout. Every transaction is atomic, so
-                # an interrupted cycle is the same as a cycle that never ran: record it and place again next cycle.
-                # A persistent lock still ends the guardian (bounded), never an unbounded silent retry.
+                # CAPA-192: another connection held the line queue past the busy timeout (every read here is a
+                # BEGIN IMMEDIATE). Every transaction is atomic, so an interrupted cycle equals a cycle that never ran:
+                # the same cycle number runs again shortly. A persistent lock still ends the guardian (bounded).
                 if not store_busy(e) or busy >= STORE_BUSY_LIMIT:
                     raise
                 busy += 1
-                result = dict(mode=MODE, actions=[], readiness=readiness, deferred="STORE_BUSY", busy_streak=busy)
-                escalation = None
+                print(json.dumps(dict(event="STORE_BUSY_CYCLE_DEFERRED", cycle=n, busy_streak=busy)), flush=True)
+                stop.wait(min(a.interval, 10))
+                continue
             # No submit/admission or PRODUCT reservation occurs while replacement
             # or observation is unknown. Guardian stays live for normal M0 work.
             row = dict(

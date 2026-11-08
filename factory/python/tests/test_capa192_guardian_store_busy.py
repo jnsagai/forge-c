@@ -57,9 +57,9 @@ def test_one_locked_cycle_is_deferred_and_the_guardian_keeps_placing(supervised,
     before = MissionLedger(supervised["store"]).snapshot(D.MISSION)
     locked = sqlite3.OperationalError("database is locked")
     rc, calls, _ = run_main(supervised, monkeypatch, tmp_path, [locked, None], 3)
-    assert rc == 0 and len(calls) == 3
+    assert rc == 0 and len(calls) == 4  # three cycles; the busy attempt of cycle 0 ran again
     rows = audit_rows(supervised)
-    assert [r["placement"].get("deferred") for r in rows][-3:] == ["STORE_BUSY", None, None]
+    assert [r["cycle"] for r in rows][-3:] == [0, 1, 2]  # nothing recorded twice, no cycle skipped
     assert MissionLedger(supervised["store"]).snapshot(D.MISSION) == before
 
 
@@ -74,6 +74,29 @@ def test_persistent_lock_still_ends_the_guardian(supervised, monkeypatch, tmp_pa
 def test_other_errors_still_end_the_guardian(supervised, monkeypatch, tmp_path, err):
     with pytest.raises(type(err)):
         run_main(supervised, monkeypatch, tmp_path, [err], 3)
+
+
+def test_lock_in_record_lookup_or_preflight_is_deferred_too(supervised, monkeypatch, tmp_path):
+    """Second crash (05:08:14 UTC, guardian 51f75ef7): the lock hit current() inside provider_preflight, before Placer.cycle."""
+    calls = []
+    rc, placed, _ = run_main(supervised, monkeypatch, tmp_path, [None], 2)  # installs the stub Placer/preflight
+    placed.clear()
+
+    def flaky(root):
+        calls.append(1)
+        if len(calls) == 1:
+            raise sqlite3.OperationalError("database is locked")
+        return {"placing": True}
+
+    monkeypatch.setattr(D, "provider_preflight", flaky)
+    import forge_factory.afo.line_orders as O
+    stub = O.Placer
+    monkeypatch.setattr(O, "Placer", stub)
+    assert D.main(["--control", supervised["control_ref"]["path"],
+                   "--runtime-policy", str(supervised["runtime"]), "--line-policy", str(supervised["line"]),
+                   "--campaigns", str(tmp_path / "unused-campaigns"), "--interval", "1",
+                   "--expiry-ticket", str(supervised["ticket_path"]), "--max-cycles", "2"]) == 0
+    assert len(calls) == 3 and len(placed) == 2
 
 
 def test_busy_classification_is_exact():
