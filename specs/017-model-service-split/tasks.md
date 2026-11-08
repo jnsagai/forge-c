@@ -355,20 +355,22 @@
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T057 [P] [US5] `factory/python/tests/test_modelservice_isolation.py`. It unit-tests the isolation checker with a fake environment: GPU device present means FAIL; host model path visible means FAIL; a host port other than the channel reachable means FAIL; the stand-in report lists the unproven properties.
+- [X] T057 [P] [US5] `factory/python/tests/test_modelservice_isolation.py`. It unit-tests the isolation checker with a fake environment: GPU device present means FAIL; host model path visible means FAIL; a host port other than the channel reachable means FAIL; the stand-in report lists the unproven properties.
 
 ### Implementation for User Story 5
 
-- [ ] T058 [US5] Write `deploy/recipe/factory-machine/provision.sh`. It installs and provisions the factory exactly as `docs/ONPREM-DEPLOYMENT.md` "Software on the VM" describes, with version pins from the lock and no GPU packages. It is idempotent, and is used both by cloud-init and by the container build.
-- [ ] T059 [US5] Write `deploy/recipe/factory-machine/cloud-init/user-data.yaml` (service account `forge`, lingering, data volume at `/srv/forge-c`, runs `provision.sh`) and `deploy/recipe/factory-machine/container/Dockerfile` (the stand-in, built by running the same `provision.sh`).
-- [ ] T060 [US5] Implement `factory/python/forge_factory/modelservice/isolation.py`, the in-boundary checker that writes a stand-in report, and wire the factory container into `deploy/recipe/model-tier/compose.yaml` or a sibling `deploy/recipe/factory-machine/compose.yaml`:
+- [X] T058 [US5] Write `deploy/recipe/factory-machine/provision.sh`. It installs and provisions the factory exactly as `docs/ONPREM-DEPLOYMENT.md` "Software on the VM" describes, with version pins from the lock and no GPU packages. It is idempotent, and is used both by cloud-init and by the container build.
+- [X] T059 [US5] Write `deploy/recipe/factory-machine/cloud-init/user-data.yaml` (service account `forge`, lingering, data volume at `/srv/forge-c`, runs `provision.sh`) and `deploy/recipe/factory-machine/container/Dockerfile` (the stand-in, built by running the same `provision.sh`).
+- [X] T060 [US5] Implement `factory/python/forge_factory/modelservice/isolation.py`, the in-boundary checker that writes a stand-in report, and wire the factory container into `deploy/recipe/model-tier/compose.yaml` or a sibling `deploy/recipe/factory-machine/compose.yaml`:
   - an `--internal` network shared only with `tenant-gateway`;
   - no GPU;
   - only the data volume mounted.
 
   T057 must pass.
 - [ ] T061 [US5] (host, non-GPU) Start the factory container stand-in and run the isolation checks and quickstart step 3. Record them in `evidence/017/isolation/`.
+  Pending 2026-11-08: provision.sh refuses until the toolchain pins (uv, LLVM, GNU Arm, Fabro URL+sha256) and factory_revision are in recipe.lock.json; the channel is a unix socket in the data volume relayed by socat on the host (no internal network with the gateway, which is a host unit on Omniverse2).
 - [ ] T062 [US5] VM path (BLOCKED until the `omniverse2` user is in group `kvm`; owner 2026-11-08 says an admin can do this). Write `deploy/recipe/factory-machine/vm/run-vm.sh`:
+  BLOCKED 2026-11-08: /dev/kvm not accessible to omniverse2 (needs kvm group) and qemu-system-x86_64/qemu-img are not installed (needs an admin); run-vm.sh prints BLOCKED and exits 3.
   - qemu from host packages or a pinned image, as the admin approves;
   - a seed ISO built with `genisoimage`;
   - network forwarding only to the tenant gateway.

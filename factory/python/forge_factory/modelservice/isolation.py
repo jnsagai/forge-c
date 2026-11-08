@@ -154,7 +154,7 @@ def detect_boundary(probes: Probes) -> tuple[str, list[str]]:
         if v and any(m in v.lower() for m in VM_DMI_MARKERS):
             evidence.append(f"{p}={v}")
     flags = next((ln for ln in (probes.read_text("/proc/cpuinfo") or "").splitlines() if ln.startswith("flags")), "")
-    if " hypervisor" in f" {flags.split(':', 1)[-1]} ".replace("\t", " ") and " hypervisor " in f" {flags.split(':', 1)[-1]} ":
+    if "hypervisor" in flags.split(":", 1)[-1].split():
         evidence.append("cpu flag hypervisor")
     if evidence:
         return "vm", evidence
@@ -233,9 +233,8 @@ def check(env: Env) -> dict:
         kind, evidence = detect_boundary(p)
     if kind not in ("vm", "container", "host"):
         raise ValueError(f"boundary kind must be vm|container|host, not {kind!r}")
-    boundary = _check("boundary_present",
-                      ["running on the host: no machine boundary between the factory and the model tier"] if kind == "host" else [],
-                      {"kind": kind, "evidence": evidence})
+    no_boundary = ["running on the host: no machine boundary between the factory and the model tier"]
+    boundary = _check("boundary_present", no_boundary if kind == "host" else [], {"kind": kind, "evidence": evidence})
     reach, attempts = _reachability(env)
     checks = [boundary, _gpu(p), _model_paths(p, env.host_model_paths), reach]
     failed = [c for c in checks if c["status"] != "PASS"]
@@ -271,7 +270,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     a = ap.parse_args(argv)
     env = Env(channel_url=a.channel, forbidden_ports=tuple(a.port) if a.port else DEFAULT_FORBIDDEN_PORTS,
               host_model_paths=DEFAULT_HOST_MODEL_PATHS + tuple(a.model_path or ()),
-              probe_hosts=DEFAULT_PROBE_HOSTS + tuple(a.host or ()), timeout_s=a.timeout, boundary_override=a.boundary)
+              probe_hosts=DEFAULT_PROBE_HOSTS + tuple(a.host or ()), timeout_s=a.timeout, boundary_override=a.boundary,
+              probes=Probes())
     try:
         report = check(env)
     except ValueError as e:
