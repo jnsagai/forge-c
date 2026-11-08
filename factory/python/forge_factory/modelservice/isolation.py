@@ -172,14 +172,19 @@ def _check(cid: str, reasons: list[str], observed: dict) -> dict:
     return {"id": cid, "status": "FAIL" if reasons else "PASS", "reasons": reasons, "observed": observed}
 
 
-def _gpu(p: Probes) -> dict:
+def _gpu(p: Probes, kind: str = "vm") -> dict:
     devices = sorted({d for g in GPU_DEVICE_GLOBS for d in p.glob(g)})
     drivers = [d for d in GPU_DRIVER_PATHS if p.exists(d)]
     tools = {t: w for t in GPU_TOOLS if (w := p.which(t))}
     reasons = [f"GPU device visible: {d}" for d in devices]
-    reasons += [f"GPU driver interface visible: {d}" for d in drivers]
+    if kind == "container":  # procfs driver entries are not namespaced: a container always sees the host kernel's
+        observed_only = drivers   # (a stand-in limitation, listed below); device nodes and tools still fail
+    else:
+        observed_only = []
+        reasons += [f"GPU driver interface visible: {d}" for d in drivers]
     reasons += [f"GPU tool installed: {t} at {w}" for t, w in tools.items()]
-    return _check("gpu_device_absent", reasons, {"devices": devices, "drivers": drivers, "tools": tools})
+    return _check("gpu_device_absent", reasons, {"devices": devices, "drivers": drivers, "tools": tools,
+                                                  "kernel_shared_driver_entries": observed_only})
 
 
 def _model_paths(p: Probes, paths: Sequence[str]) -> dict:
@@ -236,7 +241,7 @@ def check(env: Env) -> dict:
     no_boundary = ["running on the host: no machine boundary between the factory and the model tier"]
     boundary = _check("boundary_present", no_boundary if kind == "host" else [], {"kind": kind, "evidence": evidence})
     reach, attempts = _reachability(env)
-    checks = [boundary, _gpu(p), _model_paths(p, env.host_model_paths), reach]
+    checks = [boundary, _gpu(p, kind), _model_paths(p, env.host_model_paths), reach]
     failed = [c for c in checks if c["status"] != "PASS"]
     return {
         "schema": SCHEMA,
@@ -245,7 +250,9 @@ def check(env: Env) -> dict:
         "channel_url": env.channel_url,
         "checks": checks,
         "attempts": attempts,
-        "standin_limitations": list(CONTAINER_LIMITATIONS) if kind == "container" else [],
+        "standin_limitations": (list(CONTAINER_LIMITATIONS) + [
+            "GPU driver procfs entries (/proc/driver/nvidia) are visible because a container shares the host kernel; "
+            "the GPU itself is unusable (no device nodes, no driver tools)"]) if kind == "container" else [],
         "status": "FAIL" if failed else "PASS",
         "open_issues": sum(len(c["reasons"]) for c in failed),
     }

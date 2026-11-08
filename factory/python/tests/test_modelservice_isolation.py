@@ -105,9 +105,19 @@ def test_gpu_visible_fails(devices, tools, needle):
     assert r["status"] == "FAIL" and c["status"] == "FAIL" and any(needle in x for x in c["reasons"]), c
 
 
-def test_gpu_driver_interface_fails():
-    r = _run(fake(files=CONTAINER, exists={"/proc/driver/nvidia"}))
+def test_gpu_driver_interface_fails_on_a_vm_or_host():
+    r = _run(fake(exists={"/proc/driver/nvidia"}), boundary_override="vm")
     assert _chk(r, "gpu_device_absent")["reasons"] == ["GPU driver interface visible: /proc/driver/nvidia"]
+
+
+def test_container_kernel_shared_driver_entry_is_a_limitation_not_a_pass_of_the_gpu():
+    """A container shares the host kernel, so procfs driver entries are always visible; it still has no GPU."""
+    r = _run(fake(files=CONTAINER, exists={"/proc/driver/nvidia"}))
+    c = _chk(r, "gpu_device_absent")
+    assert c["status"] == "PASS" and c["observed"]["kernel_shared_driver_entries"] == ["/proc/driver/nvidia"]
+    assert any("/proc/driver/nvidia" in x for x in r["standin_limitations"])
+    r = _run(fake(files=CONTAINER, exists={"/proc/driver/nvidia"}, devices=["/dev/nvidia0"]))
+    assert _chk(r, "gpu_device_absent")["status"] == "FAIL"  # a device node in the container still fails
 
 
 @pytest.mark.parametrize("path", list(I.DEFAULT_HOST_MODEL_PATHS))
