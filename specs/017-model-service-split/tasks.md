@@ -253,8 +253,8 @@
 
 **Purpose**: the first real use of the GPU by the model tier: a smoke test, the KV capacity check, identity and contention. It proves US1 and US2 on the host.
 
-- [ ] T040 (host, non-GPU) Install the qualification lane from the T025-gated commit into `/mnt/data/forge-c/model-service/qual-lane/`, using the T024 configuration. Units are disabled until a window. Verify that there are no port or data-root collisions with the owner or production lanes.
-- [ ] T041 (host, non-GPU) Create the private secret file `/mnt/data/forge-c/model-service/secrets/model-service.secrets` (0600, directory 0700) with generated tenant keys and the engine key. Put only the hashes in the live `tenants.yaml`. Nothing goes into git.
+- [X] T040 (host, non-GPU) Install the qualification lane from the T025-gated commit into `/mnt/data/forge-c/model-service/qual-lane/`, using the T024 configuration. Units are disabled until a window. Verify that there are no port or data-root collisions with the owner or production lanes.
+- [X] T041 (host, non-GPU) Create the private secret file `/mnt/data/forge-c/model-service/secrets/model-service.secrets` (0600, directory 0700) with generated tenant keys and the engine key. Put only the hashes in the live `tenants.yaml`. Nothing goes into git.
 - [X] T042 Define the window plan `smoke` in `factory/python/forge_factory/modelservice/window_plans.py`:
   1. Tier start and identity verify.
   2. KV capacity check against at least 2 × 65,536, else apply the R2 fallbacks in order and record each deviation.
