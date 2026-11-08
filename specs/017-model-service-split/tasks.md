@@ -265,7 +265,7 @@
 
   Add a test in `factory/python/tests/test_modelservice_window.py`.
 - [ ] T043 Ask the owner, through the usual floor and summary channel, for the window limits: `max_minutes` and allowed hours. Until they answer, use the default of 120 minutes at a time when the owner lane is between orders. Record the values in `deploy/recipe/params/omniverse2.yaml` (`window_max_minutes`, `window_hours`).
-- [ ] T044 [WINDOW] Run `python -m forge_factory.modelservice.window run --plan smoke`. Collect into `evidence/017/window-<id>/`:
+- [X] T044 [WINDOW] Run `python -m forge_factory.modelservice.window run --plan smoke`. Collect into `evidence/017/window-<id>/`:
   - the window record;
   - the identity;
   - the KV capacity;
@@ -291,7 +291,7 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T045 [P] [US3] `factory/python/tests/test_modelservice_qualify.py`. Build fixtures from the `model_exchanges` export layout (`nodes.csv` and `runs/<WO>__<run>/<node>/visit-N.jsonl`) and the run metrics. It checks:
+- [X] T045 [P] [US3] `factory/python/tests/test_modelservice_qualify.py`. Build fixtures from the `model_exchanges` export layout (`nodes.csv` and `runs/<WO>__<run>/<node>/visit-N.jsonl`) and the run metrics. It checks:
   - Rows per (phase, node).
   - A missing side is `NOT_RUN`.
   - The verdict is never `QUALIFIED_FOR_OWNER_REVIEW` with an OPEN finding or a NOT_RUN phase.
@@ -300,7 +300,7 @@
 
 ### Implementation for User Story 3
 
-- [ ] T046 [US3] Create `config/factory/qualification-set.yaml`. It lists every SWE phase the line has already passed on the current setup, with the baseline WO lineages and run IDs taken from evidence (for example the CRC HAL SWE.1 to SWE.6 lineage and the GPIO orders). Each entry links its evidence path. Include no entry without evidence.
+- [X] T046 [US3] Create `config/factory/qualification-set.yaml`. It lists every SWE phase the line has already passed on the current setup, with the baseline WO lineages and run IDs taken from evidence (for example the CRC HAL SWE.1 to SWE.6 lineage and the GPIO orders). Each entry links its evidence path. Include no entry without evidence.
 - [ ] T047 [US3] Implement `factory/python/forge_factory/modelservice/qualify.py`, `report --out <dir>`. It reads the baseline from existing evidence and the per-node exchange export; it never replays C, B or L90 runs. It reads the candidate from qualification-lane runs, computes the measures per `contracts/qualification-report.schema.json` (including swaps and swap wait per phase from the SwapEvent records, FR-030), lists deviations from `params/omniverse2.yaml` against `params/production.yaml`, and writes JSON plus a plain-language markdown summary. T045 must pass.
 - [ ] T048 [US3] Define the window plan `qualification` in `factory/python/forge_factory/modelservice/window_plans.py`. It queues fresh qualification-lane orders for the qualification-set phases, using the existing order mechanism for the qualification lane only. It resumes across windows from the last quality-checked part and stops cleanly at the window's hard end.
 - [ ] T049 [US3] [WINDOW] Run qualification windows until every qualification-set phase has a candidate result or is explicitly BLOCKED, within the owner's window limits (T043). Evidence goes to `evidence/017/qualification/`.

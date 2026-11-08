@@ -68,7 +68,7 @@ class Capture:
             fd = os.open(f, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(fd, "w") as fh:
                 json.dump(_clean(rec), fh, ensure_ascii=False)
-        except Exception:  # noqa: BLE001 - capture must never fail the call
+        except Exception:  # noqa: BLE001, S110 - capture must never fail the call
             pass
 
 
