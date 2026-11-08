@@ -84,7 +84,7 @@
 
   T011 must pass.
 
-  Done 2026-11-08: controller, Omniverse2 adapters (`window_adapters.py`) and CLI. A real dry run against the live lane refused before any change with `LANE_NOT_READY:BLOCKED:DEPLOYER_WINDOW_COMMANDS_MISSING` (evidence/017/window-dry-run/): whole-lane stop and restart still need the deployer commands `window-release` and `window-restore` (new task T072).
+  Done 2026-11-08: controller, Omniverse2 adapters (`window_adapters.py`) and CLI. A real dry run against the live lane refused before any change with `LANE_NOT_READY:BLOCKED:DEPLOYER_WINDOW_COMMANDS_MISSING` (specs/017-model-service-split/evidence/window-dry-run/): whole-lane stop and restart still need the deployer commands `window-release` and `window-restore` (new task T072).
 
 **Checkpoint**: identity, reasons, secrets, pinned artefacts and a tested window controller exist. User stories can start.
 
@@ -146,7 +146,8 @@
 
   T016 must pass. Record the new gateway SHA-256 in `specs/017-model-service-split/gateway-revision.md`, with the note that it is not valid for the owner lane until the cutover (research R7).
 - [X] T024 [US1] Define the **qualification lane** in `deploy/recipe/factory-machine/qualification-lane.env.example` and `factory/python/forge_factory/modelservice/lane.py`. It has its own Fabro instance, data root (`/mnt/data/forge-c/model-service/qual-lane/`), ports (not 11460 and not the owner lane's), its own state directory and `mode: external`. Add a test in `factory/python/tests/test_modelservice_external_mode.py` that refuses any configuration whose ports or data root collide with the owner or production lane.
-- [ ] T025 [US1] Run the CRE CHANGE gate for the US1 commit, via `promotion.evaluate` from the oracle checkout, with kind `CHANGE`. Store the decision insert-only in the host incidents store. No deploy to the owner lane: the qualification lane is not deployed until T044.
+- [X] T025 [US1] Run the CRE CHANGE gate for the US1 commit, via `promotion.evaluate` from the oracle checkout, with kind `CHANGE`. Store the decision insert-only in the host incidents store. No deploy to the owner lane: the qualification lane is not deployed until T044.
+  Done 2026-11-08: first run REJECTED (pd-09dfe2c5: protected evidence paths touched; fixed in a41f5667); second run ELIGIBLE_FOR_OFFLINE_REVIEW pd-349e8e4391cdafea2fa4 for a41f5667 (all hard gates PASS; reproducer NOT_APPLICABLE_FOR_CHANGE). No deploy: this branch is not the deployer branch.
 
 **Checkpoint**: external mode is fully covered by unit tests, and owned mode is unchanged.
 
@@ -267,7 +268,7 @@
 
   Add a test in `factory/python/tests/test_modelservice_window.py`.
 - [ ] T043 Ask the owner, through the usual floor and summary channel, for the window limits: `max_minutes` and allowed hours. Until they answer, use the default of 120 minutes at a time when the owner lane is between orders. Record the values in `deploy/recipe/params/omniverse2.yaml` (`window_max_minutes`, `window_hours`).
-- [ ] T044 [WINDOW] Run `python -m forge_factory.modelservice.window run --plan smoke`. Collect into `evidence/017/window-<id>/`:
+- [ ] T044 [WINDOW] Run `python -m forge_factory.modelservice.window run --plan smoke`. Collect into `specs/017-model-service-split/evidence/window-<id>/`:
   - the window record;
   - the identity;
   - the KV capacity;
@@ -305,9 +306,9 @@
 - [X] T046 [US3] Create `config/factory/qualification-set.yaml`. It lists every SWE phase the line has already passed on the current setup, with the baseline WO lineages and run IDs taken from evidence (for example the CRC HAL SWE.1 to SWE.6 lineage and the GPIO orders). Each entry links its evidence path. Include no entry without evidence.
 - [X] T047 [US3] Implement `factory/python/forge_factory/modelservice/qualify.py`, `report --out <dir>`. It reads the baseline from existing evidence and the per-node exchange export; it never replays C, B or L90 runs. It reads the candidate from qualification-lane runs, computes the measures per `contracts/qualification-report.schema.json` (including swaps and swap wait per phase from the SwapEvent records, FR-030), lists deviations from `params/omniverse2.yaml` against `params/production.yaml`, and writes JSON plus a plain-language markdown summary. T045 must pass.
 - [X] T048 [US3] Define the window plan `qualification` in `factory/python/forge_factory/modelservice/window_plans.py`. It queues fresh qualification-lane orders for the qualification-set phases, using the existing order mechanism for the qualification lane only. It resumes across windows from the last quality-checked part and stops cleanly at the window's hard end.
-- [ ] T049 [US3] [WINDOW] Run qualification windows until every qualification-set phase has a candidate result or is explicitly BLOCKED, within the owner's window limits (T043). Evidence goes to `evidence/017/qualification/`.
+- [ ] T049 [US3] [WINDOW] Run qualification windows until every qualification-set phase has a candidate result or is explicitly BLOCKED, within the owner's window limits (T043). Evidence goes to `specs/017-model-service-split/evidence/qualification/`.
 - [ ] T050 [US3] For every phase that passes on the baseline and fails on the candidate, open a CAPA via the CRE registry, attach the evidence and set `blocking_findings[].capa_id`.
-- [ ] T051 [US3] Produce the qualification report (`evidence/017/qualification/report.json` and `report.md`) and hand it to the owner on the floor and in the summary. The verdict is one of `QUALIFIED_FOR_OWNER_REVIEW`, `NOT_QUALIFIED` or `INCOMPLETE`.
+- [ ] T051 [US3] Produce the qualification report (`specs/017-model-service-split/evidence/qualification/report.json` and `report.md`) and hand it to the owner on the floor and in the summary. The verdict is one of `QUALIFIED_FOR_OWNER_REVIEW`, `NOT_QUALIFIED` or `INCOMPLETE`.
 
 **Checkpoint**: the owner has a report to decide on; no cutover has happened.
 
@@ -341,7 +342,7 @@
   - the list of what the Omniverse2 build does not prove (FP8 against BF16, 48 GB against 141 GB, sequences, container stand-in);
   - a reference to `specs/017-model-service-split/contracts/model-channel.md` as the interface the platform team must provide.
 - [X] T055 [P] [US4] Write the optional `deploy/recipe/factory-machine/packer/forge-c.pkr.hcl`, which uses the same `provision.sh` and cloud-init. Mark it optional in its header, because Packer is BUSL-1.1 (research R10).
-- [ ] T056 [US4] [WINDOW] Run the rebuild drill: tear down the tier and the factory machine (keeping data), `recipe apply --site omniverse2`, then `recipe drift`. Record the duration and 0 drift findings in `evidence/017/rebuild-drill/` (SC-004).
+- [ ] T056 [US4] [WINDOW] Run the rebuild drill: tear down the tier and the factory machine (keeping data), `recipe apply --site omniverse2`, then `recipe drift`. Record the duration and 0 drift findings in `specs/017-model-service-split/evidence/rebuild-drill/` (SC-004).
 
 **Checkpoint**: the recipe rebuilds the mirror, and the production parameters are documented.
 
@@ -367,7 +368,7 @@
   - only the data volume mounted.
 
   T057 must pass.
-- [ ] T061 [US5] (host, non-GPU) Start the factory container stand-in and run the isolation checks and quickstart step 3. Record them in `evidence/017/isolation/`.
+- [ ] T061 [US5] (host, non-GPU) Start the factory container stand-in and run the isolation checks and quickstart step 3. Record them in `specs/017-model-service-split/evidence/isolation/`.
   Pending 2026-11-08: provision.sh refuses until the toolchain pins (uv, LLVM, GNU Arm, Fabro URL+sha256) and factory_revision are in recipe.lock.json; the channel is a unix socket in the data volume relayed by socat on the host (no internal network with the gateway, which is a host unit on Omniverse2).
 - [ ] T062 [US5] VM path (BLOCKED until the `omniverse2` user is in group `kvm`; owner 2026-11-08 says an admin can do this). Write `deploy/recipe/factory-machine/vm/run-vm.sh`:
   BLOCKED 2026-11-08: /dev/kvm not accessible to omniverse2 (needs kvm group) and qemu-system-x86_64/qemu-img are not installed (needs an admin); run-vm.sh prints BLOCKED and exits 3.
@@ -427,7 +428,7 @@
 ---
 
 - [X] T072 Add `window-release` and `window-restore` to the owner-lane deployer (`/mnt/data/forge-c/owner-autodeploy/deployer/autodeploy.py`). Release: with the admission hold already set by the window, generate or reuse the reviewed stop tooling for the live guardian and retire the lane stack, with the intent unchanged and the GPU verified free. Restore: the deployer recover path for the same live commit with a fresh ticket. Test both on a quiet lane before the first window.
-  Done 2026-11-08: deployer sha dcdbab5a -> a947e575 (backup kept); offline tests window 16/16, rollback 32/32, importer 12/12; evidence/017/deployer-t072/. Not yet exercised on the real lane (T073).
+  Done 2026-11-08: deployer sha dcdbab5a -> a947e575 (backup kept); offline tests window 16/16, rollback 32/32, importer 12/12; specs/017-model-service-split/evidence/deployer-t072/. Not yet exercised on the real lane (T073).
 - [ ] T073 Exercise `window-release` then `window-restore` once on the real owner lane while it is quiet and the branch tip is live (no model tier: release, verify the GPU is free and the timer skips, restore, verify the new guardian is healthy), before the first model-tier window (T044).
 
 ## Dependencies & Execution Order
