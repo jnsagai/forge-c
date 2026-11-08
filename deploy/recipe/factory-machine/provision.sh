@@ -323,7 +323,7 @@ if [ "$DRY_RUN" = 1 ]; then
 fi
 python3 -I -c 'import json,sys,datetime
 names=["uv","llvm","gnu_arm","fabro"]; a=sys.argv[1:]
-rec={"schema":"forge-c/017/factory-provision","at":datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+rec={"schema":"forge-c/017/factory-provision","at":datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
      "site":a[0],"container":a[1]=="1","revision":a[2],"gpu_software":False,
      "pins":{n:{"version":a[3+3*i],"url":a[4+3*i],"sha256":a[5+3*i]} for i,n in enumerate(names)}}
 print(json.dumps(rec,indent=2,sort_keys=True))' "$FORGE_SITE" "$CONTAINER" "$FORGE_REVISION" \
