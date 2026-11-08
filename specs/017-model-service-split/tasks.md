@@ -84,7 +84,7 @@
 
   T011 must pass.
 
-  Done 2026-11-08: controller, Omniverse2 adapters () and CLI. A real dry run against the live lane refused before any change with  (evidence/017/window-dry-run/): whole-lane stop and restart still need the deployer commands  /  (new task T072).
+  Done 2026-11-08: controller, Omniverse2 adapters (`window_adapters.py`) and CLI. A real dry run against the live lane refused before any change with `LANE_NOT_READY:BLOCKED:DEPLOYER_WINDOW_COMMANDS_MISSING` (evidence/017/window-dry-run/): whole-lane stop and restart still need the deployer commands `window-release` and `window-restore` (new task T072).
 
 **Checkpoint**: identity, reasons, secrets, pinned artefacts and a tested window controller exist. User stories can start.
 
@@ -424,7 +424,7 @@
 
 ---
 
-- [ ] T072 Add  and  to the owner-lane deployer (): release = hold already set by the window, generate or reuse the reviewed stop tooling for the live guardian and retire the lane stack (intent unchanged, GPU verified free); restore = the deployer recover path for the same live commit with a fresh ticket. Test both on a quiet lane before the first window.
+- [ ] T072 Add `window-release` and `window-restore` to the owner-lane deployer (`/mnt/data/forge-c/owner-autodeploy/deployer/autodeploy.py`). Release: with the admission hold already set by the window, generate or reuse the reviewed stop tooling for the live guardian and retire the lane stack, with the intent unchanged and the GPU verified free. Restore: the deployer recover path for the same live commit with a fresh ticket. Test both on a quiet lane before the first window.
 
 ## Dependencies & Execution Order
 
