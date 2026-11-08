@@ -93,19 +93,20 @@ class OwnerLane:
         if tip != st["live"]["commit"]:
             return False, "PENDING_DEPLOY:the branch tip is not live yet (a window would revert it)"
         times = [d["at_epoch"] for d in st.get("deploys", [])]
-        if times and time.time() - max(times) <= 3600:
+        if times and time.time() - max(times) <= self._limit(src, "MIN_GAP_S", 3600):
             return False, "DEPLOYER_RATE_LIMIT_GAP"
-        if sum(1 for t in times if time.time() - t < 86400) >= self._max_per_day(src):
+        if sum(1 for t in times if time.time() - t < 86400) >= self._limit(src, "MAX_PER_DAY", 4):
             return False, "DEPLOYER_RATE_LIMIT_DAY"
         return True, ""
 
     @staticmethod
-    def _max_per_day(src: str) -> int:
-        """The deployer's own daily limit (owner-set; 10 since 2026-11-08), read from its source, never assumed."""
+    def _limit(src: str, name: str, default: int) -> int:
+        """One of the deployer's own rate limits (owner-set: MAX_PER_DAY 10, MIN_GAP_S 0 since 2026-11-08), read from its
+        source, never assumed."""
         import re
 
-        m = re.search(r"^MAX_PER_DAY = (\d+)", src, flags=re.M)
-        return int(m.group(1)) if m else 4
+        m = re.search(rf"^{name} = (\d+)", src, flags=re.M)
+        return int(m.group(1)) if m else default
 
     # ---- controls ------------------------------------------------------------------------------------------------
     def _set(self, value: str, reason: str) -> None:
