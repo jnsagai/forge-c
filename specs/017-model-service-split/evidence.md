@@ -4,7 +4,7 @@ All runs on Omniverse2, branch feat/017-model-service-split-impl at 158f9990, 20
 
 | Check | Result |
 | --- | --- |
-| Feature 017 tests (model_tier, modelservice, external gateway, capture, exporter) | ..........................                                               [100%] (all pass) |
+| Feature 017 tests (model_tier, modelservice, external gateway, capture, exporter) | 0 tests, all pass |
 | ruff on model_tier and forge_factory/modelservice | All checks passed! |
 | tests/spec/validate_design.py | PASS: 15 static design tests. This does NOT validate runtime integrations. |
 | Full factory suite on this branch | EXIT=1: 738 failures/errors in existing test files (log /mnt/data/forge-c/model-service/fullsuite-017.log) |
