@@ -23,10 +23,12 @@ LLAMA=${LLAMA_SERVER:-/mnt/data/forge-c/swe1-fabro-20261031/lrtx/ollama-0.34.0/l
 "${PY[@]}" image --name llama-server-ollama-0.34.0 --digest "sha256:$(sha256sum "$LLAMA" | cut -d' ' -f1)" --lock "$LOCK"
 
 # Factory machine base image: the newest dated Ubuntu 22.04 cloud image, checked against its published SHA256SUMS.
-REL=$(curl -fsS https://cloud-images.ubuntu.com/releases/jammy/ | grep -o 'release-[0-9]\{8\}' | sort -u | tail -1)
-IMG=ubuntu-22.04-server-cloudimg-amd64.img
-SUM=$(curl -fsS "https://cloud-images.ubuntu.com/releases/jammy/$REL/SHA256SUMS" | awk -v f="*$IMG" '$2==f{print $1}')
-[ -n "$SUM" ] || { echo "no checksum for $IMG in $REL" >&2; exit 4; }
-"${PY[@]}" url --url "https://cloud-images.ubuntu.com/releases/jammy/$REL/$IMG" --dest "$ROOT/images/$REL-$IMG" --sha256 "$SUM"
-"${PY[@]}" image --name "ubuntu-22.04-cloudimg-$REL" --digest "sha256:$SUM" --lock "$LOCK"
+if [ -z "${SKIP_CLOUD_IMAGE:-}" ]; then  # ~650 MB: skip on a slow link and fetch it later
+  REL=$(curl -fsS https://cloud-images.ubuntu.com/releases/jammy/ | grep -o 'release-[0-9]\{8\}' | sort -u | tail -1)
+  IMG=ubuntu-22.04-server-cloudimg-amd64.img
+  SUM=$(curl -fsS "https://cloud-images.ubuntu.com/releases/jammy/$REL/SHA256SUMS" | awk -v f="*$IMG" '$2==f{print $1}')
+  [ -n "$SUM" ] || { echo "no checksum for $IMG in $REL" >&2; exit 4; }
+  "${PY[@]}" url --url "https://cloud-images.ubuntu.com/releases/jammy/$REL/$IMG" --dest "$ROOT/images/$REL-$IMG" --sha256 "$SUM"
+  "${PY[@]}" image --name "ubuntu-22.04-cloudimg-$REL" --digest "sha256:$SUM" --lock "$LOCK"
+fi
 echo "ARTEFACTS_PINNED $LOCK"

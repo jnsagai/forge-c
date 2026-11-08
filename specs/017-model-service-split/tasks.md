@@ -60,7 +60,7 @@
   T005 must pass.
 - [X] T008 Implement `factory/python/forge_factory/modelservice/reasons.py`, holding the reason enum and the mapping of `(status, forge_reason, exception)` to a reason, and `factory/python/forge_factory/modelservice/secrets.py`, holding the name-to-value resolver from a private file whose path is given by `FORGE_MODEL_SERVICE_SECRETS`. T006 must pass.
 - [X] T009 [P] Write `factory/python/forge_factory/modelservice/artefacts.py`, which downloads to a target directory and records SHA-256 and size, and `factory/python/tests/test_modelservice_artefacts.py`, which tests resume, a wrong hash leading to refusal, and the lock writer. It is non-GPU and writes only under the given directory.
-- [ ] T010 (host, non-GPU) Pin the S0 artefacts under `/mnt/data/forge-c/model-service/` on Omniverse2 using T009:
+- [X] T010 (host, non-GPU) Pin the S0 artefacts under `/mnt/data/forge-c/model-service/` on Omniverse2 using T009:
   - The `vllm/vllm-openai` image digest of the first release that supports the Qwen3.6 MoE architecture. Check its release notes; if no release supports it, record BLOCKED with the reason.
   - The Qwen3.6-35B-A3B weights: the publisher's FP8 checkpoint if one exists, else BF16 for FP8-at-load (research R2).
   - The Ubuntu 22.04 cloud image.
@@ -255,7 +255,7 @@
 
 - [ ] T040 (host, non-GPU) Install the qualification lane from the T025-gated commit into `/mnt/data/forge-c/model-service/qual-lane/`, using the T024 configuration. Units are disabled until a window. Verify that there are no port or data-root collisions with the owner or production lanes.
 - [ ] T041 (host, non-GPU) Create the private secret file `/mnt/data/forge-c/model-service/secrets/model-service.secrets` (0600, directory 0700) with generated tenant keys and the engine key. Put only the hashes in the live `tenants.yaml`. Nothing goes into git.
-- [ ] T042 Define the window plan `smoke` in `factory/python/forge_factory/modelservice/window_plans.py`:
+- [X] T042 Define the window plan `smoke` in `factory/python/forge_factory/modelservice/window_plans.py`:
   1. Tier start and identity verify.
   2. KV capacity check against at least 2 × 65,536, else apply the R2 fallbacks in order and record each deviation.
   3. Ten factory calls through the qualification-lane gateway.
@@ -304,7 +304,7 @@
 
 - [X] T046 [US3] Create `config/factory/qualification-set.yaml`. It lists every SWE phase the line has already passed on the current setup, with the baseline WO lineages and run IDs taken from evidence (for example the CRC HAL SWE.1 to SWE.6 lineage and the GPIO orders). Each entry links its evidence path. Include no entry without evidence.
 - [X] T047 [US3] Implement `factory/python/forge_factory/modelservice/qualify.py`, `report --out <dir>`. It reads the baseline from existing evidence and the per-node exchange export; it never replays C, B or L90 runs. It reads the candidate from qualification-lane runs, computes the measures per `contracts/qualification-report.schema.json` (including swaps and swap wait per phase from the SwapEvent records, FR-030), lists deviations from `params/omniverse2.yaml` against `params/production.yaml`, and writes JSON plus a plain-language markdown summary. T045 must pass.
-- [ ] T048 [US3] Define the window plan `qualification` in `factory/python/forge_factory/modelservice/window_plans.py`. It queues fresh qualification-lane orders for the qualification-set phases, using the existing order mechanism for the qualification lane only. It resumes across windows from the last quality-checked part and stops cleanly at the window's hard end.
+- [X] T048 [US3] Define the window plan `qualification` in `factory/python/forge_factory/modelservice/window_plans.py`. It queues fresh qualification-lane orders for the qualification-set phases, using the existing order mechanism for the qualification lane only. It resumes across windows from the last quality-checked part and stops cleanly at the window's hard end.
 - [ ] T049 [US3] [WINDOW] Run qualification windows until every qualification-set phase has a candidate result or is explicitly BLOCKED, within the owner's window limits (T043). Evidence goes to `evidence/017/qualification/`.
 - [ ] T050 [US3] For every phase that passes on the baseline and fails on the candidate, open a CAPA via the CRE registry, attach the evidence and set `blocking_findings[].capa_id`.
 - [ ] T051 [US3] Produce the qualification report (`evidence/017/qualification/report.json` and `report.md`) and hand it to the owner on the floor and in the summary. The verdict is one of `QUALIFIED_FOR_OWNER_REVIEW`, `NOT_QUALIFIED` or `INCOMPLETE`.

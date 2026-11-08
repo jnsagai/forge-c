@@ -7,8 +7,10 @@ baseline_setup:
 candidate_setup:
   label: external-model-service (the same two models behind the tenant gateway; only the channel changes)
   identity: {name: "qwen3.8:27b-q8_0", precision: other, reasoning_mode: "on"}
+# example: used only when an order predates the line queue (no envelope target); source: the CRCHAL case of
+# config/factory/campaigns/omniverse2-local-20261103.yaml (example: 0014m-crc-hal).
 phases:
-  - {phase: SWE.1, lineage: CRC-HAL, patterns: [SWE1-CRCHAL-]}
+  - {phase: SWE.1, lineage: CRC-HAL, patterns: [SWE1-CRCHAL-], example: examples/0014m-crc-hal}
   - {phase: SWE.2, lineage: CRC-HAL, patterns: [SWE2-CRCHAL-]}
   - {phase: SWE.3, lineage: CRC-HAL, patterns: [SWE3-CRCHAL-]}
   - {phase: SWE.4, lineage: CRC-HAL, patterns: [SWE4-CRCHAL-]}
