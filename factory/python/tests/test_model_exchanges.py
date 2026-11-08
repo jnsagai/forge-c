@@ -94,6 +94,55 @@ def test_incremental_skips_finished_runs_and_never_writes_the_store(tmp_path):
     before = db.read_bytes()
     out = tmp_path / "out"
     assert M.export(db, out, incremental=True)["runs_exported"] == 1
-    assert M.export(db, out, incremental=True)["runs_exported"] == 0
+    # the newest run of an order is re-read every time (its structured nodes and captures keep growing) ...
+    assert M.export(db, out, incremental=True)["runs_exported"] == 1
+    c = sqlite3.connect(db)  # ... an older finished run of the same order is skipped once exported
+    c.execute("INSERT INTO runs VALUES ('01NEWERRUN0000000000000000', ?, 'wf', 'running', 5, NULL, 0, 0, 0, 0)", (WO + " retry",))
+    c.commit()
+    c.close()
+    before = db.read_bytes()
+    # the old finished run is skipped; the order's structured records move to its newest run and are counted once
+    assert M.export(db, out, incremental=True)["runs_exported"] == 1
+    rows = {r.split(",")[0]: r.split(",") for r in (out / "nodes.csv").read_text().splitlines()[1:]}
+    assert rows["swe1-author"][2] == "1" and rows["swe1_inspector"][2] == "1"  # visits
     assert M.export(db, out, wo="SPIL")["runs_selected"] == 0
     assert db.read_bytes() == before
+
+
+def test_structured_capture_is_off_by_default_and_complete_when_switched_on(tmp_path, monkeypatch):
+    """Owner 2026-11-08 "capture the structured node prompts too": full request + reply, behind the owner's switch."""
+    from forge_factory.lrtx import structured as S
+
+    state, ws = tmp_path / "state", tmp_path / "ws"
+    (ws / ".forge-run").mkdir(parents=True)
+    (ws / ".forge-run/manifest.json").write_text(json.dumps({"work_order": WO}))
+    monkeypatch.setenv("FORGE_STATE_DIR", str(state))
+    monkeypatch.chdir(ws)
+    p = {"phase": "SWE.1", "task": "requirements:GPIO_AFRH_1", "role": "swe1-author", "input_hash": "h"}
+    body = {"model": "ornith", "messages": [{"role": "system", "content": "Write requirements. api_key=SECRETVALUE99"},
+                                            {"role": "user", "content": "RM0486 excerpt"}],
+            "max_tokens": 4096, "forge_execution": {"job_id": "j", "nonce": "NONCE-MUST-NOT-LEAK", "request_id": "r", "role": "x"}}
+    result = {"usage": {"prompt_tokens": 100, "completion_tokens": 50}, "finish_reason": "stop", "wall_ms": 12.0, "errors": []}
+    S._capture(p, body, result, '{"requirements": []}')
+    assert not (state / "model-exchanges/structured").exists()  # no switch file: nothing written
+    (state / "model-exchanges").mkdir(parents=True)
+    (state / "model-exchanges/capture.json").write_text(json.dumps({"structured": True}))
+    S._capture(p, body, result, '{"requirements": []}')
+    files = list((state / "model-exchanges/structured" / WO / "SWE.1").glob("*.json"))
+    assert len(files) == 1 and stat.S_IMODE(files[0].stat().st_mode) == 0o600
+    rec = json.loads(files[0].read_text())
+    assert rec["request"]["messages"][1]["content"] == "RM0486 excerpt" and rec["reply"]["text"] == '{"requirements": []}'
+    assert "NONCE-MUST-NOT-LEAK" not in files[0].read_text() and "SECRETVALUE99" not in files[0].read_text()
+    monkeypatch.setattr(S, "RECOVERY_WORKSPACE", None)  # a broken environment never fails the call
+    S._capture(p, body, result, "x")
+
+    # the exporter attaches the captured call to its task, once per order (newest run)
+    db = _fabro(tmp_path)
+    capdir = tmp_path / "lrtx/state/model-exchanges/structured" / WO / "SWE.1"
+    capdir.mkdir(parents=True)
+    (capdir / files[0].name).write_text(files[0].read_text())
+    out = tmp_path / "out"
+    M.export(db, out)
+    t = next((out / "runs").iterdir()) / "swe1-author/visit-1.md"
+    text = t.read_text()
+    assert "1 calls captured" in text and "RM0486 excerpt" in text and "### Captured call" in text

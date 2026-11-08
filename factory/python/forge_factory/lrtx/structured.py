@@ -445,6 +445,49 @@ def _parse_json(text: str):
         return None, f"NOT_JSON:{str(exc)[:80]}"
 
 
+CAPTURE_SWITCH = "model-exchanges/capture.json"
+
+
+def _capture(p: dict, body: dict, result: dict, text: str | None) -> None:
+    """Owner 2026-11-08 ("capture the structured node prompts too"): the complete request and reply of one structured
+    call, for the per-node model exchange log (lrtx.model_exchanges). OFF unless the owner's switch file
+    <state>/model-exchanges/capture.json says {"structured": true} (trace policy: raw prompts/responses off by default).
+    Written privately under <state>/model-exchanges/structured/<work order>/ - never into the workspace or a package.
+    The durable binding (job, nonce, request id) is not written; hidden reasoning never reaches this process (the
+    gateway strips it); secrets are redacted. Capture can never fail or slow the call beyond one file write."""
+    try:
+        from ..common import state_dir
+
+        root = state_dir() / "model-exchanges"
+        switch = root / "capture.json"
+        if not switch.is_file() or json.loads(switch.read_text()).get("structured") is not True:
+            return
+        import uuid
+
+        from ..events.redact import redact_obj
+
+        ws = RECOVERY_WORKSPACE.get() or Path.cwd()
+        man = ws / ".forge-run/manifest.json"
+        wo = (json.loads(man.read_text()).get("work_order") if man.is_file() else None) or "unknown-order"
+        safe = lambda s: re.sub(r"[^A-Za-z0-9._@-]+", "_", str(s))[:120]  # noqa: E731
+        d = root / "structured" / safe(wo) / safe(p.get("phase") or "phase")
+        d.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(root, 0o700)
+        rec = {"schema": "forge-c/structured-exchange/1", "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+               "work_order": wo, "phase": p.get("phase"), "task": p.get("task"), "role": p.get("role"),
+               "input_hash": p.get("input_hash"),
+               "request": {k: v for k, v in body.items() if k != "forge_execution"},
+               "reply": {"text": text, "usage": result.get("usage"), "finish_reason": result.get("finish_reason"),
+                         "wall_ms": result.get("wall_ms"), "errors": result.get("errors"),
+                         "format_note": result.get("format_note")}}
+        out = d / f"{time.strftime('%Y%m%dT%H%M%S', time.gmtime())}-{safe(p.get('task'))}-{uuid.uuid4().hex[:8]}.json"
+        fd = os.open(out, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(redact_obj(rec)[0], f, ensure_ascii=False)
+    except Exception:  # noqa: BLE001, S110 - the exchange log is evidence for optimization, never a reason to fail a call
+        pass
+
+
 def call(
     p: dict, *, temperature: float | None = None, schema_mode: str = "json_schema", timeout: float = 3600, url: str | None = None
 ) -> dict:
@@ -512,10 +555,12 @@ def call(
                 code = candidate
         except (OSError, ValueError, AttributeError):
             code = f"HTTP_{exc.code}"
-        return {"doc": None, "errors": ["CALL_REFUSED:" + code], "usage": None,
-                "wall_ms": round((time.monotonic() - t0) * 1000, 1), "raw_chars": 0, "finish_reason": None}
+        res = {"doc": None, "errors": ["CALL_REFUSED:" + code], "usage": None,
+               "wall_ms": round((time.monotonic() - t0) * 1000, 1), "raw_chars": 0, "finish_reason": None}
+        _capture(p, body, res, None)
+        return res
     except (urllib.error.URLError, OSError, ValueError) as exc:
-        return {
+        res = {
             "doc": None,
             "errors": [f"CALL_FAILED:{str(exc)[:160]}"],
             "usage": None,
@@ -523,6 +568,8 @@ def call(
             "raw_chars": 0,
             "finish_reason": None,
         }
+        _capture(p, body, res, "".join(content) or None)
+        return res
     text = "".join(content)
     doc, note = _parse_json(text)
     errors = [note] if doc is None else validate(doc, p["output_schema"])
@@ -532,7 +579,7 @@ def call(
         doc = declare(ws, p, doc)  # callers see the work-product schema only
     if finish == "length":
         errors.append("OUTPUT_TRUNCATED_AT_RESERVE (repartition the task or raise the reserve)")
-    return {
+    res = {
         "doc": doc,
         "errors": errors,
         "usage": usage,
@@ -541,6 +588,8 @@ def call(
         "finish_reason": finish,
         "format_note": note,
     }
+    _capture(p, body, res, text)
+    return res
 
 
 PROBE_SCHEMA = {

@@ -233,7 +233,7 @@ def collect(c: sqlite3.Connection, run_id: str) -> dict:
     return _clean({"schema": SCHEMA, "run_id": run_id, "visits": ai})
 
 
-def collect_structured(ws: Path) -> dict:
+def collect_structured(ws: Path, captured: Path | None = None) -> dict:
     """Structured command nodes (e.g. the SWE.1 author) call the gateway from Python, outside Fabro's agent loop. Their
     workspace keeps, per task, every attempt's usage, timing, finish reason, errors and request size/hash, and the final
     output document - not the request text (see the module docstring)."""
@@ -304,15 +304,67 @@ def collect_structured(ws: Path) -> dict:
                     "reused": d.get("reused"),
                 }
             )
+    # owner 2026-11-08: complete request and reply of each structured call, when the capture switch was on (structured.py)
+    for f in sorted(captured.glob("*/*.json")) if captured and captured.is_dir() else []:
+        try:
+            rec = json.loads(f.read_text())
+        except (OSError, ValueError):
+            continue
+        node = rec.get("role") or f"{rec.get('phase')}-structured"
+        v = visits.setdefault(
+            node,
+            {
+                "node": node,
+                "stage": f"{node}@1",
+                "kind": "structured",
+                "visit": 1,
+                "phase": rec.get("phase"),
+                "turns": [],
+                "tasks": [],
+            },
+        )
+        v.setdefault("captured", []).append(rec)
     for v in visits.values():
-        v["status"] = "valid" if all(x["status"] == "VALID" for x in v["tasks"]) else "has invalid tasks"
+        caps = sorted(v.get("captured") or [], key=lambda r: r.get("at") or "")
+        if caps and not v["turns"]:  # a role without packets (e.g. an inspector): its calls come from the capture alone
+            for n, rec in enumerate(caps, 1):
+                reply = rec.get("reply") or {}
+                u = reply.get("usage") or {}
+                prompt, cached = u.get("prompt_tokens"), (u.get("prompt_tokens_details") or {}).get("cached_tokens")
+                v["turns"].append(
+                    {
+                        "i": n,
+                        "task": rec.get("task"),
+                        "attempt": 1,
+                        "finish_reason": reply.get("finish_reason"),
+                        "errors": reply.get("errors") or [],
+                        "prompt_tokens": prompt,
+                        "cached_tokens": cached,
+                        "usage": {
+                            "input": (prompt - (cached or 0)) if prompt is not None else None,
+                            "output": u.get("completion_tokens"),
+                            "reasoning": None,
+                        },
+                        "timing_ms": {"total": reply.get("wall_ms")},
+                        "tool_calls": [],
+                        "warnings": [],
+                    }
+                )
+        v["captured"] = caps
+        if v["tasks"]:
+            v["status"] = "valid" if all(x["status"] == "VALID" for x in v["tasks"]) else "has invalid tasks"
+        else:
+            v["status"] = "captured"
     return _clean(visits)
 
 
 def visit_stats(v: dict) -> dict:
     turns = v["turns"]
     u = [t.get("usage") or {} for t in turns]
-    prompt = [t.get("prompt_tokens") if t.get("prompt_tokens") is not None else (x.get("input") or 0) for t, x in zip(turns, u, strict=True)]
+    prompt = [
+        t.get("prompt_tokens") if t.get("prompt_tokens") is not None else (x.get("input") or 0)
+        for t, x in zip(turns, u, strict=True)
+    ]
     processed = [x.get("input") or 0 for x in u]
     overhead = [sum((t.get("context") or {}).get(k) or 0 for k in OVERHEAD) for t in turns]
     calls = [x for t in turns for x in t["tool_calls"]]
@@ -326,6 +378,7 @@ def visit_stats(v: dict) -> dict:
         sum(len(t.get("text") or "") for t in turns)
         + sum(len(json.dumps(x.get("arguments"))) for x in calls)
         + sum(len(json.dumps(task.get("output"))) for task in v.get("tasks") or [] if task.get("output") is not None)
+        + (0 if v.get("tasks") else sum(len((r.get("reply") or {}).get("text") or "") for r in v.get("captured") or []))
     )
     return {
         "kind": v.get("kind", "agent"),
@@ -364,6 +417,7 @@ def visit_stats(v: dict) -> dict:
         "loops": v.get("loops", 0),
         "compactions": v.get("compactions", 0),
         "status": v.get("status"),
+        "captured_calls": len(v.get("captured") or []),
     }
 
 
@@ -374,6 +428,34 @@ def _fence(text: str) -> str:
         else text[:MD_OUTPUT_CHARS] + f"\n... [{len(text) - MD_OUTPUT_CHARS} more chars in the .jsonl]"
     )
     return "````text\n" + text.replace("````", "` ` ` `") + "\n````"
+
+
+def _captured_block(rec: dict) -> list[str]:
+    """One captured structured call: every request message, the request parameters and the reply text."""
+    reply = rec.get("reply") or {}
+    u = reply.get("usage") or {}
+    lines = [
+        f"### Captured call · {rec.get('at')} · {u.get('prompt_tokens')} prompt / {u.get('completion_tokens')} output tokens · "
+        f"{(reply.get('wall_ms') or 0) / 1000:.0f} s · finish {reply.get('finish_reason')}",
+        "",
+    ]
+    for m in (rec.get("request") or {}).get("messages") or []:
+        content = m.get("content")
+        text = content if isinstance(content, str) else json.dumps(content, ensure_ascii=False)
+        lines += [f"**{m.get('role')}**", "", _fence(text), ""]
+    params = {k: x for k, x in (rec.get("request") or {}).items() if k != "messages"}
+    found = "; ".join(reply.get("errors") or [])[:300]
+    lines += [
+        "Request parameters:",
+        "",
+        "```json\n" + json.dumps(params, indent=1, ensure_ascii=False)[:MD_OUTPUT_CHARS] + "\n```",
+        "",
+        "**Reply**" + (f" (findings: {found})" if found else ""),
+        "",
+        _fence(reply.get("text") or "(no reply text)"),
+        "",
+    ]
+    return lines
 
 
 def transcript(meta: dict, v: dict, st: dict) -> str:
@@ -387,10 +469,13 @@ def transcript(meta: dict, v: dict, st: dict) -> str:
         "",
     ]
     if v.get("kind") == "structured":
+        caps = v.get("captured") or []
         out += [
-            "Structured node: the request text is not recorded (only its size and hash); each task's attempts and final output follow.",
+            f"Structured node: {len(caps)} calls captured with their full request and reply (capture switch on); calls made "
+            "while the switch was off keep only their size and hash. Each task's attempts and final output follow.",
             "",
         ]
+        shown: set[int] = set()
         for task in v.get("tasks") or []:
             rows = [t for t in v["turns"] if t.get("task") == task["task"]]
             out += [
@@ -405,6 +490,15 @@ def transcript(meta: dict, v: dict, st: dict) -> str:
                 for t in rows
             ]
             out += ["", "Final output:", "", _fence(json.dumps(task.get("output"), indent=1, ensure_ascii=False)), ""]
+            for i, rec in enumerate(caps):
+                if rec.get("task") == task["task"]:
+                    out += _captured_block(rec)
+                    shown.add(i)
+        rest = [rec for i, rec in enumerate(caps) if i not in shown]
+        if rest:
+            out += ["## Captured calls", ""]
+            for rec in rest:
+                out += [f"Task `{rec.get('task')}`", ""] + _captured_block(rec)
         return "\n".join(out)
     out += [
         "## Node input (the user message the node starts from)",
@@ -535,7 +629,12 @@ def _write_visit(rdir: Path, meta: dict, v: dict) -> dict:
     with open(str(base) + ".jsonl", "w", encoding="utf-8") as f:
         f.write(
             json.dumps(
-                {"kind": "visit", "run": meta, **{k: x for k, x in v.items() if k not in ("turns", "tasks")}, "stats": st},
+                {
+                    "kind": "visit",
+                    "run": meta,
+                    **{k: x for k, x in v.items() if k not in ("turns", "tasks", "captured")},
+                    "stats": st,
+                },
                 ensure_ascii=False,
             )
             + "\n"
@@ -544,6 +643,8 @@ def _write_visit(rdir: Path, meta: dict, v: dict) -> dict:
             f.write(json.dumps({"kind": "call", **t}, ensure_ascii=False) + "\n")
         for task in v.get("tasks") or []:
             f.write(json.dumps({"kind": "task_output", **task}, ensure_ascii=False) + "\n")
+        for rec in v.get("captured") or []:
+            f.write(json.dumps({"kind": "captured_call", **rec}, ensure_ascii=False) + "\n")
     Path(str(base) + ".md").write_text(transcript(meta, v, st), encoding="utf-8")
     return {"node": v["node"], "visit": v.get("visit"), **st}
 
@@ -572,18 +673,22 @@ def export(
     done = json.loads(state_path.read_text()) if incremental and state_path.is_file() else {}
     c = _ro(db)
     try:
-        selected = [
-            r for r in runs(c) if (not run or r["run_id"] == run) and (not wo or wo in (r["wo"] or "") or wo in r["title"])
-        ]
+        every = runs(c)
+        newest = {r["wo"]: r["run_id"] for r in every if r["wo"]}  # runs are ordered by creation; the last one wins
+        selected = [r for r in every if (not run or r["run_id"] == run) and (not wo or wo in (r["wo"] or "") or wo in r["title"])]
         exported = 0
         for meta in selected:
             final = meta["status"] in ("succeeded", "failed", "cancelled")
-            if incremental and final and done.get(meta["run_id"]) == meta["completed_ms"]:
+            owns_order = bool(meta["wo"]) and newest.get(meta["wo"]) == meta["run_id"]
+            # an order's newest run is re-read every time: its structured nodes and captures keep growing after the run ends
+            if incremental and final and done.get(meta["run_id"]) == meta["completed_ms"] and not owns_order:
                 continue
             visits = list(collect(c, meta["run_id"])["visits"].values())
-            ws = workorders / (meta["wo"] or "-") / "workspace"
-            if meta["wo"] and ws.is_dir():
-                visits += list(collect_structured(ws).values())
+            if owns_order:  # an order's workspace and captures are shared by all its runs: attached to the newest run only
+                ws = workorders / meta["wo"] / "workspace"
+                caps = workorders.parent / "model-exchanges/structured" / _safe(meta["wo"])
+                if ws.is_dir() or caps.is_dir():
+                    visits += list(collect_structured(ws, caps).values())
             done[meta["run_id"]] = meta["completed_ms"] if final else None
             if not visits:
                 continue
@@ -603,10 +708,18 @@ def export(
 def rebuild_by_node(out: Path) -> dict:
     """Aggregate every exported run.json into by-node reports, nodes.csv and index.md."""
     by: dict[str, list[tuple[dict, dict]]] = defaultdict(list)
+    latest: dict[tuple, tuple[dict, dict]] = {}
     for rj in sorted((out / "runs").glob("*/run.json")):
         d = json.loads(rj.read_text())
         for st in d["visits"].values():
+            if st.get("kind") == "structured" and d["run"].get("wo"):  # one order workspace, counted once (newest run)
+                key = (d["run"]["wo"], st["node"])
+                if key not in latest or (latest[key][0].get("created_ms") or 0) < (d["run"].get("created_ms") or 0):
+                    latest[key] = (d["run"], st)
+                continue
             by[st["node"]].append((d["run"], st))
+    for meta, st in latest.values():
+        by[st["node"]].append((meta, st))
     nd = out / "by-node"
     nd.mkdir(exist_ok=True)
     rows = []
