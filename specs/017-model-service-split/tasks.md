@@ -96,7 +96,7 @@
 
 ### Tests for User Story 1 ⚠️ (write first, must fail)
 
-- [ ] T015 [P] [US1] `factory/python/tests/test_modelservice_external_mode.py`, using fakes. With `model_service.mode: external` it checks that:
+- [X] T015 [P] [US1] `factory/python/tests/test_modelservice_external_mode.py`, using fakes. With `model_service.mode: external` it checks that:
   - `lrtx/stack.py` `_start` and `serve` never spawn `llama-server` or Ollama;
   - `afo/line_launcher.py` never acquires `gpu.lock` and uses tenant-share admission instead;
   - `afo/line_stack_lifecycle.py` `swap_fence` is never set;
@@ -105,7 +105,7 @@
   - in external mode, `lrtx/stack.py` `serve` (the workflow's serve node) makes no model change and only records which model the next part uses. Alternating author and inspector models produces zero factory swap actions (FR-029, SC-010);
   - the per-model identity pin holds across a service swap away and back (data-model);
   - with `mode: owned`, the existing tests `test_line_stack_lifecycle.py`, `test_lrtx_admission.py` and `test_cloud_line_scheduler.py` pass unchanged (FR-007).
-- [ ] T016 [P] [US1] `factory/python/tests/test_llm_gateway_external.py`, using a fake upstream. It covers:
+- [X] T016 [P] [US1] `factory/python/tests/test_llm_gateway_external.py`, using a fake upstream. It covers:
   - The bearer key is sent upstream and never logged.
   - `chat_template_kwargs.enable_thinking=false` is on every request.
   - The identity is pinned on the first call; a changed `x-forge-model-identity` leads to 409 `identity_changed` and blocks the run.
@@ -115,22 +115,26 @@
   - An over-limit context is refused before sending (FR-006).
   - `reasoning_content` is stripped and counted.
   - Each meter row carries `identity_fingerprint`, `tenant_id` and `queue_ms` (ModelCallEvidence).
-- [ ] T017 [P] [US1] `factory/python/tests/test_modelservice_client.py`. It covers:
+- [X] T017 [P] [US1] `factory/python/tests/test_modelservice_client.py`. It covers:
   - Loading the profile validates against `model-service-profile.schema.json`; external mode without `base_url`, `credential_ref`, `expected_identity` or `share` is refused.
   - The identity-read state machine per data-model: UNPINNED, PINNED, WAITING, QUEUED, BLOCKED.
   - The outage wait is bounded by `outage_wait_max_s`.
 
 ### Implementation for User Story 1
 
-- [ ] T018 [US1] Implement `factory/python/forge_factory/modelservice/client.py`: profile loading, the identity read (`/forge/v1/identity`, falling back to `/v1/models` via `identity.inferred_from_models_endpoint`), the run-link state machine and reason recording. T017 must pass.
+- [X] T018 [US1] Implement `factory/python/forge_factory/modelservice/client.py`: profile loading, the identity read (`/forge/v1/identity`, falling back to `/v1/models` via `identity.inferred_from_models_endpoint`), the run-link state machine and reason recording. T017 must pass.
 - [ ] T019 [US1] Add the `model_service` block to the profile in `factory/python/forge_factory/lrtx/stack.py` (`settings`, `envmap`, `_start`, `serve`, `_serve_model`). In external mode:
   - follow the `cloud_bridge` precedent (`stack.py` near the `cloud_bridge(prof)` branch in `_start`): no Ollama, no llama-server, gateway upstream = `base_url`, key from `credential_ref`;
   - `serve` returns `{"model_swap": "BY_SERVICE", "model": m}` without any process action (FR-029);
   - the pre-run check verifies that every role's model is offered (`/forge/v1/catalog` or `/v1/models`). `owned` must stay byte-for-byte the same behaviour.
+  **DEFERRED to the cutover (S6), 2026-11-08:** `lrtx/stack.py`, `afo/execution_lifecycle.py`, `afo/product_job.py`, `fabro/client.py` and `llm_gateway.py` are pinned by the owner lane's signed transport proof (`afo/line_native_transport.py` ADAPTERS); changing them now would break owner-lane launches (`ADAPTER_CHANGED`). External mode is delivered now by new modules only (qualification lane: `modelservice/lane.py`, `gateway_external.py`, `transport.py`, `client.py`). The owner lane's own external-mode edits are made with the re-measured proof the owner signs at cutover (T069 runbook).
 - [ ] T020 [US1] In `factory/python/forge_factory/afo/line_launcher.py` (`gpu_lock`, the launch path near `with gpu_lock(cfg.gpu_lock)`, `plan`, status), skip the host GPU lock in external mode and record the step as `gpu_lock: NOT_USED_EXTERNAL`. Admission comes from the tenant share. Status and plan output name the mode.
+  **DEFERRED to the cutover (S6), 2026-11-08:** `lrtx/stack.py`, `afo/execution_lifecycle.py`, `afo/product_job.py`, `fabro/client.py` and `llm_gateway.py` are pinned by the owner lane's signed transport proof (`afo/line_native_transport.py` ADAPTERS); changing them now would break owner-lane launches (`ADAPTER_CHANGED`). External mode is delivered now by new modules only (qualification lane: `modelservice/lane.py`, `gateway_external.py`, `transport.py`, `client.py`). The owner lane's own external-mode edits are made with the re-measured proof the owner signs at cutover (T069 runbook).
 - [ ] T021 [US1] In `factory/python/forge_factory/afo/line_stack_lifecycle.py` (`_prelaunch`, `_native_handoff`, `swap_fence`), external mode means no model swap and no swap fence; swapping belongs to the service. Identity is pinned per model name, and a model whose identity differs from its pin yields `identity_changed` → BLOCKED.
+  **DEFERRED to the cutover (S6), 2026-11-08:** `lrtx/stack.py`, `afo/execution_lifecycle.py`, `afo/product_job.py`, `fabro/client.py` and `llm_gateway.py` are pinned by the owner lane's signed transport proof (`afo/line_native_transport.py` ADAPTERS); changing them now would break owner-lane launches (`ADAPTER_CHANGED`). External mode is delivered now by new modules only (qualification lane: `modelservice/lane.py`, `gateway_external.py`, `transport.py`, `client.py`). The owner lane's own external-mode edits are made with the re-measured proof the owner signs at cutover (T069 runbook).
 - [ ] T022 [US1] In `factory/python/forge_factory/afo/scheduler.py`, `afo/operations.py` and `afo/execution_lifecycle.py`, external mode replaces "inference owner lease" and "GPU idle observation" with the tenant-share state from the client. Requested stop no longer waits for native inference-owner quiescence; it waits for in-flight gateway calls to finish or reach `outcome_unknown`. T015 must pass.
-- [ ] T023 [US1] Build the new gateway revision in `factory/python/forge_factory/llm_gateway.py`, keeping it backward compatible with the current behaviour when `FORGE_MODEL_SERVICE_MODE` is unset:
+  **DEFERRED to the cutover (S6), 2026-11-08:** `lrtx/stack.py`, `afo/execution_lifecycle.py`, `afo/product_job.py`, `fabro/client.py` and `llm_gateway.py` are pinned by the owner lane's signed transport proof (`afo/line_native_transport.py` ADAPTERS); changing them now would break owner-lane launches (`ADAPTER_CHANGED`). External mode is delivered now by new modules only (qualification lane: `modelservice/lane.py`, `gateway_external.py`, `transport.py`, `client.py`). The owner lane's own external-mode edits are made with the re-measured proof the owner signs at cutover (T069 runbook).
+- [X] T023 [US1] (Delivered without editing the pinned `llm_gateway.py`: `modelservice/gateway_external.py` runs the unchanged gateway app with `modelservice/transport.py` as its upstream transport, and a test proves the source is byte-identical to the base.) Build the new gateway revision in `factory/python/forge_factory/llm_gateway.py`, keeping it backward compatible with the current behaviour when `FORGE_MODEL_SERVICE_MODE` is unset:
   - upstream bearer from `FORGE_MODEL_SERVICE_KEY_REF`, resolved via `modelservice/secrets.py`;
   - `enable_thinking=false`;
   - identity header check;
@@ -139,7 +143,7 @@
   - the ModelCallEvidence fields in `Meter.record`.
 
   T016 must pass. Record the new gateway SHA-256 in `specs/017-model-service-split/gateway-revision.md`, with the note that it is not valid for the owner lane until the cutover (research R7).
-- [ ] T024 [US1] Define the **qualification lane** in `deploy/recipe/factory-machine/qualification-lane.env.example` and `factory/python/forge_factory/modelservice/lane.py`. It has its own Fabro instance, data root (`/mnt/data/forge-c/model-service/qual-lane/`), ports (not 11460 and not the owner lane's), its own state directory and `mode: external`. Add a test in `factory/python/tests/test_modelservice_external_mode.py` that refuses any configuration whose ports or data root collide with the owner or production lane.
+- [X] T024 [US1] Define the **qualification lane** in `deploy/recipe/factory-machine/qualification-lane.env.example` and `factory/python/forge_factory/modelservice/lane.py`. It has its own Fabro instance, data root (`/mnt/data/forge-c/model-service/qual-lane/`), ports (not 11460 and not the owner lane's), its own state directory and `mode: external`. Add a test in `factory/python/tests/test_modelservice_external_mode.py` that refuses any configuration whose ports or data root collide with the owner or production lane.
 - [ ] T025 [US1] Run the CRE CHANGE gate for the US1 commit, via `promotion.evaluate` from the oracle checkout, with kind `CHANGE`. Store the decision insert-only in the host incidents store. No deploy to the owner lane: the qualification lane is not deployed until T044.
 
 **Checkpoint**: external mode is fully covered by unit tests, and owned mode is unchanged.
@@ -176,7 +180,7 @@
   - with warm strategies, a swap performs no model-file read from disk (the fake engine records the source of each load); when the RAM budget is short, that model falls back to a cold load with a finding and the request is still answered (FR-031);
   - tenant priority applies within a model queue, and guaranteed shares hold across swaps (FR-025 to FR-030, SC-009);
   - fairness: two factory tenants and a neighbour, each preferring a different model, all progress within `max_wait_s`, and a tenant flooding requests for the non-loaded model cannot take another tenant's guaranteed slots (FR-033, SC-012).
-- [ ] T028 [P] [US2] Write the contract test `factory/python/tests/test_modelservice_channel_contract.py`. Run the same client against two fakes:
+- [X] T028 [P] [US2] Write the contract test `factory/python/tests/test_modelservice_channel_contract.py`. Run the same client against two fakes:
   - (a) the full tenant gateway;
   - (b) a bare OpenAI-compatible service with only `/v1/models` and chat.
 
