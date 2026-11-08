@@ -35,8 +35,30 @@ from ..reliability.protect import _match
 MAX_SOURCE_READ_BYTES = 4 * 1024 * 1024
 CANDIDATE_TESTS = "factory/python/tests/afo_candidate/"
 ALLOW = ["factory/python/forge_factory/**", CANDIDATE_TESTS + "**"]
+AFO = "factory/python/forge_factory/afo/"
+# CAPA-194 (owner 2026-11-08, "do 2 too": a factory isolated from the network and from Claude must be able to repair
+# its own guardian/line code). afo/ is open to the maintainer EXCEPT its trust anchors: this broker and the code that
+# drives and reviews it, authorization/policy/launch guard, the owner allowance and mission accounting, acceptance,
+# the integrity primitives, the owner-signed role-trial binding and the history/qualification proofs. Imports that
+# touch afo/ face a stricter deterministic gate in the owner-lane deployer (outside this repository).
 DENY = [  # inside ALLOW, still never the maintainer's: the deciders, the grants and the other repair identities
-    "factory/python/forge_factory/afo/**",          # Conductor, AFO policy/authz, this broker
+    AFO + "maintainer.py",                          # this broker and its veto
+    AFO + "line_maintenance*.py",                   # the coordinator that drives the maintainer, its case binding
+    AFO + "maintenance_*.py",                       # maintenance binding / rework
+    AFO + "verification_job.py",                    # the independent review queue
+    AFO + "line_verifier_guard.py",
+    AFO + "authz.py",                               # AFO authorization
+    AFO + "authority.py",
+    AFO + "policy.py",                              # AFO policy
+    AFO + "owner_launch_guard.*",                   # launch guard (py + sh)
+    AFO + "owner_development_allowance.py",         # the owner's finite allowance
+    AFO + "mission_*.py",                           # mission ledger, capacity, deadline, admin
+    AFO + "acceptance.py",                          # acceptance is the owner's
+    AFO + "durable.py",                             # canonical/digest/Refused integrity primitives
+    AFO + "product_role_trial.py",                  # owner-signed role-trial binding
+    AFO + "owner_bootstrap_history.py",             # history proofs
+    AFO + "history_qualification.py",
+    AFO + "qualification*.py",                      # qualification evidence
     "factory/python/forge_factory/reliability/**",  # independent CRE evaluator, CAPA registry, sandbox identities
     "factory/python/forge_factory/registry/**",     # role and MCP grants (no self-granting)
     "factory/python/forge_factory/mcp/sdk.py",      # MCP authorization
