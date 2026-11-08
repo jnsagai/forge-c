@@ -402,14 +402,14 @@
 
 ## Phase 10: Polish, cutover preparation and cross-cutting
 
-- [ ] T067 [P] Write the ADR `docs/adr/ADR-DA-027-model-service-split.md` with the decisions R1 to R12, why the factory never owns the GPU in production, and why the gateway revision waits for the cutover.
-- [ ] T068 [P] Update `docs/ONPREM-DEPLOYMENT.md` "Questions for Infrastructure":
+- [X] T067 [P] Write the ADR `docs/adr/ADR-DA-027-model-service-split.md` with the decisions R1 to R12, why the factory never owns the GPU in production, and why the gateway revision waits for the cutover.
+- [X] T068 [P] Update `docs/ONPREM-DEPLOYMENT.md` "Questions for Infrastructure":
   - add "does the service offer the Forge-C identity extension, or only `/v1/models`?";
   - add a per-tenant share question;
   - link `deploy/recipe/README.md` and `contracts/model-channel.md`.
 
   Keep the existing text unchanged otherwise.
-- [ ] T069 Write the owner-only cutover runbook `specs/017-model-service-split/cutover-runbook.md`, per data-model CutoverRecord:
+- [X] T069 Write the owner-only cutover runbook `specs/017-model-service-split/cutover-runbook.md`, per data-model CutoverRecord:
   - what the owner signs (the re-measured transport proof for the new gateway SHA-256);
   - how `forge-owner` is enabled;
   - how the owner lane's profile switches to `mode: external`;

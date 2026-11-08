@@ -171,3 +171,8 @@ Once the VM is ready, the Forge-C team can install and validate it without furth
 - [ ] Which export-control classification and network zone apply, and is the GPU server inside that zone?
 - [ ] Is a separate VM required for each customer program?
 - [ ] Is there an internal Git server in the controlled zone for the Forge-C repository, and can the generic factory code be mirrored in from GitHub?
+- [ ] Does the GPU server offer the Forge-C identity extension (`/forge/v1/identity`), or only `/v1/models`? Without it, Forge-C records the served model as not attested.
+- [ ] What share does each tenant get: guaranteed and maximum concurrent requests, queue length, and priority between applications?
+- [ ] Which models will the server offer, and are they kept loaded together or swapped? Forge-C works either way, and only waits longer during a swap.
+
+The interface Forge-C relies on is defined in `specs/017-model-service-split/contracts/model-channel.md`. The recipe that builds the same two-tier shape on the Forge-C test machine is described in `deploy/recipe/README.md` (feature 017).
