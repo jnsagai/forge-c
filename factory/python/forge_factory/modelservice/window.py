@@ -194,7 +194,8 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     repo = Path(__file__).resolve().parents[4]
     wid = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
-    lane = OwnerLane(work=a.state / "work")
+    lane = OwnerLane(work=a.state / "work", window_id="w" + wid.replace("T", "").replace("Z", ""),
+                     deadline=time.time() + a.max_minutes * 60)
     tier = ModelTier(repo=repo, window_id=wid)
     if a.plan == "none":
         def plan(ctx):

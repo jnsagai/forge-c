@@ -8,10 +8,11 @@ Only existing, unsigned controls are used:
   file must be byte-identical before and after (never the intent: its epoch would fence the guardian);
 * idle - read-only SQL over the line queue (no active order; `quiet_ledger`'s inference, lease, request and outbox
   checks);
-* suppress redeploy - the deployer's own `deploy.lock` held with this process's PID;
-* stop / restart the whole lane - delegated to the deployer (`autodeploy.py window-release` / `window-restore`),
-  which owns the per-guardian stop tooling and the fresh-ticket recover path. Until the deployer offers those
-  commands, `preflight()` refuses every window with BLOCKED before anything is changed: never improvised.
+* stop / restart the whole lane - the deployer's `window-release <id> <deadline>` / `window-restore` (T072): the
+  reviewed deploy chain for a same-tree commit, split at the exact stop. The deployer holds its own lock and an open
+  window file, so its timer skips while the window is open and restores an abandoned window itself;
+* preflight - refuses before any change when the deployer lacks those commands, is latched or busy, a deploy is
+  pending (a window would otherwise revert it), or the deployer's rate limit would refuse the window.
 
 The model tier is started with `recipe apply` (refused outside a window) and stopped with its unit and compose.
 """
@@ -32,6 +33,7 @@ LRTX, QUAL = F / "lrtx", F / "qualification"
 DEPLOYER = Path("/mnt/data/forge-c/owner-autodeploy/deployer")
 INTENT = Path("/home/omniverse2/.config/forge-c/line-local/operations-intent.json")
 ACTIVE = ("RUNNING", "ADMITTED", "VALIDATING", "WAITING_RECOVERY", "QUEUED")
+QUIET_AND_STOP_S = 9 * 3600  # the deployer waits up to 8 h for a quiet line, then stops and proves the stop
 
 HOLD = """import json,os,sys
 from pathlib import Path
@@ -49,10 +51,12 @@ print(json.dumps({'paused':c.get('paused')}))
 
 class OwnerLane:
     def __init__(self, *, lrtx: Path = LRTX, qual: Path = QUAL, deployer: Path = DEPLOYER, intent: Path = INTENT,
-                 python: str | None = None, work: Path, run=subprocess.run):
+                 python: str | None = None, work: Path, run=subprocess.run, window_id: str = "", deadline: float = 0.0,
+                 repo: Path = Path("/mnt/data/forge-c/owner-autodeploy/repo.git"),
+                 branch: str = "feat/owner-lane-campaign-v21-20261107"):
         self.lrtx, self.qual, self.deployer, self.intent = Path(lrtx), Path(qual), Path(deployer), Path(intent)
         self.python, self.work, self.run = python or str(Path(lrtx) / "venv/bin/python"), Path(work), run
-        self._lock_fd = None
+        self.window_id, self.deadline, self.repo, self.branch = window_id, deadline, Path(repo), branch
 
     # ---- facts ---------------------------------------------------------------------------------------------------
     def live(self) -> dict:
@@ -82,6 +86,17 @@ class OwnerLane:
         src = (self.deployer / "autodeploy.py").read_text()
         if "'window-release'" not in src or "'window-restore'" not in src:
             return False, "BLOCKED:DEPLOYER_WINDOW_COMMANDS_MISSING"
+        if (self.deployer / "WINDOW.json").exists():
+            return False, "WINDOW_ALREADY_OPEN"
+        st = json.loads((self.deployer / "state.json").read_text())
+        tip = self.run(["git", "-C", str(self.repo), "rev-parse", self.branch], capture_output=True, text=True, check=False).stdout.strip()
+        if tip != st["live"]["commit"]:
+            return False, "PENDING_DEPLOY:the branch tip is not live yet (a window would revert it)"
+        times = [d["at_epoch"] for d in st.get("deploys", [])]
+        if times and time.time() - max(times) <= 3600:
+            return False, "DEPLOYER_RATE_LIMIT_GAP"
+        if sum(1 for t in times if time.time() - t < 86400) >= 4:
+            return False, "DEPLOYER_RATE_LIMIT_DAY"
         return True, ""
 
     # ---- controls ------------------------------------------------------------------------------------------------
@@ -120,24 +135,17 @@ class OwnerLane:
 
     @contextlib.contextmanager
     def suppress_redeploy(self):
-        lock = self.deployer / "deploy.lock"
-        fd = os.open(lock, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)  # FileExistsError: a deploy owns the lane
-        os.write(fd, str(os.getpid()).encode())
-        os.close(fd)
-        try:
-            yield
-        finally:
-            with contextlib.suppress(FileNotFoundError):
-                if lock.read_text().strip() == str(os.getpid()):
-                    lock.unlink()
+        """The deployer suppresses itself: its own lock during release/restore and WINDOW.json in between."""
+        yield
 
-    def _deployer(self, cmd: str) -> None:
-        r = self.run(["python3", str(self.deployer / "autodeploy.py"), cmd], capture_output=True, text=True, timeout=1800, check=False)
+    def _deployer(self, cmd: str, *args: str) -> None:
+        r = self.run([self.python, str(self.deployer / "autodeploy.py"), cmd, *args], capture_output=True, text=True,
+                     timeout=QUIET_AND_STOP_S, check=False)
         if r.returncode != 0:
             raise RuntimeError(f"DEPLOYER_{cmd.upper().replace('-', '_')}_FAILED:{(r.stderr or r.stdout)[-300:]}")
 
     def stop_lane(self) -> None:
-        self._deployer("window-release")
+        self._deployer("window-release", self.window_id, str(int(self.deadline)))
 
     def restart_lane(self) -> None:
         self._deployer("window-restore")

@@ -213,3 +213,24 @@ def test_owner_lane_adapter_reads_only_and_refuses_without_deployer_commands(tmp
     assert db.read_bytes() != before or True  # (the test wrote it; the adapter itself opened it read-only)
     (dep / "deploy.lock").write_text("123")
     assert lane.preflight() == (False, "DEPLOY_IN_PROGRESS")
+    (dep / "deploy.lock").unlink()
+    (dep / "autodeploy.py").write_text("elif cmd == 'window-release':\nelif cmd == 'window-restore':\n")
+
+    class Git:
+        def __init__(self, out):
+            self.stdout, self.returncode = out, 0
+    pending = OwnerLane(lrtx=lrtx, qual=qual, deployer=dep, intent=tmp_path / "intent.json", work=tmp_path / "w",
+                        run=lambda *a, **k: Git("deadbeef" * 5))
+    assert pending.preflight()[1].startswith("PENDING_DEPLOY")
+    (dep / "state.json").write_text(json.dumps({"live": {"commit": "383d54621a1575e5"}, "deploys": [{"at_epoch": __import__("time").time()}]}))
+    tip_live = OwnerLane(lrtx=lrtx, qual=qual, deployer=dep, intent=tmp_path / "intent.json", work=tmp_path / "w",
+                         run=lambda *a, **k: Git("383d54621a1575e5"))
+    assert tip_live.preflight() == (False, "DEPLOYER_RATE_LIMIT_GAP")
+    (dep / "state.json").write_text(json.dumps({"live": {"commit": "383d54621a1575e5"}, "deploys": []}))
+    assert tip_live.preflight() == (True, "")
+    calls = []
+    lane2 = OwnerLane(lrtx=lrtx, qual=qual, deployer=dep, intent=tmp_path / "intent.json", work=tmp_path / "w",
+                      run=lambda argv, **k: calls.append(argv) or Git(""), window_id="w20261108", deadline=1700000000)
+    lane2.stop_lane()
+    lane2.restart_lane()
+    assert calls[0][-3:] == ["window-release", "w20261108", "1700000000"] and calls[1][-1] == "window-restore"

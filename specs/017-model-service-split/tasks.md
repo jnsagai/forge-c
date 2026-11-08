@@ -426,7 +426,9 @@
 
 ---
 
-- [ ] T072 Add `window-release` and `window-restore` to the owner-lane deployer (`/mnt/data/forge-c/owner-autodeploy/deployer/autodeploy.py`). Release: with the admission hold already set by the window, generate or reuse the reviewed stop tooling for the live guardian and retire the lane stack, with the intent unchanged and the GPU verified free. Restore: the deployer recover path for the same live commit with a fresh ticket. Test both on a quiet lane before the first window.
+- [X] T072 Add `window-release` and `window-restore` to the owner-lane deployer (`/mnt/data/forge-c/owner-autodeploy/deployer/autodeploy.py`). Release: with the admission hold already set by the window, generate or reuse the reviewed stop tooling for the live guardian and retire the lane stack, with the intent unchanged and the GPU verified free. Restore: the deployer recover path for the same live commit with a fresh ticket. Test both on a quiet lane before the first window.
+  Done 2026-11-08: deployer sha dcdbab5a -> a947e575 (backup kept); offline tests window 16/16, rollback 32/32, importer 12/12; evidence/017/deployer-t072/. Not yet exercised on the real lane (T073).
+- [ ] T073 Exercise `window-release` then `window-restore` once on the real owner lane while it is quiet and the branch tip is live (no model tier: release, verify the GPU is free and the timer skips, restore, verify the new guardian is healthy), before the first model-tier window (T044).
 
 ## Dependencies & Execution Order
 
