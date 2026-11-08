@@ -8,6 +8,12 @@
 
 **Input**: User description: "Model-service split: mirror the production deployment on Omniverse2. Production (docs/ONPREM-DEPLOYMENT.md, sent to the platform team 2026-10-15; owner 2026-11-08 confirmed): an NVIDIA DGX with one H200 141 GB GPU runs a SHARED model service (vLLM-class, OpenAI-compatible API over HTTPS with per-tenant API keys; reference model Qwen3.6-35B-A3B BF16, non-thinking mode, 262k context, 11 sequences, 761k-token KV cache, prefix caching on, request logging off) that serves Forge-C and other applications; Forge-C runs in a CPU-only Ubuntu 22.04 VM whose LLM gateway is its only path to the model; the platform team's serving stack and auth are not yet known. [...] Deliver a reproducible recipe-as-code so production can be built the same way, and a requalification of the factory on the production-like model/engine before any cutover."
 
+## Clarifications
+
+### Session 2026-11-08
+
+- Q: How does the mirror share the single 48 GB GPU with the live lanes during the transition? -> A: Option C: build and qualify in scheduled windows while the owner lane is paused, then move the owner lane onto the model service as its first tenant after the owner approves the qualification report; the production lane moves only by a separate approved cutover.
+
 ## Context
 
 Production will not look like Omniverse2 today. In production a separate, **shared** GPU server answers model requests for several applications, and Forge-C runs in its own CPU-only virtual machine that reaches the model through one network channel (see `docs/ONPREM-DEPLOYMENT.md`). On Omniverse2 the factory currently **owns** the GPU: it starts and stops the model server, swaps models during a run, holds a GPU lock and an inference-owner lease, and uses a different model, precision and reasoning setting than production.
@@ -167,7 +173,7 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 
 **Transition and safety**
 
-- **FR-019**: The model service and the existing GPU-owning lanes MUST NOT hold the GPU at the same time. GPU use on Omniverse2 during the transition MUST follow this rule: [NEEDS CLARIFICATION: how does the mirror share the single 48 GB GPU with the live lanes during the transition - scheduled windows while the owner lane is paused, or migrating the owner lane onto the model service as its first tenant once qualified?]
+- **FR-019**: The model service and the existing GPU-owning lanes MUST NOT hold the GPU at the same time. GPU use on Omniverse2 during the transition MUST follow two stages (owner 2026-11-08, option C): (1) **qualification windows** - the model service is built and requalified only in scheduled windows while the owner lane is paused at a safe point, and the owner lane resumes on today's setup after each window; (2) **owner lane as first tenant** - only after the owner approves the qualification report (FR-020) does the owner lane move onto the model service as its first tenant. The production lane stays on its own setup until a separate owner-approved cutover.
 - **FR-020**: Moving any lane to the new shape MUST require an owner-approved cutover backed by the qualification report. The production lane, signed controls and the owner lane's CRE gating MUST stay unchanged until then, and every cutover MUST have a tested way back to the previous shape.
 - **FR-021**: The factory machine MUST run inside its own boundary whose only route to the model is the model channel: a virtual machine once virtualization access is granted, a container boundary until then. Its reports MUST state which production properties the stand-in does not prove.
 

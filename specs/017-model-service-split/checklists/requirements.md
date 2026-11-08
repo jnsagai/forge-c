@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain - FR-019 (GPU sharing during the transition) awaits the owner
+- [x] No [NEEDS CLARIFICATION] markers remain (FR-019 resolved 2026-11-08: option C)
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -32,3 +32,4 @@
 ## Notes
 
 - Iteration 1: all items pass except the single clarification FR-019, which needs an owner decision before `/speckit-plan`.
+- Iteration 2 (2026-11-08): owner chose option C for FR-019; all items pass. Ready for `/speckit-plan`.
