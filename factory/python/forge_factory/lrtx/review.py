@@ -221,6 +221,20 @@ def lesson_source(lessons: list[dict]) -> dict | None:
     return {"path": LESSON_SOURCE, "sha256": sha256_bytes(text.encode()), "text": text} if text else None
 
 
+def inspector_sampling(ws: Path, model: str) -> dict | None:
+    """CAPA-195 (WO-F014-SWE1-GPIOL-20261107-L40G): the sampling of a structured inspector call. A harness (seeded
+    trial, detection trial) still sets INSPECTOR["sampling"]; otherwise the profile's inspector options apply, the same
+    values the semantic inspector sends (stepwise: temperature 0 + seed). Before, this path sent no temperature or seed
+    while the owner-signed product-role trial declares the json_schema inspector shape as temperature 0, seed 1, so
+    every SWE.1 inspection was refused before any model call (CALL_REFUSED:PRODUCT_ROLE_TRIAL_CONFIGURATION_UNDECLARED).
+    A profile without inspector sampling keeps the gateway default (None), as before."""
+    if INSPECTOR["sampling"] is not None:
+        return INSPECTOR["sampling"]
+    from .review_semantic import inspector_options
+
+    return inspector_options(Path(ws), model)["sampling"]
+
+
 def item_packet(ws: Path, phase: str, item: dict, bl: dict, srcs: list[dict], model: str, findings=None,
                 previous=None, lessons: list[dict] | None = None) -> dict:
     instr = (f"Inspect checklist item {item['id']} of {phase} on the frozen baseline {bl['baseline_id']} (hash "
@@ -235,7 +249,7 @@ def item_packet(ws: Path, phase: str, item: dict, bl: dict, srcs: list[dict], mo
     return S.packet(phase=phase, task=f"inspect:{item['id']}", role=f"swe{phase[-1]}-inspector", instructions=instr,
                     sources=srcs, criteria=[f"{item['id']}: {' '.join(str(item['criterion']).split())}"],
                     output_schema=VERDICT_SCHEMA, model=model, findings=findings, previous=previous,
-                    output_reserve=2048, assessment_workspace=Path(ws), sampling=INSPECTOR["sampling"])
+                    output_reserve=2048, assessment_workspace=Path(ws), sampling=inspector_sampling(ws, model))
 
 
 PENDING_RX = re.compile(r"pending|not (?:yet )?allocated|allocation review|no software safety requirement", re.I)
