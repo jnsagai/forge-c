@@ -32,6 +32,11 @@
     }
   },
   "images": {
+    "factory_vm_base": {
+      "path": "/mnt/data/forge-c/model-service/images/ubuntu-22.04-server-cloudimg-amd64.img",
+      "release": "release-20261106",
+      "sha256": "f77bc6d59cb8deaa9657095736b5f5003f7705b47055f01823459715c967de6a"
+    },
     "llama-server-ollama-0.34.0": "sha256:234b05b2138264f8fb263c3205e85f4c290e8afe5067e280a4f6f90cdac5696b"
   },
   "model_files": {
