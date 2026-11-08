@@ -368,7 +368,7 @@
   - only the data volume mounted.
 
   T057 must pass.
-- [ ] T061 [US5] (host, non-GPU) Start the factory container stand-in and run the isolation checks and quickstart step 3. Record them in `specs/017-model-service-split/evidence/isolation/`.
+- [X] T061 [US5] (host, non-GPU) Start the factory container stand-in and run the isolation checks and quickstart step 3. Record them in `specs/017-model-service-split/evidence/isolation/`.
   Pending 2026-11-08: provision.sh refuses until the toolchain pins (uv, LLVM, GNU Arm, Fabro URL+sha256) and factory_revision are in recipe.lock.json; the channel is a unix socket in the data volume relayed by socat on the host (no internal network with the gateway, which is a host unit on Omniverse2).
 - [ ] T062 [US5] VM path (BLOCKED until the `omniverse2` user is in group `kvm`; owner 2026-11-08 says an admin can do this). Write `deploy/recipe/factory-machine/vm/run-vm.sh`:
   BLOCKED 2026-11-08: /dev/kvm not accessible to omniverse2 (needs kvm group) and qemu-system-x86_64/qemu-img are not installed (needs an admin); run-vm.sh prints BLOCKED and exits 3.
