@@ -4,13 +4,13 @@ site: production
 parameters:
   gpu_model:              {value: "NVIDIA H200", description: "GPU of the shared model service (DGX)"}
   gpu_vram_mib:           {value: 144384, description: "141 GB"}
-  model_catalog:          {value: "platform-defined", confirmed: false, description: "Models offered and whether they are co-resident or swapped; the factory is unaffected"}
-  reference_model:        {value: "Qwen3.6-35B-A3B", description: "Production reference model"}
-  reference_precision:    {value: bf16, description: "Reference precision"}
-  reference_context:      {value: 262144, description: "Engine context limit (factory uses 65536 per agent)"}
-  reference_sequences:    {value: 11, description: "Concurrent sequences"}
-  reference_kv_cache_tokens: {value: 761376, description: "KV cache size"}
-  reasoning_mode:         {value: "off", description: "Non-thinking"}
+  model_catalog:          {value: "both models loaded together (co-resident, about 90 GB)", confirmed: false, description: "141 GB holds both at full settings; no swap needed"}
+  reference_model:        {value: "qwen3.8:27b-q8_0 + Ornith-1.5-35B-A3B Q8_0", description: "The same two models as Omniverse2 (owner 2026-11-08)"}
+  reference_precision:    {value: q8_0, description: "GGUF Q8_0, pinned by sha256 in recipe.lock.json"}
+  reference_context:      {value: 262144, description: "Context per sequence of each model"}
+  reference_sequences:    {value: 1, confirmed: false, description: "Sequences per model; 141 GB leaves room for more (platform team)"}
+  reference_kv_cache_tokens: {value: null, description: "Not applicable: llama.cpp models, KV per sequence"}
+  reasoning_mode:         {value: "on", description: "Each model keeps its own setting (qwen3.8 medium effort, Ornith on)"}
   prefix_caching:         {value: true, description: "Must stay on"}
   request_logging:        {value: false, description: "Must stay off"}
   channel_url:            {value: null, confirmed: false, description: "GPU server API URL"}

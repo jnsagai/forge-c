@@ -17,12 +17,13 @@
 
 ## Decisions
 
-1. **Engine.** vLLM, digest-pinned (v0.32.0), serves the production reference model Qwen3.6-35B-A3B as the official FP8 checkpoint at a pinned commit (R1, R2). Ornith-1.5 keeps today's llama.cpp server with today's exact arguments, generated from the owner lane's profile and never retyped.
+1. **Models and engine (owner 2026-11-08).** Omniverse2 and production serve the same two models, `qwen3.8:27b-q8_0` and Ornith-1.5-35B-A3B Q8_0, both GGUF on today's llama.cpp server with today's exact arguments, generated from the owner lane's profile and never retyped. Authoring uses Ornith-1.5-35B-A3B; the supervisor, monitor and inspector roles use qwen3.8 27B (owner 2026-11-08). Qwen3.6 and vLLM are not used (the vLLM engine stays as an example for sites that serve with it). On the 141 GB production GPU both models stay loaded; on Omniverse2's 48 GB the service swaps them at each author/inspector hand-over.
 2. **One model on the GPU at a time, at full capacity; the service swaps on demand** (R3b). A swap drains in-flight work and never cuts a request off. It then unloads, loads and checks identity. A request is never answered by a model it did not name. Swapping is fair across tenants, by queue age weighted by priority, with a minimum residency and a maximum wait.
-3. **Fastest swaps: models off the GPU stay warm in host RAM** (R3c).
-   - vLLM uses sleep mode: its weights stay in pinned host RAM, and the process is not restarted or recompiled.
-   - The Ornith GGUF is staged once into `/dev/shm`, checked by SHA-256 and by residency.
+3. **Fastest swaps: models off the GPU stay warm in host RAM** (R3c, amended 2026-11-08).
+   - On Omniverse2 both GGUF files (27.1 + 35.2 GiB) are kept resident in the page cache (warm strategy `page_cache`): no copy, so the 63 GiB `/dev/shm` limit does not apply. Residency is checked before every load; an evicted file is loaded from disk this time and re-warmed in the background, with a finding.
+   - A swap is therefore a stop of one llama.cpp server and a start of the other on a file already in RAM.
    - A RAM budget and a reserve protect the shared host. When they cannot hold a model warm, that model loads cold and a finding is recorded.
+   - The other strategies stay available for other sites: `ram_staged_file` (a copy in `/dev/shm`) and `vllm_sleep` (vLLM sleep mode).
 4. **The model tier is factory-agnostic** (R3d). It is the `model_tier` package, which never imports `forge_factory` (enforced by a test). It knows tenants (key hash, share, priority, allowed models), never runs, nodes or lanes. Adding a factory is one tenant entry.
 5. **The tenant gateway is ours, thin and audited** (R3): hashed keys, guaranteed and borrowable shares, an identity extension (`/forge/v1/identity`, `x-forge-model-identity`) and a metadata-only outcome log. LiteLLM was rejected: its tenant features need Postgres and are partly outside its open-source core.
 6. **The factory talks to the channel only, through its unchanged gateway** (R6, R7). `llm_gateway.py` and four other sources are pinned by the owner lane's signed transport proof, so external mode is a new entry point (`gateway_external`). It runs the unchanged gateway with a model-channel transport that does the following:
@@ -47,4 +48,4 @@
 - **What production gets.** The factory depends only on a small OpenAI-compatible contract. Production can use any serving stack that meets it, with stated deviations when the identity extension is missing.
 - **What windows cost.** Each window stops and restarts the owner lane, so windows are rare and run only when the lane is idle. The cutover removes them.
 - **What the cutover requires.** The owner lane's own external mode (edits to `stack.py`, `execution_lifecycle.py` and the launcher) waits for it, because those files are pinned. The owner re-signs the transport proof as part of the cutover.
-- **Measurement.** Swap times, the vLLM KV capacity at FP8 and the sleeping engine's GPU residue are measured in the first window. The swap policy defaults are estimates until then.
+- **Measurement.** Swap times in both directions (Ornith to qwen3.8 and back, at each author/inspector hand-over) are measured in the first window. The swap policy defaults are estimates until then.

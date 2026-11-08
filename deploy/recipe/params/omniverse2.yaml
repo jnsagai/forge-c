@@ -7,12 +7,12 @@ parameters:
   gpu_vram_mib:           {value: 49140, production_value: 144384, description: "GPU memory of the model tier (141 GB in production)"}
   host_ram_gib:           {value: 125, production_value: null, confirmed: true, description: "Host RAM of the model tier; production value is the platform team's"}
   model_catalog:          {value: "deploy/recipe/model-tier/catalog.yaml", production_value: "platform-defined", description: "Models the service offers and how it swaps them"}
-  reference_model:        {value: "qwen3.8:27b-q8_0 + Ornith-1.5-35B-A3B Q8_0 (the models used here, llama.cpp)", production_value: "Qwen3.6-35B-A3B BF16 (docs/ONPREM-DEPLOYMENT.md; to be confirmed)", description: "Models the site serves (owner 2026-11-08: no Qwen3.6 on Omniverse2)"}
-  reference_precision:    {value: q8_0, production_value: bf16, description: "Weight precision of the served models"}
-  reference_context:      {value: 65536, production_value: 262144, description: "Context per sequence of the default model (Ornith runs 262144)"}
+  reference_model:        {value: "qwen3.8:27b-q8_0 + Ornith-1.5-35B-A3B Q8_0 (llama.cpp)", production_value: "the same two models", description: "Models the site serves (owner 2026-11-08). Ornith: authoring; qwen3.8: supervisor, monitor, inspector"}
+  reference_precision:    {value: q8_0, production_value: q8_0, description: "Weight precision of the served models"}
+  reference_context:      {value: 262144, production_value: 262144, description: "Context per sequence of each model"}
   reference_sequences:    {value: 1, production_value: 11, description: "Concurrent sequences per loaded model (today: 1)"}
   reference_kv_cache_tokens: {value: null, production_value: 761376, description: "Not applicable to the llama.cpp models here"}
-  reasoning_mode:         {value: "on", production_value: "off", description: "Each model keeps its own setting (qwen3.8 medium effort, Ornith on)"}
+  reasoning_mode:         {value: "on", production_value: "on", description: "Each model keeps its own setting (qwen3.8 medium effort, Ornith on)"}
   prefix_caching:         {value: true, production_value: true, description: "Engine prefix caching"}
   request_logging:        {value: false, production_value: false, description: "Engine request logging (must stay off)"}
   channel_url:            {value: "http://127.0.0.1:18480/v1", production_value: null, confirmed: false, description: "The model channel the factory uses; production URL from the platform team"}
@@ -34,9 +34,8 @@ parameters:
   factory_data_volume:    {value: "/mnt/data/forge-c/model-service/factory-data", production_value: "/srv/forge-c", description: "Factory data volume"}
   factory_os:             {value: "ubuntu-22.04", production_value: "ubuntu-22.04.5", description: "Factory machine OS image"}
 not_proven_here:
-  - "The production model and precision (Omniverse2 serves qwen3.8 27B Q8 and Ornith-1.5 Q8, not Qwen3.6 BF16)"
   - "141 GB scale: 11 concurrent sequences, 262k context, 761k-token KV cache"
   - "Production serving stack and authentication (unknown; only the model-channel contract is relied on)"
   - "A real VM boundary while the container stand-in is used (separate kernel, VM network, VM memory limits)"
-  - "Co-resident models: on 48 GB one model is on the GPU at a time and the service swaps"
+  - "Co-resident models: on 48 GB one model is on the GPU at a time and the service swaps; production keeps both loaded"
   - "The vLLM engine (Omniverse2 serves with llama.cpp; the vLLM path is an example only)"

@@ -88,7 +88,7 @@ from model_tier import identity as I  # noqa: E402
 def test_plan_lists_every_parameter_with_its_production_value_and_no_secret():
     p = R.plan("omniverse2")
     names = {r["name"]: r for r in p["parameters"]}
-    assert names["reference_precision"]["production_value"] == "bf16"
+    assert names["reference_precision"]["production_value"] == "q8_0"  # production runs the same two models (owner 2026-11-08)
     assert names["tenant_key_factory"]["value"] == "<secret:forge-qual>"  # a name, never a value
     assert "channel_url" in p["unconfirmed"] and p["not_proven_here"]
     prod = R.plan("production")
