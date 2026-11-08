@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/017/model-service-profile.schema.json",
+  "title": "ModelServiceProfile",
+  "description": "The factory's model_service block (config/factory/model-service.yaml or a line profile). mode=owned keeps today's behaviour unchanged (FR-007).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode"],
+  "properties": {
+    "mode": {"enum": ["owned", "external"], "default": "owned"},
+    "base_url": {"type": "string"},
+    "credential_ref": {"type": "string"},
+    "ca_bundle_ref": {"type": "string"},
+    "expected_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "precision", "reasoning_mode", "min_context_limit"],
+      "properties": {
+        "name": {"type": "string"},
+        "precision": {"enum": ["bf16", "fp8", "awq-int4", "other"]},
+        "reasoning_mode": {"enum": ["off", "on"]},
+        "min_context_limit": {"type": "integer", "minimum": 1},
+        "revision_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "share": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["concurrency", "queue_wait_max_s"],
+      "properties": {
+        "concurrency": {"type": "integer", "minimum": 1},
+        "queue_wait_max_s": {"type": "integer", "minimum": 1}
+      }
+    },
+    "outage_wait_max_s": {"type": "integer", "minimum": 1, "default": 900},
+    "context_limit": {"type": "integer", "minimum": 1, "default": 65536}
+  },
+  "if": {"properties": {"mode": {"const": "external"}}},
+  "then": {"required": ["mode", "base_url", "credential_ref", "expected_identity", "share"]}
+}
