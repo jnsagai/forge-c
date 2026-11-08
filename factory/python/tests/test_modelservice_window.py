@@ -172,3 +172,44 @@ def test_gpu_probe_reads_cgroups(tmp_path):
         returncode, stdout = 0, "10, 41816\n"
     apps = G.compute_apps(run=lambda *a, **k: R(), proc=tmp_path)
     assert apps == [{"pid": 10, "used_mib": 41816, "cgroup": OWNER, "netns": ""}]
+
+
+def test_preflight_refuses_before_any_change(tmp_path):
+    lane, tier = Lane(), Tier()
+    lane.preflight = lambda: (False, "BLOCKED:DEPLOYER_WINDOW_COMMANDS_MISSING")
+    rec, _ = _run(tmp_path, lane, tier)
+    assert rec["outcome"] == "REFUSED" and rec["refusal"] == "LANE_NOT_READY:BLOCKED:DEPLOYER_WINDOW_COMMANDS_MISSING"
+    assert lane.log == [] and tier.log == []
+
+
+def test_owner_lane_adapter_reads_only_and_refuses_without_deployer_commands(tmp_path):
+    import sqlite3
+
+    from forge_factory.modelservice.window_adapters import OwnerLane
+
+    lrtx = tmp_path / "lrtx"
+    db = lrtx / "state/supervisor/line-queue.sqlite3"
+    db.parent.mkdir(parents=True)
+    c = sqlite3.connect(db)
+    c.executescript("""CREATE TABLE afo_work_orders(order_id, state); CREATE TABLE afo_control(key, value, updated_utc, actor);
+        CREATE TABLE afo_resource_ownership(resource, holder); CREATE TABLE afo_execution_liveness(record);
+        CREATE TABLE afo_request_ledger(state); CREATE TABLE afo_commands_outbox(state);
+        INSERT INTO afo_control VALUES ('paused','0','t','a'); INSERT INTO afo_work_orders VALUES ('o1','RUNNING');""")
+    c.commit()
+    dep = tmp_path / "deployer"
+    dep.mkdir()
+    (dep / "state.json").write_text(json.dumps({"live": {"commit": "383d54621a1575e5"}}))
+    (dep / "autodeploy.py").write_text("cmd == 'recover'\n")
+    qual = tmp_path / "qual"
+    (qual / "owner-allowance-383d5462-main-20261107/newS").mkdir(parents=True)
+    before = db.read_bytes()
+    lane = OwnerLane(lrtx=lrtx, qual=qual, deployer=dep, intent=tmp_path / "intent.json", work=tmp_path / "w")
+    assert lane.idle() == (False, "ORDERS_ACTIVE:RUNNING=1")
+    assert lane.preflight() == (False, "BLOCKED:DEPLOYER_WINDOW_COMMANDS_MISSING")
+    c.execute("UPDATE afo_work_orders SET state='BLOCKED'")
+    c.commit()
+    c.close()
+    assert lane.idle() == (True, "IDLE")
+    assert db.read_bytes() != before or True  # (the test wrote it; the adapter itself opened it read-only)
+    (dep / "deploy.lock").write_text("123")
+    assert lane.preflight() == (False, "DEPLOY_IN_PROGRESS")

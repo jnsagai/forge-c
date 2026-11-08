@@ -1,0 +1,184 @@
+# ruff: noqa: E501
+"""Omniverse2 adapters of the qualification window controller (feature 017, T014; window-controls.md).
+
+Only existing, unsigned controls are used:
+
+* hold / release - the admission hold `paused` in the owner lane's line queue, written through `Store.set_control`
+  of the LIVE code tree with the live lane's Python (the deployer's hold-admission pattern); the operations intent
+  file must be byte-identical before and after (never the intent: its epoch would fence the guardian);
+* idle - read-only SQL over the line queue (no active order; `quiet_ledger`'s inference, lease, request and outbox
+  checks);
+* suppress redeploy - the deployer's own `deploy.lock` held with this process's PID;
+* stop / restart the whole lane - delegated to the deployer (`autodeploy.py window-release` / `window-restore`),
+  which owns the per-guardian stop tooling and the fresh-ticket recover path. Until the deployer offers those
+  commands, `preflight()` refuses every window with BLOCKED before anything is changed: never improvised.
+
+The model tier is started with `recipe apply` (refused outside a window) and stopped with its unit and compose.
+"""
+from __future__ import annotations
+
+import contextlib
+import json
+import os
+import sqlite3
+import subprocess
+import time
+from pathlib import Path
+
+import httpx
+
+F = Path("/mnt/data/forge-c/swe1-fabro-20261031")
+LRTX, QUAL = F / "lrtx", F / "qualification"
+DEPLOYER = Path("/mnt/data/forge-c/owner-autodeploy/deployer")
+INTENT = Path("/home/omniverse2/.config/forge-c/line-local/operations-intent.json")
+ACTIVE = ("RUNNING", "ADMITTED", "VALIDATING", "WAITING_RECOVERY", "QUEUED")
+
+HOLD = """import json,os,sys
+from pathlib import Path
+S,L,I,V,REASON=Path(sys.argv[1]),Path(sys.argv[2]),Path(sys.argv[3]),sys.argv[4],sys.argv[5]
+sys.path.insert(0,str(S/'factory/python'));sys.dont_write_bytecode=True
+os.environ.update(FORGE_REPO_ROOT=str(S),FORGE_DATA_ROOT='/mnt/data/forge-c',FORGE_STATE_DIR=str(L/'state'),FORGE_LRTX_ROOT=str(L))
+os.environ.pop('FORGE_OPERATIONS_INTENT',None)
+from forge_factory.afo.queue import Store
+s=Store(L/'state/supervisor/line-queue.sqlite3');i0=I.read_bytes()
+s.set_control('paused',V,'model-service-qualification-window',REASON)
+c=s.control();assert c.get('paused')==V and I.read_bytes()==i0,'HOLD_NOT_APPLIED_OR_INTENT_CHANGED'
+print(json.dumps({'paused':c.get('paused')}))
+"""
+
+
+class OwnerLane:
+    def __init__(self, *, lrtx: Path = LRTX, qual: Path = QUAL, deployer: Path = DEPLOYER, intent: Path = INTENT,
+                 python: str | None = None, work: Path, run=subprocess.run):
+        self.lrtx, self.qual, self.deployer, self.intent = Path(lrtx), Path(qual), Path(deployer), Path(intent)
+        self.python, self.work, self.run = python or str(Path(lrtx) / "venv/bin/python"), Path(work), run
+        self._lock_fd = None
+
+    # ---- facts ---------------------------------------------------------------------------------------------------
+    def live(self) -> dict:
+        return json.loads((self.deployer / "state.json").read_text())["live"]
+
+    def tree(self) -> Path:
+        live = self.live()
+        return self.qual / f"owner-allowance-{live['commit'][:8]}-main-20261107" / "newS"
+
+    def _db(self) -> sqlite3.Connection:
+        return sqlite3.connect(f"file:{self.lrtx / 'state/supervisor/line-queue.sqlite3'}?mode=ro", uri=True)
+
+    def paused(self) -> str | None:
+        with contextlib.closing(self._db()) as c:
+            row = c.execute("SELECT value FROM afo_control WHERE key='paused'").fetchone()
+        return row[0] if row else None
+
+    def preflight(self) -> tuple[bool, str]:
+        if not self.tree().is_dir():
+            return False, "LIVE_TREE_MISSING"
+        if (self.deployer / "deploy.lock").exists():
+            return False, "DEPLOY_IN_PROGRESS"
+        if (self.deployer / "FAILED_LATCHED.json").exists():
+            return False, "DEPLOYER_LATCHED"
+        if self.paused() != "0":
+            return False, "ADMISSION_ALREADY_HELD"
+        src = (self.deployer / "autodeploy.py").read_text()
+        if "'window-release'" not in src or "'window-restore'" not in src:
+            return False, "BLOCKED:DEPLOYER_WINDOW_COMMANDS_MISSING"
+        return True, ""
+
+    # ---- controls ------------------------------------------------------------------------------------------------
+    def _set(self, value: str, reason: str) -> None:
+        self.work.mkdir(parents=True, exist_ok=True)
+        script = self.work / "hold.py"
+        script.write_text(HOLD)
+        r = self.run([self.python, "-B", str(script), str(self.tree()), str(self.lrtx), str(self.intent), value, reason],
+                     capture_output=True, text=True, timeout=120, check=False)
+        if r.returncode != 0 or self.paused() != value:
+            raise RuntimeError(f"ADMISSION_HOLD_{'SET' if value == '1' else 'CLEAR'}_FAILED:{(r.stderr or r.stdout)[-200:]}")
+
+    def hold(self) -> None:
+        self._set("1", "feature 017 qualification window: hold new attempts while the model tier uses the GPU")
+
+    def release_hold(self) -> None:
+        self._set("0", "feature 017 qualification window ended: lane restored")
+
+    def idle(self) -> tuple[bool, str]:
+        with contextlib.closing(self._db()) as c:
+            marks = ",".join("?" * len(ACTIVE))  # fixed placeholders; the values are bound
+            busy = c.execute(f"SELECT state,count(*) FROM afo_work_orders WHERE state IN ({marks}) GROUP BY state",  # noqa: S608
+                             ACTIVE).fetchall()
+            if busy:
+                return False, "ORDERS_ACTIVE:" + ",".join(f"{s}={n}" for s, n in busy)
+            held = c.execute("SELECT holder FROM afo_resource_ownership WHERE resource='inference'").fetchone()
+            if held and held[0]:
+                return False, "INFERENCE_OWNER_PRESENT"
+            if any(json.loads(r[0]).get("resource_lease") != "RELEASED" for r in c.execute("SELECT record FROM afo_execution_liveness")):
+                return False, "EXECUTION_LEASE_NOT_RELEASED"
+            if c.execute("SELECT 1 FROM afo_request_ledger WHERE state IS NULL OR state!='QUIESCENT' LIMIT 1").fetchone():
+                return False, "REQUEST_NOT_QUIESCENT"
+            if c.execute("SELECT 1 FROM afo_commands_outbox WHERE state IS NULL OR state NOT IN ('ACKED','FAILED','QUARANTINED') LIMIT 1").fetchone():
+                return False, "COMMAND_OUTCOME_UNRESOLVED"
+        return True, "IDLE"
+
+    @contextlib.contextmanager
+    def suppress_redeploy(self):
+        lock = self.deployer / "deploy.lock"
+        fd = os.open(lock, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)  # FileExistsError: a deploy owns the lane
+        os.write(fd, str(os.getpid()).encode())
+        os.close(fd)
+        try:
+            yield
+        finally:
+            with contextlib.suppress(FileNotFoundError):
+                if lock.read_text().strip() == str(os.getpid()):
+                    lock.unlink()
+
+    def _deployer(self, cmd: str) -> None:
+        r = self.run(["python3", str(self.deployer / "autodeploy.py"), cmd], capture_output=True, text=True, timeout=1800, check=False)
+        if r.returncode != 0:
+            raise RuntimeError(f"DEPLOYER_{cmd.upper().replace('-', '_')}_FAILED:{(r.stderr or r.stdout)[-300:]}")
+
+    def stop_lane(self) -> None:
+        self._deployer("window-release")
+
+    def restart_lane(self) -> None:
+        self._deployer("window-restore")
+
+
+class ModelTier:
+    def __init__(self, *, repo: Path, window_id: str, gateway: str = "http://127.0.0.1:18480", key: str | None = None,
+                 run=subprocess.run, http: httpx.Client | None = None, ready_s: float = 1800):
+        self.repo, self.window_id, self.gateway, self.key, self.run = Path(repo), window_id, gateway, key, run
+        self.http, self.ready_s = http or httpx.Client(timeout=10), ready_s
+
+    def preflight(self) -> tuple[bool, str]:
+        tier = self.repo / "deploy/recipe/model-tier"
+        for f in ("catalog.yaml", "tenants.yaml"):
+            if not (tier / f).is_file():
+                return False, f"TIER_NOT_CONFIGURED:{f}"
+        return True, ""
+
+    def start(self) -> dict:
+        env = {**os.environ, "FORGE_017_WINDOW_ID": self.window_id}
+        r = self.run(["uv", "run", "--project", str(self.repo), "python", "-m", "forge_factory.modelservice.recipe", "apply",
+                      "--site", "omniverse2", "--execute"], capture_output=True, text=True, env=env, timeout=600, check=False)
+        if r.returncode != 0:
+            raise RuntimeError(f"TIER_APPLY_FAILED:{(r.stderr or r.stdout)[-300:]}")
+        end = time.monotonic() + self.ready_s
+        while time.monotonic() < end:  # the gateway warms every model first (vLLM start + sleep, GGUF staging)
+            with contextlib.suppress(httpx.HTTPError):
+                if self.http.get(self.gateway + "/health").status_code == 200:
+                    break
+            time.sleep(5)
+        else:
+            raise TimeoutError("TIER_NOT_READY")
+        idents = {}
+        if self.key:
+            h = {"Authorization": f"Bearer {self.key}"}
+            for m in self.http.get(self.gateway + "/forge/v1/catalog", headers=h).json()["models"]:
+                idents[m["model"]] = self.http.get(self.gateway + "/forge/v1/identity", params={"model": m["model"]},
+                                                   headers=h).json()["revision_fingerprint"][:16]
+        return {"identities": idents}
+
+    def stop(self) -> None:
+        self.run(["systemctl", "--user", "stop", "forge-model-tier-gateway"], capture_output=True, timeout=180, check=False)
+        self.run(["docker", "compose", "-f", str(self.repo / "deploy/recipe/model-tier/compose.yaml"), "-p", "forge-model-tier", "stop"],
+                 capture_output=True, timeout=300, check=False)

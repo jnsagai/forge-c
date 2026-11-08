@@ -76,13 +76,15 @@
   - Two windows never overlap (lock).
 - [X] T012 Find and document the owner lane's existing safe-pause and resume controls in `specs/017-model-service-split/window-controls.md`. Candidates are the conductor pause or latch, the deployer latch file (`owner-lane-autodeploy`), and `afo/operations.py` requested stop with inference-owner quiescence. Name the exact command or file for each step: drain, idle check, model stop, model restart, resume. If a step has no existing non-signed control, mark it BLOCKED and note that the window controller must not invent one.
 - [X] T013 Implement the GPU probe in `factory/python/model_tier/gpu.py`. It runs `nvidia-smi --query-compute-apps` and maps each holding PID to its unit or lane by cgroup. The production lane is identified from its unit names, and the probe is read-only.
-- [ ] T014 Implement `factory/python/forge_factory/modelservice/window.py`, the window controller with the CLI `python -m forge_factory.modelservice.window run --plan <smoke|qualification> --max-minutes N`:
+- [X] T014 Implement `factory/python/forge_factory/modelservice/window.py`, the window controller with the CLI `python -m forge_factory.modelservice.window run --plan <smoke|qualification> --max-minutes N`:
   - It uses only the T012 controls and the T013 probe.
   - It writes its record to `<state>/model-service/windows/<window_id>.json`.
   - It holds a host flock so two windows cannot run at once.
   - It accepts a dry-run mode.
 
   T011 must pass.
+
+  Done 2026-11-08: controller, Omniverse2 adapters () and CLI. A real dry run against the live lane refused before any change with  (evidence/017/window-dry-run/): whole-lane stop and restart still need the deployer commands  /  (new task T072).
 
 **Checkpoint**: identity, reasons, secrets, pinned artefacts and a tested window controller exist. User stories can start.
 
@@ -421,6 +423,8 @@
 - [ ] T071 Run the quickstart steps 1 to 6 and record each as PASS, FAIL, NOT_RUN or BLOCKED, with evidence paths, in `specs/017-model-service-split/evidence.md`. Then open a draft PR to `main` for owner review; it is merged only after the owner accepts, with merge commits only.
 
 ---
+
+- [ ] T072 Add  and  to the owner-lane deployer (): release = hold already set by the window, generate or reuse the reviewed stop tooling for the live guardian and retire the lane stack (intent unchanged, GPU verified free); restore = the deployer recover path for the same live commit with a fresh ticket. Test both on a quiet lane before the first window.
 
 ## Dependencies & Execution Order
 

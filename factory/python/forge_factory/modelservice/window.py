@@ -93,6 +93,11 @@ def run_window(plan: Callable[[dict], dict], *, lane: LaneControl, tier: Tier, g
 
         if f := foreign():
             return finish("REFUSED", refusal="FOREIGN_GPU_HOLDER:" + ",".join(str(a["pid"]) for a in f))
+        for name, part in (("lane", lane), ("tier", tier)):  # readiness is checked before anything is changed
+            if hasattr(part, "preflight"):
+                ok, why = part.preflight()
+                if not ok:
+                    return finish("REFUSED", refusal=f"{name.upper()}_NOT_READY:{why}")
         if dry_run:
             ok, why = lane.idle()
             return finish("DRY_RUN", checks={"lane_idle": ok, "lane_idle_detail": why, "foreign_gpu_holders": 0,
@@ -170,3 +175,39 @@ def _wait_gpu_free(gpu_apps, gpu_free_mib, cgroup, min_mib, settle_s, poll_s, cl
         if clock() - t0 > settle_s:
             raise WindowAbort(f"GPU_NOT_FREE:{cgroup}")
         sleep(poll_s)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """python -m forge_factory.modelservice.window run --plan smoke|qualification --max-minutes N [--execute]"""
+    import argparse
+
+    from model_tier import gpu
+
+    from .window_adapters import ModelTier, OwnerLane
+
+    ap = argparse.ArgumentParser(prog="window")
+    ap.add_argument("cmd", choices=["run"])
+    ap.add_argument("--plan", choices=["smoke", "qualification", "none"], default="none")
+    ap.add_argument("--max-minutes", type=int, required=True)
+    ap.add_argument("--state", type=Path, default=Path("/mnt/data/forge-c/model-service/windows-state"))
+    ap.add_argument("--execute", action="store_true", help="really drain the lane and use the GPU (default: dry run)")
+    a = ap.parse_args(argv)
+    repo = Path(__file__).resolve().parents[4]
+    wid = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    lane = OwnerLane(work=a.state / "work")
+    tier = ModelTier(repo=repo, window_id=wid)
+    if a.plan == "none":
+        def plan(ctx):
+            return {}
+    else:
+        from . import window_plans
+        plan = getattr(window_plans, a.plan)
+    rec = run_window(plan, lane=lane, tier=tier, gpu_apps=gpu.compute_apps, gpu_free_mib=lambda: gpu.memory_mib()["free"],
+                     owner_cgroup="forge-c-owner-development-", tier_cgroup="forge-model-tier", state_dir=a.state,
+                     max_minutes=a.max_minutes, dry_run=not a.execute)
+    print(json.dumps({k: rec.get(k) for k in ("window_id", "outcome", "refusal", "checks", "error")}, indent=1))
+    return 0 if rec["outcome"] in ("COMPLETED", "DRY_RUN") else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
