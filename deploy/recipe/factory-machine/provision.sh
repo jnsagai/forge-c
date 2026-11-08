@@ -298,7 +298,7 @@ step "Python $FORGE_PYTHON_VERSION (uv) and the factory checkout at $FORGE_REVIS
 as_forge uv python install "$FORGE_PYTHON_VERSION"
 run mkdir -p "$(dirname "$FORGE_REPO_DIR")"
 if [ -d "$FORGE_REPO_DIR/.git" ]; then
-  head="$(git -C "$FORGE_REPO_DIR" rev-parse HEAD 2>/dev/null || true)"
+  head="$(runuser -u "$FORGE_USER" -- git -C "$FORGE_REPO_DIR" rev-parse HEAD 2>/dev/null || true)"   # as its owner: git refuses root on a forge-owned checkout
   if [ "$head" = "$FORGE_REVISION" ]; then log "ok: checkout at $FORGE_REVISION"; else
     as_forge git -C "$FORGE_REPO_DIR" fetch --quiet origin "$FORGE_REVISION"
     as_forge git -C "$FORGE_REPO_DIR" checkout --quiet --detach "$FORGE_REVISION"
@@ -309,7 +309,7 @@ else
   as_forge git -C "$FORGE_REPO_DIR" checkout --quiet --detach "$FORGE_REVISION"
 fi
 if [ "$DRY_RUN" = 0 ]; then
-  got="$(git -C "$FORGE_REPO_DIR" rev-parse HEAD)"
+  got="$(runuser -u "$FORGE_USER" -- git -C "$FORGE_REPO_DIR" rev-parse HEAD)"
   [ "$got" = "$FORGE_REVISION" ] || refuse "checkout is at $got, expected $FORGE_REVISION"
 fi
 as_forge sh -c "cd '$FORGE_REPO_DIR' && uv sync --frozen --python '$FORGE_PYTHON_VERSION'"   # uv.lock hashes verify every wheel
