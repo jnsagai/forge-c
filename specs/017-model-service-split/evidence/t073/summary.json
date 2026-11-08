@@ -1,0 +1,9 @@
+{
+ "task": "T073",
+ "result": "PASS",
+ "window": "t073202611082102",
+ "release": "2026-11-08T21:48Z: captured, exact stop, owner lane off the GPU (929 MiB used, 47572 MiB free)",
+ "timer_during_window": "SKIP window_open",
+ "restore": "2026-11-08T22:05:19Z window_restored: live 4339ee54 (same tree as 482b824b), guardian pid 3680379, fresh ticket, 15 min watch",
+ "drain_note": "the release waited for order L40H; the owner stopped it (Fabro run cancelled, order closed BLOCKED FABRO_RUN_CANCELLED_BY_OWNER)"
+}
