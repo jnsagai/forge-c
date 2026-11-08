@@ -49,7 +49,7 @@
   - Verifying against the lock refuses on a mismatch.
   - An identity document validates against `config/schemas/model-service/served-model-identity.schema.json`.
   - The inferred identity from a `/v1/models` payload has `attested: false`.
-- [ ] T006 [P] Write `factory/python/tests/test_modelservice_reasons_secrets.py`. It must fail first and cover:
+- [X] T006 [P] Write `factory/python/tests/test_modelservice_reasons_secrets.py`. It must fail first and cover:
   - Every factory reason from `contracts/model-channel.md` (`credential_refused`, `share_exhausted`, `context_exceeded`, `identity_changed`, `service_unreachable`, `channel_interrupted`, `outcome_unknown`) maps from the status and `forge_reason` table.
   - The secret resolver reads only a 0600 file, refuses group- or world-readable files, and never puts a secret value in `repr`, logs or exceptions.
 - [X] T007 Implement `factory/python/model_tier/identity.py` (re-exported by `forge_factory/modelservice/identity.py`):
@@ -58,8 +58,8 @@
   - `inferred_from_models_endpoint(payload, recipe_params)`
 
   T005 must pass.
-- [ ] T008 Implement `factory/python/forge_factory/modelservice/reasons.py`, holding the reason enum and the mapping of `(status, forge_reason, exception)` to a reason, and `factory/python/forge_factory/modelservice/secrets.py`, holding the name-to-value resolver from a private file whose path is given by `FORGE_MODEL_SERVICE_SECRETS`. T006 must pass.
-- [ ] T009 [P] Write `factory/python/forge_factory/modelservice/artefacts.py`, which downloads to a target directory and records SHA-256 and size, and `factory/python/tests/test_modelservice_artefacts.py`, which tests resume, a wrong hash leading to refusal, and the lock writer. It is non-GPU and writes only under the given directory.
+- [X] T008 Implement `factory/python/forge_factory/modelservice/reasons.py`, holding the reason enum and the mapping of `(status, forge_reason, exception)` to a reason, and `factory/python/forge_factory/modelservice/secrets.py`, holding the name-to-value resolver from a private file whose path is given by `FORGE_MODEL_SERVICE_SECRETS`. T006 must pass.
+- [X] T009 [P] Write `factory/python/forge_factory/modelservice/artefacts.py`, which downloads to a target directory and records SHA-256 and size, and `factory/python/tests/test_modelservice_artefacts.py`, which tests resume, a wrong hash leading to refusal, and the lock writer. It is non-GPU and writes only under the given directory.
 - [ ] T010 (host, non-GPU) Pin the S0 artefacts under `/mnt/data/forge-c/model-service/` on Omniverse2 using T009:
   - The `vllm/vllm-openai` image digest of the first release that supports the Qwen3.6 MoE architecture. Check its release notes; if no release supports it, record BLOCKED with the reason.
   - The Qwen3.6-35B-A3B weights: the publisher's FP8 checkpoint if one exists, else BF16 for FP8-at-load (research R2).
@@ -67,15 +67,15 @@
   - Ornith-1.5: no download. Record the SHA-256 of the GGUF blob and of the `llama-server` binary the owner lane uses today, read from the owner-lane profile pins (`models.allowed[*].digest`, `runtime.llama_server.model_blob_sha256`) and verified on disk.
 
   Pulling the image with `docker pull` allocates no GPU. Write the digests and SHA-256 values to `deploy/recipe/recipe.lock.json`, then commit the lock.
-- [ ] T011 [P] Write `factory/python/tests/test_modelservice_window.py`. It must fail first and use fakes for the lane control, the GPU probe and the model tier. It covers:
+- [X] T011 [P] Write `factory/python/tests/test_modelservice_window.py`. It must fail first and use fakes for the lane control, the GPU probe and the model tier. It covers:
   - The steps run in order, per data-model QualificationWindow.
   - Start is refused when the production lane holds the GPU, or when the lane cannot drain before a timeout.
   - The tier stops and the lane is restored on any step failure (`ABORTED_RESTORED`).
   - The hard end is enforced.
   - `RESTORE_FAILED` raises an incident and never touches the production lane or the production observer.
   - Two windows never overlap (lock).
-- [ ] T012 Find and document the owner lane's existing safe-pause and resume controls in `specs/017-model-service-split/window-controls.md`. Candidates are the conductor pause or latch, the deployer latch file (`owner-lane-autodeploy`), and `afo/operations.py` requested stop with inference-owner quiescence. Name the exact command or file for each step: drain, idle check, model stop, model restart, resume. If a step has no existing non-signed control, mark it BLOCKED and note that the window controller must not invent one.
-- [ ] T013 Implement the GPU probe in `factory/python/model_tier/gpu.py`. It runs `nvidia-smi --query-compute-apps` and maps each holding PID to its unit or lane by cgroup. The production lane is identified from its unit names, and the probe is read-only.
+- [X] T012 Find and document the owner lane's existing safe-pause and resume controls in `specs/017-model-service-split/window-controls.md`. Candidates are the conductor pause or latch, the deployer latch file (`owner-lane-autodeploy`), and `afo/operations.py` requested stop with inference-owner quiescence. Name the exact command or file for each step: drain, idle check, model stop, model restart, resume. If a step has no existing non-signed control, mark it BLOCKED and note that the window controller must not invent one.
+- [X] T013 Implement the GPU probe in `factory/python/model_tier/gpu.py`. It runs `nvidia-smi --query-compute-apps` and maps each holding PID to its unit or lane by cgroup. The production lane is identified from its unit names, and the probe is read-only.
 - [ ] T014 Implement `factory/python/forge_factory/modelservice/window.py`, the window controller with the CLI `python -m forge_factory.modelservice.window run --plan <smoke|qualification> --max-minutes N`:
   - It uses only the T012 controls and the T013 probe.
   - It writes its record to `<state>/model-service/windows/<window_id>.json`.
