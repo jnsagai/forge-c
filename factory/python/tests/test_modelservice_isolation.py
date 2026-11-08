@@ -179,9 +179,10 @@ def test_cli_writes_report_and_exit_code(tmp_path, monkeypatch):
 
 
 # ----------------------------------------------------------------------------------------------- provision.sh (T058)
-def _lock(tmp: Path, **toolchain) -> Path:
+def _lock(tmp: Path, factory_revision=None, **toolchain) -> Path:
     doc = json.loads((ROOT / "deploy/recipe/recipe.lock.json").read_text())
     doc["toolchain"] = toolchain
+    doc["factory_revision"] = factory_revision  # tests control it; the real lock now pins one
     p = tmp / "recipe.lock.json"
     p.write_text(json.dumps(doc))
     return p
