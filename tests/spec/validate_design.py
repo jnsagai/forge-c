@@ -173,6 +173,18 @@ class ForgeV04Design(unittest.TestCase):
         for name in ['08 Supervisor','09 SKILL','10 Human dashboard','11 Validated lessons']:
             self.assertTrue(any((d.get('name') or '').startswith(name) for d in diagrams))
 
+    def test_model_service_profile_and_contracts(self):
+        # Feature 017: the factory's model-service mode is valid and the shipped contracts are valid schemas.
+        sdir=ROOT/'config/schemas/model-service'
+        schemas={p.name:json.loads(p.read_text()) for p in sdir.glob('*.schema.json')}
+        self.assertEqual(len(schemas),6)
+        for schema in schemas.values():
+            Draft202012Validator.check_schema(schema)
+        prof=cfg('model-service.yaml')
+        errors=list(Draft202012Validator(schemas['model-service-profile.schema.json']).iter_errors(prof))
+        self.assertEqual(errors,[])
+        self.assertEqual(prof['mode'],'owned')  # FR-007: today's behaviour stays the default until a cutover
+
     def test_legacy_workflow_not_mislabeled(self):
         status=(ROOT/'workflows/README.md').read_text()
         self.assertIn('legacy',status.lower())
@@ -182,5 +194,5 @@ if __name__=='__main__':
     suite=unittest.defaultTestLoader.loadTestsFromTestCase(ForgeV04Design)
     outcome=unittest.TextTestRunner(verbosity=2).run(suite)
     if outcome.wasSuccessful():
-        print('PASS: 14 static design tests. This does NOT validate runtime integrations.')
+        print('PASS: 15 static design tests. This does NOT validate runtime integrations.')
     raise SystemExit(0 if outcome.wasSuccessful() else 1)

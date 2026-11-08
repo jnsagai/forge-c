@@ -27,10 +27,10 @@
 
 **Purpose**: the implementation branch, package skeleton, configuration default and recipe skeleton.
 
-- [ ] T001 Create the worktree `repos/forge-c-017-impl` on a new branch `feat/017-model-service-split-impl`, starting from the current tip of `feat/owner-lane-campaign-v21-20261107` (host `repo.git`). Merge `feat/017-model-service-split` into it with a merge commit, to carry `specs/017-model-service-split/`. Record the base SHA in `specs/017-model-service-split/BASE.md`.
-- [ ] T002 [P] Create the package `factory/python/forge_factory/modelservice/__init__.py`. Its docstring names the feature, links `specs/017-model-service-split/plan.md` and states the hard limits above.
-- [ ] T003 [P] Create `config/factory/model-service.yaml` with `mode: owned`, which keeps today's behaviour, and commented `external` example values per `specs/017-model-service-split/contracts/model-service-profile.schema.json`. Copy the six contract schemas to `config/schemas/model-service/`, and extend `tests/spec/validate_design.py` to validate `model-service.yaml` against its schema.
-- [ ] T004 [P] Create the recipe skeleton:
+- [X] T001 Create the worktree `repos/forge-c-017-impl` on a new branch `feat/017-model-service-split-impl`, starting from the current tip of `feat/owner-lane-campaign-v21-20261107` (host `repo.git`). Merge `feat/017-model-service-split` into it with a merge commit, to carry `specs/017-model-service-split/`. Record the base SHA in `specs/017-model-service-split/BASE.md`.
+- [X] T002 [P] Create the package `factory/python/forge_factory/modelservice/__init__.py`. Its docstring names the feature, links `specs/017-model-service-split/plan.md` and states the hard limits above.
+- [X] T003 [P] Create `config/factory/model-service.yaml` with `mode: owned`, which keeps today's behaviour, and commented `external` example values per `specs/017-model-service-split/contracts/model-service-profile.schema.json`. Copy the six contract schemas to `config/schemas/model-service/`, and extend `tests/spec/validate_design.py` to validate `model-service.yaml` against its schema.
+- [X] T004 [P] Create the recipe skeleton:
   - `deploy/recipe/README.md`
   - `deploy/recipe/params/omniverse2.yaml` and `deploy/recipe/params/production.yaml`, per `contracts/recipe-params.schema.json`. Production values come from `docs/ONPREM-DEPLOYMENT.md`. Unknown platform values (serving stack, authentication method, API URL, CA) get `confirmed: false`.
   - An empty `deploy/recipe/recipe.lock.json`.
@@ -44,7 +44,7 @@
 
 **⚠️ CRITICAL**: no user-story work starts until this phase is complete.
 
-- [ ] T005 [P] Write `factory/python/tests/test_modelservice_identity.py`. It must fail first and cover:
+- [X] T005 [P] Write `factory/python/tests/test_modelservice_identity.py`. It must fail first and cover:
   - The fingerprint is stable under file order and changes when one weight byte, the tokenizer or the chat template changes.
   - Verifying against the lock refuses on a mismatch.
   - An identity document validates against `config/schemas/model-service/served-model-identity.schema.json`.
@@ -52,7 +52,7 @@
 - [ ] T006 [P] Write `factory/python/tests/test_modelservice_reasons_secrets.py`. It must fail first and cover:
   - Every factory reason from `contracts/model-channel.md` (`credential_refused`, `share_exhausted`, `context_exceeded`, `identity_changed`, `service_unreachable`, `channel_interrupted`, `outcome_unknown`) maps from the status and `forge_reason` table.
   - The secret resolver reads only a 0600 file, refuses group- or world-readable files, and never puts a secret value in `repr`, logs or exceptions.
-- [ ] T007 Implement `factory/python/forge_factory/modelservice/identity.py`:
+- [X] T007 Implement `factory/python/forge_factory/modelservice/identity.py`:
   - `fingerprint(weights_dir, tokenizer, chat_template)`
   - `from_lock(lock)`, `verify(lock, observed)`
   - `inferred_from_models_endpoint(payload, recipe_params)`

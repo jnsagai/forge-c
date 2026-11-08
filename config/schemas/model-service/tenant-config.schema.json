@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/017/tenant-config.schema.json",
+  "title": "TenantGatewayConfig",
+  "description": "Model-tier tenant gateway configuration. Keys appear only as sha256 hashes. Engines and their internal URLs come from the catalog. Cross-field rules (checked at start): sum(guaranteed_concurrency) <= the smallest catalog model's sequences; max_context <= the context of every model in allowed_models; allowed_models are catalog models.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "engine_key_ref",
+    "identity_lock",
+    "outcome_log",
+    "tenants",
+    "catalog"
+  ],
+  "properties": {
+    "engine_key_ref": {
+      "type": "string",
+      "description": "name of the secret holding the engines' internal key"
+    },
+    "identity_lock": {
+      "type": "string",
+      "description": "path of recipe.lock.json; the gateway refuses to serve on fingerprint mismatch"
+    },
+    "outcome_log": {
+      "type": "string"
+    },
+    "reasoning_finding_threshold": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 3
+    },
+    "tenants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tenant_id",
+          "key_sha256",
+          "guaranteed_concurrency",
+          "max_concurrency",
+          "queue_limit",
+          "queue_timeout_s",
+          "priority",
+          "max_context",
+          "reasoning_mode",
+          "enabled",
+          "allowed_models"
+        ],
+        "properties": {
+          "tenant_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{1,40}$"
+          },
+          "key_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "guaranteed_concurrency": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "max_concurrency": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "queue_limit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "queue_timeout_s": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "max_context": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reasoning_mode": {
+            "enum": [
+              "off",
+              "on"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "allowed_models": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "catalog": {
+      "type": "string",
+      "description": "path of catalog.yaml (model-catalog.schema.json)"
+    }
+  }
+}

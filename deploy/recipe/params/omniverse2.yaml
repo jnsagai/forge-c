@@ -1,0 +1,41 @@
+# Recipe parameters for the Omniverse2 mirror (feature 017). Schema: config/schemas/model-service/recipe-params.schema.json
+# Every site-specific value is named here; `production_value` documents the production counterpart (SC-008).
+# Secrets appear only as names (secret_ref: true) resolved from the private secrets file, never as values.
+site: omniverse2
+parameters:
+  gpu_model:              {value: "NVIDIA RTX 6000 Ada", production_value: "NVIDIA H200", description: "GPU of the model tier"}
+  gpu_vram_mib:           {value: 49140, production_value: 144384, description: "GPU memory of the model tier (141 GB in production)"}
+  host_ram_gib:           {value: 125, production_value: null, confirmed: true, description: "Host RAM of the model tier; production value is the platform team's"}
+  model_catalog:          {value: "deploy/recipe/model-tier/catalog.yaml", production_value: "platform-defined", description: "Models the service offers and how it swaps them"}
+  reference_model:        {value: "qwen3.6-35b-a3b-fp8", production_value: "Qwen3.6-35B-A3B BF16", description: "Production reference model as served on this site"}
+  reference_precision:    {value: fp8, production_value: bf16, description: "BF16 needs about 70 GB and cannot fit 48 GB (research R2)"}
+  reference_context:      {value: 65536, production_value: 262144, description: "Context limit per sequence of the reference model"}
+  reference_sequences:    {value: 2, production_value: 11, description: "Concurrent sequences; measured in the first window (research R2)"}
+  reference_kv_cache_tokens: {value: null, production_value: 761376, description: "Measured in the first window"}
+  reasoning_mode:         {value: "off", production_value: "off", description: "Non-thinking mode for the reference model"}
+  prefix_caching:         {value: true, production_value: true, description: "Engine prefix caching"}
+  request_logging:        {value: false, production_value: false, description: "Engine request logging (must stay off)"}
+  channel_url:            {value: "http://127.0.0.1:18480/v1", production_value: null, confirmed: false, description: "The model channel the factory uses; production URL from the platform team"}
+  channel_tls:            {value: false, production_value: true, description: "HTTPS in production; plain HTTP only on the internal host network"}
+  channel_ca_bundle:      {value: null, production_value: null, confirmed: false, description: "Internal CA bundle reference, if the platform needs one"}
+  auth_method:            {value: "bearer-api-key", production_value: null, confirmed: false, description: "Per-tenant credential; production method not yet known"}
+  tenant_key_factory:     {value: "forge-qual", secret_ref: true, production_value: "forge-prod", description: "Name of the factory tenant's key in the secrets file"}
+  engine_key:             {value: "engine-internal", secret_ref: true, production_value: null, confirmed: false, description: "Name of the engines' internal key"}
+  identity_extension:     {value: true, production_value: null, confirmed: false, description: "Whether the service offers /forge/v1/identity (else identity is not attested)"}
+  factory_share_concurrency: {value: 2, production_value: 7, description: "Factory tenant guaranteed concurrent requests"}
+  factory_queue_wait_max_s:  {value: 900, production_value: 900, description: "Factory bounded wait; must cover worst swap + max_wait_s"}
+  ram_budget_gib:         {value: 80, production_value: null, description: "Host RAM for warm models off the GPU (research R3c)"}
+  ram_reserve_gib:        {value: 24, production_value: null, description: "Host RAM kept free for the factory and other host users"}
+  window_max_minutes:     {value: 120, production_value: null, description: "Longest qualification window (owner limit; default until the owner sets it)"}
+  window_hours:           {value: "between owner-lane orders", production_value: null, description: "When windows may run"}
+  factory_machine:        {value: "container", production_value: "vm", description: "Container stand-in until the kvm group is granted"}
+  factory_vcpu:           {value: 16, production_value: 16, description: "Factory machine vCPU"}
+  factory_ram_gib:        {value: 64, production_value: 64, description: "Factory machine RAM"}
+  factory_data_volume:    {value: "/mnt/data/forge-c/model-service/factory-data", production_value: "/srv/forge-c", description: "Factory data volume"}
+  factory_os:             {value: "ubuntu-22.04", production_value: "ubuntu-22.04.5", description: "Factory machine OS image"}
+not_proven_here:
+  - "BF16 precision (FP8 used; quality equivalence is measured, not assumed)"
+  - "141 GB scale: 11 concurrent sequences, 262k context, 761k-token KV cache"
+  - "Production serving stack and authentication (unknown; only the model-channel contract is relied on)"
+  - "A real VM boundary while the container stand-in is used (separate kernel, VM network, VM memory limits)"
+  - "Co-resident models: on 48 GB one model is on the GPU at a time and the service swaps"

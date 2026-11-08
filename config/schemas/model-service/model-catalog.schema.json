@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/017/model-catalog.schema.json",
+  "title": "ModelCatalog",
+  "description": "Models the model service offers, each at full capacity, plus the swap policy (owner 2026-11-08). One file per site.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "site",
+    "gpu_vram_mib",
+    "models",
+    "swap_policy"
+  ],
+  "properties": {
+    "site": {
+      "enum": [
+        "omniverse2",
+        "production"
+      ]
+    },
+    "gpu_vram_mib": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model",
+          "engine",
+          "compose_service",
+          "full_capacity",
+          "reasoning_mode",
+          "identity",
+          "vram_mib",
+          "load_timeout_s",
+          "launch_kind",
+          "engine_url"
+        ],
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "engine": {
+            "enum": [
+              "llama.cpp",
+              "vllm"
+            ]
+          },
+          "compose_service": {
+            "type": "string"
+          },
+          "full_capacity": {
+            "type": "object",
+            "required": [
+              "context_per_sequence",
+              "sequences"
+            ],
+            "properties": {
+              "context_per_sequence": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "sequences": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "kv_cache_type": {
+                "type": "string"
+              },
+              "batch_tokens": {
+                "type": "integer"
+              },
+              "microbatch_tokens": {
+                "type": "integer"
+              },
+              "gpu_memory_utilization": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1
+              },
+              "mtp_draft": {
+                "type": "integer"
+              },
+              "prefix_caching": {
+                "type": "boolean"
+              }
+            }
+          },
+          "reasoning_mode": {
+            "enum": [
+              "off",
+              "on"
+            ]
+          },
+          "reasoning_effort": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          },
+          "identity": {
+            "$ref": "served-model-identity.schema.json"
+          },
+          "vram_mib": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "load_timeout_s": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "co_resident": {
+            "type": "boolean",
+            "default": false
+          },
+          "launch_kind": {
+            "enum": [
+              "compose",
+              "process"
+            ],
+            "description": "compose: a Compose engine service (vLLM); process: a pinned host binary started by the swap controller (today's llama.cpp server for Ornith)"
+          },
+          "engine_url": {
+            "type": "string",
+            "description": "internal URL of this engine; never published"
+          },
+          "warm_strategy": {
+            "enum": [
+              "vllm_sleep",
+              "ram_staged_file",
+              "none"
+            ],
+            "default": "none"
+          },
+          "ram_gib": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "swap_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "drain_max_s",
+        "min_residency_s",
+        "swap_after_wait_s",
+        "max_wait_s",
+        "max_swaps_per_hour"
+      ],
+      "properties": {
+        "drain_max_s": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_residency_s": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "swap_after_wait_s": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_wait_s": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_swaps_per_hour": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "idle_unload_s": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ram_budget_gib": {
+          "type": "number",
+          "minimum": 0
+        },
+        "ram_reserve_gib": {
+          "type": "number",
+          "minimum": 0
+        },
+        "stage_dir": {
+          "type": "string",
+          "description": "RAM-backed directory for ram_staged_file models (e.g. /dev/shm/forge-model-tier)"
+        }
+      }
+    }
+  }
+}
