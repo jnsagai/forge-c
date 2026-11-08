@@ -154,7 +154,7 @@
 
 ### Tests for User Story 2 ⚠️ (write first, must fail)
 
-- [ ] T026 [P] [US2] `factory/python/tests/test_modelservice_tenant_gateway.py`, using a fake engine. It covers:
+- [X] T026 [P] [US2] `factory/python/tests/test_modelservice_tenant_gateway.py`, using a fake engine. It covers:
   - A missing or wrong key gets 401 and makes no engine call (FR-009).
   - Over `max_concurrency` plus `queue_limit` gets 429 `share_exhausted`; a queue wait beyond its limit gets 429 `queue_timeout`.
   - A guaranteed share holds while a neighbour saturates, and priority orders borrowed slots (FR-010, SC-003).
@@ -185,7 +185,7 @@
 ### Implementation for User Story 2
 
 - [X] T029 [P] [US2] Write `factory/python/tests/test_model_tier_boundary.py`. It checks that no module under `factory/python/model_tier/` imports `forge_factory`, by AST scan of every import (FR-032, SC-012); that `model_tier/schemas/*.json` are byte-identical to `config/schemas/model-service/`; and that the `model_tier` modules name no factory concept (run, work order, node, lane) in their configuration keys.
-- [ ] T030 [US2] Implement `factory/python/model_tier/tenant_gateway.py`, using Starlette and httpx with no new dependency:
+- [X] T030 [US2] Implement `factory/python/model_tier/tenant_gateway.py`, using Starlette and httpx with no new dependency:
   - configuration per `config/schemas/model-service/tenant-config.schema.json`;
   - SHA-256 key check;
   - per-tenant semaphores with guaranteed and borrowed slots and a priority queue;
@@ -206,12 +206,12 @@
   - a changed size or inode is detected;
   - the stage directory is 0700 and the files are 0600;
   - `unstage` removes only Forge-C files.
-- [ ] T033 [US2] Implement `factory/python/model_tier/ramstage.py`: stage, verify, residency check via `mincore` through `ctypes`, budget check from `/proc/meminfo`, unstage. Add the warm strategies to `model_tier/engines.py`:
+- [X] T033 [US2] Implement `factory/python/model_tier/ramstage.py`: stage, verify, residency check via `mincore` through `ctypes`, budget check from `/proc/meminfo`, unstage. Add the warm strategies to `model_tier/engines.py`:
   - `vllm_sleep`: POST `/sleep?level=1` and `/wake_up` on the internal engine URL, with health and identity checked after wake;
   - `ram_staged_file`: llama.cpp started on the staged path.
 
   T032 must pass.
-- [ ] T034 [US2] Implement `factory/python/model_tier/swap.py`:
+- [X] T034 [US2] Implement `factory/python/model_tier/swap.py`:
   - catalog loading, validated against `config/schemas/model-service/model-catalog.schema.json` and the lock;
   - per-model queues;
   - the state machine EMPTY / LOADING / SERVING / DRAINING / UNLOADING (data-model);
@@ -221,7 +221,7 @@
   - warm-up at tier start (stage Ornith, load Qwen3.6 then sleep it, serve the first requested model).
 
   Wire it into the request path of `tenant_gateway.py`. The swap sequence is ported from `lrtx/stack.py` `_serve_model` (refuse while requests are in flight, wait for VRAM, fail closed). T027 must pass.
-- [X] T035 [US2] Write `deploy/recipe/model-tier/catalog.yaml` for the Omniverse2 site:
+- [ ] T035 [US2] Write `deploy/recipe/model-tier/catalog.yaml` for the Omniverse2 site:
   - Ornith-1.5 GGUF Q8 as `process`, with today's full settings generated from the owner-lane profile by `factory/python/forge_factory/modelservice/catalog_gen.py` (factory side, reusing `lrtx/stack.py` `llama_server_spec`), never retyped by hand;
   - Qwen3.6-35B-A3B FP8 on vLLM as `compose`, with `warm_strategy: vllm_sleep`, `--enable-sleep-mode`, `VLLM_SERVER_DEV_MODE=1` (internal network only) and unlimited memlock;
   - Ornith with `warm_strategy: ram_staged_file` and `stage_dir: /dev/shm/forge-model-tier`;
@@ -229,15 +229,15 @@
   - initial `swap_policy` values marked "to be measured in T044".
 
   Also write `deploy/recipe/model-tier/tenant-gateway.service`, a user systemd unit for the gateway and swap controller. It is enabled only inside windows until the cutover.
-- [ ] T036 [P] [US2] Implement `factory/python/model_tier/neighbour.py`, the simulated second tenant. It is configurable for concurrency, prompt size and duration, and records its own latencies (metadata only). It uses synthetic prompts only and never customer or vendor inputs.
-- [ ] T037 [P] [US2] Write `deploy/recipe/model-tier/gateway.Dockerfile`, for sites that run the gateway in a container (a production option). It uses a pinned Python base image digest, installs only the factory package's runtime dependencies, runs as non-root, and records its digest in the lock. On Omniverse2 the gateway runs as the host user unit from T035 (research R3b).
-- [ ] T038 [US2] Write `deploy/recipe/model-tier/compose.yaml`:
+- [X] T036 [P] [US2] Implement `factory/python/model_tier/neighbour.py`, the simulated second tenant. It is configurable for concurrency, prompt size and duration, and records its own latencies (metadata only). It uses synthetic prompts only and never customer or vendor inputs.
+- [X] T037 [P] [US2] Write `deploy/recipe/model-tier/gateway.Dockerfile`, for sites that run the gateway in a container (a production option). It uses a pinned Python base image digest, installs only the factory package's runtime dependencies, runs as non-root, and records its digest in the lock. On Omniverse2 the gateway runs as the host user unit from T035 (research R3b).
+- [X] T038 [US2] Write `deploy/recipe/model-tier/compose.yaml`:
   - an `engine-qwen36` service (vLLM, digest from the lock, NVIDIA CDI GPU, internal network only, `--api-key` from secret, prefix caching on, request logging off, `max_model_len` and `max_num_seqs` from params, FP8 per research R2);
   - no `tenant-gateway` service on Omniverse2, which uses the T035 host unit; its published port is the only route in, bound to the address in params;
   - read-only model volume mount.
 
   Also write `deploy/recipe/model-tier/tenants.example.yaml`, with tenants `forge-qual`, `forge-owner` (`enabled: false` until cutover) and `sim-neighbour`, hashes only, and `allowed_models` for each tenant.
-- [ ] T039 [US2] Add `compose config` validation and a lint check to `factory/python/tests/test_modelservice_recipe.py` (skipped with NOT_RUN if Docker is absent on the test machine). The check: no published engine port, the GPU only on engine services, no `--enable-log-requests` (or equivalent) flag on the engine.
+- [X] T039 [US2] Add `compose config` validation and a lint check to `factory/python/tests/test_modelservice_recipe.py` (skipped with NOT_RUN if Docker is absent on the test machine). The check: no published engine port, the GPU only on engine services, no `--enable-log-requests` (or equivalent) flag on the engine.
 
 **Checkpoint**: the tenant gateway and the model-tier definition are tested offline.
 

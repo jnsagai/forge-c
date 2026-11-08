@@ -31,7 +31,6 @@
         "required": [
           "model",
           "engine",
-          "compose_service",
           "full_capacity",
           "reasoning_mode",
           "identity",

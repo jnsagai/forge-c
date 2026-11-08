@@ -78,6 +78,10 @@ class Catalog:
     def min_sequences(self) -> int:
         return min(m.sequences for m in self.models.values())
 
+    @property
+    def max_sequences(self) -> int:
+        return max(m.sequences for m in self.models.values())
+
 
 def _validator(name: str):
     from jsonschema import Draft202012Validator

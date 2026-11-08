@@ -103,6 +103,11 @@
     "catalog": {
       "type": "string",
       "description": "path of catalog.yaml (model-catalog.schema.json)"
+    },
+    "total_slots": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "concurrent requests the service admits across tenants; default the largest catalog model's sequences (engines queue beyond their own)"
     }
   }
 }

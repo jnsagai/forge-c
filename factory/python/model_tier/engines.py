@@ -15,6 +15,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import os
+import re
 import signal
 from collections.abc import Awaitable, Callable
 from pathlib import Path
@@ -24,6 +25,11 @@ import httpx
 from .catalog import Catalog, Model
 
 Cmd = Callable[[list[str]], Awaitable[tuple[int, str]]]
+
+
+def stage_name(model: str) -> str:
+    """A file-system-safe name for a model id such as `hf.co/org/Model-GGUF:Q8_0`."""
+    return re.sub(r"[^A-Za-z0-9._-]", "_", model).strip("._-")[:120] or "model"
 
 
 async def run_cmd(argv: list[str]) -> tuple[int, str]:
@@ -76,7 +82,8 @@ class ProcessEngine:
         if decision != "warm":
             self.reason = why
             return {"warm": False, "reason": why}
-        self.staged = await asyncio.to_thread(self.ram.stage, self.m.model, Path(p["model_path"]), p.get("model_sha256"))
+        self.staged = await asyncio.to_thread(self.ram.stage, stage_name(self.m.model), Path(p["model_path"]),
+                                              p.get("model_sha256"))
         return {"warm": True, "reason": ""}
 
     def _model_path(self) -> tuple[str, bool]:
@@ -148,7 +155,7 @@ class VllmComposeEngine:
         await self._compose("up", "-d", self.m.compose_service)
         await _wait_healthy(self.http, self.m.engine_url, self.m.load_timeout_s, self.h)
         await self._post("/sleep?level=1")
-        self.ram.reserve(self.m.model, self.m.ram_gib)
+        self.ram.reserve(stage_name(self.m.model), self.m.ram_gib)
         self.sleeping = self.can_sleep = True
         return {"warm": True, "reason": ""}
 
