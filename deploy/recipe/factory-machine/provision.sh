@@ -108,6 +108,9 @@ done
 step "pins (lock: ${FORGE_LOCK_FILE:-none})"
 lock_get() {  # lock_get <dotted.key.path>; prints "" when the lock or the key is absent
   [ -n "$FORGE_LOCK_FILE" ] && [ -f "$FORGE_LOCK_FILE" ] || { echo ""; return 0; }
+  # a bare container base has no python3 before the apt step: then only explicit FORGE_PIN_* values count (the
+  # caller derives them from the lock); every download is still verified against its SHA-256 and missing pins refuse
+  command -v python3 >/dev/null 2>&1 || { echo ""; return 0; }
   python3 -I -c 'import json,sys
 v=json.load(open(sys.argv[1]))
 for k in sys.argv[2].split("."):
