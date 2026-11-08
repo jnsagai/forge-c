@@ -126,12 +126,20 @@ specs/017-model-service-split/
 ### Source Code (repository root)
 
 ```text
+factory/python/model_tier/         # NEW, factory-agnostic model service (FR-032); never imports forge_factory
+├── identity.py                    # served-model identity: fingerprint, build, verify (shared contract)
+├── tenant_gateway.py              # tenants, keys, shares, priorities, identity endpoints, metadata log
+├── swap.py                        # catalog, per-tenant per-model queues, fair swap decisions, drain/unload/load/verify
+├── engines.py                     # engine definitions from catalog.yaml (process or compose), warm strategies
+├── ramstage.py                    # keep models warm in host RAM (/dev/shm staging, residency, budget)
+├── gpu.py                         # read-only GPU probe
+├── neighbour.py                   # synthetic second-tenant load
+└── schemas/                       # copies of the contract schemas (kept identical by a test)
+
 factory/python/forge_factory/
 ├── modelservice/                  # NEW package
-│   ├── tenant_gateway.py          # model tier: keys, shares, priorities, identity, metadata log (host user service)
-│   ├── swap.py                    # model tier: catalog, per-model queues, drain/unload/load/verify, anti-thrash, swap records
-│   ├── engines.py                 # model tier: engine definitions (llama.cpp args from today's profile, vLLM args), compose start/stop
-│   ├── identity.py                # compute/verify served-model identity from the recipe lock and the engine
+│   ├── identity.py                # re-exports model_tier.identity (the shared contract)
+│   ├── catalog_gen.py             # generates the Ornith catalog entry from the owner-lane profile (factory side)
 │   ├── client.py                  # factory side: identity pin, reason mapping, share-aware admission settings
 │   ├── window.py                  # qualification window controller (drain owner lane, GPU handover, restore)
 │   ├── qualify.py                 # qualification report (reads model_exchanges export + run metrics)

@@ -52,7 +52,7 @@
 - [ ] T006 [P] Write `factory/python/tests/test_modelservice_reasons_secrets.py`. It must fail first and cover:
   - Every factory reason from `contracts/model-channel.md` (`credential_refused`, `share_exhausted`, `context_exceeded`, `identity_changed`, `service_unreachable`, `channel_interrupted`, `outcome_unknown`) maps from the status and `forge_reason` table.
   - The secret resolver reads only a 0600 file, refuses group- or world-readable files, and never puts a secret value in `repr`, logs or exceptions.
-- [X] T007 Implement `factory/python/forge_factory/modelservice/identity.py`:
+- [X] T007 Implement `factory/python/model_tier/identity.py` (re-exported by `forge_factory/modelservice/identity.py`):
   - `fingerprint(weights_dir, tokenizer, chat_template)`
   - `from_lock(lock)`, `verify(lock, observed)`
   - `inferred_from_models_endpoint(payload, recipe_params)`
@@ -75,7 +75,7 @@
   - `RESTORE_FAILED` raises an incident and never touches the production lane or the production observer.
   - Two windows never overlap (lock).
 - [ ] T012 Find and document the owner lane's existing safe-pause and resume controls in `specs/017-model-service-split/window-controls.md`. Candidates are the conductor pause or latch, the deployer latch file (`owner-lane-autodeploy`), and `afo/operations.py` requested stop with inference-owner quiescence. Name the exact command or file for each step: drain, idle check, model stop, model restart, resume. If a step has no existing non-signed control, mark it BLOCKED and note that the window controller must not invent one.
-- [ ] T013 Implement the GPU probe in `factory/python/forge_factory/modelservice/gpu.py`. It runs `nvidia-smi --query-compute-apps` and maps each holding PID to its unit or lane by cgroup. The production lane is identified from its unit names, and the probe is read-only.
+- [ ] T013 Implement the GPU probe in `factory/python/model_tier/gpu.py`. It runs `nvidia-smi --query-compute-apps` and maps each holding PID to its unit or lane by cgroup. The production lane is identified from its unit names, and the probe is read-only.
 - [ ] T014 Implement `factory/python/forge_factory/modelservice/window.py`, the window controller with the CLI `python -m forge_factory.modelservice.window run --plan <smoke|qualification> --max-minutes N`:
   - It uses only the T012 controls and the T013 probe.
   - It writes its record to `<state>/model-service/windows/<window_id>.json`.
@@ -92,7 +92,7 @@
 
 **Goal**: a `mode: external` factory never starts, stops or swaps a model server and never takes a GPU lock or lease. It reaches the model only through its gateway, pins and records the served-model identity, and maps every failure to a distinct reason.
 
-**Independent Test**: with fakes, run the line-launch and stack paths in external mode and assert zero server and GPU actions. On the host, the acceptance runs in the first window (T043).
+**Independent Test**: with fakes, run the line-launch and stack paths in external mode and assert zero server and GPU actions. On the host, the acceptance runs in the first window (T044).
 
 ### Tests for User Story 1 ⚠️ (write first, must fail)
 
@@ -140,7 +140,7 @@
 
   T016 must pass. Record the new gateway SHA-256 in `specs/017-model-service-split/gateway-revision.md`, with the note that it is not valid for the owner lane until the cutover (research R7).
 - [ ] T024 [US1] Define the **qualification lane** in `deploy/recipe/factory-machine/qualification-lane.env.example` and `factory/python/forge_factory/modelservice/lane.py`. It has its own Fabro instance, data root (`/mnt/data/forge-c/model-service/qual-lane/`), ports (not 11460 and not the owner lane's), its own state directory and `mode: external`. Add a test in `factory/python/tests/test_modelservice_external_mode.py` that refuses any configuration whose ports or data root collide with the owner or production lane.
-- [ ] T025 [US1] Run the CRE CHANGE gate for the US1 commit, via `promotion.evaluate` from the oracle checkout, with kind `CHANGE`. Store the decision insert-only in the host incidents store. No deploy to the owner lane: the qualification lane is not deployed until T043.
+- [ ] T025 [US1] Run the CRE CHANGE gate for the US1 commit, via `promotion.evaluate` from the oracle checkout, with kind `CHANGE`. Store the decision insert-only in the host incidents store. No deploy to the owner lane: the qualification lane is not deployed until T044.
 
 **Checkpoint**: external mode is fully covered by unit tests, and owned mode is unchanged.
 
@@ -150,7 +150,7 @@
 
 **Goal**: one model service owns the GPU and serves a catalog of models (Ornith-1.5 on llama.cpp, Qwen3.6 FP8 on vLLM), each at full capacity. It swaps on demand without the caller noticing (owner 2026-11-08), behind the tenant gateway, which provides keys, guaranteed shares, priorities, per-model verifiable identity and a metadata-only log. A simulated neighbour completes the setup.
 
-**Independent Test**: unit and contract tests against a fake engine; the on-host smoke and contention checks run in the first window (T043).
+**Independent Test**: unit and contract tests against a fake engine; the on-host smoke and contention checks run in the first window (T044).
 
 ### Tests for User Story 2 ⚠️ (write first, must fail)
 
@@ -174,7 +174,8 @@
   - a swap rate above `max_swaps_per_hour` raises a finding;
   - SwapEvent records hold metadata only and carry `warm`;
   - with warm strategies, a swap performs no model-file read from disk (the fake engine records the source of each load); when the RAM budget is short, that model falls back to a cold load with a finding and the request is still answered (FR-031);
-  - tenant priority applies within a model queue, and guaranteed shares hold across swaps (FR-025 to FR-030, SC-009).
+  - tenant priority applies within a model queue, and guaranteed shares hold across swaps (FR-025 to FR-030, SC-009);
+  - fairness: two factory tenants and a neighbour, each preferring a different model, all progress within `max_wait_s`, and a tenant flooding requests for the non-loaded model cannot take another tenant's guaranteed slots (FR-033, SC-012).
 - [ ] T028 [P] [US2] Write the contract test `factory/python/tests/test_modelservice_channel_contract.py`. Run the same client against two fakes:
   - (a) the full tenant gateway;
   - (b) a bare OpenAI-compatible service with only `/v1/models` and chat.
@@ -183,7 +184,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T029 [US2] Implement `factory/python/forge_factory/modelservice/tenant_gateway.py`, using Starlette and httpx with no new dependency:
+- [ ] T029 [P] [US2] Write `factory/python/tests/test_model_tier_boundary.py`. It checks that no module under `factory/python/model_tier/` imports `forge_factory`, by AST scan of every import (FR-032, SC-012); that `model_tier/schemas/*.json` are byte-identical to `config/schemas/model-service/`; and that the `model_tier` modules name no factory concept (run, work order, node, lane) in their configuration keys.
+- [ ] T030 [US2] Implement `factory/python/model_tier/tenant_gateway.py`, using Starlette and httpx with no new dependency:
   - configuration per `config/schemas/model-service/tenant-config.schema.json`;
   - SHA-256 key check;
   - per-tenant semaphores with guaranteed and borrowed slots and a priority queue;
@@ -192,24 +194,24 @@
   - the metadata outcome log (OutcomeRecord).
 
   T026 and T028 must pass.
-- [ ] T030 [US2] Implement `factory/python/forge_factory/modelservice/engines.py`. It builds engine definitions from the catalog:
-  - `process` kind: generates the llama.cpp argv by reusing `lrtx/stack.py` `llama_server_spec` field handling. The full-capacity settings are the same as today's owner-lane profile; only the host and port are internal.
+- [ ] T031 [US2] Implement `factory/python/model_tier/engines.py`. It builds engine definitions from the catalog:
+  - `process` kind: starts the pinned binary with the explicit argument list from `catalog.yaml`. The model tier never reads a factory profile (FR-032).
   - `compose` kind: starts and stops a Compose service by name.
   - Health and `/v1/models` checks.
-  - Waits for free GPU memory (`vram_mib`) through `modelservice/gpu.py` before a load.
-- [ ] T031 [P] [US2] Write `factory/python/tests/test_modelservice_ramstage.py`. It checks that:
+  - Waits for free GPU memory (`vram_mib`) through `model_tier/gpu.py` before a load.
+- [ ] T032 [P] [US2] Write `factory/python/tests/test_modelservice_ramstage.py`. It checks that:
   - staging copies to the stage directory with verification against the pinned SHA-256 (a mismatch is refused and the copy is deleted);
   - `MemAvailable` minus reserve below the need leads to no staging and a `cold` decision with a finding;
   - the residency check (`mincore`, faked) below 95% leads to a re-stage plus a cold load for this swap;
   - a changed size or inode is detected;
   - the stage directory is 0700 and the files are 0600;
   - `unstage` removes only Forge-C files.
-- [ ] T032 [US2] Implement `factory/python/forge_factory/modelservice/ramstage.py`: stage, verify, residency check via `mincore` through `ctypes`, budget check from `/proc/meminfo`, unstage. Add the warm strategies to `modelservice/engines.py`:
+- [ ] T033 [US2] Implement `factory/python/model_tier/ramstage.py`: stage, verify, residency check via `mincore` through `ctypes`, budget check from `/proc/meminfo`, unstage. Add the warm strategies to `model_tier/engines.py`:
   - `vllm_sleep`: POST `/sleep?level=1` and `/wake_up` on the internal engine URL, with health and identity checked after wake;
   - `ram_staged_file`: llama.cpp started on the staged path.
 
-  T031 must pass.
-- [ ] T033 [US2] Implement `factory/python/forge_factory/modelservice/swap.py`:
+  T032 must pass.
+- [ ] T034 [US2] Implement `factory/python/model_tier/swap.py`:
   - catalog loading, validated against `config/schemas/model-service/model-catalog.schema.json` and the lock;
   - per-model queues;
   - the state machine EMPTY / LOADING / SERVING / DRAINING / UNLOADING (data-model);
@@ -219,23 +221,23 @@
   - warm-up at tier start (stage Ornith, load Qwen3.6 then sleep it, serve the first requested model).
 
   Wire it into the request path of `tenant_gateway.py`. The swap sequence is ported from `lrtx/stack.py` `_serve_model` (refuse while requests are in flight, wait for VRAM, fail closed). T027 must pass.
-- [ ] T034 [US2] Write `deploy/recipe/model-tier/catalog.yaml` for the Omniverse2 site:
-  - Ornith-1.5 GGUF Q8 as `process`, with today's full settings read from the owner-lane profile by a generator in `modelservice/engines.py`, never retyped by hand;
+- [ ] T035 [US2] Write `deploy/recipe/model-tier/catalog.yaml` for the Omniverse2 site:
+  - Ornith-1.5 GGUF Q8 as `process`, with today's full settings generated from the owner-lane profile by `factory/python/forge_factory/modelservice/catalog_gen.py` (factory side, reusing `lrtx/stack.py` `llama_server_spec`), never retyped by hand;
   - Qwen3.6-35B-A3B FP8 on vLLM as `compose`, with `warm_strategy: vllm_sleep`, `--enable-sleep-mode`, `VLLM_SERVER_DEV_MODE=1` (internal network only) and unlimited memlock;
   - Ornith with `warm_strategy: ram_staged_file` and `stage_dir: /dev/shm/forge-model-tier`;
   - `ram_budget_gib: 80` and `ram_reserve_gib: 24`;
-  - initial `swap_policy` values marked "to be measured in T043".
+  - initial `swap_policy` values marked "to be measured in T044".
 
   Also write `deploy/recipe/model-tier/tenant-gateway.service`, a user systemd unit for the gateway and swap controller. It is enabled only inside windows until the cutover.
-- [ ] T035 [P] [US2] Implement `factory/python/forge_factory/modelservice/neighbour.py`, the simulated second tenant. It is configurable for concurrency, prompt size and duration, and records its own latencies (metadata only). It uses synthetic prompts only and never customer or vendor inputs.
-- [ ] T036 [P] [US2] Write `deploy/recipe/model-tier/gateway.Dockerfile`, for sites that run the gateway in a container (a production option). It uses a pinned Python base image digest, installs only the factory package's runtime dependencies, runs as non-root, and records its digest in the lock. On Omniverse2 the gateway runs as the host user unit from T034 (research R3b).
-- [ ] T037 [US2] Write `deploy/recipe/model-tier/compose.yaml`:
+- [ ] T036 [P] [US2] Implement `factory/python/model_tier/neighbour.py`, the simulated second tenant. It is configurable for concurrency, prompt size and duration, and records its own latencies (metadata only). It uses synthetic prompts only and never customer or vendor inputs.
+- [ ] T037 [P] [US2] Write `deploy/recipe/model-tier/gateway.Dockerfile`, for sites that run the gateway in a container (a production option). It uses a pinned Python base image digest, installs only the factory package's runtime dependencies, runs as non-root, and records its digest in the lock. On Omniverse2 the gateway runs as the host user unit from T035 (research R3b).
+- [ ] T038 [US2] Write `deploy/recipe/model-tier/compose.yaml`:
   - an `engine-qwen36` service (vLLM, digest from the lock, NVIDIA CDI GPU, internal network only, `--api-key` from secret, prefix caching on, request logging off, `max_model_len` and `max_num_seqs` from params, FP8 per research R2);
-  - no `tenant-gateway` service on Omniverse2, which uses the T034 host unit; its published port is the only route in, bound to the address in params;
+  - no `tenant-gateway` service on Omniverse2, which uses the T035 host unit; its published port is the only route in, bound to the address in params;
   - read-only model volume mount.
 
   Also write `deploy/recipe/model-tier/tenants.example.yaml`, with tenants `forge-qual`, `forge-owner` (`enabled: false` until cutover) and `sim-neighbour`, hashes only, and `allowed_models` for each tenant.
-- [ ] T038 [US2] Add `compose config` validation and a lint check to `factory/python/tests/test_modelservice_recipe.py` (skipped with NOT_RUN if Docker is absent on the test machine). The check: no published engine port, the GPU only on engine services, no `--enable-log-requests` (or equivalent) flag on the engine.
+- [ ] T039 [US2] Add `compose config` validation and a lint check to `factory/python/tests/test_modelservice_recipe.py` (skipped with NOT_RUN if Docker is absent on the test machine). The check: no published engine port, the GPU only on engine services, no `--enable-log-requests` (or equivalent) flag on the engine.
 
 **Checkpoint**: the tenant gateway and the model-tier definition are tested offline.
 
@@ -245,9 +247,9 @@
 
 **Purpose**: the first real use of the GPU by the model tier: a smoke test, the KV capacity check, identity and contention. It proves US1 and US2 on the host.
 
-- [ ] T039 (host, non-GPU) Install the qualification lane from the T025-gated commit into `/mnt/data/forge-c/model-service/qual-lane/`, using the T024 configuration. Units are disabled until a window. Verify that there are no port or data-root collisions with the owner or production lanes.
-- [ ] T040 (host, non-GPU) Create the private secret file `/mnt/data/forge-c/model-service/secrets/model-service.secrets` (0600, directory 0700) with generated tenant keys and the engine key. Put only the hashes in the live `tenants.yaml`. Nothing goes into git.
-- [ ] T041 Define the window plan `smoke` in `factory/python/forge_factory/modelservice/window_plans.py`:
+- [ ] T040 (host, non-GPU) Install the qualification lane from the T025-gated commit into `/mnt/data/forge-c/model-service/qual-lane/`, using the T024 configuration. Units are disabled until a window. Verify that there are no port or data-root collisions with the owner or production lanes.
+- [ ] T041 (host, non-GPU) Create the private secret file `/mnt/data/forge-c/model-service/secrets/model-service.secrets` (0600, directory 0700) with generated tenant keys and the engine key. Put only the hashes in the live `tenants.yaml`. Nothing goes into git.
+- [ ] T042 Define the window plan `smoke` in `factory/python/forge_factory/modelservice/window_plans.py`:
   1. Tier start and identity verify.
   2. KV capacity check against at least 2 × 65,536, else apply the R2 fallbacks in order and record each deviation.
   3. Ten factory calls through the qualification-lane gateway.
@@ -258,8 +260,8 @@
   8. Tier stop.
 
   Add a test in `factory/python/tests/test_modelservice_window.py`.
-- [ ] T042 Ask the owner, through the usual floor and summary channel, for the window limits: `max_minutes` and allowed hours. Until they answer, use the default of 120 minutes at a time when the owner lane is between orders. Record the values in `deploy/recipe/params/omniverse2.yaml` (`window_max_minutes`, `window_hours`).
-- [ ] T043 [WINDOW] Run `python -m forge_factory.modelservice.window run --plan smoke`. Collect into `evidence/017/window-<id>/`:
+- [ ] T043 Ask the owner, through the usual floor and summary channel, for the window limits: `max_minutes` and allowed hours. Until they answer, use the default of 120 minutes at a time when the owner lane is between orders. Record the values in `deploy/recipe/params/omniverse2.yaml` (`window_max_minutes`, `window_hours`).
+- [ ] T044 [WINDOW] Run `python -m forge_factory.modelservice.window run --plan smoke`. Collect into `evidence/017/window-<id>/`:
   - the window record;
   - the identity;
   - the KV capacity;
@@ -285,7 +287,7 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T044 [P] [US3] `factory/python/tests/test_modelservice_qualify.py`. Build fixtures from the `model_exchanges` export layout (`nodes.csv` and `runs/<WO>__<run>/<node>/visit-N.jsonl`) and the run metrics. It checks:
+- [ ] T045 [P] [US3] `factory/python/tests/test_modelservice_qualify.py`. Build fixtures from the `model_exchanges` export layout (`nodes.csv` and `runs/<WO>__<run>/<node>/visit-N.jsonl`) and the run metrics. It checks:
   - Rows per (phase, node).
   - A missing side is `NOT_RUN`.
   - The verdict is never `QUALIFIED_FOR_OWNER_REVIEW` with an OPEN finding or a NOT_RUN phase.
@@ -294,12 +296,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T045 [US3] Create `config/factory/qualification-set.yaml`. It lists every SWE phase the line has already passed on the current setup, with the baseline WO lineages and run IDs taken from evidence (for example the CRC HAL SWE.1 to SWE.6 lineage and the GPIO orders). Each entry links its evidence path. Include no entry without evidence.
-- [ ] T046 [US3] Implement `factory/python/forge_factory/modelservice/qualify.py`, `report --out <dir>`. It reads the baseline from existing evidence and the per-node exchange export; it never replays C, B or L90 runs. It reads the candidate from qualification-lane runs, computes the measures per `contracts/qualification-report.schema.json` (including swaps and swap wait per phase from the SwapEvent records, FR-030), lists deviations from `params/omniverse2.yaml` against `params/production.yaml`, and writes JSON plus a plain-language markdown summary. T044 must pass.
-- [ ] T047 [US3] Define the window plan `qualification` in `factory/python/forge_factory/modelservice/window_plans.py`. It queues fresh qualification-lane orders for the qualification-set phases, using the existing order mechanism for the qualification lane only. It resumes across windows from the last quality-checked part and stops cleanly at the window's hard end.
-- [ ] T048 [US3] [WINDOW] Run qualification windows until every qualification-set phase has a candidate result or is explicitly BLOCKED, within the owner's window limits (T042). Evidence goes to `evidence/017/qualification/`.
-- [ ] T049 [US3] For every phase that passes on the baseline and fails on the candidate, open a CAPA via the CRE registry, attach the evidence and set `blocking_findings[].capa_id`.
-- [ ] T050 [US3] Produce the qualification report (`evidence/017/qualification/report.json` and `report.md`) and hand it to the owner on the floor and in the summary. The verdict is one of `QUALIFIED_FOR_OWNER_REVIEW`, `NOT_QUALIFIED` or `INCOMPLETE`.
+- [ ] T046 [US3] Create `config/factory/qualification-set.yaml`. It lists every SWE phase the line has already passed on the current setup, with the baseline WO lineages and run IDs taken from evidence (for example the CRC HAL SWE.1 to SWE.6 lineage and the GPIO orders). Each entry links its evidence path. Include no entry without evidence.
+- [ ] T047 [US3] Implement `factory/python/forge_factory/modelservice/qualify.py`, `report --out <dir>`. It reads the baseline from existing evidence and the per-node exchange export; it never replays C, B or L90 runs. It reads the candidate from qualification-lane runs, computes the measures per `contracts/qualification-report.schema.json` (including swaps and swap wait per phase from the SwapEvent records, FR-030), lists deviations from `params/omniverse2.yaml` against `params/production.yaml`, and writes JSON plus a plain-language markdown summary. T045 must pass.
+- [ ] T048 [US3] Define the window plan `qualification` in `factory/python/forge_factory/modelservice/window_plans.py`. It queues fresh qualification-lane orders for the qualification-set phases, using the existing order mechanism for the qualification lane only. It resumes across windows from the last quality-checked part and stops cleanly at the window's hard end.
+- [ ] T049 [US3] [WINDOW] Run qualification windows until every qualification-set phase has a candidate result or is explicitly BLOCKED, within the owner's window limits (T043). Evidence goes to `evidence/017/qualification/`.
+- [ ] T050 [US3] For every phase that passes on the baseline and fails on the candidate, open a CAPA via the CRE registry, attach the evidence and set `blocking_findings[].capa_id`.
+- [ ] T051 [US3] Produce the qualification report (`evidence/017/qualification/report.json` and `report.md`) and hand it to the owner on the floor and in the summary. The verdict is one of `QUALIFIED_FOR_OWNER_REVIEW`, `NOT_QUALIFIED` or `INCOMPLETE`.
 
 **Checkpoint**: the owner has a report to decide on; no cutover has happened.
 
@@ -313,7 +315,7 @@
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T051 [P] [US4] Extend `factory/python/tests/test_modelservice_recipe.py`. It checks that:
+- [ ] T052 [P] [US4] Extend `factory/python/tests/test_modelservice_recipe.py`. It checks that:
   - every parameter file validates against `recipe-params.schema.json`;
   - `plan --site production` prints every parameter with its production value or `confirmed: false`, and never prints a secret value;
   - `verify` fails on one changed SHA-256 and names the file;
@@ -322,18 +324,18 @@
 
 ### Implementation for User Story 4
 
-- [ ] T052 [US4] Implement `factory/python/forge_factory/modelservice/recipe.py` with the subcommands `plan`, `verify`, `apply` and `drift`, all taking `--site`:
+- [ ] T053 [US4] Implement `factory/python/forge_factory/modelservice/recipe.py` with the subcommands `plan`, `verify`, `apply` and `drift`, all taking `--site`:
   - `apply` brings up the model tier (Compose) and the factory machine (container stand-in, or VM when available), and refuses to finish on any mismatch.
   - On Omniverse2, `apply` of the model tier is allowed only from inside a window (T014).
 
-  T051 must pass.
-- [ ] T053 [P] [US4] Complete `deploy/recipe/README.md`:
+  T052 must pass.
+- [ ] T054 [P] [US4] Complete `deploy/recipe/README.md`:
   - build Omniverse2;
   - build production (parameter mapping table: Omniverse2 value, production value, confirmed);
   - the list of what the Omniverse2 build does not prove (FP8 against BF16, 48 GB against 141 GB, sequences, container stand-in);
   - a reference to `specs/017-model-service-split/contracts/model-channel.md` as the interface the platform team must provide.
-- [ ] T054 [P] [US4] Write the optional `deploy/recipe/factory-machine/packer/forge-c.pkr.hcl`, which uses the same `provision.sh` and cloud-init. Mark it optional in its header, because Packer is BUSL-1.1 (research R10).
-- [ ] T055 [US4] [WINDOW] Run the rebuild drill: tear down the tier and the factory machine (keeping data), `recipe apply --site omniverse2`, then `recipe drift`. Record the duration and 0 drift findings in `evidence/017/rebuild-drill/` (SC-004).
+- [ ] T055 [P] [US4] Write the optional `deploy/recipe/factory-machine/packer/forge-c.pkr.hcl`, which uses the same `provision.sh` and cloud-init. Mark it optional in its header, because Packer is BUSL-1.1 (research R10).
+- [ ] T056 [US4] [WINDOW] Run the rebuild drill: tear down the tier and the factory machine (keeping data), `recipe apply --site omniverse2`, then `recipe drift`. Record the duration and 0 drift findings in `evidence/017/rebuild-drill/` (SC-004).
 
 **Checkpoint**: the recipe rebuilds the mirror, and the production parameters are documented.
 
@@ -347,20 +349,20 @@
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T056 [P] [US5] `factory/python/tests/test_modelservice_isolation.py`. It unit-tests the isolation checker with a fake environment: GPU device present means FAIL; host model path visible means FAIL; a host port other than the channel reachable means FAIL; the stand-in report lists the unproven properties.
+- [ ] T057 [P] [US5] `factory/python/tests/test_modelservice_isolation.py`. It unit-tests the isolation checker with a fake environment: GPU device present means FAIL; host model path visible means FAIL; a host port other than the channel reachable means FAIL; the stand-in report lists the unproven properties.
 
 ### Implementation for User Story 5
 
-- [ ] T057 [US5] Write `deploy/recipe/factory-machine/provision.sh`. It installs and provisions the factory exactly as `docs/ONPREM-DEPLOYMENT.md` "Software on the VM" describes, with version pins from the lock and no GPU packages. It is idempotent, and is used both by cloud-init and by the container build.
-- [ ] T058 [US5] Write `deploy/recipe/factory-machine/cloud-init/user-data.yaml` (service account `forge`, lingering, data volume at `/srv/forge-c`, runs `provision.sh`) and `deploy/recipe/factory-machine/container/Dockerfile` (the stand-in, built by running the same `provision.sh`).
-- [ ] T059 [US5] Implement `factory/python/forge_factory/modelservice/isolation.py`, the in-boundary checker that writes a stand-in report, and wire the factory container into `deploy/recipe/model-tier/compose.yaml` or a sibling `deploy/recipe/factory-machine/compose.yaml`:
+- [ ] T058 [US5] Write `deploy/recipe/factory-machine/provision.sh`. It installs and provisions the factory exactly as `docs/ONPREM-DEPLOYMENT.md` "Software on the VM" describes, with version pins from the lock and no GPU packages. It is idempotent, and is used both by cloud-init and by the container build.
+- [ ] T059 [US5] Write `deploy/recipe/factory-machine/cloud-init/user-data.yaml` (service account `forge`, lingering, data volume at `/srv/forge-c`, runs `provision.sh`) and `deploy/recipe/factory-machine/container/Dockerfile` (the stand-in, built by running the same `provision.sh`).
+- [ ] T060 [US5] Implement `factory/python/forge_factory/modelservice/isolation.py`, the in-boundary checker that writes a stand-in report, and wire the factory container into `deploy/recipe/model-tier/compose.yaml` or a sibling `deploy/recipe/factory-machine/compose.yaml`:
   - an `--internal` network shared only with `tenant-gateway`;
   - no GPU;
   - only the data volume mounted.
 
-  T056 must pass.
-- [ ] T060 [US5] (host, non-GPU) Start the factory container stand-in and run the isolation checks and quickstart step 3. Record them in `evidence/017/isolation/`.
-- [ ] T061 [US5] VM path (BLOCKED until the `omniverse2` user is in group `kvm`; owner 2026-11-08 says an admin can do this). Write `deploy/recipe/factory-machine/vm/run-vm.sh`:
+  T057 must pass.
+- [ ] T061 [US5] (host, non-GPU) Start the factory container stand-in and run the isolation checks and quickstart step 3. Record them in `evidence/017/isolation/`.
+- [ ] T062 [US5] VM path (BLOCKED until the `omniverse2` user is in group `kvm`; owner 2026-11-08 says an admin can do this). Write `deploy/recipe/factory-machine/vm/run-vm.sh`:
   - qemu from host packages or a pinned image, as the admin approves;
   - a seed ISO built with `genisoimage`;
   - network forwarding only to the tenant gateway.
@@ -379,16 +381,16 @@
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T062 [P] [US6] `factory/python/tests/test_llm_gateway_capture.py`. It checks that:
+- [ ] T063 [P] [US6] `factory/python/tests/test_llm_gateway_capture.py`. It checks that:
   - with the switch file missing or false, no capture file is written;
   - with it true, one record per call has run, node, visit, tenant and identity fingerprint, uses 0600 files in 0700 directories, has no `reasoning*` keys, no `forge_execution` and no secrets, and is written after `strip_reasoning`;
   - a capture failure never fails the call.
-- [ ] T063 [P] [US6] Extend `factory/python/tests/test_model_exchanges.py`. When gateway capture records exist for a run, the exporter uses them (one per call, with no double count against Fabro events or structured captures), and `by-node/<node>.md` keeps its format.
+- [ ] T064 [P] [US6] Extend `factory/python/tests/test_model_exchanges.py`. When gateway capture records exist for a run, the exporter uses them (one per call, with no double count against Fabro events or structured captures), and `by-node/<node>.md` keeps its format.
 
 ### Implementation for User Story 6
 
-- [ ] T064 [US6] Add the capture tap to the gateway revision in `factory/python/forge_factory/llm_gateway.py`. It is behind `<state>/model-exchanges/capture.json` `"gateway": true`, separate from the existing `"structured"` key, and reuses the redaction from `lrtx/structured.py` `_capture`. The run, node and visit come from the request's `forge_execution` binding, which is read and never written. T062 must pass.
-- [ ] T065 [US6] Teach `factory/python/forge_factory/lrtx/model_exchanges.py` `export` to read `<state>/model-exchanges/gateway/<run>/...` records with de-duplication. T063 must pass.
+- [ ] T065 [US6] Add the capture tap to the gateway revision in `factory/python/forge_factory/llm_gateway.py`. It is behind `<state>/model-exchanges/capture.json` `"gateway": true`, separate from the existing `"structured"` key, and reuses the redaction from `lrtx/structured.py` `_capture`. The run, node and visit come from the request's `forge_execution` binding, which is read and never written. T063 must pass.
+- [ ] T066 [US6] Teach `factory/python/forge_factory/lrtx/model_exchanges.py` `export` to read `<state>/model-exchanges/gateway/<run>/...` records with de-duplication. T064 must pass.
 
 **Checkpoint**: the per-node log works in the new shape; capture is off by default.
 
@@ -396,14 +398,14 @@
 
 ## Phase 10: Polish, cutover preparation and cross-cutting
 
-- [ ] T066 [P] Write the ADR `docs/adr/ADR-DA-027-model-service-split.md` with the decisions R1 to R12, why the factory never owns the GPU in production, and why the gateway revision waits for the cutover.
-- [ ] T067 [P] Update `docs/ONPREM-DEPLOYMENT.md` "Questions for Infrastructure":
+- [ ] T067 [P] Write the ADR `docs/adr/ADR-DA-027-model-service-split.md` with the decisions R1 to R12, why the factory never owns the GPU in production, and why the gateway revision waits for the cutover.
+- [ ] T068 [P] Update `docs/ONPREM-DEPLOYMENT.md` "Questions for Infrastructure":
   - add "does the service offer the Forge-C identity extension, or only `/v1/models`?";
   - add a per-tenant share question;
   - link `deploy/recipe/README.md` and `contracts/model-channel.md`.
 
   Keep the existing text unchanged otherwise.
-- [ ] T068 Write the owner-only cutover runbook `specs/017-model-service-split/cutover-runbook.md`, per data-model CutoverRecord:
+- [ ] T069 Write the owner-only cutover runbook `specs/017-model-service-split/cutover-runbook.md`, per data-model CutoverRecord:
   - what the owner signs (the re-measured transport proof for the new gateway SHA-256);
   - how `forge-owner` is enabled;
   - how the owner lane's profile switches to `mode: external`;
@@ -411,8 +413,8 @@
   - how the way back is rehearsed before approval (SC-006).
 
   Claude does not execute the cutover.
-- [ ] T069 Run the full factory test suite, `ruff` and `python3 tests/spec/validate_design.py` on the implementation branch. Record the results in `specs/017-model-service-split/evidence.md`, and confirm that the owned-mode tests are unchanged against the base SHA (T001).
-- [ ] T070 Run the quickstart steps 1 to 6 and record each as PASS, FAIL, NOT_RUN or BLOCKED, with evidence paths, in `specs/017-model-service-split/evidence.md`. Then open a draft PR to `main` for owner review; it is merged only after the owner accepts, with merge commits only.
+- [ ] T070 Run the full factory test suite, `ruff` and `python3 tests/spec/validate_design.py` on the implementation branch. Record the results in `specs/017-model-service-split/evidence.md`, and confirm that the owned-mode tests are unchanged against the base SHA (T001).
+- [ ] T071 Run the quickstart steps 1 to 6 and record each as PASS, FAIL, NOT_RUN or BLOCKED, with evidence paths, in `specs/017-model-service-split/evidence.md`. Then open a draft PR to `main` for owner review; it is merged only after the owner accepts, with merge commits only.
 
 ---
 
@@ -423,12 +425,12 @@
 - **Setup (Phase 1)**: none.
 - **Foundational (Phase 2)**: needs Setup. Blocks all stories. T010 (artefact pull) can run in the background while T011 to T014 are written.
 - **US1 (Phase 3)** and **US2 (Phase 4)**: need Foundational. They are independent of each other and can run in parallel.
-- **First window (Phase 5)**: needs US1 (T025 gate) and US2 (T037). This is the first GPU use.
+- **First window (Phase 5)**: needs US1 (T025 gate) and US2 (T038). This is the first GPU use.
 - **US3 (Phase 6)**: needs Phase 5 to complete (smoke `COMPLETED`).
-- **US4 (Phase 7)**: T051 to T054 need only Foundational and US2's Compose file; T055 (drill) needs Phase 5.
-- **US5 (Phase 8)**: needs Foundational and US2's network definition (T037); it does not need the GPU. T061 is BLOCKED on the `kvm` grant.
+- **US4 (Phase 7)**: T052 to T055 need only Foundational and US2's Compose file; T056 (drill) needs Phase 5.
+- **US5 (Phase 8)**: needs Foundational and US2's network definition (T038); it does not need the GPU. T062 is BLOCKED on the `kvm` grant.
 - **US6 (Phase 9)**: needs T023, the gateway revision.
-- **Polish (Phase 10)**: after the stories in scope. T068 has no code dependency.
+- **Polish (Phase 10)**: after the stories in scope. T069 has no code dependency.
 
 ### User story dependencies
 
@@ -448,7 +450,7 @@ Tests come first and must fail; then implementation; then the CRE gate before an
 - **Setup:** T002, T003 and T004.
 - **Foundational:** T005, T006, T009 and T011 (tests and artefacts); T010 runs in the background on the host.
 - **US1:** T015, T016 and T017 in parallel; then T019, T020 and T021, which touch different files, can run in parallel after T018.
-- **US2:** T026, T027, T028 and T031 in parallel; then T029 → T030 → T032 → T033; T035, T036 and T034 in parallel with T029.
+- **US2:** T026, T027, T028 and T032 in parallel; then T030 → T031 → T033 → T034; T036, T037 and T035 in parallel with T030.
 - **US1 and US2:** fully parallel until Phase 5.
 - **US4, US5 and US6:** offline parts in parallel after their prerequisites.
 
@@ -458,8 +460,8 @@ Tests come first and must fail; then implementation; then the CRE gate before an
 Task: "T026 tenant gateway tests in factory/python/tests/test_modelservice_tenant_gateway.py"
 Task: "T027 swap tests in factory/python/tests/test_modelservice_swap.py"
 Task: "T028 channel contract test in factory/python/tests/test_modelservice_channel_contract.py"
-Task: "T035 neighbour load generator in factory/python/forge_factory/modelservice/neighbour.py"
-Task: "T036 gateway image in deploy/recipe/model-tier/gateway.Dockerfile"
+Task: "T036 neighbour load generator in factory/python/model_tier/neighbour.py"
+Task: "T037 gateway image in deploy/recipe/model-tier/gateway.Dockerfile"
 ```
 
 ## Implementation Strategy
@@ -478,7 +480,7 @@ Task: "T036 gateway image in deploy/recipe/model-tier/gateway.Dockerfile"
 3. US4, the recipe and drill. The platform team gets the recipe.
 4. US5, isolation: the container now, the VM after the `kvm` grant.
 5. US6, the exchange log in the new shape.
-6. The cutover (S6) happens only by the owner (T068 runbook).
+6. The cutover (S6) happens only by the owner (T069 runbook).
 
 ### Notes
 

@@ -121,6 +121,16 @@ Host facts *(probed 2026-11-08)*:
   - *Both models resident at reduced settings:* violates "full capacity".
   - *vLLM for Ornith (GGUF):* GGUF support in vLLM is experimental, and the owner lane's settings (MTP draft) are llama.cpp-specific.
 
+## R3d. The model service knows tenants, never factories (owner 2026-11-08)
+
+- **Decision:** all model-side code lives in a separate top-level package, `factory/python/model_tier/`: tenant gateway, swap controller, engines, RAM staging, GPU probe, identity and neighbour.
+  - It imports nothing from `forge_factory`. A test fails on any such import.
+  - It ships its own copies of the contract schemas it needs, and a test keeps them identical to `config/schemas/model-service/`.
+  - Factory-side code (`forge_factory/modelservice/`: client, reasons, secrets, window controller, qualification, recipe, isolation) may import `model_tier.identity`, the shared contract, but nothing else from the model side.
+- **Catalog generation:** the Ornith engine settings are generated factory-side (`forge_factory/modelservice/catalog_gen.py` reads the owner-lane profile) into `catalog.yaml` as explicit engine arguments. The model service reads only `catalog.yaml`, never a factory profile.
+- **Fairness:** each tenant has its own per-model queue and share. The swap controller picks the next model by the highest score over waiting requests, where `score = queue_age × (1 + tenant_weight)` and `tenant_weight` comes from priority. `min_residency_s` and `max_wait_s` bound it. A tenant's waiting requests for a non-loaded model occupy its own share, so a tenant flooding requests for the other model cannot take slots from other tenants.
+- **Rationale:** the owner wants future factories to share the models concurrently, and production already shares the DGX between applications.
+
 ## R4. Served-model identity
 
 - **Decision:** identity is **per catalog model**. Each model's identity has five fields: `name`, `revision_fingerprint` (SHA-256 of the sorted weight-file digests plus the tokenizer and chat-template digests), `precision`, `reasoning_mode` and `context_limit`.

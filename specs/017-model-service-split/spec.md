@@ -13,6 +13,7 @@
 ### Session 2026-11-08
 
 - Q: How does the mirror share the single 48 GB GPU with the live lanes during the transition? -> A: Option C: build and qualify in scheduled windows while the owner lane is paused, then move the owner lane onto the model service as its first tenant after the owner approves the qualification report; the production lane moves only by a separate approved cutover.
+- Q (owner 2026-11-08): Is the model service only for this factory? -> A: "do it in a way that in the future I can have other factories using in concurrency the models. Therefore, the models are agnostic to the factory itself." The model service knows only tenants, never factories (FR-032, FR-033, SC-012).
 - Q (owner 2026-11-08): How fast must a swap be? -> A: "as fast as possible. So maybe they should be cached or stored in the RAM memory to do the swap as soon as possible when it's required." (FR-031, SC-011)
 - Q (owner 2026-11-08): Must the mirror serve one model or several? -> A: "I still want that both models are used at their full capacity, but the VM should be agnostic to that. When the VM requests one of those models, we should be able to do a swap in the model side, seamless to the VM." The model service therefore serves a catalog of models (today's Ornith-1.5 and the production reference Qwen3.6). Each loaded model gets the whole GPU at its full settings, and the service swaps on demand. The factory only names a model in its request.
 
@@ -74,6 +75,7 @@ The service offers **several models**: today's Ornith-1.5 and the production ref
 7. **Given** requests for both models keep arriving, **When** the service decides when to swap, **Then** it batches requests per model and keeps a loaded model resident for at least a configured time, so it never thrashes between models. Each tenant's guaranteed share still holds, and no request waits longer than the configured maximum.
 8. **Given** a request names a model that is not in the catalog, **When** it arrives, **Then** it is refused with an explicit reason, and no swap happens.
 9. **Given** a swap fails (the new model does not become healthy or its identity does not match), **When** this happens, **Then** the service refuses that model's waiting requests with an explicit reason, records the failure and returns to a healthy state. It never answers with a different model than the one requested.
+10. **Given** two factories and another application are tenants at the same time, each preferring a different model, **When** they run concurrently, **Then** every tenant keeps progressing within the maximum wait, each guaranteed share holds, and no tenant can force swaps that starve another. Adding a further factory needs only a new tenant entry and no change to the model service.
 
 ---
 
@@ -197,6 +199,11 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
   - When host RAM cannot hold all of them within the configured RAM budget, the service MUST fall back to loading from disk for that model, record an infrastructure finding, and still answer correctly.
   - Swap time MUST be measured and reported per direction.
 
+**Factory-agnostic model service (owner 2026-11-08)**
+
+- **FR-032**: The model service MUST be agnostic to the factory. It serves any number of independent tenants concurrently: several factories, other applications, or several lanes of one factory. It MUST hold no knowledge of factory concepts (runs, work orders, workflow nodes, lanes, roles), and none of its code may depend on factory code. Adding a factory MUST need only a new tenant entry (credential, share, allowed models).
+- **FR-033**: Swap decisions MUST be fair across tenants. A tenant's demand for a model that is not loaded counts against that tenant's share. The swap controller serves model batches by weighted queue age and tenant priority, within the minimum residency and the maximum wait, so no tenant can starve another tenant's guaranteed share by forcing swaps.
+
 **Requalification**
 
 - **FR-014**: Before any cutover the factory MUST be qualified on the production-like configuration: the production reference model, non-thinking mode, in the precision that fits the Omniverse2 GPU. The qualification set MUST cover every SWE phase the line has already passed on the current setup.
@@ -247,6 +254,7 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 - **SC-009**: With requests alternating between the two catalog models, 100% of requests are answered by the model they named, 0 requests fail because of a swap, and every wait stays within the configured maximum.
 - **SC-010**: A run that alternates models in external mode completes with 0 swap actions by factory components; all swaps appear only in the service's swap records.
 - **SC-011**: After the first warm-up, 95% of swaps in each direction complete within 30 seconds (from the last drained request to the first answer from the new model), measured in the first window. The cold first load is reported separately and is not counted.
+- **SC-012**: With two factory tenants and a third application running concurrently and preferring different models, 100% of requests are answered within the maximum wait, each tenant's guaranteed share holds, and an automatic check finds 0 dependencies of the model service's code on factory code.
 - **SC-008**: The platform team can map every recipe parameter to a production value without asking the factory team for missing information (checked in the handover review).
 
 ## Assumptions

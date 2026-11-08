@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/017/served-model-identity.schema.json",
+  "title": "ServedModelIdentity",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "revision_fingerprint", "precision", "reasoning_mode", "context_limit", "engine", "attested"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "revision_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "precision": {"enum": ["bf16", "fp8", "awq-int4", "other"]},
+    "kv_cache_dtype": {"type": "string"},
+    "reasoning_mode": {"enum": ["off", "on"]},
+    "context_limit": {"type": "integer", "minimum": 1},
+    "max_sequences": {"type": "integer", "minimum": 1},
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"type": "string"},
+        "version": {"type": "string"},
+        "image_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "attested": {"type": "boolean", "description": "true only when served by /forge/v1/identity; false when inferred from /v1/models plus the recipe"}
+  }
+}

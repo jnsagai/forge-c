@@ -2,7 +2,6 @@
 import json
 
 import pytest
-
 from forge_factory.modelservice import identity as I
 
 
