@@ -22,6 +22,8 @@ What these tests show:
 | --- | --- |
 | Tenant gateway (fake engine) | Requests without a key or with a wrong key get 401 (FR-009). A tenant over its share gets 429 `share_exhausted`. A tenant with a guaranteed share still gets its share while a neighbour saturates (FR-010, SC-003). No content appears in the outcome log (FR-012) |
 | Identity | A changed weight digest gets 409 `identity_mismatch`, and the gateway refuses to start (FR-011) |
+| Swap (fake engines) | Alternating requests for two models are each answered by the model named; drain happens before unload; batching and minimum residency hold; a failed load gives 503 `model_unavailable`, never another model; an unknown model gives 404 (FR-025 to FR-030, SC-009) |
+| External mode, alternating models | The serve node makes no model change, and zero swap actions come from factory components (FR-029, SC-010) |
 | External mode | Zero calls to the server start/stop/swap code and zero GPU-lock or lease acquisitions (FR-001). Each failure maps to its distinct reason (FR-005). An over-limit request is refused before sending (FR-006). `mode: owned` tests are unchanged (FR-007) |
 | Capture | Switch off: zero bytes written. Switch on: one record per call, with no reasoning and no secret (FR-022 to FR-024, SC-007) |
 
@@ -64,6 +66,8 @@ Further expectations:
 - The KV capacity check: at least 2 × 65,536 tokens, or the stated fallback (research R2).
 - `GET /forge/v1/identity` matches the lock (User Story 2, scenario 4).
 - With `sim-neighbour` saturating, the factory's calls never fail (SC-003).
+- Swap time is measured in both directions (Ornith to Qwen3.6 and back), and the swap policy parameters are set from it (research R3b).
+- An alternating-model factory part completes with 100% of answers from the named model and 0 factory swap actions (SC-009, SC-010).
 - The window outcome is `COMPLETED`. On any failure it is `ABORTED_RESTORED`, with the owner lane running again.
 
 ## 5. Qualification (one or more windows)

@@ -54,9 +54,37 @@ Date: 2026-11-08. Facts probed on Omniverse2 the same day are marked *(probed)*.
   - *vLLM `--api-key` alone:* a single key, with no shares and no tenants.
   - *nginx `limit_conn` per key:* cannot express a guaranteed share or report identity.
 
+## R3b. Several models at full capacity, swapped by the service (owner 2026-11-08)
+
+- **Decision:** the model tier holds a **catalog** with one engine definition per model:
+  - **Ornith-1.5** (GGUF Q8) on the same llama.cpp server build and full-capacity settings the owner lane uses today. Its argument list is generated from the existing `lrtx/stack.py` `llama_server_spec` profile fields (context × slots, KV type, batch, MTP draft, reasoning). Only the host, port and network change.
+  - **Qwen3.6-35B-A3B** FP8 on vLLM (R1, R2).
+
+  A **swap controller** inside the tenant gateway owns all engine lifecycle. Exactly one engine is up on the 48 GB GPU.
+- **Swap sequence:** stop admitting new work to the loaded model; drain in-flight requests up to `drain_max_s`; stop the engine and verify that GPU memory is free; start the target engine; wait for health; verify identity; release the waiting requests. The sequence is ported from today's `stack.serve` and `_serve_model`, which already refuse while requests are in flight, wait for VRAM and fail closed, so the proven logic moves to the model side rather than being re-invented.
+- **Anti-thrash policy:**
+  - Per-model queues.
+  - The loaded model stays at least `min_residency_s`.
+  - A swap is triggered when the other model's oldest waiting request reaches `swap_after_wait_s`, or when the loaded model is idle.
+  - Hard ceiling `max_wait_s`, after which the request gets 429 `queue_timeout`.
+  - Tenant priority orders requests inside a model queue.
+  - A swap-rate finding is raised above `max_swaps_per_hour`.
+- **Engine control on Omniverse2:**
+  - The tenant gateway with its swap controller runs as a user systemd service on the host, not in a container. That lets it start and stop the engine containers through the user's existing `docker` group without mounting the Docker socket into a container.
+  - Engines are Compose services started and stopped by name.
+  - In production this whole layer is the platform team's choice; the factory sees only the channel contract.
+- **Rationale:**
+  - The owner wants both models at full capacity, with the VM agnostic to swaps.
+  - Swapping inside the service is the only way to keep the factory free of GPU ownership (FR-001) while still alternating models.
+  - Keeping Ornith on its current engine and settings means the owner lane's cutover can keep its model unchanged.
+- **Alternatives considered:**
+  - *llama-swap* (MIT, Go): an on-demand swap proxy for OpenAI-compatible engines and a strong candidate. It was not chosen as the primary because the swap decision must be tenant-share-aware and identity-verifying, and must be recorded as Forge-C evidence; a second proxy would split that logic. It stays the documented fallback if the in-house controller proves costly.
+  - *Both models resident at reduced settings:* violates "full capacity".
+  - *vLLM sleep mode / multi-model:* it does not cover the llama.cpp engine.
+
 ## R4. Served-model identity
 
-- **Decision:** the identity has five fields: `name`, `revision_fingerprint` (SHA-256 of the sorted weight-file digests plus the tokenizer and chat-template digests), `precision`, `reasoning_mode` and `context_limit`.
+- **Decision:** identity is **per catalog model**. Each model's identity has five fields: `name`, `revision_fingerprint` (SHA-256 of the sorted weight-file digests plus the tokenizer and chat-template digests), `precision`, `reasoning_mode` and `context_limit`.
   - The recipe computes it at build time and verifies it when the service starts. On a mismatch the tenant gateway refuses to serve.
   - The tenant gateway exposes it at `/forge/v1/identity` and in the `x-forge-model-identity` response header, which carries a fingerprint prefix.
   - On a service that lacks the extension (possibly production), the factory falls back to the `/v1/models` `id` and `max_model_len` plus the recipe's declared values, and states "identity not service-attested" as a deviation.
@@ -159,6 +187,12 @@ Date: 2026-11-08. Facts probed on Omniverse2 the same day are marked *(probed)*.
   - **Missing comparisons:** a comparison without a matching earlier run is labelled `NOT_RUN`, never PASS.
   - **Blocking findings:** each one goes through CRE as a CAPA (FR-016).
 - **Rationale:** the evidence rules. Earlier revisions' results are never relabelled as the new revision's pass.
+
+## Swap cost (to measure in the first window)
+
+- Ornith Q8 loads from page cache in tens of seconds today.
+- vLLM start time for a 35B FP8 MoE is minutes when cold; it shortens with a persisted compile cache volume, which the recipe mounts.
+- The first window measures both directions. `swap_after_wait_s`, `min_residency_s` and the factory's `queue_wait_max_s` are set from those measurements. They are recipe parameters, never constants in code.
 
 ## Remaining unknowns (outside this feature's control)
 

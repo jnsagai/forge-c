@@ -24,6 +24,42 @@ All records are files, written atomically. Privacy class is noted per entity:
 - At service start, the tenant gateway recomputes `revision_fingerprint` from the mounted weights and refuses to serve if it differs from the lock.
 - The factory pins the identity on its first call; any later difference means `identity_changed`, which blocks the run.
 
+## ModelCatalogEntry *(public-safe; one catalog per site, `deploy/recipe/model-tier/catalog.yaml`)*
+
+| Field | Type | Rule |
+| --- | --- | --- |
+| `model` | string | The name tenants put in `model`; unique in the catalog |
+| `engine` | `llama.cpp \| vllm` | Engine kind; the image or binary is pinned in the lock |
+| `launch_kind` | `compose \| process` | `compose` for vLLM; `process` for the pinned host llama.cpp server binary Ornith uses today |
+| `compose_service` | string | The engine's Compose service name (`compose` only) |
+| `engine_url` | URL | The engine's internal address; never published |
+| `full_capacity` | object | Context per sequence, sequences, KV cache type, batch sizes, GPU memory share, speculative or MTP settings. These are the model's own full settings and are never shrunk to co-reside |
+| `reasoning_mode` | `off \| on` (+ `effort`) | Ornith keeps today's setting; Qwen3.6 is `off` |
+| `identity` | ServedModelIdentity | Pinned; verified after every load |
+| `vram_mib` | int | Expected GPU memory when loaded; the swap waits for this much free before loading |
+| `load_timeout_s` | int | The load fails after this |
+
+**Validation:** at catalog load, every entry's identity must match the lock. On Omniverse2 the sum of `vram_mib` over entries marked `co_resident: true` must fit the GPU; by default no entry is co-resident.
+
+## SwapPolicy *(public-safe)*
+
+`{drain_max_s, min_residency_s, swap_after_wait_s, max_wait_s, max_swaps_per_hour, idle_unload_s?}`
+
+These are recipe parameters, measured in the first window (research R3b).
+
+## SwapEvent *(public-safe; metadata only, appended to the outcome log)*
+
+`{ts, swap_id, from_model, to_model, trigger: queue_age|idle|explicit_window, drain_ms, unload_ms, load_ms, identity_verified, outcome: OK|LOAD_FAILED|IDENTITY_MISMATCH|DRAIN_TIMEOUT, waiting_requests, tenants_waiting}`
+
+**State of the model tier:**
+
+```text
+EMPTY --request(m)--> LOADING(m) --healthy+identity ok--> SERVING(m)
+SERVING(m) --request(n!=m) and policy says swap--> DRAINING(m) --in-flight done or drain_max_s--> UNLOADING(m) --GPU free--> LOADING(n)
+LOADING(n) --fail/identity mismatch--> EMPTY (waiting requests for n -> 503 model_unavailable; others re-trigger normally)
+any --request(model not in catalog)--> refused 404 model_not_offered (no state change)
+```
+
 ## Tenant *(the key hash is private; the rest is public-safe)*
 
 | Field | Type | Rule |
@@ -36,12 +72,13 @@ All records are files, written atomically. Privacy class is noted per entity:
 | `queue_timeout_s` | int | Longest wait in the queue → 429 `queue_timeout` |
 | `priority` | int | Lower value wins for borrowed slots |
 | `max_context` | int ≤ `context_limit` | A request estimated above it → 400 `context_exceeded` (never truncated) |
-| `reasoning_mode` | `off \| on` | Enforced through `chat_template_kwargs` |
+| `allowed_models` | list | Catalog models this tenant may name; anything else is refused with `model_not_offered` |
+| `reasoning_mode` | `off \| on` | Enforced through `chat_template_kwargs` for models whose catalog entry is `off` |
 | `enabled` | bool | False → 401 for every request |
 
 ## OutcomeRecord *(public-safe; written by the tenant gateway, metadata only)*
 
-`{ts, tenant_id, request_id, model_fingerprint_prefix, status, forge_reason?, queue_ms, total_ms, prompt_tokens, completion_tokens, cached_tokens?, reasoning_tokens_stripped}`
+`{ts, tenant_id, request_id, model, model_fingerprint_prefix, status, forge_reason?, queue_ms, swap_wait_ms, swap_id?, total_ms, prompt_tokens, completion_tokens, cached_tokens?, reasoning_tokens_stripped}`
 
 It never contains messages, tool arguments, content or reasoning text.
 
@@ -53,14 +90,16 @@ It never contains messages, tool arguments, content or reasoning text.
 | `base_url` | URL | `external` only; must be the model channel and nothing else |
 | `credential_ref` | name | Resolved from the private secret file; the value is never logged |
 | `ca_bundle_ref` | name? | For an internal CA |
-| `expected_identity` | ServedModelIdentity subset | `name`, `precision`, `reasoning_mode` and minimum `context_limit` |
+| `expected_identity` | map model → ServedModelIdentity subset | Per model: `precision`, `reasoning_mode` and minimum `context_limit`. Before a run, every role's model must be in this map and offered by the service |
 | `share` | `{concurrency, queue_wait_max_s}` | Sets gateway admission; must be ≤ the tenant's `max_concurrency` |
 | `outage_wait_max_s` | int | Bounded wait for unreachable or restarting service |
 
 **State transitions of a run's model link (external mode):**
 
 ```text
+(per model name)
 UNPINNED --first identity read--> PINNED --identity differs--> BLOCKED(identity_changed)
+PINNED --service swaps away and back with the same identity--> PINNED   (a swap is only a wait)
 PINNED --unreachable/channel error--> WAITING --recovered within outage_wait_max_s--> PINNED
 WAITING --timeout--> BLOCKED(service_unreachable | channel_interrupted)
 PINNED --401/403--> BLOCKED(credential_refused)          (incident; no blind retry)

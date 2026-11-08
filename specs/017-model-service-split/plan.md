@@ -8,7 +8,13 @@
 
 Omniverse2 gets two tiers.
 
-- **Model tier:** one vLLM service owns the GPU. It serves the production reference model (Qwen3.6-35B-A3B) in FP8, non-thinking, behind a thin Forge-C **tenant gateway** that provides per-tenant keys, guaranteed shares with priorities, a metadata-only log and a verifiable served-model identity.
+- **Model tier:** one model service owns the GPU and serves a **catalog of models, each at full capacity**:
+  - today's Ornith-1.5 (GGUF Q8 on its current llama.cpp server and settings);
+  - the production reference Qwen3.6-35B-A3B (FP8 on vLLM, non-thinking).
+
+  The 48 GB GPU holds one at a time, so a **swap controller** in the tenant gateway swaps on demand (owner 2026-11-08). It drains in-flight requests, unloads, loads, verifies identity and then serves, with an anti-thrash policy. The factory only names a model and sees a longer wait.
+
+  The thin Forge-C **tenant gateway** also provides per-tenant keys, guaranteed shares with priorities, a metadata-only log and a per-model verifiable identity.
 - **Factory tier:** the factory runs in an isolated **factory machine**. That is a container stand-in now, and a KVM virtual machine once the `omniverse2` user is in group `kvm`. Its only route to the model is the tenant gateway port.
 
 The factory gains an **external model service** mode. In that mode it never starts, stops or swaps a model server and never holds a GPU lock or lease. Admission follows the tenant share, and every call is tied to the served-model identity.
@@ -70,7 +76,7 @@ Research and decisions: [research.md](research.md).
 - **Evidence:** CRE gating applies to every factory change.
 
 **Scale/Scope**:
-- One model service and three tenants on Omniverse2: `forge-qual`, `forge-owner` (after the cutover) and `sim-neighbour`.
+- One model service with a two-model catalog and three tenants on Omniverse2: `forge-qual`, `forge-owner` (after the cutover) and `sim-neighbour`.
 - One factory machine.
 - One qualification lane.
 - Every SWE phase the line has already passed.
@@ -122,7 +128,9 @@ specs/017-model-service-split/
 ```text
 factory/python/forge_factory/
 ├── modelservice/                  # NEW package
-│   ├── tenant_gateway.py          # model tier: keys, shares, priorities, identity, metadata log (runs in its own image)
+│   ├── tenant_gateway.py          # model tier: keys, shares, priorities, identity, metadata log (host user service)
+│   ├── swap.py                    # model tier: catalog, per-model queues, drain/unload/load/verify, anti-thrash, swap records
+│   ├── engines.py                 # model tier: engine definitions (llama.cpp args from today's profile, vLLM args), compose start/stop
 │   ├── identity.py                # compute/verify served-model identity from the recipe lock and the engine
 │   ├── client.py                  # factory side: identity pin, reason mapping, share-aware admission settings
 │   ├── window.py                  # qualification window controller (drain owner lane, GPU handover, restore)
@@ -143,7 +151,9 @@ deploy/recipe/
 ├── README.md                      # how to build Omniverse2 and production from the same recipe
 ├── params/omniverse2.yaml, params/production.yaml
 ├── recipe.lock.json               # image digests, model file sha256, factory revision, tool versions
-├── model-tier/compose.yaml        # vLLM + tenant gateway on an internal network
+├── model-tier/compose.yaml        # one engine service per catalog model (llama.cpp Ornith, vLLM Qwen3.6), internal network
+├── model-tier/catalog.yaml        # models, engines, full-capacity settings, identities, swap policy
+├── model-tier/tenant-gateway.service  # user systemd unit for the tenant gateway + swap controller
 ├── model-tier/tenants.example.yaml
 ├── factory-machine/cloud-init/user-data.yaml
 ├── factory-machine/container/Dockerfile   # stand-in built from the same provisioning script
@@ -172,7 +182,7 @@ factory/python/tests/
 | S1 | Tenant gateway, identity and recipe CLI. Unit and contract tests against a fake engine | no | no |
 | S2 | Factory external mode, gateway revision and client, behind `mode: external`. Unit tests, with `owned` unchanged | no | no |
 | S3 | Factory container stand-in from the shared provisioning script; isolation checks | no | no |
-| S4 | Window controller. First window: model tier smoke test, KV capacity check (R2), identity, neighbour contention test | **yes** | paused, then restored |
+| S4 | Window controller. First window: model tier smoke test, KV capacity check (R2), identity per model, swap measurements in both directions, alternating-model run (SC-009, SC-010), neighbour contention test | **yes** | paused, then restored |
 | S5 | Qualification windows: every passed SWE phase on the production-like setup; report; CAPAs for blocking findings | **yes** | paused, then restored |
 | S6 | Owner review of the report. On approval: re-measured transport proof for the new gateway (owner signs), owner lane as first tenant, rehearsed way back | yes (permanent) | **cutover, owner-approved** |
 | S7 | VM factory machine once `kvm` is granted; recipe rebuild drill (SC-004); production parameter handover (SC-008) | no | no |

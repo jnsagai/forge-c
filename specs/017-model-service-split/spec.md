@@ -13,6 +13,7 @@
 ### Session 2026-11-08
 
 - Q: How does the mirror share the single 48 GB GPU with the live lanes during the transition? -> A: Option C: build and qualify in scheduled windows while the owner lane is paused, then move the owner lane onto the model service as its first tenant after the owner approves the qualification report; the production lane moves only by a separate approved cutover.
+- Q (owner 2026-11-08): Must the mirror serve one model or several? -> A: "I still want that both models are used at their full capacity, but the VM should be agnostic to that. When the VM requests one of those models, we should be able to do a swap in the model side, seamless to the VM." The model service therefore serves a catalog of models (today's Ornith-1.5 and the production reference Qwen3.6). Each loaded model gets the whole GPU at its full settings, and the service swaps on demand. The factory only names a model in its request.
 
 ## Context
 
@@ -48,7 +49,14 @@ The factory completes a work order while the model is provided by a separate mod
 
 ### User Story 2 - A shared model service on Omniverse2 behaves like the production one (Priority: P1)
 
-The owner can run, on Omniverse2, a model service that has the production service's essential properties: one service owns the GPU, several tenants each have their own credential and share, a tenant cannot exceed its share or see another tenant's traffic, and the service can prove which model it serves.
+The owner can run, on Omniverse2, a model service that has the production service's essential properties:
+
+- one service owns the GPU;
+- several tenants each have their own credential and share;
+- a tenant cannot exceed its share or see another tenant's traffic;
+- the service can prove which model it serves.
+
+The service offers **several models**: today's Ornith-1.5 and the production reference Qwen3.6. Each model runs at its full capacity when loaded. When a request names a model that is not loaded, the service swaps models itself, and the requester sees only a longer wait.
 
 **Why this priority**: The factory can only be qualified against a realistic neighbour. Quota exhaustion, waiting behind another tenant and credential rotation are exactly the conditions production will impose.
 
@@ -61,6 +69,10 @@ The owner can run, on Omniverse2, a model service that has the production servic
 3. **Given** the simulated tenant saturates its own share, **When** the factory runs, **Then** the factory's requests still receive at least its guaranteed share.
 4. **Given** any tenant, **When** it asks which model is served, **Then** the service returns a verifiable identity (name, revision fingerprint, precision, context limit) that matches the pinned recipe.
 5. **Given** default settings, **When** requests are served, **Then** the model service stores no prompt or response content.
+6. **Given** model A is loaded, **When** a tenant requests model B from the catalog, **Then** the service finishes or drains the requests in flight on A, unloads A, loads B with B's full-capacity settings, verifies B's identity and answers the request. The tenant receives a normal answer, and the only visible difference is the longer wait (reported as queue time).
+7. **Given** requests for both models keep arriving, **When** the service decides when to swap, **Then** it batches requests per model and keeps a loaded model resident for at least a configured time, so it never thrashes between models. Each tenant's guaranteed share still holds, and no request waits longer than the configured maximum.
+8. **Given** a request names a model that is not in the catalog, **When** it arrives, **Then** it is refused with an explicit reason, and no swap happens.
+9. **Given** a swap fails (the new model does not become healthy or its identity does not match), **When** this happens, **Then** the service refuses that model's waiting requests with an explicit reason, records the failure and returns to a healthy state. It never answers with a different model than the one requested.
 
 ---
 
@@ -134,6 +146,9 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 - **Reasoning content appears although non-thinking mode is configured**: it is stripped before storage and counted; repeated occurrences raise an infrastructure finding about the service configuration.
 - **Credential expired or rotated**: requests are refused with an authentication reason; the factory raises an incident and does not retry blindly.
 - **Channel interrupted** (network or certificate failure): treated like an unreachable service (User Story 1, scenario 3).
+- **Swap during another tenant's long request**: the swap waits for in-flight requests on the loaded model up to a configured drain time. It never cuts a request off. A request still running at the drain limit delays the swap, and the waiting requests stay within their bounded wait.
+- **Swap thrash**: alternating requests (for example an author on one model and an inspector on the other) are served in per-model batches with a minimum residency time. Swap count and swap time are recorded per hour, and a swap rate above a configured limit raises an infrastructure finding.
+- **Factory asks for a model the site does not offer** (for example production serves only the reference model): the request is refused with "model not offered". The factory's profile for that site maps every role to an offered model, and this is checked before a run starts.
 - **GPU contention on Omniverse2**: the existing lanes and the new model service cannot hold the GPU at the same time (see FR-019); a start of the model service while a lane owns the GPU is refused, and vice versa.
 - **Factory machine cannot boot** (virtualization access missing): the container stand-in is used, and its limitations are stated (User Story 5, scenario 2).
 
@@ -145,7 +160,7 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 
 - **FR-001**: The factory MUST support an "external model service" mode in which no factory component starts, stops, restarts or swaps a model server, takes a GPU lock, or holds an inference-owner lease.
 - **FR-002**: In that mode the factory MUST reach the model only through its own gateway, and the gateway MUST reach only the configured model channel. Every other model endpoint MUST be refused.
-- **FR-003**: Before a run's first model call, and again whenever the service reports a change, the factory MUST read and record the served model's identity: name, revision fingerprint, precision, reasoning mode and context limit. A mismatch with the identity pinned for the run MUST block the run.
+- **FR-003**: Before a run's first call to each model, and again whenever the service reports a change, the factory MUST read and record that model's served identity: name, revision fingerprint, precision, reasoning mode and context limit. The identity is pinned per model name for the run. A mismatch with the identity pinned for that model MUST block the run. A swap that brings back the same identity is not a mismatch.
 - **FR-004**: The factory's admission MUST follow the service's share for the factory tenant (concurrent requests and waiting), replacing the GPU-ownership lease. "Share exhausted" MUST be a bounded wait or an explicit refusal, never a model failure.
 - **FR-005**: An unreachable service, a refused credential, an interrupted channel or an unknown call outcome MUST each produce a distinct, recorded reason. The run MUST resume from the last quality-checked part or end blocked.
 - **FR-006**: Requests that need more context than the factory's configured limit MUST be refused before sending. Required evidence MUST never be truncated to fit.
@@ -160,6 +175,22 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 - **FR-012**: The service MUST store no prompt or response content by default. Its operational records MUST contain only metadata (tenant, time, token counts, outcome).
 - **FR-013**: The mirror MUST include a simulated second tenant that can generate configurable load, for qualification under contention.
 
+**Several models at full capacity, swapped by the service (owner 2026-11-08)**
+
+- **FR-025**: The model service MUST serve a catalog of models fixed by the recipe. On Omniverse2 the catalog holds today's Ornith-1.5 and the production reference Qwen3.6. Each catalog entry MUST carry its own engine, full-capacity settings (context, concurrent sequences, cache), reasoning mode and pinned identity.
+- **FR-026**: When a model is loaded, it MUST have the whole GPU at its full-capacity settings. Models MUST NOT be shrunk to fit together. If the hardware can hold several catalog models at full capacity (production), the service MAY keep them loaded together, and the factory MUST NOT be able to tell the difference except by waiting time.
+- **FR-027**: The service MUST swap models on demand when a request names a catalog model that is not loaded. A swap MUST:
+  1. let in-flight requests finish, up to a drain limit;
+  2. unload the current model completely;
+  3. load the requested model;
+  4. verify its identity;
+  5. then serve the waiting requests.
+
+  A swap MUST never answer a request with a model other than the one named.
+- **FR-028**: The swap policy MUST prevent thrashing: requests are batched per model, a loaded model stays resident for at least a configured time, and the maximum wait for any request is bounded. Tenant shares and priorities MUST still hold across swaps.
+- **FR-029**: The factory MUST be agnostic to swapping. It names a model per request and treats any swap as a bounded wait. In external mode, the factory's own swap step (today's serve node in the workflow) MUST make no model change and only record which model the next part will use.
+- **FR-030**: Every swap MUST be recorded as metadata: time, from-model, to-model, drain time, load time, outcome and the requests that waited. Swap count and total swap time MUST appear per phase in the qualification report.
+
 **Requalification**
 
 - **FR-014**: Before any cutover the factory MUST be qualified on the production-like configuration: the production reference model, non-thinking mode, in the precision that fits the Omniverse2 GPU. The qualification set MUST cover every SWE phase the line has already passed on the current setup.
@@ -173,7 +204,7 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 
 **Transition and safety**
 
-- **FR-019**: The model service and the existing GPU-owning lanes MUST NOT hold the GPU at the same time. GPU use on Omniverse2 during the transition MUST follow two stages (owner 2026-11-08, option C): (1) **qualification windows** - the model service is built and requalified only in scheduled windows while the owner lane is paused at a safe point, and the owner lane resumes on today's setup after each window; (2) **owner lane as first tenant** - only after the owner approves the qualification report (FR-020) does the owner lane move onto the model service as its first tenant. The production lane stays on its own setup until a separate owner-approved cutover.
+- **FR-019**: The model service and the existing GPU-owning lanes MUST NOT hold the GPU at the same time. GPU use on Omniverse2 during the transition MUST follow two stages (owner 2026-11-08, option C): (1) **qualification windows** - the model service is built and requalified only in scheduled windows while the owner lane is paused at a safe point, and the owner lane resumes on today's setup after each window; (2) **owner lane as first tenant** - only after the owner approves the qualification report (FR-020) does the owner lane move onto the model service as its first tenant. The production lane stays on its own setup until a separate owner-approved cutover. Because the catalog contains the owner lane's current model at its current settings (FR-025), the owner lane's cutover can keep its model unchanged; only the channel changes.
 - **FR-020**: Moving any lane to the new shape MUST require an owner-approved cutover backed by the qualification report. The production lane, signed controls and the owner lane's CRE gating MUST stay unchanged until then, and every cutover MUST have a tested way back to the previous shape.
 - **FR-021**: The factory machine MUST run inside its own boundary whose only route to the model is the model channel: a virtual machine once virtualization access is granted, a container boundary until then. Its reports MUST state which production properties the stand-in does not prove.
 
@@ -193,6 +224,8 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 - **Qualification report**: per-phase and per-node comparison of the two setups, with deviations and blocking findings.
 - **Recipe**: the versioned, fingerprint-pinned description of the whole environment, with site parameters and a drift check.
 - **Cutover record**: owner approval, the qualification report it relies on, the lane moved, and its way back.
+- **Model catalog entry**: model name, engine, full-capacity settings, reasoning mode, pinned identity. One catalog per site.
+- **Swap event**: from-model, to-model, drain time, load time, outcome, waiting requests.
 
 ## Success Criteria *(mandatory)*
 
@@ -205,12 +238,15 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 - **SC-005**: The qualification report covers 100% of the SWE phases the line has already passed, per AI node, and states every deviation from production values.
 - **SC-006**: No cutover happens with an open blocking qualification finding, and every cutover's way back is exercised at least once before approval.
 - **SC-007**: With the exchange-log switch off, a full run writes 0 bytes of prompt or reply content anywhere. With it on, 100% of the factory's model calls appear in the per-node log, and 0 contain hidden reasoning text.
+- **SC-009**: With requests alternating between the two catalog models, 100% of requests are answered by the model they named, 0 requests fail because of a swap, and every wait stays within the configured maximum.
+- **SC-010**: A run that alternates models in external mode completes with 0 swap actions by factory components; all swaps appear only in the service's swap records.
 - **SC-008**: The platform team can map every recipe parameter to a production value without asking the factory team for missing information (checked in the handover review).
 
 ## Assumptions
 
 - **Reference document**: `docs/ONPREM-DEPLOYMENT.md` (2026-10-15) is the production description. Production is one H200 141 GB GPU (owner 2026-11-08), serving the production reference model in BF16, non-thinking, with 262k context, 11 sequences and a 761k-token cache, request logging off, and an OpenAI-compatible interface over HTTPS with API keys. The platform team's actual serving stack and authentication are not yet known (owner 2026-11-08); the mirror therefore depends only on the chat-completion interface, a per-tenant credential and a model-identity query.
 - **Scale on Omniverse2**: the RTX 6000 Ada (48 GB) cannot hold the production model in BF16. The mirror uses a lower precision that fits, with fewer concurrent sequences and a smaller cache. Production speed and concurrency are not claimed; production qualification on BF16 remains a separate step on the production hardware.
+- **Model catalog**: on Omniverse2 the catalog is today's Ornith-1.5 (GGUF Q8, served by the same llama.cpp server and full-capacity settings the owner lane uses today) and Qwen3.6-35B-A3B (FP8, vLLM, non-thinking). The 48 GB GPU holds one of them at full capacity at a time, so the service swaps. In production the catalog and whether models are co-resident or swapped are the platform team's choice. They are recipe parameters, and the factory is unaffected either way.
 - **Virtualization**: the `omniverse2` user can be added to the `kvm` group (owner 2026-11-08, one-time admin action). Until then the factory machine uses a container boundary. Docker with GPU access is already available for the model tier.
 - **Reasoning**: production runs non-thinking. Today's lane uses reasoning effort "medium". Moving to non-thinking is part of the requalification (FR-014), not an assumed equivalence.
 - **Factory gateway**: the factory keeps its existing gateway, which already strips reasoning, enforces admission and records usage. Its upstream becomes the remote service. The gateway source is bound into the owner lane's signed transport proof, so changing it requires a re-measured proof under the owner's signed control. This is part of the cutover (FR-020), not of the mirror build.
