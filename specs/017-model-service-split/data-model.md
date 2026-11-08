@@ -38,18 +38,20 @@ All records are files, written atomically. Privacy class is noted per entity:
 | `identity` | ServedModelIdentity | Pinned; verified after every load |
 | `vram_mib` | int | Expected GPU memory when loaded; the swap waits for this much free before loading |
 | `load_timeout_s` | int | The load fails after this |
+| `warm_strategy` | `vllm_sleep \| ram_staged_file \| none` | How the model stays ready in host RAM while off the GPU (FR-031, research R3c) |
+| `ram_gib` | number | Host RAM the warm copy needs; counted against `ram_budget_gib` |
 
 **Validation:** at catalog load, every entry's identity must match the lock. On Omniverse2 the sum of `vram_mib` over entries marked `co_resident: true` must fit the GPU; by default no entry is co-resident.
 
 ## SwapPolicy *(public-safe)*
 
-`{drain_max_s, min_residency_s, swap_after_wait_s, max_wait_s, max_swaps_per_hour, idle_unload_s?}`
+`{drain_max_s, min_residency_s, swap_after_wait_s, max_wait_s, max_swaps_per_hour, idle_unload_s?, ram_budget_gib, ram_reserve_gib, stage_dir}`
 
 These are recipe parameters, measured in the first window (research R3b).
 
 ## SwapEvent *(public-safe; metadata only, appended to the outcome log)*
 
-`{ts, swap_id, from_model, to_model, trigger: queue_age|idle|explicit_window, drain_ms, unload_ms, load_ms, identity_verified, outcome: OK|LOAD_FAILED|IDENTITY_MISMATCH|DRAIN_TIMEOUT, waiting_requests, tenants_waiting}`
+`{ts, swap_id, from_model, to_model, trigger: queue_age|idle|explicit_window, drain_ms, unload_ms, load_ms, warm: bool, identity_verified, outcome: OK|LOAD_FAILED|IDENTITY_MISMATCH|DRAIN_TIMEOUT, waiting_requests, tenants_waiting}`
 
 **State of the model tier:**
 

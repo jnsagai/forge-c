@@ -34,3 +34,4 @@
 - Iteration 1: all items pass except the single clarification FR-019, which needs an owner decision before `/speckit-plan`.
 - Iteration 2 (2026-11-08): owner chose option C for FR-019; all items pass. Ready for `/speckit-plan`.
 - Iteration 3 (2026-11-08): owner added "both models at full capacity, swapped on the model side, VM agnostic" -> FR-025..FR-030, SC-009/SC-010, US2 scenarios 6-9, edge cases; no new clarification markers; all items pass.
+- Iteration 4 (2026-11-08): owner "swap as fast as possible, models cached in RAM" -> FR-031, SC-011, research R3c; all items pass.

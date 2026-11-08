@@ -129,6 +129,18 @@
           "engine_url": {
             "type": "string",
             "description": "internal URL of this engine; never published"
+          },
+          "warm_strategy": {
+            "enum": [
+              "vllm_sleep",
+              "ram_staged_file",
+              "none"
+            ],
+            "default": "none"
+          },
+          "ram_gib": {
+            "type": "number",
+            "minimum": 0
           }
         }
       }
@@ -167,6 +179,18 @@
         "idle_unload_s": {
           "type": "integer",
           "minimum": 0
+        },
+        "ram_budget_gib": {
+          "type": "number",
+          "minimum": 0
+        },
+        "ram_reserve_gib": {
+          "type": "number",
+          "minimum": 0
+        },
+        "stage_dir": {
+          "type": "string",
+          "description": "RAM-backed directory for ram_staged_file models (e.g. /dev/shm/forge-model-tier)"
         }
       }
     }

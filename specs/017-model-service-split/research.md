@@ -82,6 +82,45 @@ Date: 2026-11-08. Facts probed on Omniverse2 the same day are marked *(probed)*.
   - *Both models resident at reduced settings:* violates "full capacity".
   - *vLLM sleep mode / multi-model:* it does not cover the llama.cpp engine.
 
+## R3c. Fast swaps: every model not on the GPU stays ready in host RAM (owner 2026-11-08)
+
+Host facts *(probed 2026-11-08)*:
+
+| Fact | Value |
+| --- | --- |
+| Host RAM | 125 GB, of which 120 GB available |
+| Locked-memory limit | `ulimit -l` is 16 GB, too small to `mlock` a 37.8 GB model |
+| `/dev/shm` | 63 GB tmpfs |
+| Ornith GGUF | 37.8 GB |
+| Swap space | 32 GB |
+
+- **Decision, per engine:**
+  - **Qwen3.6 on vLLM:** vLLM **sleep mode** (`--enable-sleep-mode`). Swapping away calls level 1 sleep, which copies the weights to pinned host RAM and drops the KV cache; the process, its compiled graphs and its CUDA context stay alive. Swapping in calls wake-up, which copies the weights back. There is no process restart, no model-file read and no recompilation.
+    - The sleep and wake endpoints are development endpoints (`VLLM_SERVER_DEV_MODE=1`). They are reachable only on the internal engine network, and the swap controller is their only client.
+    - The container runs with an unlimited memlock limit, which the root Docker daemon grants per container.
+  - **Ornith on llama.cpp:** there is no sleep mode. At tier start the GGUF blob is **staged once into `/dev/shm`**, which is RAM-backed. It is verified by SHA-256 against the pinned digest, and llama-server is started on the staged file, which it memory-maps from RAM.
+    - Swapping away stops the process, which takes milliseconds.
+    - Swapping in starts it on the staged file, so the load is a RAM-to-GPU copy with no disk read.
+    - Before each load, the controller checks the staged file's size and inode and its RAM residency (`mincore`). If the residency is below 95% (for example, the host pushed it to swap), it re-stages the file in the background and loads from disk this time, recording a finding.
+- **Warm-up:** at tier start the controller stages Ornith, starts vLLM, loads Qwen3.6 and puts it to sleep, and then serves the first requested model. The first swap is therefore already warm.
+- **RAM budget:** Ornith staged (37.8 GB) plus Qwen3.6 sleeping (about 35 GB) is about 73 GB of 125 GB. The budget is the recipe parameter `ram_budget_gib`, 80 on Omniverse2. Before warming each model, the controller checks `MemAvailable` minus a reserve (`ram_reserve_gib`, 24) for the factory and the host. If the check fails, that model falls back to a cold load with a finding (FR-031). On the shared host this keeps the factory and other users safe from memory pressure.
+- **GPU residue:** a sleeping vLLM keeps its CUDA context, roughly 1 GB, measured in the first window. Ornith at today's full settings uses 41.8 of 48 GB, so it still fits. The measured residue is reported as a deviation if Ornith's settings would need it.
+- **Expected swap times, to be confirmed in the first window (SC-011):**
+
+  | Step | Expected time |
+  | --- | --- |
+  | Qwen3.6 sleep (about 35 GB GPU→RAM over PCIe 4) | a few seconds |
+  | Ornith start from RAM | about 10–20 s |
+  | Ornith stop | under 1 s |
+  | Qwen3.6 wake | a few seconds |
+
+  Target: 95% of swaps within 30 s per direction.
+- **Alternatives considered:**
+  - *`mlock` keeper process:* blocked by the 16 GB locked-memory limit, and raising the limit needs an admin.
+  - *Rely on the page cache only:* other host users can evict it silently, which turns swaps slow without warning.
+  - *Both models resident at reduced settings:* violates "full capacity".
+  - *vLLM for Ornith (GGUF):* GGUF support in vLLM is experimental, and the owner lane's settings (MTP draft) are llama.cpp-specific.
+
 ## R4. Served-model identity
 
 - **Decision:** identity is **per catalog model**. Each model's identity has five fields: `name`, `revision_fingerprint` (SHA-256 of the sorted weight-file digests plus the tokenizer and chat-template digests), `precision`, `reasoning_mode` and `context_limit`.

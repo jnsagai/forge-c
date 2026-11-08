@@ -13,6 +13,7 @@
 ### Session 2026-11-08
 
 - Q: How does the mirror share the single 48 GB GPU with the live lanes during the transition? -> A: Option C: build and qualify in scheduled windows while the owner lane is paused, then move the owner lane onto the model service as its first tenant after the owner approves the qualification report; the production lane moves only by a separate approved cutover.
+- Q (owner 2026-11-08): How fast must a swap be? -> A: "as fast as possible. So maybe they should be cached or stored in the RAM memory to do the swap as soon as possible when it's required." (FR-031, SC-011)
 - Q (owner 2026-11-08): Must the mirror serve one model or several? -> A: "I still want that both models are used at their full capacity, but the VM should be agnostic to that. When the VM requests one of those models, we should be able to do a swap in the model side, seamless to the VM." The model service therefore serves a catalog of models (today's Ornith-1.5 and the production reference Qwen3.6). Each loaded model gets the whole GPU at its full settings, and the service swaps on demand. The factory only names a model in its request.
 
 ## Context
@@ -191,6 +192,11 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 - **FR-029**: The factory MUST be agnostic to swapping. It names a model per request and treats any swap as a bounded wait. In external mode, the factory's own swap step (today's serve node in the workflow) MUST make no model change and only record which model the next part will use.
 - **FR-030**: Every swap MUST be recorded as metadata: time, from-model, to-model, drain time, load time, outcome and the requests that waited. Swap count and total swap time MUST appear per phase in the qualification report.
 
+- **FR-031**: Swaps MUST be as fast as the hardware allows (owner 2026-11-08: "the model should be swapping as fast as possible ... cached or stored in the RAM"). Every catalog model that is not on the GPU MUST be kept ready in host RAM so a swap never reads model files from disk.
+  - The service warms all catalog models once when it starts.
+  - When host RAM cannot hold all of them within the configured RAM budget, the service MUST fall back to loading from disk for that model, record an infrastructure finding, and still answer correctly.
+  - Swap time MUST be measured and reported per direction.
+
 **Requalification**
 
 - **FR-014**: Before any cutover the factory MUST be qualified on the production-like configuration: the production reference model, non-thinking mode, in the precision that fits the Omniverse2 GPU. The qualification set MUST cover every SWE phase the line has already passed on the current setup.
@@ -240,6 +246,7 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 - **SC-007**: With the exchange-log switch off, a full run writes 0 bytes of prompt or reply content anywhere. With it on, 100% of the factory's model calls appear in the per-node log, and 0 contain hidden reasoning text.
 - **SC-009**: With requests alternating between the two catalog models, 100% of requests are answered by the model they named, 0 requests fail because of a swap, and every wait stays within the configured maximum.
 - **SC-010**: A run that alternates models in external mode completes with 0 swap actions by factory components; all swaps appear only in the service's swap records.
+- **SC-011**: After the first warm-up, 95% of swaps in each direction complete within 30 seconds (from the last drained request to the first answer from the new model), measured in the first window. The cold first load is reported separately and is not counted.
 - **SC-008**: The platform team can map every recipe parameter to a production value without asking the factory team for missing information (checked in the handover review).
 
 ## Assumptions
