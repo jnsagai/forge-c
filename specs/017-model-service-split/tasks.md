@@ -421,7 +421,7 @@
   - how the way back is rehearsed before approval (SC-006).
 
   Claude does not execute the cutover.
-- [ ] T070 Run the full factory test suite, `ruff` and `python3 tests/spec/validate_design.py` on the implementation branch. Record the results in `specs/017-model-service-split/evidence.md`, and confirm that the owned-mode tests are unchanged against the base SHA (T001).
+- [X] T070 Run the full factory test suite, `ruff` and `python3 tests/spec/validate_design.py` on the implementation branch. Record the results in `specs/017-model-service-split/evidence.md`, and confirm that the owned-mode tests are unchanged against the base SHA (T001).
 - [ ] T071 Run the quickstart steps 1 to 6 and record each as PASS, FAIL, NOT_RUN or BLOCKED, with evidence paths, in `specs/017-model-service-split/evidence.md`. Then open a draft PR to `main` for owner review; it is merged only after the owner accepts, with merge commits only.
 
 ---
