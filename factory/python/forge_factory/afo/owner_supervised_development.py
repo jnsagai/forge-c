@@ -15,6 +15,7 @@ import os
 import re
 import secrets
 import socket
+import sqlite3
 import struct
 import threading
 import time
@@ -1143,6 +1144,16 @@ def provider_preflight(root):
         return dict(state="UNKNOWN", placing=False, code=getattr(exc, "code", type(exc).__name__))
 
 
+STORE_BUSY_LIMIT = 10  # consecutive cycles (default interval 30 s: ~5 min plus 10 busy timeouts) before giving up
+
+
+def store_busy(exc):
+    """CAPA-192: SQLITE_BUSY/LOCKED surfaced as OperationalError after the busy timeout, nothing else."""
+    text = str(exc).lower()
+    return isinstance(exc, sqlite3.OperationalError) and ("database is locked" in text or "database is busy" in text
+                                                         or "database table is locked" in text)
+
+
 def main(argv=None):
     """Explicit external engineering producer, using the existing placer/worker.
 
@@ -1217,7 +1228,7 @@ def main(argv=None):
     signal.signal(signal.SIGTERM, lambda *_: stop.set())
     signal.signal(signal.SIGINT, lambda *_: stop.set())
     audit = Path(ref["path"]).with_suffix(".audit.jsonl")
-    n = 0
+    n = busy = 0
     try:
         if a.bootstrap_managed_profile:
             from .owner_profile_bootstrap import bootstrap
@@ -1238,10 +1249,21 @@ def main(argv=None):
             live_record = current(store=store)
             _publish_heartbeat(live_record, cycle=n)
             readiness = provider_preflight(cfg.stack_root)
-            result = placer.cycle() if readiness["placing"] else dict(mode=MODE, actions=[], readiness=readiness)
             from .controller_escalation import observe as controller_escalation
 
-            escalation = controller_escalation(store, cfg, store_identity=live_record["store_identity"])
+            try:
+                result = placer.cycle() if readiness["placing"] else dict(mode=MODE, actions=[], readiness=readiness)
+                escalation = controller_escalation(store, cfg, store_identity=live_record["store_identity"])
+                busy = 0
+            except sqlite3.OperationalError as e:
+                # CAPA-192: another writer held the line queue past the busy timeout. Every transaction is atomic, so
+                # an interrupted cycle is the same as a cycle that never ran: record it and place again next cycle.
+                # A persistent lock still ends the guardian (bounded), never an unbounded silent retry.
+                if not store_busy(e) or busy >= STORE_BUSY_LIMIT:
+                    raise
+                busy += 1
+                result = dict(mode=MODE, actions=[], readiness=readiness, deferred="STORE_BUSY", busy_streak=busy)
+                escalation = None
             # No submit/admission or PRODUCT reservation occurs while replacement
             # or observation is unknown. Guardian stays live for normal M0 work.
             row = dict(
