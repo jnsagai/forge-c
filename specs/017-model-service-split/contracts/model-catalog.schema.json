@@ -133,6 +133,7 @@
             "enum": [
               "vllm_sleep",
               "ram_staged_file",
+              "page_cache",
               "none"
             ],
             "default": "none"

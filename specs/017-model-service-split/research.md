@@ -22,7 +22,10 @@ Date: 2026-11-08. Facts probed on Omniverse2 the same day are marked *(probed)*.
   - *SGLang:* comparable, but production states vLLM.
   - *pip install on the host:* not reproducible as a recipe and pollutes a shared host.
 
-## R2. Precision that fits 48 GB
+## R2. Precision that fits 48 GB (SUPERSEDED for Omniverse2, owner 2026-11-08)
+
+**Superseded:** "we don't work with qwen 3.6 here". Omniverse2 serves the owner lane's own models (`qwen3.8:27b-q8_0`, Ornith-1.5 Q8_0) on llama.cpp with today's arguments, kept warm in the page cache (62.3 GiB together; `/dev/shm` is 63 GiB, too tight for a copy of both). vLLM and the FP8 checkpoint are no longer downloaded; the vLLM engine stays in the code and as `deploy/recipe/model-tier/examples/compose.vllm.yaml` for sites that serve with vLLM. The text below is kept as the record of the earlier decision.
+
 
 - **Decision:** FP8 weights. Use the publisher's FP8 checkpoint if one is published; otherwise quantise the BF16 checkpoint with vLLM's `--quantization fp8` at load. Keep the KV cache in the model's default dtype first.
 - **Acceptance at startup:** the engine must report a KV capacity of at least 2 sequences × 65,536 tokens, the factory's per-agent limit. If it does not, apply the fallback steps in order and record each one as a stated deviation (FR-015):

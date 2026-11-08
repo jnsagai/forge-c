@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Feature 017 T010: fetch and pin the model-tier artefacts for a site. Non-GPU: downloads, `docker pull` and hashing
-# only. Every artefact is pinned in recipe.lock.json (FR-017). Re-running resumes and re-verifies.
+# Feature 017 T010: pin the model-tier artefacts for a site. Non-GPU: hashing of the models already on disk and one
+# small download (the factory machine's cloud image). Every artefact is pinned in recipe.lock.json (FR-017). Re-running resumes and re-verifies.
 #
 #   deploy/recipe/fetch-artefacts.sh <data-root>      e.g. /mnt/data/forge-c/model-service
 set -euo pipefail
@@ -11,24 +11,14 @@ PY=(uv run --project "$REPO" python -m forge_factory.modelservice.artefacts)
 mkdir -p "$ROOT/models" "$ROOT/images"
 chmod 0750 "$ROOT"
 
-# Inference engine: vLLM release pinned by digest (research R1); verified to know the model architecture.
-VLLM=vllm/vllm-openai@sha256:befccf0e7e4089aa23926bb6f887a85c0d46c2a99e6de5c5ffdf5cb7957c5b34   # v0.32.0
-docker pull -q "$VLLM"
-docker run --rm --network none --entrypoint python3 "$VLLM" -c \
-  "from vllm.model_executor.models.registry import ModelRegistry as R; import vllm, sys; \
-a='Qwen3_5MoeForConditionalGeneration'; print('vllm', vllm.__version__, a, a in R.get_supported_archs()); \
-sys.exit(0 if a in R.get_supported_archs() else 3)"
-"${PY[@]}" image --name vllm-openai --digest "${VLLM#*@}" --lock "$LOCK"
-
-# Production reference model on this site: official FP8 checkpoint at an exact commit (research R2).
-QWEN_REPO=Qwen/Qwen3.6-35B-A3B-FP8
-QWEN_REV=c653bba46dfa06e9658dcc0b0dc87fe4685f14a2
-"${PY[@]}" hf --repo "$QWEN_REPO" --revision "$QWEN_REV" --dest "$ROOT/models/qwen3.6-35b-a3b-fp8" \
-  --lock "$LOCK" --model qwen3.6-35b-a3b-fp8
-
-# Today's Ornith model (owner lane): already on disk, recorded by hash, never re-downloaded.
-ORNITH=${ORNITH_BLOB:-/mnt/data/forge-c/swe1-fabro-20261031/lrtx/ollama-models/blobs/sha256-de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3}
-"${PY[@]}" file --path "$ORNITH" --lock "$LOCK" --model ornith-1.5-35b-a3b-q8
+# The models the owner lane uses today (owner 2026-11-08: "we don't work with qwen 3.6 here"): already on disk as
+# content-addressed Ollama blobs, recorded by hash, never re-downloaded. Names are the ones the factory requests.
+BLOBS=${OLLAMA_BLOBS:-/mnt/data/forge-c/swe1-fabro-20261031/lrtx/ollama-models/blobs}
+"${PY[@]}" file --path "$BLOBS/sha256-de46c4baf4b4dd85ea438bb0f757f21c38841a353506579979bba114311658c3" --lock "$LOCK" \
+  --model "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
+Q38_BLOB=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print([l['digest'] for l in d['layers'] if l['mediaType'].endswith('.image.model')][0].replace(':','-'))" \
+  "${OLLAMA_MANIFESTS:-/mnt/data/forge-c/swe1-fabro-20261031/lrtx/ollama-models/manifests}/registry.ollama.ai/library/qwen3.8/27b-q8_0")
+"${PY[@]}" file --path "$BLOBS/$Q38_BLOB" --lock "$LOCK" --model "qwen3.8:27b-q8_0"
 LLAMA=${LLAMA_SERVER:-/mnt/data/forge-c/swe1-fabro-20261031/lrtx/ollama-0.34.0/lib/ollama/llama-server}
 "${PY[@]}" image --name llama-server-ollama-0.34.0 --digest "sha256:$(sha256sum "$LLAMA" | cut -d' ' -f1)" --lock "$LOCK"
 

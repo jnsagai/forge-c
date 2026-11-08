@@ -2,11 +2,11 @@
 # config/factory/qualification-set.yaml from evidence (newest run that succeeded and whose gate decided PASS).
 # Only phases the line has already passed belong here (FR-014): GPIO SWE.1 has no gate PASS yet (2026-11-08).
 baseline_setup:
-  label: ornith-1.5-q8-owned-llama.cpp
-  identity: {name: "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0", precision: other, reasoning_mode: "on", context_limit: 262144}
+  label: owned-lane-llama.cpp (qwen3.8 27B Q8 + Ornith-1.5 Q8, the lane owns the GPU)
+  identity: {name: "qwen3.8:27b-q8_0", precision: other, reasoning_mode: "on"}
 candidate_setup:
-  label: qwen3.6-35b-a3b-fp8-external-vllm
-  identity: {name: qwen3.6-35b-a3b-fp8, precision: fp8, reasoning_mode: "off", context_limit: 65536}
+  label: external-model-service (the same two models behind the tenant gateway; only the channel changes)
+  identity: {name: "qwen3.8:27b-q8_0", precision: other, reasoning_mode: "on"}
 phases:
   - {phase: SWE.1, lineage: CRC-HAL, patterns: [SWE1-CRCHAL-]}
   - {phase: SWE.2, lineage: CRC-HAL, patterns: [SWE2-CRCHAL-]}

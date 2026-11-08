@@ -12,7 +12,6 @@ ExecStart=/home/omniverse2/.local/bin/uv run python -m model_tier.tenant_gateway
   --config deploy/recipe/model-tier/tenants.yaml \
   --secrets /mnt/data/forge-c/model-service/secrets/model-service.secrets \
   --listen 127.0.0.1:18480 --state /mnt/data/forge-c/model-service/tier-state
-ExecStopPost=/usr/bin/docker compose -f deploy/recipe/model-tier/compose.yaml -p forge-model-tier stop
 Restart=no
 TimeoutStopSec=120
 UMask=0077

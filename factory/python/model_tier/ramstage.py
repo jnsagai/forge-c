@@ -11,6 +11,7 @@ Findings hold metadata only.
 """
 from __future__ import annotations
 
+import contextlib
 import ctypes
 import ctypes.util
 import hashlib
@@ -176,6 +177,21 @@ class RamStage:
         staged = Staged(name, dest, want, size, dest.stat().st_ino)
         self._staged[name] = staged
         return staged
+
+    def keep_resident(self, name: str, path: Path, sha256: str, gib: float) -> Staged:
+        """Warm strategy ``page_cache``: keep the original model file resident in the page cache (no copy, no tmpfs
+        size limit). Counted against the budget like a staged copy; ``check`` verifies residency before each load.
+        The file is read once sequentially with WILLNEED advice; later re-warms are the engine's (background)."""
+        self._check_name(name)
+        path = Path(path)
+        st = path.stat()
+        with open(path, "rb") as f:
+            with contextlib.suppress(AttributeError, OSError):
+                os.posix_fadvise(f.fileno(), 0, 0, os.POSIX_FADV_WILLNEED)
+            while f.read(16 << 20):
+                pass
+        self._reserved[name] = float(gib)
+        return Staged(name=name, path=path, sha256=sha256, size=st.st_size, inode=st.st_ino)
 
     def check(self, staged: Staged, min_residency: float = 0.95) -> tuple[bool, str]:
         """Before a load: size and inode unchanged and at least ``min_residency`` of the pages in RAM."""

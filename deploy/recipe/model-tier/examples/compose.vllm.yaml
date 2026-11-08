@@ -1,4 +1,7 @@
-# Model tier engines for the Omniverse2 site (feature 017). Started and stopped ONLY by the swap controller of the
+# EXAMPLE (feature 017): engines for a site that serves with vLLM, such as the production reference in
+# docs/ONPREM-DEPLOYMENT.md. Omniverse2 does not use it (owner 2026-11-08: "we don't work with qwen 3.6 here"):
+# its catalog is the owner lane's llama.cpp models.
+# Started and stopped ONLY by the swap controller of the
 # tenant gateway (model_tier.engines), and on Omniverse2 only inside a qualification window until the cutover.
 #
 # - vLLM with sleep mode: started once, then slept/woken for swaps; weights stay in pinned host RAM (FR-031).

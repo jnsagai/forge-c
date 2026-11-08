@@ -135,3 +135,42 @@ def test_process_engine_starts_on_the_staged_copy_and_stops_cleanly(tmp_path):
     # evicted from RAM: this load reads from disk and says why
     prep, load, used, _, _ = asyncio.run(go(False))
     assert not load["warm"] and load["reason"].startswith("NOT_RESIDENT") and used == str(blob)
+
+
+def test_page_cache_strategy_uses_the_original_file_and_rewarms_when_evicted(tmp_path):
+    from model_tier.ramstage import RamStage
+
+    blob = tmp_path / "qwen38.gguf"
+    blob.write_bytes(b"g" * 4096)
+    script = tmp_path / "server.py"
+    script.write_text("import sys,time\nopen(sys.argv[2],'w').write(sys.argv[1])\ntime.sleep(60)\n")
+    out = tmp_path / "argv.txt"
+    m = _model(model="qwen3.8:27b-q8_0", engine="llama.cpp", launch_kind="process", compose_service=None,
+               warm_strategy="page_cache", ram_gib=0.001,
+               process={"binary": sys.executable, "args": [str(script), "{model_path}", str(out)], "model_path": str(blob),
+                        "model_sha256": "2" * 64})
+    healthy = httpx.AsyncClient(transport=httpx.MockTransport(lambda r: httpx.Response(200, json={})))
+    meminfo = tmp_path / "meminfo"
+    meminfo.write_text("MemAvailable:   104857600 kB\n")
+    resident = {"v": 1.0}
+    ram = RamStage(tmp_path / "stage", budget_gib=1, reserve_gib=0, meminfo=meminfo, residency=lambda p: resident["v"])
+
+    async def go():
+        e = ProcessEngine(m, ram, http=healthy, log_dir=tmp_path / "logs")
+        prep = await e.prepare()
+        load = await e.load()
+        for _ in range(100):
+            if out.exists() and out.read_text():
+                break
+            await asyncio.sleep(0.05)
+        used = out.read_text()
+        out.unlink()
+        await e.unload()
+        resident["v"] = 0.2  # the host evicted it: this load still works, from disk, and says why
+        load2 = await e.load()
+        await e.unload()
+        return prep, load, used, load2
+    prep, load, used, load2 = asyncio.run(go())
+    assert prep["warm"] and load["warm"] and used == str(blob)  # no copy: the original file, resident in the page cache
+    assert not load2["warm"] and load2["reason"].startswith("NOT_RESIDENT")
+    assert not (tmp_path / "stage" / "qwen3.8_27b-q8_0").exists()  # nothing staged into tmpfs

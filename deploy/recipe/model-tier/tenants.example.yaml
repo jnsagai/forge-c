@@ -16,9 +16,9 @@ tenants:
     queue_timeout_s: 900
     priority: 0
     max_context: 65536
-    reasoning_mode: "on"            # each catalog model keeps its own mode; Qwen3.6 is non-thinking in the catalog
+    reasoning_mode: "on"            # each catalog model keeps its own reasoning setting
     enabled: true
-    allowed_models: [qwen3.6-35b-a3b-fp8, "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"]
+    allowed_models: ["qwen3.8:27b-q8_0", "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"]
   - tenant_id: forge-owner         # the owner lane, enabled only by the owner-approved cutover (FR-020)
     key_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
     guaranteed_concurrency: 0
@@ -29,7 +29,7 @@ tenants:
     max_context: 65536
     reasoning_mode: "on"
     enabled: false
-    allowed_models: ["hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0", qwen3.6-35b-a3b-fp8]
+    allowed_models: ["qwen3.8:27b-q8_0", "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"]
   - tenant_id: sim-neighbour       # synthetic second application for contention tests (FR-013)
     key_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
     guaranteed_concurrency: 0
@@ -38,6 +38,6 @@ tenants:
     queue_timeout_s: 600
     priority: 5
     max_context: 32768
-    reasoning_mode: "off"
+    reasoning_mode: "on"
     enabled: true
-    allowed_models: [qwen3.6-35b-a3b-fp8]
+    allowed_models: ["qwen3.8:27b-q8_0"]

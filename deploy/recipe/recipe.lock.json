@@ -1,9 +1,38 @@
 {
-    "schema": "forge-c/017/recipe-lock",
-    "images": {},
-    "model_files": [],
-    "identities": {},
-    "factory_revision": null,
-    "fabro_version": "0.362.0",
-    "toolchain": {}
+  "fabro_version": "0.362.0",
+  "factory_revision": null,
+  "identities": {
+    "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": {
+      "attested": true,
+      "context_limit": 262144,
+      "engine": {
+        "name": "llama.cpp",
+        "version": "ollama-0.34.0-bundled"
+      },
+      "kv_cache_dtype": "f16",
+      "max_sequences": 1,
+      "name": "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0",
+      "precision": "other",
+      "reasoning_mode": "on",
+      "revision_fingerprint": "7152ae684ce037a1c10e451c1a4dc717dfdd527af817df327b88e59eb2baae1b"
+    },
+    "qwen3.8:27b-q8_0": {
+      "attested": true,
+      "context_limit": 262144,
+      "engine": {
+        "name": "llama.cpp",
+        "version": "ollama-0.34.0-bundled"
+      },
+      "kv_cache_dtype": "f16",
+      "max_sequences": 1,
+      "name": "qwen3.8:27b-q8_0",
+      "precision": "other",
+      "reasoning_mode": "on",
+      "revision_fingerprint": "ade583af591347e6505301ee959383c17e10fad4b69403b1120c09a80f87c36c"
+    }
+  },
+  "images": {},
+  "model_files": [],
+  "schema": "forge-c/017/recipe-lock",
+  "toolchain": {}
 }

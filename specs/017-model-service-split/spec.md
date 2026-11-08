@@ -12,6 +12,7 @@
 
 ### Session 2026-11-08
 
+- Q (owner 2026-11-08): Which models does the Omniverse2 mirror serve? -> A: "we don't work with qwen 3.6 here". The mirror serves the models the owner lane uses today, `qwen3.8:27b-q8_0` and Ornith-1.5-35B-A3B Q8_0, on today's llama.cpp server with today's full settings. Qwen3.6 appears only as the production reference named in `docs/ONPREM-DEPLOYMENT.md`, whose production model stays the owner's and the platform team's decision. Requalification on Omniverse2 therefore compares the same two models before and after the move behind the model service: only the channel changes (FR-014 as amended).
 - Q: How does the mirror share the single 48 GB GPU with the live lanes during the transition? -> A: Option C: build and qualify in scheduled windows while the owner lane is paused, then move the owner lane onto the model service as its first tenant after the owner approves the qualification report; the production lane moves only by a separate approved cutover.
 - Q (owner 2026-11-08): Is the model service only for this factory? -> A: "do it in a way that in the future I can have other factories using in concurrency the models. Therefore, the models are agnostic to the factory itself." The model service knows only tenants, never factories (FR-032, FR-033, SC-012).
 - Q (owner 2026-11-08): How fast must a swap be? -> A: "as fast as possible. So maybe they should be cached or stored in the RAM memory to do the swap as soon as possible when it's required." (FR-031, SC-011)
@@ -206,7 +207,7 @@ The owner keeps the per-node model exchange log (introduced 2026-11-08) in the n
 
 **Requalification**
 
-- **FR-014**: Before any cutover the factory MUST be qualified on the production-like configuration: the production reference model, non-thinking mode, in the precision that fits the Omniverse2 GPU. The qualification set MUST cover every SWE phase the line has already passed on the current setup.
+- **FR-014**: Before any cutover the factory MUST be qualified on the new shape. On Omniverse2 (owner 2026-11-08) that is the same models it uses today, served by the model service through the channel; a production site whose models differ requalifies on its own models. The qualification set MUST cover every SWE phase the line has already passed on the current setup.
 - **FR-015**: The qualification report MUST compare both setups per phase and per AI node: gate outcomes, rework and retries, model time, prompt and output tokens, and prompt-cache reuse. It MUST list every deviation from production values (precision, concurrent sequences, context, cache size) next to the production value.
 - **FR-016**: A phase that passes on the current setup and fails on the production-like setup MUST be recorded as a blocking qualification finding through the factory's corrective-action process (CRE).
 

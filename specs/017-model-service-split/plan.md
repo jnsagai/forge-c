@@ -19,6 +19,8 @@ Omniverse2 gets two tiers.
 
 The factory gains an **external model service** mode. In that mode it never starts, stops or swaps a model server and never holds a GPU lock or lease. Admission follows the tenant share, and every call is tied to the served-model identity.
 
+**Models on Omniverse2 (owner 2026-11-08):** the catalog is the owner lane's own `qwen3.8:27b-q8_0` and Ornith-1.5 Q8_0 on llama.cpp, not Qwen3.6; both are kept warm in the page cache (research R2, superseded note).
+
 **Transition (spec FR-019, option C):**
 
 1. The model tier is built and the factory requalified only in **scheduled windows** while the owner lane is paused.

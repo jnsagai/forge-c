@@ -227,7 +227,7 @@
   - warm-up at tier start (stage Ornith, load Qwen3.6 then sleep it, serve the first requested model).
 
   Wire it into the request path of `tenant_gateway.py`. The swap sequence is ported from `lrtx/stack.py` `_serve_model` (refuse while requests are in flight, wait for VRAM, fail closed). T027 must pass.
-- [ ] T035 [US2] Write `deploy/recipe/model-tier/catalog.yaml` for the Omniverse2 site:
+- [X] T035 [US2] Write `deploy/recipe/model-tier/catalog.yaml` for the Omniverse2 site:
   - Ornith-1.5 GGUF Q8 as `process`, with today's full settings generated from the owner-lane profile by `factory/python/forge_factory/modelservice/catalog_gen.py` (factory side, reusing `lrtx/stack.py` `llama_server_spec`), never retyped by hand;
   - Qwen3.6-35B-A3B FP8 on vLLM as `compose`, with `warm_strategy: vllm_sleep`, `--enable-sleep-mode`, `VLLM_SERVER_DEV_MODE=1` (internal network only) and unlimited memlock;
   - Ornith with `warm_strategy: ram_staged_file` and `stage_dir: /dev/shm/forge-model-tier`;

@@ -76,6 +76,14 @@ class ProcessEngine:
 
     async def prepare(self) -> dict:
         p = self.m.process
+        if self.m.warm_strategy == "page_cache" and self.ram is not None:
+            decision, why = self.ram.decide(self.m.ram_gib)
+            if decision != "warm":
+                self.reason = why
+                return {"warm": False, "reason": why}
+            self.staged = await asyncio.to_thread(self.ram.keep_resident, stage_name(self.m.model), Path(p["model_path"]),
+                                                  p.get("model_sha256"), self.m.ram_gib)
+            return {"warm": True, "reason": ""}
         if self.m.warm_strategy != "ram_staged_file" or self.ram is None:
             return {"warm": False, "reason": "NO_WARM_STRATEGY"}
         decision, why = self.ram.decide(self.m.ram_gib)
@@ -92,6 +100,9 @@ class ProcessEngine:
             if ok:
                 return str(self.staged.path), True
             self.reason = why
+            if self.m.warm_strategy == "page_cache":  # evicted by the host: re-warm in the background for next time
+                asyncio.get_running_loop().run_in_executor(None, self.ram.keep_resident, stage_name(self.m.model),
+                                                           self.staged.path, self.staged.sha256, self.m.ram_gib)
         return self.m.process["model_path"], False
 
     async def load(self) -> dict:

@@ -15,7 +15,7 @@ TIER = ROOT / "deploy/recipe/model-tier"
 
 
 def _compose():
-    return yaml.safe_load((TIER / "compose.yaml").read_text())
+    return yaml.safe_load((TIER / "examples/compose.vllm.yaml").read_text())
 
 
 def test_engines_are_private_pinned_and_log_nothing():
@@ -66,10 +66,10 @@ def test_gateway_unit_is_not_enabled_by_default_and_keeps_files_private():
 
 @pytest.mark.skipif(shutil.which("docker") is None, reason="NOT_RUN: docker absent on this machine")
 def test_compose_config_is_valid():
-    r = subprocess.run(["docker", "compose", "-f", str(TIER / "compose.yaml"), "config", "--quiet"], capture_output=True, text=True,
+    r = subprocess.run(["docker", "compose", "-f", str(TIER / "examples/compose.vllm.yaml"), "config", "--quiet"], capture_output=True, text=True,
                        env={**os.environ, "FORGE_MODEL_TIER_ENGINE_KEY": "x"}, timeout=60, check=False)
     assert r.returncode == 0, r.stderr
-    r = subprocess.run(["docker", "compose", "-f", str(TIER / "compose.yaml"), "config", "--quiet"], capture_output=True, text=True,
+    r = subprocess.run(["docker", "compose", "-f", str(TIER / "examples/compose.vllm.yaml"), "config", "--quiet"], capture_output=True, text=True,
                        env={k: v for k, v in os.environ.items() if k != "FORGE_MODEL_TIER_ENGINE_KEY"}, timeout=60, check=False)
     assert r.returncode != 0  # refuses to start engines without the internal key
 

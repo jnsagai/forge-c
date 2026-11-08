@@ -180,5 +180,7 @@ class ModelTier:
 
     def stop(self) -> None:
         self.run(["systemctl", "--user", "stop", "forge-model-tier-gateway"], capture_output=True, timeout=180, check=False)
-        self.run(["docker", "compose", "-f", str(self.repo / "deploy/recipe/model-tier/compose.yaml"), "-p", "forge-model-tier", "stop"],
-                 capture_output=True, timeout=300, check=False)
+        compose = self.repo / "deploy/recipe/model-tier/compose.yaml"  # only sites with container engines have one
+        if compose.is_file():
+            self.run(["docker", "compose", "-f", str(compose), "-p", "forge-model-tier", "stop"], capture_output=True, timeout=300,
+                     check=False)
