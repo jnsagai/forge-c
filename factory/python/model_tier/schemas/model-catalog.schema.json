@@ -141,6 +141,44 @@
           "ram_gib": {
             "type": "number",
             "minimum": 0
+          },
+          "process": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "binary",
+              "args",
+              "model_path"
+            ],
+            "description": "process launch kind: pinned binary with explicit arguments; {model_path} in args is replaced by the staged (RAM) or on-disk model file",
+            "properties": {
+              "binary": {
+                "type": "string"
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "env": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "model_path": {
+                "type": "string"
+              },
+              "model_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          },
+          "served_name": {
+            "type": "string",
+            "description": "name the engine reports in /v1/models (defaults to model)"
           }
         }
       }
@@ -193,6 +231,13 @@
           "description": "RAM-backed directory for ram_staged_file models (e.g. /dev/shm/forge-model-tier)"
         }
       }
+    },
+    "compose_file": {
+      "type": "string",
+      "description": "Compose file of the engine services (compose launch kind)"
+    },
+    "compose_project": {
+      "type": "string"
     }
   }
 }

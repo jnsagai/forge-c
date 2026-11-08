@@ -164,7 +164,7 @@
   - The outcome log contains no content: assert that no request or response text appears in the log bytes (FR-012).
   - Above the threshold, `reasoning_content` produces an infrastructure finding.
   - The start check rejects a configuration where the sum of guaranteed shares exceeds `max_sequences`.
-- [ ] T027 [P] [US2] Write `factory/python/tests/test_modelservice_swap.py`, using fake engines with load delays. It checks that:
+- [X] T027 [P] [US2] Write `factory/python/tests/test_modelservice_swap.py`, using fake engines with load delays. It checks that:
   - alternating requests are each answered by the model they name;
   - the drain finishes before the unload, and nothing in flight is cut off;
   - per-model batching and `min_residency_s` hold;
@@ -184,7 +184,7 @@
 
 ### Implementation for User Story 2
 
-- [ ] T029 [P] [US2] Write `factory/python/tests/test_model_tier_boundary.py`. It checks that no module under `factory/python/model_tier/` imports `forge_factory`, by AST scan of every import (FR-032, SC-012); that `model_tier/schemas/*.json` are byte-identical to `config/schemas/model-service/`; and that the `model_tier` modules name no factory concept (run, work order, node, lane) in their configuration keys.
+- [X] T029 [P] [US2] Write `factory/python/tests/test_model_tier_boundary.py`. It checks that no module under `factory/python/model_tier/` imports `forge_factory`, by AST scan of every import (FR-032, SC-012); that `model_tier/schemas/*.json` are byte-identical to `config/schemas/model-service/`; and that the `model_tier` modules name no factory concept (run, work order, node, lane) in their configuration keys.
 - [ ] T030 [US2] Implement `factory/python/model_tier/tenant_gateway.py`, using Starlette and httpx with no new dependency:
   - configuration per `config/schemas/model-service/tenant-config.schema.json`;
   - SHA-256 key check;
@@ -194,12 +194,12 @@
   - the metadata outcome log (OutcomeRecord).
 
   T026 and T028 must pass.
-- [ ] T031 [US2] Implement `factory/python/model_tier/engines.py`. It builds engine definitions from the catalog:
+- [X] T031 [US2] Implement `factory/python/model_tier/engines.py`. It builds engine definitions from the catalog:
   - `process` kind: starts the pinned binary with the explicit argument list from `catalog.yaml`. The model tier never reads a factory profile (FR-032).
   - `compose` kind: starts and stops a Compose service by name.
   - Health and `/v1/models` checks.
   - Waits for free GPU memory (`vram_mib`) through `model_tier/gpu.py` before a load.
-- [ ] T032 [P] [US2] Write `factory/python/tests/test_modelservice_ramstage.py`. It checks that:
+- [X] T032 [P] [US2] Write `factory/python/tests/test_modelservice_ramstage.py`. It checks that:
   - staging copies to the stage directory with verification against the pinned SHA-256 (a mismatch is refused and the copy is deleted);
   - `MemAvailable` minus reserve below the need leads to no staging and a `cold` decision with a finding;
   - the residency check (`mincore`, faked) below 95% leads to a re-stage plus a cold load for this swap;
@@ -221,7 +221,7 @@
   - warm-up at tier start (stage Ornith, load Qwen3.6 then sleep it, serve the first requested model).
 
   Wire it into the request path of `tenant_gateway.py`. The swap sequence is ported from `lrtx/stack.py` `_serve_model` (refuse while requests are in flight, wait for VRAM, fail closed). T027 must pass.
-- [ ] T035 [US2] Write `deploy/recipe/model-tier/catalog.yaml` for the Omniverse2 site:
+- [X] T035 [US2] Write `deploy/recipe/model-tier/catalog.yaml` for the Omniverse2 site:
   - Ornith-1.5 GGUF Q8 as `process`, with today's full settings generated from the owner-lane profile by `factory/python/forge_factory/modelservice/catalog_gen.py` (factory side, reusing `lrtx/stack.py` `llama_server_spec`), never retyped by hand;
   - Qwen3.6-35B-A3B FP8 on vLLM as `compose`, with `warm_strategy: vllm_sleep`, `--enable-sleep-mode`, `VLLM_SERVER_DEV_MODE=1` (internal network only) and unlimited memlock;
   - Ornith with `warm_strategy: ram_staged_file` and `stage_dir: /dev/shm/forge-model-tier`;
