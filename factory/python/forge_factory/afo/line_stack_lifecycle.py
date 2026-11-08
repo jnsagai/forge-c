@@ -237,6 +237,34 @@ def _native_handoff(cfg, store, job, execution, workspace, model, s):
     return current
 
 
+SWAP_FENCE = "MODEL_SWAP_FENCE"
+
+
+def swap_fence(job_id, model, state):
+    from ..lrtx.stack import process_identity
+
+    return {"schema": "forge-c/model-swap-fence/1", "job_id": job_id, "model": model, "state": state,
+            "pid": os.getpid(), "identity": process_identity(os.getpid()), "started_at": time.time()}
+
+
+def _write_swap_fence(c, job_id, value):
+    c.execute("INSERT INTO afo_execution_evidence VALUES (?,?,?,?) ON CONFLICT(job_id,kind) "
+              "DO UPDATE SET record=excluded.record,sha256=excluded.sha256",
+              (job_id, SWAP_FENCE, canonical(value).decode(), digest(value)))
+
+
+def swap_in_progress(c, job_id):
+    """CAPA-193: an ACTIVE fence whose swapping process still lives (a dead swapper releases it, like its lock did)."""
+    from ..lrtx.stack import _same_process, process_identity
+
+    row = c.execute("SELECT record FROM afo_execution_evidence WHERE job_id=? AND kind=?", (job_id, SWAP_FENCE)).fetchone()
+    if not row:
+        return False
+    fence = json.loads(row[0])
+    return fence.get("state") == "ACTIVE" and bool(fence.get("identity")) and _same_process(
+        process_identity(fence.get("pid")), fence["identity"])
+
+
 @contextmanager
 def fenced(s, action, *, model=None, workspace=None):
     """No global intent transition/store; keep actual intent locked through the bounded effect."""
@@ -286,18 +314,26 @@ def fenced(s, action, *, model=None, workspace=None):
             from ..lrtx import provider_process as provider
 
             provider.require_owner_view(fabro["pid"], fabro["identity"]["uid"], fabro.get("owner_view"))
-            with gpu_lock(cfg.gpu_lock), held_stack_lock(cfg.stack_root), store.tx() as c:
-                # Serialize a model change against new durable request reservations.
-                current_execution = c.execute("SELECT record FROM afo_execution_liveness WHERE job_id=?",
-                                              (job["job_id"],)).fetchone()
-                if (not current_execution or json.loads(current_execution[0]) != execution
-                        or c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone()):
-                    raise Refused("LINE_STACK_EXECUTION_CHANGED_BEFORE_SERVE")
-                effect_guard()
+            with gpu_lock(cfg.gpu_lock), held_stack_lock(cfg.stack_root):
+                # Serialize a model change against new durable request reservations. CAPA-193: with a COMMITTED
+                # job-scoped swap fence (reserve_request refuses MODEL_SWAP_IN_PROGRESS while it is ACTIVE and its
+                # process lives), never by holding the line queue's write lock across the swap: a 9-27 s swap held
+                # every other writer past its busy timeout ("database is locked" ended the owner guardian twice).
+                with store.tx() as c:
+                    current_execution = c.execute("SELECT record FROM afo_execution_liveness WHERE job_id=?",
+                                                  (job["job_id"],)).fetchone()
+                    if (not current_execution or json.loads(current_execution[0]) != execution
+                            or c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone()):
+                        raise Refused("LINE_STACK_EXECUTION_CHANGED_BEFORE_SERVE")
+                    effect_guard()
+                    fence = swap_fence(job["job_id"], model, "ACTIVE")
+                    _write_swap_fence(c, job["job_id"], fence)
+
                 def record_failure(instance):
                     value = effect_guard.failure_record(instance)
-                    c.execute("INSERT OR IGNORE INTO afo_execution_evidence VALUES (?,?,?,?)", (job["job_id"],
-                              "LINE_STARTUP_CLEANUP_UNKNOWN:" + digest(value), canonical(value).decode(), digest(value)))
+                    with store.tx() as c:  # committed at once: a failed-startup hold outlives this process
+                        c.execute("INSERT OR IGNORE INTO afo_execution_evidence VALUES (?,?,?,?)", (job["job_id"],
+                                  "LINE_STARTUP_CLEANUP_UNKNOWN:" + digest(value), canonical(value).decode(), digest(value)))
 
                 effect_guard.record_cleanup_unknown = record_failure
                 failure = None
@@ -305,7 +341,10 @@ def fenced(s, action, *, model=None, workspace=None):
                     yield effect_guard
                 except Exception as exc:
                     failure = exc
-                # Commit a failed-startup hold before propagating its native node failure.
+                finally:
+                    with store.tx() as c:
+                        _write_swap_fence(c, job["job_id"], {**fence, "state": "FAILED" if failure else "DONE",
+                                                             "ended_at": time.time()})
             if failure is not None:
                 raise failure
         else:

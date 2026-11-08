@@ -161,6 +161,10 @@ def validate_intake(env: dict, *, repo: Path, approve=None) -> str:
     return order_id_for(env["tenant_scope"], env["request_id"])
 
 
+# CAPA-193: probe-observed commits (synchronous=FULL) waited 6-9 s on the ext4 journal while a 35B model loaded from the
+# same disk; with 10 s every other writer was one slow fsync away from "database is locked".
+BUSY_TIMEOUT_S = 60
+
 class Store:
     def __init__(self, path: Path | None = None, producer: str = "afo-conductor", *, must_exist: bool | None = None):
         import os
@@ -247,9 +251,9 @@ class Store:
         if existing:
             self._check_existing()
         try:
-            c = sqlite3.connect(self.path.absolute().as_uri() + "?mode=rw", uri=True, timeout=10,
+            c = sqlite3.connect(self.path.absolute().as_uri() + "?mode=rw", uri=True, timeout=BUSY_TIMEOUT_S,
                                 isolation_level=None) if existing else sqlite3.connect(
-                                    self.path, timeout=10, isolation_level=None)
+                                    self.path, timeout=BUSY_TIMEOUT_S, isolation_level=None)
             if existing:
                 self._check_existing()
         except (OSError, sqlite3.Error) as exc:
@@ -261,7 +265,7 @@ class Store:
         c.row_factory = sqlite3.Row
         c.execute("PRAGMA journal_mode=WAL")
         c.execute("PRAGMA synchronous=FULL")
-        c.execute("PRAGMA busy_timeout=10000")
+        c.execute(f"PRAGMA busy_timeout={int(BUSY_TIMEOUT_S * 1000)}")
         c.execute("PRAGMA foreign_keys=ON")
         return c
 

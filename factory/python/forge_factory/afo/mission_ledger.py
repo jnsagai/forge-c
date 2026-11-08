@@ -220,6 +220,10 @@ class MissionLedger:
                 return {**rec, "replay": True}
             if c.execute("SELECT 1 FROM afo_execution_evidence WHERE job_id=? AND kind='GENERATION_FENCE'", (job_id,)).fetchone():
                 raise Refused("GENERATION_RETIREMENT_FENCED")
+            from .line_stack_lifecycle import swap_in_progress
+
+            if swap_in_progress(c, job_id):  # CAPA-193: the committed swap fence replaces the held write lock
+                raise Refused("MODEL_SWAP_IN_PROGRESS")
             snap = self._snapshot(c, mission_id)
             if not authorize() or (time.time() if now is None else now) >= snap["limits"]["deadline"]:
                 raise Refused("REQUEST_NOT_AUTHORIZED")

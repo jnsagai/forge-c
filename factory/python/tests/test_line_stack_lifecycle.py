@@ -393,12 +393,28 @@ def test_first_graph_serve_uses_existing_authoritative_nonce_adoption_before_det
         assert current["native_run_ids"] == ["OWN-NATIVE"] and current["identity_state"] == "CONFIRMED"
         assert current["resource_lease"] == "HELD" and current["lease_epoch"] == execution["lease_epoch"]
         with A.fenced(p.s, "serve", model=model, workspace=ws) as guard:
-            guard()  # fresh permission can be checked with the ledger write fence held
+            guard()  # fresh permission can be checked with the committed swap fence in place
             assert Executions(p.store).store.path == p.store.path  # same durable store
+            # CAPA-193: no write lock is held across the swap; the fence is committed and visible to reservations
+            import sqlite3
+            other = sqlite3.connect(str(p.store.path), timeout=0, isolation_level=None)
+            other.execute("BEGIN IMMEDIATE")
+            other.execute("ROLLBACK")
+            other.close()
+            with p.store.tx() as c:
+                assert A.swap_in_progress(c, job["job_id"])
+
+        def fence_state():
+            with p.store.tx() as c:
+                return json.loads(c.execute("SELECT record FROM afo_execution_evidence WHERE job_id=? AND kind=?",
+                                            (job["job_id"], A.SWAP_FENCE)).fetchone()[0])["state"]
+
+        assert fence_state() == "DONE"
         with pytest.raises(Refused, match="TEST_UNPROVEN_STARTUP"):
             with A.fenced(p.s, "serve", model=model, workspace=ws) as guard:
                 guard.record_cleanup_unknown(None)
                 raise Refused("TEST_UNPROVEN_STARTUP")
+        assert fence_state() == "FAILED"
         with p.store.tx() as c:
             assert c.execute("SELECT COUNT(*) FROM afo_execution_evidence WHERE job_id=? "
                              "AND kind LIKE 'LINE_STARTUP_CLEANUP_UNKNOWN:%'", (job["job_id"],)).fetchone()[0] == 1
