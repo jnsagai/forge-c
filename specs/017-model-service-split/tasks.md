@@ -385,16 +385,16 @@
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T063 [P] [US6] `factory/python/tests/test_llm_gateway_capture.py`. It checks that:
+- [X] T063 [P] [US6] `factory/python/tests/test_llm_gateway_capture.py`. It checks that:
   - with the switch file missing or false, no capture file is written;
   - with it true, one record per call has run, node, visit, tenant and identity fingerprint, uses 0600 files in 0700 directories, has no `reasoning*` keys, no `forge_execution` and no secrets, and is written after `strip_reasoning`;
   - a capture failure never fails the call.
-- [ ] T064 [P] [US6] Extend `factory/python/tests/test_model_exchanges.py`. When gateway capture records exist for a run, the exporter uses them (one per call, with no double count against Fabro events or structured captures), and `by-node/<node>.md` keeps its format.
+- [X] T064 [P] [US6] Extend `factory/python/tests/test_model_exchanges.py`. When gateway capture records exist for a run, the exporter uses them (one per call, with no double count against Fabro events or structured captures), and `by-node/<node>.md` keeps its format.
 
 ### Implementation for User Story 6
 
-- [ ] T065 [US6] Add the capture tap to the gateway revision in `factory/python/forge_factory/llm_gateway.py`. It is behind `<state>/model-exchanges/capture.json` `"gateway": true`, separate from the existing `"structured"` key, and reuses the redaction from `lrtx/structured.py` `_capture`. The run, node and visit come from the request's `forge_execution` binding, which is read and never written. T063 must pass.
-- [ ] T066 [US6] Teach `factory/python/forge_factory/lrtx/model_exchanges.py` `export` to read `<state>/model-exchanges/gateway/<run>/...` records with de-duplication. T064 must pass.
+- [X] T065 [US6] (Delivered in `modelservice/transport.py`, because `llm_gateway.py` is pinned by the owner lane's signed proof; the exporter joins each record to its turn by model, exact prompt tokens and time.) Add the capture tap to the gateway revision in `factory/python/forge_factory/llm_gateway.py`. It is behind `<state>/model-exchanges/capture.json` `"gateway": true`, separate from the existing `"structured"` key, and reuses the redaction from `lrtx/structured.py` `_capture`. The run, node and visit come from the request's `forge_execution` binding, which is read and never written. T063 must pass.
+- [X] T066 [US6] Teach `factory/python/forge_factory/lrtx/model_exchanges.py` `export` to read `<state>/model-exchanges/gateway/<run>/...` records with de-duplication. T064 must pass.
 
 **Checkpoint**: the per-node log works in the new shape; capture is off by default.
 

@@ -76,7 +76,8 @@ def processes(cfg: LaneConfig, profile: dict) -> dict[str, list[str]]:
     procs = {
         "gateway": [cfg.python, "-m", "forge_factory.modelservice.gateway_external", "--port", str(cfg.gateway_port),
                     "--model-service", str(cfg.model_service), "--secrets", str(cfg.secrets),
-                    "--meter", str(r / "state/llm-gateway/usage.jsonl"), "--calls", str(r / "state/model-service/calls.jsonl")],
+                    "--meter", str(r / "state/llm-gateway/usage.jsonl"), "--calls", str(r / "state/model-service/calls.jsonl"),
+                    "--capture-root", str(r / "state/model-exchanges")],
         "fabro": [env["FORGE_FABRO_BIN"], "server", "start", "--foreground", "--no-web", "--no-upgrade-check",
                   "--config", str(r / "fabro/settings.toml"), "--storage-dir", str(r / "fabro/storage")],
     }
