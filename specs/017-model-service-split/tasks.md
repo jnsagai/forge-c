@@ -319,7 +319,7 @@
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T052 [P] [US4] Extend `factory/python/tests/test_modelservice_recipe.py`. It checks that:
+- [X] T052 [P] [US4] Extend `factory/python/tests/test_modelservice_recipe.py`. It checks that:
   - every parameter file validates against `recipe-params.schema.json`;
   - `plan --site production` prints every parameter with its production value or `confirmed: false`, and never prints a secret value;
   - `verify` fails on one changed SHA-256 and names the file;
@@ -328,17 +328,17 @@
 
 ### Implementation for User Story 4
 
-- [ ] T053 [US4] Implement `factory/python/forge_factory/modelservice/recipe.py` with the subcommands `plan`, `verify`, `apply` and `drift`, all taking `--site`:
+- [X] T053 [US4] Implement `factory/python/forge_factory/modelservice/recipe.py` with the subcommands `plan`, `verify`, `apply` and `drift`, all taking `--site`:
   - `apply` brings up the model tier (Compose) and the factory machine (container stand-in, or VM when available), and refuses to finish on any mismatch.
   - On Omniverse2, `apply` of the model tier is allowed only from inside a window (T014).
 
   T052 must pass.
-- [ ] T054 [P] [US4] Complete `deploy/recipe/README.md`:
+- [X] T054 [P] [US4] Complete `deploy/recipe/README.md`:
   - build Omniverse2;
   - build production (parameter mapping table: Omniverse2 value, production value, confirmed);
   - the list of what the Omniverse2 build does not prove (FP8 against BF16, 48 GB against 141 GB, sequences, container stand-in);
   - a reference to `specs/017-model-service-split/contracts/model-channel.md` as the interface the platform team must provide.
-- [ ] T055 [P] [US4] Write the optional `deploy/recipe/factory-machine/packer/forge-c.pkr.hcl`, which uses the same `provision.sh` and cloud-init. Mark it optional in its header, because Packer is BUSL-1.1 (research R10).
+- [X] T055 [P] [US4] Write the optional `deploy/recipe/factory-machine/packer/forge-c.pkr.hcl`, which uses the same `provision.sh` and cloud-init. Mark it optional in its header, because Packer is BUSL-1.1 (research R10).
 - [ ] T056 [US4] [WINDOW] Run the rebuild drill: tear down the tier and the factory machine (keeping data), `recipe apply --site omniverse2`, then `recipe drift`. Record the duration and 0 drift findings in `evidence/017/rebuild-drill/` (SC-004).
 
 **Checkpoint**: the recipe rebuilds the mirror, and the production parameters are documented.
