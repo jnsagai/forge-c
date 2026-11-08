@@ -265,7 +265,7 @@
 
   Add a test in `factory/python/tests/test_modelservice_window.py`.
 - [ ] T043 Ask the owner, through the usual floor and summary channel, for the window limits: `max_minutes` and allowed hours. Until they answer, use the default of 120 minutes at a time when the owner lane is between orders. Record the values in `deploy/recipe/params/omniverse2.yaml` (`window_max_minutes`, `window_hours`).
-- [X] T044 [WINDOW] Run `python -m forge_factory.modelservice.window run --plan smoke`. Collect into `evidence/017/window-<id>/`:
+- [ ] T044 [WINDOW] Run `python -m forge_factory.modelservice.window run --plan smoke`. Collect into `evidence/017/window-<id>/`:
   - the window record;
   - the identity;
   - the KV capacity;
@@ -301,7 +301,7 @@
 ### Implementation for User Story 3
 
 - [X] T046 [US3] Create `config/factory/qualification-set.yaml`. It lists every SWE phase the line has already passed on the current setup, with the baseline WO lineages and run IDs taken from evidence (for example the CRC HAL SWE.1 to SWE.6 lineage and the GPIO orders). Each entry links its evidence path. Include no entry without evidence.
-- [ ] T047 [US3] Implement `factory/python/forge_factory/modelservice/qualify.py`, `report --out <dir>`. It reads the baseline from existing evidence and the per-node exchange export; it never replays C, B or L90 runs. It reads the candidate from qualification-lane runs, computes the measures per `contracts/qualification-report.schema.json` (including swaps and swap wait per phase from the SwapEvent records, FR-030), lists deviations from `params/omniverse2.yaml` against `params/production.yaml`, and writes JSON plus a plain-language markdown summary. T045 must pass.
+- [X] T047 [US3] Implement `factory/python/forge_factory/modelservice/qualify.py`, `report --out <dir>`. It reads the baseline from existing evidence and the per-node exchange export; it never replays C, B or L90 runs. It reads the candidate from qualification-lane runs, computes the measures per `contracts/qualification-report.schema.json` (including swaps and swap wait per phase from the SwapEvent records, FR-030), lists deviations from `params/omniverse2.yaml` against `params/production.yaml`, and writes JSON plus a plain-language markdown summary. T045 must pass.
 - [ ] T048 [US3] Define the window plan `qualification` in `factory/python/forge_factory/modelservice/window_plans.py`. It queues fresh qualification-lane orders for the qualification-set phases, using the existing order mechanism for the qualification lane only. It resumes across windows from the last quality-checked part and stops cleanly at the window's hard end.
 - [ ] T049 [US3] [WINDOW] Run qualification windows until every qualification-set phase has a candidate result or is explicitly BLOCKED, within the owner's window limits (T043). Evidence goes to `evidence/017/qualification/`.
 - [ ] T050 [US3] For every phase that passes on the baseline and fails on the candidate, open a CAPA via the CRE registry, attach the evidence and set `blocking_findings[].capa_id`.
