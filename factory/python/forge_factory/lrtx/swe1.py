@@ -851,9 +851,8 @@ def safety_text(ws: Path) -> str | None:
 
 def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict) -> dict:
     """results: [(group, VALID task record)]. Writes the SWE.1 work products; returns the SWR map."""
-    from ..layer import profile
-
     from ..assurance import owner_obligations as OO
+    from ..layer import profile
     from . import review as R
 
     ws = Path(ws)
@@ -988,7 +987,11 @@ def consistency(results: list[tuple[dict, dict]], cross: dict) -> list[tuple[str
                 seen[norm] = (rec["task"], r["key"])
             for e in r["effects"]:
                 ops.setdefault((e["case"], e["register"], e["field"]), []).append((rec["task"], e["op"]))
-                if e["op"] == "write" and _value(e["value"]) is not None:  # lrtx9: same write, other words
+                # lrtx9: same write, other words. CAPA-196 (WO-F014-SWE1-GPIOL-20261107-L40F): an effect with `requested` is
+                # AR-7's corner case (an out-of-range input and the field value it yields, e.g. requested 0x5 -> 0x1); it
+                # legitimately writes a value an in-range requirement also writes, so it is not a duplicate. Before, AR-7
+                # demanded it and this rule removed it again: the author's repair could never converge (REPAIR_STUCK).
+                if e["op"] == "write" and _value(e["value"]) is not None and not e.get("requested"):
                     w = (e["register"], e["field"], _value(e["value"]))
                     if w in writes and writes[w][1] != r["key"]:
                         first_task, first_key = writes[w]
