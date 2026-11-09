@@ -365,6 +365,9 @@ def structured_authors(dot: str, structured: dict, nodes: dict | None = None) ->
         if phase == "SWE.1" and structured.get("two_phase_inspection"):  # feature 018 (owner 2026-11-09)
             dot = phase1_nodes(dot, structured)
             dot = cont(dot, "swe1_author", "swe1_iq_inspect", "author", phase)
+            if nodes is not None:  # the line-product check binds every model node to a declared role (WWDGL-L44)
+                nodes["swe1_iq_inspect"] = dict(nodes["swe1_inspector"])
+                nodes["swe1_iq_rework"] = dict(nodes["swe1_author"])
         else:
             dot = cont(dot, f"swe{n}_author", f"swe{n}_author_gate", "author", phase)
     for phase in structured.get("inspect_phases", []):
