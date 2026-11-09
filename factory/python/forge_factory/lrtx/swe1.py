@@ -387,6 +387,25 @@ def groups(inv: dict) -> list[dict]:
     return out
 
 
+def sibling_rule(ws: Path, g: dict) -> str:
+    """CAPA-208: a register split at MAX_FIELDS names its sibling tasks and their fields in each task's first draft
+    (SPI LL L41N: most failed first drafts acted on a field a sibling task owns). Unsplit registers: no text."""
+    sib = [x for x in groups(inventory(ws)) if x["register"] == g["register"]]
+    if len(sib) < 2:
+        return ""
+    parts = "; ".join(f"task {x['id']}: {', '.join(x['fields'])}" for x in sib)
+    return (f" Register {g['register']} is split into {len(sib)} tasks ({parts}). This task is {g['id']}: a "
+            "requirement, effect or not_covered entry for a field of another task of this register is written only "
+            "in that task, never here, and a function that acts on such a field belongs to that task.")
+
+
+def _owner_task(ws: Path, reg: str, fld: str) -> str | None:
+    try:
+        return next((x["id"] for x in groups(inventory(ws)) if x["register"] == reg and fld in x["fields"]), None)
+    except (OSError, KeyError, ValueError):
+        return None
+
+
 # ---- packet texts -----------------------------------------------------------------------------------------------------
 def coverage_guidance(ws: Path) -> str:
     """The work order's coverage rules, from the same texts the agent prompts use (no new requirements policy)."""
@@ -491,7 +510,8 @@ def group_packet(ws: Path, g: dict, model: str, findings: list[str] | None = Non
                  "prohibitions, which are target_robot_test.") + \
              f" source_page is the RM0486 page of the cited fact ({', '.join(map(str, g['pages']))}). "
              + effect_rule(ws) + " key is a short snake_case name of the requirement. open_points lists ambiguities of "
-             "the source (or nothing). Author rules: " + REGISTER_RULES + (" " + AR_NEGATIVE if uspec_mode(ws) else ""))
+             "the source (or nothing). Author rules: " + REGISTER_RULES + (" " + AR_NEGATIVE if uspec_mode(ws) else "")
+             + sibling_rule(ws, g))
     crit = [f"every requirement's subject is exactly 'the {sysname}'", "every field of the task is covered or listed "
             "in not_covered", "every effect names a field of this task that its statement names",
             "a statement that sets, clears or writes a field has an effect for it"]
@@ -633,7 +653,9 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         for e in r["effects"]:
             reg, fld, op = e["register"], e["field"], e["op"]
             if g is not None and (reg != g["register"] or fld not in g["fields"]):
-                owner = f"the {reg} task" if reg != g["register"] else "another task of this register"
+                task = _owner_task(ws, reg, fld)  # CAPA-208: name the real task id (SPI_CR1_2, not "SPI_CR1")
+                owner = (f"task {task}" if task else
+                         f"the {reg} task" if reg != g["register"] else "another task of this register")
                 out.append(f"[{k}] acts on {reg}.{fld}, which {owner} covers: remove requirement [{k}] from this task")
                 continue
             if reg not in idx or fld not in idx[reg]["fields"]:
