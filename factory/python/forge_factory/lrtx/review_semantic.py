@@ -233,7 +233,8 @@ def adjudicate(ws: Path, item: str, claims: list[dict], facts: dict | None = Non
     return out
 
 
-RECORDED_UPSTREAM = re.compile(r"\bNOT_PROVIDED\b|\bDRAFT_TEMPLATE\b|upstream (?:status|inputs?) (?:is|are) (?:not provided|"
+RECORDED_UPSTREAM = re.compile(r"\bNOT_PROVIDED\b|\bOUT_OF_CONTEXT\b|out of context|"  # owner 2026-11-09
+                               r"\bDRAFT_TEMPLATE\b|upstream (?:status|inputs?) (?:is|are) (?:not provided|"
                                r"missing|absent)|\bPENDING\b", re.I)  # run 10: 0008B's recorded PENDING safety allocation
 
 

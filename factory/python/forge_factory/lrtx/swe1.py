@@ -895,7 +895,13 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
             open_points[ident] = origin
             opens.append(f"**{ident}** (input scope: {scope}): {text}")
     up = m.get("upstream", {}).get("status", "NOT_PROVIDED")
-    opens += [f"Upstream inputs (HSI contract, safety allocation, budgets): {up}.",
+    from ..upstream import OUT_OF_CONTEXT
+
+    ooc = up == OUT_OF_CONTEXT
+    opens += [("Upstream inputs: OUT_OF_CONTEXT - developed out of context (owner 2026-11-09): no upstream system or "
+               "software safety requirement is allocated; the upstream baseline is the reference manual (every "
+               "requirement cites its section and page) plus the work-order scope and budgets."
+               if ooc else f"Upstream inputs (HSI contract, safety allocation, budgets): {up}."),
               f"Safety allocation as stated in the manifest: {m['target'].get('safety_allocation', 'UNSPECIFIED')}.",
               *(["Safe state: no software safe state is allocated; the allocated safety safe state is outside this "
                  "ASPICE-only work order's owner scope (inspection-assessment-context)."]
@@ -949,7 +955,10 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
             f"| Budgets | {m['budgets'].get('status', '')}; flash_bytes: {m['budgets']['flash_bytes']}; static_ram_bytes: "
             f"{m['budgets']['static_ram_bytes']}; stack_bytes: {m['budgets']['stack_bytes']}; upstream.status: {up} | "
             f"{', '.join(bud_swr)} |", "",
-            "No allocation is invented: missing approved upstream inputs remain open gaps.", "",
+            ("Developed out of context (owner 2026-11-09): the upstream of every requirement is the reference-manual "
+             "section it cites (or the work-order budget); no upstream system or safety requirement is allocated, so "
+             "none is missing." if ooc else
+             "No allocation is invented: missing approved upstream inputs remain open gaps."), "",
             "## Upstream to software requirements", "", "| Upstream ID | SWR IDs |", "| --- | --- |"]
     gaps += [f"| {u} | {', '.join(s)} |" for u, s in by_up.items()]
     gaps += ["", "## Software requirements to upstream", "", "| SWR ID | Upstream ID |", "| --- | --- |"]

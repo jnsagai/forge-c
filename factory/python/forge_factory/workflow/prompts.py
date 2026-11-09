@@ -135,6 +135,15 @@ OWNER_SCOPE_NOTE = ("SWE1-01: if .forge-run/manifest.json target.hsi_contract / 
                     "scope; upstream.status NOT_PROVIDED placeholders of the optional approval template are gaps to be "
                     "recorded in traceability/upstream_gaps.md, not a failure of SWE1-01.")
 
+OUT_OF_CONTEXT_NOTE = ("SWE1-01/SWE1-05: .forge-run/manifest.json upstream.status OUT_OF_CONTEXT records the owner "
+                       "decision that this driver is developed out of context: no upstream system requirement and no "
+                       "allocated software safety requirement exist. The upstream baseline is the reference manual "
+                       "(its register and functional sections are the HSI) plus the work-order scope and budgets. "
+                       "SWE1-01 is met when that baseline is stated and every requirement cites its reference-manual "
+                       "section and page; SWE1-05 is met when every requirement traces to a reference-manual section "
+                       "(or a work-order budget) and back. The absence of upstream system requirements, of an approved "
+                       "upstream template or of a safety allocation is not a finding.")
+
 GATE_DECLARED_CHECK = ("glob .forge-run/defects/DEF-*.json: for every kind TEST defect with detected_phase {p} "
                        "(declared by the author, or by the route-gate after an upstream fix) read the CURRENT version "
                        "of each file in its test_files (it may have been corrected again after the declaration) and "

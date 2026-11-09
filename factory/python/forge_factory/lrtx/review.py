@@ -80,6 +80,14 @@ def missing_constraint_not_satisfied(ws: Path) -> bool:
         any("constraint" in str(e) for e in v.get("required_engineering_evidence") or [])
 
 
+def out_of_context(ws: Path) -> bool:
+    """The work order is developed out of context (upstream.OUT_OF_CONTEXT, owner 2026-11-09)."""
+    from ..upstream import OUT_OF_CONTEXT
+
+    m = Path(ws) / ".forge-run/manifest.json"
+    return m.is_file() and (json.loads(m.read_text()).get("upstream") or {}).get("status") == OUT_OF_CONTEXT
+
+
 def _notes(ws: Path, phase: str, item: str) -> list[str]:
     from ..layer import profile
     from ..workflow import prompts
@@ -87,6 +95,8 @@ def _notes(ws: Path, phase: str, item: str) -> list[str]:
     out = []
     if phase == "SWE.1":  # the agent inspector reads it once for all items (prompts.inspector_prompt); lrtx9: the
         out.append(prompts.OWNER_SCOPE_NOTE)  # SWE1-05 packets lacked it and failed the recorded gaps
+        if item in ("SWE1-01", "SWE1-05") and out_of_context(ws):  # owner 2026-11-09
+            out.append(prompts.OUT_OF_CONTEXT_NOTE)
         from .c_language_context import for_workspace
 
         if note := for_workspace(ws):

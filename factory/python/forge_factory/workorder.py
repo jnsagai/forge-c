@@ -248,7 +248,13 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     from .upstream import UPSTREAM_FILE, load_upstream
 
     upstream = load_upstream(example)  # human-approved HSI/safety allocation/budgets, else NOT_PROVIDED
+    from .upstream import OUT_OF_CONTEXT, out_of_context
+
+    upstream = out_of_context(upstream, layer=spec.get("layer", "LL+HAL"), purpose=purpose)  # owner 2026-11-09
     target, budgets = dict(spec["target"]), dict(spec["budgets"])
+    if upstream["status"] == OUT_OF_CONTEXT:
+        target["safety_allocation"] = ("OUT_OF_CONTEXT: no software safety requirement is allocated (driver developed "
+                                       f"out of context, purpose {purpose}, owner 2026-11-09)")
     from . import simulation_performance
 
     performance = simulation_performance.validate(spec[simulation_performance.FIELD]) \
@@ -352,7 +358,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         "unit_verification": UNIT_VERIFICATION,
         "quality": quality_block, "quality_source": quality_source,  # owner rule 2026-11-03: the order's quality
         **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
-        "upstream": {k: upstream[k] for k in ("status", "issues", "sha256")},
+        "upstream": {k: upstream[k] for k in ("status", "issues", "sha256", "context") if k in upstream},
         "scope": spec["scope"],
         "budgets": budgets,
         **({simulation_performance.FIELD: performance} if performance else {}),

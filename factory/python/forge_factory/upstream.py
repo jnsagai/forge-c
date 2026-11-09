@@ -27,6 +27,28 @@ def _placeholders(node: Any, path: str = "") -> list[str]:
     return [path] if node is None or (isinstance(node, str) and (not node.strip() or PLACEHOLDER.search(node))) else []
 
 
+# Owner 2026-11-09: "by now, it is not needed upstream requirementw for drivers, lets implement them as out of
+# context" + "they should be traceable to the reference manual". An ASPICE-only/QM driver work order without an approved
+# upstream file is developed out of context: no upstream system or software safety requirement is allocated, and the
+# upstream baseline of its requirements is the reference manual (each requirement cites its RM section and page) plus
+# the work-order scope and budgets. An approved upstream file still wins; safety work orders keep needing one.
+OUT_OF_CONTEXT = "OUT_OF_CONTEXT"
+OUT_OF_CONTEXT_PURPOSES = ("ASPICE_ONLY", "QM")
+OUT_OF_CONTEXT_LAYERS = ("LL", "HAL", "LL+HAL")
+OUT_OF_CONTEXT_DECISION = (
+    "owner 2026-11-09: driver developed out of context - no upstream system or software safety requirement is "
+    "allocated; the upstream baseline is the reference manual (every requirement traces to the RM section and page it "
+    "cites) plus the work-order scope and budgets")
+
+
+def out_of_context(upstream: dict, *, layer: str, purpose: str) -> dict:
+    """The work order's upstream status: APPROVED, OUT_OF_CONTEXT (owner decision above) or NOT_PROVIDED."""
+    if upstream["status"] == "APPROVED" or layer not in OUT_OF_CONTEXT_LAYERS or purpose not in OUT_OF_CONTEXT_PURPOSES:
+        return upstream
+    return {**upstream, "status": OUT_OF_CONTEXT, "issues": [], "template_issues": upstream["issues"],
+            "context": OUT_OF_CONTEXT_DECISION}
+
+
 def load_upstream(example: Path) -> dict:
     """{'status': 'APPROVED'|'NOT_PROVIDED', 'issues': [...], 'data': {...}|None, 'sha256': str|None}."""
     p = example / UPSTREAM_FILE
