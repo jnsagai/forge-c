@@ -1243,3 +1243,99 @@ def _visit(ws: Path, model: str, budget: dict, routed: dict[str, list[str]]) -> 
     return reply(ws, "PASS", [], budget, artifacts=amap["files"])
 
 
+
+
+# ---- feature 018: one requirement replaced on its own (two-phase inspection, phase 1) -------------------------------
+def checkpoint_set(ws: Path) -> tuple[dict, list[tuple[dict, dict]], dict]:
+    """The assembled set's task records read from their checkpoints (every author task VALID), so that a single
+    requirement can be replaced and the set re-assembled without any author call."""
+    ws = Path(ws)
+    inv = inventory(ws)
+
+    def load(task: str) -> dict | None:
+        p = V._ckpt(ws, "SWE.1", task)
+        return json.loads(p.read_text()) if p.is_file() else None
+    results = [(g, load(f"requirements:{g['id']}")) for g in groups(inv)]
+    cross = load("requirements:crosscutting")
+    if any(r is None or r.get("status") != "VALID" or r.get("doc") is None for _g, r in results) or \
+            not cross or cross.get("status") != "VALID" or cross.get("doc") is None:
+        raise ValueError("PHASE1_SET_NOT_ASSEMBLED")
+    return inv, results, cross
+
+
+def requirement_hashes(ws: Path, results: list[tuple[dict, dict]], cross: dict) -> dict[tuple[str, str], str]:
+    """(task, key) -> sha256 of the canonical requirement object, for every requirement of the set."""
+    out = {}
+    for rec in [r for _g, r in results] + [cross]:
+        for r in rec["doc"]["requirements"]:
+            out[(rec["task"], r["key"])] = sha256_bytes(canonical_json(r))
+    for r in budget_requirements(ws, system_name(ws)):
+        out[("budgets", r["key"])] = sha256_bytes(canonical_json(r))
+    return out
+
+
+def splice(ws: Path, task: str, key: str, new: dict) -> tuple[list[str], tuple | None]:
+    """The findings of the set with requirement `key` of `task` replaced by `new` (nothing is written): the task's
+    own validator, the cross-task consistency rules and the key identity. Returns (errors, (inv, results, cross))."""
+    from ..assurance.hardware import index
+
+    ws = Path(ws)
+    if not isinstance(new, dict) or new.get("key") != key:
+        return [f"[{(new or {}).get('key')}] the requirement keeps its key '{key}'"], None
+    inv, results, cross = checkpoint_set(ws)
+    sysname, idx = system_name(ws), index(ws / "inputs/sections/RM0486")
+
+    def put(rec: dict) -> dict:
+        reqs = rec["doc"]["requirements"]
+        if sum(r["key"] == key for r in reqs) != 1:
+            raise ValueError(f"PHASE1_KEY_NOT_UNIQUE:{task}:{key}")
+        return {**rec, "doc": {**rec["doc"], "requirements": [new if r["key"] == key else r for r in reqs]}}
+    if task == "requirements:crosscutting":
+        cross = put(cross)
+        functional = [r for _g, rec in results for r in rec["doc"]["requirements"]]
+        errs = validate_group(ws, cross["doc"], None, sysname, idx) + crosscut_obligation_findings(
+            ws, cross["doc"], functional)
+    else:
+        if not any(rec["task"] == task for _g, rec in results):
+            return [f"PHASE1_TASK_NOT_AUTHORED:{task}"], None
+        results = [(g, put(rec) if rec["task"] == task else rec) for g, rec in results]
+        g, rec = next((g, rec) for g, rec in results if rec["task"] == task)
+        errs = validate_group(ws, rec["doc"], g, sysname, idx)
+    errs += [f"{t}: {f}" for t, f in consistency(results, cross)]
+    return errs, (inv, results, cross)
+
+
+def replace_requirement(ws: Path, task: str, key: str, new: dict) -> dict:
+    """Feature 018 (owner 2026-11-09: rework "requirement per requirement without modifying others"): write `new` in
+    place of requirement `key` of `task` and re-assemble the set from the task checkpoints. Every other requirement
+    stays byte-identical, verified before the change is kept; the set's own deterministic checks must not get worse.
+    Raises ValueError (nothing kept) otherwise. Returns the new assembly map."""
+    ws = Path(ws)
+    errs, state = splice(ws, task, key, new)
+    if errs:
+        raise ValueError("PHASE1_SPLICE_INVALID:" + errs[0][:300])
+    inv, results, cross = state
+    _inv0, results0, cross0 = checkpoint_set(ws)
+    before = requirement_hashes(ws, results0, cross0)
+    checks_before = set(self_check(ws))
+    ck = V._ckpt(ws, "SWE.1", task)
+    old_raw = ck.read_text()
+    rec = next(r for r in [r for _g, r in results] + [cross] if r["task"] == task)
+    old_obj = next(r for r in json.loads(old_raw)["doc"]["requirements"] if r["key"] == key)
+    rec = {**rec, "phase1_rework": [*(rec.get("phase1_rework") or []),
+                                    {"key": key, "at": utc_now(), "before": sha256_bytes(canonical_json(old_obj)),
+                                     "after": sha256_bytes(canonical_json(new))}]}
+    ck.write_text(json.dumps(rec, indent=1, sort_keys=True) + "\n")
+    results = [(g, rec if r["task"] == task else r) for g, r in results]
+    cross = rec if task == "requirements:crosscutting" else cross
+    amap = assemble(ws, inv, results, cross)
+    after = requirement_hashes(ws, results, cross)
+    others_changed = [k for k in before if k != (task, key) and before[k] != after.get(k)]
+    new_checks = sorted(set(self_check(ws)) - checks_before)
+    if others_changed or set(after) != set(before) or new_checks:
+        ck.write_text(old_raw)  # restore: the set is re-assembled exactly as it was
+        assemble(ws, inv, [(g, json.loads(old_raw) if r["task"] == task else r) for g, r in results],
+                 json.loads(old_raw) if task == "requirements:crosscutting" else cross)
+        raise ValueError("PHASE1_REFUSED_OTHER_CHANGED" if others_changed or set(after) != set(before)
+                         else "PHASE1_SELF_CHECK_WORSE:" + new_checks[0][:200])
+    return amap

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "forge-c/swe1-individual-verdict/1",
+  "title": "Phase-1 inspector answer for one requirement (structured output schema)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["requirement_id", "findings"],
+  "properties": {
+    "requirement_id": {"type": "string", "pattern": "^SWR-[0-9]{3,}$"},
+    "findings": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["quality_id", "severity", "evidence", "required_action", "input_uncertainty"],
+        "properties": {
+          "quality_id": {"type": "string", "pattern": "^IQ-(0[1-9]|1[0-2])$"},
+          "severity": {"enum": ["BLOCKING", "CORRECTABLE", "EDITORIAL", "N/A"]},
+          "evidence": {"type": "string", "minLength": 1, "maxLength": 400},
+          "required_action": {"type": "string", "maxLength": 300},
+          "input_uncertainty": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}
