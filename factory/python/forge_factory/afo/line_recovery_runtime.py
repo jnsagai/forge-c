@@ -148,8 +148,14 @@ def launch(job, *, cfg=None, host=None, procs=None, authorization=None):
                 raise R.BindingRefused("LINE_NATIVE_TRANSPORT_GATEWAY_NOT_ENABLED")
             if not permitted(job):
                 raise R.BindingRefused("LINE_RECOVERY_NOT_AUTHORIZED")
+            # CAPA-198 (L40J): under managed serving lrtx.stack.serve swaps only through the line stack lifecycle;
+            # the role job's own serve authority (job, nonce, model) lets it be served before its native launch.
+            from . import line_stack_lifecycle as LS
+
+            payload, payload_sha256 = LS.write_agent_payload(job, logs)
+            serve_env = {**env, LS.FILE: str(payload), LS.SHA: payload_sha256, "FORGE_OPERATIONS_PROFILE": job["profile"]}
             rc, _ = host.stack(["exec", "--", "python", "-m", "forge_factory.lrtx.stack", "serve", "--model", job["model"]],
-                               env=env, cwd=cwd, log=logs / "serve.log")
+                               env=serve_env, cwd=cwd, log=logs / "serve.log")
             if rc:
                 raise R.BindingRefused("LINE_RECOVERY_MODEL_SERVE_FAILED")
             port = profile["deployment"]["ports"]["llama"]

@@ -413,6 +413,13 @@ class LaunchNotStarted(RuntimeError):
             and re.fullmatch(r"[A-Z][A-Z0-9_]{0,127}", cause.code)
         ):
             self.failure_type = cause.code
+        # CAPA-198: a line binding refusal carries its typed code as its only argument (L40J recorded just
+        # "BindingRefused" for LINE_RECOVERY_MODEL_SERVE_FAILED).
+        from .line_recovery import BindingRefused
+
+        if (isinstance(cause, BindingRefused) and len(cause.args) == 1 and isinstance(cause.args[0], str)
+                and re.fullmatch(r"[A-Z][A-Z0-9_]{0,127}", cause.args[0])):
+            self.failure_type = cause.args[0]
 
 
 def launch(job: dict) -> str:

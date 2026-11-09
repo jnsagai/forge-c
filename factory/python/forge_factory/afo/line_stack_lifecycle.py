@@ -15,10 +15,48 @@ from .durable import Refused, canonical, digest
 
 FILE = "FORGE_LINE_STACK_PAYLOAD"
 SHA = "FORGE_LINE_STACK_PAYLOAD_SHA256"
+# CAPA-198 (WO-F014-SWE1-GPIOL-20261107-L40J): a claimed line recovery role job (planner/maintainer) serves its own
+# model before its native launch. Under managed serving lrtx.stack.serve swaps only through this lifecycle, and the
+# role launcher had no payload, so after a product run ended on the inspector model the planner was never served
+# (MODEL_SWAP_REFUSED_MANAGED_SERVING -> LOCAL_DIAGNOSIS_FAILED). The agent payload names one job, nonce and model;
+# everything else is re-derived from the line store and the role's own authorization, and it permits only `serve`.
+AGENT_SCHEMA = "forge-c/line-stack-agent-serve/1"
+AGENT_ROLES = ("afo-recovery-planner", "afo-factory-maintainer")
 
 
 def selected():
     return bool(os.environ.get(FILE) or os.environ.get(SHA))
+
+
+def write_agent_payload(job, directory):
+    """The serve authority of one claimed role job (written by its launcher; immutable content, sha in the env)."""
+    import hashlib
+
+    value = {"schema": AGENT_SCHEMA, "job_id": job["job_id"], "order_id": job["order_id"], "nonce": job["nonce"],
+             "model": job["model"]}
+    raw = canonical(value)
+    path = (Path(directory) / "stack-serve-payload.json").resolve()
+    path.write_bytes(raw)
+    return path, hashlib.sha256(raw).hexdigest()
+
+
+def agent_payload():
+    """The agent payload when the selected payload is one; a product payload (other schema) returns None."""
+    import hashlib
+
+    path, sha = os.environ.get(FILE), os.environ.get(SHA)
+    if not path or not Path(path).is_absolute():
+        return None
+    try:
+        raw = Path(path).read_bytes()
+        value = json.loads(raw)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(value, dict) or value.get("schema") != AGENT_SCHEMA:
+        return None
+    if hashlib.sha256(raw).hexdigest() != sha:
+        raise Refused("LINE_STACK_AGENT_PAYLOAD_INVALID")
+    return value
 
 
 def _descendant(pid, ancestor, start):
@@ -39,15 +77,28 @@ def _descendant(pid, ancestor, start):
     return False
 
 
-def _bound(s):
-    from . import line_recovery_control as C
-    from . import line_recovery_product as P
-    from .execution_lifecycle import Executions
+def _with_cleanup_records(effect_guard, store, job, execution, root):
+    effect_guard.startup_binding = {k: job[k] for k in ("job_id", "nonce", "mission_id", "operations_epoch")}
+    effect_guard.startup_binding["lease_epoch"] = execution["lease_epoch"]
+
+    def failure_record(instance):
+        return {"schema": "forge-c/line-startup-cleanup-unknown/1", "binding": effect_guard.startup_binding,
+                "root": str(root), "profile": job["profile"], "profile_sha256": job["profile_sha256"],
+                "provider_instance": instance, "provider_instance_sha256": digest(instance)}
+
+    def record_failure(instance):
+        value = failure_record(instance)
+        with store.tx() as c:
+            c.execute("INSERT OR IGNORE INTO afo_execution_evidence VALUES (?,?,?,?)", (job["job_id"],
+                      "LINE_STARTUP_CLEANUP_UNKNOWN:" + digest(value), canonical(value).decode(), digest(value)))
+
+    effect_guard.failure_record = failure_record
+    effect_guard.record_cleanup_unknown = record_failure
+    return effect_guard
+
+
+def _scope(s):
     from .line_launcher import LineConfig
-    from .local_agent import authorized, request_for
-    from .operations import Intent
-    from .policy import load
-    from .queue import Store
 
     cfg = LineConfig.from_env()
     root = s["root"].resolve()
@@ -56,6 +107,72 @@ def _bound(s):
             or cfg.stack_root.resolve() != root
             or Path(os.environ.get("FORGE_STATE_DIR", "/")).resolve() != root / "state"):
         raise Refused("LINE_STACK_SCOPE_MISMATCH")
+    return cfg, root
+
+
+def _quiescent_owner(store, job, execution):
+    with store.tx() as c:
+        owner = c.execute("SELECT holder,epoch FROM afo_resource_ownership WHERE resource='inference'").fetchone()
+        held = c.execute(
+            "SELECT record FROM afo_execution_liveness WHERE json_extract(record,'$.resource_lease')='HELD'"
+        ).fetchall()
+        requests = c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone()
+    if (not owner or tuple(owner) != (job["job_id"], execution["lease_epoch"])
+            or len(held) != 1 or json.loads(held[0][0])["job_id"] != job["job_id"] or requests):
+        raise Refused("LINE_STACK_RESOURCE_OR_REQUEST_NOT_QUIESCENT")
+
+
+def _bound_agent(s, value):
+    """CAPA-198: the same fence as a product execution, bound to a claimed line recovery role job instead."""
+    from . import local_agent as L
+    from .execution_lifecycle import Executions
+    from .line_recovery_runtime import authorize
+    from .operations import Intent
+    from .queue import Store
+
+    cfg, root = _scope(s)
+    store = Store(root / "state/supervisor/line-queue.sqlite3", must_exist=True)
+
+    def current():
+        rows = [j for j in L.records(store, value.get("order_id")) if j.get("job_id") == value.get("job_id")]
+        return rows[0] if len(rows) == 1 else None
+
+    job = current()
+    if (not job or job.get("role") not in AGENT_ROLES or job.get("nonce") != value.get("nonce")
+            or job.get("model") != value.get("model") or s["profile"]["id"] != job.get("profile")
+            or s["profile"]["_sha256"] != job.get("profile_sha256") or not authorize(job, store)):
+        raise Refused("LINE_STACK_AGENT_AUTHORITY_OR_EXECUTION_FENCED")
+    intent_path = (job.get("native_context") or {}).get("FORGE_OPERATIONS_INTENT")
+    execution = Executions(store).get(job["job_id"])
+    if (not intent_path or os.environ.get("FORGE_OPERATIONS_INTENT") != intent_path or not execution
+            or execution["launch_nonce"] != job["nonce"] or execution["resource_lease"] != "HELD"
+            or execution["admission_state"] != "DISPATCH_INTENT_RECORDED" or execution["native_run_ids"]
+            or execution["task_outcome"] != "ACTIVE"):
+        raise Refused("LINE_STACK_AGENT_AUTHORITY_OR_EXECUTION_FENCED")
+    _quiescent_owner(store, job, execution)
+
+    def effect_guard():
+        fresh = current()
+        if fresh != job or not authorize(fresh, store):
+            raise Refused("LINE_STACK_EFFECT_AUTHORITY_EXPIRED_OR_CHANGED")
+
+    return cfg, store, job, execution, Intent(intent_path), _with_cleanup_records(effect_guard, store, job,
+                                                                                   execution, root)
+
+
+def _bound(s):
+    agent = agent_payload()
+    if agent is not None:
+        return _bound_agent(s, agent)
+    from . import line_recovery_control as C
+    from . import line_recovery_product as P
+    from .execution_lifecycle import Executions
+    from .local_agent import authorized, request_for
+    from .operations import Intent
+    from .policy import load
+    from .queue import Store
+
+    cfg, root = _scope(s)
     value = P.payload(os.environ.get(FILE), os.environ.get(SHA))
     store = Store(root / "state/supervisor/line-queue.sqlite3", must_exist=True)
     job, row, spec = P._job_for_payload(store, value)
@@ -77,15 +194,7 @@ def _bound(s):
             or execution["resource_lease"] != "HELD" or execution["authorization_state"] != "VALID"
             or execution["task_outcome"] != "ACTIVE"):
         raise Refused("LINE_STACK_AUTHORITY_OR_EXECUTION_FENCED")
-    with store.tx() as c:
-        owner = c.execute("SELECT holder,epoch FROM afo_resource_ownership WHERE resource='inference'").fetchone()
-        held = c.execute(
-            "SELECT record FROM afo_execution_liveness WHERE json_extract(record,'$.resource_lease')='HELD'"
-        ).fetchall()
-        requests = c.execute("SELECT 1 FROM afo_request_ledger WHERE state!='QUIESCENT' LIMIT 1").fetchone()
-    if (not owner or tuple(owner) != (job["job_id"], execution["lease_epoch"])
-            or len(held) != 1 or json.loads(held[0][0])["job_id"] != job["job_id"] or requests):
-        raise Refused("LINE_STACK_RESOURCE_OR_REQUEST_NOT_QUIESCENT")
+    _quiescent_owner(store, job, execution)
     from .line_recovery_worker import bound_order, metadata
 
     _, worker, _, _ = metadata(store, value["command_id"])
@@ -113,23 +222,7 @@ def _bound(s):
                 or not time.time() < job["deadline_epoch"] or not authorized(row, current_policy, job["model"])):
             raise Refused("LINE_STACK_EFFECT_AUTHORITY_EXPIRED_OR_CHANGED")
 
-    effect_guard.startup_binding = {k: job[k] for k in ("job_id", "nonce", "mission_id", "operations_epoch")}
-    effect_guard.startup_binding["lease_epoch"] = execution["lease_epoch"]
-
-    def failure_record(instance):
-        return {"schema": "forge-c/line-startup-cleanup-unknown/1", "binding": effect_guard.startup_binding,
-                "root": str(root), "profile": job["profile"], "profile_sha256": job["profile_sha256"],
-                "provider_instance": instance, "provider_instance_sha256": digest(instance)}
-
-    def record_failure(instance):
-        value = failure_record(instance)
-        with store.tx() as c:
-            c.execute("INSERT OR IGNORE INTO afo_execution_evidence VALUES (?,?,?,?)", (job["job_id"],
-                      "LINE_STARTUP_CLEANUP_UNKNOWN:" + digest(value), canonical(value).decode(), digest(value)))
-
-    effect_guard.failure_record = failure_record
-    effect_guard.record_cleanup_unknown = record_failure
-    return cfg, store, job, execution, intent, effect_guard
+    return cfg, store, job, execution, intent, _with_cleanup_records(effect_guard, store, job, execution, root)
 
 
 def _observation_host(cfg, s):
@@ -271,6 +364,8 @@ def fenced(s, action, *, model=None, workspace=None):
     from .operations import Intent
 
     cfg, store, job, execution, intent, effect_guard = _bound(s)
+    if agent_payload() is not None and (action != "serve" or workspace is not None):
+        raise Refused("LINE_STACK_AGENT_ACTION_UNDECLARED")  # CAPA-198: a role job's authority is a pre-launch serve
     with intent.lock():
         current = Intent(intent.path).read()
         if current["mode"] != "RUNNING" or current["epoch"] != job["operations_epoch"]:
@@ -422,6 +517,12 @@ def serve(s, model, workspace=None):
     from ..lrtx import provider_process as provider
     from ..lrtx import stack
 
+    if agent_payload() is not None:  # CAPA-198: nothing to swap is nothing to fence (as stack.serve's managed no-op)
+        saved = s["root"] / "run/services.json"
+        current = ((json.loads(saved.read_text()) if saved.is_file() else {}).get("processes") or {}).get(
+            "llama_server") or {}
+        if current.get("model") == model:
+            return {"model_swap": "NOT_NEEDED", "model": model}
     with fenced(s, "serve", model=model, workspace=workspace) as guard, stack.line_effect_guard(guard):
         instance = stack.serving_instance(s)
         provider.require_live_instance(instance)
