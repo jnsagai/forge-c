@@ -653,8 +653,9 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
                 if v is None or not 0 <= v < (1 << width):
                     out.append(f"[{k}] effect {e['case']}: value {e['value']!r} must be a number that fits "
                                f"{reg}.{fld} ({width} bits)")
-                elif RC.requested_problem(e, width):
-                    out.append(f"[{k}] effect {e['case']}: {RC.requested_problem(e, width)}")
+                elif RC.requested_problem(e, width, idx[reg]["fields"][fld]["lsb"]):
+                    out.append(f"[{k}] effect {e['case']}: "
+                               f"{RC.requested_problem(e, width, idx[reg]['fields'][fld]['lsb'])}")
                 elif e.get("requested") in (None, ""):
                     # CAPA-120: the verification calls with an input above the field that truncates to this value,
                     # but the case records only the value - SWE.2 would then have to pass the truncated value

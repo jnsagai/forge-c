@@ -108,8 +108,8 @@ def check_effects(ws: Path, layer: str = "HAL") -> list[str]:
             if v is None or not 0 <= v < (1 << width):
                 out.append(f"CONTRACT_WRITE_VALUE:{where}:{e.get('value')!r} (an integer that fits {reg}.{fld}, "
                            f"{width} bits)")
-            elif requested_problem(e, width):
-                out.append(f"CONTRACT_WRITE_REQUESTED:{where}:{requested_problem(e, width)}")
+            elif requested_problem(e, width, r["fields"][fld]["lsb"]):
+                out.append(f"CONTRACT_WRITE_REQUESTED:{where}:{requested_problem(e, width, r['fields'][fld]['lsb'])}")
         elif swr in reqs and f"{reg}.{fld}" not in reqs[swr] and not (reg in reqs[swr] and fld in reqs[swr]):
             out.append(f"CONTRACT_FIELD_NOT_IN_SWR:{where}:{reg}.{fld} is not named by {swr}")
         ready = e.get("ready")
@@ -156,11 +156,15 @@ def _value(v) -> int | None:
         return None
 
 
-def requested_problem(e: dict, width: int | None) -> str | None:
+def requested_problem(e: dict, width: int | None, lsb: int = 0) -> str | None:
     """CAPA-120 (run WO-F014-CMP-SWE2-IWDGG-20261102-08): a write may record the caller's requested input apart from the
     field value it leaves, for a truncating write ("write only bits 11:0 of the requested value": requested 0x1234,
     value 0x234). Absent or "" means the call passes the value itself. The requested input is a 32-bit number that
-    does not fit the field and whose low `width` bits are the value; None when the entry is consistent."""
+    does not fit the field and whose low `width` bits are the value; None when the entry is consistent.
+
+    WO-F014-SWE1-WWDGL-20261109-L44E (SWR-006): an ST LL setter often takes a constant already at the field's position
+    (LL_WWDG_SetPrescaler: MODIFY_REG(CFR, WDGTB, Prescaler); requested 0x5000 leaves WDGTB = 0x2). For a field above
+    bit 0 (`lsb`) the value may also be the requested input's bits at the field position."""
     r = e.get("requested")
     if r in (None, ""):
         return None
@@ -174,8 +178,12 @@ def requested_problem(e: dict, width: int | None) -> str | None:
     low = rv & ((1 << width) - 1)
     if rv < (1 << width):
         return f'requested {r!r} fits the {width}-bit field: write it as the value and leave requested ""'
-    if v != low:
-        return f"value {e.get('value')!r} must be the low {width} bits of requested {r!r} (0x{low:X})"
+    placed = (rv >> lsb) & ((1 << width) - 1) if lsb else None
+    if v != low and v != placed:
+        if placed is None:
+            return f"value {e.get('value')!r} must be the low {width} bits of requested {r!r} (0x{low:X})"
+        return (f"value {e.get('value')!r} must be the low {width} bits of requested {r!r} (0x{low:X}) or, for a "
+                f"constant at the field position (bits {lsb + width - 1}:{lsb}), those bits (0x{placed:X})")
     return None
 
 
@@ -283,10 +291,8 @@ def check_compiles(ws: Path, include_dirs: list[Path], api_header: str) -> list[
     cs, notes = cases(ws)
     if not cs:
         return []
-    from ..brownfield import delivered_paths, is_brownfield, manifest_of
+    from ..brownfield import cmsis, delivered_paths, is_brownfield, manifest_of
     from ..layer import instance_flags, ll_instance
-
-    from ..brownfield import cmsis
 
     m = manifest_of(ws)
     compiler, extra, headers = ["gcc", "-std=c99"], [], [api_header]

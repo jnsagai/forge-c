@@ -189,6 +189,14 @@ def _scope_text(ws: Path) -> str:
     return " | ".join(m.get("scope") or [])
 
 
+# WO-F014-SWE1-WWDGL-20261109-L44E (SWR-017): the register-field convention made the inspector ask a cross-cutting
+# requirement to name WWDG_SR.EWIF; the consistency rule then refused the rework (a cross-cutting requirement may not act
+# on a register a register task covers), so the requirement could never converge.
+CROSSCUT_CONVENTION = ("this is a cross-cutting requirement (reset/startup behaviour, failure handling, rules for all "
+                       "functions): it states a rule over the driver and must NOT name a register field that a register "
+                       "task covers - never ask it to name one.")
+
+
 def iq_packet(ws: Path, ref: dict, model: str, sources: list[dict], findings=None, previous=None) -> dict:
     from ..workflow import prompts
     from . import review as R
@@ -209,8 +217,9 @@ def iq_packet(ws: Path, ref: dict, model: str, sources: list[dict], findings=Non
              "input_uncertainty true when the defect is a missing or contradictory input rather than the author's. "
              "A requirement without defects has an empty findings list. Project conventions (not defects): EARS with "
              f"exactly one 'shall' and the subject 'the {sysname}'; source_page is the RM0486 page of the cited fact; "
-             "requirements of a header-only LL driver name register fields as REGISTER.FIELD. Work-order scope: "
-             + _scope_text(ws))
+             + (CROSSCUT_CONVENTION if ref["task"] == "requirements:crosscutting" else
+                "requirements of a header-only LL driver name register fields as REGISTER.FIELD.")
+             + " Work-order scope: " + _scope_text(ws))
     if R.out_of_context(ws):
         instr += " " + prompts.OUT_OF_CONTEXT_NOTE
     art = [{"path": "lrtx:requirement", "text": json.dumps(ref["obj"], indent=1, sort_keys=True)},
@@ -259,6 +268,8 @@ def rework_packet(ws: Path, ref: dict, model: str, sources: list[dict], fixes: l
              f"If..then), exactly one 'shall', the subject 'the {sysname}', and ends with a period; name fields as "
              "REGISTER.FIELD; source_page is the RM0486 page of the cited fact; verification states the test and its "
              "pass criterion ('... passes when ...'); " + swe1.effect_rule(ws) + " Author rules: " + swe1.REGISTER_RULES
+             + (" " + CROSSCUT_CONVENTION.replace("never ask it to name one", "do not add one")
+                if ref["task"] == "requirements:crosscutting" else "")
              + " INSPECTION FINDINGS TO RESOLVE: " + " | ".join(fixes) + " Work-order scope: " + _scope_text(ws))
     art = [{"path": "lrtx:requirement", "text": json.dumps(ref["obj"], indent=1, sort_keys=True)},
            {"path": "lrtx:task_requirements",
