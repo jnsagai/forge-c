@@ -272,7 +272,7 @@ def continuation(dot: str, node: str, gate_node: str, step: str, phase: str, str
         return dot
     run, t, box = runner_cmd(), structured.get("timeout_s", 3600), int(structured.get("visit_time_s", 1200))
     chk, more = f"{node}_cont", f"{node}_more"
-    model = structured.get("inspector_model" if step == "inspect" else "author_model") or structured["model"]
+    model = structured.get("inspector_model" if step in ("inspect", "iq-inspect") else "author_model") or structured["model"]
     cmd = f"{run} {step} --phase {phase} --workspace . --model {model} --time-budget {box} --resume"
     edge = f"  {node} -> {gate_node}\n"
     if edge not in dot:
@@ -284,6 +284,38 @@ def continuation(dot: str, node: str, gate_node: str, step: str, phase: str, str
         f'max_visits={CONTINUATION_MAX_VISITS}, timeout="{t}s", script="{_q(cmd)}"]',
         f"  {node} -> {chk}", f'  {chk} -> {more} [condition="outcome=succeeded"]', f"  {chk} -> {gate_node}",
         f"  {more} -> {chk}"]) + "\n", 1)
+
+
+def phase1_nodes(dot: str, structured: dict) -> str:
+    """Feature 018 (owner 2026-11-09): SWE.1 phase 1 between the author and its freeze gate - every requirement is
+    inspected on its own (inspector model) and a flagged one is reworked alone (author model) until none needs rework:
+      swe1_author -> swe1_iq_inspect -> swe1_iq_check -[rework]-> swe1_iq_rework -> swe1_iq_inspect
+                                        swe1_iq_check -[done]-> swe1_author_gate
+    The rounds are bounded in code (per requirement); the nodes' visit limits never use the phase's rework budget."""
+    run, t, box = runner_cmd(), structured.get("timeout_s", 3600), int(structured.get("visit_time_s", 1200))
+    am = structured.get("author_model") or structured["model"]
+    im = structured.get("inspector_model") or structured["model"]
+    edge = "  swe1_author -> swe1_author_gate\n"
+    if edge not in dot:
+        raise ValueError("STRUCTURED_EDGE_MISSING:swe1_author->swe1_author_gate")
+    ins = f"{run} iq-inspect --phase SWE.1 --workspace . --model {im} --time-budget {box}"
+    rew = f"{run} iq-rework --phase SWE.1 --workspace . --model {am} --time-budget {box}"
+    chk = f"{run} iq-check --phase SWE.1 --workspace ."
+    v = CONTINUATION_MAX_VISITS
+    dot = dot.replace(edge, "\n".join([
+        "  swe1_author -> swe1_iq_inspect",
+        f'  swe1_iq_inspect [shape=parallelogram, label="SWE.1 phase 1: inspect each requirement on its own", '
+        f'max_visits={v}, timeout="{t}s", script="{_q(ins)}"]',
+        "  swe1_iq_inspect -> swe1_iq_check",
+        f'  swe1_iq_check [shape=parallelogram, label="SWE.1 phase 1: requirement rework pending check", '
+        f'max_visits={v}, script="{_q(chk)}"]',
+        '  swe1_iq_check -> swe1_iq_rework [condition="outcome=succeeded"]',
+        "  swe1_iq_check -> swe1_author_gate",
+        f'  swe1_iq_rework [shape=parallelogram, label="SWE.1 phase 1: rework each flagged requirement alone", '
+        f'max_visits={v}, timeout="{t}s", script="{_q(rew)}"]',
+        "  swe1_iq_rework -> swe1_iq_inspect"]) + "\n", 1)
+    dot = continuation(dot, "swe1_iq_inspect", "swe1_iq_check", "iq-inspect", "SWE.1", structured)
+    return continuation(dot, "swe1_iq_rework", "swe1_iq_inspect", "iq-rework", "SWE.1", structured)
 
 
 def structured_authors(dot: str, structured: dict, nodes: dict | None = None) -> str:
@@ -330,7 +362,11 @@ def structured_authors(dot: str, structured: dict, nodes: dict | None = None) ->
                    f"{run} author --phase {phase} --workspace . --model {am} --time-budget {box}", t)
         dot = pipe(dot, f"swe{n}_author_gate", f"swe{n}_author", f"{phase} freeze gate",
                    f".forge-run/lrtx/{phase}/reply.json", phase, "author")
-        dot = cont(dot, f"swe{n}_author", f"swe{n}_author_gate", "author", phase)
+        if phase == "SWE.1" and structured.get("two_phase_inspection"):  # feature 018 (owner 2026-11-09)
+            dot = phase1_nodes(dot, structured)
+            dot = cont(dot, "swe1_author", "swe1_iq_inspect", "author", phase)
+        else:
+            dot = cont(dot, f"swe{n}_author", f"swe{n}_author_gate", "author", phase)
     for phase in structured.get("inspect_phases", []):
         n = phase[-1]
         dot = swap(dot, f"swe{n}_inspector", f"{phase} structured inspector (local profile)",
@@ -405,9 +441,9 @@ def serve_swaps(dot: str, structured: dict, nodes: dict | None = None) -> str:
         dot = dot[:start] + text + dot[end:]
     models: dict[str, str] = {}
     for _st, _en, _i, name, attrs in statements(dot):
-        if "forge_factory.lrtx.runner inspect " in attrs:
+        if re.search(r"forge_factory\.lrtx\.runner (?:inspect|iq-inspect) ", attrs):
             models[name] = im
-        elif re.search(r"forge_factory\.lrtx\.runner (?:author|code|tests) ", attrs):
+        elif re.search(r"forge_factory\.lrtx\.runner (?:author|code|tests|iq-rework) ", attrs):
             models[name] = am
     for name in native_agent_nodes(dot):
         models.setdefault(name, im if name in native_inspectors else structured["model"])

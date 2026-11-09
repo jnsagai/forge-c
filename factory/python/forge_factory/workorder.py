@@ -777,7 +777,8 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         return None
     from .lrtx.profile import load
 
-    st = load(local["id"]).get("structured") or {}
+    prof = load(local["id"])
+    st = prof.get("structured") or {}
     layer = manifest.get("layer", "LL+HAL")
     phases = (st.get("phases_by_layer") or {}).get(layer) or []
     inspect = (st.get("inspect_phases_by_layer") or {}).get(layer) or []
@@ -804,6 +805,10 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
     }
     if int(st.get("visit_time_s", 1200)) > MAX_VISIT_TIME_S:
         out["visit_time_requested_s"] = int(st["visit_time_s"])
+    from .lrtx.swe1_quality import enabled as two_phase_enabled
+
+    if two_phase_enabled(prof) and "SWE.1" in phases and "SWE.1" in inspect:  # feature 018 (owner 2026-11-09)
+        out["two_phase_inspection"] = True
     if st.get("role_models"):  # in-run model swap (owner 2026-10-31): author and inspector models per role
         out["author_model"] = st["role_models"]["author"]
         out["inspector_model"] = st["role_models"]["inspector"]

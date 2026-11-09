@@ -246,13 +246,19 @@ def inspector_sampling(ws: Path, model: str) -> dict | None:
 
 
 def item_packet(ws: Path, phase: str, item: dict, bl: dict, srcs: list[dict], model: str, findings=None,
-                previous=None, lessons: list[dict] | None = None) -> dict:
+                previous=None, lessons: list[dict] | None = None, quality: list[str] | None = None) -> dict:
     instr = (f"Inspect checklist item {item['id']} of {phase} on the frozen baseline {bl['baseline_id']} (hash "
              f"{bl['baseline_hash'][:16]}). Criterion (full text): {' '.join(str(item['criterion']).split())} "
              "Judge ONLY this criterion, ONLY from the SOURCES below (the frozen work products and the work-order "
              "context). verdict PASS only when the evidence satisfies the whole criterion; otherwise FAIL with one "
              "concrete finding per problem that names the requirement, section or file it concerns. Do not judge other "
              "criteria. evidence_checked lists the source paths you used. " + " ".join(_notes(ws, phase, item["id"])))
+    if quality:  # feature 018: set-quality and carried per-requirement findings that belong to this item
+        instr += (" QUALITY FINDINGS FOR THIS ITEM (Forge-C SWE.1 quality guideline: set-quality criteria judged on "
+                  "this baseline, and individual-quality findings that requirements kept after their own rework): "
+                  + " | ".join(quality) + " Check each against the SOURCES: FAIL this item with a concrete finding for "
+                  "every one that holds; ignore one the sources refute. PASS only when none holds and the criterion is "
+                  "otherwise met.")
     ref = lesson_source(lessons or [])
     if ref:  # reference data with provenance, after the frozen work products; without lessons the packet is unchanged
         srcs = [*srcs, ref]
@@ -355,6 +361,100 @@ def validate_verdict(doc: dict, paths: set[str], ws: Path | None = None, phase: 
     return out
 
 
+# ---- feature 018: the set phase's quality criteria (owner 2026-11-09) ------------------------------------------------
+# The SWE.1 checklist stays the gate (SWE1-01..08); each set-quality criterion of the guideline is judged over the whole
+# set first and its actionable findings are handed to the checklist item they belong to (guideline section 6 / the
+# item's criterion). Requirements that kept individual-quality findings after phase 1 go to SWE1-02.
+SQ_ITEMS = {"SQ-01": "SWE1-05", "SQ-02": "SWE1-03", "SQ-03": "SWE1-04", "SQ-04": "SWE1-02", "SQ-05": "SWE1-02",
+            "SQ-06": "SWE1-05", "SQ-07": "SWE1-02", "SQ-08": "SWE1-03", "SQ-09": "SWE1-01", "SQ-10": "SWE1-06"}
+CARRIED_ITEM = "SWE1-02"
+PHASE1_SOURCE = "lrtx:phase1-summary"
+SET_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["findings", "evidence_checked"],
+              "properties": {"findings": {"type": "array", "maxItems": 20, "items": {
+                  "type": "object", "additionalProperties": False,
+                  "required": ["requirement_id", "severity", "evidence", "required_action", "input_uncertainty"],
+                  "properties": {"requirement_id": {"type": "string", "pattern": "^(SWR-[0-9]{3,}|SET)$"},
+                                 "severity": {"type": "string", "enum": ["BLOCKING", "CORRECTABLE", "EDITORIAL", "N/A"]},
+                                 "evidence": {"type": "string", "minLength": 1, "maxLength": 400},
+                                 "required_action": {"type": "string", "maxLength": 300},
+                                 "input_uncertainty": {"type": "boolean"}}}},
+                  "evidence_checked": {"type": "array", "minItems": 1, "items": {"type": "string"}}}}
+
+
+def two_phase(ws: Path) -> bool:
+    """The work order's profile runs the two-phase SWE.1 inspection (lrtx.swe1_quality.enabled)."""
+    m = Path(ws) / ".forge-run/manifest.json"
+    pid = (json.loads(m.read_text()).get("local_profile") or {}).get("id") if m.is_file() else None
+    if not pid:
+        return False
+    from .profile import load
+    from .swe1_quality import enabled
+
+    return enabled(load(pid))
+
+
+def set_packet(ws: Path, sq: dict, bl: dict, srcs: list[dict], model: str, findings=None, previous=None) -> dict:
+    instr = (f"Inspect the COMPLETE SWE.1 requirement set on the frozen baseline {bl['baseline_id']} (hash "
+             f"{bl['baseline_hash'][:16]}) against set-quality criterion {sq['id']} {sq['property']} of the Forge-C "
+             f"SWE.1 requirements quality guideline: {sq['criterion']} Judge ONLY this criterion over the whole set, "
+             "ONLY from the SOURCES. One finding per real gap or defect: requirement_id (the SWR concerned, or SET for "
+             "a gap of the set), severity (BLOCKING: an applicable source obligation uncovered, contradiction, trace "
+             "inconsistency, invented mandatory limit; CORRECTABLE: resolvable from the provided inputs; EDITORIAL: no "
+             "technical change; N/A: the criterion does not apply here, give the reason), evidence quoting the "
+             "document or the source, required_action, input_uncertainty true when the gap is a missing or "
+             "contradictory input rather than an author defect. An empty findings list means the criterion is met. "
+             "Never ask for invented budgets, behaviours or upstream needs to fill a category. evidence_checked lists "
+             "the source paths you used. " + " ".join(_notes(ws, "SWE.1", "SWE1-05")))
+    return S.packet(phase="SWE.1", task=f"inspect:{sq['id']}", role="swe1-inspector", instructions=instr,
+                    sources=srcs, criteria=[f"{sq['id']} {sq['property']}: {sq['criterion']}"],
+                    output_schema=SET_SCHEMA, model=model, findings=findings, previous=previous, output_reserve=4096,
+                    assessment_workspace=Path(ws), sampling=inspector_sampling(ws, model))
+
+
+def validate_set(doc: dict, paths: set[str]) -> list[str]:
+    out = [f"findings[{i}]: N/A needs the reason in evidence" for i, f in enumerate(doc.get("findings") or [])
+           if f.get("severity") == "N/A" and not str(f.get("evidence") or "").strip()]
+    out += [f"evidence_checked names {p}, which is not a provided source" for p in doc["evidence_checked"]
+            if _norm_path(p) not in {_norm_path(x) for x in paths}]
+    return out
+
+
+def set_quality(ws: Path, bl: dict, srcs: list[dict], model: str, budget: dict) -> tuple[dict, dict, list[str]]:
+    """Feature 018 phase 2: SQ-01..10 over the frozen set (one checkpointed call each, bound to the baseline hash).
+    Returns (findings per SQ id, quality notes per checklist item, notes for unjudged criteria)."""
+    from . import swe1_quality as Q
+
+    cl = Q.quality_checklist()
+    p1 = Path(ws) / ".forge-run/lrtx" / Q.SUMMARY
+    carried = json.loads(p1.read_text()).get("carried_findings", []) if p1.is_file() else []
+    text = json.dumps({"carried_findings": carried}, indent=1, sort_keys=True)
+    srcs = [*srcs, {"path": PHASE1_SOURCE, "text": text, "sha256": sha256_bytes(text.encode())}]
+    paths = {s["path"] for s in srcs}
+    found, per_item, unjudged = {}, {}, []
+    for sq in cl["set"]:
+        rec = V.run_task(ws, "SWE.1", f"inspect:{bl['baseline_hash'][:16]}:{sq['id']}",
+                         lambda fi, pr, sq=sq: set_packet(ws, sq, bl, srcs, model, fi, pr),
+                         lambda d: validate_set(d, paths), budget)
+        if rec["status"] != "VALID":
+            unjudged.append(f"LRTX_SET_QUALITY_UNJUDGED:{sq['id']}: {(rec.get('errors') or ['?'])[0]}"[:300])
+            continue
+        found[sq["id"]] = rec["doc"]["findings"]
+        for f in rec["doc"]["findings"]:
+            if Q.needs_rework(f, cl):
+                per_item.setdefault(SQ_ITEMS[sq["id"]], []).append(
+                    f"{sq['id']} {f['severity']} {f['requirement_id']}: {f['evidence']} -> {f['required_action']}")
+    for f in carried:
+        per_item.setdefault(CARRIED_ITEM, []).append(
+            f"{f['quality_id']} {f['severity']} {f['requirement_id']} (kept after its per-requirement rework): "
+            f"{f['evidence']} -> {f.get('required_action') or ''}")
+    S.record(ws, "SWE.1/phase2/set-quality.json", {"schema": "forge-c/swe1-set-quality/1", "at": utc_now(),
+                                                    "baseline_id": bl["baseline_id"],
+                                                    "guideline_sha256": cl["guideline"]["sha256"],
+                                                    "findings": found, "to_items": per_item, "unjudged": unjudged})
+    Q.report(ws)
+    return found, per_item, unjudged
+
+
 def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume: bool = False,
           time_budget_s: float | None = None) -> dict:
     """One inspection (or its continuation after a time box). Verdicts already judged for this baseline are reused."""
@@ -384,6 +484,9 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
              if c.get("required") and not c.get("deterministic_check")]
     paths = {s["path"] for s in srcs}
     verdicts, issues, contested, withdrawn, lessons = {}, [], {}, {}, {}
+    quality, set_found, unjudged = {}, {}, []
+    if phase == "SWE.1" and two_phase(ws):  # feature 018: the set's quality criteria before the gate items
+        set_found, quality, unjudged = set_quality(ws, bl, srcs, model, budget)
     for it in items:
         # the checkpoint key binds the verdict to the baseline it judged: a new baseline is a new task
         task = f"inspect:{bl['baseline_hash'][:16]}:{it['id']}"
@@ -391,7 +494,8 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
         ipaths = paths | ({LESSON_SOURCE} if les else set())
         lessons[it["id"]] = [{k: x[k] for k in ("id", "version", "sha256", "purpose")} for x in les]
         rec = V.run_task(ws, phase, task,
-                         lambda fi, pr, it=it, les=les: item_packet(ws, phase, it, bl, srcs, model, fi, pr, les),
+                         lambda fi, pr, it=it, les=les: item_packet(ws, phase, it, bl, srcs, model, fi, pr, les,
+                                                                    quality.get(it["id"])),
                          lambda d, it=it, ipaths=ipaths: validate_verdict(d, ipaths, ws, phase, it["id"]), budget)
         d = rec["doc"]
         if rec["status"] != "VALID":
@@ -432,10 +536,13 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
                                                      "contested_findings": contested,
                                                      "withdrawn_in_repair": withdrawn,
                                                      **({"inspection_lessons": lessons}
-                                                        if any(lessons.values()) else {})})
+                                                        if any(lessons.values()) else {}),
+                                                     **({"set_quality": set_found, "quality_to_items": quality}
+                                                        if set_found or quality else {})})
     status = "PASS" if res["status"] == "PASS" else "REWORK"
     notes = [f"LRTX_INSPECTOR_FINDING_CONTESTED:{i}: {c}" for i, cs in contested.items() for c in cs]
     notes += [f"LRTX_INSPECTOR_FINDING_WITHDRAWN_IN_REPAIR:{i}: {f}" for i, fs in withdrawn.items() for f in fs]
+    notes += unjudged
     return _reply(ws, phase, status, list(res.get("issues") or []) + notes, budget,
                   list(res.get("artifact_refs") or []))
 
