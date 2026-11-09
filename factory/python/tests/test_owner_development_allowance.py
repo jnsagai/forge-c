@@ -72,7 +72,7 @@ def test_cannot_open_before_the_spent_orders_are_finished(store):
 
 
 def test_allowance_is_finite_and_covers_every_reservation():
-    assert D.ATTEMPTS == 256 and len(D.ORDERS) == len(set(D.ORDERS)) == 4 * 6 * 64
+    assert D.ATTEMPTS == 256 and len(D.ORDERS) == len(set(D.ORDERS)) == 5 * 6 * 64  # + WWDG (owner 2026-11-09)
     assert D.CAPS["max_attempts"] == 256 and D.CAPS["max_jobs"] == 256 * 8
     assert D.CAPS["max_requests"] == 256 * 4096 and D.CAPS["max_tools"] == 256 * 16384
     assert D.CAPS["max_tokens"] == 256 * 67108864 + 256 * 8 * 1048576
@@ -202,7 +202,7 @@ def test_campaign_orders_are_the_campaign_lineage_names():
     assert D.RETRYING_ORDERS[0].endswith("L90G") and D.RETRYING_ORDERS[-1] == D.SERIES + retry_suffix(D.RETRYING_LAST)
     assert set(D.RETRYING_ORDERS) <= set(D.SPENT_ORDERS) and not set(D.ORDERS) & set(D.SPENT_ORDERS)
     assert not any("AFOQUAL" in wo for wo in D.ORDERS)  # allowance D's L90AD.. names are gone
-    assert [L["id"] for L in D.LINEAGES] == ["gpio-ll", "spi-ll", "usart-ll", "tim-ll"]
+    assert [L["id"] for L in D.LINEAGES] == ["gpio-ll", "spi-ll", "usart-ll", "tim-ll", "wwdg-ll"]  # + WWDG 2026-11-09
     expected = {}
     for spec in D.LINEAGES:
         L = Lineage(campaign_id=D.CAMPAIGN, id=spec["id"], status="ACTIVE", example=spec["example"], tag=spec["tag"],
@@ -215,7 +215,7 @@ def test_campaign_orders_are_the_campaign_lineage_names():
                 assert D.ORDER_DRIVERS[L.wo(phase, k)] == spec["driver_class"]
     assert D.ORDER_SCOPE == expected and D.ORDERS == tuple(expected)
     assert D.ORDERS[0] == "WO-F014-SWE1-GPIOL-20261107-L40" and D.ORDER_DRIVERS[D.ORDERS[0]] == "STM32N6_GPIO_LL_ST"
-    assert D.ORDERS[-1] == "WO-F014-SWE6-TIML-20261107-L43" + retry_suffix(64)
+    assert D.ORDERS[-1] == "WO-F014-SWE6-WWDGL-20261109-L44" + retry_suffix(64)
 
 
 def test_carry_stays_inside_one_lineage_phase():

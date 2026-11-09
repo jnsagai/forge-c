@@ -110,6 +110,10 @@ LINEAGES = tuple(
         ("spi-ll", "SPIL", "20261107-L41", "0011l-st-cube-spi-swe1-gen", "STM32N6_SPI_LL_ST"),
         ("usart-ll", "USARTL", "20261107-L42", "0012l-st-cube-usart-swe1-gen", "STM32N6_USART_LL_ST"),
         ("tim-ll", "TIML", "20261107-L43", "0013l-st-cube-tim-swe1-gen", "STM32N6_TIM_LL_ST"),
+        # Owner 2026-11-09: "lets choose a simpler driver to implement swe.1, the simpliest one, after that we go for
+        # an intermediate, after a complex" - WWDG (3 registers, 6 fields) first, then SPI, then TIM. The campaign
+        # file activates one lineage at a time; this table only names the orders the allowance may carry.
+        ("wwdg-ll", "WWDGL", "20261109-L44", "0016c-st-cube-wwdg", "STM32N6_WWDG_LL_ST"),
     )
 )
 _LINEAGE = {L["id"]: L for L in LINEAGES}
