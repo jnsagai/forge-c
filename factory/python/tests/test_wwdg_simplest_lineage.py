@@ -23,5 +23,5 @@ def test_the_wwdg_example_has_the_swe1_generation_form_of_the_other_campaign_exa
 
 
 def test_the_existing_lineages_and_their_order_names_are_unchanged():
-    assert [L["id"] for L in D.LINEAGES] == ["gpio-ll", "spi-ll", "usart-ll", "tim-ll", "wwdg-ll"]
+    assert [L["id"] for L in D.LINEAGES][:5] == ["gpio-ll", "spi-ll", "usart-ll", "tim-ll", "wwdg-ll"]
     assert D.ORDERS[0] == "WO-F014-SWE1-GPIOL-20261107-L40"

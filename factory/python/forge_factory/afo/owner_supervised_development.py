@@ -104,16 +104,20 @@ CAMPAIGN = "CMP-OMNI2-ST-LL-20261107"
 PER_PHASE = 64
 LINEAGES = tuple(
     dict(id=i, tag=t, series=s, example=e, driver_class=d, phases=PHASES, purpose="ASPICE_ONLY",
-         profile=PROFILE, run_model=RUN_MODEL)
-    for i, t, s, e, d in (
-        ("gpio-ll", "GPIOL", "20261107-L40", "0010l-st-cube-gpio-swe1-gen", "STM32N6_GPIO_LL_ST"),
-        ("spi-ll", "SPIL", "20261107-L41", "0011l-st-cube-spi-swe1-gen", "STM32N6_SPI_LL_ST"),
-        ("usart-ll", "USARTL", "20261107-L42", "0012l-st-cube-usart-swe1-gen", "STM32N6_USART_LL_ST"),
-        ("tim-ll", "TIML", "20261107-L43", "0013l-st-cube-tim-swe1-gen", "STM32N6_TIM_LL_ST"),
+         profile=PROFILE, run_model=RUN_MODEL, depends_on=dep)
+    for i, t, s, e, d, dep in (
+        ("gpio-ll", "GPIOL", "20261107-L40", "0010l-st-cube-gpio-swe1-gen", "STM32N6_GPIO_LL_ST", None),
+        ("spi-ll", "SPIL", "20261107-L41", "0011l-st-cube-spi-swe1-gen", "STM32N6_SPI_LL_ST", None),
+        ("usart-ll", "USARTL", "20261107-L42", "0012l-st-cube-usart-swe1-gen", "STM32N6_USART_LL_ST", None),
+        ("tim-ll", "TIML", "20261107-L43", "0013l-st-cube-tim-swe1-gen", "STM32N6_TIM_LL_ST", None),
         # Owner 2026-11-09: "lets choose a simpler driver to implement swe.1, the simpliest one, after that we go for
         # an intermediate, after a complex" - WWDG (3 registers, 6 fields) first, then SPI, then TIM. The campaign
         # file activates one lineage at a time; this table only names the orders the allowance may carry.
-        ("wwdg-ll", "WWDGL", "20261109-L44", "0016c-st-cube-wwdg", "STM32N6_WWDG_LL_ST"),
+        ("wwdg-ll", "WWDGL", "20261109-L44", "0016c-st-cube-wwdg", "STM32N6_WWDG_LL_ST", None),
+        # Owner 2026-11-09: "implement first the low level driver, then the whole driver for the same model" - each
+        # HAL lineage runs on the LL order of its peripheral that passed SWE.6 (campaign depends_on; the order carries
+        # provided_from, and workorder.provided_ll still requires all six LL gates PASS, ADR-0009).
+        ("wwdg-hal", "WWDGH", "20261109-L45", "0016m-wwdg-hal", "STM32N6_WWDG_HAL", "wwdg-ll"),
     )
 )
 _LINEAGE = {L["id"]: L for L in LINEAGES}
@@ -599,6 +603,16 @@ def _trial_envelopes(control, envelopes=None):
             _fail("ORIGINAL_ROLE_ENVELOPES_REQUIRED")
 
 
+def _provided_shape(order, L):
+    """An LL lineage builds on nothing; a HAL lineage only on the SWE.6 order of the LL lineage it depends on (the
+    order line_orders.Planner sets from depends_on once that phase passed)."""
+    source = order.get("provided_from")
+    if L.get("depends_on") is None:
+        return source is None
+    scope = ORDER_SCOPE.get(source)
+    return scope is not None and scope[0] == L["depends_on"] and scope[1] == PHASES[-1]
+
+
 def _resume_shape(order, lineage_id, phase):
     """Exactly the resume shapes line_orders.Planner.decide and line_recovery_coordination produce."""
     kind, source, upto = order.get("kind"), order.get("resume_from"), order.get("resume_upto")
@@ -633,7 +647,7 @@ def validate_order(order):
         or order.get("profile") != PROFILE
         or order.get("run_model") != RUN_MODEL
         or order.get("purpose") != "ASPICE_ONLY"
-        or order.get("provided_from") is not None
+        or not _provided_shape(order, L)
         or not _resume_shape(order, lineage_id, phase)
         or order.get("durable_control") != record["control_ref"]
         or digest(order.get("quality")) != QUALITY_SHA
