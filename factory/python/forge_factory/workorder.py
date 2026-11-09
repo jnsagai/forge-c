@@ -257,8 +257,7 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
                                        f"out of context, purpose {purpose}, owner 2026-11-09)")
     from . import simulation_performance
 
-    performance = simulation_performance.validate(spec[simulation_performance.FIELD]) \
-        if simulation_performance.FIELD in spec else None
+    performance, performance_note = simulation_performance.prepared(spec, upstream["status"])  # CAPA-206
     if upstream["status"] == "APPROVED":
         d = upstream["data"]
         inputs["inputs/upstream-inputs.yaml"] = (example / UPSTREAM_FILE).read_bytes()
@@ -360,7 +359,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
         "upstream": {k: upstream[k] for k in ("status", "issues", "sha256", "context") if k in upstream},
         "scope": spec["scope"],
-        "budgets": budgets,
+        "budgets": ({**budgets, "status": f"{budgets.get('status', '')}; {performance_note}".lstrip("; ")}
+                    if performance_note else budgets),
         **({simulation_performance.FIELD: performance} if performance else {}),
         "inputs": listed,
         "guideline": spec.get("guideline"),

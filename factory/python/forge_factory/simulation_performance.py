@@ -26,6 +26,27 @@ def validate(value):
     return value
 
 
+# CAPA-206: an out-of-context LL driver order (owner 2026-11-09) whose spec declares no budget gets the factory's LL
+# simulation budget - the targets every other LL order carries (CRC, RCC, IWDG, WWDG LL: 64 executed instructions and
+# 100 us of virtual time per call at 100 MIPS; Renode simulation only, not a silicon timing claim). Timing/CPU
+# decisions were delegated by the owner 2026-11-03; the factory, not a hand edit, prepares the input.
+OUT_OF_CONTEXT_LL = {"schema": SCHEMA, "instructions_per_call": 64, "microseconds_per_call": 100,
+                     "performance_mips": 100, "test_source": TEST}
+OUT_OF_CONTEXT_LL_NOTE = ("simulation_performance: factory budget for out-of-context LL drivers (the CRC/RCC/IWDG/WWDG "
+                          "LL targets; Renode simulation only, not a silicon timing claim; CAPA-206)")
+
+
+def prepared(spec: dict, upstream_status: str):
+    """(budget, note): the spec's own budget, else the factory LL budget for an out-of-context LL order, else none."""
+    if FIELD in spec:
+        return validate(spec[FIELD]), None
+    from .upstream import OUT_OF_CONTEXT
+
+    if upstream_status == OUT_OF_CONTEXT and spec.get("layer", "LL+HAL") == "LL":
+        return validate(dict(OUT_OF_CONTEXT_LL)), OUT_OF_CONTEXT_LL_NOTE
+    return None, None
+
+
 def selected(ws):
     path = Path(ws) / ".forge-run/manifest.json"
     if not path.is_file():
