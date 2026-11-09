@@ -765,6 +765,13 @@ class Planner:
                             quality_via=(via or None) if ok else None, durable_control=self.durable_control)
         if self.durable_control is not None and P.prev and (P.prev.spec or {}).get("durable_recovery"):
             order["durable_recovery"] = P.prev.spec["durable_recovery"]
+        if kind in RETRY_KINDS and resume_from is None:
+            # CAPA-209: a retry of the first phase names the failed attempt; the work order revalidates and reuses
+            # its identical author tasks and passed phase-1 verdicts instead of starting from scratch
+            prior = [x for x in P.atts.get(phase, []) if x.status == "ENDED" and x.verdict == "NO"
+                     and x.wo != order["wo"]]
+            if prior:
+                order["retry_of"] = max(prior, key=lambda x: ((x.created or 0), x.n)).wo
         return order
 
     def decide(self, P: Plan, campaign: LCMP.Campaign) -> None:
@@ -1467,7 +1474,7 @@ class Placer:
         a = ["launch", o["revision"], o["wo"], o["example"], o["profile"], "--model", o["run_model"],
              "--purpose", o["purpose"], "--stop-after", o["stop_after"]]
         for flag, k in (("--resume-from", "resume_from"), ("--provided-from", "provided_from"),
-                        ("--resume-upto", "resume_upto")):
+                        ("--resume-upto", "resume_upto"), ("--retry-of", "retry_of")):
             if o.get(k):
                 a += [flag, o[k]]
         if o.get("quality") and o.get("quality_via") == "FLAG":

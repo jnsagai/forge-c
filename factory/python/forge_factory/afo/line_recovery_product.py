@@ -165,6 +165,7 @@ def launcher(store, cmd, spec, *, cfg=None, launch=None):
                 **{k: spec.get(k) for k in ("purpose", "stop_after", "resume_from", "provided_from", "resume_upto")},
                 "quality": spec.get("quality") if spec.get("quality_via") == "FLAG" else None,
                 **({"rework_context": spec["rework_context"]} if spec.get("rework_context") is not None else {}),
+                **({"retry_of": spec["retry_of"]} if spec.get("retry_of") else {}),  # CAPA-209
             },
         }
         path = root / (job["job_id"] + ".json")
@@ -453,6 +454,8 @@ def order_arguments(order):
     }
     if getattr(order, "rework_context", None) is not None:
         value["rework_context"] = order.rework_context
+    if getattr(order, "retry_of", None):  # CAPA-209
+        value["retry_of"] = order.retry_of
     return value
 
 
