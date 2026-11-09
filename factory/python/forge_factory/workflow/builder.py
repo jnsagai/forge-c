@@ -50,7 +50,12 @@ def _env() -> str:
     # F011-T036 (first Fabro run on local-rtx-v2-omniverse2): without the profile the local runner called the v1
     # gateway port (CALL_FAILED: connection refused); set only inside a local stack, so other graphs are unchanged
     prof = os.environ.get("FORGE_LRTX_PROFILE")
-    return env + (f" FORGE_LRTX_PROFILE={shlex.quote(prof)}" if prof else "")
+    env += f" FORGE_LRTX_PROFILE={shlex.quote(prof)}" if prof else ""
+    # CAPA-203 (WO-F014-SWE1-WWDGL-20261109-L44E): a line-local order's runner nodes charged their tool calls to the
+    # default (conductor) queue, which does not know the line mission: every check_inspection was denied
+    # MISSION_NOT_REGISTERED. The launcher's queue scope reaches the nodes like the other locations.
+    scope = os.environ.get("FORGE_AFO_QUEUE_SCOPE")
+    return env + (f" FORGE_AFO_QUEUE_SCOPE={shlex.quote(scope)}" if scope else "")
 
 
 def gate_cmd(phase: str, step: str, check: str = "") -> str:

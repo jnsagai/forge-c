@@ -10,6 +10,22 @@ from pathlib import Path
 from .durable import Refused, strict_json
 
 
+def _store_for(job: dict, Store):
+    """The queue that holds the job's order. CAPA-203: without FORGE_AFO_QUEUE_SCOPE a line-local order's runner
+    charged the default conductor queue (MISSION_NOT_REGISTERED); the line queue is used when it holds that order."""
+    import os
+
+    from ..common import state_dir
+
+    if not os.environ.get("FORGE_AFO_QUEUE_SCOPE") and job.get("order_id"):
+        line = state_dir() / "supervisor/line-queue.sqlite3"
+        if line.is_file():
+            store = Store(line, must_exist=True)
+            if store.order(job["order_id"]) is not None:
+                return store
+    return Store()
+
+
 def charge(workspace: Path, event_id: str) -> dict | None:
     from .mission_ledger import MissionLedger
     from .queue import Store
@@ -23,5 +39,5 @@ def charge(workspace: Path, event_id: str) -> dict | None:
     if (not isinstance(job, dict)
             or any(not isinstance(job.get(k), str) or not job[k] for k in ("mission_id", "job_id"))):
         raise Refused("TOOL_MISSION_BINDING_INVALID")
-    MissionLedger(Store()).count(job["mission_id"], job["job_id"], "TOOL", event_id)
+    MissionLedger(_store_for(job, Store)).count(job["mission_id"], job["job_id"], "TOOL", event_id)
     return {"mission_id": job["mission_id"], "job_id": job["job_id"], "event_id": event_id}
