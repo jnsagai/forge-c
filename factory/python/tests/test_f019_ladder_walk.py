@@ -49,3 +49,20 @@ def test_a_lineage_grown_from_one_phase_continues_from_its_passed_phase(env):
     nxt = env["line"].launched[1]
     assert nxt["wo"] == "WO-F014-SWE2-WWDGL-20261109-L44" and nxt["--resume-from"] == swe1
     assert [x["wo"] for x in env["line"].launched].count(swe1) == 1  # SWE.1 never rerun
+
+
+def test_the_swe1_stage_walks_ll_hal_on_a_verified_ll_then_the_next_ll(env):
+    write_campaign(env, [lineage("crc-ll", "CRCL", "20261109-L1", priority=50, phases=["SWE.1"]),
+                         lineage("crc-hal", "CRCHAL", "20261109-L2", priority=49, phases=["SWE.1"],
+                                 provided_from="WO-F014-SWE6-CRCL-20261103-L24",
+                                 after={"lineage": "crc-ll", "phase": "SWE.1", "verdict": "PASS"}),
+                         lineage("wwdg-ll", "WWDGL", "20261109-L3", priority=48, phases=["SWE.1"],
+                                 after={"lineage": "crc-hal", "phase": "SWE.1", "verdict": "PASS"})])
+    grant(env)
+    outs = drive(env, placer(env), cycles=40, until=lambda o: lin(o, "wwdg-ll")["state"] == "DONE")
+    launched = env["line"].launched
+    assert [x["wo"] for x in launched] == ["WO-F014-SWE1-CRCL-20261109-L1", "WO-F014-SWE1-CRCHAL-20261109-L2",
+                                           "WO-F014-SWE1-WWDGL-20261109-L3"]
+    assert [x.get("--provided-from") for x in launched] == [None, "WO-F014-SWE6-CRCL-20261103-L24", None]
+    for o in outs:
+        assert sum(lin(o, x)["state"] in STEP for x in ("crc-ll", "crc-hal", "wwdg-ll")) <= 1

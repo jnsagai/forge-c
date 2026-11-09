@@ -26,6 +26,18 @@ the deploy package (status ACTIVE / ON_HOLD, phase list) and switches whenever a
 factory to own every input of a run. This feature moves the driver ladder into versioned factory source and lets the
 line walk it alone.
 
+## Owner amendment 2026-11-09 ~14:00 (phase stages)
+
+"Before going to SW2, I want to exercise a bit more SW1 with other examples. As I told you, we must go now for HAL
+example on WWDG, Then we go for the SW1 on intermediate model, then a complex model. just when we are sure that SW1 is
+really stable, then we can go for the next one."
+
+- The ladder runs one **phase stage** across all its steps: today SWE.1 for WWDG LL -> WWDG HAL -> SPI LL -> TIM LL.
+- The owner moves the stage to the next phase (a source change, gated and deployed like code) once SWE.1 is stable.
+- In a stage that ends before SWE.6, a HAL step builds on an LL order of its peripheral that already passed all six
+  phases (WWDG LL `WO-F014-SWE6-WWDGL-20261103-L29`); the factory re-checks those six gates at prepare (ADR-0009).
+- SPI HAL and TIM HAL are not in this stage (no specs; they stay input gaps for feature 016).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - The ladder is factory source, not a hand edit (Priority: P1)
@@ -152,6 +164,10 @@ roll back to a source without the HAL lineage and check the campaign no longer l
   blocked) and which step runs next.
 - **FR-010**: Claude MUST NOT write run inputs (campaign files, work-order specifications) as a manual step; a missing
   input is reported, and closing it is the factory's job (onboarding stage) or an owner decision.
+- **FR-012**: The ladder MUST run one owner-chosen phase stage across all steps (FR-003 "last phase" = the stage's
+  last phase); only the owner moves the stage forward.
+- **FR-013**: In a stage that ends before SWE.6, a HAL step MUST build on a named LL order of its own peripheral that
+  passed all six phases; no other lineage may use it.
 - **FR-011**: Mission E caps, the Nov 19 deadline, the CRE gate before deploy, signed controls and the production Line
   Conductor MUST stay unchanged.
 

@@ -91,6 +91,12 @@ drops unknown lineages.
 - [ ] T021 Merge the feature branch into `feat/owner-lane-campaign-v21-20261107` (merge commit), push to the host repo; the deployer timer gates (CRE) and deploys unattended - do not start a manual gate
 - [ ] T022 Native acceptance after deploy: deploy record `campaign_source: DERIVED`; guardian audit shows `wwdg-ll` at SWE.2 with `resume_from` the passed L44 SWE.1 order (or still SWE.1 if L44F failed), `wwdg-hal` WAITING `DEPENDS_ON:wwdg-ll:SWE.6:PASS`, `spi-ll` WAITING `AFTER:wwdg-hal:SWE.6:PASS`; floor ladder strip matches; save to `specs/019-factory-prepared-inputs/evidence/native-acceptance.md`
 
+## Phase 8: Owner amendment - SWE.1 stage (2026-11-09 ~14:00)
+
+- [X] T023 [US1] `LADDER = (wwdg-ll, wwdg-hal, spi-ll, tim-ll)`, `LADDER_PHASES = ("SWE.1",)`, `PROVIDED_LL` (WWDG LL L29, checked by `workorder.provided_ll`: six gates PASS, frozen ST header) and `derived_campaign()` per stage in `forge_factory/afo/owner_supervised_development.py`; tests `tests/test_f019_derived_campaign.py` (rewritten), `tests/test_owner_supervised_hal_lineage.py`, `tests/test_f019_ladder_walk.py` (stage walk)
+- [X] T024 [US1] Generator dry run with the stage source from the live package `owner-allowance-main-auto-9bb2c981`: `evidence/generator-dry-run-swe1-stage.txt` (DERIVED; ladder steps SWE.1 only)
+- [ ] T025 Native acceptance of the stage: WWDG HAL SWE.1 `WO-F014-SWE1-WWDGH-20261109-L45` starts by itself with `--provided-from` L29; SPI LL SWE.1 follows its pass; TIM LL SWE.1 after SPI; `evidence/native-acceptance.md`
+
 ## Dependencies & execution order
 
 - T001 -> Phase 2 (T002->T003, T004 parallel, T005) -> US1 (T006->T007->T008->T009) and US2 (T010->T011->T012)
