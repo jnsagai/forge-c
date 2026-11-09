@@ -18,7 +18,7 @@ import httpx
 from ..afo.durable import Refused, canonical
 
 METHOD = "native_template_plus_serialized"
-MAX_REQUEST_BYTES = 8 * 1024 * 1024
+MAX_REQUEST_BYTES = 64 * 1024 * 1024  # CAPA-199 (was 8 MiB)
 # This profile's checksum is bound into issued guardian history, so its file stays fixed.
 PINNED_PROFILE_ROUTES = {
     "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104": {
@@ -71,7 +71,7 @@ async def measure(client: httpx.AsyncClient, body: dict) -> dict:
 
     async def post(path, value):
         try:
-            response = await client.post(path, json=value, timeout=httpx.Timeout(30, connect=5))
+            response = await client.post(path, json=value, timeout=httpx.Timeout(600, connect=5))
             response.raise_for_status()
             return response.json()
         except (httpx.HTTPError, ValueError) as exc:

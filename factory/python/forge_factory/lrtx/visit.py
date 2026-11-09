@@ -32,6 +32,10 @@ def _ckpt(ws: Path, phase: str, task: str) -> Path:
     return Path(ws) / ".forge-run/lrtx" / phase / "packets" / (task.replace(":", "__") + ".json")
 
 
+MAX_VISIT_CALLS = 1_000_000  # CAPA-199: the largest call budget a profile may give one visit (was 4096)
+CALL_TIMEOUT_S = 21600  # CAPA-199: one structured call may run as long as the gateway allows (was 3600)
+
+
 def author_call_limit(ws: Path, phase: str, default: int, explicit: int | None = None) -> int:
     """A pinned profile may size this existing visit for more coherent obligations.
 
@@ -46,10 +50,10 @@ def author_call_limit(ws: Path, phase: str, default: int, explicit: int | None =
 
         limits = (load(selected["id"]).get("structured") or {}).get("author_max_calls_by_phase") or {}
     if (not isinstance(limits, dict) or any(k not in {f"SWE.{n}" for n in range(1, 7)}
-            or type(v) is not int or not 1 <= v <= 4096 for k, v in limits.items())):
+            or type(v) is not int or not 1 <= v <= MAX_VISIT_CALLS for k, v in limits.items())):
         raise ValueError("PROFILE_AUTHOR_CALL_LIMIT_INVALID")
     value = explicit if explicit is not None else limits.get(phase, default)
-    if type(value) is not int or not 1 <= value <= 4096:
+    if type(value) is not int or not 1 <= value <= MAX_VISIT_CALLS:
         raise ValueError("PROFILE_AUTHOR_CALL_LIMIT_INVALID")
     return value
 
@@ -284,7 +288,7 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         from ..brownfield.resume import remaining_seconds
 
         remaining = remaining_seconds(ws)
-        r = S.call(p, schema_mode=budget["schema_mode"], **({"timeout": min(3600, remaining)} if remaining else {}))
+        r = S.call(p, schema_mode=budget["schema_mode"], **({"timeout": min(CALL_TIMEOUT_S, remaining)} if remaining else {}))
         code = O.call_outage(r["errors"]) if r["doc"] is None else None
         final = code is None and seen_outage is not None and r["doc"] is None and \
             any(e in NON_REPAIRABLE_REFUSALS for e in r["errors"])
@@ -343,7 +347,7 @@ def run_task(ws: Path, phase: str, task: str, build, check, budget: dict, findin
         if n + 1 == limit and limit < max_repairs + 3 and len(attempts) > 1 and \
                 len(attempts[-1]["errors"]) < len(attempts[-2]["errors"]):
             limit += 1
-        p = build(errs[:12], r["doc"]) if r["doc"] is not None and not r["errors"] else p
+        p = build(errs[:REPAIR_FINDINGS_MAX], r["doc"]) if r["doc"] is not None and not r["errors"] else p
     rec = {"task": task, "status": "VALID" if doc is not None and not errs else "INVALID", "doc": doc,
            "errors": errs, "base_hash": base["input_hash"], "attempts": attempts, "at": utc_now(), "reused": False}
     if mark and rec["status"] == "VALID":
@@ -438,7 +442,8 @@ def rework_findings(ws: Path, phase: str, since: str) -> list[str]:
     return out
 
 
-KEEP_FIXED_MAX = 20  # per task and repair packet: the most recent are kept, older ones are counted as omitted
+KEEP_FIXED_MAX = 200  # per task and repair packet: the most recent are kept, older ones are counted as omitted
+REPAIR_FINDINGS_MAX = 200  # CAPA-199: a repair packet carries every finding (was the first 12)
 
 
 def keep_fixed_findings(ws: Path, phase: str) -> list[str]:

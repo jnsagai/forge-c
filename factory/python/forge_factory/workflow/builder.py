@@ -26,6 +26,8 @@ PROGRESS_EXTRA_CYCLES = 2  # owner decision 2026-10-18: rework-policy.yaml max_e
 # Fabro kills the run when a node is entered beyond max_visits (probe P2, ADR-0008). The rework budget is per epoch
 # (owner decision 2026-10-15): each upstream loop gives every phase 1 + REWORK_CYCLES (+ progress extension) visits.
 MAX_VISITS = (1 + REWORK_CYCLES + PROGRESS_EXTRA_CYCLES) * (1 + UPSTREAM_LOOPS)
+# CAPA-199: time-box continuation nodes are re-entered once per 240 s box; their visit cap is not a rework budget.
+CONTINUATION_MAX_VISITS = 100_000
 ONCE = 1 + UPSTREAM_LOOPS  # single-pass nodes (scaffolds' authors, LL/HAL authors) re-entered by upstream loops
 
 
@@ -276,10 +278,10 @@ def continuation(dot: str, node: str, gate_node: str, step: str, phase: str, str
     if edge not in dot:
         raise ValueError(f"STRUCTURED_EDGE_MISSING:{node}->{gate_node}")
     return dot.replace(edge, "\n".join([
-        f'  {chk} [shape=parallelogram, label="{phase} {step} time-box check", max_visits={8 * MAX_VISITS}, '
+        f'  {chk} [shape=parallelogram, label="{phase} {step} time-box check", max_visits={CONTINUATION_MAX_VISITS}, '
         f'script="{_q(f"{run} continue-check --phase {phase} --workspace . --of {step}")}"]',
         f'  {more} [shape=parallelogram, label="{phase} structured {step} (continued)", '
-        f'max_visits={8 * MAX_VISITS}, timeout="{t}s", script="{_q(cmd)}"]',
+        f'max_visits={CONTINUATION_MAX_VISITS}, timeout="{t}s", script="{_q(cmd)}"]',
         f"  {node} -> {chk}", f'  {chk} -> {more} [condition="outcome=succeeded"]', f"  {chk} -> {gate_node}",
         f"  {more} -> {chk}"]) + "\n", 1)
 

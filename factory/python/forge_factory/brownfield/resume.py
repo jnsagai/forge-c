@@ -22,7 +22,9 @@ from pathlib import Path
 from ..common import REPO_ROOT, canonical_json, pretty_json, safe_id, sha256_bytes, sha256_file, state_dir, utc_now
 
 SCHEMA = "forge-c/brownfield-resume/1"
-DEFAULT_LIMITS = {"max_attempts": 6, "max_wall_seconds": 86400}
+# CAPA-199 (owner 2026-11-09: every arbitrary limit very high): a new root lineage gets 10000 attempts / 1 year.
+# Existing lineages keep the limits stored with them (a stored limit is never changed).
+DEFAULT_LIMITS = {"max_attempts": 10000, "max_wall_seconds": 31536000}
 TOOLS = ("clang", "gcc", "arm-none-eabi-gcc", "cppcheck", "cmake", "ninja", "gcovr", "lcov", "cbmc", "goto-cc",
          "frama-c", "why3", "alt-ergo", "cvc5", "robot", "renode", "java")
 CONTRACT_FIELDS = ("driver", "layer", "target", "scope", "budgets", "system_names", "guideline", "trace_profile",

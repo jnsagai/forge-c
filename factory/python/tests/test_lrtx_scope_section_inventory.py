@@ -89,7 +89,7 @@ def test_full_scope_visit_uses_pinned_call_envelope_and_explicit_smaller_limit(t
     assert visit.author_call_limit(ws, "SWE.2", 35) == 35
 
 
-@pytest.mark.parametrize("value", [True, 0, -1, 4097, 2.5, "256"])
+@pytest.mark.parametrize("value", [True, 0, -1, 1_000_001, 2.5, "256"])  # CAPA-199: ceiling 1_000_000
 def test_invalid_profile_call_limits_cannot_expand_admission(tmp_path, monkeypatch, value):
     from forge_factory.lrtx import profile, visit
 

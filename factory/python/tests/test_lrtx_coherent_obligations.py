@@ -23,11 +23,12 @@ def test_actual_crc_coupled_reversal_fields_cannot_cross_packet_boundaries():
     assert all(len(p) <= swe1.MAX_FIELDS for p in parts)
 
 
-def test_an_oversized_joint_obligation_blocks_instead_of_being_silently_split():
+def test_an_oversized_joint_obligation_is_one_packet_never_silently_split():
+    # CAPA-199 (owner 2026-11-09): was a refusal (COHERENT_SCOPE_GROUP_EXCEEDS_FIELD_LIMIT); never split either way
     names = [f"F{i}" for i in range(swe1.MAX_FIELDS + 1)]
     inv = inventory(names, [[f"DEV_CR.{f}" for f in names]], "DEV_CR")
-    with pytest.raises(ValueError, match="COHERENT_SCOPE_GROUP_EXCEEDS_FIELD_LIMIT"):
-        swe1.groups(inv)
+    groups = swe1.groups(inv)
+    assert any(set(names) <= set(g.get("fields") or []) for g in groups), groups
 
 
 def test_legacy_inventory_keeps_the_existing_balanced_partition_exactly():
@@ -64,7 +65,8 @@ def test_unknown_member_of_a_joint_obligation_is_not_dropped():
 @pytest.mark.parametrize("cross_register", [False, True])
 def test_unrepresentable_obligation_blocks_before_any_model_request(tmp_path, monkeypatch, cross_register):
     names = [f"F{i}" for i in range(swe1.MAX_FIELDS + 1)]
-    links = [["DEV_CR." + f for f in names]]
+    # CAPA-199: an oversized coherent set is now one packet; a field outside the inventory is still unrepresentable
+    links = [["DEV_CR.F0", "DEV_CR.NOT_IN_INVENTORY"]]
     if cross_register:
         links = [["DEV_CR.F0", "OTHER_CR.F0"]]
     inv = {**inventory(names, links, "DEV_CR"), "missing_sections": []}

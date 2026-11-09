@@ -25,6 +25,7 @@ from . import structured as S
 from . import visit as V
 
 MAX_FIELDS = 5
+FUNCTIONAL_SOURCE_MAX_CHARS = 1_048_576  # CAPA-199: the whole functional chapter (was 20000 -> SOURCE_TOO_LARGE)
 SCOPE_COVERAGE_RULE = (
     "A REGISTER.FIELD explicitly named in the in-scope work-order text must not be listed in not_covered. "
     "A verifier limitation is an unresolved verification gap, not permission to remove a requested field."
@@ -547,7 +548,7 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
 
     chapter = str(profile(ws)["rm"]["chapter"])
     func = [n for n, s in secs.items() if n.startswith(chapter + ".") and "functional" in s["title"].lower()]
-    srcs = [S.source(ws, secs[n]["file"], max_chars=20_000) for n in func[:1]]
+    srcs = [S.source(ws, secs[n]["file"], max_chars=FUNCTIONAL_SOURCE_MAX_CHARS) for n in func[:1]]
     crit = [f"subject exactly 'the {sysname}'", "no budget requirements"]
     if obl is not None:
         instr += obligation_rule(obl, True)

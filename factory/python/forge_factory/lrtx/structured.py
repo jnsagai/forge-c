@@ -489,7 +489,7 @@ def _capture(p: dict, body: dict, result: dict, text: str | None) -> None:
 
 
 def call(
-    p: dict, *, temperature: float | None = None, schema_mode: str = "json_schema", timeout: float = 3600, url: str | None = None
+    p: dict, *, temperature: float | None = None, schema_mode: str = "json_schema", timeout: float = 21600, url: str | None = None
 ) -> dict:
     """One structured call. Returns {doc, errors, usage, wall_ms, raw_chars, format_note}; never raises on model
     output problems (they are findings for the localized repair loop)."""

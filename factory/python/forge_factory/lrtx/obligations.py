@@ -96,12 +96,14 @@ def partition(register, names, links, maximum):
     components = {}
     for name in names:
         components.setdefault(root(name), []).append(name)
-    if any(len(c) > maximum for c in components.values()):
-        raise CoherentScopeRefused("COHERENT_SCOPE_GROUP_EXCEEDS_FIELD_LIMIT:" + register)
     order = {name: i for i, name in enumerate(names)}
-    bins = [[] for _ in range(-(-len(names) // maximum))]
-    for component in sorted(components.values(), key=lambda c: (-len(c), order[c[0]])):
-        available = [i for i, part in enumerate(bins) if len(part) + len(component) <= maximum]
+    # CAPA-199: a coherent set larger than the packet size is one packet of its own (never split, never refused:
+    # was COHERENT_SCOPE_GROUP_EXCEEDS_FIELD_LIMIT); the other fields keep the usual packing.
+    whole = [c for c in components.values() if len(c) > maximum]
+    rest = [c for c in components.values() if len(c) <= maximum]
+    bins = [list(c) for c in whole] + [[] for _ in range(-(-sum(len(c) for c in rest) // maximum))]
+    for component in sorted(rest, key=lambda c: (-len(c), order[c[0]])):
+        available = [i for i, part in enumerate(bins) if i >= len(whole) and len(part) + len(component) <= maximum]
         if not available:
             bins.append([])
             available = [len(bins) - 1]
