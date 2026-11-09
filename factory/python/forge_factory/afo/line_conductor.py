@@ -928,7 +928,11 @@ def _lineage(orders_by_wo: dict, rec: dict) -> str:
     return f"{rec['tag']}/{cur['wo']}"
 
 
-def _later(orders: list[dict], tag: str, phase: str, after: float, *, launched: bool) -> tuple[str | None, str | None]:
+RECOVERY_LIVE_S = 6 * 3600  # a later order counts as a recovery under way only while it shows activity
+
+
+def _later(orders: list[dict], tag: str, phase: str, after: float, *, launched: bool,
+           now: float | None = None) -> tuple[str | None, str | None]:
     """The part's (tag's) newer orders across lineages decide; see _supersede for the reason codes."""
     """('RESOLVED'|'RECOVERING', the order) when a later order of the part passed this phase (or a later one), or -
     for a launch failure - simply launched; a later order still running on the phase is a recovery under way."""
@@ -942,7 +946,11 @@ def _later(orders: list[dict], tag: str, phase: str, after: float, *, launched: 
             if o["phase"] == phase and o["rid"]:
                 return "RESOLVED", o["wo"]
     for o in later:
-        if o["phase"] == phase and o["package"] is None:
+        # 2026-11-09 (owner: "the supervisor is reparing USART, is it correct?"): USART L42D's issue showed RECOVERING
+        # because of L42I, an order that was prepared but never launched (no native run) on a lineage then put
+        # ON_HOLD. Only a launched later order that is still active is a recovery under way.
+        if (o["phase"] == phase and o["package"] is None and o.get("rid")
+                and (now is None or now - float(o.get("activity") or 0) < RECOVERY_LIVE_S)):
             return "RECOVERING", o["wo"]
     return None, None
 
@@ -1044,7 +1052,7 @@ class Observer:
                                                                                         float("inf"))),
                                  status="PARKED", used=1, opened=rec["created"], lineage=_lineage(by_wo, rec), now=now)
                     iss["escalation"]["reason"] = "ABANDONED_NO_LIVE_RUN"
-                    st, by = _later(orders, rec["tag"], rec["phase"], rec["created"], launched=False)
+                    st, by = _later(orders, rec["tag"], rec["phase"], rec["created"], launched=False, now=now)
                     if st == "RESOLVED":
                         _resolve(iss, f"workorders/{by}", _supersede_reason(by_wo.get(by), rec["phase"]), now)
                     out.append(iss)
@@ -1088,7 +1096,7 @@ class Observer:
             if nxt is not None:
                 _resolve(iss, nxt[2], "SUPERSEDED_BY_PART_PROGRESS" if nxt[1] == "PASS" else "PROGRESS_NEW_ISSUE", now)
             else:
-                st, by = _later(orders, tag, phase, last["created"], launched="la" in last)
+                st, by = _later(orders, tag, phase, last["created"], launched="la" in last, now=now)
                 if st == "RESOLVED":
                     _resolve(iss, f"workorders/{by}", _supersede_reason(by_wo.get(by), phase), now)
                 elif st == "RECOVERING":

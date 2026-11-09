@@ -539,6 +539,12 @@ def _visit(ws: Path, phase: str, model: str, budget: dict) -> dict:
                                                         if any(lessons.values()) else {}),
                                                      **({"set_quality": set_found, "quality_to_items": quality}
                                                         if set_found or quality else {})})
+    if (res.get("metrics") or {}).get("handler_executed") is False:
+        # CAPA-203: the record itself was refused before its handler ran (e.g. denied: MISSION_NOT_REGISTERED); no
+        # inspection exists, so this is no rework finding - a FAILED reply lets the refusal bound (CAPA-085) block
+        # instead of a REINSPECT/REWORK loop (30 cycles on L44E)
+        return _reply(ws, phase, "FAILED", [f"LRTX_INSPECTION_RECORD_DENIED:{i}" for i in res.get("issues") or []]
+                      or ["LRTX_INSPECTION_RECORD_DENIED"], budget)
     status = "PASS" if res["status"] == "PASS" else "REWORK"
     notes = [f"LRTX_INSPECTOR_FINDING_CONTESTED:{i}: {c}" for i, cs in contested.items() for c in cs]
     notes += [f"LRTX_INSPECTOR_FINDING_WITHDRAWN_IN_REPAIR:{i}: {f}" for i, fs in withdrawn.items() for f in fs]
