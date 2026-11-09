@@ -56,7 +56,7 @@
 
 ## Phase 6: Polish and rollout
 
-- [ ] T013 Regression: full suite on the branch vs its base (`de42bc29`), design check; record results.
+- [X] T013 Regression: full suite on the branch vs its base (`de42bc29`), design check; record results.
 - [ ] T014 CRE: register the change (CHANGE gate) and merge into `feat/owner-lane-campaign-v21-20261107` (merge
   commit); deployer gates and deploys.
 - [ ] T015 Native acceptance: WWDG SWE.1 order evidence (phase1 summary, swaps per round, quality report, gate
@@ -71,4 +71,8 @@ Parallel: T004 and T003; T010 with T006-T008 (different files).
 ## Evidence (2026-11-09)
 
 T001-T012: `tests/test_f018_quality_checklist.py` (2), `tests/test_f018_phase1.py` (9), `tests/test_f018_phase2.py` (6)
-pass on `d87326fc`; they import modules and behaviour that do not exist on the base `de42bc29`. T013-T015 open.
+pass on `d87326fc`; they import modules and behaviour that do not exist on the base `de42bc29`.
+T013: full suite `factory/python/tests` on the branch (536 failing/erroring, all environment-bound on this host) vs a
+clean base worktree of `de42bc29` with the same private inputs and venv: every one of the 49 tests that failed only in
+the first branch-vs-old-clone comparison fails identically on the clean base (logs `/mnt/data/forge-c/f018-eval/`);
+no new failure. Design check `tests/spec/validate_design.py`: PASS (14 static tests). T014-T015 open.
