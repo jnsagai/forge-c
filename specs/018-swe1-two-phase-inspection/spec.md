@@ -132,8 +132,11 @@ SQ/SWE1 item: verdict and findings.
   findings (owner decision); phase 1 MUST NOT block SWE.1 by itself.
 - **FR-008**: Phase 2 MUST judge the existing SWE.1 checklist items SWE1-01..08 unchanged as the gate, plus SQ-01..SQ-10
   as set findings, and MUST provide phase 1's carried findings as context.
-- **FR-009**: Phase-2 findings with severity BLOCKING or CORRECTABLE MUST route to the existing set rework and
-  re-inspection; EDITORIAL and justified N/A findings MUST be recorded without forcing rework.
+- **FR-009**: Phase-2 findings with severity BLOCKING or CORRECTABLE (not input uncertainty) MUST route to the
+  existing set rework and re-inspection through the SWE1 checklist item they belong to (SQ-01/06 -> SWE1-05, SQ-02/08
+  -> SWE1-03, SQ-03 -> SWE1-04, SQ-04/05/07 and phase-1 carried findings -> SWE1-02, SQ-09 -> SWE1-01, SQ-10 ->
+  SWE1-06): the item's inspector checks each against the sources and fails the item for every one that holds;
+  EDITORIAL and justified N/A findings MUST be recorded without forcing rework.
 - **FR-010**: The SWE.1 gate verdict MUST remain the existing checklist decision (SWE1-01..08); SQ findings and
   carried phase-1 findings influence it only through those items and through rework.
 - **FR-011**: Every phase-1 verdict and rework result MUST be checkpointed per requirement so that a resumed or

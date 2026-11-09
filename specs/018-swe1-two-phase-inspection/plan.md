@@ -103,11 +103,13 @@ swe1_author -> swe1_iq_inspect -> swe1_iq_check -(succeeded: rework pending)-> s
 
 - After the SWE1-01..06 items, the inspector judges SQ-01..SQ-10 as items with the existing verdict machinery and
   packet sources (whole set), plus the phase-1 summary (carried findings) as an extra source.
-- SQ items are recorded in the inspection record as non-gating items (`required: false`, `quality_set: true`).
-- The reply is REWORK when a required item fails (unchanged) or, while the SQ rework allowance (default 2 set-rework
-  cycles counted from the phase's rework history) remains, when an SQ item has a BLOCKING/CORRECTABLE finding;
-  SQ findings route through `rework_findings` -> `attribute_findings` like checklist findings. When the allowance
-  is used, SQ findings are recorded only (the gate decides on SWE1-01..08, FR-010).
+- SQ verdicts are recorded beside the checklist verdicts (`inspection-record.json` `set_quality`,
+  `phase2/set-quality.json`); they are not gate items.
+- Routing (implementation decision, 2026-11-09): the gate decides from the recorded checklist verdicts only, so an
+  actionable SQ finding (and every phase-1 carried finding) is handed to the checklist item it belongs to
+  (`review.SQ_ITEMS`; carried -> SWE1-02) as context the item's inspector must check against the sources; a finding
+  that holds fails the item, which routes to the existing rework with its budgets (`maximum_rework_cycles`). No
+  separate SQ allowance is needed: the checklist rework budget bounds the loop.
 
 ### D5 Versioned criteria and evidence
 
@@ -115,7 +117,7 @@ swe1_author -> swe1_iq_inspect -> swe1_iq_check -(succeeded: rework pending)-> s
   from `docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md` with its sha256; a test re-derives the IDs and properties from
   the guideline tables so drift is caught.
 - Evidence: `phase1/summary.json` + verdict/rework JSONL; the inspection record keeps SQ verdicts; a compact report
-  `inspection/SWE.1/quality-report.md` lists per requirement rounds/final verdict/open findings and per item the
+  `.forge-run/lrtx/SWE.1/quality-report.md` (run evidence, outside the baselined work products) lists per requirement rounds/final verdict/open findings and per item the
   verdict (US3).
 
 ### D6 Rollout
