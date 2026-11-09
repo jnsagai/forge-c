@@ -88,8 +88,11 @@ class MissionLedger:
         tokens = sum(max(r["charge"], request_charges.pop(r["identity"], 0)) for r in ex) + sum(request_charges.values())
         from collections import Counter
 
-        counters = c.execute("SELECT job_id,kind,COUNT(*) AS n FROM afo_mission_counters WHERE mission_id=? "
-                             "GROUP BY job_id,kind", (mission_id,)).fetchall()
+        # CAPA-205: positional (job_id, kind, n) - the deployer's budget capture uses a plain connection (no row
+        # factory), and since CAPA-203 the line queue holds this mission's TOOL counters.
+        counters = [(job, kind, n) for job, kind, n in c.execute(
+            "SELECT job_id,kind,COUNT(*) AS n FROM afo_mission_counters WHERE mission_id=? GROUP BY job_id,kind",
+            (mission_id,)).fetchall()]
 
         def count(kind, observed):
             # Later ingestion of the same native history replaces an aggregate
@@ -101,8 +104,8 @@ class MissionLedger:
             return total + sum(observed.values())
 
         requests = count("requests", dict(Counter(r["job_id"] for r in req)))
-        tools = count("tools", {r["job_id"]: r["n"] for r in counters if r["kind"] == "TOOL"})
-        corrections = count("corrections", {r["job_id"]: r["n"] for r in counters if r["kind"] == "CORRECTION"})
+        tools = count("tools", {job: n for job, kind, n in counters if kind == "TOOL"})
+        corrections = count("corrections", {job: n for job, kind, n in counters if kind == "CORRECTION"})
         return {
             **m,
             "attempts": sum(r["kind"] == "PRODUCT" for r in ex),
