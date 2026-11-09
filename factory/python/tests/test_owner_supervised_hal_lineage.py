@@ -55,3 +55,11 @@ def test_the_hal_lineages_name_their_specs_and_drivers():
             for i in ("spi-hal", "tim-hal")} == {
         "spi-hal": ("0011m-spi-hal", "STM32N6_SPI_HAL", "spi-ll"),
         "tim-hal": ("0013m-tim-hal", "STM32N6_TIM_HAL", "tim-ll")}
+
+
+def test_the_swe1_stage_hal_builds_on_the_verified_wwdg_ll(supervised):
+    D.validate_order({**_shape(supervised, "START", "wwdg-hal"), "provided_from": "WO-F014-SWE6-WWDGL-20261103-L29"})
+    with pytest.raises(Refused, match=D.ENVELOPE_REFUSED):  # another lineage cannot borrow it
+        D.validate_order({**_shape(supervised, "START", "spi-hal"), "provided_from": "WO-F014-SWE6-WWDGL-20261103-L29"})
+    with pytest.raises(Refused, match=D.ENVELOPE_REFUSED):  # nor an LL
+        D.validate_order({**_shape(supervised, "START", "wwdg-ll"), "provided_from": "WO-F014-SWE6-WWDGL-20261103-L29"})

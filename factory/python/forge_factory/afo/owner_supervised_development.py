@@ -129,17 +129,27 @@ _LINEAGE = {L["id"]: L for L in LINEAGES}
 # Feature 019 (owner 2026-11-09): "implement first the low level driver, then the whole driver for the same model" and
 # "I want that Omniverse to be fully responsible to prepare all the inputs for the run". The driver ladder is factory
 # source: every deploy derives the line campaign from it (derived_campaign) and the line walks it one step at a time.
-LADDER = ("wwdg-ll", "wwdg-hal", "spi-ll", "spi-hal", "tim-ll", "tim-hal")
+# Owner ~14:00: "Before going to SW2, I want to exercise a bit more SW1 with other examples ... HAL example on WWDG,
+# then SW1 on intermediate model, then a complex model. just when we are sure that SW1 is really stable, then we can
+# go for the next one." -> the ladder runs one phase stage across all steps; the owner raises LADDER_PHASES.
+LADDER = ("wwdg-ll", "wwdg-hal", "spi-ll", "tim-ll")
+LADDER_PHASES = ("SWE.1",)
+# A HAL step of a stage that ends before SWE.6 builds on an LL order of its peripheral that already passed all six
+# phases (workorder.provided_ll re-checks the six gates, ADR-0009): WWDG LL L29, factory 82fabdb9 (2026-11-03).
+PROVIDED_LL = {"wwdg-hal": "WO-F014-SWE6-WWDGL-20261103-L29"}
 assert all(i in _LINEAGE for i in LADDER) and len(set(LADDER)) == len(LADDER)
+assert LADDER_PHASES == PHASES[:len(LADDER_PHASES)] and LADDER_PHASES
 assert all(_LINEAGE[i]["depends_on"] in (None, LADDER[k - 1]) and (k or _LINEAGE[i]["depends_on"] is None)
            for k, i in enumerate(LADDER))
+assert LADDER_PHASES[-1] == PHASES[-1] or all(i in PROVIDED_LL for i in LADDER if _LINEAGE[i]["depends_on"])
 
 
 def derived_campaign():
-    """The owner-lane campaign document (forge-c/line-campaign/1) derived from LINEAGES and LADDER; the deployer
-    substitutes @SOURCE@ with the deployed commit. Ladder steps are ACTIVE with descending priority; a HAL step
-    depends_on its LL lineage's SWE.6 (provided_from), any other later step waits `after` the previous step's SWE.6;
-    lineages off the ladder stay ON_HOLD."""
+    """The owner-lane campaign document (forge-c/line-campaign/1) derived from LINEAGES, LADDER and LADDER_PHASES;
+    the deployer substitutes @SOURCE@ with the deployed commit. Ladder steps are ACTIVE with descending priority and
+    run the stage's phases; a HAL step builds on its LL lineage's SWE.6 (depends_on) when the stage reaches SWE.6,
+    else on its PROVIDED_LL; every later step waits `after` the previous step's last stage phase unless it already
+    depends on it. Lineages off the ladder stay ON_HOLD."""
     from ..quality import defaults
 
     pos = {lid: k for k, lid in enumerate(LADDER)}
@@ -148,12 +158,16 @@ def derived_campaign():
         k = pos.get(L["id"])
         e = dict(id=L["id"], status="ACTIVE" if k is not None else "ON_HOLD", example=L["example"], tag=L["tag"],
                  series=L["series"], driver_class=L["driver_class"], factory_revision="@SOURCE@", profile=PROFILE,
-                 run_model=RUN_MODEL, purpose="ASPICE_ONLY", phases=list(PHASES),
+                 run_model=RUN_MODEL, purpose="ASPICE_ONLY",
+                 phases=list(LADDER_PHASES if k is not None else PHASES),
                  priority=50 - k if k is not None else 30, quality=defaults("ASPICE_ONLY"))
         if L["depends_on"] is not None:
-            e["depends_on"] = dict(lineage=L["depends_on"], phase=PHASES[-1], verdict="PASS")
-        elif k:
-            e["after"] = dict(lineage=LADDER[k - 1], phase=PHASES[-1], verdict="PASS")
+            if k is not None and LADDER_PHASES[-1] != PHASES[-1]:
+                e["provided_from"] = PROVIDED_LL[L["id"]]
+            else:
+                e["depends_on"] = dict(lineage=L["depends_on"], phase=PHASES[-1], verdict="PASS")
+        if k and e.get("depends_on", {}).get("lineage") != LADDER[k - 1]:
+            e["after"] = dict(lineage=LADDER[k - 1], phase=LADDER_PHASES[-1], verdict="PASS")
         e["note"] = (f"Driver ladder step {k + 1} of {len(LADDER)} (owner 2026-11-09: LL first, then the HAL on it)."
                      if k is not None else "Not on the driver ladder (owner 2026-11-09).")
         out.append(e)
@@ -647,6 +661,8 @@ def _provided_shape(order, L):
     source = order.get("provided_from")
     if L.get("depends_on") is None:
         return source is None
+    if source is not None and source == PROVIDED_LL.get(L["id"]):  # the SWE.1-stage HAL on its verified LL
+        return True
     scope = ORDER_SCOPE.get(source)
     return scope is not None and scope[0] == L["depends_on"] and scope[1] == PHASES[-1]
 

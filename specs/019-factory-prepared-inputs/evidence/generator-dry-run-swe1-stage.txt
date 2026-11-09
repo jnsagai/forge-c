@@ -1,0 +1,71 @@
+{
+ "source": "/mnt/data/forge-c/repos/forge-c-019-inputs",
+ "campaign_source": "DERIVED",
+ "template_sha256_ignored": "0a912a75445c39b2a54d81263f7add3b502c799a97c8573daebbe68262df85e4",
+ "lineages": [
+  [
+   "gpio-ll",
+   "ON_HOLD",
+   30,
+   6,
+   null,
+   null
+  ],
+  [
+   "spi-ll",
+   "ACTIVE",
+   48,
+   1,
+   null,
+   "wwdg-hal"
+  ],
+  [
+   "usart-ll",
+   "ON_HOLD",
+   30,
+   6,
+   null,
+   null
+  ],
+  [
+   "tim-ll",
+   "ACTIVE",
+   47,
+   1,
+   null,
+   "spi-ll"
+  ],
+  [
+   "wwdg-ll",
+   "ACTIVE",
+   50,
+   1,
+   null,
+   null
+  ],
+  [
+   "wwdg-hal",
+   "ACTIVE",
+   49,
+   1,
+   null,
+   "wwdg-ll"
+  ],
+  [
+   "spi-hal",
+   "ON_HOLD",
+   30,
+   6,
+   "spi-ll",
+   null
+  ],
+  [
+   "tim-hal",
+   "ON_HOLD",
+   30,
+   6,
+   "tim-ll",
+   null
+  ]
+ ]
+}
