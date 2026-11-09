@@ -16,7 +16,7 @@ Source: `assembly.json` (`swr -> {task, key}`) plus the task checkpoint answer.
 
 ## Quality checklist (`quality-checklist`)
 
-Versioned file `factory/checklists/v0.4/SWE.1-quality.yaml` derived from the pinned guideline:
+Versioned file `config/factory/swe1-requirements-quality.yaml` derived from the pinned guideline:
 
 | Field | Type | Rule |
 |---|---|---|

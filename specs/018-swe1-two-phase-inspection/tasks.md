@@ -6,7 +6,7 @@
 ## Phase 1: Setup
 
 - [X] T001 Pin the guideline: `docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md` (copy of main 248e423a) and create
-  `factory/checklists/v0.4/SWE.1-quality.yaml` (IQ-01..12, SQ-01..10, severities, `phase1.rounds: 3`, guideline
+  `config/factory/swe1-requirements-quality.yaml` (IQ-01..12, SQ-01..10, severities, `phase1.rounds: 3`, guideline
   sha256); loader `forge_factory/lrtx/swe1_quality.py:quality_checklist()`; test
   `tests/test_f018_quality_checklist.py` re-derives the IDs/properties from the guideline tables and checks the sha.
 
