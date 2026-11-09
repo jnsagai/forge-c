@@ -280,6 +280,35 @@
           },
           "description": "Auto-chaining inside the campaign (decision 3): the lineage starts when that lineage passed that phase; --provided-from is that passing order."
         },
+        "after": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lineage",
+            "phase",
+            "verdict"
+          ],
+          "properties": {
+            "lineage": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]{1,47}$"
+            },
+            "phase": {
+              "enum": [
+                "SWE.1",
+                "SWE.2",
+                "SWE.3",
+                "SWE.4",
+                "SWE.5",
+                "SWE.6"
+              ]
+            },
+            "verdict": {
+              "const": "PASS"
+            }
+          },
+          "description": "Feature 019 (owner 2026-11-09): the lineage waits until that lineage passed that phase and builds on nothing (no --provided-from); the driver ladder's next peripheral."
+        },
         "priority": {
           "type": "integer",
           "minimum": 0,

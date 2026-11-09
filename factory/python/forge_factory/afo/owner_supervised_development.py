@@ -118,9 +118,47 @@ LINEAGES = tuple(
         # HAL lineage runs on the LL order of its peripheral that passed SWE.6 (campaign depends_on; the order carries
         # provided_from, and workorder.provided_ll still requires all six LL gates PASS, ADR-0009).
         ("wwdg-hal", "WWDGH", "20261109-L45", "0016m-wwdg-hal", "STM32N6_WWDG_HAL", "wwdg-ll"),
+        # Feature 019: the SPI and TIM HAL specs do not exist yet; the line holds those steps as INPUT_GAP until the
+        # peripheral onboarding stage (feature 016) delivers them.
+        ("spi-hal", "SPIH", "20261109-L46", "0011m-spi-hal", "STM32N6_SPI_HAL", "spi-ll"),
+        ("tim-hal", "TIMH", "20261109-L47", "0013m-tim-hal", "STM32N6_TIM_HAL", "tim-ll"),
     )
 )
 _LINEAGE = {L["id"]: L for L in LINEAGES}
+
+# Feature 019 (owner 2026-11-09): "implement first the low level driver, then the whole driver for the same model" and
+# "I want that Omniverse to be fully responsible to prepare all the inputs for the run". The driver ladder is factory
+# source: every deploy derives the line campaign from it (derived_campaign) and the line walks it one step at a time.
+LADDER = ("wwdg-ll", "wwdg-hal", "spi-ll", "spi-hal", "tim-ll", "tim-hal")
+assert all(i in _LINEAGE for i in LADDER) and len(set(LADDER)) == len(LADDER)
+assert all(_LINEAGE[i]["depends_on"] in (None, LADDER[k - 1]) and (k or _LINEAGE[i]["depends_on"] is None)
+           for k, i in enumerate(LADDER))
+
+
+def derived_campaign():
+    """The owner-lane campaign document (forge-c/line-campaign/1) derived from LINEAGES and LADDER; the deployer
+    substitutes @SOURCE@ with the deployed commit. Ladder steps are ACTIVE with descending priority; a HAL step
+    depends_on its LL lineage's SWE.6 (provided_from), any other later step waits `after` the previous step's SWE.6;
+    lineages off the ladder stay ON_HOLD."""
+    from ..quality import defaults
+
+    pos = {lid: k for k, lid in enumerate(LADDER)}
+    out = []
+    for L in LINEAGES:
+        k = pos.get(L["id"])
+        e = dict(id=L["id"], status="ACTIVE" if k is not None else "ON_HOLD", example=L["example"], tag=L["tag"],
+                 series=L["series"], driver_class=L["driver_class"], factory_revision="@SOURCE@", profile=PROFILE,
+                 run_model=RUN_MODEL, purpose="ASPICE_ONLY", phases=list(PHASES),
+                 priority=50 - k if k is not None else 30, quality=defaults("ASPICE_ONLY"))
+        if L["depends_on"] is not None:
+            e["depends_on"] = dict(lineage=L["depends_on"], phase=PHASES[-1], verdict="PASS")
+        elif k:
+            e["after"] = dict(lineage=LADDER[k - 1], phase=PHASES[-1], verdict="PASS")
+        e["note"] = (f"Driver ladder step {k + 1} of {len(LADDER)} (owner 2026-11-09: LL first, then the HAL on it)."
+                     if k is not None else "Not on the driver ladder (owner 2026-11-09).")
+        out.append(e)
+    return dict(schema="forge-c/line-campaign/1", campaign_id=CAMPAIGN, line="local", wo_prefix="WO-F014",
+                lineages=out, note="Derived from the factory source driver ladder (feature 019); never hand-edited.")
 
 
 def _name(lineage, phase, k):

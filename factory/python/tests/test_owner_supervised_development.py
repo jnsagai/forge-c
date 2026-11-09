@@ -846,8 +846,9 @@ def test_permit_admits_every_lineage_with_its_own_driver(supervised):
     eff = policy.load(supervised["runtime"])
     record = D.current(store=supervised["store"])
     assert record["order_ids"] == list(D.ORDERS) and record["order_drivers"] == D.ORDER_DRIVERS
-    assert record["driver_class"] == ["STM32N6_GPIO_LL_ST", "STM32N6_SPI_LL_ST", "STM32N6_TIM_LL_ST", "STM32N6_USART_LL_ST",
-                                      "STM32N6_WWDG_HAL", "STM32N6_WWDG_LL_ST"]
+    assert record["driver_class"] == ["STM32N6_GPIO_LL_ST", "STM32N6_SPI_HAL", "STM32N6_SPI_LL_ST", "STM32N6_TIM_HAL",
+                                      "STM32N6_TIM_LL_ST", "STM32N6_USART_LL_ST", "STM32N6_WWDG_HAL",
+                                      "STM32N6_WWDG_LL_ST"]
     for L in D.LINEAGES:
         for order_id in (_wo(L["id"], "SWE.1"), _wo(L["id"], "SWE.6", 64)):
             request = dict(order_id=order_id, driver_class=L["driver_class"], model=supervised["control"]["profile"])
