@@ -758,6 +758,12 @@ class Planner:
         if a is not None and a.status in ("LAUNCHING", "RUNNING"):
             P.state, P.reason = a.status, "ADOPTED" if not a.spec else ""
             return
+        # feature 019 (owner 2026-11-09): the next ladder step waits for the previous one and builds on nothing
+        if L.after:
+            dep = self.plans.get(f"{L.campaign_id}/{L.after['lineage']}")
+            if not (dep and dep.chain.get(L.after["phase"])):
+                P.state, P.reason = "WAITING", f"AFTER:{L.after['lineage']}:{L.after['phase']}:PASS"
+                return
         if L.factory_revision is None:
             P.state, P.reason = "WAITING", "FACTORY_REVISION_PENDING"
             return
@@ -766,6 +772,10 @@ class Planner:
             P.state, P.reason = "WAITING", "FACTORY_REVISION_NOT_ON_HOST"
             return
         ph = P.phase
+        if a is None and not self.line.spec_quality(full, L.example)[0]:
+            # feature 019: a missing run input (the step's work-order spec) is held and reported, never improvised
+            P.state, P.reason = "WAITING", f"INPUT_GAP:WORKORDER_SPEC:{L.example}"
+            return
         if a is None:
             kind = "START" if prev is None else "CHAIN"
             self._place(P, self._order(P, ph, kind, resume_from=prev.wo if prev else None), "PLACE")

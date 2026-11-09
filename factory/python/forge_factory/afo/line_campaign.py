@@ -25,6 +25,7 @@ lineage or example is a new campaign entry, i.e. a new owner-approved commit.
         start: {resume_from: WO-..., at: SWE.3}           # optional: phases before `at` are carried by resume_from
         provided_from: WO-...                            # optional (HAL on a verified LL), or
         depends_on: {lineage: crc-ll, phase: SWE.6, verdict: PASS}   # provided_from = that lineage's passing order
+        after: {lineage: crc-hal, phase: SWE.6, verdict: PASS}       # optional: wait for it, build on nothing
         priority: 50                            # higher first; one GPU run at a time
         quality: {...}                          # optional order quality block (owner rule 2026-11-03), into the order
 
@@ -49,7 +50,7 @@ STATUSES = ("ACTIVE", "ON_HOLD", "DONE")
 PURPOSES = ("ASPICE_ONLY", "QM", "DEVELOPMENT", "FORMAL_REVIEW")
 TOP_KEYS = {"schema", "campaign_id", "line", "wo_prefix", "lineages", "note"}
 LINEAGE_KEYS = {"id", "status", "example", "tag", "series", "driver_class", "factory_revision", "profile", "run_model",
-                "purpose", "phases", "start", "provided_from", "depends_on", "priority", "quality", "completed_by",
+                "purpose", "phases", "start", "provided_from", "depends_on", "after", "priority", "quality", "completed_by",
                 "note"}
 REQUIRED = ("id", "example", "tag", "series", "driver_class", "factory_revision", "profile", "run_model", "phases")
 RX = {
@@ -90,6 +91,7 @@ class Lineage:
     start: dict | None = None
     provided_from: str | None = None
     depends_on: dict | None = None
+    after: dict | None = None  # feature 019: wait for that lineage's phase PASS without building on it
     quality: dict | None = None
     completed_by: str | None = None
     wo_prefix: str = "WO-F014"
@@ -196,6 +198,11 @@ def validate(doc, *, purpose_check: bool = True) -> list[str]:
             if not isinstance(d, dict) or set(d) != {"lineage", "phase", "verdict"} or d.get("verdict") != "PASS" \
                     or d.get("phase") not in PHASES or d.get("lineage") not in ids or d.get("lineage") == L.get("id"):
                 out.append(f"{p}:FIELD_INVALID:depends_on")
+        a = L.get("after")  # feature 019 (owner 2026-11-09): the ladder's next step waits, builds on nothing
+        if a is not None and (not isinstance(a, dict) or set(a) != {"lineage", "phase", "verdict"}
+                              or a.get("verdict") != "PASS" or a.get("phase") not in PHASES
+                              or a.get("lineage") not in ids or a.get("lineage") == L.get("id")):
+            out.append(f"{p}:FIELD_INVALID:after")
         if st == "DONE" and (not isinstance(L.get("completed_by"), str) or not RX["wo"].match(L["completed_by"])):
             out.append(f"{p}:DONE_NEEDS_COMPLETED_BY")
         if st != "DONE" and L.get("completed_by") is not None:
@@ -209,16 +216,23 @@ def validate(doc, *, purpose_check: bool = True) -> list[str]:
     tags = [(x.get("tag"), x.get("series")) for x in lins if isinstance(x, dict)]
     if len(set(tags)) != len(tags):
         out.append("TAG_SERIES_DUPLICATE")
-    # no dependency cycle
-    dep = {x.get("id"): (x.get("depends_on") or {}).get("lineage") for x in lins if isinstance(x, dict)}
+    # no dependency cycle over depends_on and after (feature 019)
+    def _edge(x, k):
+        v = x.get(k)
+        return v.get("lineage") if isinstance(v, dict) else None
+
+    dep = {x.get("id"): [e for e in (_edge(x, "depends_on"), _edge(x, "after")) if e] for x in lins if isinstance(x, dict)}
     for start in dep:
-        seen, cur = set(), start
-        while cur in dep and dep[cur] is not None:
-            if cur in seen:
+        seen, todo = set(), list(dep[start])
+        while todo:
+            cur = todo.pop()
+            if cur == start:
                 out.append(f"DEPENDENCY_CYCLE:{start}")
                 break
+            if cur in seen:
+                continue
             seen.add(cur)
-            cur = dep[cur]
+            todo += dep.get(cur, [])
     return out
 
 
@@ -280,7 +294,8 @@ def parse(path: Path, *, require_approval: bool = True) -> Campaign:
             series=L["series"], driver_class=L["driver_class"], factory_revision=L["factory_revision"],
             profile=L["profile"], run_model=L["run_model"], purpose=L.get("purpose", "ASPICE_ONLY"),
             phases=tuple(L["phases"]), priority=int(L.get("priority", 50)), start=L.get("start"),
-            provided_from=L.get("provided_from"), depends_on=L.get("depends_on"), quality=L.get("quality"),
+            provided_from=L.get("provided_from"), depends_on=L.get("depends_on"), after=L.get("after"),
+            quality=L.get("quality"),
             completed_by=L.get("completed_by"), wo_prefix=prefix, sha256=sha256_bytes(canonical_json(L)), position=i))
     return c
 

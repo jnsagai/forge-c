@@ -104,19 +104,61 @@ CAMPAIGN = "CMP-OMNI2-ST-LL-20261107"
 PER_PHASE = 64
 LINEAGES = tuple(
     dict(id=i, tag=t, series=s, example=e, driver_class=d, phases=PHASES, purpose="ASPICE_ONLY",
-         profile=PROFILE, run_model=RUN_MODEL)
-    for i, t, s, e, d in (
-        ("gpio-ll", "GPIOL", "20261107-L40", "0010l-st-cube-gpio-swe1-gen", "STM32N6_GPIO_LL_ST"),
-        ("spi-ll", "SPIL", "20261107-L41", "0011l-st-cube-spi-swe1-gen", "STM32N6_SPI_LL_ST"),
-        ("usart-ll", "USARTL", "20261107-L42", "0012l-st-cube-usart-swe1-gen", "STM32N6_USART_LL_ST"),
-        ("tim-ll", "TIML", "20261107-L43", "0013l-st-cube-tim-swe1-gen", "STM32N6_TIM_LL_ST"),
+         profile=PROFILE, run_model=RUN_MODEL, depends_on=dep)
+    for i, t, s, e, d, dep in (
+        ("gpio-ll", "GPIOL", "20261107-L40", "0010l-st-cube-gpio-swe1-gen", "STM32N6_GPIO_LL_ST", None),
+        ("spi-ll", "SPIL", "20261107-L41", "0011l-st-cube-spi-swe1-gen", "STM32N6_SPI_LL_ST", None),
+        ("usart-ll", "USARTL", "20261107-L42", "0012l-st-cube-usart-swe1-gen", "STM32N6_USART_LL_ST", None),
+        ("tim-ll", "TIML", "20261107-L43", "0013l-st-cube-tim-swe1-gen", "STM32N6_TIM_LL_ST", None),
         # Owner 2026-11-09: "lets choose a simpler driver to implement swe.1, the simpliest one, after that we go for
         # an intermediate, after a complex" - WWDG (3 registers, 6 fields) first, then SPI, then TIM. The campaign
         # file activates one lineage at a time; this table only names the orders the allowance may carry.
-        ("wwdg-ll", "WWDGL", "20261109-L44", "0016c-st-cube-wwdg", "STM32N6_WWDG_LL_ST"),
+        ("wwdg-ll", "WWDGL", "20261109-L44", "0016c-st-cube-wwdg", "STM32N6_WWDG_LL_ST", None),
+        # Owner 2026-11-09: "implement first the low level driver, then the whole driver for the same model" - each
+        # HAL lineage runs on the LL order of its peripheral that passed SWE.6 (campaign depends_on; the order carries
+        # provided_from, and workorder.provided_ll still requires all six LL gates PASS, ADR-0009).
+        ("wwdg-hal", "WWDGH", "20261109-L45", "0016m-wwdg-hal", "STM32N6_WWDG_HAL", "wwdg-ll"),
+        # Feature 019: the SPI and TIM HAL specs do not exist yet; the line holds those steps as INPUT_GAP until the
+        # peripheral onboarding stage (feature 016) delivers them.
+        ("spi-hal", "SPIH", "20261109-L46", "0011m-spi-hal", "STM32N6_SPI_HAL", "spi-ll"),
+        ("tim-hal", "TIMH", "20261109-L47", "0013m-tim-hal", "STM32N6_TIM_HAL", "tim-ll"),
     )
 )
 _LINEAGE = {L["id"]: L for L in LINEAGES}
+
+# Feature 019 (owner 2026-11-09): "implement first the low level driver, then the whole driver for the same model" and
+# "I want that Omniverse to be fully responsible to prepare all the inputs for the run". The driver ladder is factory
+# source: every deploy derives the line campaign from it (derived_campaign) and the line walks it one step at a time.
+LADDER = ("wwdg-ll", "wwdg-hal", "spi-ll", "spi-hal", "tim-ll", "tim-hal")
+assert all(i in _LINEAGE for i in LADDER) and len(set(LADDER)) == len(LADDER)
+assert all(_LINEAGE[i]["depends_on"] in (None, LADDER[k - 1]) and (k or _LINEAGE[i]["depends_on"] is None)
+           for k, i in enumerate(LADDER))
+
+
+def derived_campaign():
+    """The owner-lane campaign document (forge-c/line-campaign/1) derived from LINEAGES and LADDER; the deployer
+    substitutes @SOURCE@ with the deployed commit. Ladder steps are ACTIVE with descending priority; a HAL step
+    depends_on its LL lineage's SWE.6 (provided_from), any other later step waits `after` the previous step's SWE.6;
+    lineages off the ladder stay ON_HOLD."""
+    from ..quality import defaults
+
+    pos = {lid: k for k, lid in enumerate(LADDER)}
+    out = []
+    for L in LINEAGES:
+        k = pos.get(L["id"])
+        e = dict(id=L["id"], status="ACTIVE" if k is not None else "ON_HOLD", example=L["example"], tag=L["tag"],
+                 series=L["series"], driver_class=L["driver_class"], factory_revision="@SOURCE@", profile=PROFILE,
+                 run_model=RUN_MODEL, purpose="ASPICE_ONLY", phases=list(PHASES),
+                 priority=50 - k if k is not None else 30, quality=defaults("ASPICE_ONLY"))
+        if L["depends_on"] is not None:
+            e["depends_on"] = dict(lineage=L["depends_on"], phase=PHASES[-1], verdict="PASS")
+        elif k:
+            e["after"] = dict(lineage=LADDER[k - 1], phase=PHASES[-1], verdict="PASS")
+        e["note"] = (f"Driver ladder step {k + 1} of {len(LADDER)} (owner 2026-11-09: LL first, then the HAL on it)."
+                     if k is not None else "Not on the driver ladder (owner 2026-11-09).")
+        out.append(e)
+    return dict(schema="forge-c/line-campaign/1", campaign_id=CAMPAIGN, line="local", wo_prefix="WO-F014",
+                lineages=out, note="Derived from the factory source driver ladder (feature 019); never hand-edited.")
 
 
 def _name(lineage, phase, k):
@@ -599,6 +641,16 @@ def _trial_envelopes(control, envelopes=None):
             _fail("ORIGINAL_ROLE_ENVELOPES_REQUIRED")
 
 
+def _provided_shape(order, L):
+    """An LL lineage builds on nothing; a HAL lineage only on the SWE.6 order of the LL lineage it depends on (the
+    order line_orders.Planner sets from depends_on once that phase passed)."""
+    source = order.get("provided_from")
+    if L.get("depends_on") is None:
+        return source is None
+    scope = ORDER_SCOPE.get(source)
+    return scope is not None and scope[0] == L["depends_on"] and scope[1] == PHASES[-1]
+
+
 def _resume_shape(order, lineage_id, phase):
     """Exactly the resume shapes line_orders.Planner.decide and line_recovery_coordination produce."""
     kind, source, upto = order.get("kind"), order.get("resume_from"), order.get("resume_upto")
@@ -633,7 +685,7 @@ def validate_order(order):
         or order.get("profile") != PROFILE
         or order.get("run_model") != RUN_MODEL
         or order.get("purpose") != "ASPICE_ONLY"
-        or order.get("provided_from") is not None
+        or not _provided_shape(order, L)
         or not _resume_shape(order, lineage_id, phase)
         or order.get("durable_control") != record["control_ref"]
         or digest(order.get("quality")) != QUALITY_SHA
