@@ -667,6 +667,18 @@ def _provided_shape(order, L):
     return scope is not None and scope[0] == L["depends_on"] and scope[1] == PHASES[-1]
 
 
+def _retry_shape(order, lineage_id, phase):
+    """CAPA-209: a first-phase retry may name the failed attempt it revalidates - an order of the same lineage and
+    phase, never itself and never with resumed phases."""
+    source = order.get("retry_of")
+    if source is None:
+        return True
+    scope = ORDER_SCOPE.get(source)
+    return (order.get("kind") in ("RETRY", "RETRY_INFRA", "RELAUNCH", "RELAUNCH_INFRA")
+            and order.get("resume_from") is None and source != order.get("wo")
+            and scope is not None and scope[0] == lineage_id and scope[1] == phase)
+
+
 def _resume_shape(order, lineage_id, phase):
     """Exactly the resume shapes line_orders.Planner.decide and line_recovery_coordination produce."""
     kind, source, upto = order.get("kind"), order.get("resume_from"), order.get("resume_upto")
@@ -703,6 +715,7 @@ def validate_order(order):
         or order.get("purpose") != "ASPICE_ONLY"
         or not _provided_shape(order, L)
         or not _resume_shape(order, lineage_id, phase)
+        or not _retry_shape(order, lineage_id, phase)
         or order.get("durable_control") != record["control_ref"]
         or digest(order.get("quality")) != QUALITY_SHA
     ):

@@ -86,7 +86,7 @@ _MODEL_RX = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,200}$")
 EXTRA_FLAGS = {"--stop-after": "stop_after", "--resume-from": "resume_from", "--provided-from": "provided_from",
                "--resume-upto": "resume_upto", "--timeout-scale": "timeout_scale",
                "--quality": "quality_file", "--durable-launch": "durable_file",
-               "--durable-launch-sha256": "durable_sha256"}
+               "--durable-launch-sha256": "durable_sha256", "--retry-of": "retry_of"}
 
 
 class LaunchError(RuntimeError):
@@ -169,12 +169,16 @@ class Order:
     durable_file: str | None = None
     durable_sha256: str | None = None
     rework_context: dict | None = None
+    retry_of: str | None = None  # CAPA-209: the failed attempt of the same lineage and first phase
 
     def validate(self) -> None:
         bad = [n for n, v, rx in (("wo", self.wo, _WO_RX), ("rev", self.rev, _REV_RX), ("example", self.example, _EX_RX),
                                    ("profile", self.profile, _PROFILE_RX), ("model", self.model, _MODEL_RX))
                if not isinstance(v, str) or not rx.match(v)]
-        bad += [n for n in ("resume_from", "provided_from") if getattr(self, n) and not _WO_RX.match(getattr(self, n))]
+        bad += [n for n in ("resume_from", "provided_from", "retry_of")
+                if getattr(self, n) and not _WO_RX.match(getattr(self, n))]
+        if self.retry_of and (self.resume_from or self.retry_of == self.wo):
+            bad.append("retry_of")
         bad += [n for n in ("stop_after", "resume_upto") if getattr(self, n) and getattr(self, n) not in PHASES]
         if self.timeout_scale is not None and not 1.0 <= float(self.timeout_scale) <= 10.0:
             bad.append("timeout_scale")
@@ -221,7 +225,7 @@ class Order:
 
     def view(self):
         result = asdict(self)
-        for key in ("durable_file", "durable_sha256", "rework_context"):
+        for key in ("durable_file", "durable_sha256", "rework_context", "retry_of"):
             if result[key] is None:
                 result.pop(key)
         return result

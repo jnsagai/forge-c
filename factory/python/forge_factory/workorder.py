@@ -856,6 +856,7 @@ def run(
     recovery_plan: dict | None = None,
     fresh_recovery_from: str | None = None,
     revalidate_author_tasks: bool = False,
+    line_retry: bool = False,
     durable_binding: dict | None = None,
     before_native_launch=None,
     recovery_exhausted: dict | None = None,
@@ -881,6 +882,8 @@ def run(
         raise ValueError("AUTHOR_TASK_REVALIDATION_FLAG_INVALID")
     if revalidate_author_tasks and not (fresh_recovery_from or resume):
         raise ValueError("AUTHOR_TASK_REVALIDATION_SOURCE_REQUIRED")
+    if line_retry and not (fresh_recovery_from and revalidate_author_tasks):
+        raise ValueError("LINE_RETRY_SOURCE_REQUIRED")
     if type(evaluation_holdout) is not bool:
         raise ValueError("EVALUATION_HOLDOUT_FLAG_INVALID")
     from .brownfield.resume import DEFAULT_LIMITS, ResumeRefused, check_source
@@ -958,6 +961,13 @@ def run(
                 "fresh independent phase validation after externally approved factory change; "
                 "no old phase artifacts, inspections, PASS verdicts or delivered-code corrections carried; "
                 "individual author task proposals may be reused only after exact input/schema/task revalidation"
+            )
+        if line_retry:  # CAPA-209
+            fresh_origin["kind"] = "LINE_RETRY"
+            fresh_origin["basis"] = (
+                "line retry of a failed attempt of the same lineage and first phase; no phase artifacts, set "
+                "inspections, baselines, gates or PASS verdicts of the phase carried; an author task proposal or a "
+                "passed phase-1 requirement verdict is reused only when its packet is identical and it revalidates"
             )
         evaluation_holdout = evaluation_holdout or bool(old.get("evaluation_holdout"))
     resume_limits = {
@@ -1271,6 +1281,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--durable-launch", type=Path, help="explicit immutable line product context; no inferred authority")
     ap.add_argument("--durable-launch-sha256")
     ap.add_argument("--rework-from", help="failed work order whose bound findings are untrusted retry input")
+    ap.add_argument("--retry-of", help="CAPA-209: failed attempt of the same lineage and first phase to revalidate")
     ap.add_argument("--rework-inspection-sha256", help="full latest failed inspection SHA-256, or explicit ABSENT")
     ap.add_argument("--rework-gates-sha256", help="full source gate-log SHA-256; requires --resume-from and --stop-after")
     ap.add_argument("--rework-source-phase", choices=("SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"),
@@ -1314,6 +1325,8 @@ def main(argv: list[str] | None = None) -> int:
                         "resume_upto": a.resume_upto, "quality": quality}
             if rework is not None:
                 expected["rework_context"] = rework
+            if a.retry_of:
+                expected["retry_of"] = a.retry_of
             durable = native_parameters(a.durable_launch, a.durable_launch_sha256, expected)
         res = run(
             a.example.resolve(),
@@ -1324,6 +1337,8 @@ def main(argv: list[str] | None = None) -> int:
             provider=a.provider,
             resume=a.resume_from,
             provided_from=a.provided_from,
+            **({"fresh_recovery_from": a.retry_of, "revalidate_author_tasks": True, "line_retry": True}
+               if a.retry_of else {}),
             acp_authors=a.acp_authors,
             acp_inspectors=a.acp_inspectors,
             intake_only=a.intake_only,

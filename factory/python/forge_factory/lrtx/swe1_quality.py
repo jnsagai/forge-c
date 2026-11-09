@@ -288,6 +288,43 @@ def _budget(ws: Path, phase: str, resume: bool, time_budget_s: float | None) -> 
     return budget
 
 
+def _inherited_verdict(ws: Path, ref: dict, task: str, build, check) -> dict | None:
+    """CAPA-209: a line retry (manifest fresh_recovery_from kind LINE_RETRY, bound to the source manifest) keeps the
+    source's PASS verdict of a requirement only when the source checkpoint of the same task is VALID, answered the
+    identical inspection packet (base_hash = this packet's hash: requirement, siblings, sources, criteria, model),
+    still validates, and is the recorded passing verdict. Failed, missing or changed: judged again."""
+    from ..brownfield.resume import source_workspace
+    from ..common import state_dir
+
+    try:
+        man = json.loads((Path(ws) / ".forge-run/manifest.json").read_text())
+        fresh = man.get("fresh_recovery_from") or {}
+        if fresh.get("kind") != "LINE_RETRY" or fresh.get("revalidate_author_tasks") is not True:
+            return None
+        parent = source_workspace(fresh["work_order"])
+        root = (state_dir() / "workorders").resolve()
+        if (parent.resolve() == Path(ws).resolve() or not parent.resolve().is_relative_to(root)
+                or sha256_file(parent / ".forge-run/manifest.json") != fresh.get("source_manifest_sha256")):
+            return None
+        old_v = verdicts(parent).get((_tk(ref), ref["sha"]))
+        if not old_v or old_v.get("passed") is not True or old_v.get("inherited_from"):
+            return None
+        cand = V._ckpt(parent, INSPECT, task)
+        if cand.is_symlink() or not cand.resolve().is_relative_to(parent.resolve()):
+            return None
+        raw = cand.read_bytes()
+        old = json.loads(raw)
+        base = build(None, None)
+        if (old.get("task") != task or old.get("status") != "VALID" or old.get("base_hash") != base["input_hash"]
+                or S.validate(old.get("doc"), base["output_schema"]) or check(old["doc"])
+                or old["doc"].get("findings") != old_v.get("findings")):
+            return None
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    return {**old_v, "at": utc_now(), "inherited_from": {"source_work_order": fresh["work_order"],
+                                                         "record_sha256": sha256_bytes(raw)}}
+
+
 def iq_inspect(ws: Path, model: str, resume: bool = False, time_budget_s: float | None = None) -> dict:
     """Judge every requirement whose current content has no verdict yet (one structured call each)."""
     ws = Path(ws)
@@ -303,6 +340,15 @@ def iq_inspect(ws: Path, model: str, resume: bool = False, time_budget_s: float 
             if k["stopped"] or (_tk(ref), ref["sha"]) in done:
                 continue
             sources = srcs.get(ref["task"], [])
+            inherited = _inherited_verdict(
+                ws, ref, f"iq:{ref['task']}:{ref['key']}:{ref['sha'][:12]}",
+                lambda fi, pr, ref=ref, sources=sources: iq_packet(ws, ref, model, sources, fi, pr),
+                lambda d, ref=ref: validate_iq(d, ref))
+            if inherited is not None:  # CAPA-209
+                inherited["round"] = k["reworks"] + 1
+                _append(ws, VERDICTS, inherited)
+                done[(inherited["tk"], inherited["sha"])] = inherited
+                continue
             rec = V.run_task(ws, INSPECT, f"iq:{ref['task']}:{ref['key']}:{ref['sha'][:12]}",
                              lambda fi, pr, ref=ref, sources=sources: iq_packet(ws, ref, model, sources, fi, pr),
                              lambda d, ref=ref: validate_iq(d, ref), budget)
