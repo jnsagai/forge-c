@@ -299,6 +299,36 @@ class RealLine:
         except ValueError:
             return False, None
 
+    def input_gaps(self, sha: str, example: str, purpose: str) -> list[str]:
+        """CAPA-207: what SWE.1 needs from the example's work-order spec at the revision and does not get (empty:
+        ready). The upstream approval is read the way work-order preparation reads it."""
+        key = (sha, example, purpose)
+        cache = self.__dict__.setdefault("_input_gaps", {})
+        if key not in cache:
+            import tempfile
+
+            from .. import input_readiness
+            from ..upstream import UPSTREAM_FILE, load_upstream
+
+            reader = self.LL.RevReader(self.cfg.repo, sha)
+            raw = reader.read(f"examples/{example}/workorder.json")
+            try:
+                spec = json.loads(raw) if raw is not None else None
+            except ValueError:
+                spec = None
+            if spec is None:
+                cache[key] = ["WORKORDER_SPEC"]
+            else:
+                up = reader.read(f"examples/{example}/{UPSTREAM_FILE}")
+                approved = False
+                if up is not None:
+                    with tempfile.TemporaryDirectory() as td:
+                        (Path(td) / UPSTREAM_FILE).parent.mkdir(parents=True)
+                        (Path(td) / UPSTREAM_FILE).write_bytes(up)
+                        approved = load_upstream(Path(td))["status"] == "APPROVED"
+                cache[key] = input_readiness.gaps(spec, purpose=purpose, upstream_approved=approved)
+        return list(cache[key])
+
     def quality_supported(self, sha: str) -> bool:
         return self.LL.quality_supported(self.LL.RevReader(self.cfg.repo, sha))
 
@@ -776,6 +806,13 @@ class Planner:
             # feature 019: a missing run input (the step's work-order spec) is held and reported, never improvised
             P.state, P.reason = "WAITING", f"INPUT_GAP:WORKORDER_SPEC:{L.example}"
             return
+        input_gaps = getattr(self.line, "input_gaps", None)
+        if (a is None or a.status == "QUEUED") and input_gaps is not None:
+            # CAPA-207: what SWE.1 needs from the inputs is checked before the GPU, not found by the inspector hours later
+            missing = input_gaps(full, L.example, L.purpose)
+            if missing:
+                P.state, P.reason = "WAITING", f"INPUT_GAP:{missing[0]}:{L.example}"
+                return
         if a is None:
             kind = "START" if prev is None else "CHAIN"
             self._place(P, self._order(P, ph, kind, resume_from=prev.wo if prev else None), "PLACE")
