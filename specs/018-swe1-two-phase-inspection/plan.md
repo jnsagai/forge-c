@@ -113,7 +113,7 @@ swe1_author -> swe1_iq_inspect -> swe1_iq_check -(succeeded: rework pending)-> s
 
 ### D5 Versioned criteria and evidence
 
-- `factory/checklists/v0.4/SWE.1-quality.yaml` (schema `forge-c/swe1-quality-checklist/1`): IQ/SQ criteria derived
+- `config/factory/swe1-requirements-quality.yaml` (schema `forge-c/swe1-quality-checklist/1`): IQ/SQ criteria derived
   from `docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md` with its sha256; a test re-derives the IDs and properties from
   the guideline tables so drift is caught.
 - Evidence: `phase1/summary.json` + verdict/rework JSONL; the inspection record keeps SQ verdicts; a compact report
@@ -133,7 +133,7 @@ swe1_author -> swe1_iq_inspect -> swe1_iq_check -(succeeded: rework pending)-> s
 ```
 specs/018-swe1-two-phase-inspection/{spec,plan,research,data-model,quickstart,tasks}.md, contracts/
 docs/SWE1-REQUIREMENTS-QUALITY-GUIDELINE.md                      (pinned copy of main 248e423a)
-factory/checklists/v0.4/SWE.1-quality.yaml                       (new)
+config/factory/swe1-requirements-quality.yaml                       (new)
 factory/python/forge_factory/lrtx/swe1_quality.py                (new: phase 1 inspect/rework/check, report)
 factory/python/forge_factory/lrtx/runner.py                      (steps iq-inspect, iq-rework, iq-check)
 factory/python/forge_factory/lrtx/swe1.py                        (single-requirement packet + splice helpers)

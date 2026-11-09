@@ -25,7 +25,7 @@ from ..common import REPO_ROOT, canonical_json, sha256_bytes, sha256_file, utc_n
 from . import structured as S
 from . import visit as V
 
-CHECKLIST = "factory/checklists/v0.4/SWE.1-quality.yaml"
+CHECKLIST = "config/factory/swe1-requirements-quality.yaml"  # not under the protected factory/checklists/** (CRE)
 INSPECT = "SWE.1/phase1"  # visit state and verdict checkpoints of the inspector step
 REWORK = "SWE.1/phase1-rework"  # visit state and answer checkpoints of the author step
 STATE = "SWE.1/phase1/state.json"
