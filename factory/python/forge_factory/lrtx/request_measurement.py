@@ -23,6 +23,11 @@ MAX_REQUEST_BYTES = 8 * 1024 * 1024
 PINNED_PROFILE_ROUTES = {
     "local-rtx-v2-omniverse2-ornith-think-afo-finite-review-20261104": {
         "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": METHOD,
+        # CAPA-197 (WO-F014-SWE1-GPIOL-20261107-L40J): the SWE.1 inspector packet carries the whole assembly (~241 kB).
+        # By the byte bound it was 241654+34816 tokens > 262144 and every inspection was refused CAPABILITY_LIMIT
+        # before any model call; its native count is a fraction of that. qwen3.8 is this stack's primary
+        # llama-server model, so the gateway can measure it on its own route (after the served-model check).
+        "qwen3.8:27b-q8_0": METHOD,
     },
 }
 

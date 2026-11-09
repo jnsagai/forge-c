@@ -188,7 +188,7 @@ ORNITH = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
 
 def test_trial_profile_measures_the_author_natively_and_leaves_its_limits_alone():
     selected = profile.load(TRIAL_PROFILE)
-    assert M.policy(selected) == {ORNITH: M.METHOD}
+    assert M.policy(selected) == {ORNITH: M.METHOD, MODEL: M.METHOD}  # CAPA-197: the inspector too
     assert selected["runtime"]["context_limit_tokens"] == 262144
     assert selected["runtime"]["fabro_max_output_tokens"] == 16384
     assert selected["gateway"]["reasoning"][ORNITH]["extra_output_tokens"] == 131072
