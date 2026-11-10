@@ -434,12 +434,13 @@ def inject_fault(ctx: ToolContext, a: FaultIn) -> dict:
 
 
 OPERATIONS = [
-    Operation("check_model", CheckModelIn, check_model,
-              "Gate the fixed onboarding model subject: RM load/reset/access checks and delivered-code smoke."),
     Operation("run_renode", SimIn, run_renode,
               "Build software/tests/target/test_*.c for Cortex-M55 and run them on the Renode STM32N6 RCC model."),
     Operation("run_hwsim", SimIn, run_hwsim, "HwSim device model (disabled: no model)."),
     Operation("inject_fault", FaultIn, inject_fault, "Plan a deterministic register fault for host tests."),
+    # F016: appended - callers and tests address run_renode as OPERATIONS[0]
+    Operation("check_model", CheckModelIn, check_model,
+              "Gate the fixed onboarding model subject: RM load/reset/access checks and delivered-code smoke."),
 ]
 
 if __name__ == "__main__":
