@@ -316,6 +316,7 @@ def request_material(job, step=None, prior=None):
             "json_schema": {"name": "semantic_proposal", "strict": True, "schema": wire_schema()},
         },
     }
+    _bounded_thinking(body)
     from ..llm_gateway import sanitize_request
     from ..lrtx.profile import load as load_profile
 
@@ -337,12 +338,26 @@ def request_material(job, step=None, prior=None):
     return body, measured
 
 
+# CAPA-219 (TIM LL L43R recovery 2026-11-10): Ornith's chat template has no effort level and the gateway's reasoning
+# policy widens the output cap, so an unbounded diagnosis reasoned for 133120 tokens and answered nothing
+# (EMPTY_MODEL_OUTPUT). The llama.cpp per-request thinking budget bounds it (same mechanism as CAPA-213).
+AGENT_THINKING_BUDGET = {"hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": 32768}
+
+
+def _bounded_thinking(body):
+    budget = AGENT_THINKING_BUDGET.get(body.get("model"))
+    if budget:
+        body["thinking_budget_tokens"] = budget
+    return body
+
+
 def _finish(job, body, extra):
     from ..llm_gateway import sanitize_request
     from ..lrtx.profile import load as load_profile
 
     if not job.get("profile"):
         raise Refused("COMPLETE_REQUEST_PROFILE_REQUIRED")
+    _bounded_thinking(body)
     profile = load_profile(job["profile"])
     effective = sanitize_request(body, policy=(profile.get("gateway") or {}).get("reasoning") or {}, role=job["role"])
     return body, {
