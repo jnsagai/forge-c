@@ -817,7 +817,9 @@ class ReadSnapshot(Store):
         if self.reader is not None:
             raise QueueError("OBSERVATION_SNAPSHOT_ALREADY_OPEN")
         self.deadline = time.monotonic() + self.timeout_s
-        c = sqlite3.connect(self.path.resolve().as_uri() + "?mode=ro", uri=True, timeout=2, isolation_level=None)
+        # CAPA-214 (TIM LL L43L): a fixed 2 s busy wait failed while the guardian held a write; bounded by the deadline
+        c = sqlite3.connect(self.path.resolve().as_uri() + "?mode=ro", uri=True, timeout=max(2, min(60, self.timeout_s)),
+                            isolation_level=None)
 
         def bounded_row(cursor, row):
             self.remaining_rows -= 1

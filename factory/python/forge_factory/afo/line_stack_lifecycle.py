@@ -212,7 +212,8 @@ def _bound(s):
         current_intent = intent.read()
         from .queue import ReadSnapshot
 
-        with ReadSnapshot(root / "state/supervisor/line-queue.sqlite3", max_rows=10000, timeout_s=3) as reader:
+        # CAPA-214: a 3 s deadline expired under host load (TIM LL L43K); the queue maximum is 120 s
+        with ReadSnapshot(root / "state/supervisor/line-queue.sqlite3", max_rows=10000, timeout_s=120) as reader:
             grant = bound_order(reader, worker)["grant"]
         if not grant.permit("launch_workorder", {"order_id": spec["wo"], "driver_class": spec["driver_class"],
                                                "model": spec["profile"], "service_action": "line_stack_restart"}).allow:

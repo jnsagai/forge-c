@@ -294,11 +294,9 @@ def _replan(store, cmd, value, spec, row, eff, client):
     if decision["source"] == "PLANNER" and (not receipt or Receipts(store).bound_plan(receipt) != plan):
         raise Refused("LINE_RECOVERY_SEMANTIC_RECEIPT_REQUIRED")
     # Park owner input/model/safety/policy changes; deterministic validation remains authoritative.
-    if (
-        plan.get("model_profile")
-        or plan["strategy"] == "SWITCH_PREAPPROVED_MODEL_PROFILE"
-        or (plan.get("owner_phase") or plan["affected_phase"]) == "SWE.1"
-    ):
+    from .line_recovery_coordination import owner_change_required
+
+    if owner_change_required(plan):  # CAPA-215: a transient SWE.1 retry is not an owner change
         raise Refused("LINE_RECOVERY_OWNER_CHANGE_REQUIRED")
     store.mark_command(cmd["command_id"], "ACKED", ack_ref="afo-plan:" + plan["plan_id"])
     return {"status": "PLAN_VALIDATED", "plan_id": plan["plan_id"], "receipt_id": receipt["receipt_id"] if receipt else None}

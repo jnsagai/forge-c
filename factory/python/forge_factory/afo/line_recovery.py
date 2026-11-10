@@ -207,7 +207,8 @@ def valid_job(job, store=None):
         if store is not None:
             return verify(store)
         # Callers can hold the mission writer: a second writer connection would wait on itself.
-        with ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=10000, timeout_s=3) as reader:
+        # CAPA-214: a 3 s deadline expired under host load (TIM LL L43K); the queue maximum is 120 s
+        with ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=10000, timeout_s=120) as reader:
             return verify(reader)
     except (BindingRefused, QueueError, sqlite3.Error, OSError, ValueError, KeyError, TypeError,
             subprocess.SubprocessError):

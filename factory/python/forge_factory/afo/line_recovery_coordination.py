@@ -136,6 +136,16 @@ def launch_product(placer, store, order, aid, oid, campaign, now):
     return {"attempt_id": aid, **_spawn(placer, store, command(store, cmds[0]["command_id"]), order["wo"], now)}
 
 
+def owner_change_required(plan: dict, owner: str | None = None) -> bool:
+    """Recovery plans parked for the owner: model/profile switches, closing, and any change owned by SWE.1 (owner inputs).
+    CAPA-215 (owner 2026-11-10): a transient-dependency retry of an SWE.1 order changes no input, model, profile or
+    policy, so it retries without the owner (bounded by the planner's transient retry budget)."""
+    owner = owner or plan.get("owner_phase") or plan["affected_phase"]
+    if plan.get("model_profile") or plan["strategy"] in ("SWITCH_PREAPPROVED_MODEL_PROFILE", "CLOSE_BLOCKED"):
+        return True
+    return owner == "SWE.1" and plan["strategy"] != "DEFER_TRANSIENT_DEPENDENCY"
+
+
 def _decision(store, cmd):
     from . import recovery
     from .completion_receipt import Receipts, for_plan
@@ -150,11 +160,7 @@ def _decision(store, cmd):
     if record["source"] == "PLANNER":
         if not receipt or Receipts(store).bound_plan(receipt) != plan:
             raise Refused("LINE_RECOVERY_SEMANTIC_RECEIPT_REQUIRED")
-    if (
-        plan["strategy"] in ("SWITCH_PREAPPROVED_MODEL_PROFILE", "CLOSE_BLOCKED")
-        or (plan.get("owner_phase") or plan["affected_phase"]) == "SWE.1"
-        or plan.get("model_profile")
-    ):
+    if owner_change_required(plan):
         raise Refused("LINE_RECOVERY_OWNER_CHANGE_REQUIRED")
     return plan, receipt
 
@@ -199,9 +205,7 @@ def continuation(store, spec):
 
     owner = selected.get("owner_phase") or selected["affected_phase"]
     if (
-        owner == "SWE.1"
-        or selected.get("model_profile")
-        or selected["strategy"] in ("CLOSE_BLOCKED", "SWITCH_PREAPPROVED_MODEL_PROFILE")
+        owner_change_required(selected, owner)
         or spec["phase"] not in PHASES
         or PHASES.index(spec["phase"]) < PHASES.index(owner)
     ):
