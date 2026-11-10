@@ -445,6 +445,13 @@ def _transcript(case, cfg):
         if any(not isinstance(step, dict) for step in steps):
             raise Refused("LAUNCH_TRANSCRIPT_METADATA_INVALID")
         case["records"]["launcher"]["steps"] = [metadata(step) for step in steps]
+        # CAPA-217 (TIM LL L43M..L43Q): the guard's typed verdict explains a GUARD_FAIL; any other text stays out.
+        for step, meta in zip(steps, case["records"]["launcher"]["steps"]):
+            if step.get("step") == "guard" and step.get("result") is not None:
+                if isinstance(step["result"], str) and GUARD_RESULT.fullmatch(step["result"]):
+                    meta["result"] = step["result"]
+                else:
+                    case["gaps"].append("GUARD_RESULT_UNTYPED")
         observed = {step["step"] for step in case["records"]["launcher"]["steps"] if "step" in step}
         phases = {"guard", "run_live", "revision", "worktree", "inputs", "stack_stop", "stack_start", "smoke", "workorder_launch"}
         case["records"]["steps_recorded"] = sorted(observed)
@@ -464,6 +471,10 @@ def _transcript(case, cfg):
         )
     except (OSError, ValueError, Refused) as exc:
         case["gaps"].append(getattr(exc, "code", "LAUNCH_TRANSCRIPT_UNREADABLE"))
+
+
+# CAPA-217: the launch guard prints OK or FAIL:<CODE[:DETAIL]>[ <CODE[:DETAIL]>...] (guard-line.sh, owner_launch_guard.py)
+GUARD_RESULT = re.compile(r"OK|FAIL:[A-Za-z0-9_]+(?::[A-Za-z0-9_]+)*(?: [A-Za-z0-9_]+(?::[A-Za-z0-9_]+)*){0,15}")
 
 
 STOP_CODES = {
