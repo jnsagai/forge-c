@@ -27,8 +27,8 @@ def test_requirements_are_grouped_by_register_then_crosscutting_then_budgets(ws,
     heads = re.findall(r"^## (.+)$", md, re.M)
     regs = [h.split(" ")[0] for h in heads if " register" in h]
     assert regs == ["IWDG_KR", "IWDG_PR", "IWDG_RLR", "IWDG_SR"]  # split IWDG_SR_1/_2 share one section
-    assert heads[len(regs):len(regs) + 3] == ["Cross-cutting requirements", "Resource and timing budget requirements",
-                                            "Open points"]
+    assert heads[len(regs):len(regs) + 4] == ["Cross-cutting requirements", "Resource and timing budget requirements",
+                                            "Budget feasibility", "Open points"]  # CAPA-212 adds the feasibility section
     kr, pr = md.index("## IWDG_KR register"), md.index("## IWDG_PR register")
     assert all(kr < md.index(f"**SWR-00{i}**") < pr for i in range(1, 5))
     assert md.index("## Cross-cutting requirements") < md.index("**SWR-010**") < md.index("## Resource and timing")
