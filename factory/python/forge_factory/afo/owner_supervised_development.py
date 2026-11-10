@@ -601,7 +601,8 @@ def _snapshot_store():
     from ..common import state_dir
     from .queue import ReadSnapshot
 
-    return ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=10000, timeout_s=3)
+    # CAPA-214: a 3 s deadline expired under host load (TIM LL L43K); the queue maximum is 120 s
+    return ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=10000, timeout_s=120)
 
 
 def _read_file(ref):

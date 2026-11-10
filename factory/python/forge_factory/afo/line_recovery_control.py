@@ -123,7 +123,8 @@ def require_job_binding(job, control, *, store=None):
     from .queue import ReadSnapshot
 
     if store is None:
-        with ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=100, timeout_s=3) as reader:
+        # CAPA-214: a 3 s deadline expired under host load (TIM LL L43K); the queue maximum is 120 s
+        with ReadSnapshot(state_dir() / "supervisor/line-queue.sqlite3", max_rows=100, timeout_s=120) as reader:
             return require_job_binding(job, control, store=reader)
     native = job.get("native_context") or {}
     from . import owner_supervised_development as development
