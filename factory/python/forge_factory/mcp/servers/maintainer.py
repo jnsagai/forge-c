@@ -110,6 +110,12 @@ def read_case(ctx: ToolContext, a: NoIn) -> dict:
                        for k in ('order_id', 'attempt_id', 'bundle_id', 'failure_class'))):
             raise ToolDenied('LINE_MAINTENANCE_FAILURE_CHANGED', 'frozen source evidence hash mismatch')
         body['line_failure_bundle'] = failure
+    if c.get("run_evidence"):  # CAPA-222: bounded view of the failed run (findings, gates, products); untrusted
+        from ...afo.durable import digest
+
+        if digest(c["run_evidence"]["record"]) != c["run_evidence"]["sha256"]:
+            raise ToolDenied("RUN_EVIDENCE_CHANGED", "frozen run evidence hash mismatch")
+        body["run_evidence"] = c["run_evidence"]["record"]
     if c.get("retained_rework"):
         from ...afo.durable import digest
 

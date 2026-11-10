@@ -132,6 +132,74 @@ def factory_refusal(obs: dict) -> str | None:
     return m.group(1) if m else None
 
 
+# CAPA-222: the CRE observer publishes open, still-unfixed CAPAs with a driver/phase/kind failure key; a product or
+# unknown failure that matches one while the table is fresh is a known factory defect for the maintainer.
+ROUTES = "supervisor/factory-defect-routes.json"
+ROUTES_MAX_AGE_S = 7200
+
+
+def _part(ws) -> str:
+    p = Path(ws).parent.name.replace("WO-F014-", "").split("-")
+    return p[1] if len(p) > 1 else "UNKNOWN"
+
+
+def routed_capa(ws, phase: str, dom: dict) -> dict | None:
+    import time
+
+    from ..common import state_dir
+
+    try:
+        doc = json.loads((state_dir() / ROUTES).read_text())
+        if time.time() - float(doc["generated_epoch"]) > ROUTES_MAX_AGE_S:
+            return None
+        kind = str(factory_refusal(dom) or dom.get("error_code") or "").split(":")[0]
+        hit = doc["routes"].get(f"{_part(ws)}|{phase}|{kind}")
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        return None
+    return {"capa_id": str(hit["capa_id"])[:20], "hypothesis": str(hit.get("hypothesis", ""))[:600]} \
+        if isinstance(hit, dict) and hit.get("capa_id") else None
+
+
+def route_class(cls: str, ws, phase: str, dom: dict) -> tuple[str, dict | None]:
+    if cls not in ("PRODUCT_QUALITY", "UNKNOWN"):
+        return cls, None
+    capa = routed_capa(ws, phase, dom)
+    return ("FACTORY_CODE_DEFECT", capa) if capa else (cls, None)
+
+
+def run_evidence(ws, phase: str, dom: dict | None = None) -> dict:
+    """A bounded, read-only view of the failed run for the maintainer (CAPA-222): the latest set-inspection findings,
+    the phase's last gate decisions, the work products present, and the routed CAPA's hypothesis. Untrusted data."""
+    ws = Path(ws)
+    findings = []
+    for f in sorted((ws / "inspection" / phase).glob("INS-*.json"))[-1:]:
+        try:
+            for x in json.loads(f.read_text()).get("findings", [])[:12]:
+                findings.append({"id": str(x.get("id"))[:40], "severity": str(x.get("severity"))[:20],
+                                 "detail": redact(str(x.get("detail", "")))[:800], "source": f"workspace:{f.relative_to(ws)}"})
+        except (OSError, ValueError, AttributeError):
+            continue
+    gates = []
+    log = ws / ".forge-run/gates/gate-log.jsonl"
+    for line in log.read_text().splitlines() if log.is_file() else []:
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if r.get("phase") == phase:
+            g = r.get("gate") or {}
+            gates.append({"step": str(r.get("step"))[:40], "decision": str(g.get("decision"))[:40],
+                          "reason": redact(str(g.get("reason", "")))[:240]})
+    products = [{"path": str(p.relative_to(ws)), "bytes": p.stat().st_size}
+                for p in sorted((ws / "workproducts" / phase).glob("*")) if p.is_file() and not p.is_symlink()][:30]
+    ev = {"schema": "forge-c/maintainer-run-evidence/1", "phase": phase, "set_inspection_findings": findings,
+          "gate_tail": gates[-40:], "workproducts": products,
+          "routed_capa": routed_capa(ws, phase, dom) if dom else None, "trust": "UNTRUSTED_RUN_DATA"}
+    while len(json.dumps(ev).encode()) > 24576 and (ev["set_inspection_findings"] or ev["gate_tail"]):
+        (ev["gate_tail"] if len(ev["gate_tail"]) > 10 or not ev["set_inspection_findings"] else ev["set_inspection_findings"]).pop(0)
+    return ev
+
+
 def afo_class(obs: dict, open_capa: set[str]) -> str:
     if obs["failure_class"] == "POLICY_SECURITY":
         return "SECURITY"
@@ -186,14 +254,15 @@ def build(ws: Path, order_id: str, attempt_id: str, *, open_capa: set[str] | Non
     if dom is None:
         return None
     open_capa = _capa_fingerprints() if open_capa is None else open_capa
-    cls = afo_class(dom, open_capa)
+    cls, routed = route_class(afo_class(dom, open_capa), ws, phase, dom)
     ins = sorted((ws / "inspection" / phase).glob("INS-*.json"))
     findings, reqs = [], set()
     if ins:
         for f in json.loads(ins[-1].read_text()).get("findings", []):
             findings.append(f"{f.get('id')}: {str(f.get('detail', ''))[:300]}")
             reqs |= set(re.findall(r"\bSWR-\d{3}\b", str(f.get("detail", ""))))
-    summary = redact("; ".join([f"route: {reason}"] + findings + [o["excerpt"] for o in work[-3:] if o.get("excerpt")]))
+    summary = redact("; ".join(([f"known factory defect {routed['capa_id']}: {routed['hypothesis'][:300]}"] if routed else [])
+                               + [f"route: {reason}"] + findings + [o["excerpt"] for o in work[-3:] if o.get("excerpt")]))
     digests = {}
     for rel in (".forge-run/manifest.json", "workproducts/SWE.1/software_requirements.md", "software/ll/stm32n6xx_ll_rcc.h"):
         if (ws / rel).is_file():
