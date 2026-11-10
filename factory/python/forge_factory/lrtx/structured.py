@@ -488,18 +488,13 @@ def _capture(p: dict, body: dict, result: dict, text: str | None) -> None:
         pass
 
 
-def call(
-    p: dict, *, temperature: float | None = None, schema_mode: str = "json_schema", timeout: float = 21600, url: str | None = None
-) -> dict:
-    """One structured call. Returns {doc, errors, usage, wall_ms, raw_chars, format_note}; never raises on model
-    output problems (they are findings for the localized repair loop)."""
-    ws = RECOVERY_WORKSPACE.get()
-    if ws is not None:
-        from ..development_execution import reserve_call
+# CAPA-213 (owner 2026-11-10 "if inspector confirms, apply the 16k budget"): the llama.cpp per-request thinking budget of
+# an author model whose chat template has no effort level (the profile's reasoning effort does not bound it).
+AUTHOR_THINKING_BUDGET = {"hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0": 16384}
 
-        if not reserve_call(ws, p):
-            return {"doc": None, "errors": ["CALL_REFUSED:DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"], "usage": None,
-                    "wall_ms": 0, "finish_reason": None, "raw_chars": 0, "format_note": "phase allowance retained"}
+
+def request_body(p: dict, temperature: float | None = None, schema_mode: str = "json_schema") -> dict:
+    """The chat request of one structured call (without the durable execution binding)."""
     body = {
         "model": p["model"],
         "messages": p["_messages"],
@@ -517,6 +512,25 @@ def call(
     body.update(p.get("sampling") or {})  # F011-T048: the inspector's recorded sampling (temperature, top_p, seed)
     if temperature is not None:
         body["temperature"] = temperature
+    budget = AUTHOR_THINKING_BUDGET.get(p["model"])
+    if budget and str(p.get("role") or "").endswith("-author"):
+        body["thinking_budget_tokens"] = budget  # CAPA-213
+    return body
+
+
+def call(
+    p: dict, *, temperature: float | None = None, schema_mode: str = "json_schema", timeout: float = 21600, url: str | None = None
+) -> dict:
+    """One structured call. Returns {doc, errors, usage, wall_ms, raw_chars, format_note}; never raises on model
+    output problems (they are findings for the localized repair loop)."""
+    ws = RECOVERY_WORKSPACE.get()
+    if ws is not None:
+        from ..development_execution import reserve_call
+
+        if not reserve_call(ws, p):
+            return {"doc": None, "errors": ["CALL_REFUSED:DEVELOPMENT_PHASE_REPAIR_EXHAUSTED"], "usage": None,
+                    "wall_ms": 0, "finish_reason": None, "raw_chars": 0, "format_note": "phase allowance retained"}
+    body = request_body(p, temperature, schema_mode)
     ws = RECOVERY_WORKSPACE.get()
     if ws is not None and (ws / ".forge-run/durable-binding.json").is_file():
         import uuid

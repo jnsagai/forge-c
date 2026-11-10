@@ -86,16 +86,16 @@ drops unknown lineages.
 
 ## Phase 7: Polish & delivery
 
-- [ ] T019 Run all `tests/test_f019_*.py`, the allowance suites and `python3 tests/spec/validate_design.py`; compare with the T001 baseline; save to `specs/019-factory-prepared-inputs/evidence/final-tests.txt`
-- [ ] T020 Register the change in the CRE registry (CAPA-204: manual campaign inputs; owner 2026-11-09) with the commit and tests
-- [ ] T021 Merge the feature branch into `feat/owner-lane-campaign-v21-20261107` (merge commit), push to the host repo; the deployer timer gates (CRE) and deploys unattended - do not start a manual gate
-- [ ] T022 Native acceptance after deploy: deploy record `campaign_source: DERIVED`; guardian audit shows `wwdg-ll` at SWE.2 with `resume_from` the passed L44 SWE.1 order (or still SWE.1 if L44F failed), `wwdg-hal` WAITING `DEPENDS_ON:wwdg-ll:SWE.6:PASS`, `spi-ll` WAITING `AFTER:wwdg-hal:SWE.6:PASS`; floor ladder strip matches; save to `specs/019-factory-prepared-inputs/evidence/native-acceptance.md`
+- [X] T019 Run all `tests/test_f019_*.py`, the allowance suites and `python3 tests/spec/validate_design.py`; compare with the T001 baseline; save to `specs/019-factory-prepared-inputs/evidence/final-tests.txt` (2026-11-10: 80 passed, design check PASS)
+- [X] T020 Register the change in the CRE registry (CAPA-204: manual campaign inputs; owner 2026-11-09) with the commit and tests (CAPA-204 TRIAGED in the host CRE store)
+- [X] T021 Merge the feature branch into `feat/owner-lane-campaign-v21-20261107` (merge commit), push to the host repo; the deployer timer gates (CRE) and deploys unattended - do not start a manual gate (`c052a38c` ELIGIBLE pd-d12da294; deployed with `9bb2c981` 2026-11-09 13:48Z, stage `55b0530a` ELIGIBLE pd-ec99e2d8 deployed 14:31Z)
+- [ ] T022 Native acceptance after deploy: deploy record `campaign_source: DERIVED`; guardian audit shows `wwdg-ll` at SWE.2 with `resume_from` the passed L44 SWE.1 order (or still SWE.1 if L44F failed), `wwdg-hal` WAITING `DEPENDS_ON:wwdg-ll:SWE.6:PASS`, `spi-ll` WAITING `AFTER:wwdg-hal:SWE.6:PASS`; floor ladder strip matches; save to `specs/019-factory-prepared-inputs/evidence/native-acceptance.md` - SUPERSEDED by the Phase 8 owner amendment (SWE.1 stage: the SWE.2/SWE.6 states named here no longer apply); acceptance moves to T025
 
 ## Phase 8: Owner amendment - SWE.1 stage (2026-11-09 ~14:00)
 
 - [X] T023 [US1] `LADDER = (wwdg-ll, wwdg-hal, spi-ll, tim-ll)`, `LADDER_PHASES = ("SWE.1",)`, `PROVIDED_LL` (WWDG LL L29, checked by `workorder.provided_ll`: six gates PASS, frozen ST header) and `derived_campaign()` per stage in `forge_factory/afo/owner_supervised_development.py`; tests `tests/test_f019_derived_campaign.py` (rewritten), `tests/test_owner_supervised_hal_lineage.py`, `tests/test_f019_ladder_walk.py` (stage walk)
 - [X] T024 [US1] Generator dry run with the stage source from the live package `owner-allowance-main-auto-9bb2c981`: `evidence/generator-dry-run-swe1-stage.txt` (DERIVED; ladder steps SWE.1 only)
-- [ ] T025 Native acceptance of the stage: WWDG HAL SWE.1 `WO-F014-SWE1-WWDGH-20261109-L45` starts by itself with `--provided-from` L29; SPI LL SWE.1 follows its pass; TIM LL SWE.1 after SPI; `evidence/native-acceptance.md`
+- [ ] T025 Native acceptance of the stage: WWDG HAL SWE.1 `WO-F014-SWE1-WWDGH-20261109-L45` starts by itself with `--provided-from` L29; SPI LL SWE.1 follows its pass; TIM LL SWE.1 after SPI; `evidence/native-acceptance.md` - 2026-11-10: WWDG HAL and SPI LL steps proven; TIM LL order created by the line, run pending (see evidence)
 
 ## Dependencies & execution order
 

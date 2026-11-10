@@ -57,9 +57,11 @@
 ## Phase 6: Polish and rollout
 
 - [X] T013 Regression: full suite on the branch vs its base (`de42bc29`), design check; record results.
-- [ ] T014 CRE: register the change (CHANGE gate) and merge into `feat/owner-lane-campaign-v21-20261107` (merge
-  commit); deployer gates and deploys.
-- [ ] T015 Native acceptance: WWDG SWE.1 order evidence (phase1 summary, swaps per round, quality report, gate
+- [X] T014 CRE: register the change (CHANGE gate) and merge into `feat/owner-lane-campaign-v21-20261107` (merge
+  commit); deployer gates and deploys. Evidence: merge `03d78012` gate REJECTED (pd-e9adda3e, role binding); fixes
+  `26f0bd8c` (ELIGIBLE pd-cdff829f, deployed 2026-11-09 09:17Z) and `a58c4018` (ELIGIBLE pd-1ade8fbe, deployed 10:18Z);
+  CRE CAPA-200 (phase-1 model nodes) registered.
+- [X] T015 Native acceptance: WWDG SWE.1 order evidence (phase1 summary, swaps per round, quality report, gate
   verdict); record in `specs/018-swe1-two-phase-inspection/implementation-report.md`; tick only with evidence.
 
 ## Dependencies
@@ -75,4 +77,5 @@ pass on `d87326fc`; they import modules and behaviour that do not exist on the b
 T013: full suite `factory/python/tests` on the branch (536 failing/erroring, all environment-bound on this host) vs a
 clean base worktree of `de42bc29` with the same private inputs and venv: every one of the 49 tests that failed only in
 the first branch-vs-old-clone comparison fails identically on the clean base (logs `/mnt/data/forge-c/f018-eval/`);
-no new failure. Design check `tests/spec/validate_design.py`: PASS (14 static tests). T014-T015 open.
+no new failure. Design check `tests/spec/validate_design.py`: PASS (14 static tests).
+T014-T015 closed 2026-11-10 with native evidence (`implementation-report.md`).

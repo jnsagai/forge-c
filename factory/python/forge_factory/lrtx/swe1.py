@@ -844,6 +844,46 @@ def budget_requirements(ws: Path, sysname: str) -> list[dict]:
     return requirements
 
 
+def budget_feasibility(ws: Path, m: dict, budget_rows: list[dict]) -> list[str]:
+    """CAPA-212 (SQ-07 interdependency and feasibility): the factory-generated budget rows get a factual feasibility
+    section - each budget, the implementation form quoted from the scope, the computed relationship of the simulation
+    budgets, what SWE.1 assesses and what only the SWE.6 measurement confirms, and the residual risk."""
+    if not budget_rows:
+        return []
+    from ..simulation_performance import selected
+
+    ids = {r["key"]: r["swr"] for r in budget_rows}
+    b = m["budgets"]
+    out = ["", "## Budget feasibility", "",
+           "Factory assessment at SWE.1 of the budget requirements above (no measurement exists before SWE.6).", "",
+           f"- Implementation form (work-order scope): {str(m['scope'][0]).strip()}",
+           f"- {ids['budget_flash']} flash at most {b['flash_bytes']} bytes, {ids['budget_static_ram']} static RAM at "
+           f"most {b['static_ram_bytes']} bytes and {ids['budget_stack']} stack at most {b['stack_bytes']} bytes per "
+           f"public API call are independent limits; source: {b.get('status') or 'work-order budgets'}."]
+    scope = " ".join(str(s) for s in m["scope"]).lower()
+    if "header-only" in scope:
+        out.append("- A header-only driver defines its functions at the call sites: its flash is the inlined code of "
+                   "the functions used and it needs no driver-owned static data for register access through the "
+                   "externally provided device structure.")
+    perf = selected(ws)
+    if perf and "budget_simulation_cpu" in ids:
+        allowed = perf["microseconds_per_call"] * perf["performance_mips"]
+        binding = ("the instruction budget is the binding one" if perf["instructions_per_call"] <= allowed
+                   else "the virtual-time budget is the binding one")
+        out.append(f"- {ids['budget_simulation_cpu']} ({perf['instructions_per_call']} executed instructions per call) "
+                   f"and {ids['budget_simulation_time']} ({perf['microseconds_per_call']} microseconds of virtual time "
+                   f"at {perf['performance_mips']} MIPS, i.e. {allowed} instructions) are consistent: {binding}.")
+    else:
+        out.append("- The work order allocates no simulation performance budget; no CPU or timing feasibility is "
+                   "assessed here.")
+    out += ["- Status: each budget is a development target that is not yet measured; it is confirmed or refuted only "
+            "by the SWE.6 measurement named in its verification. No conflict between these budgets is identified at "
+            "SWE.1.",
+            "- Residual risk: build options (optimisation level, inlining, debug instrumentation) change flash, stack "
+            "and executed instructions; the measured image and the pinned measurement configuration decide."]
+    return out
+
+
 def _scope_ids(alloc: str) -> tuple[str, str]:
     asil = re.search(r"\b(ASIL [A-D]|QM)\b", alloc)
     sid = re.search(r"\((SC-[^,)\s]+)", alloc)
@@ -951,6 +991,7 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
             md += ([""] if md[-1] != "" else []) + [f"## {heading}", ""]
         md += [f"- **{r['swr']}** {r['statement'].strip()}", f"  - Source: {r['source']}",
                f"  - Verification: {r['verification'].strip()}"] + OO.render_lines(r.get("obligations") or [])
+    md += budget_feasibility(ws, m, [r for r in rows if r["task"] == "budgets"])
     md += ["", "## Open points", ""] + [f"- {o}" for o in opens]
     obl_gaps = cross["doc"].get("obligation_gaps") or []
     md += OO.render_gaps(obl_gaps) + [""]
