@@ -50,9 +50,13 @@ def authorize(job, store=None):
     from .line_recovery_control import native_envelope_minimum
 
     if job.get("durable_native") == "maintenance-1":
-        from .line_recovery_control import require_native_transport
+        from .line_recovery_control import configuration, require_native_transport
 
-        require_native_transport(job)
+        # CAPA-221 (L40G/L41E/L43D 2026-11-08): without the order's request the owner-development permit saw
+        # order_id None and every maintainer launch ended CONTROL_SCOPE_CHANGED. Derive the control for THIS order,
+        # as line_recovery_product.bind_native does; no authority ref still refuses inside require_native_transport.
+        ref = job.get("line_role_authority_ref")
+        require_native_transport(job, control=configuration(ref, eff, request=L.request_for(order)) if ref else None)
     native_envelope_minimum(job)  # no model serving when even the smallest request cannot fit
     # Source runs do not qualify diagnosis. A measured receipt or an explicitly signed trial is mandatory.
     entry = (job.get("role_capabilities") or {}).get(job["role"])
