@@ -457,6 +457,22 @@ def process_identity(pid):
         return None
 
 
+def _ns_identity(pid, holder, timeout=5.0):
+    """CAPA-216 (TIM LL L43L): a stack process is spawned through nsenter, which enters the holder's namespaces after the
+    fork. An identity read before that names the caller's network namespace and later refuses the managed stop
+    (LOCAL_PROCESS_OWNERSHIP_UNPROVEN). Record it once the process has left the caller's netns (bounded wait)."""
+    own, deadline = os.readlink("/proc/self/ns/net"), time.monotonic() + timeout
+    try:
+        target = os.readlink(f"/proc/{holder}/ns/net")
+    except OSError:
+        return process_identity(pid)
+    while True:
+        ident = process_identity(pid)
+        if ident is None or target == own or ident["netns"] != own or time.monotonic() > deadline:
+            return ident
+        time.sleep(0.02)
+
+
 def _pinned_process_ended(expected, current):
     """A different boot/start proves the OLD process ended, never ownership of the new PID."""
     if not expected or not current:
@@ -798,7 +814,7 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
                     for fd in development_handles:
                         os.close(fd)
                 parent_pid = proc.pid
-                rec["serving_holder"] = {"pid": proc.pid, "identity": process_identity(proc.pid)}
+                rec["serving_holder"] = {"pid": proc.pid, "identity": _ns_identity(proc.pid, holder)}  # CAPA-216
                 if development_view is not None:
                     rec["serving_holder"]["owner_development_view"] = development_view
                 _save_services(r, {**rec, "processes": procs})
@@ -910,7 +926,7 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         startup_binding = getattr(_EFFECT_GUARD.get(), "startup_binding", None)
         bootstrap_binding = getattr(_EFFECT_GUARD.get(), "bootstrap_binding", None)
         if startup_binding is not None or bootstrap_binding is not None:
-            procs[name]["identity"] = process_identity(proc.pid)
+            procs[name]["identity"] = _ns_identity(proc.pid, holder)  # CAPA-216
             procs[name]["owner_view"] = provider.owner_view(proc.pid)
             _save_services(r, {**rec, "processes": procs,
                                **({"startup_binding": startup_binding} if startup_binding is not None else {}),
@@ -922,7 +938,7 @@ def _start(s: dict, *, recovery=False, control_only=False) -> dict:
         while time.monotonic() < deadline and not _probe(holder, env, health):
             guard()
             time.sleep(1)
-        procs[name]["identity"] = process_identity(proc.pid)
+        procs[name]["identity"] = _ns_identity(proc.pid, holder)  # CAPA-216
         if managed_serving():
             procs[name]["owner_view"] = provider.owner_view(proc.pid)
         if managed_serving() and serving is not None and name == "llama_server":
