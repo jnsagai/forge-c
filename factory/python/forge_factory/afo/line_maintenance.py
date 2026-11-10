@@ -53,5 +53,7 @@ def prepare(store, order_id, attempt_id, workspace, origin, *, eff=None, repo=RE
         return prior
     # Preserve the original broker's source, path, credential, protected-oracle and publication boundaries.
     compact = {k: incident[k] for k in ("order_id", "attempt_id", "bundle_id", "failure_class", "fingerprint", "error_code")}
+    dom = {"error_code": incident["error_code"]}
     return maintainer.prepare(pid, context["source_revision"], compact, Path(repo), line_binding=binding,
-                              line_failure_bundle=incident)
+                              line_failure_bundle=incident,
+                              run_evidence=bundle.run_evidence(source, incident["phase"], dom))  # CAPA-222

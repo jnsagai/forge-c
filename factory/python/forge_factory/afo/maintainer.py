@@ -159,7 +159,8 @@ def case_dir(pid: str) -> Path:
 
 
 def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, retained_rework: dict | None = None,
-            line_binding: dict | None = None, line_failure_bundle: dict | None = None) -> dict:
+            line_binding: dict | None = None, line_failure_bundle: dict | None = None,
+            run_evidence: dict | None = None) -> dict:
     """Detached worktree of `base`; everything the maintainer may not change is read-only (OS); one frozen case."""
     if line_failure_bundle is not None:
         from .durable import digest
@@ -193,6 +194,10 @@ def prepare(pid: str, base: str, incident: dict, repo: Path = REPO_ROOT, *, reta
         case["line_binding"] = line_binding
     if line_failure_bundle is not None:
         case['line_failure_bundle'] = {'sha256': digest(line_failure_bundle), 'record': line_failure_bundle}
+    if run_evidence is not None and len(json.dumps(run_evidence).encode()) <= 24576:  # CAPA-222: read-only run view
+        from .durable import digest as _digest
+
+        case["run_evidence"] = {"sha256": _digest(run_evidence), "record": run_evidence}
     if retained_rework is not None:
         case["retained_rework"] = retained_rework
         if len(json.dumps(case).encode()) > 65536:
