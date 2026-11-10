@@ -307,6 +307,40 @@ def cited_page_findings(ws: Path, r: dict, secs: dict[str, dict] | None = None) 
             "source_page to the page of the cited section that states the fact, or cite the section of that page"]
 
 
+def crosscut_page_findings(ws: Path, r: dict, secs: dict[str, dict] | None = None) -> list[str]:
+    """CAPA-218 (TIM LL L43R, 2026-11-10): a cross-cutting requirement has no register section of its own, so nothing
+    bounded its source_page. The author cited a page of no provided section (RM0486 p.3); the assembly traced it to the
+    first register section and the set inspector failed SWE1-05 on the mismatch round after round. The page must lie in
+    the pages of the provided reference-manual sections (inputs/index.md and the section files)."""
+    secs = _section_files(ws) if secs is None else secs
+    page = r.get("source_page")
+    if not secs or not isinstance(page, int):
+        return []
+    pages: set[int] = set()
+    for s in secs.values():
+        f = Path(ws) / s["file"]
+        pages |= set(_file_pages(f.read_text(errors="replace"), s["page"]) if f.is_file() else
+                     ([s["page"]] if s["page"] else []))
+    if not pages or min(pages) <= page <= max(pages):
+        return []
+    return [f"[{r['key']}] source_page {page} is not a page of the provided RM0486 sections (pages "
+            f"{min(pages)}-{max(pages)}): set source_page to the page of the provided section that states the fact"]
+
+
+def crosscut_sections(ws: Path, secs: dict[str, dict] | None = None) -> list[str]:
+    """The reference-manual sections the cross-cutting task reads: the chapter's functional description. CAPA-218 (TIM
+    LL L43R): when the input index has no such section (TIM: 54.4 absent, 54.4.2.. present), the owner scope's context
+    sections (the functional sections of the scope without a register layout), never no source at all."""
+    from ..layer import profile
+
+    secs = _section_files(ws) if secs is None else secs
+    chapter = str(profile(ws)["rm"]["chapter"])
+    func = [n for n, s in secs.items() if n.startswith(chapter + ".") and "functional" in s["title"].lower()]
+    if func:
+        return func[:1]
+    return [n for n in inventory(ws).get("context_sections", []) if n in secs]
+
+
 def system_name(ws: Path) -> str:
     from ..layer import layer_of, profile
 
@@ -564,11 +598,7 @@ def crosscut_packet(ws: Path, functional: list[dict], model: str, findings: list
              (" " + AR_NEGATIVE if uspec_mode(ws) else ""))
     art = {"path": "lrtx:functional_requirements", "text": listing, "sha256": sha256_bytes(listing.encode())}
     secs = _section_files(ws)
-    from ..layer import profile
-
-    chapter = str(profile(ws)["rm"]["chapter"])
-    func = [n for n, s in secs.items() if n.startswith(chapter + ".") and "functional" in s["title"].lower()]
-    srcs = [S.source(ws, secs[n]["file"], max_chars=FUNCTIONAL_SOURCE_MAX_CHARS) for n in func[:1]]
+    srcs = [S.source(ws, secs[n]["file"], max_chars=FUNCTIONAL_SOURCE_MAX_CHARS) for n in crosscut_sections(ws, secs)]
     crit = [f"subject exactly 'the {sysname}'", "no budget requirements"]
     if obl is not None:
         instr += obligation_rule(obl, True)
@@ -646,6 +676,8 @@ def validate_group(ws: Path, doc: dict, g: dict | None, sysname: str, idx: dict)
         if g is not None and g["pages"] and not (min(g["pages"]) <= r["source_page"] <= max(g["pages"]) + 2):
             out.append(f"[{k}] source_page {r['source_page']} is outside the section pages {g['pages']}")
         out += cited_page_findings(ws, r, secs)
+        if g is None:  # CAPA-218: a cross-cutting page lies in the provided sections
+            out += crosscut_page_findings(ws, r, secs)
         for f in re.findall(rf"\b({pfx}_[A-Z0-9]+)\.([A-Z0-9_]+)", st):
             named.add(f"{f[0]}.{f[1]}")
             if f[0] not in idx or f[1] not in idx[f[0]]["fields"]:
