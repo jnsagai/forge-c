@@ -1126,11 +1126,25 @@ def task_index(obligations: list[dict]) -> dict[str, dict]:
             for g in obligations}
 
 
+# CAPA-211 (SPI LL L41O): SQ-04 "coherent structure and priorities" judges what the factory assembles - sections, SWR
+# identifiers, release scope and priority (CAPA-210) - not any author task's requirements. Routed by its SWR range it
+# reopened every task and churned requirements that had passed individual inspection.
+_FACTORY_OWNED = re.compile(r"^\s*SWE1-\d{2}:\s*SQ-04\b")
+
+
+def factory_owned(finding: str) -> bool:
+    return bool(_FACTORY_OWNED.match(finding))
+
+
 def route_findings(findings: list[str], amap: dict | None, tasks: dict[str, dict] | None = None,
                    ws: Path | None = None) -> dict[str, list[str]]:
     """CAPA-108: each finding goes to the tasks it names; with `ws` the attribution is recorded (rework-routing.json),
-    including every finding that named no author task and kept the earlier fan-out."""
-    routed, report = V.attribute_findings(findings, amap, "requirements:crosscutting", tasks)
+    including every finding that named no author task and kept the earlier fan-out. CAPA-211: a factory-owned
+    finding reaches no author task and is recorded as such."""
+    routed, report = V.attribute_findings([f for f in findings if not factory_owned(f)], amap,
+                                          "requirements:crosscutting", tasks)
+    report += [{"finding": f[:300], "tasks": [], "basis": [], "unattributed": False, "factory_owned": "SWE.1 assembly"}
+               for f in findings if factory_owned(f)]
     if ws is not None:
         S.record(ws, "SWE.1/rework-routing.json", {"schema": "forge-c/lrtx-rework-routing/1", "at": utc_now(),
                                                    "assembly_at": (amap or {}).get("at"), "findings": report,
@@ -1169,8 +1183,9 @@ def visit(ws: Path, model: str, max_calls: int | None = None, resume: bool = Fal
         except CoherentScopeRefused:
             tasks = None  # the visit itself reports the refused scope
         routed = route_findings(findings, amap, tasks, ws)
-        V.attach_keep_fixed(ws, "SWE.1", budget,
-                            lambda fs: V.attribute_findings(fs, amap, "requirements:crosscutting", tasks)[0])
+        V.attach_keep_fixed(ws, "SWE.1", budget,  # CAPA-211: factory-owned findings are no task's to keep fixed
+                            lambda fs: V.attribute_findings([f for f in fs if not factory_owned(f)], amap,
+                                                            "requirements:crosscutting", tasks)[0])
     try:
         return _visit(ws, model, budget, routed)
     except V.Continue as c:
