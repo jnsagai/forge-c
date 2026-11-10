@@ -260,7 +260,11 @@ def _run_level(ctx: ToolContext, level: str, coverage: bool) -> dict:
             b, blog = _build_gtest(ctx, t, exe, bdir, test_incs, srcs, coverage, fake and not real_ll, gt,
                                    real_ll=real_ll, argument_history=t in argument_history_tests)
         else:
+            # F015-T065: section GC - a delivered HAL unit (ST stm32n6xx_hal_spi.c) also holds DMA/interrupt paths that
+            # call modules not delivered (HAL_DMA_*); unreferenced code is dropped instead of failing the link. Coverage
+            # keeps every function's record, so an untested function still reports 0%.
             argv = ["clang", "-std=c11", "-O0", "-g", "-Wall", "-Wextra", "-DFORGE_HOST_TEST=1", "-DFORGE_HOST_BUILD=1",
+                    "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections",
                     *(COV_FLAGS if coverage else []), *test_incs, str(t), *srcs, "-o", str(exe)]
             b = run_argv(argv, bdir, 180, ALLOW)
             blog = b"$ " + " ".join(argv).encode() + b"\n" + b.stdout + b.stderr

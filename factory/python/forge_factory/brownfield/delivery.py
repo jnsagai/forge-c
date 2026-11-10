@@ -66,6 +66,22 @@ def _unpack(src: Path, tmp: Path) -> Path:
     raise DeliveryBlocked(f"DELIVERY_SOURCE_UNSUPPORTED:{src.name}")
 
 
+HAL_MODULE_LINE = re.compile(r"^(/\*\s*)?#define HAL_([A-Z0-9]+)_MODULE_ENABLED\b[^\r\n]*", re.M)
+
+
+def configure_hal_conf(template: bytes, modules: list[str]) -> bytes:
+    """Feature 015 (ST HAL): ST's stm32n6xx_hal_conf_template.h with exactly `modules` enabled - every
+    'HAL_<M>_MODULE_ENABLED' line (enabled or commented out in the template) becomes '#define' for a listed module and
+    a comment otherwise; nothing else of the template changes. A listed module the template does not name is refused."""
+    text = template.decode("utf-8")
+    named = {m.group(2) for m in HAL_MODULE_LINE.finditer(text)}
+    missing = [m for m in modules if m not in named]
+    if missing:
+        raise DeliveryBlocked(f"DELIVERY_HAL_MODULE_UNKNOWN:{','.join(missing)}")
+    return HAL_MODULE_LINE.sub(lambda m: f"#define HAL_{m.group(2)}_MODULE_ENABLED" if m.group(2) in modules
+                               else f"/*#define HAL_{m.group(2)}_MODULE_ENABLED */", text).encode("utf-8")
+
+
 def _pick(root: Path, rel: str) -> Path:
     p = (root / rel).resolve()
     if root.resolve() not in p.parents or not p.is_file():
@@ -97,7 +113,11 @@ def build_check(files: dict[str, bytes], style: str, defines: list[str], secure:
                 units.append(root / rel)
             elif rel.startswith(CODE_DIRS) and rel.endswith(".h"):
                 tu = root / f"_check_{Path(rel).stem}.c"
-                tu.write_text(f'#include "{Path(rel).name}"\n')
+                # F015 (ST HAL): a delivered HAL header is used through the delivered umbrella stm32n6xx_hal.h (ST's
+                # documented usage; stm32n6xx_hal_crc_ex.h needs the types of stm32n6xx_hal_crc.h)
+                umbrella = '#include "stm32n6xx_hal.h"\n' if "inputs/vendor/include/stm32n6xx_hal.h" in files and \
+                    rel.startswith("software/hal/") else ""
+                tu.write_text(f'{umbrella}#include "{Path(rel).name}"\n')
                 units.append(tu)
         log, rc, warnings = [], 0, 0
         for u in units:
@@ -120,6 +140,8 @@ def intake(spec: dict, example: Path, wo: str, extra: dict[str, bytes] | None = 
     blank = [k for k in ("origin", "licence") if k in d and not str(d[k]).strip()]  # FR-005, named explicitly
     issues = [f"DELIVERY_{k.upper()}_MISSING" for k in blank] + \
         [e for e in validate(d) if not any(e.startswith(f"DELIVERY_SPEC_INVALID:{k}:") for k in blank)]
+    if not issues and not d.get("files"):  # F016: an onboarding delivery reaches intake only with its derived map
+        issues.append("DELIVERY_FILES_NOT_DERIVED:run the onboarding derivation first")
     if not issues and d["code_mode"] == "FIX_ALLOWED" and not d["licence_allows_modification"]:
         issues.append("DELIVERY_MODE_FORBIDDEN_BY_LICENCE:FIX_ALLOWED")
     files: dict[str, bytes] = {}
@@ -138,9 +160,15 @@ def intake(spec: dict, example: Path, wo: str, extra: dict[str, bytes] | None = 
                 for dep in d.get("dependencies") or []:
                     droot = _unpack(_resolve_source(dep["source"], example), Path(td) / "dep") \
                         if dep.get("source") else root
-                    files[dep["to"]] = _pick(droot, dep["from"]).read_bytes()
-                    records.append({"path": dep["to"], "role": "delivered_dependency", "origin": dep["origin"],
-                                    "licence": dep["licence"]})
+                    data = _pick(droot, dep["from"]).read_bytes()
+                    rec = {"path": dep["to"], "role": "delivered_dependency", "origin": dep["origin"],
+                           "licence": dep["licence"]}
+                    if dep.get("configure"):  # ST's hal_conf template, configured for this work order (recorded)
+                        mods = list(dep["configure"]["hal_modules"])
+                        rec["configured_from"] = {"path": dep["from"], "sha256": sha256_bytes(data), "hal_modules": mods}
+                        data = configure_hal_conf(data, mods)
+                    files[dep["to"]] = data
+                    records.append(rec)
             except (DeliveryBlocked, OSError, tarfile.TarError) as exc:
                 issues.append(str(exc) if isinstance(exc, DeliveryBlocked) else f"DELIVERY_SOURCE_UNREADABLE:{exc}")
     if not issues:

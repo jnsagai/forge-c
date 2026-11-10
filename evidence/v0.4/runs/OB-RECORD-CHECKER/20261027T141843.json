@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "evidence/v0.4/benchmark/st-drivers-hal-ob/test_ob_check.py"
+  ],
+  "duration_s": 0.694,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "459bb4910357e73b33e0b1ad0ec4f8cc611b60ab",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-RECORD-CHECKER/20261027T141843.log",
+  "log_sha256": "eabc89fc7c4e785126c010769bbc82959e1abc874420106bbd67ec1122757fc1",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-RECORD-CHECKER",
+  "ts_utc": "2026-10-27T14:18:43.176666Z"
+}

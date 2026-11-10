@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "evidence/v0.4/runs/OB-SIGNER-DEPLOYMENT/check.py"
+  ],
+  "duration_s": 0.146,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "4fd28b7b9c0d6889a8cb2d248be3ffa64e31e14c",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-SIGNER-DEPLOYMENT/20261027T115000.log",
+  "log_sha256": "c6c49ad80143cb2493bf7d7d2cd1933e9f84309f72d3f667fe7a036bf18b7915",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-SIGNER-DEPLOYMENT",
+  "ts_utc": "2026-10-27T11:50:00.627474Z"
+}

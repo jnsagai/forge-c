@@ -1,0 +1,186 @@
+{
+  "recorded_at": "2026-10-27T15:10:11.376406Z",
+  "request_id": "BENCH-USART-ST-HAL-OB",
+  "order_id": "afo-91b7e28a3bab37e5",
+  "attempt_id": "afo-91b7e28a3bab37e5-a1",
+  "archive_integrity": {
+    "archive": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/archives/WO-AFO-91b7e28a3bab37e5-a1/forge-c-WO-AFO-91b7e28a3bab37e5-a1-review.zip",
+    "integrity": "PASS",
+    "issues": []
+  },
+  "phases": {
+    "SWE.1": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 1,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.1-001"
+    },
+    "SWE.2": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 0,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.2-001"
+    },
+    "SWE.3": {
+      "inspections_passed": 1,
+      "inspections_failed": 0,
+      "reworks": 0,
+      "upstream_returns": 0,
+      "final": "PASS",
+      "final_reason": "INS-SWE.3-001"
+    },
+    "SWE.4": {
+      "inspections_passed": 0,
+      "inspections_failed": 0,
+      "reworks": 1,
+      "upstream_returns": 0,
+      "final": "BLOCKED",
+      "final_reason": "STUCK: identical deterministic rejection twice (REQUIRED_TOOL_NOT_PASS:run_unit:FAIL, UT:SPEC_NOT_VERIFIED:USPEC-HAL-01-02, UT:SPEC_NOT_VERIFIED:USPEC-HAL-01-03, UT:SPE); stopped early"
+    }
+  },
+  "gap_count": 711,
+  "gap_groups": {
+    "failed_or_missing_quality_check": 9,
+    "missing_or_empty_file": 7,
+    "missing_or_empty_section": 5,
+    "run_not_completed": 1,
+    "unresolved_finding": 689
+  },
+  "defects": [
+    {
+      "id": "DEF-001",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN delivery: HAL_UART_Transmit dereferences huart->gState and HAL_UART_Receive dereferences huart->RxState before any NULL guard; NULL transfer handles cannot return HAL_ERROR. Init/DeInit do guard NULL.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_uart.c:1107",
+        "software/hal/stm32n6xx_hal_uart.c:1208",
+        "workproducts/SWE.1/software_requirements.md:33",
+        "workproducts/SWE.1/register_effects.json"
+      ]
+    },
+    {
+      "id": "DEF-002",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN delivery: HAL_UART_Init clears CR1.UE before UART_SetConfig; invalid configurations only use assert_param (disabled in delivered conf). No pre-register-access rejection implements SWR-008; invalid baud can divide by zero and prescaler can index outside UARTPrescTable.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_uart.c:366",
+        "software/hal/stm32n6xx_hal_uart.c:3129",
+        "inputs/vendor/include/stm32n6xx_hal_conf.h:506",
+        "workproducts/SWE.1/software_requirements.md:37"
+      ]
+    },
+    {
+      "id": "DEF-003",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN delivery: UART_WaitOnFlagUntilTimeout tests elapsed > Timeout, continuing to wait at elapsed==Timeout with unavailable TXE/TC/RXNE. It also skips elapsed checking if the flag is already set. This does not implement the strict SWR-010 deadline.",
+      "evidence_refs": [
+        "software/hal/stm32n6xx_hal_uart.c:3431",
+        "workproducts/SWE.1/software_requirements.md:45"
+      ]
+    },
+    {
+      "id": "DEF-004",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "FROZEN delivery rejects nonzero representable USART divisors below 16: with available 64 MHz clock, DIV1, OVER16 and BaudRate=8000000 the divisor is 8, but UART_SetConfig returns HAL_ERROR due to UART_BRR_MIN=0x10. SWE.1 line 5 defines a valid baud by representable nonzero BRR and does not exclude this case.",
+      "evidence_refs": [
+        "workproducts/SWE.1/software_requirements.md:5",
+        "workproducts/SWE.1/software_requirements.md:9",
+        "workproducts/SWE.1/software_requirements.md:13",
+        "software/hal/stm32n6xx_hal_uart.c:3130",
+        "software/hal/stm32n6xx_hal_uart.c:3289"
+      ]
+    },
+    {
+      "id": "DEF-005",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-010 fails nine deadline bounds with TXE, TC or RXNE withheld, finite timeouts 0/2/5, and unsigned tick wrap. Reproduces escalated DEF-003. Preserve assertions; FROZEN code needs owner disposition.",
+      "evidence_refs": [
+        "artifact:sha256:0a8be6bf498ac7bc5c8226c7fc5f7fdb394f657e3ea986e0cf77f73c9aad5b38"
+      ]
+    },
+    {
+      "id": "DEF-006",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-008 records 13 failed assertions: HAL_UART_Init accepts invalid encodings or modifies USART registers before returning HAL_ERROR. Reproduces DEF-002 against FROZEN delivered code; retain the requirement checks.",
+      "evidence_refs": [
+        "artifact:sha256:0a8be6bf498ac7bc5c8226c7fc5f7fdb394f657e3ea986e0cf77f73c9aad5b38",
+        "software/tests/unit/test_usart.c:109"
+      ]
+    },
+    {
+      "id": "DEF-007",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "UT-001/UT-002 fail for representable nonzero BRR=8: 64 MHz, DIV1, OVER16, 8000000 baud. HAL_UART_Init returns HAL_ERROR and BRR stays zero instead of accepting this valid configuration. Reproduces DEF-004; FROZEN code requires owner disposition.",
+      "evidence_refs": [
+        "artifact:sha256:0a8be6bf498ac7bc5c8226c7fc5f7fdb394f657e3ea986e0cf77f73c9aad5b38",
+        "software/tests/unit/test_usart.c:135",
+        "workproducts/SWE.1/software_requirements.md:5"
+      ]
+    },
+    {
+      "id": "DEF-008",
+      "kind": "CODE",
+      "status": "ESCALATED",
+      "summary": "Rerun reproduces DEF-005/DEF-003: nine UT-010 deadline checks fail with TXE, TC or RXNE withheld, timeouts 0/2/5 and tick wrap. Delivered line 3441 checks elapsed > Timeout. Preserve elapsed <= Timeout assertions and FROZEN driver; owner disposition required.",
+      "evidence_refs": [
+        "artifact:sha256:0a8be6bf498ac7bc5c8226c7fc5f7fdb394f657e3ea986e0cf77f73c9aad5b38",
+        "software/hal/stm32n6xx_hal_uart.c:3441"
+      ]
+    }
+  ],
+  "source_refs": [
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/gates/gate-log.jsonl",
+      "sha256": "bc08fc455779818658123476704c828d62a8f2d8ede58773973a2a4d4e7b4830"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/package.json",
+      "sha256": "1a1e819a79e4011bda3d38a1a7b45c3560c845bccd76c120694d4e49d414ee6a"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-001.json",
+      "sha256": "05d9c1b44e78681fcadda2cfb48fef97799b53847db4259beadde524bbe8571f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-002.json",
+      "sha256": "85b3e8728a0a0c3ad81c784d96613e0a6c63ef64da4093789a1d78eed9ebf9e6"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-003.json",
+      "sha256": "4e9d885d5d302d1c2992f7af05ca01629b1888688b474df175000051bf162a7f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-004.json",
+      "sha256": "b3f00d7d8280207dd2838e034fe69ffe48485ea10753d1218c13439658eca41f"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-005.json",
+      "sha256": "3f01c8879e045d6c57bf667823c611b268f57552a2179b1a40c462306b4cee34"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-006.json",
+      "sha256": "51908393d5385220c89b8ed2dca30a05e1bc6a9d8706c8bbb0b8bf0d22d0223b"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-007.json",
+      "sha256": "6e045eed0ca6942ac5c18d85307383a40c74001f1ef36ea7edc74bc736a3025c"
+    },
+    {
+      "path": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/workorders/WO-AFO-91b7e28a3bab37e5-a1/workspace/.forge-run/defects/DEF-008.json",
+      "sha256": "e04990cc03fb8d65d8aee9644f35dd5d596b9072ecab79790145da32a7efcee5"
+    }
+  ],
+  "review_status": "PENDING_CAUSE_REVIEW",
+  "note": "Context capture is not an SC-005 or owner disposition claim."
+}

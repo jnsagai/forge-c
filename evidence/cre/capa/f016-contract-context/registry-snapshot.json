@@ -1,0 +1,159 @@
+{
+  "recorded_at": "2026-10-27T13:17:40.183381Z",
+  "plan": {
+    "source": "883a54c5fc68d57928e7ff3f493d0fe2b2eef391",
+    "baseline": "557e920daa540a47461958c1e62842ac6bb709fd",
+    "candidate": "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc",
+    "staged_manifest": "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/state/onboarding/cre-contract-context/manifest.yaml",
+    "capa_id": "CAPA-028",
+    "decision_id": "pd-8fdefc372c5e6a0f2943"
+  },
+  "record": {
+    "affected_versions": [
+      "forge-c@<9e8b6253ef40"
+    ],
+    "candidate_patch_sha256": "b09094b092007bb10109847a4bddf06a961b011c7cb47cc104e737e6c276336f",
+    "capa_id": "CAPA-028",
+    "created_at": "2026-10-17T16:12:38.019760Z",
+    "event_ids": [],
+    "incident_ids": [
+      "CAPA-028"
+    ],
+    "lesson_ids": [],
+    "observation_window_end": null,
+    "policy_sha256": "2fb2ca15ba7326d3878026b5d539eb3c1d0aaac894c79913c3a7f66bc2d1cca1",
+    "prevention_test_id": "prevention:RPR-030",
+    "reproducer_id": "RPR-030",
+    "root_cause_evidence_refs": [
+      "reproducer-run:rr-d47cfa23964b0bc25d7c",
+      "reproducer-run:rr-41ef8d473253c311b02a"
+    ],
+    "root_cause_status": "VERIFIED",
+    "root_cause_summary": "with the owner trace profile the SWE.3 design author writes unit specs, per-unit PlantUML designs and the MISRA statement by hand; the extra work exhausts the per-visit tool budget on rework",
+    "schema_version": "1.0",
+    "state": "EFFECTIVENESS_OBSERVING",
+    "updated_at": "2026-10-27T13:17:40.154149Z"
+  },
+  "history": [
+    {
+      "seq": 235,
+      "capa_id": "CAPA-028",
+      "from_state": null,
+      "to_state": "OPEN",
+      "at": "2026-10-17T16:12:38.019760Z",
+      "reason": "r110 SWE.3 author exceeded its tool budget (46>45) in the third cycle; BLOCKED",
+      "evidence": "[\"CAPA-028\"]"
+    },
+    {
+      "seq": 236,
+      "capa_id": "CAPA-028",
+      "from_state": "OPEN",
+      "to_state": "TRIAGED",
+      "at": "2026-10-17T16:12:38.047649Z",
+      "reason": "triage by AGENT (Claude Code)",
+      "evidence": "[]"
+    },
+    {
+      "seq": 237,
+      "capa_id": "CAPA-028",
+      "from_state": "TRIAGED",
+      "to_state": "REPRODUCER_PENDING",
+      "at": "2026-10-17T16:12:38.093637Z",
+      "reason": "reproducer RPR-030 assigned",
+      "evidence": "[]"
+    },
+    {
+      "seq": 241,
+      "capa_id": "CAPA-028",
+      "from_state": "REPRODUCER_PENDING",
+      "to_state": "CAUSE_VERIFIED",
+      "at": "2026-10-17T16:14:04.173550Z",
+      "reason": "CAUSE_VERIFIED_BY_CONTRAST",
+      "evidence": "[\"reproducer-run:rr-d47cfa23964b0bc25d7c\", \"reproducer-run:rr-41ef8d473253c311b02a\"]"
+    },
+    {
+      "seq": 242,
+      "capa_id": "CAPA-028",
+      "from_state": "CAUSE_VERIFIED",
+      "to_state": "FIX_CANDIDATE",
+      "at": "2026-10-17T16:14:04.229187Z",
+      "reason": "fix 9e8b6253ef40 (patch 17813 bytes)",
+      "evidence": "[\"git:9c25965034ed..9e8b6253ef40\"]"
+    },
+    {
+      "seq": 243,
+      "capa_id": "CAPA-028",
+      "from_state": "FIX_CANDIDATE",
+      "to_state": "PREVENTION_TESTED",
+      "at": "2026-10-17T16:14:04.329473Z",
+      "reason": "prevention test prevention:RPR-030 absent at 9e8b6253ef40",
+      "evidence": "[\"reproducer-run:rr-bd82b372bc2325cf7608\"]"
+    },
+    {
+      "seq": 244,
+      "capa_id": "CAPA-028",
+      "from_state": "PREVENTION_TESTED",
+      "to_state": "EFFECTIVENESS_OBSERVING",
+      "at": "2026-10-17T16:14:04.370084Z",
+      "reason": "observation window opened",
+      "evidence": "[]"
+    },
+    {
+      "seq": 564,
+      "capa_id": "CAPA-028",
+      "from_state": "EFFECTIVENESS_OBSERVING",
+      "to_state": "EFFECTIVENESS_OBSERVING",
+      "at": "2026-10-27T13:17:40.154149Z",
+      "reason": "Linked SPI configured HAL probe symptom and staged causal contrast; no change to lifecycle claims.",
+      "evidence": "[\"pd-8fdefc372c5e6a0f2943\", \"AFO-OB-CONTRACT-CONTEXT\"]"
+    }
+  ],
+  "links": [
+    "cfp1-7bf33c21272f215bd19f0e900f98235f022e8871",
+    "cfp1-e846045e642e16b796937c910ff30357d730ef1d",
+    "9c25965034ed776ee7a00e8f9ce19fd4520aeb53",
+    "9e8b6253ef40d962abc3c1b626ba23da5c707b0f",
+    "pd-fc29eea32100e67e3194",
+    "AFO-OB-CONTRACT-CONTEXT",
+    "rr-1f53e4dcd79b61c494da",
+    "WO-AFO-cbde5111bd5eeaf6-a1",
+    "pd-8fdefc372c5e6a0f2943",
+    "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc"
+  ],
+  "contrast": [
+    {
+      "run_id": "rr-1f53e4dcd79b61c494da",
+      "reproducer_id": "AFO-OB-CONTRACT-CONTEXT",
+      "revision": "557e920daa540a47461958c1e62842ac6bb709fd",
+      "role": "BASELINE",
+      "exit_code": 1,
+      "verdict": "SYMPTOM_PRESENT",
+      "signature": "contract probe omits configured HAL dependency types",
+      "log_sha256": "b33433945cb33147a73707cf1cfc11e037b9598625eb13bced58743749695961",
+      "at": "2026-10-27T13:14:55.240911Z"
+    },
+    {
+      "run_id": "rr-febd7f5882fea2a80d5a",
+      "reproducer_id": "AFO-OB-CONTRACT-CONTEXT",
+      "revision": "557e920daa540a47461958c1e62842ac6bb709fd",
+      "role": "BASELINE",
+      "exit_code": 1,
+      "verdict": "SYMPTOM_PRESENT",
+      "signature": "contract probe omits configured HAL dependency types",
+      "log_sha256": "b33433945cb33147a73707cf1cfc11e037b9598625eb13bced58743749695961",
+      "at": "2026-10-27T13:14:58.349355Z"
+    },
+    {
+      "run_id": "rr-5bf78bb93abf2f3a8102",
+      "reproducer_id": "AFO-OB-CONTRACT-CONTEXT",
+      "revision": "9dd5b713dd5e8fc92b86b1055cb3d52295f578cc",
+      "role": "CANDIDATE",
+      "exit_code": 0,
+      "verdict": "SYMPTOM_ABSENT",
+      "signature": null,
+      "log_sha256": "96fe637c51b1566355cadbb9678fdb0db7d6977e7b196b95a0377576de2c9fce",
+      "at": "2026-10-27T13:14:59.356418Z"
+    }
+  ],
+  "note": "Shared native fingerprint linked to existing CAPA. The staged reproducer supplies the observed baseline/candidate causal contrast; no manual cause/effectiveness claim."
+}

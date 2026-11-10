@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "tests/spec/validate_design.py"
+  ],
+  "duration_s": 0.218,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "65e947bd940869a0f9b7a465e6740db35469fdef",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-DESIGN/20261027T163845.log",
+  "log_sha256": "842413c9c966014762aec4ec1b6089695bf83e616d3b703fd19548c530760169",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-DESIGN",
+  "ts_utc": "2026-10-27T16:38:45.387543Z"
+}

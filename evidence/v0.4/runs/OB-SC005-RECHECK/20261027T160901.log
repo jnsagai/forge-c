@@ -1,0 +1,7 @@
+BENCH-GPIO-ST-HAL-OB-R1 onboarding-fact causes identified: 0 named gaps: 709
+BENCH-SPI-ST-HAL-OB-R1 onboarding-fact causes identified: 0 named gaps: 310
+BENCH-USART-ST-HAL-OB onboarding-fact causes identified: 0 named gaps: 711
+BENCH-TIM-ST-HAL-OB onboarding-fact causes identified: 0 named gaps: 230
+PASS cited reviews identify zero onboarding-fact causes in the latest terminal package of each selected driver; this validates review coverage and binding, not owner acceptance
+
+--- stderr ---

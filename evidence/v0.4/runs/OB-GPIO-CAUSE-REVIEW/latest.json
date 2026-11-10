@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-c",
+    "import runpy; m=runpy.run_path(\"evidence/v0.4/benchmark/st-drivers-hal-ob/ob_check.py\"); m[\"check_causes\"](m[\"collect\"](), (\"gpio\",))"
+  ],
+  "duration_s": 0.192,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "a5f6376a6eb78f638bcb299976684f8b7da4e9e8",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-GPIO-CAUSE-REVIEW/20261027T142551.log",
+  "log_sha256": "491fa41372d2ecb7fa4aebb8be697bff3e7661bbad7a909c44dd5b8b0f353c22",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-GPIO-CAUSE-REVIEW",
+  "ts_utc": "2026-10-27T14:25:51.924877Z"
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "forge-c/task-evidence/0.4",
+  "task": "OB-T062",
+  "status": "NOT_RUN",
+  "command": null,
+  "exit_code": null,
+  "ts_utc": "2026-10-27T10:53:57.921485Z",
+  "reason": "No qualified local model profile (feature 014). Owner handoff prohibits local-model workloads and changes to omniverse2/x-verse_fabric. No local-model onboarding run was started.",
+  "qualification_ref": "specs/014-durable-local-autonomy",
+  "model_calls": 0
+}

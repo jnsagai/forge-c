@@ -1,0 +1,32 @@
+{
+  "schema": "forge-c/onboarding-review-candidate/0.1",
+  "recorded_at": "2026-10-27T11:36:40.949960Z",
+  "pull_request": {
+    "baseRefName": "main",
+    "headRefName": "feat/016-peripheral-onboarding",
+    "headRefOid": "df773868333eb111fb3243bd3e86a74254dcee57",
+    "isDraft": true,
+    "number": 44,
+    "state": "open",
+    "title": "Add owner-approved peripheral onboarding before SWE.1",
+    "url": "https://github.com/jnsagai/forge-c/pull/44"
+  },
+  "runtime_revision": "5fb0a8673944c7e919ceffc78daaf6f3b782d71e",
+  "task_boxes_passed": 46,
+  "task_boxes_total": 64,
+  "acceptance_submitted": false,
+  "remaining_owner_action": "Run $FORGE_STATE_DIR/onboarding/sign-F016.sh in the owner terminal; chat approval and the 64 MHz USART value are already recorded. Verify and commit the signed approval copies before submitting GPIO, SPI, USART and TIM sequentially.",
+  "provenance": {
+    "raw_final_scan": "FAIL",
+    "finding": "Synthetic malicious-lesson token in a JUnit parameter name, already present in baseline test fixtures",
+    "independent_triage": "evidence/v0.4/runs/OB-PROVENANCE-TRIAGE/latest.json"
+  },
+  "remaining_feature_work": [
+    "OB-T035..OB-T037: authored texts and onboarding graph",
+    "OB-T041/OB-T043: model author and held-out CRC authoring",
+    "Owner SSH signatures and sequential acceptance SWE runs",
+    "OB-T058..OB-T060: frozen run record, SC-001/005 audit and owner review",
+    "OB-T062: local-model run remains NOT_RUN",
+    "OB-T064: final acceptance and PR completion; draft only, no merge"
+  ]
+}

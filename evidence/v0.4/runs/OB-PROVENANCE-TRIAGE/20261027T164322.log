@@ -1,0 +1,4 @@
+PASS: both findings repeat the synthetic malicious-lesson fixture already present at 11482e3:factory/python/tests/test_m5_lessons.py
+The raw whole-branch provenance result remains FAIL; no real credential or unknown finding was found.
+
+--- stderr ---

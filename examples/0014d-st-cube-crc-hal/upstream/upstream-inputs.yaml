@@ -1,0 +1,50 @@
+# Forge-C upstream inputs for WO-0002 (STM32N6 RCC LL/HAL driver) -- TO BE FILLED IN AND APPROVED BY A HUMAN.
+#
+# The factory uses this file ONLY when `status: APPROVED`, `approval.approved_by` and `approval.approved_on` are
+# set and no value still contains a placeholder (TBD / REPLACE / FILL). Until then every item stays NOT_PROVIDED
+# and SWE.1 correctly fails SWE1-01 (HSI and allocated software safety requirements baselined and traceable).
+# The AI must never fill in or approve this file. The `example:` lines are illustrations of the expected
+# format only; delete or replace them.
+schema: forge-c/upstream-inputs/0.1
+status: DRAFT_TEMPLATE            # set to APPROVED when complete and reviewed
+approval:
+  approved_by: FILL               # name / role (e.g. Functional Safety Manager)
+  approved_on: FILL               # YYYY-MM-DD
+  review_record: FILL             # reference to your review record / ticket
+
+target:
+  part_number: FILL               # exact part, e.g. STM32N657X0H3Q
+  silicon_revision: FILL          # e.g. rev Z / B (errata baseline)
+  board: FILL
+
+hsi_contract:                     # hardware-software interface for the RCC driver
+  contract_id: FILL               # e.g. HSI-RCC-001
+  version: FILL
+  items:                          # one entry per interface item the driver must honour
+    - id: FILL                    # example: HSI-RCC-001-01
+      resource: FILL              # example: RCC_CR.HSION / RCC_SR.HSIRDY
+      behaviour: FILL             # example: HSI ready within 1000 polling iterations after HSION set
+      constraints: FILL           # example: privileged access only; RCC base 0x56028000 (RM0486 p.176)
+
+safety_allocation:
+  asil: FILL                      # e.g. B, or QM
+  technical_safety_requirements:  # upstream TSR ids allocated to software (traceability anchors)
+    - id: FILL
+      text: FILL
+  software_safety_requirements:   # allocated SSRs the SWE.1 requirements must trace to
+    - id: FILL                    # example: SSR-RCC-001
+      text: FILL                  # example: The RCC driver shall report a clock enable failure within 1 ms.
+      derived_from: FILL          # TSR id
+  safe_state:
+    id: FILL                      # example: SS-RCC-01
+    description: FILL             # what the system does on an RCC fault
+    max_reaction_time: FILL       # e.g. 10 ms
+    owner: FILL                   # e.g. system-level safety mechanism, not the RCC driver
+
+budgets:                          # approved resource / timing budgets (replace the illustrative pilot values)
+  flash_bytes: FILL
+  static_ram_bytes: FILL
+  stack_bytes: FILL
+  max_wait_polling_iterations: FILL
+  api_cycle_limits:
+    clock_enable: FILL            # CPU cycles

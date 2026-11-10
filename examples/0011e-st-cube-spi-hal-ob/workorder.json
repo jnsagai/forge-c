@@ -1,0 +1,106 @@
+{
+  "schema": "forge-c/work-order-spec/0.4",
+  "driver": "STM32N6 serial peripheral interface (SPI1) hardware abstraction layer (HAL) driver as delivered by ST (STM32CubeN6 v1.4.0)",
+  "target": {
+    "part_number": "STM32N657X0 (STM32N6x5/x7 family)",
+    "core": "Arm Cortex-M55",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "DS14791 Rev 9",
+      "RM0486 Rev 4 chapter 67 (SPI) + memory map"
+    ],
+    "safety_allocation": "NOT_PROVIDED: no owner safety scope recorded for the SPI benchmark work orders",
+    "instance": "SPI1",
+    "hsi_contract": "RM0486 Rev 4 ch.67 SPI register interface (instance base address and register map derived by the onboarding stage)"
+  },
+  "scope": [
+    "ST's classic HAL SPI driver as delivered (STM32CubeN6 v1.4.0), used as is (FROZEN), for SPI1",
+    "Initialisation and de-initialisation from the handle configuration (master mode, direction, data size, clock polarity and phase, software slave select, baud-rate prescaler, bit order, CRC off); blocking transmit, receive and transmit-receive of a buffer with a timeout; the handle state and error code",
+    "Out of scope: the MSP hooks, interrupt and DMA transfers and the abort functions, slave mode, CRC calculation, TI mode, FIFO threshold tuning beyond the default, the extended API, register callbacks"
+  ],
+  "system_names": [
+    "SPI HAL driver",
+    "SPI driver",
+    "STM32N6 SPI HAL driver"
+  ],
+  "budgets": {
+    "flash_bytes": 4096,
+    "static_ram_bytes": 64,
+    "stack_bytes": 128,
+    "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)"
+  },
+  "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
+  "inputs": [
+    {
+      "path": "../0002-arm_55_rcc_st/inputs/DS14791-rev9-stm32n6x5-x7-datasheet.md",
+      "role": "datasheet"
+    },
+    {
+      "path": "../0011-spi-st/inputs/RM0486-rev4-ch67-spi.md",
+      "role": "reference_manual_spi_chapter"
+    },
+    {
+      "path": "../0011-spi-st/inputs/RM0486-rev4-memory-map-excerpt-spi.md",
+      "role": "reference_manual_memory_map"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions.md",
+      "role": "reference_manual_register_conventions"
+    },
+    {
+      "path": "../0015-rm0486-conventions/inputs/RM0486-rev4-register-conventions-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0011-spi-st/inputs/inputs-manifest.json",
+      "role": "conversion_provenance"
+    },
+    {
+      "path": "../0002-arm_55_rcc_st/hal_driver_guideline.md",
+      "role": "development_guideline"
+    }
+  ],
+  "layer": "HAL",
+  "layer_note": "Feature 016 acceptance (owner 2026-10-27, feature 015 T065): ST's existing STM32CubeN6 HAL code, FROZEN, onboarded by the factory from the owner inputs alone - the delivery file map, framework modules, peripheral profile and prompt texts are derived and owner-approved, not written by hand; requirements are derived from RM0486 independently of the code; secure build.",
+  "delivery": {
+    "code_mode": "FROZEN",
+    "origin": "STMicroelectronics stm32n6xx-hal-driver v1.4.0 (STM32CubeN6), https://github.com/STMicroelectronics/stm32n6xx-hal-driver tag v1.4.0",
+    "licence": "BSD-3-Clause",
+    "licence_allows_modification": true,
+    "provided_ll": false,
+    "onboarding": true,
+    "source": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/src/stm32n6xx-hal-driver-1.4.0",
+    "provenance": "$FORGE_DATA_ROOT/inputs/st/stm32n6xx-hal-driver-v1.4.0/provenance.json",
+    "packages": [
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/cmsis-device-n6-v1.4.0/src/cmsis-device-n6-1.4.0",
+        "origin": "STMicroelectronics cmsis-device-n6 v1.4.0",
+        "licence": "Apache-2.0"
+      },
+      {
+        "source": "$FORGE_DATA_ROOT/inputs/st/stm32cuben6-v1.4.0-cmsis-core/src",
+        "origin": "CMSIS core headers shipped in STMicroelectronics STM32CubeN6 v1.4.0",
+        "licence": "Apache-2.0"
+      }
+    ],
+    "scope": {
+      "functions": [
+        "HAL_SPI_Init",
+        "HAL_SPI_DeInit",
+        "HAL_SPI_Transmit",
+        "HAL_SPI_Receive",
+        "HAL_SPI_TransmitReceive",
+        "HAL_SPI_GetState",
+        "HAL_SPI_GetError"
+      ],
+      "note": "blocking/polling HAL API of the scope; MSP hooks, interrupt/DMA paths excluded"
+    },
+    "build": {
+      "style": "cmsis",
+      "defines": [
+        "STM32N657xx"
+      ],
+      "secure": true
+    }
+  }
+}

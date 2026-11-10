@@ -7,7 +7,8 @@
 # read of SPI_RXDR (0x030) pops a frame (RXP clears when empty); a frame arriving with a full 16-frame RxFIFO is lost
 # and sets SPI_SR.OVR (bit 6). SPI_SR (0x014) is read-only (reset 0x00001002: TXP, TXC); flags clear only by writing 1
 # to SPI_IFCR (0x018, write-only): EOTC bit 3, TXTFC bit 4, UDRC bit 5, OVRC bit 6, CRCEC bit 7, TIFREC bit 8, MODFC
-# bit 9, SUSPC bit 11. SPI_CRCPOLY (0x040) resets to 0x107; other registers are storage. CRC, TI mode, I2S, interrupts,
+# bit 9, SUSPC bit 11. SPI_CRCPOLY (0x040) resets to 0x107; SPI_TXCRC (0x044) and SPI_RXCRC (0x048) are read-only (0);
+# other registers are storage. CRC, TI mode, I2S, interrupts,
 # DMA and the half-duplex/simplex directions are out of the work orders' scope and not modelled.
 SCENARIO = "default"
 DEPTH = 16
@@ -64,5 +65,5 @@ elif request.IsWrite:
         tx.append(v)
         sr &= ~0x1000
         _transfer()
-    elif off != 0x014 and off != 0x030:
+    elif off not in (0x014, 0x030, 0x044, 0x048):  # SPI_SR, SPI_RXDR, SPI_TXCRC, SPI_RXCRC are read-only (RM0486)
         regs[off] = v
