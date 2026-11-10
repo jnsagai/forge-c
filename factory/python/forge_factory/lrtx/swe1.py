@@ -886,12 +886,15 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
     for g, rec in results:
         for r in rec["doc"]["requirements"]:
             rows.append({**r, "task": rec["task"], "source": f"RM0486 p.{r['source_page']}",
-                         "upstream": f"RM0486-{_task_section(ws, r['source_page'], g)}"})
+                         "upstream": f"RM0486-{_task_section(ws, r['source_page'], g)}",
+                         "heading": f"{g['register']} register requirements (RM0486 section {g['section']})"})
     first = inv["registers"][0]["section"] if inv["registers"] else "?"
     for r in cross["doc"]["requirements"]:
         rows.append({**r, "task": cross["task"], "source": f"RM0486 p.{r['source_page']}",
-                     "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}"})
-    rows += [{**r, "task": "budgets"} for r in budget_requirements(ws, sysname)]
+                     "upstream": f"RM0486-{_page_section(ws, r['source_page'], first)}",
+                     "heading": "Cross-cutting requirements"})
+    rows += [{**r, "task": "budgets", "heading": "Resource and timing budget requirements"}
+             for r in budget_requirements(ws, sysname)]
     for n, r in enumerate(rows, 1):
         r["swr"] = f"SWR-{n:03d}"
     opens, open_points = [], {}
@@ -931,9 +934,21 @@ def assemble(ws: Path, inv: dict, results: list[tuple[dict, dict]], cross: dict)
                 if R.safe_state_outside_scope(ws) else []),
               f"Target silicon revision: {m['target'].get('silicon_revision', 'UNSPECIFIED')}.",
               f"Flash, static RAM and stack limits: {m['budgets'].get('status', 'work-order budgets')}."]
+    # CAPA-210 (SQ-04 coherent structure and priorities): sections by hardware interface (one per register, in
+    # inventory order; a split register's tasks share its section), then cross-cutting, then budgets; release scope and
+    # priority in the header. Requirement lines and SWR numbering are unchanged.
     md = ["# Software requirements", "",
-          f"Software requirements of the {sysname} for this work order. Scope: " + " ".join(m["scope"]), ""]
+          f"Software requirements of the {sysname} for this work order. Scope: " + " ".join(m["scope"]), "",
+          f"Release scope: work order {m['work_order']} (a single release; every requirement below belongs to it). "
+          "Priority: mandatory - every requirement is required for this release; none is optional or deferred.", "",
+          "Organization: grouped by the driver's hardware interface - one section per peripheral register, in "
+          "reference-manual order - then cross-cutting requirements, then resource and timing budgets. SWR "
+          "identifiers are stable within this baseline.", ""]
+    heading = None
     for r in rows:
+        if r.get("heading") != heading:
+            heading = r.get("heading")
+            md += ([""] if md[-1] != "" else []) + [f"## {heading}", ""]
         md += [f"- **{r['swr']}** {r['statement'].strip()}", f"  - Source: {r['source']}",
                f"  - Verification: {r['verification'].strip()}"] + OO.render_lines(r.get("obligations") or [])
     md += ["", "## Open points", ""] + [f"- {o}" for o in opens]
