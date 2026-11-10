@@ -1,0 +1,10 @@
+T019 final tests - 2026-11-10, Omniverse2, source 14a0bb4a (live 64eb1352 + CAPA-212), venv forge-c-capa195/.venv
+pytest -q tests/test_f019_campaign_after.py tests/test_f019_derived_campaign.py tests/test_f019_input_gap.py
+  tests/test_f019_ladder_walk.py tests/test_owner_development_allowance.py tests/test_refused_verification_allowance.py
+  tests/test_da014_high_allowance.py
+Run 2: exit 0, 80 passed, 0 failed, 0 errors.
+Run 1 (same command, minutes earlier): fixture setup errors in an allowance suite while another pytest process of the
+same user ran in parallel (shared /tmp/pytest-of-omniverse2 base directory); not reproduced in run 2. Treat as
+environmental, not as a product result.
+Compared with the T001 baseline (baseline-failures.txt): no failure in these files, so no new failure.
+python3 tests/spec/validate_design.py: PASS (14 static design tests).
