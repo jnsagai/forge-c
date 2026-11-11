@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/mnt/data/forge-c/repos/forge-c-capa195/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "factory/python/tests/test_onboarding_factory_hal.py",
+    "-k",
+    "scope_and_budget or unconfirmed_budgets"
+  ],
+  "duration_s": 5.492,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "f41fdeb1a6222fa148f41ddb9054d292b86cc51d",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-T069/20261111T033320.log",
+  "log_sha256": "2d648351d3e67cb578371d4907352e6cc44a7aec0e0e41901ac2fef9894fe3dc",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-T069",
+  "ts_utc": "2026-11-11T03:33:20.186168Z"
+}

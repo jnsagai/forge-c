@@ -362,29 +362,29 @@ SWE.1–SWE.6.
 owner inputs and the LL lineage; the owner signs each package. Owner decisions 2026-11-11: "Extend 016 to factory
 HAL" and "HAL SWE.1 can use the LL SWE.1 as basis".
 
-- [ ] **OB-T065** Amend `spec.md` (FR-024–FR-027), `research.md` (R4, R10, new R13), `plan.md` (slice M),
+- [X] **OB-T065** Amend `spec.md` (FR-024–FR-027), `research.md` (R4, R10, new R13), `plan.md` (slice M), ✅ Evidence: `evidence/v0.4/runs/OB-T065/latest.json`
   `data-model.md`, `HANDOFF-codex.md`: lift the factory-HAL exclusion, add the factory-HAL package and the SWE.1-stage
   LL basis rule with the owner quotes. Run `python3 tests/spec/validate_design.py`.
-- [ ] **OB-T066** `ff/onboarding/factory_hal.py` + `derive`: the `HAL_ON_LL` context from the LL lineage example
+- [X] **OB-T066** `ff/onboarding/factory_hal.py` + `derive`: the `HAL_ON_LL` context from the LL lineage example ✅ Evidence: `evidence/v0.4/runs/OB-T066/latest.json`
   (delivery, register index, instance, model gate) read against the HAL work order's RM inputs; new facts `ll_api`
   and `ll_lineage` (package contract enum). AC: 0016m/0014m-style orders derive with driver_style `HAL_ON_LL`, no
   MISSING_INPUT, deterministic canonical hash (`tests/test_onboarding_factory_hal.py`).
-- [ ] **OB-T067** Template set `factory_hal.texts`: all 15 `prompt.hal_*` keys plus the base keys the overlay needs,
+- [X] **OB-T067** Template set `factory_hal.texts`: all 15 `prompt.hal_*` keys plus the base keys the overlay needs, ✅ Evidence: `evidence/v0.4/runs/OB-T067/latest.json`
   from facts, with origins; derived profile (`hal.host_instance` for SPI1/TIM2) and the leftover preview built like
   a run (provided-LL instance API). AC: the leftover check gives 0 findings for WWDG, CRC, SPI and TIM.
-- [ ] **OB-T068** Oracle test: re-derive the WWDG and CRC factory-HAL texts and compare them with the hand-written
+- [X] **OB-T068** Oracle test: re-derive the WWDG and CRC factory-HAL texts and compare them with the hand-written ✅ Evidence: `evidence/v0.4/runs/OB-T068/latest.json`
   `wwdg.yaml`/`crc.yaml` `hal_*` keys and `semantic_required_operations`; every difference is listed in
   `config/factory/onboarding/factory-hal-oracle-exceptions.yaml` with a reason (no unlisted difference, no stale
   entry).
-- [ ] **OB-T069** Generated HAL scope and `semantic_required_operations` from facts; budgets and
+- [X] **OB-T069** Generated HAL scope and `semantic_required_operations` from facts; budgets and ✅ Evidence: `evidence/v0.4/runs/OB-T069/latest.json`
   `simulation_performance` become assumptions the owner confirms in the approval (verify refuses unconfirmed ones);
   the summary shows the generated scope and HAL API.
-- [ ] **OB-T070** `workorder.prepare`/`admit` for `HAL_ON_LL` orders: no `delivery_from_package`, the generated
+- [X] **OB-T070** `workorder.prepare`/`admit` for `HAL_ON_LL` orders: no `delivery_from_package`, the generated ✅ Evidence: `evidence/v0.4/runs/OB-T070/latest.json`
   scope and confirmed budgets applied, `provided_ll` still called (its peripheral and header hash must be the
   package's), unapproved package refused; the SWE.1-stage LL basis rule in `provided_ll` (FR-027) with the basis
   phase in the manifest. Tests: wrong peripheral refused, unverified phase refused, SWE.1-stage accepted with an LL
   SWE.1 PASS order, SWE.3 still needs six gates.
-- [ ] **OB-T071** Add `examples/0011m-spi-hal/workorder.json` and `examples/0013m-tim-hal/workorder.json` with owner
+- [X] **OB-T071** Add `examples/0011m-spi-hal/workorder.json` and `examples/0013m-tim-hal/workorder.json` with owner ✅ Evidence: `evidence/v0.4/runs/OB-T071/latest.json`
   inputs only (no scope prose, no prompt texts), derive both packages into a private state dir and produce
   `summary.md` + `approval.template.json` for the owner. The owner signs (never the factory).
 
