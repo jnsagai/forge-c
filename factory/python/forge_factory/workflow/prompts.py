@@ -689,9 +689,12 @@ def trace_step(kind: str) -> list[str]:
                 f"'component \"RCC_{x}\\nstm32n6xx_{x.lower()}_rcc\" <<SWC>> as {swc}' (keep the module name "
                 f"stm32n6xx_{x.lower()}_rcc in the label: the view check requires it) and {other}. Allocate EVERY SWR of "
                 f"workproducts/SWE.1/software_requirements.md to {swc} with a note IN the diagram: 'note right of {swc}', "
-                "'Allocated: SWR-001, SWR-002, ...', 'end note'. Label EVERY connection with a unique interface id, e.g. "
-                f"'{swc} --> RCC : IF-01 register access'" + (" and 'SWC_HAL --> SWC_LL : IF-01 LL_RCC_* accessors'"
-                                                           if _layer() != "LL" else "") + ". The gate generates "
+                "'Allocated: SWR-001, SWR-002, ...', 'end note'. Label EVERY connection with a unique interface id, e.g. " +
+                (f"'{swc} --> RCC : IF-01 register access'" if _layer() == "LL" or STANDALONE["on"] else
+                 # CAPA-230: a HAL on the provided LL never connects to the register block itself
+                 "'SWC_HAL --> SWC_LL : IF-01 LL_RCC_* calls' and 'SWC_LL --> RCC : IF-02 register access' (the HAL "
+                 "never connects to the register block: it reaches the registers only through the LL)") +
+                ". The gate generates "
                 "workproducts/SWE.2/traceability/matrix_1_swr_to_architecture.csv.",
         "code": f"OWNER TRACE RULES: software units are the function groups of the SWE.2 allocation table (unit ids "
                 f"SWU-{x}-01, SWU-{x}-02, ... in table order; one unit per group, e.g. HSI, HSE, ADC12, GPDMA1). Put a "
@@ -847,7 +850,12 @@ def contract_step(phase: str) -> list[str]:
     if phase == "SWE.2":
         ex = (', e.g. \"&(const hal_rcc_osc_config_t){ .oscillator = HAL_RCC_OSC_HSE }\" and \"{timeout}\" where '
               'the caller passes the timeout; invalid cases pass the invalid value (NULL, 0U, HAL_RCC_TIMEOUT_VALUE + 1U, '
-              'an unknown selector)' if hal else ' (LL functions take no arguments: args [])')
+              'an unknown selector)' if hal else
+              # CAPA-230: delivered CMSIS LL functions take the instance first, then their values as delivered
+              ' (each delivered LL function takes the instance {i} first, then its value arguments as delivered, e.g. '
+              '["{i}"] for a query and ["{i}", "<a constant of the delivered LL header>"] for a setter)'.format(
+                  i=cmsis_instance()[0]) if BROWNFIELD["mode"] and BROWNFIELD.get("style") == "cmsis" else
+              ' (LL functions take no arguments: args [])')
         return [CONTRACT_SWE2.format(example=ex)]
     if phase == "SWE.3":
         return [CONTRACT_SWE3]
@@ -1092,6 +1100,9 @@ def author_prompt(phase: str) -> str:
                  .replace("Components (LL header-only stm32n6xx_ll_rcc.h, HAL stm32n6xx_hal_rcc.c/.h)",
                           "Components (PROVIDED LL header-only stm32n6xx_ll_rcc.h from the verified LL work order - the "
                           "HAL calls only the LL_RCC_ functions it declares; HAL stm32n6xx_hal_rcc.c/.h)")
+                 .replace("and a Register table with one row per register/bit used:",  # CAPA-230
+                          "and a Register table with one row per register/bit the HAL reaches through the LL functions "
+                          "it calls:")
                  for x in body]
     manifest = [] if phase in ("SWE.3", "SWE.4") else ["read_file .forge-run/manifest.json."]  # saves turn budget
     extra = [FIX_DEFECTS.format(p=phase)] if phase in ("SWE.1", "SWE.2") else \
@@ -1355,9 +1366,26 @@ def cmsisize(text: str) -> str:
          "(first '#define FORGE_HOST_DEVICE_IMPLEMENTATION' and '#include \"forge_host_device.h\"', then the delivered "
          "headers and a CHECK macro like the unit harness; " + CMSIS_REGS + "; observe forge_host_rcc.<REG>)"),
     ]
+    inst, typedef = cmsis_instance()
+    frags.append((  # CAPA-230: the SWE.2 architecture of delivered vendor code describes its CMSIS access
+        "Register access (extern volatile uint32_t register-block array placed at the RCC base by the linker, indexed "
+        "by offset/4; no integer-to-pointer casts; host tests define the array; read-modify-write that preserves other "
+        "bits)",
+        f"Register access (as DELIVERED: the vendor LL reaches the registers through the device header's CMSIS instance, "
+        f"the {typedef} pointer {inst}, with the CMSIS macros SET_BIT, CLEAR_BIT, READ_BIT, MODIFY_REG and WRITE_REG "
+        "on its members; there is no register-block array; on host tests the factory maps the instance to a RAM struct "
+        "(forge_host_device.h); state which functions write a whole register and which read-modify-write and preserve "
+        "the other bits)"))
     for old, new in frags:
         text = text.replace(old, new)
     return text
+
+
+def cmsis_instance() -> tuple[str, str]:
+    """CAPA-230: (instance, CMSIS type) of the work order's peripheral, e.g. ("SPI1", "SPI_TypeDef")."""
+    pr = PERIPHERAL["profile"] or {}
+    prefix = pr.get("register_prefix") or "RCC"
+    return (pr.get("hal") or {}).get("host_instance") or prefix, f"{prefix}_TypeDef"
 
 
 UNIT_VERIFICATION = {"gtest": False}  # owner 2026-11-03: set by the builder for work orders with unit_verification
