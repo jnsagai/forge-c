@@ -65,6 +65,9 @@ def inject(ws: Path) -> dict:
     store = D.store_dir(wo)
     for name in ("intake.json", "scope.json"):
         shutil.copyfile(store / name, ws / DELIVERY_DIR / name)
+    from .api_index import write as write_api_index
+
+    write_api_index(ws, m)  # CAPA-242: bounded view for the native SWE.2 author (index + brief)
     rec = {"schema": "forge-c/delivery-injection/0.1", "swe1_baseline_id": base["baseline_id"],
            "swe1_baseline_hash": base["baseline_hash"], "injected_at": utc_now(),
            "files": [d for d in m.get("delivered") or []]}
