@@ -822,8 +822,11 @@ def make_planner(store, eff, *, line_origin=None, line_role_authority_ref=None):
             from .completion_receipt import Receipts
 
             receipt = Receipts(store).latest(job["receipt_id"])
-            if receipt["decision"] == "NEEDS_EVIDENCE":
-                raise planner.Failed("MISSING_EVIDENCE:" + job["job_id"])
+            if receipt["decision"] == "NEEDS_EVIDENCE":  # CAPA-225 / DA-T036: typed, deterministic disposition
+                from .evidence_disposition import disposition, requested_kinds
+
+                typed = disposition(Path(doc["workspace"]), doc["bundle"]["phase"], requested_kinds(store, job["job_id"]))
+                raise planner.Failed(f"MISSING_EVIDENCE:{typed}:" + job["job_id"])
             return json.dumps(job["completion"])
         return (directory(job["job_id"]) / "reply.json").read_text()
 
