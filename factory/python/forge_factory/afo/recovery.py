@@ -149,6 +149,19 @@ def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) ->
     }
 
 
+STALL_AFTER = 2  # DA-T034: executed non-transient plans that left the same failure fingerprint in place
+
+
+def search_stalled(store: Store, order: dict, bundle: dict) -> str | None:
+    """DA-T034: the bounded candidate search stops on a measured lack of progress. The independent verifier result of an
+    executed plan is the next attempt's own failure fingerprint (gates, not the planner's confidence): when the same
+    fingerprint survived STALL_AFTER executed non-transient plans in the lineage, no further planner call is made."""
+    n = sum(1 for p in strategy_history(store, order["order_id"])
+            if p["status"] == "EXECUTED" and p["failure_fingerprint"] == bundle["fingerprint"]
+            and p["strategy"] not in ("DEFER_TRANSIENT_DEPENDENCY", "CLOSE_BLOCKED"))
+    return f"RECOVERY_STALLED:SAME_FAILURE_AFTER_{n}_PLANS" if n >= STALL_AFTER else None
+
+
 def next_transient_retry(store: Store, order: dict) -> int:
     """CAPA-224: the next retry number is past every transient retry already PLANNED in the cohort (any status), so its
     fingerprint never collides with another order's plan; the transient budget still counts executed retries."""
@@ -390,6 +403,8 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
         n = next_transient_retry(store, order)
         plan = _base(bundle, plan["strategy"], plan["affected_phase"], plan["rationale_code"],
                      material_difference_ref=f"transient_retry:{n}")
+    if plan is None and (stalled := search_stalled(store, order, bundle)):  # DA-T034: before any planner call
+        plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], stalled)
     if plan is None and planner is not None and eff.get("engineering.enable_recovery_planner"):
         from .planner import Failed
 
