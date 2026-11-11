@@ -116,3 +116,50 @@ def compare(example, wo: str = "WO-ORACLE") -> list[dict]:
         elif hand[k] != got.get(k):
             diffs.append({"fact": k, "hand_value": hand[k], "derived_value": got.get(k)})
     return diffs
+
+
+# ---- OB-T068 (owner 2026-11-11): the factory-HAL texts against the hand-written WWDG/CRC overlays ------------------
+FACTORY_HAL_EXCEPTIONS = CONFIG_DIR / "onboarding/factory-hal-oracle-exceptions.yaml"
+FACTORY_HAL_KEYS = ("hal_requirement_example", "hal_reset_example", "hal_failure_responses", "hal_api",
+                    "hal_dynamic_view", "hal_wait_rule", "hal_example", "hal_wait_rest", "hal_contract_rule",
+                    "hal_ut_example", "hal_ut_rule", "hal_integration", "hal_effect_example", "hal_args_example",
+                    "hal_target_tests", "semantic_required_operations")
+FACTORY_HAL_FIELDS = ("peripheral", "key", "reason", "reviewed_by")
+
+
+def factory_hal_exceptions() -> dict[tuple[str, str], dict]:
+    doc = load_yaml(FACTORY_HAL_EXCEPTIONS) or {}
+    if doc.get("schema") != "forge-c/onboarding-factory-hal-oracle-exceptions/0.1":
+        raise OracleError("FACTORY_HAL_ORACLE_EXCEPTIONS_SCHEMA")
+    out = {}
+    for e in doc.get("exceptions") or []:
+        missing = [k for k in FACTORY_HAL_FIELDS if not str(e.get(k) or "").strip()]
+        if missing or e["key"] not in FACTORY_HAL_KEYS:
+            raise OracleError(f"FACTORY_HAL_ORACLE_EXCEPTION_INCOMPLETE:{e.get('peripheral')}:{e.get('key')}:"
+                              f"{','.join(missing) or 'unknown key'}")
+        out[(e["peripheral"], e["key"])] = e
+    return out
+
+
+def factory_hal_compare(pkg: dict, peripheral: str) -> list[dict]:
+    """Differences between a HAL_ON_LL package's generated texts and the hand-written factory-HAL overlay of the same
+    peripheral (`config/factory/peripherals/<peripheral>.yaml`): the 15 `hal_*` prompt keys (whitespace-normalised)
+    and `semantic_required_operations` (as a set)."""
+    import json
+
+    from ..peripheral import load
+    from .texts import work_order
+
+    hand = load(peripheral)
+    gen = {k: v["text"] for k, v in ((pkg.get("texts") or {}).get("prompt") or {}).items()}
+    norm = lambda t: " ".join(str(t).split()) if t is not None else None  # noqa: E731
+    diffs = []
+    for k in FACTORY_HAL_KEYS[:-1]:
+        h, g = norm((hand.get("prompt") or {}).get(k)), norm(gen.get(k))
+        if h != g:
+            diffs.append({"key": k, "hand_value": h, "derived_value": g})
+    canon = lambda ops: sorted(json.dumps(o, sort_keys=True) for o in ops or [])  # noqa: E731
+    h, g = hand.get("semantic_required_operations"), work_order(pkg.get("texts"), "semantic_required_operations")
+    if canon(h) != canon(g):
+        diffs.append({"key": "semantic_required_operations", "hand_value": h, "derived_value": g})
+    return diffs
