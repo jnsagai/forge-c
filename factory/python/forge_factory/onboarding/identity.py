@@ -95,6 +95,18 @@ def context(example: Path) -> Ctx:
 
 # ---- preprocessor ------------------------------------------------------------------------------------------------
 def compiler() -> str | None:
+    """CAPA-226: one canonical compiler, so the package the owner signs and the one derived at launch are identical:
+    FORGE_ONBOARDING_GCC, else the factory's product toolchain (data root toolchains/sysroot), PATH last."""
+    import os
+
+    from ..common import data_root
+
+    explicit = os.environ.get("FORGE_ONBOARDING_GCC")
+    if explicit and Path(explicit).is_file() and os.access(explicit, os.X_OK):
+        return explicit
+    factory = data_root() / "toolchains/sysroot/usr/bin/arm-none-eabi-gcc"
+    if factory.is_file() and os.access(factory, os.X_OK):
+        return str(factory)
     return shutil.which("arm-none-eabi-gcc")
 
 
