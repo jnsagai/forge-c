@@ -132,11 +132,17 @@ _LINEAGE = {L["id"]: L for L in LINEAGES}
 # Owner ~14:00: "Before going to SW2, I want to exercise a bit more SW1 with other examples ... HAL example on WWDG,
 # then SW1 on intermediate model, then a complex model. just when we are sure that SW1 is really stable, then we can
 # go for the next one." -> the ladder runs one phase stage across all steps; the owner raises LADDER_PHASES.
-LADDER = ("wwdg-ll", "wwdg-hal", "spi-ll", "tim-ll")
+# Owner 2026-11-11: "i want to deploy spi and tim hal first for swe 1" and "HAL SWE.1 can use the LL SWE.1 as basis"
+# -> SPI HAL and TIM HAL join the SWE.1 stage right after their LL steps (both LL steps already passed SWE.1).
+LADDER = ("wwdg-ll", "wwdg-hal", "spi-ll", "spi-hal", "tim-ll", "tim-hal")
 LADDER_PHASES = ("SWE.1",)
 # A HAL step of a stage that ends before SWE.6 builds on an LL order of its peripheral that already passed all six
 # phases (workorder.provided_ll re-checks the six gates, ADR-0009): WWDG LL L29, factory 82fabdb9 (2026-11-03).
-PROVIDED_LL = {"wwdg-hal": "WO-F014-SWE6-WWDGL-20261103-L29"}
+# Owner 2026-11-11: a SWE.1-stage HAL may build on its LL lineage's passed SWE.1 order (workorder.provided_ll checks
+# the LL gates up to the HAL order's last phase; feature 016 factory-HAL path).
+PROVIDED_LL = {"wwdg-hal": "WO-F014-SWE6-WWDGL-20261103-L29",
+               "spi-hal": "WO-F014-SWE1-SPIL-20261107-L41P",
+               "tim-hal": "WO-F014-SWE1-TIML-20261107-L43T"}
 assert all(i in _LINEAGE for i in LADDER) and len(set(LADDER)) == len(LADDER)
 assert LADDER_PHASES == PHASES[:len(LADDER_PHASES)] and LADDER_PHASES
 assert all(_LINEAGE[i]["depends_on"] in (None, LADDER[k - 1]) and (k or _LINEAGE[i]["depends_on"] is None)
