@@ -1120,7 +1120,9 @@ def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
     n = phase[-1]
     checks = (checklist or load_checklist(phase, brownfield=bool(BROWNFIELD["mode"])))["checks"]  # OD-2026-10-20-02
     items = "; ".join(f"{c['id']}: {c['criterion'][:70]}" for c in checks)
-    example = "; ".join(f"{c['id']}=PASS" for c in checks[:2])
+    cite = phase == "SWE.2"  # CAPA-231: a SWE.2 PASS cites the baseline file and section examined
+    example = "; ".join(f"{c['id']}=PASS" + ("[workproducts/SWE.2/software_architecture.md#Interfaces]" if cite else "")
+                        for c in checks[:2])
     steps = [f"Call use_skill with skill_name swe{n}-inspector.",
              f"glob configuration/baselines/{phase}/BL-*.json and read the newest one: note its baseline_id and files.",
              "read_file each listed workproduct (use offset/limit for long files). Never edit any file. Use the active "
@@ -1144,7 +1146,10 @@ def inspector_prompt(phase: str, checklist: dict | None = None) -> str:
                else []),
              f"Call mcp__forge_evidence_mcp__check_inspection with phase {phase}, baseline_id <id>, and verdicts as ONE plain "
              f"string covering EVERY item, e.g. \"{example}; ...\" and for a failed item ID=FAIL:<short finding>. "
-             "Items decided by deterministic tools are recomputed automatically.",
+             "Items decided by deterministic tools are recomputed automatically." +
+             (" Every PASS of an item the tools do not decide names in [...] the baseline file(s), each with the "
+              "section you examined for it (file#section, comma separated); a PASS without them is not recorded."
+              if cite else ""),
              'Finish with ONLY JSON: {"status":"PASS" or "REWORK","artifacts":["inspection/' + phase +
              '/<INS id>.json"],"issues":["<item id: finding>"],"next_action":"next" or "rework"}']
     if phase == "SWE.1" and assessment_scope_note():
