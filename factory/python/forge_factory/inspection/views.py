@@ -146,7 +146,7 @@ def check_views(ws: Path, render: bool = False) -> dict:
     shown = [f for f in apis if f in dy]
     if apis and not shown:
         findings.append("VIEWS:DYNAMIC_SHOWS_NO_ALLOCATED_API")
-    findings += view_rules(ws, st, dy, layer, apis)  # CAPA-229
+    rules = view_rules(ws, st, dy, layer, apis)  # CAPA-229: reported after the view's own syntax/render findings
     # CAPA-124: only a HAL with a bounded wait has a timeout path (a no-wait HAL such as CRC returns no HAL_TIMEOUT)
     # F015/F016: ST's standalone CRC/GPIO/TIM HAL never waits unless its profile names a time base
     timeout_required = layer != "LL" and hal_waits(ws) and (
@@ -184,6 +184,7 @@ def check_views(ws: Path, render: bool = False) -> dict:
             rr = _plantuml(["-tsvg", STATIC, DYNAMIC], ws)
             if rr.returncode != 0:
                 findings.append("VIEWS:RENDER_FAILED")
+    findings += rules
     return {"verdict": "FAIL" if findings else "PASS", "major_findings": findings,
             "stats": {"syntax": syntax, "allocated_apis": len(apis), "apis_in_dynamic_view": len(shown),
                       "timeout_path_required": timeout_required,
