@@ -33,12 +33,18 @@ def registered(store, jid):
     return json.loads(row[0])
 
 
-def link_mission(store, row, control, spec):
-    """Register finite authority before the first inference, never import old work as zero usage."""
-    from . import owner_supervised_development as development
+ACTIVE_PARENT = ("SUBMITTED", "QUEUED", "ADMITTED", "RUNNING", "WAITING_RECOVERY", "VALIDATING", "PAUSED",
+                 "WAITING_EXTERNAL_CHANGE")
+
+
+def continuation_parent(store, spec, ledger, control, *, development_mode):
+    """The continued order whose mission consumption this order joins, or None for an independently validated frozen
+    input. CAPA-223 (SWE2-WWDGL-L44, 2026-11-09): every owner-lane deploy issues a new development control, so a phase
+    continuation of an order passed under an earlier deploy was refused CONTROL_CHANGED and no SWE.2 could ever start.
+    On the development lane such a parent, once no longer active, is a frozen input like one without a recorded control
+    (no continuation link, its historical consumption is never relabelled); an active parent or any other mode refuses."""
     from .line_orders import _load, supervisor_dir
 
-    ledger = MissionLedger(store)
     continuation = spec.get("resume_from")
     parents = [r for r in store.orders() if r["request_id"] == continuation] if continuation else []
     parent = parents[0] if len(parents) == 1 else None
@@ -46,11 +52,32 @@ def link_mission(store, row, control, spec):
         previous = _load(supervisor_dir() / "line-orders" / (continuation + ".json")) or {}
         if previous.get("durable_control"):
             if previous["durable_control"] != spec["durable_control"]:
+                if development_mode and parent.get("state") not in ACTIVE_PARENT:
+                    return None
                 raise Refused("LINE_PRODUCT_CONTINUATION_CONTROL_CHANGED")
             if ledger.for_order(parent["order_id"]) != control["mission"]["mission_id"]:
                 raise Refused("LINE_PRODUCT_CONTINUATION_MISSION_CHANGED")
         else:
             parent = None  # independently validated frozen input, never relabel its historical consumption
+    return parent
+
+
+def _development_mode():
+    from . import owner_supervised_development as development
+    from .policy import load
+
+    try:
+        return load().mode == development.MODE
+    except Exception:  # noqa: BLE001 - an unreadable policy is never the development lane
+        return False
+
+
+def link_mission(store, row, control, spec):
+    """Register finite authority before the first inference, never import old work as zero usage."""
+    from . import owner_supervised_development as development
+
+    ledger = MissionLedger(store)
+    parent = continuation_parent(store, spec, ledger, control, development_mode=_development_mode())
     try:
         existing = ledger.for_order(row["order_id"])
     except Refused:
