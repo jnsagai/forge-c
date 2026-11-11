@@ -64,11 +64,11 @@ def test_no_timing_ownership_instruction_outside_the_explicit_scope(options):
 
 
 @pytest.mark.parametrize("options, exclude, expected", [
-    ({"perf": False}, [], "c4d8ff3bf80d34aae0d28a1a9d6c33badffe5848f2fe1ee4a0c95097a092291a"),
+    ({"perf": False}, [], "7cf6bbac6bdc14c53c732c02bcad0ce5a560fedda5deca1dec9021e514e6da25"),
     ({"provided": False}, [], "b19b67876214abbb9a93af35f5486681b866b93c7a5d98d04e81fa05d03c5d4d"),
-    ({"style": "other"}, [], "cf06006ccec3e3c3a86c3b66a40fd11e702b9991ff666e8276a7ad235098bef8"),
+    ({"style": "other"}, [], "def846e3188f026a9165fb5cea0ee484fb5c6f1ca1c538c538913eaa49eec8dd"),
     ({"layer": "LL"}, [], "dc131a9122aed865b0328ec6059300d13eb46211da2f33c7a502e03c5a9d3b02"),
-    ({}, ["swe3_author"], "6ba1aef2b677d2601c4684ebbbbf44d4c654d06afb655dd2e06f230a2dfbecfe"),
+    ({}, ["swe3_author"], "9e8a847305aedde9b565e556ecc42e928345323a6b1c85205173925aa2195c74"),
 ])
 def test_frozen_e014_graph_nodes_outside_the_two_intentional_author_changes(options, exclude, expected):
     # Values measured from a separate clean e014fd86 worktree, not generated from candidate expectations.

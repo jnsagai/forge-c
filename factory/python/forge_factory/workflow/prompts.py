@@ -894,6 +894,12 @@ BROWNFIELD_SWE2_BRIEF = (
     "read_file .forge-run/delivery/api-index.md, which lists every in-scope delivered function with its signature and "
     "the line range of its comment and body, and read delivered code only with read_file offset/limit on those ranges "
     "(each range once); never read a whole delivered file.")
+# CAPA-243 (SPI HAL L46: 2 of 3 SWE.2 author cycles refused CAPABILITY_LIMIT at ~115k input tokens after reading the
+# whole provided ST LL header): the provided LL through the factory's index (brownfield/api_index.write_provided).
+PROVIDED_LL_INDEX = (
+    "the PROVIDED LL software/ll/stm32n6xx_ll_rcc.h (frozen) through its index: read_file .forge-run/provided-ll-api.md "
+    "(its constant groups and every LL function with signature and line range), then read the header only with "
+    "read_file offset/limit on the ranges you need (each range once; never the whole header)")
 BROWNFIELD_SWE3 = [
     "read_file workproducts/SWE.3/delivered_code_facts.json (deterministic facts of the delivered scope functions: "
     "file, line, kind, register effects) and workproducts/SWE.3/code_trace_map.seed.json.",
@@ -1102,9 +1108,10 @@ def author_prompt(phase: str) -> str:
                           "framework headers stm32n6xx_hal.h, stm32n6xx_hal_def.h, stm32n6xx_hal_conf.h and the CMSIS "
                           "device header are delivered dependencies)") for x in body]
     elif _layer() == "HAL" and phase == "SWE.2":  # ADR-0009: the HAL is designed on the PROVIDED, frozen LL
+        ll = (PROVIDED_LL_INDEX if PROVIDED_API["api"] else  # CAPA-243: a provided ST LL header is large
+              "software/ll/stm32n6xx_ll_rcc.h (PROVIDED LL, frozen)")
         body = [x.replace("Read workproducts/SWE.1/software_requirements.md and",
-                          "Read workproducts/SWE.1/software_requirements.md, software/ll/stm32n6xx_ll_rcc.h (PROVIDED "
-                          "LL, frozen) and")
+                          f"Read workproducts/SWE.1/software_requirements.md, {ll} and")
                  .replace("Components (LL header-only stm32n6xx_ll_rcc.h, HAL stm32n6xx_hal_rcc.c/.h)",
                           "Components (PROVIDED LL header-only stm32n6xx_ll_rcc.h from the verified LL work order - the "
                           "HAL calls only the LL_RCC_ functions it declares; HAL stm32n6xx_hal_rcc.c/.h)")

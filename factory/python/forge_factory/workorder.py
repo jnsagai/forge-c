@@ -891,10 +891,14 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
 
 
 def _provided_api_arg(ws: Path) -> dict:
-    """CAPA-131: the provided ST LL's instance API for the HAL prompts; no argument otherwise (graph byte-identical)."""
+    """CAPA-131: the provided ST LL's instance API for the HAL prompts; no argument otherwise (graph byte-identical).
+    CAPA-243: with it, the provided LL index that the HAL SWE.2 author reads instead of the whole header."""
+    from .brownfield.api_index import write_provided
     from .brownfield.cmsis import provided_api
 
     api = provided_api(ws)
+    if api:
+        write_provided(ws)
     return {"provided_api": api} if api else {}
 
 

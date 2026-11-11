@@ -10,6 +10,7 @@ Both are derived deterministically from files already in the workspace; nothing 
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from . import DELIVERY_DIR
@@ -83,3 +84,45 @@ def write(ws, manifest: dict) -> None:
     (ws / INDEX).write_text(index_text(ws))
     brief = {k: v for k, v in manifest.items() if k not in DROP}
     (ws / BRIEF).write_text(json.dumps(brief, sort_keys=True, separators=(",", ":")))
+
+
+# CAPA-243 (SPI HAL L46: the HAL SWE.2 author read the whole provided ST LL header, 121 kB, then parts of it again, and
+# 2 of 3 author cycles were refused CAPABILITY_LIMIT at ~115k input tokens): the same bounded view for a HAL designed
+# on a PROVIDED CMSIS LL - its constant groups and functions by line range.
+PROVIDED_INDEX = ".forge-run/provided-ll-api.md"
+_DEF = re.compile(r"\b(?:__STATIC_(?:FORCE)?INLINE|static\s+inline)\b[^;{(]*?\b(LL_\w+)\s*\(")
+_GROUP = re.compile(r"@defgroup\s+(\w+)\s*(.*?)\s*(?:\*/)?\s*$")
+
+
+def provided_text(header_rel: str, text: str) -> str:
+    lines = text.splitlines()
+    code = S.strip_comments(text).splitlines()
+    groups = [(i + 1, m.group(1), m.group(2)) for i, ln in enumerate(lines) for m in [_GROUP.search(ln)] if m]
+    grows = [f"- {name} ({title}): {a}-{(groups[k + 1][0] - 1) if k + 1 < len(groups) else len(lines)}"
+             for k, (a, name, title) in enumerate(groups)]
+    frows = []
+    for i, c in enumerate(code):
+        m = _DEF.search(c)
+        if m:
+            a, b, sig = _range(lines, code, i + 1)
+            sig = re.sub(r"^(?:__STATIC_(?:FORCE)?INLINE|static\s+inline)\s+", "", sig)
+            frows.append(f"- `{sig}`: {a}-{b}")
+    head = ["# Provided LL API index (factory-generated, CAPA-243)", "",
+            f"{header_rel} is PROVIDED and frozen. Read it only with read_file offset/limit on these ranges "
+            "(offset = first line); never read the whole header.", ""]
+    return "\n".join(head + ["## Groups (constants and functions, by line range)", *(grows or ["none"]), "",
+                             "## Functions (signature: lines of comment and body)", *(frows or ["none"]), ""])
+
+
+def write_provided(ws) -> str | None:
+    """Writes PROVIDED_INDEX for a HAL work order on a provided CMSIS LL; None (no file) for every other work order."""
+    from ..layer import ll_header
+    from .cmsis import provided_api
+
+    ws = Path(ws)
+    if not provided_api(ws):
+        return None
+    rel = ll_header(ws)
+    (ws / PROVIDED_INDEX).parent.mkdir(parents=True, exist_ok=True)
+    (ws / PROVIDED_INDEX).write_text(provided_text(rel, (ws / rel).read_text(errors="replace")))
+    return PROVIDED_INDEX
