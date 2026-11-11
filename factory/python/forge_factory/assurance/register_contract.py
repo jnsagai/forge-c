@@ -40,11 +40,46 @@ def _load(ws: Path, rel: str) -> tuple[dict | None, list[str]]:
     p = Path(ws) / rel
     if not p.is_file():
         return None, [f"CONTRACT_MISSING:{rel}"]
+    text = p.read_text()
     try:
-        d = json.loads(p.read_text())
+        d = json.loads(text)
     except ValueError as exc:
-        return None, [f"CONTRACT_NOT_JSON:{rel}:{str(exc)[:80]}"]
+        return None, [f"CONTRACT_NOT_JSON:{rel}:{str(exc)[:80]}{unclosed_hint(text, exc)}"]
     return (d, []) if isinstance(d, dict) else (None, [f"CONTRACT_NOT_OBJECT:{rel}"])
+
+
+def unclosed_hint(text: str, exc: ValueError) -> str:
+    """CAPA-244 (TIM HAL L47: in api_calls.json each HAL_TIM_Init case line lacked the '}' closing its case object; JSON
+    nests the following cases inside it, so the parser failed only at the end of the file with "Expecting ',' delimiter:
+    line 47 column 1", and the SWE.2 author resubmitted the same file until the gate stopped it as STUCK): when the parse
+    fails at the end of the text with objects/arrays still open, name the lines where those still-open ones begin (an
+    object that should have closed on its own line). Empty for every other parse error."""
+    pos = getattr(exc, "pos", None)
+    if not isinstance(pos, int) or pos < len(text.rstrip()):
+        return ""
+    stack, in_str, esc, line = [], False, False, 1
+    for ch in text:
+        if ch == "\n":
+            line += 1
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+        elif ch == '"':
+            in_str = True
+        elif ch in "{[":
+            stack.append(line)
+        elif ch in "}]" and stack:
+            stack.pop()
+    if in_str or not stack:
+        return ""
+    lines = sorted(set(stack))
+    shown = ",".join(map(str, lines[:40])) + (",..." if len(lines) > 40 else "")
+    return (f" - the file ends with {len(stack)} object(s)/array(s) still open, opened on line(s) {shown}: each must "
+            "close where it ends (e.g. a case line missing its closing '}'), not at the end of the file")
 
 
 def _rm_index(ws: Path) -> dict:
