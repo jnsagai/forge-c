@@ -1,0 +1,12 @@
+{
+  "schema": "forge-c/task-evidence/0.4",
+  "task": "OB-T043",
+  "status": "NOT_RUN",
+  "command": null,
+  "exit_code": null,
+  "ts_utc": "2026-10-27T15:59:29.359188Z",
+  "reason": "Owner reports Claude token quota exhausted. The codex-claude model-authoring graph requires a distinct Claude inspector. No held-out authoring model call was started and no inspector was substituted. Deterministic implementation checks are recorded separately under OB-MODEL-AUTHORING. Resume the real held-out CRC authoring and target checks only when the approved inspector is available.",
+  "model_calls": 0,
+  "held_out_model": "crc",
+  "owner_message": "claude is out of tokens, the inspector will not be able to run"
+}

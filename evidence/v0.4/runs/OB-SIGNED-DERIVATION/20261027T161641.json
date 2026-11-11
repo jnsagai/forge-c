@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "evidence/v0.4/benchmark/st-drivers-hal-ob/audit_signed_derivation.py"
+  ],
+  "duration_s": 17.543,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "222cb8e65aafe48532aaa4fd6c3a1a35c2cc491d",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-SIGNED-DERIVATION/20261027T161641.log",
+  "log_sha256": "621cd7949b0ac349ad3afa5849e44cf6fb8a9a5a8a4bbf3e501740d3e898790a",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-SIGNED-DERIVATION",
+  "ts_utc": "2026-10-27T16:16:41.068895Z"
+}

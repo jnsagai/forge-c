@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/mnt/data/forge-c/repos/forge-c-capa195/.venv/bin/python",
+    "tests/spec/validate_design.py"
+  ],
+  "duration_s": 0.101,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "f41fdeb1a6222fa148f41ddb9054d292b86cc51d",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-T065/20261111T033220.log",
+  "log_sha256": "e94030b2c2b5a85e4a4b6566d90cd005f3fc99de05f94ddadac686f09bba42db",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-T065",
+  "ts_utc": "2026-11-11T03:32:20.588831Z"
+}

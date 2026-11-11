@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "evidence/v0.4/runs/OB-FULL-SUITE/check_results.py",
+    "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/logs/f016-557e920-full-tests.xml"
+  ],
+  "duration_s": 0.029,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "8e4edefa59370b17ff8da97d6763cd1341be91d6",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-NO-REGRESSIONS/20261027T131235.log",
+  "log_sha256": "ffe338ad0989b10c68a66a3277535ae24df055cd8bf2be640e6585880e8c6bdb",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-NO-REGRESSIONS",
+  "ts_utc": "2026-10-27T13:12:35.663411Z"
+}

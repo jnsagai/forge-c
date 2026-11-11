@@ -1,0 +1,25 @@
+JUnit sha256: b397633f2f4965539760c31b90462bad8e1b24c157835c183544a2b39cb3848d
+Total: 1482, passed: 1452, skipped: 27, failed/error: 3
+FAILED test_cre_d7_e2e.test_latest_local_qwen_work_order_has_real_terminal_evidence
+FAILED test_kpi_003.test_kpi_t012_observer_mcp_read_only_and_least_privilege
+FAILED test_kpi_003.test_kpi_t020_pilot_reconciles_with_raw_evidence
+PASS: exactly the three previously recorded baseline failures; no additional failures
+gpio BLOCKED gaps 709 archive 9a08206c37163b72e7dcb03d44b6f128d035fdbdea6e91686baec2c4f632f36b
+spi BLOCKED gaps 310 archive 858d0fc2a98880ec8c29a75c913b78c577ea500b6e2bbd20ba265639a3fe5458
+usart BLOCKED gaps 711 archive c2a19403a1f7705d95c960601c670efdba3b0c122534e00203a6cb8638bee3e8
+tim BLOCKED gaps 230 archive ae6059eaac1475bab029d74918423b61a6cecb591053a13b64328d2e42c75749
+PASS terminal outcomes and approved package bindings; gap-cause/SC-005 review remains separate
+PASS owner accepted the four exact BLOCKED handovers with findings open and the exact historical exception
+Raw SC-001 remains FAIL. This proves owner adjudication and artifact binding, not driver/safety/merge approval.
+BENCH-GPIO-ST-HAL-OB-R1 onboarding-fact causes identified: 0 named gaps: 709
+BENCH-SPI-ST-HAL-OB-R1 onboarding-fact causes identified: 0 named gaps: 310
+BENCH-USART-ST-HAL-OB onboarding-fact causes identified: 0 named gaps: 711
+BENCH-TIM-ST-HAL-OB onboarding-fact causes identified: 0 named gaps: 230
+PASS cited reviews identify zero onboarding-fact causes in the latest terminal package of each selected driver; this validates review coverage and binding, not owner acceptance
+PASS: both findings repeat the synthetic malicious-lesson fixture already present at 11482e3:factory/python/tests/test_m5_lessons.py
+The raw whole-branch provenance result remains FAIL; no real credential or unknown finding was found.
+PASS OB-T064 delivery: exact source and complete suite, existing-model quickstart, owner bindings and draft PR
+Raw suite/provenance/history FAIL evidence retained. SC-007 remains NOT_RUN, not qualified or waived.
+No deployment, merge, driver acceptance, finding closure or safety approval is implied.
+
+--- stderr ---

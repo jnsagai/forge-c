@@ -1,0 +1,140 @@
+EEEEEEEEE                                                                [100%]
+==================================== ERRORS ====================================
+__________ ERROR at setup of test_a_complete_signed_approval_verifies __________
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_INCOMPLETE:assumption] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_INCOMPLETE:conflict] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_INCOMPLETE:gap_not_accepted] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_STALE] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_REJECTED] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_BAD_SIGNATURE] _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_wrong_namespace_or_edited_after_signing_is_a_bad_signature _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+_ ERROR at setup of test_missing_input_blocks_and_invalidation_keeps_the_old_approval _
+
+self = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-ev/a'
+
+/home/jefferson/.pyenv/versions/3.13.13/lib/python3.13/pathlib/_local.py:722: FileNotFoundError
+=========================== short test summary info ============================
+ERROR factory/python/tests/test_onboarding_approval.py::test_a_complete_signed_approval_verifies
+ERROR factory/python/tests/test_onboarding_approval.py::test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_INCOMPLETE:assumption]
+ERROR factory/python/tests/test_onboarding_approval.py::test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_INCOMPLETE:conflict]
+ERROR factory/python/tests/test_onboarding_approval.py::test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_INCOMPLETE:gap_not_accepted]
+ERROR factory/python/tests/test_onboarding_approval.py::test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_STALE]
+ERROR factory/python/tests/test_onboarding_approval.py::test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_REJECTED]
+ERROR factory/python/tests/test_onboarding_approval.py::test_incomplete_stale_rejected_or_foreign_approvals_are_refused[<lambda>-APPROVAL_BAD_SIGNATURE]
+ERROR factory/python/tests/test_onboarding_approval.py::test_wrong_namespace_or_edited_after_signing_is_a_bad_signature
+ERROR factory/python/tests/test_onboarding_approval.py::test_missing_input_blocks_and_invalidation_keeps_the_old_approval
+
+--- stderr ---

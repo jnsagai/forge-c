@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "scripts/onboarding_acceptance_checks.py",
+    "inputs"
+  ],
+  "duration_s": 0.102,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "bb7a04a867ec2df4a954bb67970dd1e70194c389",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-INPUT-HASHES/20261027T105304.log",
+  "log_sha256": "e6d87be79f87aeca4d0567d663d9c04dfb44eed19b695bd516d4b269712edeef",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-INPUT-HASHES",
+  "ts_utc": "2026-10-27T10:53:04.424181Z"
+}

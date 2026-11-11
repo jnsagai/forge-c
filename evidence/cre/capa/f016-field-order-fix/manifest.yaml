@@ -1,0 +1,15 @@
+reproducers:
+- id: AFO-OB-DISCRETE-FIELDS
+  script: fields.py
+  sha256: 6f14094e5e16fd302fb0860aa39228474917cd4e7dfc67f4537dc6cb40a46dd5
+  symptom_signature: RM parser omits comma-separated GPIO pin fields
+  observed_in: GPIO F016 initial acceptance and SC-001 preparation audit
+  baseline_revision: 9fa4664798183218184a6cf1a650ab1985087ea4
+  fix_revision: 557e920daa540a47461958c1e62842ac6bb709fd
+- id: AFO-OB-TEXT-PERSISTENCE
+  script: texts.py
+  sha256: 88acfda530320d58ce36b79e5c7aed06ddf6d9fd8e20bcfd4dc3cf5bd3b1caef
+  symptom_signature: saved package facts change generated function order
+  observed_in: GPIO F016 initial acceptance and SC-001 preparation audit
+  baseline_revision: 9fa4664798183218184a6cf1a650ab1985087ea4
+  fix_revision: 557e920daa540a47461958c1e62842ac6bb709fd

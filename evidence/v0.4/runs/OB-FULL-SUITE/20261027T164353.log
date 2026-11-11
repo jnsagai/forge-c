@@ -1,0 +1,144 @@
+....s................................................................... [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 24%]
+........................................................................ [ 29%]
+..........................................F............................. [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 43%]
+........................................................................ [ 48%]
+..............................................F..F...................... [ 53%]
+........................................................................ [ 58%]
+..........s............................................................. [ 63%]
+.................................................F...............s...... [ 68%]
+...................................s.................................... [ 73%]
+.........................................................F.............. [ 77%]
+........................................................................ [ 82%]
+........................................................................ [ 87%]
+......................................ss.ss.....................ssssssss [ 92%]
+s..s....ssss................................s..................s........ [ 97%]
+...............s.........s..s........                                    [100%]
+=================================== FAILURES ===================================
+_________ test_latest_local_qwen_work_order_has_real_terminal_evidence _________
+
+    def test_latest_local_qwen_work_order_has_real_terminal_evidence():
+        wss = e2e.latest_local_attempts(1)
+        if not wss:
+            pytest.fail("BLOCKED: no local-model work order with a package on this host (real E2E not demonstrated)")
+        r = e2e.assess(wss[0])
+        assert r["model_profile"]["local_only"] is True and r["fabro_server"].startswith("http://127.0.0.1:32290")
+        assert r["package_status"] in ("BLOCKED", "READY_FOR_OFFLINE_REVIEW", "READY")
+        assert r["archive_verification"] is not None and r["archive_verification"]["issues"] == []
+>       assert r["cre_observations"] > 0 and r["result"] == "PASS"
+E       assert (0 > 0)
+
+factory/python/tests/test_cre_d7_e2e.py:15: AssertionError
+___________ test_kpi_t012_observer_mcp_read_only_and_least_privilege ___________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-b68bdbb-full/test_kpi_t012_observer_mcp_rea0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78b3ea7de190>
+
+    def test_kpi_t012_observer_mcp_read_only_and_least_privilege(tmp_path, monkeypatch):
+        monkeypatch.setenv("FORGE_STATE_DIR", str(tmp_path / "state"))
+        monkeypatch.setenv("FORGE_EVENTS_DIR", str(tmp_path / "ev"))
+        monkeypatch.setenv("FORGE_MCP_TRUST", "env")
+        monkeypatch.setenv("FORGE_WORKSPACE", str(tmp_path))
+        S.compute_and_store(order("O1", "O1", "2026-10-14T00:30:00Z", ALL_PASS))
+        from forge_factory.mcp import sdk
+        from forge_factory.mcp.servers import observer
+        op = {o.name: o for o in observer.OPERATIONS}
+        monkeypatch.setenv("FORGE_ROLE", "release-manager")
+        ok = sdk.invoke("forge-observer-mcp", op["get_kpis"], {"kpi_id": "K02"})
+        assert ok["status"] == "PASS" and all(i.startswith("K02") for i in ok["issues"])
+        ev_ = sdk.invoke("forge-observer-mcp", op["get_kpi_evidence"], {"kpi_id": "K02"})
+>       assert ev_["status"] == "PASS" and ev_["metrics"]["event_refs"] >= 1
+E       AssertionError: assert ('PASS' == 'PASS'
+E         
+E           PASS and 0 >= 1)
+
+factory/python/tests/test_kpi_003.py:269: AssertionError
+_______________ test_kpi_t020_pilot_reconciles_with_raw_evidence _______________
+
+    @pytest.mark.skipif(not (Path(__import__("os").environ.get("FORGE_STATE_DIR", "/nonexistent")) / "workorders").is_dir(),
+                        reason="no live work orders")
+    def test_kpi_t020_pilot_reconciles_with_raw_evidence():
+        import os
+    
+        from forge_factory.kpi.sources import collect_all
+        from forge_factory.release.finalize import archive_root
+        from forge_factory.supervisor.store import IncidentStore
+        evs = collect_all()
+        snap = E.snapshot(evs, "2026-10-01T00:00:00Z", time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+        assert E.schema_errors_kpi(snap) == []
+        # packages on disk vs package.sealed events (attempt level)
+        root = Path(os.environ["FORGE_STATE_DIR"]) / "workorders"
+        def local(ws):
+            prof = ws / ".forge-run/model-profile.json"
+            return not prof.is_file() or json.loads(prof.read_text()).get("local_only", True)
+    
+        sealed_ws = {ws.parent.name for ws in root.glob("*/workspace")
+                     if (ws / ".forge-run/package.json").is_file() and local(ws)}
+        assert sealed_ws == {e["attempt_id"] for e in evs if e["type"] == "package.sealed"}
+        import hashlib
+        for ws in root.glob("*/workspace"):  # every recorded package exists on disk with the recorded SHA-256
+            pj = ws / ".forge-run/package.json"
+            if pj.is_file():
+                p = json.loads(pj.read_text())
+                assert hashlib.sha256(Path(p["archive"]).read_bytes()).hexdigest() == p["archive_sha256"]
+        assert archive_root().is_dir()
+        # incidents ledger vs K16 denominator
+        inc = [i for i in IncidentStore().all(1000) if i["recoverable"] and i["state"] in ("RESOLVED", "REQUIRES_OFFLINE_ATTENTION")]
+        assert get(snap, "K16")["denominator"] == len(inc)
+        # initial inspections vs inspection files
+        first = {}
+        for ws in filter(local, root.glob("*/workspace")):
+            for f in sorted(ws.glob("inspection/SWE.*/INS-*.json")):
+                first.setdefault(f.parent.name, f)
+        for p in ("SWE.1", "SWE.2"):
+>           assert get(snap, "K02", phase=p)["denominator"] == (1 if p in first else 0)
+E           assert 4 == 1
+
+factory/python/tests/test_kpi_003.py:365: AssertionError
+________ test_t010_catalog_all_ops_implemented_and_mandatory_available _________
+
+    def test_t010_catalog_all_ops_implemented_and_mandatory_available():
+        cat = PF.op_catalog()
+>       assert len(cat) == 39  # 34 design ops + 2 v0.5 KPI overlay ops + run_robot (SWE.6) + report/reject_defect (ADR-0008)
+        ^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 41 == 39
+E        +  where 41 = len({'forge-analysis-mcp.cbmc_verify': {'mandatory': False, 'missing_tools': [], 'op': 'cbmc_verify', 'role_grants': [], ....': ['swe3-author', 'swe3-inspector', 'swe4-author', 'swe4-inspector', 'swe5-author', 'swe5-inspector', ...], ...}, ...})
+
+factory/python/tests/test_m2_mcp.py:51: AssertionError
+____________ test_filesystem_view_excludes_host_hand_model_and_home ____________
+
+tmp_path = PosixPath('/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-b68bdbb-full/test_filesystem_view_excludes_0')
+
+    @pytest.mark.skipif(not shutil.which('bwrap'), reason='rootless bubblewrap not installed')
+    def test_filesystem_view_excludes_host_hand_model_and_home(tmp_path):
+        secret = tmp_path / 'hand_model.py'
+        secret.write_text('not visible in the isolated scratch')
+        scratch = tmp_path / 'scratch'
+        scratch.mkdir()
+        # The trusted test broker selects Python to probe the same mount builder used for Renode.
+        command = S.argv(Path('/usr/bin/python3'), scratch, ['-c',
+            f"from pathlib import Path; assert not Path({str(secret)!r}).exists(); "
+            "assert not Path('/home/jefferson').exists(); assert not Path('/media').exists(); "
+            "assert not Path('/proc/net/route').read_text().splitlines()[1:]"])
+        result = subprocess.run(command, capture_output=True, timeout=15)
+>       assert result.returncode == 0, result.stderr.decode()
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 1, in <module>
+E         AssertionError
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/bin/bwrap', '--unshare-all', '--die-with-parent', '--new-session', '--cap-drop', 'ALL', '...=1, stdout=b'', stderr=b'Traceback (most recent call last):\n  File "<string>", line 1, in <module>\nAssertionError\n').returncode
+
+factory/python/tests/test_onboarding_model_sandbox.py:42: AssertionError
+=========================== short test summary info ============================
+FAILED factory/python/tests/test_cre_d7_e2e.py::test_latest_local_qwen_work_order_has_real_terminal_evidence
+FAILED factory/python/tests/test_kpi_003.py::test_kpi_t012_observer_mcp_read_only_and_least_privilege
+FAILED factory/python/tests/test_kpi_003.py::test_kpi_t020_pilot_reconciles_with_raw_evidence
+FAILED factory/python/tests/test_m2_mcp.py::test_t010_catalog_all_ops_implemented_and_mandatory_available
+FAILED factory/python/tests/test_onboarding_model_sandbox.py::test_filesystem_view_excludes_host_hand_model_and_home
+5 failed, 1445 passed, 27 skipped in 2373.27s (0:39:33)

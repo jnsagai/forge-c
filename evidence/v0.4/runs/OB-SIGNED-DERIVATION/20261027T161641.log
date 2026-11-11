@@ -1,0 +1,7 @@
+GPIO PASS same signed subject e7eeec3c04d48ad30d4b6ef2d178bee17131299a7e4bff094d8caaab9edb9891
+SPI PASS same signed subject dd2e4792a5f04c9302aea1430c23be86c0778a140bf53fef95a8eb9e30078523
+USART PASS same signed subject ad9bfa76ac4a23e283aac36714781582faf038c401a6a9bf7b28d2e2be9801c9
+TIM PASS same signed subject cefb9802488388480dce855fd8048f58b09b727fde7a1f8860f38bddd98ba804
+PASS all four owner packages and signatures remain byte-identical and valid; no authoring model call requested
+
+--- stderr ---

@@ -1,0 +1,27 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-q",
+    "factory/python/tests/test_onboarding_authoring.py",
+    "factory/python/tests/test_onboarding_model_sandbox.py",
+    "factory/python/tests/test_m2_mcp.py",
+    "--junitxml=/tmp/f016-final-model-controls.xml"
+  ],
+  "duration_s": 20.294,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "65e947bd940869a0f9b7a465e6740db35469fdef",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-MODEL-CONTROLS/20261027T163801.log",
+  "log_sha256": "04c3d2d145c1653f317df71eead190f2093e3f87c9445cb83fd0bfb715a4f448",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-MODEL-CONTROLS",
+  "ts_utc": "2026-10-27T16:38:01.307547Z"
+}

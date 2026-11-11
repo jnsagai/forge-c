@@ -1,0 +1,31 @@
+d4bbb5562794262fe2d32b57661cba473d87cfaf F016 US3 slice H + US4 slice I: generated prompt texts, leftover check, model gate
+
+config/factory/peripherals/gpio.yaml
+78ca44a133b353fe844166373ffa8b32c4cbf1b3 F016 US2 (OB-T021..OB-T030): derived profile, owner-signed approval, package-driven prepare, AFO intake check
+
+examples/0010e-st-cube-gpio-hal-ob/workorder.json
+examples/0011e-st-cube-spi-hal-ob/workorder.json
+examples/0012e-st-cube-usart-hal-ob/workorder.json
+examples/0013e-st-cube-tim-hal-ob/workorder.json
+
+diff --git a/config/factory/peripherals/gpio.yaml b/config/factory/peripherals/gpio.yaml
+index 262ad42..b501556 100644
+--- a/config/factory/peripherals/gpio.yaml
++++ b/config/factory/peripherals/gpio.yaml
+@@ -97,7 +97,7 @@ prompt:
+     the GPIO_BSRR/GPIO_BRR value written; queries get a set and a clear case; port read/write check the register value.
+   target_model: >-
+     The simulated GPIOA (factory/sim/stm32n6/gpio_model.py) is a behavioural port model with the RM0486 port A reset
+-    values (GPIO_MODER 0xABFFEFFF, GPIO_OSPEEDR 0x0C000000, GPIO_PUPDR 0x64000000, the others 0); GPIO_BSRR (write-only)
++    values (GPIO_MODER 0xABFFEFFF, GPIO_OSPEEDR 0x0C000000, GPIO_PUPDR 0x64000000, GPIO_SECCFGR and GPIO_PRIVCFGR 0x0000FFFF, the others 0); GPIO_BSRR (write-only)
+     sets the GPIO_ODR bits of BSy and clears those of BRy (BSy wins when both are set); GPIO_BRR (write-only) clears
+     GPIO_ODR bits; GPIO_IDR (read-only) reads back GPIO_ODR for pins in output or alternate function mode, 1 for input
+     pins with pull-up, 0 otherwise. Expected values in target checks follow this model.
+
+
+--- stderr ---
+Traceback (most recent call last):
+  File "/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/repos/forge-c-016-onboarding/evidence/v0.4/benchmark/st-drivers-hal-ob/audit_history.py", line 20, in <module>
+    assert not change, ('STRICT_SC001_EXCEPTION: unused legacy GPIO target-model reset description was corrected. '
+           ^^^^^^^^^^
+AssertionError: STRICT_SC001_EXCEPTION: unused legacy GPIO target-model reset description was corrected. The separate read-trace audit proves onboarding does not read that profile. Owner review must adjudicate the literal history criterion; no zero-change claim.

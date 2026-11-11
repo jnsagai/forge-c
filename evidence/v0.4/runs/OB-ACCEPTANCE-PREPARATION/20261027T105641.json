@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "--basetemp=/media/jefferson/11c42dee-73a3-4c2b-ab42-a0440011d9e0/forge-c/tmp/pt-f016-benchmark-queue",
+    "factory/python/tests/test_benchmark_queue.py"
+  ],
+  "duration_s": 0.522,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "ffcd74ee525442c00b55cb7048505ac291909bbe",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-ACCEPTANCE-PREPARATION/20261027T105641.log",
+  "log_sha256": "61e1264bf8ae0dbcc318ac7d9e8e6d6babffde8358e52b92ea28d62f90b8066b",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-ACCEPTANCE-PREPARATION",
+  "ts_utc": "2026-10-27T10:56:41.726028Z"
+}

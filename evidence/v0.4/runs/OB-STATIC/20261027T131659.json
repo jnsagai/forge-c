@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "forge_factory.safec_bridge.static_check"
+  ],
+  "duration_s": 0.211,
+  "exit_code": 0,
+  "git_dirty": true,
+  "git_head": "883a54c5fc68d57928e7ff3f493d0fe2b2eef391",
+  "host": {
+    "node": "master",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/OB-STATIC/20261027T131659.log",
+  "log_sha256": "0083028d40ae37be75c597a712945fbc27dc2594b05c4a448fe50cada50d4677",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "PASS",
+  "task": "OB-STATIC",
+  "ts_utc": "2026-10-27T13:16:59.603853Z"
+}
