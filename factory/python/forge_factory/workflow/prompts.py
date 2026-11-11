@@ -886,6 +886,14 @@ BROWNFIELD_SWE2 = (
     "requirement case, set that case's api_calls function to \"NONE\" (args []) and write 'NONE (no delivered code)' in "
     "its allocation row: the gate reports it as a NO_CODE finding for the owner. Add a section '## Delivered functions "
     "without requirement' listing every delivered scope function that no requirement needs (or 'none').")
+# CAPA-242 (SPI LL L41E-G: every SWE.2 author request refused CAPABILITY_LIMIT at ~115k input tokens): the manifest
+# without its resume identity, and the delivered code by line ranges from the factory's API index.
+BROWNFIELD_SWE2_BRIEF = (
+    "read_file .forge-run/delivery/swe2-brief.json: it is .forge-run/manifest.json without the resume identity (the "
+    "same scope, delivery and delivered entries); read it instead of the manifest. The delivered files are large: "
+    "read_file .forge-run/delivery/api-index.md, which lists every in-scope delivered function with its signature and "
+    "the line range of its comment and body, and read delivered code only with read_file offset/limit on those ranges "
+    "(each range once); never read a whole delivered file.")
 BROWNFIELD_SWE3 = [
     "read_file workproducts/SWE.3/delivered_code_facts.json (deterministic facts of the delivered scope functions: "
     "file, line, kind, register effects) and workproducts/SWE.3/code_trace_map.seed.json.",
@@ -1105,6 +1113,8 @@ def author_prompt(phase: str) -> str:
                           "it calls:")
                  for x in body]
     manifest = [] if phase in ("SWE.3", "SWE.4") else ["read_file .forge-run/manifest.json."]  # saves turn budget
+    if BROWNFIELD["mode"] and phase == "SWE.2":  # CAPA-242: the native author's context stays under its bound
+        manifest = [BROWNFIELD_SWE2_BRIEF]
     extra = [FIX_DEFECTS.format(p=phase)] if phase in ("SWE.1", "SWE.2") else \
         [DEFECT_RULE] if phase in ("SWE.4", "SWE.5", "SWE.6") else []
     tr = {"SWE.2": "swe2", "SWE.3": "swe3", "SWE.4": "ut", "SWE.5": "it", "SWE.6": "vt"}.get(phase)
