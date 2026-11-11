@@ -54,9 +54,9 @@ _CALLER = re.compile(r"caller|application|\buser\b", re.I)
 def _role(name: str, label: str, kind: str, hal: str, ll: str) -> str:
     if kind.lower() == "actor" or _CALLER.search(name) or _CALLER.search(label):
         return "caller"
-    if name == "SWC_HAL" or hal in label or name.upper() == "HAL":
+    if name == "SWC_HAL" or hal in label or hal in name or name.upper() == "HAL":  # RPR-124: module-named elements
         return "hal"
-    if name == "SWC_LL" or ll in label or name.upper() == "LL":
+    if name == "SWC_LL" or ll in label or ll in name or name.upper() == "LL":
         return "ll"
     return "registers"
 
