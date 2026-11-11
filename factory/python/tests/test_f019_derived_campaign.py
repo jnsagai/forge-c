@@ -17,7 +17,7 @@ def _sub(doc):
 
 
 def test_the_ladder_is_the_owner_order_for_the_swe1_stage():
-    assert D.LADDER == ("wwdg-ll", "wwdg-hal", "spi-ll", "tim-ll") and D.LADDER_PHASES == ("SWE.1", "SWE.2")
+    assert D.LADDER == ("wwdg-ll", "wwdg-hal", "spi-ll", "tim-ll") and D.LADDER_PHASES == ("SWE.1",)
     assert set(D.LADDER) <= set(D._LINEAGE) and len(set(D.LADDER)) == len(D.LADDER)
     assert D.PROVIDED_LL == {"wwdg-hal": L29}  # the WWDG LL that passed all six phases (factory 82fabdb9)
 
@@ -30,8 +30,7 @@ def test_the_derived_campaign_validates_and_follows_the_ladder():
     assert list(by) == [L["id"] for L in D.LINEAGES]
     for k, lid in enumerate(D.LADDER):
         L, spec = by[lid], D._LINEAGE[lid]
-        assert (L["status"], L["priority"], L["phases"], L["factory_revision"]) == (
-            "ACTIVE", 50 - k, ["SWE.1", "SWE.2"], "@SOURCE@")
+        assert (L["status"], L["priority"], L["phases"], L["factory_revision"]) == ("ACTIVE", 50 - k, ["SWE.1"], "@SOURCE@")
         assert (L["example"], L["tag"], L["series"], L["driver_class"]) == (
             spec["example"], spec["tag"], spec["series"], spec["driver_class"])
         assert digest(L["quality"]) == D.QUALITY_SHA and (L["profile"], L["run_model"]) == (D.PROFILE, D.RUN_MODEL)
@@ -39,7 +38,7 @@ def test_the_derived_campaign_validates_and_follows_the_ladder():
         if k == 0:
             assert "after" not in L
         else:
-            assert L["after"] == {"lineage": D.LADDER[k - 1], "phase": "SWE.2", "verdict": "PASS"}
+            assert L["after"] == {"lineage": D.LADDER[k - 1], "phase": "SWE.1", "verdict": "PASS"}
     assert by["wwdg-hal"]["provided_from"] == L29
     assert all("provided_from" not in by[i] for i in ("wwdg-ll", "spi-ll", "tim-ll"))
     for lid in set(by) - set(D.LADDER):

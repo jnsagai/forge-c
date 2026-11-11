@@ -133,9 +133,7 @@ _LINEAGE = {L["id"]: L for L in LINEAGES}
 # then SW1 on intermediate model, then a complex model. just when we are sure that SW1 is really stable, then we can
 # go for the next one." -> the ladder runs one phase stage across all steps; the owner raises LADDER_PHASES.
 LADDER = ("wwdg-ll", "wwdg-hal", "spi-ll", "tim-ll")
-# Owner 2026-11-11 (after TIM LL L43T passed SWE.1, the last ladder step): "Advance to SWE.2" - same ladder order,
-# each step resumes from its passed SWE.1 order.
-LADDER_PHASES = ("SWE.1", "SWE.2")
+LADDER_PHASES = ("SWE.1",)
 # A HAL step of a stage that ends before SWE.6 builds on an LL order of its peripheral that already passed all six
 # phases (workorder.provided_ll re-checks the six gates, ADR-0009): WWDG LL L29, factory 82fabdb9 (2026-11-03).
 PROVIDED_LL = {"wwdg-hal": "WO-F014-SWE6-WWDGL-20261103-L29"}
