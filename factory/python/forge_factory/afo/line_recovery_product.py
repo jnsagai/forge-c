@@ -602,6 +602,15 @@ def _native_prepare_claim(store, job):
     return value
 
 
+def record_pre_native_refusal(store, job, failure_type, *, executions=None):
+    """CAPA-237: durable proof that the workorder refused before native submission (no PRODUCT_NATIVE_SUBMIT_INTENT),
+    so the line worker settles the launch as not started instead of holding the inference lease as unknown."""
+    ex = (executions or Executions)(store)
+    if not ex._evidence(job["job_id"], "PRODUCT_NATIVE_SUBMIT_INTENT"):
+        ex._save_evidence(job["job_id"], "PRODUCT_NATIVE_ADMISSION_REFUSAL",
+                          {"job_id": job["job_id"], "nonce": job["nonce"], "failure_type": failure_type})
+
+
 def native_parameters(path, sha256, expected):
     """The workorder CLI's only optional durable input; no model-supplied CLI kwargs."""
     from .queue import Store
@@ -624,14 +633,8 @@ def native_parameters(path, sha256, expected):
         try:
             bind_native(store, job["job_id"])
         except Exception as exc:
-            if not Executions(store)._evidence(job["job_id"], "PRODUCT_NATIVE_SUBMIT_INTENT"):
-                Executions(store)._save_evidence(
-                    job["job_id"],
-                    "PRODUCT_NATIVE_ADMISSION_REFUSAL",
-                    {"job_id": job["job_id"], "nonce": job["nonce"],
-                     "failure_type": getattr(exc, "code", None) or (str(exc)[:96] if isinstance(exc, R.BindingRefused)
-                                                                    else type(exc).__name__)},
-                )
+            record_pre_native_refusal(store, job, getattr(exc, "code", None) or (
+                str(exc)[:96] if isinstance(exc, R.BindingRefused) else type(exc).__name__))
             if isinstance(exc, Refused):
                 raise
             raise Refused("LINE_PRODUCT_NATIVE_ADMISSION_FAILED", type(exc).__name__) from exc
@@ -641,4 +644,6 @@ def native_parameters(path, sha256, expected):
         "durable_binding": value["binding"],
         "labels": value["labels"],
         "before_native_launch": before_native,
+        # CAPA-237: the workorder CLI reports a refusal it raised before native submission (never passed to run())
+        "refused_before_native": lambda stage: record_pre_native_refusal(store, job, stage),
     }
