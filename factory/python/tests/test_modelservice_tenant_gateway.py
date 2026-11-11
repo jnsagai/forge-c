@@ -208,3 +208,17 @@ def test_secret_reader_requires_a_private_file(tmp_path):
     os.chmod(p, 0o640)
     with pytest.raises(RuntimeError, match="NOT_PRIVATE"):
         read_secret(p, "engine-internal")
+
+
+def test_capa240_reasoning_content_with_thinking_on_is_no_finding(tmp_path):
+    """CAPA-240 (017 smoke windows 2026-11-11): qwen3.8 runs with thinking ON (catalog and tenants reasoning_mode 'on'),
+    yet the gateway raised REASONING_CONTENT_WITH_THINKING_OFF for its expected reasoning text. The finding is raised only
+    for a request whose thinking the gateway switched off."""
+    reply = {"choices": [{"message": {"content": "x", "reasoning_content": "thought"}}], "usage": {}}
+    app, _, log, _ = make(tmp_path, engine_reply=lambda req, body: httpx.Response(200, json=reply))
+    with TestClient(app) as c:
+        for _ in range(4):
+            c.post("/v1/chat/completions", json=chat(A), headers=H("factory-a"))
+    recs = [json.loads(x) for x in log.read_text().splitlines()]
+    assert not any(r.get("finding") == "REASONING_CONTENT_WITH_THINKING_OFF" for r in recs)
+    assert all(r.get("reasoning_content_seen") for r in recs if r.get("status") == 200)

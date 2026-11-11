@@ -157,7 +157,8 @@ def create_app(cfg: dict, cat: C.Catalog, controller: SwapController, shares: Sh
         if estimate_tokens(body) + int(body.get("max_tokens") or body.get("max_completion_tokens") or 0) > limit:
             log.write({**rec, "status": 400, "forge_reason": "context_exceeded"})
             return _err(400, "context_exceeded", f"limit {limit}")
-        if m.reasoning_mode == "off" or t.get("reasoning_mode") == "off":
+        thinking_off = m.reasoning_mode == "off" or t.get("reasoning_mode") == "off"
+        if thinking_off:
             body["chat_template_kwargs"] = {**(body.get("chat_template_kwargs") or {}), "enable_thinking": False}
         body["model"] = m.name_on_engine
         try:
@@ -183,7 +184,7 @@ def create_app(cfg: dict, cat: C.Catalog, controller: SwapController, shares: Sh
             lease.release()
             shares.release(t["tenant_id"])
             u = usage or {}
-            if reasoning:
+            if reasoning and thinking_off:  # CAPA-240: reasoning text is expected when thinking is on
                 reasoning_seen[name] = reasoning_seen.get(name, 0) + 1
                 if reasoning_seen[name] == threshold:
                     log.write({"kind": "finding", "finding": "REASONING_CONTENT_WITH_THINKING_OFF", "model": name})

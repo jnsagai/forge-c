@@ -19,7 +19,9 @@ GPU free again, lane restarted and resumed (window record: `window-record.json`)
 | SC-002 (100% of calls fingerprinted) | NOT_RUN in this plan |
 | SC-010 | NOT_RUN in this plan |
 
-Findings: REASONING_CONTENT_WITH_THINKING_OFF (qwen3.8, recorded by the tier).
+Findings: the tier recorded REASONING_CONTENT_WITH_THINKING_OFF for qwen3.8. This was a false alarm: thinking was ON
+(catalog and tenants reasoning_mode 'on'), and the gateway counted reasoning text without checking that; fixed by
+CAPA-240 (the finding now requires thinking switched off by the gateway).
 Earlier windows the same day: 20261111T093853Z-23268f COMPLETED but every Ornith load failed
 (FileNotFoundError, fixed by CAPA-234); 20261111T093137Z-e88182 release refused untouched (CAPA-232, CAPA-233).
 T044 stays open until the missing items are measured.
