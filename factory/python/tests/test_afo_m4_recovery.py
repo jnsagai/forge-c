@@ -304,7 +304,8 @@ def test_transient_retries_are_numbered_backed_off_and_bounded(order, tmp_path):
     assert d["plan"]["strategy"] == "CLOSE_BLOCKED" and d["plan"]["rationale_code"].startswith("PLAN_REJECTED:BUDGET_")
     (rej,) = [p for p in recovery.plans(s, oid) if p["status"] == "REJECTED"]
     assert "BUDGET_TRANSIENT_RETRIES_EXHAUSTED" in json.loads(rej["reasons"])
-    assert recovery.budget_snapshot(s, s.order(oid), eff)["variants_by_phase"]["SWE.1"] == 1  # only the CLOSE plan
+    # CAPA-224: giving up (CLOSE_BLOCKED) is no strategy variant; it used to count and exhaust the variant budget
+    assert recovery.budget_snapshot(s, s.order(oid), eff)["variants_by_phase"]["SWE.1"] == 0
 
 
 def test_a_model_switch_to_the_orders_own_profile_is_refused(order):
