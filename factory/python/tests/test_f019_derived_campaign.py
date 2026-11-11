@@ -10,6 +10,8 @@ from forge_factory.afo.durable import digest
 
 SIX = ["SWE.1", "SWE.2", "SWE.3", "SWE.4", "SWE.5", "SWE.6"]
 L29 = "WO-F014-SWE6-WWDGL-20261103-L29"
+L41P = "WO-F014-SWE1-SPIL-20261107-L41P"
+L43T = "WO-F014-SWE1-TIML-20261107-L43T"
 
 
 def _sub(doc):
@@ -17,9 +19,9 @@ def _sub(doc):
 
 
 def test_the_ladder_is_the_owner_order_for_the_swe1_stage():
-    assert D.LADDER == ("wwdg-ll", "wwdg-hal", "spi-ll", "tim-ll") and D.LADDER_PHASES == ("SWE.1",)
+    assert D.LADDER == ("wwdg-ll", "wwdg-hal", "spi-ll", "spi-hal", "tim-ll", "tim-hal") and D.LADDER_PHASES == ("SWE.1",)
     assert set(D.LADDER) <= set(D._LINEAGE) and len(set(D.LADDER)) == len(D.LADDER)
-    assert D.PROVIDED_LL == {"wwdg-hal": L29}  # the WWDG LL that passed all six phases (factory 82fabdb9)
+    assert D.PROVIDED_LL == {"wwdg-hal": L29, "spi-hal": L41P, "tim-hal": L43T}  # owner 2026-11-11: LL SWE.1 basis
 
 
 def test_the_derived_campaign_validates_and_follows_the_ladder():
@@ -39,7 +41,7 @@ def test_the_derived_campaign_validates_and_follows_the_ladder():
             assert "after" not in L
         else:
             assert L["after"] == {"lineage": D.LADDER[k - 1], "phase": "SWE.1", "verdict": "PASS"}
-    assert by["wwdg-hal"]["provided_from"] == L29
+    assert (by["wwdg-hal"]["provided_from"], by["spi-hal"]["provided_from"], by["tim-hal"]["provided_from"]) == (L29, L41P, L43T)
     assert all("provided_from" not in by[i] for i in ("wwdg-ll", "spi-ll", "tim-ll"))
     for lid in set(by) - set(D.LADDER):
         assert (by[lid]["status"], by[lid]["priority"], by[lid]["phases"]) == ("ON_HOLD", 30, SIX)
