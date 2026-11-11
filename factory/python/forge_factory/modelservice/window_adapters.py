@@ -157,7 +157,28 @@ class OwnerLane:
         self._deployer("window-release", self.window_id, str(int(self.deadline)))
 
     def restart_lane(self) -> None:
+        if not (self.deployer / "WINDOW.json").exists() and self._release_refused_untouched():
+            return  # CAPA-233: nothing was released, so nothing is restored (the hold is released by the caller)
         self._deployer("window-restore")
+
+    def _release_refused_untouched(self) -> bool:
+        """CAPA-233: the deployer's latest record of this window says it refused the release before touching the lane."""
+        try:
+            with open(self.deployer / "log.jsonl", "rb") as f:
+                f.seek(0, 2)
+                f.seek(max(0, f.tell() - 262144))
+                lines = f.read().decode(errors="replace").splitlines()
+        except OSError:
+            return False
+        for line in reversed(lines):
+            try:
+                x = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(x, dict) and x.get("window") == self.window_id:
+                return (x.get("event") == "window_release_failed" and x.get("line_touched") is False
+                        and x.get("stopped") is False)
+        return False
 
 
 class ModelTier:
