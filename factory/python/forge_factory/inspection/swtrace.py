@@ -51,7 +51,7 @@ SWR_RX = re.compile(r"\bSWR-\d{3}\b")
 USPEC_RX = re.compile(r"\bUSPEC-(?:LL|HAL)-\d{2,}-\d{2,}\b")
 SWU_RX = re.compile(r"\bSWU-(?:LL|HAL)-\d{2,}\b")
 IF_RX = re.compile(r"\bIF-\d{2}\b")
-MATRICES = {1: ("swr_to_architecture", ["swr", "swc", "status"]),
+MATRICES = {1: ("swr_to_architecture", ["swr", "swc", "interfaces", "status"]),  # CAPA-229: + interfaces
             2: ("unitspec_to_swr", ["uspec", "unit", "swc", "swr", "status"]),
             3: ("code_to_unitspec", ["function", "file", "unit", "uspec", "status"]),
             4: ("unittest_to_unitspec", ["test", "file", "uspec", "result", "status"]),
@@ -157,6 +157,15 @@ def check_architecture_model(ws: Path) -> dict:
     f += [f"ARCH:DUPLICATE_INTERFACE_ID:{i}" for i in sorted({i for i in ids if ids.count(i) > 1})]
     if not ids:
         f.append("ARCH:NO_INTERFACES")
+    if layer_of(ws) != "LL" and not hal_standalone(ws) and "SWC_LL" in model["swcs"]:
+        # CAPA-229 (WWDG HAL L35: 'SWC_HAL --> WWDG : IF-02 register access'): a HAL on the provided LL connects only
+        # to the LL (and its caller), never to the register block
+        decl = {m.group(2): m.group(1) for m in re.finditer(r'^\s*\w+\s+"([^"]+)"[^\n]*?\s+as\s+(\w+)', text, re.M)}
+        for c in model["interfaces"]:
+            other = c["to"] if c["from"] == "SWC_HAL" else c["from"] if c["to"] == "SWC_HAL" else None
+            if other and other not in ("SWC_HAL", "SWC_LL") and not re.search(r"caller|application|user", other + " " +
+                                                                             decl.get(other, ""), re.I):
+                f.append(f"ARCH:HAL_BYPASSES_LL:SWC_HAL->{other}")
     return {"verdict": "FAIL" if f else "PASS", "major_findings": f, "model": model}
 
 
@@ -688,9 +697,16 @@ def build_all(ws: Path, *, render: bool = True, doxygen: bool = True, upto: str 
     arch = check_architecture_model(ws)
     rep["findings"]["SWE.2"] = arch["major_findings"]
     model = arch.get("model") or {"swcs": {}, "allocation": {}, "interfaces": []}
-    rows1 = [{"swr": r, "swc": s, "status": "ALLOCATED"} for s, rs in model["allocation"].items() for r in rs]
+    # CAPA-229 (owner 2026-11-11: "add the interface allocation to matrix 1"): a functional requirement of a component
+    # is allocated to the component's interfaces (the IF ids of its connections); a component-level constraint (budget,
+    # initial state) to the component itself
+    level = component_constraints(ws)
+    ifs = {s: " ".join(sorted({m.group(0) for c in model["interfaces"] if s in (c["from"], c["to"])
+                               for m in [IF_RX.match(c["label"])] if m})) for s in model["swcs"]}
+    rows1 = [{"swr": r, "swc": s, "interfaces": "COMPONENT_LEVEL" if r in level else ifs.get(s) or "NONE",
+              "status": "ALLOCATED"} for s, rs in model["allocation"].items() for r in rs]
     allocated = {r["swr"] for r in rows1}
-    rows1 += [{"swr": r, "swc": "", "status": "NOT_ALLOCATED"} for r in reqs if r not in allocated]
+    rows1 += [{"swr": r, "swc": "", "interfaces": "", "status": "NOT_ALLOCATED"} for r in reqs if r not in allocated]
     rep["matrices"].append(write_matrix(ws, 1, rows1, [r for r in reqs if r not in allocated], write=w(1)))
     if k < 1:
         return rep
