@@ -26,7 +26,7 @@ live in the conductor store. The schemas are in [contracts/](contracts/).
 
 | Field | Type | Rules |
 |---|---|---|
-| `name` | string | From a closed vocabulary. Examples: `instance`, `base_address`, `mm_page`, `register_prefix`, `register_index`, `driver_style`, `function_prefix`, `headers`, `time_base`, `timeout_constants`, `waits`, `undelivered_externals`, `instance_comparisons`, `host_instance`, `file_map`, `framework_modules`. |
+| `name` | string | From a closed vocabulary. Examples: `instance`, `base_address`, `mm_page`, `register_prefix`, `register_index`, `driver_style`, `function_prefix`, `headers`, `time_base`, `timeout_constants`, `waits`, `undelivered_externals`, `instance_comparisons`, `host_instance`, `file_map`, `framework_modules`; for `HAL_ON_LL` (2026-11-11) `ll_api` (LL scope functions: prototype, kind, register effects) and `ll_lineage` (LL example, work-order hash). |
 | `value` | any JSON | `null` unless status is DERIVED |
 | `status` | `DERIVED` \| `NOT_DERIVED` \| `CONFLICT` | FR-005 |
 | `method` | string | The derivation rule id (research R3), e.g. `cmsis_base_chain`, `mm_table_row`, `link_undefined` |
@@ -100,11 +100,19 @@ and the post-approval profile records `approval_id`.
   `onboarding: true`. When present, they are cross-checked against the derived values (CONFLICT on difference).
 - `inputs[]`: may carry `{path: <pdf>, role: reference_manual, chapter, memory_map_pages}`.
 - `onboarding` (bool): opt-in to the package-driven path. Absent or false keeps today's behaviour (FR-019).
+- Top-level `onboarding: {"style": "HAL_ON_LL", "ll_example": "<LL example>"}` (2026-11-11): a factory HAL on the
+  factory's own LL. No `delivery`, no `scope`: the scope, budgets and simulation performance budget come from the
+  approved package (generated scope; owner-confirmed assumptions). `target.instance` names the instance.
 
 ## Manifest addition (`.forge-run/manifest.json`)
 
 `onboarding: {package: "onboarding/package.json", sha256, approval_id}`. Present only on approved package-driven
-work orders. Every phase gate copies `sha256` into its evidence record (FR-018).
+work orders. Every phase gate copies `sha256` into its evidence record (FR-018). A `HAL_ON_LL` order adds
+`driver_style` and `ll_lineage`.
+
+`provided[]` (HAL work orders, FR-027): a record built on an LL order verified only up to SWE.N (N = SWE.1 or SWE.2,
+the HAL order's `--stop-after`) carries `basis_phase` and `verified_phases`; without them the record is the six-gate
+basis of ADR-0009 (unchanged).
 
 ## AFO integration (amended 2026-10-27: no new queue states)
 

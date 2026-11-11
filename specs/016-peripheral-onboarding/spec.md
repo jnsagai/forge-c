@@ -12,6 +12,8 @@ hardware manual as input plus the code, we need to have some preparation before 
 Owner choice (2026-10-27): specify this now and use the remaining ST HAL drivers of feature 015 T065 (GPIO, SPI,
 USART, TIM) as its acceptance test, instead of onboarding them by hand.
 
+**Amendment 2026-11-11**: Owner decisions 2026-11-11: "Extend 016 to factory HAL" (the factory derives the SPI and TIM factory-HAL work orders itself, from owner inputs and the LL lineage, instead of anyone hand-writing per-driver prompt texts or scope; the owner signs each package) and "HAL SWE.1 can use the LL SWE.1 as basis". The factory-HAL exclusion of the first version is lifted (FR-024 to FR-027).
+
 ## Context
 
 Before a driver delivery can go through SWE.1-SWE.6 today, the implementation engineer (Claude Code) prepares it by
@@ -320,6 +322,29 @@ and the per-attempt record, in the same form as the feature 015 benchmark record
   factory's configured model profile, local or remote, and need no paid service.
 - **FR-023**: The onboarding stage, its gates and its role skills are factory changes. They MUST pass the CRE
   promotion gate before deployment, like every factory change.
+
+**Factory HAL on the factory's own LL (amendment 2026-11-11)**
+
+- **FR-024**: A factory HAL written on the factory's own verified LL (driver style `HAL_ON_LL`) MUST be onboarded
+  from owner inputs only: the HAL work order's driver, target (with the instance), RM inputs, system names, budgets
+  and the block `onboarding: {"style": "HAL_ON_LL", "ll_example": "<LL lineage example>"}`. The identity and
+  behaviour facts MUST come from the LL lineage example's delivery read against the HAL work order's own RM inputs,
+  plus the facts `ll_api` (the LL scope functions, their prototypes, kinds and register effects, read from the
+  delivered LL code) and `ll_lineage` (the LL example and the hash of its work order). A HAL work order whose RM
+  inputs differ from its LL lineage's MUST be BLOCKED (missing input).
+- **FR-025**: The HAL API, the work-order scope, the semantic required operations and every prompt text (the base
+  `prompt` keys and the 15 `hal_*` keys) of a `HAL_ON_LL` work order MUST be generated from the package facts by one
+  template rule per LL function kind, each text with its origin. A hand-written scope or prompt text in a
+  `HAL_ON_LL` work order MUST be refused. The hand-written WWDG and CRC factory-HAL texts are the regression oracle:
+  every difference is listed with its reason (as FR-020).
+- **FR-026**: The budgets and the simulation performance budget of a `HAL_ON_LL` work order MUST be assumptions the
+  owner confirms in the signed approval. The work order's values are proposals only; the confirmed values replace
+  them when the work order is prepared.
+- **FR-027**: A HAL work order that stops at phase N, with N being SWE.1 or SWE.2 (`--stop-after`), MAY use as its
+  provided LL an LL work order whose gates SWE.1 to SWE.N all PASS. The manifest's provided record MUST state the
+  basis phase and the verified phases. A HAL work order that runs SWE.3 or later MUST keep the six-gate rule
+  (ADR-0009). For a `HAL_ON_LL` work order the provided LL MUST be the package's peripheral and its header the LL
+  lineage's delivered header (same hash).
 
 ### Key Entities
 

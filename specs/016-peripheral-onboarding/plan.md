@@ -98,6 +98,7 @@ Post-design re-check: PASS. The design adds no human node, no paid service and n
 | J | Onboarding Fabro run: graph, four role skills, authz prefixes, bounded loops, gaps. | US3, US4 | FR-008, 009, 022 |
 | K | Held-out model authoring (CRC) and SC-007 check. | US4 | SC-007 |
 | L | Acceptance: GPIO, SPI, USART and TIM ST HAL onboarded, approved by the owner, run SWE.1–SWE.6. Record frozen; feature 015 T065 closed by reference. | US5 | SC-001, 005, 006 |
+| M | Amendment 2026-11-11, factory HAL on the factory's own LL: `HAL_ON_LL` context from the LL lineage, `ll_api`/`ll_lineage`, the `factory_hal` template set (texts, scope, required operations), budget assumptions, prepare/admit, SWE.1-stage LL basis. SPI and TIM factory-HAL packages derived for owner review. | US2, US3 | FR-024–027 |
 
 Each slice ends with its tests, the full suite, `tests/spec/validate_design.py` and a CRE decision before any
 deploy.

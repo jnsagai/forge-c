@@ -92,8 +92,8 @@ The method per fact (all deterministic), each recording `file:line` or `doc:page
 - for a standalone HAL, the `prompt_st_hal` keys, plus its `replace` list.
 
 How it builds them:
-- One template set per driver style: register-level LL, standalone handle-based HAL. The factory-HAL-on-LL style
-  keeps today's RCC/IWDG texts.
+- One template set per driver style: register-level LL, standalone handle-based HAL, and (amendment 2026-11-11,
+  R13) the factory HAL on the factory's own LL.
 - The templates are filled from facts: names, headers, handle type, `Init` fields, instance, base address, page,
   time base, clock stubs, host instance.
 - The few keys that need domain content are filled only from **authored items** (R6). Examples: a worked requirement
@@ -236,7 +236,8 @@ the owner's (FR-007).
 - It compares them with the hand-written profiles and work orders: instance, base address, page, prefix, headers,
   prefixes, time base, clock stub, host instance, file map, modules.
 - Every known difference is listed in a reviewed exceptions file with its explanation. An unlisted difference fails.
-- Factory-authored (greenfield) examples are out of scope: they have no delivered code.
+- Factory-authored (greenfield) examples are out of scope: they have no delivered code. The hand-written WWDG and
+  CRC factory-HAL texts are compared separately with the generated `HAL_ON_LL` texts (R13, OB-T068).
 
 ## R11. Model profile and local models
 
@@ -252,3 +253,43 @@ part has no model dependency at all (SC-004).
   the deployed factory with the SWE.3 fix (d9da03e).
 - The four acceptance work orders use new request ids, `BENCH-<P>-ST-HAL-OB`, so the feature 015 records stay
   separate.
+
+## R13. Factory HAL on the factory's own LL (amendment 2026-11-11)
+
+Owner decisions 2026-11-11: "Extend 016 to factory HAL" (the factory derives the SPI and TIM factory-HAL work orders itself, from owner inputs and the LL lineage, instead of anyone hand-writing per-driver prompt texts or scope; the owner signs each package) and "HAL SWE.1 can use the LL SWE.1 as basis".
+
+**Decision.**
+- The HAL work order holds owner inputs only and names its LL lineage example. Onboarding reads the LL lineage's
+  delivery (the delivered ST LL) against the HAL work order's own RM inputs: instance, base address, page, register
+  index, file map and model gate are the LL's facts. Two new facts: `ll_api` (per LL scope function: prototype, kind,
+  register effects read from the delivered LL code with the brownfield effect extractor and the register index) and
+  `ll_lineage` (LL example, hash of its work order; the work order is also a package input, so a change voids the
+  approval).
+- The HAL design is a template, one rule per LL function kind, so it is the same for every peripheral:
+  setters, Enable/Disable pairs and interrupt enables become the fields of `hal_<p>_config_t` that `HAL_<P>_Init`
+  checks (a value is the register encoding the LL setter takes, valid when it has no bit outside the fields the LL
+  writes; a selection is 0 or 1) and writes, with the peripheral disabled first when the LL can disable it; the main
+  enable (LL_<P>_Enable, else the Enable<X> that sets bit 0 of the lowest-offset register) becomes
+  `HAL_<P>_Start/Stop/IsEnabled`; flag queries and clears become `HAL_<P>_GetFlag/ClearFlag` with `HAL_<P>_FLAG_<F>`
+  selectors; getters, data writes, data reads and actions become one function each. No HAL function waits: the LL
+  scopes of the lineages have no wait; the caller polls and bounds its loop.
+- Every text (`prompt` base keys, the 15 `hal_*` keys), the scope statements, the semantic required operations (the
+  LL scope's register forms, at most 32) and the HAL declarations are rendered from that plan, with origins. LL calls
+  in the texts are written without the instance: the provided-LL rewrite (CAPA-131) inserts the profile's instance.
+- The budgets and the simulation performance budget are assumptions with the work order's values as proposals.
+- Domain constraints that only the RM states (e.g. the WWDG counter must keep T6 set, a refresh only inside the
+  window) are not derivable from the LL code: they stay with the RM-based SWE.1 requirements, which already read the
+  RM chapter. The hand-written WWDG/CRC overlays are the oracle; each difference is listed with its reason.
+
+**Rationale.** A peripheral-specific HAL design is exactly the hand-written text the owner wants gone. A template
+over the LL function kinds is deterministic, reviewable in the summary, and needs no model call.
+
+**Alternatives rejected.**
+- *An AI text author (OB-T035–OB-T037).* Not needed: all texts are generated; a model would reintroduce the leftover
+  and review risk without adding a derivable fact.
+- *Copying the WWDG/CRC hand texts as templates.* They carry RM domain content that does not transfer.
+
+**SWE.1-stage LL basis.** A HAL work order that stops at SWE.1 (or SWE.2) may build on an LL work order whose gates
+up to that phase pass (FR-027): its requirements need the LL's interface and verified LL requirements, not the LL's
+code verification. The six-gate rule stays for SWE.3+ (code). A HAL order resumed later into SWE.3+ needs a six-gate
+LL order; its provided record then differs, so the resume of such a phase-scoped order is a new provided input.

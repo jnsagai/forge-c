@@ -235,13 +235,16 @@ and inspected.
   (budgets, MCP ops: `forge-docs-mcp` read ops; `write_file` for the author) and render their SKILL.md with
   `ff/registry/skillgen.py` into `.fabro/skills/`. Add authz write prefixes in `ff/policy/authz.py`
   (`onboard-text-author`: `onboarding/texts.json` only; the inspector writes nothing).
+  Closed by owner decision 2026-11-11: not needed (all texts are generated; the factory-HAL path is OB-T065..).
 - [ ] **OB-T036** [US3] Implement the text gate in `ff/onboarding/texts.py` `check_authored(ws)` (FR-010): every
   register and field is in `register_index`, every function, type and constant is declared by the delivered
   headers, and every expected value cites an RM page. Then the leftover check.
+  Closed by owner decision 2026-11-11: not needed (all texts are generated; the factory-HAL path is OB-T065..).
 - [ ] **OB-T037** [US3] In `ff/workflow/builder.py`, implement the onboarding graph `onboarding.fabro`: a text author
   node → deterministic text gate → inspector → a bounded loop of at most 3 attempts → the item becomes a gap. The
   graph is emitted only for the slots the package needs. Validate it with Fabro's graph validation in
   `tests/test_onboarding_graph.py`. (FR-009, FR-022)
+  Closed by owner decision 2026-11-11: not needed (all texts are generated; the factory-HAL path is OB-T065..).
 
 **Checkpoint (US3 done)**: full suite, CRE gate.
 
@@ -352,6 +355,38 @@ SWE.1–SWE.6.
   and quickstart §1–§6 with evidence. Then open the PR to `main`. Do not merge without the owner's acceptance; use
   merge commits only. Quickstart §5 existing-model checks are complete; the separate held-out
   SC-007 qualification remains NOT_RUN under OB-T043 while Claude is unavailable.
+
+## Phase 9: Factory HAL on the factory's own LL (amendment 2026-11-11)
+
+**Goal**: the factory derives the factory-HAL work orders (`examples/0011m-spi-hal`, `examples/0013m-tim-hal`) from
+owner inputs and the LL lineage; the owner signs each package. Owner decisions 2026-11-11: "Extend 016 to factory
+HAL" and "HAL SWE.1 can use the LL SWE.1 as basis".
+
+- [ ] **OB-T065** Amend `spec.md` (FR-024–FR-027), `research.md` (R4, R10, new R13), `plan.md` (slice M),
+  `data-model.md`, `HANDOFF-codex.md`: lift the factory-HAL exclusion, add the factory-HAL package and the SWE.1-stage
+  LL basis rule with the owner quotes. Run `python3 tests/spec/validate_design.py`.
+- [ ] **OB-T066** `ff/onboarding/factory_hal.py` + `derive`: the `HAL_ON_LL` context from the LL lineage example
+  (delivery, register index, instance, model gate) read against the HAL work order's RM inputs; new facts `ll_api`
+  and `ll_lineage` (package contract enum). AC: 0016m/0014m-style orders derive with driver_style `HAL_ON_LL`, no
+  MISSING_INPUT, deterministic canonical hash (`tests/test_onboarding_factory_hal.py`).
+- [ ] **OB-T067** Template set `factory_hal.texts`: all 15 `prompt.hal_*` keys plus the base keys the overlay needs,
+  from facts, with origins; derived profile (`hal.host_instance` for SPI1/TIM2) and the leftover preview built like
+  a run (provided-LL instance API). AC: the leftover check gives 0 findings for WWDG, CRC, SPI and TIM.
+- [ ] **OB-T068** Oracle test: re-derive the WWDG and CRC factory-HAL texts and compare them with the hand-written
+  `wwdg.yaml`/`crc.yaml` `hal_*` keys and `semantic_required_operations`; every difference is listed in
+  `config/factory/onboarding/factory-hal-oracle-exceptions.yaml` with a reason (no unlisted difference, no stale
+  entry).
+- [ ] **OB-T069** Generated HAL scope and `semantic_required_operations` from facts; budgets and
+  `simulation_performance` become assumptions the owner confirms in the approval (verify refuses unconfirmed ones);
+  the summary shows the generated scope and HAL API.
+- [ ] **OB-T070** `workorder.prepare`/`admit` for `HAL_ON_LL` orders: no `delivery_from_package`, the generated
+  scope and confirmed budgets applied, `provided_ll` still called (its peripheral and header hash must be the
+  package's), unapproved package refused; the SWE.1-stage LL basis rule in `provided_ll` (FR-027) with the basis
+  phase in the manifest. Tests: wrong peripheral refused, unverified phase refused, SWE.1-stage accepted with an LL
+  SWE.1 PASS order, SWE.3 still needs six gates.
+- [ ] **OB-T071** Add `examples/0011m-spi-hal/workorder.json` and `examples/0013m-tim-hal/workorder.json` with owner
+  inputs only (no scope prose, no prompt texts), derive both packages into a private state dir and produce
+  `summary.md` + `approval.template.json` for the owner. The owner signs (never the factory).
 
 ## Dependencies and execution order
 

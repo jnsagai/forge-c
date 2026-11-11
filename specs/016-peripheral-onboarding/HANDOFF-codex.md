@@ -211,7 +211,8 @@ CRE gate. The test worktree has been removed.
 ## 6. Known limits and open points
 
 - Only the ST classic HAL (HAL_STANDALONE) has a text template set. LL and factory-HAL work orders cannot use the
-  package-driven path yet.
+  package-driven path yet. (Superseded 2026-11-11 for the factory HAL: `HAL_ON_LL` has its own template set, R13,
+  OB-T065–OB-T071.)
 - No AI-authored model exists yet (US4 authoring). Peripherals without a model get `PROFILE_MODEL_MISSING`.
 - On the host, an assumption confirmed in the approval becomes `hal.clock_stub.hz`. The model smoke step uses a
   placeholder value 1 before approval.
