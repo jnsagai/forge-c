@@ -184,6 +184,25 @@ def provided_ll(source_wo: str, peripheral: str | None = None, upto: str | None 
     }
 
 
+def ll_basis_for(stop_after: str | None, source_manifest: dict | None = None) -> str | None:
+    """F016 FR-027: a HAL work order that stops at SWE.1 or SWE.2 may build on an LL work order verified up to its last
+    phase (provided_ll `upto`); None keeps the six-gate rule (code phases SWE.3+).
+    CAPA-228 (owner SWE.2 review 2026-11-11: the SPI/TIM HAL keep their LL SWE.1 basis through SWE.2): an order that
+    continues a HAL order keeps the LL basis that order recorded (its provided basis_phase), so the continuation builds
+    on the same verified LL instead of requiring LL gates the basis order never ran."""
+    if stop_after not in ("SWE.1", "SWE.2"):
+        return None
+    from .inspection.engine import PHASES
+
+    recorded = {r.get("basis_phase") for r in (source_manifest or {}).get("provided") or []
+                if r.get("role") == "provided_ll_driver" and r.get("basis_phase")}
+    if len(recorded) == 1:
+        basis = recorded.pop()
+        if basis in PHASES and PHASES.index(basis) <= PHASES.index(stop_after):
+            return basis
+    return stop_after
+
+
 def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[dict]:
     """Owner dispositions (config/factory/verification-dispositions.yaml) that apply to this example work order.
     Refuses a disposition without a human approver and date: an agent never settles an input issue."""
@@ -1058,8 +1077,9 @@ def run(
         purpose_args["execution_policy"] = selected_profile["development_execution_policy"]
     if quality is not None:
         purpose_args["quality"] = quality
-    if stop_after in ("SWE.1", "SWE.2"):  # F016 FR-027: the HAL order's LL basis need only pass up to its last phase
-        purpose_args["ll_basis"] = stop_after
+    basis = ll_basis_for(stop_after, source_scope if resume else None)  # F016 FR-027, CAPA-228
+    if basis is not None:
+        purpose_args["ll_basis"] = basis
     ws, manifest = (
         prepare(example, wo, provided_from, resume_limits=resume_limits, **purpose_args)
         if spec.get("delivery")
