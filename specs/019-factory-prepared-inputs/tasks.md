@@ -95,7 +95,7 @@ drops unknown lineages.
 
 - [X] T023 [US1] `LADDER = (wwdg-ll, wwdg-hal, spi-ll, tim-ll)`, `LADDER_PHASES = ("SWE.1",)`, `PROVIDED_LL` (WWDG LL L29, checked by `workorder.provided_ll`: six gates PASS, frozen ST header) and `derived_campaign()` per stage in `forge_factory/afo/owner_supervised_development.py`; tests `tests/test_f019_derived_campaign.py` (rewritten), `tests/test_owner_supervised_hal_lineage.py`, `tests/test_f019_ladder_walk.py` (stage walk)
 - [X] T024 [US1] Generator dry run with the stage source from the live package `owner-allowance-main-auto-9bb2c981`: `evidence/generator-dry-run-swe1-stage.txt` (DERIVED; ladder steps SWE.1 only)
-- [X] T025 Native acceptance of the stage: WWDG HAL SWE.1 `WO-F014-SWE1-WWDGH-20261109-L45` starts by itself with `--provided-from` L29; SPI LL SWE.1 follows its pass; TIM LL SWE.1 after SPI; `evidence/native-acceptance.md` - 2026-11-10: WWDG HAL and SPI LL steps proven; TIM LL order created by the line, run pending (see evidence) ✅ Evidence: `evidence/v0.4/runs/F019-T025/latest.json`
+- [ ] T025 Native acceptance of the stage: WWDG HAL SWE.1 `WO-F014-SWE1-WWDGH-20261109-L45` starts by itself with `--provided-from` L29; SPI LL SWE.1 follows its pass; TIM LL SWE.1 after SPI; `evidence/native-acceptance.md` - 2026-11-10: WWDG HAL and SPI LL steps proven; TIM LL order created by the line, run pending (see evidence)
 
 ## Dependencies & execution order
 
