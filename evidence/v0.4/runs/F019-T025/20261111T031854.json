@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python3",
+    "../../specs/019-factory-prepared-inputs/evidence/native_check.py",
+    "t025"
+  ],
+  "duration_s": 0.011,
+  "exit_code": 2,
+  "git_dirty": true,
+  "git_head": "d0ea5b40a975f635e9eb803ba54f92bcd77cf63b",
+  "host": {
+    "node": "omniverse2",
+    "python": "3.13.13",
+    "system": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "log": "evidence/v0.4/runs/F019-T025/20261111T031854.log",
+  "log_sha256": "5914c8c6deb45c464b6e4d427b4699f77ec9b1f191ba73c67255c5a5ac805776",
+  "schema": "forge-c/task-evidence/0.4",
+  "status": "FAIL",
+  "task": "F019-T025",
+  "ts_utc": "2026-11-11T03:18:54.443900Z"
+}
