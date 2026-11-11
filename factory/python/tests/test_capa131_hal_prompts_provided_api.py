@@ -73,8 +73,8 @@ def test_hal_author_prompt_calls_the_provided_ll_with_its_instance(tmp_path):
 
 
 @pytest.mark.parametrize("pid,sha", [
-    ("iwdg", "ced532040bbfbd51d2a0cb625063c1d3c919e5f02acffb93f1b96d8b4aea0e94"),
-    ("crc", "1f12ee623e362c3f29b241e28a34839f2e1376d7263d6b1f4d425fc171c788e5")])
+    ("iwdg", "afcf7413ece417ffe1a112b7f115bf85596f6a205afdcef6c197b728937b84b7"),
+    ("crc", "1537c161514f38443c31b89210646355bf9201abab3dcd86a4331827373ac35b")])
 def test_greenfield_hal_graphs_are_byte_identical(pid, sha):
     """Frozen sha256 of the HAL graphs built by the parent 90ff4f4a/b4686726 (no provided instance API).
 

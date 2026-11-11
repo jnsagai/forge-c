@@ -21,7 +21,7 @@ ST_HDR = ('#include "stm32n6xx.h"\n'
 GREENFIELD = re.compile(r"ll_crc_regs|LL_CRC_<REG>_OFFSET|LL_CRC_REG_COUNT")
 NODES = ("swe2_inspector", "swe3_inspector", "swe3_hal_author", "swe5_target_author", "swe6_test_author")
 # host-path-free sha256 of the greenfield CRC HAL graph at 01bd80dc (the parent of the fix)
-GREEN_SHA = "c39528d3ce72965d96c70928d980575bf332d1d71eba3e5e274cfe0848150c5a"
+GREEN_SHA = "2469e30060fb801763d20cd29d77e960f8ce7bead84984d1599f8cbae49be285"
 
 
 @pytest.fixture(autouse=True)

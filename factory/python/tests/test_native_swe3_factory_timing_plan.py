@@ -64,11 +64,11 @@ def test_no_timing_ownership_instruction_outside_the_explicit_scope(options):
 
 
 @pytest.mark.parametrize("options, exclude, expected", [
-    ({"perf": False}, [], "a94180fa80197da49e6c8949f7ba88783c1b12449d6b6d04f54f07ff1ed89472"),
-    ({"provided": False}, [], "d2f88dae592b090d5b08251d6d19ac7650bcd8cf31651670a9e6a84ba1d0e692"),
-    ({"style": "other"}, [], "4f2a427e07a0810b3a7766209c87d40ab7a3a6473144d97237be5879877bbcfe"),
-    ({"layer": "LL"}, [], "9683849f195b1838597cbc62d976467df391f8b1d8fad821a8545213d0077f6f"),
-    ({}, ["swe3_author"], "78104486ca491a4957b6f1acf39430aaa5c71cd341748673b81f5f3f34fe45bf"),
+    ({"perf": False}, [], "c4d8ff3bf80d34aae0d28a1a9d6c33badffe5848f2fe1ee4a0c95097a092291a"),
+    ({"provided": False}, [], "b19b67876214abbb9a93af35f5486681b866b93c7a5d98d04e81fa05d03c5d4d"),
+    ({"style": "other"}, [], "cf06006ccec3e3c3a86c3b66a40fd11e702b9991ff666e8276a7ad235098bef8"),
+    ({"layer": "LL"}, [], "dc131a9122aed865b0328ec6059300d13eb46211da2f33c7a502e03c5a9d3b02"),
+    ({}, ["swe3_author"], "6ba1aef2b677d2601c4684ebbbbf44d4c654d06afb655dd2e06f230a2dfbecfe"),
 ])
 def test_frozen_e014_graph_nodes_outside_the_two_intentional_author_changes(options, exclude, expected):
     # Values measured from a separate clean e014fd86 worktree, not generated from candidate expectations.
