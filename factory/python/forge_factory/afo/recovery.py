@@ -130,8 +130,9 @@ def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) ->
         "attempts": len(store.attempts(order["order_id"])),
         "max_attempts": int(eff.get("budgets.max_order_attempts")),
         "variants_by_phase": {
+            # CAPA-224: giving up (CLOSE_BLOCKED) and transient retries are not strategy variants
             ph: sum(1 for p in ps if p["record"]["affected_phase"] == ph and p["status"] != "REJECTED"
-                    and p["strategy"] != "DEFER_TRANSIENT_DEPENDENCY") for ph in PHASES
+                    and p["strategy"] not in ("DEFER_TRANSIENT_DEPENDENCY", "CLOSE_BLOCKED")) for ph in PHASES
         },
         "transient_retries": sum(1 for p in ps if p["strategy"] == "DEFER_TRANSIENT_DEPENDENCY"
                                  and p["status"] == "EXECUTED"),
@@ -146,6 +147,12 @@ def budget_snapshot(store: Store, order: dict, eff, now: float | None = None) ->
         "tried_models": sorted({json.loads(order["envelope"]).get("model_profile") or "?"} | {
             p["record"]["model_profile"] for p in ps if p["status"] == "EXECUTED" and p["record"].get("model_profile")}),
     }
+
+
+def next_transient_retry(store: Store, order: dict) -> int:
+    """CAPA-224: the next retry number is past every transient retry already PLANNED in the cohort (any status), so its
+    fingerprint never collides with another order's plan; the transient budget still counts executed retries."""
+    return 1 + sum(1 for p in strategy_history(store, order["order_id"]) if p["strategy"] == "DEFER_TRANSIENT_DEPENDENCY")
 
 
 def _base(bundle: dict, strategy: str, phase: str, rationale: str, **kw) -> dict:
@@ -286,7 +293,8 @@ def validate(plan: dict, bundle: dict, *, store: Store, order: dict, eff, auth_m
         b = budget_snapshot(store, order, eff)
         if b["attempts"] >= b["max_attempts"]:
             issues.append("BUDGET_ATTEMPTS_EXHAUSTED")
-        if b["variants_by_phase"].get(plan["affected_phase"], 0) >= b["max_variants_per_phase"]:
+        if (plan["strategy"] != "DEFER_TRANSIENT_DEPENDENCY"  # CAPA-224: a retry has its own transient budget
+                and b["variants_by_phase"].get(plan["affected_phase"], 0) >= b["max_variants_per_phase"]):
             issues.append("BUDGET_VARIANTS_EXHAUSTED")
         if b["wall_seconds"] >= b["max_wall_seconds"]:
             issues.append("BUDGET_WALL_TIME_EXHAUSTED")
@@ -379,7 +387,7 @@ def decide(store: Store, order: dict, bundle: dict, *, ws, eff, auth_models: lis
     if ws is not None and development_execution(ws) and line_context is None:
         plan = _base(bundle, "CLOSE_BLOCKED", bundle["phase"], "DEFERRED_BY_DEVELOPMENT_POLICY")
     if plan is not None and plan["strategy"] == "DEFER_TRANSIENT_DEPENDENCY":  # retry n+1: its own fingerprint
-        n = budget_snapshot(store, order, eff)["transient_retries"] + 1
+        n = next_transient_retry(store, order)
         plan = _base(bundle, plan["strategy"], plan["affected_phase"], plan["rationale_code"],
                      material_difference_ref=f"transient_retry:{n}")
     if plan is None and planner is not None and eff.get("engineering.enable_recovery_planner"):

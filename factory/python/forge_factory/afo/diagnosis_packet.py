@@ -140,9 +140,12 @@ def build(workspace: Path, bundle: dict, *, prior_strategies=()) -> dict:
     patterns += [f"inspection/{phase}/INS-*.json"]
     if PHASES.index(phase) >= 2:
         patterns += ["software/ll/**/*", "software/hal/**/*"]
+    if PHASES.index(phase) >= 3:  # CAPA-225 / DA-T036: the planner asked for TEST_DIAGNOSTIC the packet left out
+        patterns += ["evidence/*.log", "evidence/*.xml", "verification/*.log", "verification/*.xml"]
     for pattern in patterns:
         for p in sorted(workspace.glob(pattern)):
-            if not p.is_file() or p.suffix not in (".md", ".json", ".jsonl", ".c", ".h", ".txt", ".puml"):
+            if not p.is_file() or p.suffix not in (".md", ".json", ".jsonl", ".c", ".h", ".txt", ".puml", ".csv", ".log",
+                                                   ".xml"):
                 continue
             rel = p.relative_to(workspace).as_posix()
             files[rel] = {"path": rel}
