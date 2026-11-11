@@ -34,7 +34,9 @@ def intake_check(repo: Path, launch_manifest: dict) -> str | None:
         spec = json.loads((ex / "workorder.json").read_text())
     except (OSError, ValueError):
         return None
-    if not (spec.get("delivery") or {}).get("onboarding"):
+    from .factory_hal import block
+
+    if not ((spec.get("delivery") or {}).get("onboarding") or block(spec)):  # OB-T070: factory HAL orders too
         return None
     r = verify(onboarding_dir(ex.name))
     return None if r["code"] == "APPROVAL_OK" else f"{r['code']}:{ex.name}"
@@ -55,32 +57,47 @@ def derive(example: Path, wo: str | None = None, gate_model: bool = True, *,
     Only explicit `author_missing` may launch the separate missing-model authoring graph."""
     from . import behaviour as B
     from . import facts as F
+    from . import factory_hal as FH
     from . import identity as I
 
     wo = wo or Path(example).name
-    ctx = I.context(Path(example))
+    fhal = FH.is_factory_hal(Path(example))  # OB-T066: a factory HAL on the factory's own LL (HAL_ON_LL)
+    hal, fh_missing = None, []
+    if fhal:
+        ctx, hal, fh_missing = FH.context(Path(example))
+    else:
+        ctx = I.context(Path(example))
     facts, ident = I.derive(ctx)
+    if fhal:
+        facts = FH.restyle(facts, hal)
     style_f = next((f for f in facts if f.name == "driver_style"), None)
     style = style_f.value if style_f and style_f.status == "DERIVED" else None
     asm, dmap, missing = [], {}, []
     if style:
-        bf, asm, dmap = B.derive(ctx, ident, style)
+        bf, asm, dmap = B.derive(ctx, ident, "LL" if fhal else style)  # HAL_ON_LL: the LL lineage's delivery
         facts += bf
         missing = [(n, "the delivered code needs it to build; no package of the work order declares it")
                    for n in dmap.get("missing") or []]
         if not dmap.get("files"):
             missing = missing or [("file_map", "the delivered code does not build from the inputs")]
-    inputs = I.input_records(ctx)
+    inputs = I.input_records(hal if fhal else ctx)
+    if fhal:
+        inputs.append(FH.lineage_input(hal))
     for f in dmap.get("files") or []:
         inputs.append({"path": f["to"], "role": "delivered_code",
                        "sha256": sha256_bytes((ctx.source / f["from"]).read_bytes())})
     for d in dmap.get("dependencies") or []:
         inputs.append({"path": d["to"], "role": "delivered_dependency",
                        "sha256": sha256_bytes((Path(d["package"]) / d["from"]).read_bytes())})
-    if style:
+    if style and fhal:
+        rindex = next((f.value for f in facts if f.name == "register_index" and f.status == "DERIVED"), None)
+        facts += [FH.ll_api(ctx, ident, rindex), FH.ll_lineage(ctx, hal)]
+        asm = [*asm, *FH.assumptions(hal.spec)]
+    elif style:
         from .api import api
 
         facts.append(api(ctx, style))
+    missing = [*fh_missing, *missing]
     profile = {"derived_from": {"work_order": wo, "example": Path(example).name}}
     if hide_model:
         profile["model_authoring"] = {"hide_model": hide_model, "test_only": True}
@@ -119,7 +136,8 @@ def derive(example: Path, wo: str | None = None, gate_model: bool = True, *,
             texts, missing = {}, [*missing, (str(e), "the prompt texts cannot be generated")]
         pkg = F.assemble(wo, inputs, _revision(), style, facts, authored, asm, profile, texts, missing)
         if gate_model and not absent:  # OB-T042: an existing model is re-gated (reused), never re-authored
-            item = model_item(wo, pkg, Path(example))
+            item = model_item(wo, pkg, FH.ll_example_dir(Path(example), FH.block(hal.spec)) if fhal
+                              else Path(example))
             if item:
                 pkg = F.assemble(wo, inputs, _revision(), style, facts, [item], asm, profile, texts, missing)
     root = onboarding_dir(wo)

@@ -74,6 +74,13 @@ def summary(root: Path) -> Path:
     lines += [f"- **{a['id']}** `{a['symbol']}`: {a['reason']}. Affects: {', '.join(a['affects'])}."
               + (f" Proposed by the inputs: {a['proposed_value']}." if a.get("proposed_value") is not None else
                  " The inputs state no value.") for a in pkg["assumptions"]] or ["- none"]
+    from .texts import work_order
+
+    sc, decl = work_order(pkg.get("texts"), "scope"), work_order(pkg.get("texts"), "hal_api")
+    if sc:  # OB-T069: a factory HAL's scope is generated; approving the package approves it
+        lines += ["", "## Generated work-order scope (approved with the package)", ""] + [f"- {s}" for s in sc]
+    if decl:
+        lines += ["", "## Generated HAL API", "", "```c", *decl, "```"]
     lines += ["", "## Gaps", ""]
     lines += [f"- {g['id']} {g['kind']} `{g['ref']}`{' (blocks approval)' if g['blocks_approval'] else ''}: "
               f"{g['effect']}" for g in pkg["gaps"]] or ["- none"]

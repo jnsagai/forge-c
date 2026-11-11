@@ -271,6 +271,19 @@ def device_macros(ctx) -> set[str]:
 def generate(ctx, pkg: dict, model_path: Path | None = None) -> dict:
     """The package `texts` for the work order's driver style; {} when the style has no template set yet."""
     style = value(pkg, "driver_style")
+    if style == "HAL_ON_LL":  # OB-T067: the factory HAL on the factory's own LL (factory_hal.texts)
+        from .factory_hal import FactoryHalError
+        from .factory_hal import texts as factory_hal
+
+        pid = (value(pkg, "register_prefix") or "").lower()
+        model = model_description(pid, model_path)
+        if model is None:
+            raise TextsUnavailable(f"TEXTS_MODEL_DESCRIPTION_MISSING:{pid}")
+        scope = ctx.spec.get("scope") if isinstance(ctx.spec.get("scope"), list) else []
+        try:
+            return factory_hal(pkg, scope, f"{value(pkg, 'register_prefix')} driver", device_macros(ctx), model)
+        except (FactoryHalError, KeyError, StopIteration) as e:
+            raise TextsUnavailable(f"TEXTS_FACTORY_HAL:{str(e)[:120]}") from e
     if style != "HAL_STANDALONE":
         return {}
     scope = ctx.spec.get("scope") if isinstance(ctx.spec.get("scope"), list) else []
@@ -283,5 +296,16 @@ def plain(texts: dict) -> dict:
     """{key: str} (and `replace` as a list) - the form the profile's prompt keys take."""
     out = {}
     for group, d in texts.items():
+        if group == WORK_ORDER:  # generated work-order content (scope, required operations), not prompt keys
+            continue
         out[group] = {k: v["text"] for k, v in d.items()}
     return out
+
+
+WORK_ORDER = "work_order"
+
+
+def work_order(texts: dict, key: str):
+    """A generated work-order item of a package's texts (factory HAL: scope, semantic_required_operations,
+    hal_api), or None."""
+    return ((texts or {}).get(WORK_ORDER) or {}).get(key, {}).get("text")

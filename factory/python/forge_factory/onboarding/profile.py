@@ -35,17 +35,20 @@ def derived_profile(pkg: dict, approval: dict | None = None, system_name: str | 
     ch = _need(pkg, "rm_chapter")
     window = _need(pkg, "window_bytes")
     confirmed = {c["id"]: c["value"] for c in (approval or {}).get("assumption_confirmations") or []}
-    ll_header = hdr["header"] if style == "LL" else f"stm32n6xx_ll_{pid}.h"
+    on_ll = style in ("LL", "HAL_ON_LL")  # OB-T066: a factory HAL's LL is the lineage's delivered LL
+    ll_header = hdr["header"] if on_ll else f"stm32n6xx_ll_{pid}.h"
     prof = {"schema": "forge-c/peripheral-profile/0.1", "id": pid, "name": f"{ch['title']} ({inst})",
             "register_prefix": prefix, "base_address": _need(pkg, "base_address"), "mm_page": _need(pkg, "mm_page"),
             "window_bytes": window, "system_name": system_name or f"{prefix} driver",
             "rm": {"doc": ch["doc"], "chapter": ch["chapter"], "key_sections": _need(pkg, "key_sections")},
             "ll": {"header": ll_header, "compile_unit": re.sub(r"\.h$", ".c", ll_header),
-                   "function_prefix": fprefix if style == "LL" else f"LL_{prefix}_",
+                   "function_prefix": fprefix if on_ll else f"LL_{prefix}_",
                    "register_block": f"ll_{pid}_regs", "register_count": window // 4, "void_signatures": False}}
-    if style == "LL":
+    if on_ll:
         prof["hal"] = {"header": f"stm32n6xx_hal_{pid}.h", "source": f"stm32n6xx_hal_{pid}.c",
                        "function_prefix": f"HAL_{prefix}_"}
+        if style == "HAL_ON_LL" and inst != prefix:  # SPI1 of SPI_TypeDef: the provided-LL calls and host mapping
+            prof["hal"]["host_instance"] = inst
     else:
         prof["hal"] = {"header": hdr["header"], "source": hdr.get("source") or re.sub(r"\.h$", ".c", hdr["header"]),
                        "function_prefix": fprefix}
@@ -73,8 +76,13 @@ def derived_profile(pkg: dict, approval: dict | None = None, system_name: str | 
     if pkg.get("texts"):  # OB-T032: generated texts only - a hand profile's prompt keys are never read for it
         from .texts import plain
 
+        from .texts import work_order
+
         prof.update(plain(pkg["texts"]))
-    elif style == "HAL_STANDALONE" and not gate_preview:
+        ops = work_order(pkg["texts"], "semantic_required_operations")
+        if ops:
+            prof["semantic_required_operations"] = ops
+    elif style in ("HAL_STANDALONE", "HAL_ON_LL") and not gate_preview:
         raise ProfileIncomplete("PROFILE_TEXTS_MISSING")
     prof["derived_from"] = {"work_order": pkg["work_order"], "package_sha256": pkg["sha256"],
                             "approval_id": (approval or {}).get("approval_id")}

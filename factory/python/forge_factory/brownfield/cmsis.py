@@ -152,6 +152,17 @@ def host_instance(ws: Path) -> str | None:
     return profile(ws)["hal"].get("host_instance") if hal_standalone(ws) else None
 
 
+def provided_concrete(ws: Path, pfx: str, var: str) -> str:
+    """F016 HAL_ON_LL: the concrete instance of a HAL on a provided LL (SPI1 for SPI_TypeDef) and its secure and
+    non-secure aliases also map to the RAM struct; empty when the profile names none or it is the prefix (CRC, WWDG)."""
+    from ..layer import profile
+
+    inst = profile(ws)["hal"].get("host_instance")
+    if not inst or inst == pfx:
+        return ""
+    return "".join(f"#undef {n}\n#define {n} (&{var})\n" for n in (inst, f"{inst}_S", f"{inst}_NS"))
+
+
 def host_header(ws: Path) -> str:
     pfx = instance(ws)
     var = f"forge_host_{pfx.lower()}"
@@ -172,7 +183,7 @@ __attribute__((weak)) {pfx}_TypeDef {var};
 #endif
 #undef {pfx}
 #define {pfx} (&{var})
-#endif
+{provided_concrete(ws, pfx, var)}#endif
 """
     inst = host_instance(ws)
     # F016: the device header's IS_<P>_*_INSTANCE macros compare against the secure/non-secure aliases (TIM2_S, TIM2_NS)
@@ -298,16 +309,23 @@ def provided_api(ws: Path) -> dict | None:
     """CAPA-131: the instance API of a HAL work order's provided LL, derived from the provided header: the LL functions
     whose first parameter is the CMSIS instance pointer (`CRC_TypeDef *CRCx`), the instance macro (`CRC`) and their
     signatures. None for every other work order (a greenfield register-array LL has no instance parameter)."""
-    import re
-    from collections import Counter
-
-    from ..layer import layer_of, ll_header
+    from ..layer import layer_of, ll_header, profile
 
     ws = Path(ws)
     p = ws / ll_header(ws)
     if layer_of(ws) != "HAL" or not p.is_file():
         return None
-    code = re.sub(r"/\*.*?\*/|//[^\n]*", "", p.read_text(errors="replace"), flags=re.S)
+    return instance_api(p.read_text(errors="replace"), profile(ws)["hal"].get("host_instance"))
+
+
+def instance_api(text: str, host_instance: str | None = None) -> dict | None:
+    """provided_api() of a provided LL header's text. The instance macro is the profile's hal.host_instance when it
+    names one (feature 016 HAL_ON_LL: SPI1 of SPI_TypeDef, TIM2 of TIM_TypeDef; `prefix` then keeps the type name),
+    else the most common <P>_TypeDef name (CRC, WWDG: the instance macro is the type name)."""
+    import re
+    from collections import Counter
+
+    code = re.sub(r"/\*.*?\*/|//[^\n]*", "", text, flags=re.S)
     sigs, calls, inst = {}, {}, Counter()
     for m in re.finditer(r"\b(?:__STATIC_(?:FORCE)?INLINE|static\s+inline)\s+((?:const\s+)?\w+[\s*]+?)(LL_\w+)\s*"
                          r"\(([^)]*)\)\s*\{", code):
@@ -318,6 +336,8 @@ def provided_api(ws: Path) -> dict | None:
             calls[m.group(2)] = [re.findall(r"\w+", a)[-1] for a in m.group(3).split(",")[1:] if a.strip()]
     if not sigs:
         return None
-    macro = inst.most_common(1)[0][0]
+    prefix = inst.most_common(1)[0][0]
+    macro = host_instance or prefix
     return {"instance": macro, "functions": sorted(sigs), "signatures": sigs,
-            "calls": {n: f"{n}({', '.join([macro, *a])})" for n, a in calls.items()}}
+            "calls": {n: f"{n}({', '.join([macro, *a])})" for n, a in calls.items()},
+            **({"prefix": prefix} if macro != prefix else {})}

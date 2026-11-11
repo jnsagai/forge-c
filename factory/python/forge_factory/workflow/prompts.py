@@ -1697,14 +1697,15 @@ def provided_registers(text: str, api: dict) -> str:
     import re as _re
 
     inst = api["instance"]
+    pfx = api.get("prefix", inst)  # F016: SPI1 is an SPI_TypeDef; its masks are SPI_<REG>_<FIELD>_Msk
     get = next((n for n in api["functions"] if _re.search(r"_(?:Read|Get|Is)", n)), None)
     via = f" (e.g. {api['calls'][get]})" if get else ""
     regs = (f"the {inst} registers, read through the provided LL functions with the instance {inst}{via} or as "
-            f"{inst}-><REG> & the device header's {inst}_<REG>_<FIELD>_Msk masks; there is no register-block array and "
+            f"{inst}-><REG> & the device header's {pfx}_<REG>_<FIELD>_Msk masks; there is no register-block array and "
             "no <REG>_OFFSET define")
     nodef = f"No printf, no stdlib; never define a register block or the instance {inst} (the device header provides it)."
-    host = (f"the factory force-includes forge_host_device.h and maps {inst} to the RAM {inst}_TypeDef "
-            f"forge_host_{inst.lower()}; observe and preset documented members through {inst}-><REG>, never invent "
+    host = (f"the factory force-includes forge_host_device.h and maps {inst} to the RAM {pfx}_TypeDef "
+            f"forge_host_{pfx.lower()}; observe and preset documented members through {inst}-><REG>, never invent "
             "or define a register-block array. Integration tests use the real provided LL, not the unit-only LL fake")
     blk = r"(\w+_regs)"
     subs = [

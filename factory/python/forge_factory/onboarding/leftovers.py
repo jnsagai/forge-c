@@ -37,17 +37,32 @@ def vocabulary(pkg: dict, files: list[Path]) -> set[str]:
     for e in value(pkg, "undelivered_externals") or []:
         voc.add(e["symbol"])
     voc |= {P, value(pkg, "instance") or "", f"{P}_HAL", value(pkg, "function_prefix") or ""}  # SWC label, prefix
+    if pkg.get("driver_style") == "HAL_ON_LL":  # OB-T067: the generated HAL API and the LL test doubles are its own
+        from .texts import work_order
+
+        for d in work_order(pkg.get("texts"), "hal_api") or []:
+            voc |= set(re.findall(r"\b[A-Za-z_]\w*\b", d))
+        for f in (value(pkg, "ll_api") or {}).get("functions", []):
+            voc |= {f["name"], f"LL_FAKE_{f['name']}"}
+        hdr = (value(pkg, "headers") or {}).get("header") or ""
+        voc |= {f"HAL_{P}_", f"LL_{P}_", f"HAL_{P}", "LL_FAKE_", Path(hdr).stem}
     return voc
 
 
-def instructions(key: str) -> dict[str, str]:
-    """{node: prompt} of the SWE workflow built for the package-driven work order `key` (preview profile)."""
+def instructions(key: str, style: str = "HAL_STANDALONE", provided_api: dict | None = None) -> dict[str, str]:
+    """{node: prompt} of the SWE workflow built for the package-driven work order `key` (preview profile). A factory
+    HAL (HAL_ON_LL) is built as a HAL work order on a provided LL: unit isolation, no delivery of its own."""
     from ..workflow import prompts as PR
     from ..workflow.builder import build
 
     nodes: dict[str, str] = {}
-    dot, info = build(key, goal="x", sections={}, layer="HAL", trace=True, isolation=False, brownfield="FROZEN",
-                      peripheral=f"onboarding-preview:{key}", delivery_style="cmsis", hal_standalone=True)
+    if style == "HAL_ON_LL":
+        dot, info = build(key, goal="x", sections={}, layer="HAL", trace=True, isolation=True, brownfield=None,
+                          peripheral=f"onboarding-preview:{key}", delivery_style=None, hal_standalone=False,
+                          **({"provided_api": provided_api} if provided_api else {}))
+    else:
+        dot, info = build(key, goal="x", sections={}, layer="HAL", trace=True, isolation=False, brownfield="FROZEN",
+                          peripheral=f"onboarding-preview:{key}", delivery_style="cmsis", hal_standalone=True)
     for m in re.finditer(r'(?m)^\s*"?([\w.-]+)"?\s*\[(.*?)\]\s*;?\s*$', dot, re.S):
         p = re.search(r'prompt="((?:[^"\\]|\\.)*)"', m.group(2))
         if p:
@@ -70,8 +85,17 @@ def check(key: str, pkg: dict, files: list[Path]) -> list[str]:
     P = value(pkg, "register_prefix")
     voc = vocabulary(pkg, files)
     others = {x for x in _registered_prefixes() if x and x != P}
+    on_ll = pkg.get("driver_style") == "HAL_ON_LL"
+    api = None
+    if on_ll:  # as in a run: the provided LL's instance API (CAPA-131) with the profile's instance
+        from ..brownfield.cmsis import instance_api
+
+        hdr = (value(pkg, "headers") or {}).get("header")
+        llh = next((f for f in files if f.name == hdr), None)
+        inst = value(pkg, "instance")
+        api = instance_api(llh.read_text(errors="replace"), inst if inst != P else None) if llh else None
     out = []
-    for node, text in sorted(instructions(key).items()):
+    for node, text in sorted(instructions(key, pkg.get("driver_style") or "HAL_STANDALONE", api).items()):
         for word_rx in [rx for p, rx in FOREIGN_WORDS.items() if p != P]:
             for m in re.finditer(word_rx, text):
                 out.append(f"LEFTOVER:{node}:{m.group(0)}")
@@ -80,8 +104,12 @@ def check(key: str, pkg: dict, files: list[Path]) -> list[str]:
             if tok in voc or tok in GENERIC or re.fullmatch(r"(UT|SWR|IT|QT|DEF|SWU|IF|TC)-?\w*", tok):
                 continue
             head = tok.split("_", 1)[0]
-            foreign = head in others or tok.startswith(("LL_", "ll_", "stm32n6xx_ll_"))
-            own_unknown = head == P or tok.startswith("HAL_") or tok.endswith("TypeDef")
+            foreign = head in others or (tok.startswith(("LL_", "ll_", "stm32n6xx_ll_")) and not on_ll)
+            if on_ll and tok.startswith(("LL_", "ll_", "stm32n6xx_ll_")):  # the provided LL: only its own names
+                foreign = not (tok.startswith((f"LL_{P}_", f"ll_{P.lower()}_", f"stm32n6xx_ll_{P.lower()}"))
+                               or tok.startswith(f"LL_FAKE_LL_{P}_"))
+            own_unknown = head == P or tok.startswith("HAL_") or tok.endswith("TypeDef") or \
+                (on_ll and tok.startswith(("LL_", "ll_", "stm32n6xx_ll_")))
             if foreign or own_unknown:
                 out.append(f"LEFTOVER:{node}:{tok}")
     return sorted(set(out))
@@ -103,8 +131,9 @@ def write_preview(key: str, pkg: dict, model_paths: tuple[Path, Path] | None = N
     load.cache_clear()
 
 
-def run(key: str) -> list[str]:
-    """The check for a derived package `key` (state/onboarding/<key>), with a preview of its profile."""
+def run(key: str, example: Path | None = None) -> list[str]:
+    """The check for a derived package `key` (state/onboarding/<key>), with a preview of its profile; `example` is the
+    work order's example directory (default examples/<key>)."""
     from . import facts as F
     from . import onboarding_dir
 
@@ -119,7 +148,12 @@ def run(key: str) -> list[str]:
         src = Path(os.path.expandvars(d["source"]))
         if (src / d["from"]).is_file():
             files.append(src / d["from"])
-    delivered = Path(os.path.expandvars(json.loads((REPO_ROOT / "examples" / key / "workorder.json").read_text())
-                                        ["delivery"]["source"]))
+    ex = Path(example) if example else REPO_ROOT / "examples" / key
+    spec = json.loads((ex / "workorder.json").read_text())
+    from .factory_hal import block, ll_example_dir
+
+    if block(spec):  # OB-T067: a factory HAL's delivered code is its LL lineage's delivery
+        spec = json.loads((ll_example_dir(ex, block(spec)) / "workorder.json").read_text())
+    delivered = Path(os.path.expandvars(spec["delivery"]["source"]))
     files += [delivered / f["from"] for f in fm.get("files", [])]
     return check(key, pkg, files)
