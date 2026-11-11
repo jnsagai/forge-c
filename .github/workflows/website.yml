@@ -1,0 +1,68 @@
+name: Documentation website
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - '.github/workflows/website.yml'
+      - 'Makefile'
+      - 'pyproject.toml'
+      - 'factory/python/forge_factory/**'
+      - 'examples/**/workorder.json'
+      - 'config/factory/**'
+      - 'specs/**/contracts/**'
+      - 'evidence/v0.4/runs/RC1/**'
+      - 'evidence/v0.4/runs/CR-T044/*.png'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SITE_URL: https://jnsagai.github.io
+      BASE_PATH: /forge-c/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.4'
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - name: Install website dependencies
+        run: npm --prefix website ci --no-audit --no-fund
+      - name: Verify publication boundaries
+        run: npm --prefix website run test
+      - name: Build and verify root hosting
+        run: BASE_PATH=/ npm --prefix website run build
+      - name: Build and verify GitHub project hosting
+        run: npm --prefix website run build
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        with:
+          path: website/dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy checked documentation
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,55 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.500
+SWE.1 AUTHOR: REJECTED. Requirements lacked required register effects.
+
+00:00:02.500 --> 00:00:05.000
+SWE.1 ROUTE: REWORK. Return to the author. The rework budget remains bounded.
+
+00:00:05.000 --> 00:00:07.500
+SWE.1 AUTHOR: FROZEN. Baseline BL-SWE.1-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE.
+
+00:00:07.500 --> 00:00:10.000
+SWE.1 INSPECT: PASS. The recorded inspection gate passed. The agent status separately reported FAILED; see the source log.
+
+00:00:10.000 --> 00:00:12.500
+SWE.2 AUTHOR: FROZEN. Baseline BL-SWE.2-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE.
+
+00:00:12.500 --> 00:00:15.000
+SWE.2 INSPECT: PASS. The recorded inspection gate passed.
+
+00:00:15.000 --> 00:00:17.500
+SWE.3 AUTHOR: REJECTED. The detailed-design diagram did not pass the render check.
+
+00:00:17.500 --> 00:00:20.000
+SWE.3 ROUTE: REWORK. Return to the author. The rework budget remains bounded.
+
+00:00:20.000 --> 00:00:22.500
+SWE.3 AUTHOR: FROZEN. Baseline BL-SWE.3-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE.
+
+00:00:22.500 --> 00:00:25.000
+SWE.3 VERIFY: PASS. Guideline verification: 0 violations, 0 implementation findings, 0 register-map findings.
+
+00:00:25.000 --> 00:00:27.500
+SWE.3 INSPECT: PASS. The recorded inspection gate passed. The agent status separately reported FAILED; see the source log.
+
+00:00:27.500 --> 00:00:30.000
+SWE.4 AUTHOR: FROZEN. Baseline BL-SWE.4-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE.
+
+00:00:30.000 --> 00:00:32.500
+SWE.4 INSPECT: PASS. The recorded inspection gate passed.
+
+00:00:32.500 --> 00:00:35.000
+SWE.5 AUTHOR: FROZEN. Baseline BL-SWE.5-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE.
+
+00:00:35.000 --> 00:00:37.500
+SWE.5 INSPECT: PASS. The recorded inspection gate passed.
+
+00:00:37.500 --> 00:00:40.000
+SWE.6 AUTHOR: FROZEN. Baseline BL-SWE.6-001 frozen. Recorded author-output warning: AGENT_OUTPUT_PROSE.
+
+00:00:40.000 --> 00:00:42.500
+SWE.6 INSPECT: PASS. The recorded inspection gate passed.
+
+00:00:42.500 --> 00:00:45.000
+PACKAGE SEAL: READY_FOR_OFFLINE_REVIEW. 0 declared gaps. Offline review only; not safety approved.

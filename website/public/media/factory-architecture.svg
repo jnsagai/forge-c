@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+<title id="title">Forge-C architecture and authority boundaries</title><desc id="desc">Approved inputs enter the six-phase Fabro workflow. Role-scoped MCP access connects agents to deterministic verification tools. The finalizer seals a review package. An independent model-free supervisor observes services. Human review and release authority remain outside the factory.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#f4a66b"/></marker><marker id="mutedArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#8eabbc"/></marker></defs>
+<rect width="1200" height="640" rx="10" fill="#151b1f"/>
+<g font-family="Segoe UI,Arial,sans-serif" fill="#eef0ed">
+<text x="40" y="45" font-size="14" fill="#f4a66b" letter-spacing="2">FORGE-C / ARCHITECTURE</text><text x="40" y="78" font-size="25" font-weight="600">Work production, verification, and authority have different boundaries.</text>
+<rect x="30" y="106" width="1140" height="360" rx="7" fill="#1b2329" stroke="#47555e"/>
+<text x="50" y="135" font-size="11" fill="#b8c5ce" letter-spacing="2">INSIDE THE FACTORY</text>
+<g fill="#222d34" stroke="#596b76"><rect x="50" y="162" width="170" height="90" rx="5"/><rect x="270" y="162" width="255" height="90" rx="5"/><rect x="575" y="162" width="210" height="90" rx="5"/><rect x="835" y="162" width="305" height="90" rx="5"/></g>
+<g font-size="17" font-weight="600"><text x="70" y="192">Approved inputs</text><text x="290" y="192">Fabro / SWE.1–SWE.6</text><text x="595" y="192">Finalizer</text><text x="855" y="192">Sealed review package</text></g>
+<g font-size="12" fill="#bdc9d0"><text x="70" y="218">Hash + preflight</text><text x="290" y="218">Author → check → inspect → gate</text><text x="595" y="218">Evidence-derived status</text><text x="855" y="218">Review-ready or blocked</text><text x="855" y="238">Code + findings + hashes + provenance</text></g>
+<g fill="none" stroke="#f4a66b" stroke-width="2" marker-end="url(#arrow)"><path d="M220 207H260"/><path d="M525 207H565"/><path d="M785 207H825"/></g>
+<path d="M475 252v22H295v-15" stroke="#f4a66b" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<text x="355" y="289" font-size="10" fill="#f4a66b">BOUNDED REWORK</text>
+<g fill="#202a31" stroke="#4b626f"><rect x="270" y="314" width="255" height="110" rx="5"/><rect x="575" y="314" width="300" height="110" rx="5"/><rect x="50" y="314" width="170" height="110" rx="5"/></g>
+<g font-size="15" font-weight="600"><text x="290" y="345">Role-scoped MCP + policy</text><text x="595" y="345">Deterministic verification</text><text x="70" y="345">Versioned skills</text></g>
+<g font-size="12" fill="#bdc9d0"><text x="290" y="370">Explicit operations and permissions</text><text x="290" y="391">Missing authorization → blocked</text><text x="595" y="370">Compile · static analysis · tests</text><text x="595" y="391">Coverage · footprint · target evidence</text><text x="70" y="370">Role contracts</text><text x="70" y="391">Scoped tool budgets</text></g>
+<g fill="none" stroke="#8eabbc" stroke-width="1.6" marker-end="url(#mutedArrow)"><path d="M397 252v52"/><path d="M220 369h40"/><path d="M525 369h40"/><path d="M725 314v-52"/></g>
+<rect x="30" y="496" width="550" height="110" rx="6" fill="#202b30" stroke="#63878a"/><text x="50" y="526" font-size="16" font-weight="600">Independent model-free supervisor</text><text x="50" y="552" font-size="12" fill="#bdc9d0">Health → incident → bounded repair → validate or roll back</text><text x="50" y="578" font-size="12" fill="#aad6c0">Zero model calls during healthy polling · external finalization</text>
+<path d="M135 496v-59" fill="none" stroke="#8eabbc" stroke-dasharray="5 5" stroke-width="1.5" marker-end="url(#mutedArrow)"/>
+<rect x="630" y="496" width="540" height="110" rx="6" fill="#342c24" stroke="#c49064"/><text x="650" y="526" font-size="16" font-weight="600" fill="#f4b88a">Outside the factory / independent human review</text><text x="650" y="552" font-size="12" fill="#ddd0c5">Engineering acceptance · safety decisions · release authority</text><text x="650" y="578" font-size="12" fill="#ddd0c5">A review-ready package is not approval or certification.</text>
+<path d="M1020 252v232" fill="none" stroke="#f4a66b" stroke-dasharray="5 5" stroke-width="1.6" marker-end="url(#arrow)"/>
+</g></svg>

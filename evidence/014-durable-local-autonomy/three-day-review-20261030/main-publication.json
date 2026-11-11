@@ -1,0 +1,134 @@
+{
+  "schema": "forge-c/main-report-publication/1",
+  "source_report_commit": "51a656f94c3611d3e138d1f6f728bd3769fded6c",
+  "reviewed_implementation_revision": "c221b65ebc011cbed488db83af3e2804790c1129",
+  "main_parent_revision": "71b9a7d3bda7576428e22a4f3798e04d406390a9",
+  "scope": "REPORT_AND_EVIDENCE_ONLY_NO_FEATURE_CODE_MERGE",
+  "copied_files": 93,
+  "source_report_sha256": "c9665e1dd70677a2188ea7dd7a8670b38ee6cfe03881fe3d43906055536fdd95",
+  "main_report_sha256": "1d66093436db9646637f691b0d4bc108fa0b9431a80804a4be4ccf3767f21bdd",
+  "link_rewrites": [
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/mtp-and-terminal-audit-20261028/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/mtp-and-terminal-audit-20261028/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/incremental-e2e-20261028/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/m1-high-allowance-20261028/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/aspice-resume-98d066d/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/aspice-resume-98d066d/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/independent-unit-recheck-20261029/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/context-expansion-20261029/swe2-frozen/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/context-expansion-20261029/swe2-frozen/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe4-frozen/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe4-frozen/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe5-frozen/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/mcp-root-followup-20261029/swe5-frozen/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/owner-stop-20261029/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/owner-stop-20261029/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/afo-paging-20261029/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/afo-paging-20261029/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/afo-max-context-20261029/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/afo-max-context-20261029/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/afo-brownfield-repair-20261029/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/afo-brownfield-repair-20261029/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/maintenance-live-recovery-20261030/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/maintenance-live-recovery-20261030/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/maintenance-signature-binding-20261030/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/maintenance-signature-binding-20261030/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/rcc-qwen-context-integration-20261030/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/rcc-qwen-context-integration-20261030/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/aspice-stepwise-product-20261030/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/aspice-stepwise-product-20261030/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/structured-inspection-feedback-20261030/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/structured-inspection-feedback-20261030/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/scope-inventory-20261030/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/scope-inventory-20261030/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/request-context-20261030/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/request-context-20261030/README.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/SPEED-REPORT.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/model-speed-owner-abort-20261030/SPEED-REPORT.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/mtp-speed-20261030/SPEED-REPORT.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/mtp-speed-20261030/SPEED-REPORT.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/non-thinking-speed-20261030/v2/final/SPEED-REPORT.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/non-thinking-speed-20261030/v2/final/SPEED-REPORT.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/stepwise-diagnosis-20261030/final/SPEED-REPORT.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/stepwise-diagnosis-20261030/final/SPEED-REPORT.md"
+    },
+    {
+      "file": "specs/014-durable-local-autonomy/ASTRA-REVIEW-20261028-30.md",
+      "old": "../../evidence/014-durable-local-autonomy/wal-cycle-20261030/README.md",
+      "new": "https://github.com/jnsagai/forge-c/blob/51a656f94c3611d3e138d1f6f728bd3769fded6c/evidence/014-durable-local-autonomy/wal-cycle-20261030/README.md"
+    }
+  ],
+  "runtime_changed_by_publication": false,
+  "cutoff_remains": "2026-10-30T18:33:30Z"
+}

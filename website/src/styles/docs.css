@@ -1,0 +1,62 @@
+:root {
+  --sl-font: "Inter", "Segoe UI", system-ui, sans-serif;
+  --sl-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --sl-color-accent-low: #482713;
+  --sl-color-accent: #f4a66b;
+  --sl-color-accent-high: #ffd6b5;
+  --sl-color-white: #f5f7f2;
+  --sl-color-gray-1: #e0e7e8;
+  --sl-color-gray-2: #b9c4cb;
+  --sl-color-gray-3: #85939e;
+  --sl-color-gray-4: #52616f;
+  --sl-color-gray-5: #293641;
+  --sl-color-gray-6: #17232c;
+  --sl-color-black: #13171a;
+  --sl-color-bg-nav: #181d21;
+  --sl-color-bg-sidebar: #181d21;
+}
+:root[data-theme="light"] {
+  --sl-color-accent-low: #fff0e2;
+  --sl-color-accent: #a64c13;
+  --sl-color-accent-high: #77390f;
+  --sl-color-white: #15212a;
+  --sl-color-gray-1: #283844;
+  --sl-color-gray-2: #3c4d59;
+  --sl-color-gray-3: #627481;
+  --sl-color-gray-4: #95a5af;
+  --sl-color-gray-5: #d5deda;
+  --sl-color-gray-6: #edf0e9;
+  --sl-color-gray-7: #f5f6f0;
+  --sl-color-black: #fbfcf7;
+  --sl-color-bg-nav: #fbfcf7;
+  --sl-color-bg-sidebar: #f5f6f0;
+}
+.site-title {
+  letter-spacing: -0.04em;
+  font-weight: 750;
+}
+h1 {
+  letter-spacing: -0.045em;
+}
+.sl-markdown-content h2 {
+  letter-spacing: -0.025em;
+}
+.sl-markdown-content a {
+  text-underline-offset: 0.2em;
+}
+::selection {
+  background: #f4a66b;
+  color: #111a22;
+}
+:focus-visible {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 4px;
+}
+#pagefind-search {
+  --pagefind-ui-primary: var(--sl-color-accent);
+  --pagefind-ui-text: var(--sl-color-text);
+  --pagefind-ui-background: var(--sl-color-bg);
+  --pagefind-ui-border: var(--sl-color-gray-5);
+  --pagefind-ui-tag: var(--sl-color-gray-6);
+  --pagefind-ui-font: var(--sl-font);
+}

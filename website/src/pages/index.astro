@@ -1,0 +1,499 @@
+---
+import Search from "../components/Search.astro";
+import RunReplay from "../components/RunReplay.astro";
+import "../styles/home.css";
+const base = import.meta.env.BASE_URL;
+const doc = (path = "") => `${base}docs/${path}`;
+const stages = [
+  [
+    "SWE.1",
+    "Requirements",
+    "Turn approved inputs into traceable software requirements.",
+  ],
+  [
+    "SWE.2",
+    "Architecture",
+    "Define the interfaces, responsibilities, and design constraints.",
+  ],
+  [
+    "SWE.3",
+    "Implementation",
+    "Develop the detailed design and embedded C driver.",
+  ],
+  [
+    "SWE.4",
+    "Unit verification",
+    "Verify units against their specifications and record coverage.",
+  ],
+  [
+    "SWE.5",
+    "Integration",
+    "Check component interactions and integration evidence.",
+  ],
+  ["SWE.6", "Qualification", "Verify the software against its requirements."],
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Forge-C is an open-source software factory for embedded C drivers. AI authors and inspectors, deterministic verification, and sealed evidence for human review."
+    />
+    <meta name="theme-color" content="#13171a" />
+    <meta
+      property="og:title"
+      content="Forge-C — Embedded C. Engineered with evidence."
+    />
+    <meta
+      property="og:description"
+      content="From approved requirements to embedded C drivers and sealed offline review evidence. Explore the open-source factory."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(base, Astro.site)} />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="canonical" href={new URL(base, Astro.site)} />
+    <title>Forge-C — Embedded C. Engineered with evidence.</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header wrap">
+      <a class="wordmark" href={base} aria-label="Forge-C home"
+        ><img
+          src={`${base}favicon.svg`}
+          width="34"
+          height="34"
+          alt=""
+        />FORGE<span>-C</span></a
+      >
+      <nav aria-label="Main navigation">
+        <a href={doc()}>Documentation</a><a
+          class="wide-nav"
+          href={doc("concepts/architecture/")}>Architecture</a
+        ><a class="wide-nav" href={doc("guides/offline-review/")}>Evidence</a>
+      </nav>
+      <a class="github-link" href="https://github.com/jnsagai/forge-c"
+        >GitHub <span aria-hidden="true">↗</span></a
+      >
+    </header>
+    <main id="main">
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <a class="release-tag" href={doc("status/")}
+            ><span class="status-dot"></span> OPEN SOURCE / PILOT <span
+              aria-hidden="true">↗</span
+            ></a
+          >
+          <h1 id="hero-title">
+            Embedded C.<br />Engineered<br /><span>with evidence.</span>
+          </h1>
+          <p class="hero-intro">
+            A software factory for embedded drivers. AI agents author and
+            inspect. Deterministic tools verify. People make the final
+            engineering decision.
+          </p>
+          <div class="hero-actions">
+            <a
+              class="button primary"
+              href={doc("getting-started/first-work-order/")}
+              >Run your first work order <span aria-hidden="true">→</span></a
+            ><a class="text-link" href="#workflow-demo"
+              >Watch the workflow <span aria-hidden="true">▷</span></a>
+          </div>
+          <p class="hero-note">
+            Local-first runtime. Open-source tooling. Apache 2.0.
+          </p>
+        </div>
+        <div
+          class="factory-visual"
+          aria-label="Conceptual factory flow from approved inputs through six SWE phases to an offline review package"
+        >
+          <div class="visual-top mono">
+            <span><i></i> FACTORY / PROCESS VIEW</span><span>01—06</span>
+          </div>
+          <div class="input-tray">
+            <span class="mono small-label">APPROVED INPUTS</span><div>
+              <span>Requirements</span><span>MCU manual</span><span
+                >Safety inputs</span>
+            </div>
+          </div>
+          <div class="flow-line" aria-hidden="true"></div>
+          <div class="station-grid">
+            {
+              stages.map(([id, name], i) => (
+                <div class:list={["mini-station", { hot: i === 2 }]}>
+                  <>
+                    <span class="mono">{id}</span>
+                    <strong>{name}</strong>
+                    <div class="station-gate">
+                      <span aria-hidden="true">◇</span> Author · check · inspect
+                    </div>
+                  </>
+                </div>
+              ))
+            }
+          </div>
+          <div class="flow-line" aria-hidden="true"></div>
+          <div class="output-tray">
+            <div class="package-icon" aria-hidden="true">⌘</div><div>
+              <span class="mono small-label">SEALED REVIEW PACKAGE</span><strong
+                >Code + traceability + evidence</strong>
+            </div><span class="output-arrow" aria-hidden="true">↗</span>
+          </div>
+          <div class="visual-bottom mono">
+            <span>HASH → VERIFY → HAND OVER</span><span>HUMAN REVIEW</span>
+          </div>
+        </div>
+      </section>
+      <div class="principles-strip">
+        <div class="wrap strip-inner">
+          <span>AI BUILDS THE WORK.</span><span
+            class="strip-separator"
+            aria-hidden="true">/</span
+          ><span>TOOLS CHECK THE RESULT.</span><span
+            class="strip-separator"
+            aria-hidden="true">/</span
+          ><span>PEOPLE HOLD RELEASE AUTHORITY.</span>
+        </div>
+      </div>
+
+      <RunReplay />
+
+      <section class="section wrap" aria-labelledby="process-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">01 / A PROCESS YOU CAN FOLLOW</span><h2
+              id="process-title"
+            >
+              Six stations.<br />An explicit trail.
+            </h2>
+          </div><p>
+            Each Automotive SPICE SWE phase pairs an author with a separate
+            inspector. Versioned checklists and deterministic gates decide
+            whether work advances or returns for bounded rework.
+          </p>
+        </div>
+        <div class="process-layout">
+          <div
+            class="stage-list"
+            role="group"
+            aria-label="Explore the six software engineering phases"
+          >
+            {
+              stages.map(([id, name, detail], i) => (
+                <button
+                  class="stage"
+                  aria-pressed={i === 0 ? "true" : "false"}
+                  data-stage={i}
+                  data-title={name}
+                  data-description={detail}
+                >
+                  <>
+                    <span class="mono">{id}</span>
+                    <strong>{name}</strong>
+                    <span aria-hidden="true">↗</span>
+                  </>
+                </button>
+              ))
+            }
+          </div><div class="stage-detail">
+            <div class="stage-detail-top mono">
+              <span id="stage-id">SWE.1</span><span>PHASE ANATOMY</span>
+            </div><h3 id="stage-title">Requirements</h3><p
+              id="stage-description"
+              aria-live="polite"
+            >
+              {stages[0][2]}
+            </p><ol class="phase-loop">
+              <li>
+                <span>01</span><div>
+                  <strong>Author</strong><small>Produce the workproduct</small>
+                </div>
+              </li><li>
+                <span>02</span><div>
+                  <strong>Check</strong><small
+                    >Run the deterministic tools</small>
+                </div>
+              </li><li>
+                <span>03</span><div>
+                  <strong>Inspect</strong><small
+                    >Review against the checklist</small>
+                </div>
+              </li><li>
+                <span>04</span><div>
+                  <strong>Gate</strong><small
+                    >Advance or return for rework</small>
+                </div>
+              </li>
+            </ol><a class="text-link" href={doc("concepts/workflow/")}
+              >Understand the workflow <span>→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="evidence-section" aria-labelledby="evidence-title">
+        <div class="wrap evidence-layout">
+          <div class="evidence-copy">
+            <span class="eyebrow">02 / THE DELIVERABLE IS THE EVIDENCE</span><h2
+              id="evidence-title"
+            >
+              A package.<br />Not a promise.
+            </h2><p>
+              Every terminal run is intended to leave a hash-verifiable archive.
+              Read what passed, what failed, and what is missing before making
+              an engineering decision.
+            </p><p>
+              Review-ready means the configured gates passed. A blocked package
+              preserves the findings and available work, so gaps remain visible.
+            </p><a class="text-link" href={doc("guides/offline-review/")}
+              >Learn to review a package <span>→</span></a>
+          </div><div class="package-window">
+            <div class="code-title mono">
+              <span>REVIEW PACKAGE / ILLUSTRATIVE</span><span
+                >ZIP + SHA256</span>
+            </div><div
+              class="package-switch"
+              role="group"
+              aria-label="Illustrative package outcomes"
+            >
+              <button aria-pressed="true" data-outcome="ready"
+                >Review-ready</button
+              ><button aria-pressed="false" data-outcome="blocked"
+                >Blocked</button>
+            </div><div class="package-status" id="package-status">
+              READY_FOR_OFFLINE_REVIEW
+            </div><div class="file-tree mono">
+              <span>review-package.zip</span><span>├── software/</span><span
+                >├── requirements/</span
+              ><span>├── design/</span><span>├── evidence/</span><span
+                >├── REVIEW_SUMMARY.md</span
+              ><span>├── missing_artifacts.json</span><span
+                >└── SHA256SUMS.txt</span>
+            </div><p id="package-description" aria-live="polite">
+              Configured gates passed. Independent human review is the next
+              step.
+            </p><div class="package-foot mono">
+              <span aria-hidden="true">◇</span> INTEGRITY IS VERIFIABLE. APPROVAL
+              IS HUMAN.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section wrap" aria-labelledby="controls-title">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">03 / BUILT AROUND BOUNDARIES</span><h2
+              id="controls-title"
+            >
+              Unattended execution.<br />Accountable decisions.
+            </h2>
+          </div><p>
+            Automation needs limits that remain effective when a model fails.
+            Forge-C puts enforcement in policy and tools, with evidence that can
+            be examined outside the factory.
+          </p>
+        </div><div class="controls-grid">
+          <article>
+            <span class="module-code">[ POLICY ]</span><h3>
+              Scoped agent access
+            </h3><p>
+              Versioned skills and role-specific MCP permissions. Missing
+              permissions stop a run at preflight.
+            </p><a class="text-link" href={doc("concepts/architecture/")}
+              >Explore the boundaries →</a>
+          </article><article>
+            <span class="module-code">[ SUPERVISION ]</span><h3>
+              A model-free watchdog
+            </h3><p>
+              Independent health checks, bounded recovery, and external
+              finalization when a run ends without a package.
+            </p><a class="text-link" href={doc("guides/operations/")}
+              >Operate the factory →</a>
+          </article><article>
+            <span class="module-code">[ VERIFICATION ]</span><h3>
+              Checks with provenance
+            </h3><p>
+              Compilation, static analysis, tests, coverage, and footprint
+              evidence, tied to the configured toolchain.
+            </p><a class="text-link" href={doc("concepts/verification/")}
+              >Understand the evidence →</a>
+          </article>
+        </div>
+      </section>
+
+      <section
+        class="showcase-section section wrap"
+        aria-labelledby="showcase-title"
+      >
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow"
+              >INSIDE THE FACTORY / ARCHITECTURE &amp; OBSERVABILITY</span
+            ><h2 id="showcase-title">
+              See the boundaries.<br />See the operation.
+            </h2>
+          </div><p>
+            A readable architecture map and an actual Control Room capture make
+            the factory concrete. Open either image to inspect the details.
+          </p>
+        </div>
+        <figure class="architecture-image">
+          <a
+            href={`${base}media/factory-architecture.svg`}
+            aria-label="Open full-size Forge-C architecture diagram"
+            ><img
+              src={`${base}media/factory-architecture.svg`}
+              alt="Architecture diagram separating approved inputs, six SWE phases, scoped MCP tools, deterministic verification, a sealed package, model-free supervision, and external human review."
+              width="1200"
+              height="640"
+              loading="lazy"
+            /></a
+          ><figcaption>
+            <span
+              >Factory architecture / simplified process and authority map</span
+            ><a class="text-link" href={doc("concepts/architecture/")}
+              >Explore the architecture ↗</a>
+          </figcaption>
+        </figure>
+        <div class="dashboard-showcase">
+          <div>
+            <span class="eyebrow">A REAL CAPTURE, NOT A MOCKUP</span><h3>
+              One view of the shop floor.
+            </h3><p>
+              The Control Room brings phase state, throughput, losses,
+              corrective actions, and model usage into a read-only view.
+            </p><p>
+              This capture is from the recorded October 2026 development
+              campaign. Its historical values are not current factory metrics.
+            </p><a class="text-link" href={doc("guides/operations/")}
+              >Read the operations guide →</a>
+          </div><figure>
+            <a
+              href={`${base}media/control-room.png`}
+              aria-label="Open full-size historical Control Room screenshot"
+              ><img
+                src={`${base}media/control-room.png`}
+                alt="Historical Forge-C Control Room screenshot showing the production scorecard, six-phase shop floor, quality charts, corrective actions, and model-usage panels."
+                width="1440"
+                height="2620"
+                loading="lazy"
+              /></a
+            ><figcaption>
+              Recorded Control Room screenshot · 19 Oct 2026 · <a
+                href="https://github.com/jnsagai/forge-c/blob/main/evidence/v0.4/runs/CR-T044/control-room-after-r168.png"
+                >Source ↗</a>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="start-section">
+        <div class="wrap start-layout">
+          <div>
+            <span class="eyebrow">04 / CHOOSE YOUR STARTING POINT</span><h2>
+              Bring requirements.<br />Or bring existing C.
+            </h2><p>
+              Generate a new driver, assess a delivered implementation, or
+              explore the host demonstration before setting up a model.
+            </p><div class="home-search"><Search /></div>
+          </div><div class="path-list">
+            <a
+              href={doc(
+                "getting-started/installation/#try-the-host-demonstration",
+              )}
+              ><span class="path-number">01</span><div>
+                <h3>Explore without an AI model</h3><p>
+                  Build and test the host RCC demonstration.
+                </p>
+              </div><span>↗</span></a
+            ><a href={doc("getting-started/first-work-order/")}
+              ><span class="path-number">02</span><div>
+                <h3>Run the driver workflow</h3><p>
+                  Start with the RCC low-level work order.
+                </p>
+              </div><span>↗</span></a
+            ><a href={doc("guides/brownfield/")}
+              ><span class="path-number">03</span><div>
+                <h3>Assess delivered code</h3><p>
+                  Use frozen or explicitly permitted repair scope.
+                </p>
+              </div><span>↗</span></a
+            ><a href={doc("development/contributing/")}
+              ><span class="path-number">04</span><div>
+                <h3>Contribute to the factory</h3><p>
+                  Work from reproducible checks and evidence.
+                </p>
+              </div><span>↗</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="closing wrap">
+        <div>
+          <span class="eyebrow">OPEN DEVELOPMENT / EXPLICIT LIMITATIONS</span
+          ><h2>Inspect the evidence.<br />Understand the scope.</h2><p>
+            Forge-C is a pilot, not a certified toolchain. Review packages do
+            not constitute ISO 26262 approval, an ASPICE assessment, or
+            authorization for production release.
+          </p>
+        </div><a class="button primary" href={doc("status/")}
+          >Read the current status <span>→</span></a>
+      </section>
+    </main>
+    <footer class="wrap site-footer">
+      <a class="wordmark" href={base}>FORGE<span>-C</span></a><p>
+        Embedded software. Traceable engineering.
+      </p><div>
+        <a href={doc()}>Documentation</a><a
+          href="https://github.com/jnsagai/forge-c">GitHub ↗</a
+        ><a href="https://github.com/jnsagai/forge-c/blob/main/LICENSE"
+          >Apache 2.0</a>
+      </div>
+    </footer>
+    <script>
+      document
+        .querySelectorAll<HTMLButtonElement>("[data-stage]")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            document
+              .querySelectorAll("[data-stage]")
+              .forEach((other) =>
+                other.setAttribute("aria-pressed", String(other === button)),
+              );
+            document.querySelector("#stage-id")!.textContent =
+              `SWE.${Number(button.dataset.stage) + 1}`;
+            document.querySelector("#stage-title")!.textContent =
+              button.dataset.title!;
+            document.querySelector("#stage-description")!.textContent =
+              button.dataset.description!;
+          });
+        });
+      document
+        .querySelectorAll<HTMLButtonElement>("[data-outcome]")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            const blocked = button.dataset.outcome === "blocked";
+            document
+              .querySelectorAll("[data-outcome]")
+              .forEach((other) =>
+                other.setAttribute("aria-pressed", String(other === button)),
+              );
+            document.querySelector("#package-status")!.textContent = blocked
+              ? "BLOCKED"
+              : "READY_FOR_OFFLINE_REVIEW";
+            document.querySelector("#package-description")!.textContent =
+              blocked
+                ? "A configured gate failed or evidence is missing. Read the findings and missing_artifacts.json before continuing."
+                : "Configured gates passed. Independent human review is the next step.";
+            document
+              .querySelector("#package-status")!
+              .classList.toggle("blocked", blocked);
+          });
+        });
+    </script>
+  </body>
+</html>

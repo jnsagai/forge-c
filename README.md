@@ -1,5 +1,7 @@
 # Forge-C
 
+[**Public website & documentation**](https://jnsagai.github.io/forge-c/)
+
 **An open-source, on-premise "software dark factory" for safety-related embedded C drivers.**
 
 You give Forge-C an approved set of inputs, such as requirements, safety inputs and the MCU reference manual. Forge-C then
@@ -11,7 +13,22 @@ compilers, static analysis, MISRA checks, unit tests, coverage and footprint mea
 > input to human engineering and safety review. It is **never** an ISO 26262 / ASIL B approval, an ASPICE assessment
 > or a production release.
 
+**Is Forge-C for you?** It is for embedded and functional-safety engineers who want to see how far an AI-driven,
+evidence-first process can take a low-level driver (for example an STM32 RCC or IWDG driver), entirely on their own
+machine and with open-source tools. It is not a code generator you can drop into a product as is.
+
 ---
+
+## Key terms
+
+| Term | Meaning |
+|---|---|
+| **Work order** | One job for the factory: a driver to build, its inputs (requirements, reference-manual sections, budgets) and its scope. The examples in [`examples/`](examples/) are work orders. |
+| **SWE.1 … SWE.6** | The six Automotive SPICE software engineering steps: requirements, architecture, detailed design and code, unit verification, integration verification, qualification testing. |
+| **Author / inspector** | Two separate AI agents per step. The author writes the work product; the inspector reviews it against a versioned checklist. |
+| **Gate** | The deterministic decision after each step: pass, send back to the author with the findings, or stop. |
+| **Package** | The sealed archive a finished work order leaves for human review: `READY_FOR_OFFLINE_REVIEW` or `BLOCKED`. |
+| **Fabro** | The workflow engine that runs the steps. **MCP** servers are the only tools an agent may use. |
 
 ## How it works
 
@@ -54,15 +71,28 @@ The diagrams can be edited in [`architecture/`](architecture/).
 | Model | Any OpenAI-compatible endpoint with tool calling: local Ollama (default `qwen3:8b`) or a vLLM server |
 | Orchestrator | Fabro 0.362 (workflow engine) |
 | Toolchain | Python 3.13 + [`uv`](https://github.com/astral-sh/uv), LLVM/Clang 19.1.7, `gcc-arm-none-eabi` 10.3, Cppcheck 2.7, CMake, Ninja, gcovr |
+| Hardware | A GPU is optional but strongly recommended; on CPU only, a full work order takes many hours |
 
 Everything is open source. Forge-C needs no paid service or cloud API at runtime. The pinned versions are listed in
-[`docs/TOOLCHAIN.md`](docs/TOOLCHAIN.md) and [`docs/OSS-SETUP.md`](docs/OSS-SETUP.md).
+[`docs/TOOLCHAIN.md`](docs/TOOLCHAIN.md); a step-by-step installation is in [`docs/OSS-SETUP.md`](docs/OSS-SETUP.md).
 
-## Quick start
+## Try it first (no model needed)
+
+These checks run in a minute or two and confirm that the repository and your Python are in order before you set up
+a model and Fabro:
 
 ```bash
-# 0. Choose where data, models, state and archives live (default: see scripts/forge-env.sh)
-export FORGE_DATA_ROOT=/srv/forge-c
+git clone https://github.com/jnsagai/forge-c.git && cd forge-c
+make test           # baseline tests of the v0.1 RCC host demonstrator
+make design-check   # checks the design files, schemas and the agent/tool registry
+```
+
+## Quick start (a full work order)
+
+```bash
+# 0. Choose where data, models, state and archives live. Set this BEFORE anything else:
+#    the default in scripts/forge-env.sh is a developer's path and will not exist on your machine.
+export FORGE_DATA_ROOT=/srv/forge-c        # any directory you own, with room for models, state and archives
 
 # 1. Load the environment. Do this in every new shell.
 . scripts/forge-env.sh
@@ -70,11 +100,12 @@ export FORGE_DATA_ROOT=/srv/forge-c
 # 2. Install the Python factory from the hash-pinned lock file
 make factory-bootstrap
 
-# 3. Start the model server, the LLM gateway and Fabro
+# 3. Start the model server, the LLM gateway and Fabro, then the supervisor
 ./scripts/forge_services.sh start          # Ollama :11435 -> gateway :11436 -> Fabro :32290
+./scripts/forge_services.sh status         # all three should report healthy
 ./scripts/install_supervisor.sh            # model-free supervisor as a systemd user service
 
-# 4. Run a work order (the STM32N6 RCC driver pilot)
+# 4. Run a work order (the STM32N6 RCC driver pilot). It prints a run id.
 python -m forge_factory.workorder --example examples/0002-arm_55_rcc_st --wo WO-0002-demo --detach
 
 # 5. Watch it
@@ -82,8 +113,11 @@ python -m forge_factory.fabro.progress <run-id>
 python -m forge_factory.dashboard.app      # read-only dashboard on http://127.0.0.1:8765
 ```
 
-Fabro reads its model provider settings from `$FORGE_FABRO_CONFIG`. See
-[`config/fabro-settings.oss.example.toml`](config/fabro-settings.oss.example.toml) for the provider and model entries.
+The model must be available to the Ollama instance the services start, for example
+`OLLAMA_HOST=127.0.0.1:11435 ollama pull qwen3:8b`. Fabro reads its model provider settings from
+`$FORGE_FABRO_CONFIG`; see [`config/fabro-settings.oss.example.toml`](config/fabro-settings.oss.example.toml) for the
+provider and model entries. A work order runs for hours, not minutes: each step is authored, checked and inspected,
+and failures go back to the author.
 
 ## Reading the result
 
@@ -107,7 +141,20 @@ python -c "from pathlib import Path; from forge_factory.release.finalize import 
 print(verify_archive(Path('<archive.zip>')))"
 ```
 
-Then read `REVIEW_SUMMARY.md`, `evidence/quality/final-gates.json` and `evidence/safety/known_limitations.md`.
+Then read, in this order: `REVIEW_SUMMARY.md` (what was built and what is missing),
+`evidence/quality/final-gates.json` (every gate decision) and `evidence/safety/known_limitations.md`.
+
+## Troubleshooting
+
+| Symptom | What to check |
+|---|---|
+| A script complains about a missing directory or file under a strange path | `FORGE_DATA_ROOT` is not set in this shell. Export it and run `. scripts/forge-env.sh` again. |
+| `forge_services.sh status` shows a service down | Run `./scripts/forge_services.sh stop` then `start`; check that ports 11435, 11436 and 32290 are free. |
+| The run stops at once with `BLOCKED` | Read `REVIEW_SUMMARY.md` in the package: intake stops early when an input, a tool or a permission is missing. |
+| A step goes back to the author several times | This is the normal rework loop; the number of attempts is bounded. The findings are in the work order's `inspection/` folder. |
+| Very slow progress | The model runs on CPU or a small GPU. Check the speed on the dashboard; see [`docs/OPTIMIZATION.md`](docs/OPTIMIZATION.md). |
+
+The failure runbook, backup, recovery and trace retention are in [`docs/OPERATIONS-v0.4.md`](docs/OPERATIONS-v0.4.md).
 
 ## Everyday commands
 
@@ -123,8 +170,6 @@ Then read `REVIEW_SUMMARY.md`, `evidence/quality/final-gates.json` and `evidence
 | Implementation status report | `make status` |
 | Compute KPI snapshot | `make kpi` |
 
-Backup, recovery, trace retention and the failure runbook are in [`docs/OPERATIONS-v0.4.md`](docs/OPERATIONS-v0.4.md).
-
 ## Repository map
 
 | Path | What is there |
@@ -132,19 +177,31 @@ Backup, recovery, trace retention and the failure runbook are in [`docs/OPERATIO
 | [`factory/python/forge_factory/`](factory/python/forge_factory/) | The factory: workflow generator, LLM gateway, MCP servers, supervisor, repair, lessons, events, dashboard, KPIs, release packager |
 | [`.fabro/skills/`](.fabro/skills/) | The versioned `SKILL.md` for each of the 20 agent roles |
 | [`config/factory/`](config/factory/) | Agent permissions, MCP registry, supervisor, trace, token and KPI policies |
-| [`examples/`](examples/) | Work order inputs (generic RCC, STM32N6 RCC) |
+| [`examples/`](examples/) | Work orders: generic RCC, STM32N6 RCC low-level (LL) and HAL drivers, RCC drivers built on delivered code, IWDG LL and HAL |
 | [`specs/`](specs/) | Spec Kit features: 001 OSS driver bootstrap, 002 self-healing factory, 003 manufacturing KPIs |
 | [`docs/`](docs/) | Architecture, operations, compliance matrix, ADRs ([`docs/adr/`](docs/adr/)) |
 | [`drivers/`](drivers/), [`tests/`](tests/) | v0.1 RCC host demonstrator and baseline tests |
 | [`evidence/`](evidence/) | Recorded test and run evidence |
 
+## Where to read next
+
+| If you want to … | Read |
+|---|---|
+| Install everything step by step | [`docs/OSS-SETUP.md`](docs/OSS-SETUP.md) |
+| Understand the design | [`docs/DARK-FACTORY-ARCHITECTURE-v0.4.md`](docs/DARK-FACTORY-ARCHITECTURE-v0.4.md) |
+| See the STM32N6 RCC pilot in detail | [`docs/PILOT-STM32N6-RCC.md`](docs/PILOT-STM32N6-RCC.md) |
+| Run work orders on code you already have | [`docs/BROWNFIELD-WORK-ORDERS.md`](docs/BROWNFIELD-WORK-ORDERS.md) |
+| Know what the checklists check | [`docs/SWE-CHECKLISTS.md`](docs/SWE-CHECKLISTS.md) |
+| Operate the factory day to day | [`docs/OPERATIONS-v0.4.md`](docs/OPERATIONS-v0.4.md) |
+
 ## Current status
 
 - All 51 tasks of the self-healing factory (002) and all 20 KPI tasks (003) pass, each with recorded test evidence.
   The task-by-task report is [`docs/IMPLEMENTATION-STATUS-v0.4.md`](docs/IMPLEMENTATION-STATUS-v0.4.md).
-- On the STM32N6 RCC pilot, SWE.1 to SWE.6 have all passed in a single run. Packages still end `BLOCKED`, because
-  target verification (simulator or hardware), full MISRA coverage and the deferred safety documents are missing. The
-  package declares each of these gaps.
+- In the rc1 regression round, every example work order (RCC LL and HAL, RCC on delivered code, IWDG LL and HAL)
+  reached a `READY_FOR_OFFLINE_REVIEW` package with 0 gaps; see
+  [`evidence/v0.4/runs/RC1/README.md`](evidence/v0.4/runs/RC1/README.md). That round used cloud models as author and
+  inspector; runs on local models are ongoing.
 - Known findings from running local models are recorded in
   [`docs/adr/ADR-0005-local-model-runtime-findings.md`](docs/adr/ADR-0005-local-model-runtime-findings.md).
 

@@ -32,3 +32,6 @@ examples/0018-lptim-st/inputs/*.md
 
 # process-first lab (design rev 4 §1): generated lab work orders, launch manifests and handoff copies
 /process-lab/
+
+# Local factory bootstrap data (website quick-start example)
+.factory-data/
