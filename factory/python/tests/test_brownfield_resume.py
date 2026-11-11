@@ -136,10 +136,8 @@ def test_explicit_return_to_swe1_does_not_expose_code(pair):
 
 
 @pytest.mark.parametrize("mutation,code", [
-    (lambda s, m: m["factory_revision"].update(commit="2" * 40), "FACTORY_REVISION"),
     (lambda s, m: m["factory_revision"].update(dirty=True), "FACTORY_REVISION"),
     (lambda s, m: m.update(local_profile={"id": "other"}), "LOCAL_PROFILE_CHANGED"),
-    (lambda s, m: m["resume_identity"]["runtime"].update(tools={"clang": "changed"}), "CONTRACT_OR_RUNTIME"),
     (lambda s, m: m["delivery"]["scope"]["functions"].pop(), "CONTRACT_OR_RUNTIME"),
     (lambda s, m: m["target"].update(core="other core"), "CONTRACT_OR_RUNTIME"),
 ])
@@ -150,6 +148,22 @@ def test_incompatible_source_is_refused_before_copy(pair, mutation, code):
     with pytest.raises(R.ResumeRefused, match=code):
         WO.resume_from(dst, new, "WO-SRC")
     assert not (dst / "workproducts").exists()
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda s, m: m["factory_revision"].update(commit="2" * 40),
+    lambda s, m: m["resume_identity"]["runtime"].update(tools={"clang": "changed"}),
+])
+def test_capa236_a_runtime_or_revision_change_carries_swe1_and_is_recorded(pair, mutation):
+    """CAPA-236 (owner 2026-11-11, "Narrow guard"): a source that carries only SWE.1/SWE.2 continues across a factory
+    runtime or revision change (contract, limits, inputs unchanged); the change is recorded. SWE.3+ stays strict
+    (test_capa236_resume_across_factory_change)."""
+    src, old, dst, new, _, _ = pair
+    mutation(src, old)
+    save(src, old)
+    assert WO.resume_from(dst, new, "WO-SRC") == PHASES[1:]
+    ch = new["resume_runtime_change"]
+    assert ch["carried_phases"] == ["SWE.1"] and "CAPA-236" in ch["rule"]
 
 
 def test_input_tamper_refused(pair):
