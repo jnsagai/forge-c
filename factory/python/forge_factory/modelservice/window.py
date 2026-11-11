@@ -129,7 +129,8 @@ def run_window(plan: Callable[[dict], dict], *, lane: LaneControl, tier: Tier, g
                 started = tier.start() or {}
                 step("tier_started")
                 step("identity_verified", identities=started.get("identities"))
-                ctx = {"deadline": hard_end, "clock": clock, "sleep": sleep, "window_id": wid}
+                ctx = {"deadline": hard_end, "clock": clock, "sleep": sleep, "window_id": wid,
+                       "gpu_apps": gpu_apps, "tier_cgroup": tier_cgroup}  # T044 SC-001 GPU ownership audit
                 result = plan(ctx) or {}
                 if clock() > hard_end:
                     raise WindowAbort("HARD_END_EXCEEDED")

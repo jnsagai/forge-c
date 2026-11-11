@@ -33,6 +33,7 @@ STATE = Path("/mnt/data/forge-c/model-service")
 TIER = "http://127.0.0.1:18480"
 AUTHOR, INSPECTOR = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0", "qwen3.8:27b-q8_0"
 SC011_SWAP_P95_S = 30.0
+FACTORY_CONTEXT_TOKENS = 65536  # T044/R2: the factory per-agent limit every served model must offer
 
 
 def _p95(xs: list[float]) -> float | None:
@@ -67,8 +68,17 @@ def smoke(ctx: dict, *, http: httpx.Client | None = None, keys: dict | None = No
     keys = keys or _keys(STATE / "secrets/model-service.secrets")
     cat = catalog or yaml.safe_load((ROOT / "deploy/recipe/model-tier/catalog.yaml").read_text())
     pinned = {m["model"]: m["identity"]["revision_fingerprint"][:16] for m in cat["models"]}
+    engines = {m["model"]: m.get("engine_url") for m in cat["models"]}
     hq = {"Authorization": f"Bearer {keys['forge-qual']}"}
-    t0, res = time.time(), {"identities": {}, "calls": [], "wrong_model": 0, "failed": 0}
+    t0, res = time.time(), {"identities": {}, "calls": [], "wrong_model": 0, "failed": 0, "kv": {},
+                            "gpu_samples": 0, "gpu_violations": [], "kv_served": {}}
+    probe, tier_cg = ctx.get("gpu_apps"), ctx.get("tier_cgroup")
+
+    def gpu_audit():  # T044 SC-001: during the plan only the model tier holds the GPU (no factory server or lock)
+        if probe is None or not tier_cg:
+            return
+        res["gpu_samples"] += 1
+        res["gpu_violations"] += [a["cgroup"] for a in probe() if tier_cg not in a["cgroup"]][:3]
 
     def ask(model: str, text: str) -> dict:
         r = http.post(TIER + "/v1/chat/completions", headers=hq, json={"model": model, "max_tokens": 16,
@@ -77,6 +87,15 @@ def smoke(ctx: dict, *, http: httpx.Client | None = None, keys: dict | None = No
         rec = {"model": model, "status": r.status_code, "identity": ident, "swap_ms": int(r.headers.get("x-forge-swap-ms") or 0),
                "queue_ms": int(r.headers.get("x-forge-queue-ms") or 0)}
         res["calls"].append(rec)
+        gpu_audit()
+        if r.status_code == 200 and model not in res["kv_served"] and engines.get(model):
+            try:  # T044 KV capacity: the loaded engine's own context (llama.cpp /props), per sequence
+                props = http.get(engines[model] + "/props", timeout=10).json()
+                n_ctx = (props.get("default_generation_settings") or {}).get("n_ctx") or props.get("n_ctx")
+                if n_ctx:
+                    res["kv_served"][model] = int(n_ctx) // max(1, int(props.get("total_slots") or 1))
+            except (httpx.HTTPError, ValueError, TypeError):
+                pass
         res["failed"] += r.status_code != 200
         res["wrong_model"] += r.status_code == 200 and ident != pinned[model]
         return rec
@@ -85,6 +104,7 @@ def smoke(ctx: dict, *, http: httpx.Client | None = None, keys: dict | None = No
     for m in pinned:
         got = http.get(TIER + "/forge/v1/identity", params={"model": m}, headers=hq).json()
         res["identities"][m] = got.get("revision_fingerprint", "")[:16] == pinned[m]
+        res["kv"][m] = got.get("context_limit")  # T044: served KV capacity per sequence
     # 2. author/inspector hand-overs: each one may swap; measured from the service's own swap records
     for i in range(hand_overs):
         if ctx["clock"]() > ctx["deadline"] - 900:
@@ -99,6 +119,10 @@ def smoke(ctx: dict, *, http: httpx.Client | None = None, keys: dict | None = No
     res["swap_s"] = {k: {"n": len(v), "p95": _p95(v), "median": statistics.median(v)} for k, v in per_dir.items()}
     res["sc011_pass"] = bool(per_dir) and all((_p95(v) or 1e9) <= SC011_SWAP_P95_S for v in per_dir.values())
     res["cold_swaps"] = sum(1 for e in swaps if not e.get("warm"))
+    # T044 SC-010: every model change of the alternating run is a swap in the service's own records
+    seq = [c["model"] for c in res["calls"]]
+    res["model_changes"] = sum(1 for i, m in enumerate(seq) if i == 0 or m != seq[i - 1])
+    res["sc010_pass"] = bool(seq) and res["failed"] == 0 and len(swaps) >= res["model_changes"]
     # 3. a saturating neighbour while the factory tenant keeps working (SC-003)
     from model_tier import neighbour
 
@@ -115,6 +139,27 @@ def smoke(ctx: dict, *, http: httpx.Client | None = None, keys: dict | None = No
         th.join()
     res["neighbour"] = {k: nb.get(k) for k in ("requests", "ok", "by_status", "latency_ms")}
     res["sc003_pass"] = res["failed"] == 0
+    # T044 SC-002: every answered call carries the served-model fingerprint
+    res["sc002_pass"] = all(c["identity"] for c in res["calls"] if c["status"] == 200)
+    # served measurement where the engine reports it, else the declared (catalog) identity, with its basis
+    res["kv_basis"] = {m: ("served" if m in res["kv_served"] else "declared") for m in res["kv"]}
+    res["kv"] = {m: res["kv_served"].get(m, v) for m, v in res["kv"].items()}
+    res["kv_pass"] = bool(res["kv"]) and all((v or 0) >= FACTORY_CONTEXT_TOKENS for v in res["kv"].values())
+    res["sc001_pass"] = None if not res["gpu_samples"] else not res["gpu_violations"]  # no probe: NOT_RUN
+    # T044 per-tenant latency from the service's own request records of this plan
+    lat: dict[str, list[dict]] = {}
+    for line in outcomes.read_text().splitlines() if outcomes.is_file() else []:
+        try:
+            e = json.loads(line)
+        except ValueError:
+            continue
+        if not e.get("kind") and e.get("tenant_id") and \
+                calendar.timegm(time.strptime(e["ts"], "%Y-%m-%dT%H:%M:%SZ")) >= t0 - 1:
+            lat.setdefault(e["tenant_id"], []).append(e)
+    res["tenant_latency"] = {t: {"n": len(v), "ok": sum(1 for e in v if e.get("status") == 200),
+                                 "p50_total_ms": statistics.median([e.get("total_ms") or 0 for e in v]),
+                                 "p95_total_ms": _p95([e.get("total_ms") or 0 for e in v]),
+                                 "p95_queue_ms": _p95([e.get("queue_ms") or 0 for e in v])} for t, v in lat.items()}
     res["sc009_pass"] = res["wrong_model"] == 0 and res["failed"] == 0
     res["identities_pass"] = all(res["identities"].values())
     res["calls"] = len(res["calls"])
