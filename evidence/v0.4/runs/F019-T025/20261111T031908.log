@@ -1,0 +1,15 @@
+PASS wwdg-ll WO-F014-SWE1-WWDGL-20261109-L44F terminal PHASE_VERDICT:PASS:SWE.1
+PASS wwdg-hal WO-F014-SWE1-WWDGH-20261109-L45 terminal PHASE_VERDICT:PASS:SWE.1
+PASS WO-F014-SWE1-WWDGH-20261109-L45 created 2026-11-09T14:16:32.396979Z after previous pass 2026-11-09T12:37:36.852203Z
+PASS spi-ll WO-F014-SWE1-SPIL-20261107-L41P terminal PHASE_VERDICT:PASS:SWE.1
+PASS WO-F014-SWE1-SPIL-20261107-L41P created 2026-11-10T04:12:30.852151Z after previous pass 2026-11-09T14:38:35.165202Z
+PASS tim-ll WO-F014-SWE1-TIML-20261107-L43T terminal PHASE_VERDICT:PASS:SWE.1
+PASS WO-F014-SWE1-TIML-20261107-L43T created 2026-11-10T21:55:36.823960Z after previous pass 2026-11-10T06:16:08.337952Z
+PASS WWDG HAL manifest names the provided LL order WO-F014-SWE6-WWDGL-20261103-L29
+PASS guardian ladder wwdg-ll state DONE
+PASS guardian ladder wwdg-hal state DONE
+PASS guardian ladder spi-ll state DONE
+PASS guardian ladder tim-ll state DONE
+PASS live deploy c1738241 generation report campaign_source DERIVED
+
+--- stderr ---
