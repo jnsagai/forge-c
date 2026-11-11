@@ -100,4 +100,5 @@ def test_missing_input_blocks_and_invalidation_keeps_the_old_approval(tmp_path, 
     assert A.invalidate(tmp_path, "input changed") and not (tmp_path / A.APPROVAL).exists()
     void = next((tmp_path / "onboarding/void").iterdir())
     assert (void / "approval.json").is_file() and (void / "approval.json.sig").is_file()
-    assert A.verify(tmp_path, allowed)["code"] == "APPROVAL_MISSING"
+    # owner 2026-11-11 (no sign-off): without an approval the package is judged under the waiver; its gap still holds it
+    assert A.verify(tmp_path, allowed)["code"] == "APPROVAL_INCOMPLETE:blocking_gap"

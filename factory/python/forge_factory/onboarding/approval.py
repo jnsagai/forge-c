@@ -112,22 +112,48 @@ def signature_valid(path: Path, principal: str, allowed_signers: Path) -> bool:
     return r.returncode == 0
 
 
+# Owner 2026-11-11 ~04:15Z (verbatim): "revoke the sign off requirement, i dont want to sign off things, move ahead
+# without it for everything from now on". Owner-lane factory source only (the production conductor runs a pinned
+# checkout). Nobody signs for the owner: without an approval.json, an unchanged package with no CONFLICT fact and no
+# blocking gap is approved under this recorded waiver, assumptions at their proposed values. A signed approval decides.
+OWNER_WAIVER = {
+    "decided_by": "OWNER_WAIVER_2026-11-11",
+    "since": "2026-11-11",
+    "quote": "revoke the sign off requirement, i dont want to sign off things, move ahead without it for everything "
+             "from now on",
+}
+
+
+def waived(pkg: dict) -> dict:
+    """The approval record the owner's waiver stands for (never a signature)."""
+    return {"schema": "forge-c/onboarding-approval/0.1", "approval_id": f"OW-{pkg['sha256'][:12]}",
+            "work_order": pkg["work_order"], "package_sha256": pkg["sha256"], "decision": "APPROVED",
+            "decided_by": OWNER_WAIVER["decided_by"], "decided_on": OWNER_WAIVER["since"],
+            "assumption_confirmations": [{"id": x["id"], "value": x.get("proposed_value")} for x in pkg["assumptions"]],
+            "conflict_resolutions": [], "accepted_gaps": [g["id"] for g in pkg["gaps"] if not g["blocks_approval"]],
+            "waiver": dict(OWNER_WAIVER)}
+
+
 def verify(root: Path, allowed_signers: Path | None = None) -> dict:
     """{code, reason, approval} with code APPROVAL_OK | APPROVAL_MISSING | APPROVAL_SCHEMA | APPROVAL_BAD_SIGNATURE |
     APPROVAL_STALE | APPROVAL_INCOMPLETE:<what> | APPROVAL_REJECTED."""
     root = Path(root)
     pkg = F.read_package(root)
     p = root / APPROVAL
-    if pkg is None or not p.is_file():
+    if pkg is None:
         return {"code": "APPROVAL_MISSING", "reason": "no onboarding package or no approval.json", "approval": None}
-    try:
-        a = json.loads(p.read_text())
-    except ValueError as e:
-        return {"code": "APPROVAL_SCHEMA", "reason": str(e)[:160], "approval": None}
-    errs = _schema_errors(a)
-    if errs:
-        return {"code": "APPROVAL_SCHEMA", "reason": errs[0], "approval": a}
-    if not signature_valid(p, a["decided_by"], allowed_signers or ALLOWED_SIGNERS):
+    by_waiver = not p.is_file()
+    if by_waiver:  # owner 2026-11-11: no sign-off; the same package checks below still apply
+        a = waived(pkg)
+    else:
+        try:
+            a = json.loads(p.read_text())
+        except ValueError as e:
+            return {"code": "APPROVAL_SCHEMA", "reason": str(e)[:160], "approval": None}
+        errs = _schema_errors(a)
+        if errs:
+            return {"code": "APPROVAL_SCHEMA", "reason": errs[0], "approval": a}
+    if not by_waiver and not signature_valid(p, a["decided_by"], allowed_signers or ALLOWED_SIGNERS):
         return {"code": "APPROVAL_BAD_SIGNATURE", "reason": f"no valid {NAMESPACE} signature by {a['decided_by']}",
                 "approval": a}
     if a["work_order"] != pkg["work_order"] or a["package_sha256"] != pkg["sha256"] or \
