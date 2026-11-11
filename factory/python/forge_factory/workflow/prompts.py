@@ -1677,7 +1677,8 @@ def providedize(text: str) -> str:
             return m.group(0)
         return f"{m.group(1)}({inst}" + ("" if m.group(2) else ", ")
 
-    text = _re.sub(r"\b(LL_\w+)\((?=(\s*\))?)", call, text)
+    # CAPA-227: a call that already passes the instance (hand profile texts) keeps it once
+    text = _re.sub(r"\b(LL_\w+)\((?!\s*" + _re.escape(inst) + r"\s*[,)])(?=(\s*\))?)", call, text)
     shown = [n for n in api["functions"] if f"{n}({inst}" in text]
     ex = (shown or api["functions"])[0]
     rule = (f" It is the delivered vendor (CMSIS) code: each of its LL functions takes the peripheral instance as its "
