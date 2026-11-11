@@ -4,6 +4,14 @@ A request takes one of its tenant's slots on arrival and holds it until it is an
 swap, so a tenant flooding requests for a model that is not loaded uses up its own share only. A tenant always gets
 its guaranteed slots; it may borrow idle slots up to its maximum only while no other tenant's guarantee is at risk.
 Waiting requests are served by tenant priority (lower value first), then arrival.
+
+Work-conserving lending (T044 finding, windows 2026-11-11: the sim-neighbour tenant got 0 of 4 requests, each refused
+429 queue_timeout after 600 s): on a host whose engines serve one sequence (total_slots 1) the factory's guarantee
+reserved the only slot even while it was idle, so a tenant without a guarantee could never run - against US2 scenario
+10 / SC-012 ("every tenant keeps progressing within the maximum wait"). A slot that is reserved but idle is now lent
+to a tenant under its maximum while no tenant with an unmet guarantee is waiting. The guarantee still holds: its owner
+is admitted at once (the engine queues it), and its extra wait is at most the lent requests in flight - recorded as
+queue time per request (SC-003: waits recorded and bounded).
 """
 from __future__ import annotations
 
@@ -48,7 +56,13 @@ class Shares:
         t, used = self.t[tid], self.in_use[tid]
         if used < t.guaranteed:
             return True
-        return used < t.max_concurrency and self._reserved() < self.total
+        if used >= t.max_concurrency:
+            return False
+        if self._reserved() < self.total:
+            return True
+        # lend an idle reserved slot, never while a tenant whose guarantee is unmet is waiting
+        return sum(self.in_use.values()) < self.total and not any(
+            not w[3].done() and self.in_use[w[2]] < self.t[w[2]].guaranteed for w in self._waiting)
 
     def waiting(self, tid: str) -> int:
         return sum(1 for w in self._waiting if w[2] == tid and not w[3].done())
