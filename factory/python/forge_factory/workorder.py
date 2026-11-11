@@ -137,9 +137,14 @@ def split_sections(md_text: str, doc_stem: str) -> tuple[dict[str, str], list[st
     return files, index
 
 
-def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, dict]:
+def provided_ll(source_wo: str, peripheral: str | None = None, upto: str | None = None) -> tuple[bytes, dict]:
     """ADR-0009: the HAL work order builds on the LL header of an earlier LL work order whose six phases all passed
-    their gates (inspected, unit/integration/target/requirement tested). Returns the header bytes and provenance."""
+    their gates (inspected, unit/integration/target/requirement tested). Returns the header bytes and provenance.
+
+    F016 FR-027 (owner 2026-11-11, "HAL SWE.1 can use the LL SWE.1 as basis"): a HAL work order that stops at SWE.1 or
+    SWE.2 (`upto`, its --stop-after) may build on an LL work order whose gates SWE.1..`upto` pass; the record then
+    states `basis_phase` and `verified_phases`. Any other `upto` (SWE.3+: code) keeps the six-gate rule, and its
+    record is unchanged."""
     from .inspection.engine import PHASES, Store
     from .layer import layer_of, ll_header, profile
 
@@ -154,7 +159,9 @@ def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, d
     if layer_of(src) != "LL":
         raise ValueError(f"PROVIDED_LL_NOT_FROM_LL_WORK_ORDER:{source_wo}:{layer_of(src)}")
     st = Store(src)
-    failed = [ph for ph in PHASES if st.gate(ph)["decision"] != "PASS"]
+    relaxed = upto in ("SWE.1", "SWE.2")
+    need = list(PHASES[:PHASES.index(upto) + 1]) if relaxed else list(PHASES)
+    failed = [ph for ph in need if st.gate(ph)["decision"] != "PASS"]
     if failed:
         raise ValueError(f"PROVIDED_LL_NOT_VERIFIED:{source_wo}:{','.join(failed)}")
     data = (src / LL_HEADER).read_bytes()
@@ -170,6 +177,10 @@ def provided_ll(source_wo: str, peripheral: str | None = None) -> tuple[bytes, d
         "source_package": json.loads(pkg.read_text()).get("archive_ref") if pkg.is_file() else None,
         "rule": "read-only: the HAL work order must not change it (SWE.3 implementation check)",
         **({"delivered_code_mode": delivered} if delivered else {}),
+        **({"basis_phase": upto, "verified_phases": need,
+            "basis_rule": "F016 FR-027 (owner 2026-11-11): a HAL work order stopping at "
+                          f"{upto} builds on an LL work order whose gates {need[0]}..{upto} pass; SWE.3+ needs all six"}
+           if relaxed else {}),
     }
 
 
@@ -193,7 +204,7 @@ def owner_dispositions_for(example_name: str, repo: Path = REPO_ROOT) -> list[di
 
 def prepare(example: Path, wo: str, provided_from: str | None = None, resume_limits: dict | None = None,
             *, purpose: str = "DEVELOPMENT", execution_policy: str | None = None,
-            quality: dict | None = None, cmsis_gtest: bool = True) -> tuple[Path, dict]:
+            quality: dict | None = None, cmsis_gtest: bool = True, ll_basis: str | None = None) -> tuple[Path, dict]:
     from .release import aspice, qm
     from .release.development import binding
 
@@ -204,6 +215,29 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     qm_scope = qm.binding() if purpose == qm.PURPOSE else None
     development = binding(purpose) if aspice_scope is None and qm_scope is None else None
     spec = json.loads((example / "workorder.json").read_text())
+    onboarded = None
+    from .onboarding.factory_hal import block as factory_hal_block
+
+    fhal = factory_hal_block(spec)  # F016 OB-T070: a factory HAL on the factory's own LL (HAL_ON_LL)
+    if (spec.get("delivery") or {}).get("onboarding") or fhal:  # feature 016: only from an owner-approved package
+        from .onboarding import admit, delivery_from_package, derive, onboarding_dir
+
+        key = Path(example).name
+        derive(example, key)  # re-derived at every launch: any changed input voids the approval (FR-017)
+        ob_pkg, ob_appr, ob_prof = admit(key, spec)
+        if fhal:  # the generated scope and the owner-confirmed budgets; no delivery of its own (FR-025, FR-026)
+            from .onboarding.factory_hal import apply as factory_hal_apply
+
+            spec = factory_hal_apply(spec, ob_pkg, ob_appr)
+        else:
+            spec["delivery"] = delivery_from_package(spec, ob_pkg)
+        spec["peripheral"] = f"onboarded:{key}"
+        onboarded = {"key": key, "package": f"state/onboarding/{key}/onboarding/package.json",
+                     "sha256": ob_pkg["sha256"], "approval_id": ob_appr["approval_id"],
+                     "profile_sha256": sha256_bytes((onboarding_dir(key) / "onboarding/profile.json").read_bytes()),
+                     **({"driver_style": ob_pkg["driver_style"],
+                         "ll_lineage": next(f["value"] for f in ob_pkg["facts"] if f["name"] == "ll_lineage")}
+                        if fhal else {})}
     from .development_execution import binding as execution_binding
 
     execution = execution_binding(execution_policy or spec.get("development_execution_policy"), purpose)
@@ -280,7 +314,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         )
         budgets = {k: d["budgets"][k] for k in ("flash_bytes", "static_ram_bytes", "stack_bytes")} | {"status": who}
     provided, provided_build = [], None
-    if layer == "HAL":
+    standalone = layer == "HAL" and (spec.get("delivery") or {}).get("provided_ll") is False  # F015: ST classic HAL
+    if layer == "HAL" and not standalone:
         if not provided_from:
             raise ValueError("HAL_LAYER_NEEDS_PROVIDED_LL: pass --provided-from <verified LL work order>")
         if execution and execution.get("demonstration_only") and purpose == "QM":
@@ -288,7 +323,13 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
 
             data, rec = demonstration_ll(provided_from, spec.get("peripheral") or "rcc")
         else:
-            data, rec = provided_ll(provided_from, spec.get("peripheral") or "rcc")
+            # F016: an onboarded order's provided LL is the package's peripheral (its derived profile id)
+            data, rec = provided_ll(provided_from, ob_prof["id"] if onboarded else (spec.get("peripheral") or "rcc"),
+                                    upto=ll_basis)
+            if fhal:  # OB-T070: the provided LL header is the LL lineage's delivered header (same bytes)
+                lineage = {i["path"]: i["sha256"] for i in ob_pkg["inputs"] if i["role"] == "delivered_code"}
+                if lineage.get(rec["path"]) != rec["sha256"]:
+                    raise ValueError(f"PROVIDED_LL_NOT_THE_PACKAGE_LINEAGE:{provided_from}:{rec['path']}")
             from .brownfield.cmsis import provided_inputs
 
             # CAPA-128: a provided CMSIS LL (ST code) needs its work order's vendor includes, hash-bound to its manifest
@@ -356,7 +397,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         "register_contract": REGISTER_CONTRACT,
         "unit_verification": UNIT_VERIFICATION,
         "quality": quality_block, "quality_source": quality_source,  # owner rule 2026-11-03: the order's quality
-        **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" else {}),
+        **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" and not standalone else {}),
+        **({"hal_standalone": True} if standalone else {}),  # F015: the delivered HAL needs no provided LL
         "upstream": {k: upstream[k] for k in ("status", "issues", "sha256", "context") if k in upstream},
         "scope": spec["scope"],
         "budgets": ({**budgets, "status": f"{budgets.get('status', '')}; {performance_note}".lstrip("; ")}
@@ -369,7 +411,8 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             "SWE.1": "workproducts/SWE.1/software_requirements.md (EARS) + traceability/"
             "requirements_to_tests.csv + safety/software_safety_requirements.md",
             "SWE.2": "workproducts/SWE.2/software_architecture.md",
-            "SWE.3": "workproducts/SWE.3/detailed_design.md + software/hal/*.c|h + software/ll/*.h",
+            "SWE.3": "workproducts/SWE.3/detailed_design.md + software/hal/*.c|h"
+            + ("" if standalone else " + software/ll/*.h"),
             "SWE.4": "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.c",
             "SWE.5": "workproducts/SWE.5/integration_verification_report.md + software/tests/integration/test_*.c + software/tests/target/test_*.c (Renode)",
             "SWE.6": "workproducts/SWE.6/software_verification_report.md",
@@ -437,10 +480,12 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         missing = [x for x in prof["rm"]["key_sections"] if x not in have]
         if missing:
             raise ValueError(f"PERIPHERAL_KEY_SECTIONS_NOT_IN_INPUTS:{prof['id']}:{','.join(missing)}")
-        manifest["peripheral"] = prof["id"]
+        manifest["peripheral"] = spec["peripheral"] if onboarded else prof["id"]  # F016: onboarded:<WO>
         manifest["peripheral_profile_sha256"] = prof["sha256"]
         if "semantic_required_operations" in prof:
             manifest["semantic_required_operations"] = prof["semantic_required_operations"]
+    if onboarded:
+        manifest["onboarding"] = onboarded
     if intake:  # the delivered code itself stays in the store until SWE.1 is frozen (brownfield/inject.py, FR-007)
         from .brownfield import delivery as BD
 
@@ -1013,6 +1058,8 @@ def run(
         purpose_args["execution_policy"] = selected_profile["development_execution_policy"]
     if quality is not None:
         purpose_args["quality"] = quality
+    if stop_after in ("SWE.1", "SWE.2"):  # F016 FR-027: the HAL order's LL basis need only pass up to its last phase
+        purpose_args["ll_basis"] = stop_after
     ws, manifest = (
         prepare(example, wo, provided_from, resume_limits=resume_limits, **purpose_args)
         if spec.get("delivery")
@@ -1098,6 +1145,7 @@ def run(
         layer=manifest.get("layer", "LL+HAL"),
         trace=manifest.get("trace_profile") == TRACE_PROFILE,
         isolation=manifest.get("hal_unit_isolation") == HAL_UNIT_ISOLATION,
+        hal_standalone=bool(manifest.get("hal_standalone")),
         uspec_gtest=manifest.get("unit_verification") == UNIT_VERIFICATION,
         provided_code_handoff=early_provided_code_enabled(ws),
         brownfield=manifest.get("code_mode") if manifest.get("delivery") else None,

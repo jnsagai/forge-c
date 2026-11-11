@@ -13,7 +13,7 @@ import re
 import subprocess
 from pathlib import Path
 
-from ..layer import components, hal_waits, layer_of
+from ..layer import components, hal_standalone, hal_waits, layer_of, profile
 from .implementation import allocated_functions
 
 STATIC = "workproducts/SWE.2/architecture_static.puml"
@@ -65,7 +65,9 @@ def check_views(ws: Path, render: bool = False) -> dict:
     if apis and not shown:
         findings.append("VIEWS:DYNAMIC_SHOWS_NO_ALLOCATED_API")
     # CAPA-124: only a HAL with a bounded wait has a timeout path (a no-wait HAL such as CRC returns no HAL_TIMEOUT)
-    timeout_required = layer != "LL" and hal_waits(ws)
+    # F015/F016: ST's standalone CRC/GPIO/TIM HAL never waits unless its profile names a time base
+    timeout_required = layer != "LL" and hal_waits(ws) and (
+        not hal_standalone(ws) or bool(profile(ws)["hal"].get("time_base")))
     if timeout_required and "HAL_TIMEOUT" not in dy:
         findings.append("VIEWS:DYNAMIC_MISSING_TIMEOUT_PATH")
     syntax = "NOT_RUN"

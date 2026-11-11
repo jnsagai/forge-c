@@ -54,7 +54,9 @@ class AgentDefinition(BaseModel):
         # Feature 005 overlay roles (afo-*) keep their skills in factory/skills/afo/<role>/ (the v0.4 design keeps
         # exactly the 20 base skills under .fabro/skills); every other role keeps the strict rule
         afo = str(info.data.get("id", "")).startswith("afo-") and v.startswith("factory/skills/afo/")
-        if p.is_absolute() or ".." in p.parts or not (v.startswith(".fabro/skills/") or afo) or p.name != "SKILL.md":
+        onboarding = str(info.data.get("id", "")).startswith("onboard-") and v.startswith("factory/skills/onboarding/")
+        if p.is_absolute() or ".." in p.parts or not (v.startswith(".fabro/skills/") or afo or onboarding) or \
+                p.name != "SKILL.md":
             raise ValueError("skill must be .fabro/skills/<role>/SKILL.md")
         return v
 
@@ -81,14 +83,19 @@ def parse_frontmatter(text: str) -> dict | None:
 
 
 AFO_AGENTS = CONFIG_DIR / "agents.afo.yaml"
+ONBOARDING_AGENTS = CONFIG_DIR / "agents.onboarding.yaml"
 
 
-def load_agents(path: Path | None = None, include_afo: bool = False) -> tuple[list[AgentDefinition], list[Issue]]:
+def load_agents(path: Path | None = None, include_afo: bool = False,
+                include_onboarding: bool = False) -> tuple[list[AgentDefinition], list[Issue]]:
     """The v0.4 role registry (20 roles); `include_afo` adds the Feature 005 overlay roles (agents.afo.yaml)."""
     raw = yaml.safe_load((path or CONFIG_DIR / "agents.yaml").read_text(encoding="utf-8"))
     if include_afo and path is None and AFO_AGENTS.is_file():
         raw = {**raw, "agents": list(raw.get("agents", [])) + list(
             (yaml.safe_load(AFO_AGENTS.read_text(encoding="utf-8")) or {}).get("agents") or [])}
+    if include_onboarding and path is None and ONBOARDING_AGENTS.is_file():
+        raw = {**raw, "agents": list(raw.get("agents", [])) + list(
+            (yaml.safe_load(ONBOARDING_AGENTS.read_text(encoding="utf-8")) or {}).get("agents") or [])}
     roles, issues = [], []
     from .mcp_registry import role_tool_additions
 
@@ -132,9 +139,10 @@ def validate_skill(role: AgentDefinition, root: Path, lock: dict | None) -> list
 
 def preflight(roles_required: list[str] | None = None, agents_path: Path | None = None,
               registry: McpRegistry | None = None, root: Path = REPO_ROOT,
-              lock_path: Path | None = None, token_policy_path: Path | None = None, include_afo: bool = False) -> dict:
+              lock_path: Path | None = None, token_policy_path: Path | None = None, include_afo: bool = False,
+              include_onboarding: bool = False) -> dict:
     """`include_afo` (Feature 005): also the AFO overlay roles, the AFO MCP servers and skills.afo.lock.json."""
-    roles, issues = load_agents(agents_path, include_afo=include_afo)
+    roles, issues = load_agents(agents_path, include_afo=include_afo, include_onboarding=include_onboarding)
     reg = registry or load_registry(include_afo=include_afo)
     ops = reg.ops()
     lock_file = lock_path or CONFIG_DIR / "skills.lock.json"
@@ -142,6 +150,9 @@ def preflight(roles_required: list[str] | None = None, agents_path: Path | None 
     afo_lock = CONFIG_DIR / "skills.afo.lock.json"
     if include_afo and lock is not None and afo_lock.is_file():
         lock = {**lock, "skills": {**lock["skills"], **json.loads(afo_lock.read_text())["skills"]}}
+    onboarding_lock = CONFIG_DIR / "skills.onboarding.lock.json"
+    if include_onboarding and lock is not None and onboarding_lock.is_file():
+        lock = {**lock, "skills": {**lock["skills"], **json.loads(onboarding_lock.read_text())["skills"]}}
     if lock is None:
         issues.append(Issue("AGENT_SKILL_INVALID", "*", "skills.lock.json missing"))
     tok = yaml.safe_load((token_policy_path or CONFIG_DIR / "token-policy.yaml").read_text())

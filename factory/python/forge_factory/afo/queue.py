@@ -154,6 +154,15 @@ def validate_intake(env: dict, *, repo: Path, approve=None) -> str:
         raise QueueError("INTAKE_MANIFEST_MISSING", env["input_manifest_ref"])
     if hashlib.sha256(mpath.read_bytes()).hexdigest() != env["manifest_sha256"]:
         raise QueueError("INTAKE_MANIFEST_HASH_MISMATCH", env["input_manifest_ref"])
+    from ..onboarding import intake_check  # feature 016 (FR-016): onboarding work orders need the approval first
+
+    try:
+        launch = json.loads(mpath.read_text())
+    except ValueError:  # not a JSON launch manifest: it names no onboarding example
+        launch = None
+    ob = intake_check(repo, launch) if isinstance(launch, dict) else None
+    if ob:
+        raise QueueError("INTAKE_ONBOARDING_NOT_APPROVED", ob)
     if approve is not None:
         ok, code = approve(env)
         if not ok:

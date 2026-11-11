@@ -71,7 +71,10 @@ def test_capa048_real_package_layout_with_the_flat_src_copy_links_once(tmp_path)
     m = O.collect(_pkg(tmp_path, "flat", flat_copy=True))
     assert m["instructions_status"] == "MEASURED", m
     assert all(v["status"] == "OK" and v["instructions"] > 0 for v in m["instructions"].values()), m
-    bad = HAL_C + "\nint broken(void) { return undefined_symbol(); }\n"
+    # F015-T065: target images link with --gc-sections, so an unreferenced broken function would be discarded; the
+    # undefined reference sits in a HAL function the benchmark runs (as slow_c above edits the same line)
+    bad = "int undefined_symbol(void);\n" + HAL_C.replace("    LL_RCC_HSE_Enable();\n",
+                                                          "    LL_RCC_HSE_Enable();\n    (void)undefined_symbol();\n", 1)
     (tmp_path / "b").mkdir()
     n = O.collect(_pkg(tmp_path / "b", "broken", hal_c=bad))
     assert n["instructions_status"].startswith("NOT_MEASURED:"), n                  # no number -> never MEASURED

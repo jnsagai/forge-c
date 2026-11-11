@@ -28,7 +28,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from ...common import REPO_ROOT, canonical_json, sha256_file
+from ...common import REPO_ROOT, canonical_json, sha256_bytes, sha256_file
 from ...inspection.defects import integrity, record_integrity, undeclared_test_changes
 from ..sdk import Operation, ToolContext, ToolInput, build_server, result, run_argv, tool_version
 
@@ -42,6 +42,16 @@ class FaultIn(ToolInput):
     fault: Literal["stuck_at_0", "stuck_at_1", "never_ready", "bit_flip"]
     bit: int = Field(ge=0, le=31)
     seed: int = Field(default=1, ge=0, le=2**31)
+
+
+class CheckModelIn(ToolInput):
+    candidate: bool = True
+
+
+def check_model(ctx: ToolContext, a: CheckModelIn) -> dict:
+    from ...onboarding.model_tool import run
+
+    return run(ctx, candidate=a.candidate)
 
 
 SIM_DIR = REPO_ROOT / "factory" / "sim" / "stm32n6"
@@ -74,7 +84,7 @@ def shadowed_harness(ws: Path) -> list[str]:
                                              "software/tests/software")
             for n in FACTORY_HARNESS_HEADERS for p in [ws / d / n] if p.is_file()]
 CFLAGS = ["-mcpu=cortex-m55", "-mthumb", "-mfloat-abi=hard", "-std=c11", "-Os", "-ffreestanding", "-nostdlib",
-          "-Wall", "-Wextra"]
+          "-Wall", "-Wextra", "-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections"]  # F015-T065: see tests.py
 
 
 def validate_adapter(manifest, adapter):
@@ -144,7 +154,8 @@ def build_image(ws: Path, test: Path, elf: Path) -> tuple[bool, bytes, list[str]
         incs.append("-I" + str(elf.parent))
         performance_inputs = performance.inputs(ws)
     b = run_argv(["arm-none-eabi-gcc", *CFLAGS, *incs, f"-I{SIM_DIR}", "-T", str(linker_script(ws, elf.parent)),
-                  str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf)], elf.parent, 180, {"arm-none-eabi-gcc"})
+                  str(SIM_DIR / "startup.c"), str(test), *srcs, "-o", str(elf), "-lgcc"], elf.parent, 180,
+                 {"arm-none-eabi-gcc"})  # -lgcc: compiler runtime helpers (ST UART_SetConfig: 64-bit __aeabi_uldivmod)
     lines = b.stderr.decode(errors="replace").splitlines()
     # r68: a link failure only said "collect2: error: ld returned 1"; the cause is the undefined reference line
     errs = [ln.split(str(ws) + "/")[-1][:140] for ln in lines
@@ -215,14 +226,28 @@ def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None =
     from ...layer import profile
 
     pr = profile(ws)
+    source = (SIM_DIR / pr["sim"]["model"]).resolve()
+    blob = source.read_bytes()
+    platform_blob = (SIM_DIR / pr["sim"]["platform"]).read_bytes()
+    isolated = not source.is_relative_to(SIM_DIR.resolve())
+    if isolated:
+        from ...onboarding.model_sandbox import source_issues
+
+        pinned = pr.get("derived_from") or {}
+        if (pinned.get("model_sha256") != sha256_bytes(blob) or
+                pinned.get("platform_sha256") != sha256_bytes(platform_blob)):
+            return None, b"ONBOARDING_AUTHORED_MODEL_CHANGED"
+        issues = source_issues(blob.decode())
+        if issues:
+            return None, ("\n".join(issues)).encode()
     stem = Path(pr["sim"]["model"]).stem
     model = wd / f"{stem}_{scenario}.py"
     model.write_text(observed_model(re.sub(r'^SCENARIO = .*$', f'SCENARIO = "{scenario}"',
-                                           (SIM_DIR / pr["sim"]["model"]).read_text(), flags=re.M)))
+                                           blob.decode(), flags=re.M)))
     access_log = access_log_path(elf, wd)  # the observer writes it (FORGE_ACCESS_LOG); stale logs never survive
     access_log.unlink(missing_ok=True)
     repl = wd / f"platform_{scenario}.repl"
-    repl.write_text((SIM_DIR / pr["sim"]["platform"]).read_text().replace(f"{pr['register_prefix']}_MODEL_PATH",
+    repl.write_text(platform_blob.decode().replace(f"{pr['register_prefix']}_MODEL_PATH",
                                                                           str(model)))
     words = "\n".join(f"sysbus ReadDoubleWord {MAILBOX + 4 * k:#x}" for k in range(12))
     resc = wd / f"run_{elf.stem}.resc"
@@ -262,8 +287,15 @@ def run_image(renode: str, elf: Path, scenario: str, wd: Path, ws: Path | None =
     # .NET under the sandbox rlimits: no W^X double-mapping file (RLIMIT_FSIZE) and a bounded GC heap (RLIMIT_AS)
     env = {"DOTNET_EnableWriteXorExecute": "0", "DOTNET_GCHeapHardLimit": "0x60000000",
            "FORGE_ACCESS_LOG": str(access_log.resolve())}
-    r = run_argv([renode, "--disable-gui", "--console", "--plain", "-e", f"include @{resc}"], wd, 170,
-                 {os.path.basename(renode)}, env_extra=env, mem_mb=65536, fsize_mb=512)
+    args = ["--disable-gui", "--console", "--plain", "-e", f"include @{resc}"]
+    if isolated:  # F016: an onboarding-authored model runs in the bwrap sandbox (its fixed environment: no access log)
+        from ...onboarding.model_sandbox import run
+
+        r = run(Path(renode), wd, args)
+        if r.exit_code:
+            return None, r.stdout + r.stderr
+    else:
+        r = run_argv([renode, *args], wd, 170, {os.path.basename(renode)}, env_extra=env, mem_mb=65536, fsize_mb=512)
     if measurement is None and instrumentation and (
             any(instrumentation[k] != v for k, v in performance.inputs(ws).items())
             or instrumentation["elf_sha256"] != sha256_file(elf)):
@@ -406,6 +438,9 @@ OPERATIONS = [
               "Build software/tests/target/test_*.c for Cortex-M55 and run them on the Renode STM32N6 RCC model."),
     Operation("run_hwsim", SimIn, run_hwsim, "HwSim device model (disabled: no model)."),
     Operation("inject_fault", FaultIn, inject_fault, "Plan a deterministic register fault for host tests."),
+    # F016: appended - callers and tests address run_renode as OPERATIONS[0]
+    Operation("check_model", CheckModelIn, check_model,
+              "Gate the fixed onboarding model subject: RM load/reset/access checks and delivered-code smoke."),
 ]
 
 if __name__ == "__main__":

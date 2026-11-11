@@ -1,0 +1,19 @@
+{
+  "schema": "forge-c/onboarding-approval/0.1",
+  "approval_id": "OA-2026-10-28-01",
+  "work_order": "WO-AFO-example-usart-hal-a1",
+  "package_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+  "decision": "APPROVED",
+  "conflict_resolutions": [],
+  "assumption_confirmations": [
+    {
+      "id": "ASM-CLOCK-USART1",
+      "value": 64000000
+    }
+  ],
+  "accepted_gaps": [
+    "GAP-OB-001"
+  ],
+  "decided_by": "owner",
+  "decided_on": "2026-10-28"
+}
