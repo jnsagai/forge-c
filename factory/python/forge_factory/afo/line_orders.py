@@ -194,6 +194,29 @@ def verify_grant(policy: LinePolicy, *, now: float, base: Path | None = None,
 
 
 # ------------------------------------------------------------------------------------------------------ the line
+def onboarding_spec(spec: dict) -> bool:
+    """Feature 016: an onboarding or factory-HAL (HAL_ON_LL) work order, whose package needs the owner's approval."""
+    if (spec.get("delivery") or {}).get("onboarding"):
+        return True
+    try:
+        from ..onboarding.factory_hal import block
+    except ImportError:
+        return False
+    return bool(block(spec))
+
+
+def onboarding_gap(example: str) -> str | None:
+    """Owner 2026-11-11 (SPI/TIM HAL on the SWE.1 ladder): an unapproved onboarding package is an input gap the line
+    holds and reports (INPUT_GAP:ONBOARDING_NOT_APPROVED:<example>) instead of placing an order the AFO intake refuses."""
+    from ..onboarding import onboarding_dir
+    from ..onboarding.approval import verify
+
+    try:
+        return None if verify(onboarding_dir(example))["code"] == "APPROVAL_OK" else "ONBOARDING_NOT_APPROVED"
+    except Exception:  # noqa: BLE001 - an unreadable package is not approved
+        return "ONBOARDING_NOT_APPROVED"
+
+
 class RealLine:
     """The real line: the M2 launcher (as a subprocess, so a launch outlives a conductor cycle and its restart), the
     line's Fabro API (M2 `wait_for_end`, one poll), the phase verdict (M2 `order_verdict`), the orphan sweep (M2
@@ -327,7 +350,13 @@ class RealLine:
                         (Path(td) / UPSTREAM_FILE).write_bytes(up)
                         approved = load_upstream(Path(td))["status"] == "APPROVED"
                 cache[key] = input_readiness.gaps(spec, purpose=purpose, upstream_approved=approved)
-        return list(cache[key])
+                self.__dict__.setdefault("_onboarding_examples", {})[key] = onboarding_spec(spec)
+        out = list(cache[key])
+        if not out and self.__dict__.get("_onboarding_examples", {}).get(key):
+            code = onboarding_gap(example)  # live, never cached: the owner may sign at any time
+            if code:
+                out.append(code)
+        return out
 
     def quality_supported(self, sha: str) -> bool:
         return self.LL.quality_supported(self.LL.RevReader(self.cfg.repo, sha))
