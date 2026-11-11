@@ -301,13 +301,48 @@ def remaining_seconds(ws: Path) -> float | None:
 RUNTIME_CHANGE_PHASES = ("SWE.1", "SWE.2")
 
 
-def runtime_change(a: dict, b: dict, old_rev: dict, new_rev: dict) -> dict | None:
+def profile_hal_only_change(old_man: dict, new_man: dict, old_rev: str) -> dict | None:
+    """CAPA-241 (SPI LL SWE.2 continuation of L41P refused: F015-T065 added HAL-only fields to spi.yaml): for an LL order
+    whose contracts differ only in peripheral_profile_sha256, the change record when the two profile files - the old one
+    read from git at the source run's own revision, each matching its recorded hash - are identical outside their hal:
+    section; else None (the strict refusal stands)."""
+    import subprocess
+
+    import yaml
+
+    drop = lambda c: {k: v for k, v in c.items() if k != "peripheral_profile_sha256"}  # noqa: E731
+    if drop(contract(old_man)) != drop(contract(new_man)):
+        return None
+    pid = new_man.get("peripheral")
+    if old_man.get("layer") != "LL" or new_man.get("layer") != "LL" or old_man.get("peripheral") != pid or \
+            not isinstance(pid, str) or not pid or ":" in pid or "/" in pid:
+        return None  # LL orders on a factory profile only (onboarded profiles are package-bound)
+    rel = f"config/factory/peripherals/{pid}.yaml"
+    old = subprocess.run(["git", "-C", str(REPO_ROOT), "show", f"{old_rev}:{rel}"], capture_output=True)
+    new_p = Path(REPO_ROOT) / rel
+    if old.returncode or not new_p.is_file() or sha256_bytes(old.stdout) != old_man.get("peripheral_profile_sha256") or \
+            sha256_file(new_p) != new_man.get("peripheral_profile_sha256"):
+        return None
+    yo, yn = yaml.safe_load(old.stdout), yaml.safe_load(new_p.read_bytes())
+    if not isinstance(yo, dict) or not isinstance(yn, dict):
+        return None
+    yo.pop("hal", None)
+    yn.pop("hal", None)
+    if yo != yn:
+        return None
+    return {"field": "peripheral_profile_sha256", "from": old_man.get("peripheral_profile_sha256"),
+            "to": new_man.get("peripheral_profile_sha256"),
+            "rule": "CAPA-241: an LL order's peripheral profile changed only in its hal: section"}
+
+
+def runtime_change(a: dict, b: dict, old_rev: dict, new_rev: dict, *, profile_change: dict | None = None) -> dict | None:
     """None when the runtime identity and the factory revision are unchanged; else the recorded change. Refuses a change
     outside the runtime (contract, limits, inputs, configuration) or a dirty/unknown new revision."""
     pick = lambda r: {k: (r or {}).get(k) for k in ("commit", "dirty")}  # noqa: E731
     if a == b and pick(old_rev) == pick(new_rev):
         return None
-    if {k: v for k, v in a.items() if k != "runtime"} != {k: v for k, v in b.items() if k != "runtime"}:
+    skip = ("runtime", "contract_sha256") if profile_change else ("runtime",)  # CAPA-241: only that contract change
+    if {k: v for k, v in a.items() if k not in skip} != {k: v for k, v in b.items() if k not in skip}:
         raise ResumeRefused("RESUME_CONTRACT_OR_RUNTIME_CHANGED")
     if (new_rev or {}).get("dirty") or not (new_rev or {}).get("commit") or new_rev.get("commit") == "UNKNOWN":
         raise ResumeRefused("RESUME_FACTORY_REVISION_CHANGED_OR_DIRTY")
@@ -322,7 +357,8 @@ def runtime_change(a: dict, b: dict, old_rev: dict, new_rev: dict) -> dict | Non
             "factory_assets_sha256": [ra.get("factory_assets_sha256"), rb.get("factory_assets_sha256")],
             "tools_changed": changed("tools"), "packages_changed": changed("packages"),
             "python_changed": ra.get("python") != rb.get("python"),
-            "build_environment_changed": ra.get("build_environment") != rb.get("build_environment")}
+            "build_environment_changed": ra.get("build_environment") != rb.get("build_environment"),
+            **({"contract_change": profile_change} if profile_change else {})}
 
 
 def carry_across_change(change: dict | None, stable: list[str]) -> None:
@@ -353,7 +389,10 @@ def resume(ws: Path, man: dict, source_wo: str, upto: str | None = None) -> list
     revision = old.get("factory_revision", {})
     if revision.get("dirty") or not revision.get("commit") or revision.get("commit") == "UNKNOWN":
         raise ResumeRefused("RESUME_FACTORY_REVISION_CHANGED_OR_DIRTY")
-    change = runtime_change(a, b, revision, man.get("factory_revision", {}))  # CAPA-236: checked against `stable` below
+    profile_change = profile_hal_only_change(old, man, revision["commit"]) \
+        if a.get("contract_sha256") != b.get("contract_sha256") else None  # CAPA-241
+    change = runtime_change(a, b, revision, man.get("factory_revision", {}),  # CAPA-236: checked against `stable` below
+                            profile_change=profile_change)
     if old.get("local_profile") != man.get("local_profile"):
         raise ResumeRefused("RESUME_LOCAL_PROFILE_CHANGED")
     _verify_inputs(src, old)
