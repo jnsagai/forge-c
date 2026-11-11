@@ -1368,6 +1368,12 @@ def main(argv: list[str] | None = None) -> int:
     from .rework_context import ReworkRefused
     from .workflow.unit_target_carry import CarryRefused
 
+    refused_hook = []  # CAPA-237: the durable launch's pre-native refusal callback, when this is a line product launch
+
+    def pre_native(stage):
+        if refused_hook:
+            refused_hook[0](stage)
+
     try:
         carry_promotion = None
         if a.target_proof_carry_promotion is not None:
@@ -1396,6 +1402,9 @@ def main(argv: list[str] | None = None) -> int:
             if a.retry_of:
                 expected["retry_of"] = a.retry_of
             durable = native_parameters(a.durable_launch, a.durable_launch_sha256, expected)
+            hook = durable.pop("refused_before_native", None)
+            if hook is not None:
+                refused_hook.append(hook)
         res = run(
             a.example.resolve(),
             a.wo,
@@ -1423,9 +1432,11 @@ def main(argv: list[str] | None = None) -> int:
             **durable,
         )
     except CarryRefused as exc:
+        pre_native("target_proof_carry")
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "target_proof_carry", "issues": [str(exc)]}))
         return 2
     except ReworkRefused as exc:
+        pre_native("bound_rework_context")
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "bound_rework_context",
                           "issues": [str(exc)]}))
         return 2
@@ -1437,12 +1448,15 @@ def main(argv: list[str] | None = None) -> int:
                           "issues": ["LINE_PRODUCT_NATIVE_PREPARATION_ALREADY_CLAIMED"]}))
         return 3
     except ResumeRefused as exc:
+        pre_native("validated_resume")
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "validated_resume", "issues": [str(exc)]}))
         return 2
     except DeliveryBlocked as exc:  # FR-003..FR-005: refused before any agent ran; the record is in the store
+        pre_native("delivery_intake")
         print(json.dumps({"work_order": a.wo, "status": "BLOCKED", "stage": "delivery_intake", "issues": str(exc).split(";")}))
         return 2
     except ProfileRefused as exc:  # LRTX-FR-002: a refused local profile is reported, never silently changed
+        pre_native("local_profile")
         print(json.dumps({"work_order": a.wo, "status": "REFUSED", "stage": "local_profile", "issues": exc.issues}))
         return 2
     print(
