@@ -267,7 +267,7 @@
   8. Tier stop.
 
   Add a test in `factory/python/tests/test_modelservice_window.py`.
-- [ ] T043 Ask the owner, through the usual floor and summary channel, for the window limits: `max_minutes` and allowed hours. Until they answer, use the default of 120 minutes at a time when the owner lane is between orders. Record the values in `deploy/recipe/params/omniverse2.yaml` (`window_max_minutes`, `window_hours`).
+- [X] T043 Ask the owner, through the usual floor and summary channel, for the window limits: `max_minutes` and allowed hours. Until they answer, use the default of 120 minutes at a time when the owner lane is between orders. Record the values in `deploy/recipe/params/omniverse2.yaml` (`window_max_minutes`, `window_hours`).
 - [ ] T044 [WINDOW] Run `python -m forge_factory.modelservice.window run --plan smoke`. Collect into `specs/017-model-service-split/evidence/window-<id>/`:
   - the window record;
   - the identity;

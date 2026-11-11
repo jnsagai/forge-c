@@ -26,8 +26,8 @@ parameters:
   factory_queue_wait_max_s:  {value: 900, production_value: 900, description: "Factory bounded wait; must cover worst swap + max_wait_s"}
   ram_budget_gib:         {value: 80, production_value: null, description: "Host RAM for warm models off the GPU (research R3c)"}
   ram_reserve_gib:        {value: 24, production_value: null, description: "Host RAM kept free for the factory and other host users"}
-  window_max_minutes:     {value: 120, production_value: null, description: "Longest qualification window (owner limit; default until the owner sets it)"}
-  window_hours:           {value: "between owner-lane orders", production_value: null, description: "When windows may run"}
+  window_max_minutes:     {value: 120, production_value: null, confirmed: true, description: "Longest window; owner approved 2026-11-11 (T043). A ceiling, not a target; the qualification window limit is revisited from the smoke window measurements"}
+  window_hours:           {value: "between owner-lane orders", production_value: null, confirmed: true, description: "When windows may run; owner approved 2026-11-11 (T043)"}
   factory_machine:        {value: "container", production_value: "vm", description: "Container stand-in until the kvm group is granted"}
   factory_vcpu:           {value: 16, production_value: 16, description: "Factory machine vCPU"}
   factory_ram_gib:        {value: 64, production_value: 64, description: "Factory machine RAM"}
