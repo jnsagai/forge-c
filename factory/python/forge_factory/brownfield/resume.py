@@ -291,6 +291,47 @@ def remaining_seconds(ws: Path) -> float | None:
     return remaining
 
 
+# CAPA-236 (owner 2026-11-11, "Narrow guard"; WWDG LL L44F SWE.2 continuation refused RESUME_CONTRACT_OR_RUNTIME_CHANGED):
+# the resume identity pins the factory code/checklists/config/skills and host tools of the source run, and the factory
+# revision check refuses every deploy. Requirements and architecture (SWE.1/SWE.2) carry no code, build or tool
+# evidence: a continuation that carries only those phases accepts a runtime and factory-revision change when the
+# contract, limits, inputs and configuration are unchanged, the new revision is clean, and every carried phase still
+# passes its gate and checklist identity check in the new workspace. The change is recorded in the manifest.
+# Carrying SWE.3+ keeps the strict rule.
+RUNTIME_CHANGE_PHASES = ("SWE.1", "SWE.2")
+
+
+def runtime_change(a: dict, b: dict, old_rev: dict, new_rev: dict) -> dict | None:
+    """None when the runtime identity and the factory revision are unchanged; else the recorded change. Refuses a change
+    outside the runtime (contract, limits, inputs, configuration) or a dirty/unknown new revision."""
+    pick = lambda r: {k: (r or {}).get(k) for k in ("commit", "dirty")}  # noqa: E731
+    if a == b and pick(old_rev) == pick(new_rev):
+        return None
+    if {k: v for k, v in a.items() if k != "runtime"} != {k: v for k, v in b.items() if k != "runtime"}:
+        raise ResumeRefused("RESUME_CONTRACT_OR_RUNTIME_CHANGED")
+    if (new_rev or {}).get("dirty") or not (new_rev or {}).get("commit") or new_rev.get("commit") == "UNKNOWN":
+        raise ResumeRefused("RESUME_FACTORY_REVISION_CHANGED_OR_DIRTY")
+    ra, rb = a.get("runtime") or {}, b.get("runtime") or {}
+
+    def changed(key):
+        x, y = ra.get(key) or {}, rb.get(key) or {}
+        return {k: [x.get(k), y.get(k)] for k in sorted(set(x) | set(y)) if x.get(k) != y.get(k)}
+    return {"rule": "CAPA-236: SWE.1/SWE.2 carried across a factory runtime/revision change (owner 2026-11-11)",
+            "from_revision": old_rev.get("commit"), "to_revision": new_rev.get("commit"),
+            "runtime_changed": ra != rb,
+            "factory_assets_sha256": [ra.get("factory_assets_sha256"), rb.get("factory_assets_sha256")],
+            "tools_changed": changed("tools"), "packages_changed": changed("packages"),
+            "python_changed": ra.get("python") != rb.get("python"),
+            "build_environment_changed": ra.get("build_environment") != rb.get("build_environment")}
+
+
+def carry_across_change(change: dict | None, stable: list[str]) -> None:
+    """Refuse (with the original code) a carry of SWE.3+ phases across a runtime/revision change."""
+    if change is not None and any(p not in RUNTIME_CHANGE_PHASES for p in stable):
+        raise ResumeRefused("RESUME_CONTRACT_OR_RUNTIME_CHANGED" if change["runtime_changed"]
+                            else "RESUME_FACTORY_REVISION_CHANGED_OR_DIRTY")
+
+
 def resume(ws: Path, man: dict, source_wo: str, upto: str | None = None) -> list[str]:
     from ..inspection.engine import PHASE_PATHS, PHASES, Store
     from .delivery import store_dir
@@ -307,13 +348,12 @@ def resume(ws: Path, man: dict, source_wo: str, upto: str | None = None) -> list
         raise ResumeRefused(f"RESUME_INVALID_PHASE:{upto}")
     a, b = old["resume_identity"], man.get("resume_identity")
     if b is None or a["contract_sha256"] != sha256_bytes(canonical_json(contract(old))) or \
-            b["contract_sha256"] != sha256_bytes(canonical_json(contract(man))) or a != b:
+            b["contract_sha256"] != sha256_bytes(canonical_json(contract(man))):
         raise ResumeRefused("RESUME_CONTRACT_OR_RUNTIME_CHANGED")
     revision = old.get("factory_revision", {})
-    if revision.get("dirty") or not revision.get("commit") or revision.get("commit") == "UNKNOWN" or \
-            {k: revision.get(k) for k in ("commit", "dirty")} != \
-            {k: man.get("factory_revision", {}).get(k) for k in ("commit", "dirty")}:
+    if revision.get("dirty") or not revision.get("commit") or revision.get("commit") == "UNKNOWN":
         raise ResumeRefused("RESUME_FACTORY_REVISION_CHANGED_OR_DIRTY")
+    change = runtime_change(a, b, revision, man.get("factory_revision", {}))  # CAPA-236: checked against `stable` below
     if old.get("local_profile") != man.get("local_profile"):
         raise ResumeRefused("RESUME_LOCAL_PROFILE_CHANGED")
     _verify_inputs(src, old)
@@ -369,6 +409,9 @@ def resume(ws: Path, man: dict, source_wo: str, upto: str | None = None) -> list
         selected.update(files(src, rel))
     if "SWE.3" in stable:
         selected.update(files(src, "build/target-cm55-gcc"))
+    carry_across_change(change, stable)  # CAPA-236: only SWE.1/SWE.2 may be carried across a runtime/revision change
+    if change is not None:
+        man["resume_runtime_change"] = {**change, "carried_phases": list(stable)}
     # Copy accepted evidence from a stable snapshot; never import a terminal package or failed inspection as PASS.
     man["resume_lineage"] = _reserve(old, man)
     protected = {r["path"]: r["sha256"] for r in man.get("provided", [])}
