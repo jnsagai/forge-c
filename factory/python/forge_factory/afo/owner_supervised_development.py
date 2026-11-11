@@ -135,7 +135,10 @@ _LINEAGE = {L["id"]: L for L in LINEAGES}
 # Owner 2026-11-11: "i want to deploy spi and tim hal first for swe 1" and "HAL SWE.1 can use the LL SWE.1 as basis"
 # -> SPI HAL and TIM HAL join the SWE.1 stage right after their LL steps (both LL steps already passed SWE.1).
 LADDER = ("wwdg-ll", "wwdg-hal", "spi-ll", "spi-hal", "tim-ll", "tim-hal")
-LADDER_PHASES = ("SWE.1",)
+# Owner 2026-11-11 SWE.2 review (CAPA-228..231 deployed) and "For the other points I approve": the ladder advances to
+# the SWE.2 stage; each step resumes from its passed SWE.1 order and the SPI/TIM HAL keep their LL SWE.1 basis
+# (CAPA-228); the next step waits `after` the previous step's SWE.2 pass; the stage stops after SWE.2.
+LADDER_PHASES = ("SWE.1", "SWE.2")
 # A HAL step of a stage that ends before SWE.6 builds on an LL order of its peripheral that already passed all six
 # phases (workorder.provided_ll re-checks the six gates, ADR-0009): WWDG LL L29, factory 82fabdb9 (2026-11-03).
 # Owner 2026-11-11: a SWE.1-stage HAL may build on its LL lineage's passed SWE.1 order (workorder.provided_ll checks
