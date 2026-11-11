@@ -58,10 +58,16 @@ def parse_verdict_string(text: str) -> dict[str, dict]:
     hits = list(_ITEM.finditer(text))
     for k, m in enumerate(hits):
         end = hits[k + 1].start() if k + 1 < len(hits) else len(text)
-        note = text[m.end():end].strip().lstrip(":").strip().rstrip(";.,").strip()
+        note = text[m.end():end].strip()
+        refs: list[str] = []
+        cited = re.match(r"\[([^\]]*)\]", note)  # CAPA-231: ID=PASS[<file>#<section>, ...] cites the evidence examined
+        if cited:
+            refs = [x.strip() for x in cited.group(1).split(",") if x.strip()]
+            note = note[cited.end():].strip()
+        note = note.lstrip(":").strip().rstrip(";.,").strip()
         word = m.group(2).upper()
-        out[m.group(1).upper()] = {"verdict": word if word in ("PASS", "NOT_APPLICABLE") else "FAIL", "evidence_refs": [],
-                                   "findings": [note] if note else []}
+        out[m.group(1).upper()] = {"verdict": word if word in ("PASS", "NOT_APPLICABLE") else "FAIL",
+                                   "evidence_refs": refs, "findings": [note] if note else []}
     return out
 
 
@@ -267,6 +273,26 @@ def _gtest_bodies(code: str) -> dict[str, str]:
             for i, h in enumerate(heads)}
 
 
+CITED_EVIDENCE_PHASES = ("SWE.2",)
+
+
+def uncited_passes(ws, phase: str, baseline_id: str, checklist: dict, verdicts: dict) -> list[str]:
+    """CAPA-231 (owner SWE.2 review 2026-11-11): at a phase of CITED_EVIDENCE_PHASES every PASS of an item no tool
+    decides must cite at least one file of the inspected baseline (`<file>#<section>`); the baseline record alone, or a
+    file outside the baseline, is no evidence that the inspector examined anything. Returns the uncited item ids."""
+    if phase not in CITED_EVIDENCE_PHASES:
+        return []
+    import json
+
+    try:
+        files = set(json.loads((ws / f"configuration/baselines/{phase}/{baseline_id}.json").read_text())["files"])
+    except (OSError, ValueError, KeyError, TypeError):
+        files = set()
+    return [c["id"] for c in checklist["checks"] if not c.get("deterministic_check")
+            and (verdicts.get(c["id"]) or {}).get("verdict") == "PASS"
+            and not any(str(r).split("#")[0].strip() in files for r in verdicts[c["id"]].get("evidence_refs") or [])]
+
+
 def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
     base_ref = f"configuration/baselines/{a.phase}/{a.baseline_id}.json"
     if isinstance(a.verdicts, str):
@@ -290,6 +316,11 @@ def check_inspection(ctx: ToolContext, a: InspectIn) -> dict:
         return result(ctx, "FAIL", f"inspection not recorded: no PASS/FAIL/NOT_APPLICABLE verdict for "
                       f"{', '.join(missing)}; resubmit EVERY item as ID=PASS or ID=FAIL:<finding>"[:160],
                       issues=[f"INCOMPLETE_VERDICTS:{m}" for m in missing][:10], tool="forge-inspection")
+    uncited = uncited_passes(ctx.workspace, a.phase, a.baseline_id, checklist, verdicts)
+    if uncited:  # CAPA-231: nothing is recorded; the inspector resubmits (bounded by max_visits and its turn cap)
+        return result(ctx, "FAIL", f"inspection not recorded: PASS without cited baseline evidence for "
+                      f"{', '.join(uncited)}; resubmit each PASS as ID=PASS[<baseline file>#<section>] naming what you "
+                      "examined"[:160], issues=[f"UNCITED_PASS:{u}" for u in uncited][:10], tool="forge-inspection")
     try:
         rec = Store(ctx.workspace).record_inspection(a.phase, ctx.role, a.baseline_id, verdicts)
     except InspectionError as exc:
