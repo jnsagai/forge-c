@@ -110,7 +110,8 @@ class ProcessEngine:
         path, warm = self._model_path()
         args = [a.replace("{model_path}", path) for a in p["args"]]
         self.log_dir.mkdir(parents=True, exist_ok=True)
-        log = open(self.log_dir / f"{self.m.model}.log", "ab")  # noqa: SIM115 - handed to the child
+        # CAPA-234: a Hugging Face model id has slashes; the log file uses the file-system-safe stage name
+        log = open(self.log_dir / f"{stage_name(self.m.model)}.log", "ab")  # noqa: SIM115 - handed to the child
         try:
             self.proc = await self.spawn(p["binary"], *args, env={**os.environ, **(p.get("env") or {})},
                                          stdout=log, stderr=asyncio.subprocess.STDOUT, start_new_session=True)
