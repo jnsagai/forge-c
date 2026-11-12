@@ -24,9 +24,9 @@ Hard limits: do not edit `llm_gateway.py`, `afo/product_job.py`, `afo/execution_
 
 ## Phase 1: Setup
 
-- [ ] T001 Rebase the feature onto the deployed campaign tip so the held SWE.3 commits (578df4d8, 751dc57f) do not ride along: create branch `feat/020-usart-benchmark-pilot-r` from `303b46ea` and cherry-pick the three spec/plan commits (c550d66f, 0094f18f, 851a5212 and this tasks commit); switch the worktree `/mnt/data/forge-c/repos/forge-c-020-usart` to it; copy the git-ignored example inputs as `/mnt/data/forge-c/model-service/swe3reg.sh` does; record the base in `specs/020-usart-benchmark-pilot/decision-log.md` (new row)
-- [ ] T002 Create a clean base worktree `/mnt/data/forge-c/repos/forge-c-020-base` at `303b46ea` with the same ignored inputs, for fail-before runs and regression comparisons
-- [ ] T003 [P] Create `config/factory/swe1-functional-template.yaml` (schema `forge-c/swe1-functional-template/1`): template id `swe1-functional-v1`, attribute list and enums exactly as `specs/020-usart-benchmark-pilot/contracts/functional-requirement.schema.json`, origin groups, fixed lane values (status draft, ASIL QM, CAL 0, allocation text "not applicable until SWE.2"), the level-rule term sources (RM register index + CMSIS header symbols, hex-address pattern)
+- [X] T001 Rebase the feature onto the deployed campaign tip so the held SWE.3 commits (578df4d8, 751dc57f) do not ride along: create branch `feat/020-usart-benchmark-pilot-r` from `303b46ea` and cherry-pick the three spec/plan commits (c550d66f, 0094f18f, 851a5212 and this tasks commit); switch the worktree `/mnt/data/forge-c/repos/forge-c-020-usart` to it; copy the git-ignored example inputs as `/mnt/data/forge-c/model-service/swe3reg.sh` does; record the base in `specs/020-usart-benchmark-pilot/decision-log.md` (new row)
+- [X] T002 Create a clean base worktree `/mnt/data/forge-c/repos/forge-c-020-base` at `303b46ea` with the same ignored inputs, for fail-before runs and regression comparisons
+- [X] T003 [P] Create `config/factory/swe1-functional-template.yaml` (schema `forge-c/swe1-functional-template/1`): template id `swe1-functional-v1`, attribute list and enums exactly as `specs/020-usart-benchmark-pilot/contracts/functional-requirement.schema.json`, origin groups, fixed lane values (status draft, ASIL QM, CAL 0, allocation text "not applicable until SWE.2"), the level-rule term sources (RM register index + CMSIS header symbols, hex-address pattern)
 
 ---
 
