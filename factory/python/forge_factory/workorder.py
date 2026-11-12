@@ -375,6 +375,12 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
             data = BI.render(api)
             inputs[BI.OUT] = data
             listed.append({"path": BI.OUT, "role": BI.ROLE, "sha256": sha256_bytes(data), "bytes": len(data)})
+    if level_keys:  # feature 020 (T011): the deterministic governance inventory, a listed fingerprinted input;
+        from .governance import inventory as GI  # an unclassifiable module is refused here (INPUT_GAP)
+
+        data = GI.render(GI.build(spec, listed, inputs, intake, wo))
+        inputs[GI.OUT] = data
+        listed.append({"path": GI.OUT, "role": GI.ROLE, "sha256": sha256_bytes(data), "bytes": len(data)})
     from .quality import resolve as resolve_quality
 
     if quality is not None:  # autonomous line M3: the campaign's order quality block replaces the example's

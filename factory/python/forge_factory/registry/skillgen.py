@@ -190,6 +190,55 @@ BROWNFIELD = {
 }
 
 
+# Feature 020 (decision log D15): the functional-level SWE.1 role text. The role's SKILL.md is part of every
+# register-level structured packet (hash and text) and of the release packages' skills manifest, so it stays
+# byte-identical; the functional text is a versioned reference file of the same skill, rendered from the template
+# config, which functional-level packets carry as a hash-bound source.
+FUNCTIONAL_REFERENCES = {"swe1-author": ".fabro/skills/swe1-author/references/functional-level.md"}
+
+
+def render_functional(rid: str) -> str:
+    t = yaml.safe_load((CONFIG_DIR / "swe1-functional-template.yaml").read_text())
+    enums, fixed = t["enums"], t["fixed"]
+
+    def values(key: str) -> str:
+        return ", ".join(f"`{v}`" for v in enums[key])
+    lines = [
+        f"# {rid} - functional-level SWE.1 (template {t['template_id']})", "",
+        f"Reference of the `{rid}` skill (forge {SKILL_VERSION}) for work orders whose manifest has "
+        "`swe1_level: functional` (feature 020). Register-level work orders do not use it.", "",
+        "## Governance task", "",
+        "Before any requirement, prepare the module's governance package from the governance inventory "
+        "(`inputs/governance-inventory.json`) and the input section index:",
+        "1. Name the actors that use the module's public API.",
+        "2. Write the use cases: each names its actor, its goal, every in-scope delivered function it exercises and "
+        "the in-scope reference-manual features it relies on.",
+        "3. Record the assumptions you make and, as an open point, every in-scope function or feature the inputs do "
+        "not describe - never invent behaviour.",
+        "4. The delivered code is the implementation under analysis, never a source; out-of-scope and not-delivered "
+        "capabilities get no use case.",
+        "", "The factory checks the coverage deterministically: an in-scope function or feature in no use case and no "
+        "open point stops SWE.1 before the requirements (COVERAGE_FAIL).", "",
+        "## Functional-level requirements", "",
+        "Write each requirement at the functional/API level in **EARS** syntax with exactly one `shall`; register, "
+        "bit-field and address detail and the concrete negative cases belong to SWE.3.",
+        "Attributes you write: " + ", ".join(f"`{a}`" for a in t["attributes"]) + ".",
+        f"- `type`: {values('type')}.",
+        f"- `origin_group`: {values('origin_group')}.",
+        f"- `links[].kind`: {values('link_kind')}; a link names an `input_id` of the input register that is a "
+        "requirement source, and a locator; a derive link states its rationale; an `awaiting_traceability` "
+        "requirement has no link.",
+        f"- `verification_method`: {values('verification_method')}; a `design_constraint` is verified by inspection.",
+        f"- `test_level`: {values('test_level')}.",
+        "Set by the factory, never by you: " + ", ".join(f"`{k}` = {v}" for k, v in fixed.items()) + ".",
+        "Level rule: no register name, field name, register address or reset value in a statement (terms of the "
+        "reference-manual register index and the device header symbols; hexadecimal addresses are refused); the "
+        "delivered public API names (functions, states, option constants) are allowed.",
+        "Invalid use is stated generically (parameter validity, operation permitted in the current state, error "
+        "reporting); concrete cases are left to SWE.3.", ""]
+    return "\n".join(lines)
+
+
 def render(role: dict) -> str:
     rid, phase = role["id"], role.get("phase")
     inspector = rid.endswith("-inspector")
@@ -276,6 +325,9 @@ def main(argv: list[str] | None = None) -> int:
         skills[role["id"]] = {"path": role["skill"], "sha256": sha256_file(path)}
     if a.write:
         (CONFIG_DIR / "skills.lock.json").write_text(pretty_json(lock), encoding="utf-8")
+        for rid, rel in FUNCTIONAL_REFERENCES.items():  # feature 020: not in the lock (D15)
+            (REPO_ROOT / rel).parent.mkdir(parents=True, exist_ok=True)
+            (REPO_ROOT / rel).write_text(render_functional(rid), encoding="utf-8")
     afo = yaml.safe_load((CONFIG_DIR / "agents.afo.yaml").read_text())["agents"] if (
         CONFIG_DIR / "agents.afo.yaml").is_file() else []
     afo_skills: dict[str, dict[str, str]] = {}

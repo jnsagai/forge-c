@@ -58,8 +58,10 @@ def inspector_module(ws: Path, phase: str) -> str:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("step", choices=["author", "code", "tests", "inspect", "continue-check",
-                                     "iq-inspect", "iq-rework", "iq-check"])  # iq-*: feature 018 phase 1 (SWE.1)
-    ap.add_argument("--of", choices=["author", "code", "tests", "inspect", "iq-inspect", "iq-rework"], default="author",
+                                     "iq-inspect", "iq-rework", "iq-check",  # iq-*: feature 018 phase 1 (SWE.1)
+                                     "governance", "governance-check"])  # feature 020: functional SWE.1
+    ap.add_argument("--of", choices=["author", "code", "tests", "inspect", "iq-inspect", "iq-rework", "governance"],
+                    default="author",
                     help="continue-check: which reply")
     ap.add_argument("--resume", action="store_true", help="continue the open visit after its time box")
     ap.add_argument(
@@ -86,7 +88,8 @@ def main(argv: list[str] | None = None) -> int:
         # CAPA-100 (run WO-F014-SWE3-IWDG-20261101-L3): the code (SWE.3) and tests (SWE.4-6) steps write the author
         # reply too; reading the inspector's reply for them found nothing, so a continued visit went on unfinished
         f = ws / ".forge-run/lrtx" / a.phase / ("inspect-reply.json" if a.of == "inspect" else
-                                                 f"{a.of}-reply.json" if a.of.startswith("iq-") else "reply.json")
+                                                 f"{a.of}-reply.json" if a.of.startswith("iq-") or a.of == "governance"
+                                                 else "reply.json")
         status = json.loads(f.read_text()).get("status") if f.is_file() else "MISSING"
         log = ws / ".forge-run/lrtx" / a.phase / "continue-checks.log"
         n = len(log.read_text().splitlines()) + 1 if log.is_file() else 1
@@ -117,6 +120,22 @@ def main(argv: list[str] | None = None) -> int:
             rep = _call(ws, fn, ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
         except Exception as exc:  # noqa: BLE001 - phase 1 never blocks: the check node goes on to the freeze gate
             rep = Q.reply(ws, a.step, "FAILED", [f"LRTX_RUNNER_ERROR:{type(exc).__name__}:{str(exc)[:200]}"])
+        print(json.dumps(rep))
+        return 0
+    if a.step in ("governance", "governance-check"):  # feature 020: the governance step of functional SWE.1
+        from ..governance import package as GP
+
+        if a.phase != "SWE.1":
+            ap.error("the governance step is SWE.1 only")
+        if a.step == "governance-check":  # exit 0 = coverage passed (the author starts), 1 = SWE.1 stops
+            return _call(ws, GP.check, ws)
+        if not a.model:
+            ap.error("--model is required")
+        (ws / ".forge-run/lrtx" / GP.REPLY).unlink(missing_ok=True)
+        try:
+            rep = _call(ws, GP.visit, ws, a.model, resume=a.resume, time_budget_s=a.time_budget)
+        except Exception as exc:  # noqa: BLE001 - recorded as FAILED; the check node then stops SWE.1
+            rep = GP._reply(ws, "FAILED", [f"LRTX_RUNNER_ERROR:{type(exc).__name__}:{str(exc)[:200]}"])
         print(json.dumps(rep))
         return 0
     if not a.model:

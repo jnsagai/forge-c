@@ -157,6 +157,12 @@ def build(work_order: str, phases: list[str] | None = None, goal: str | None = N
         kept = PHASES[:PHASES.index(stop_after) + 1]
         structured = {**structured, **{k: [p for p in structured.get(k) or [] if p in kept]
                                        for k in ("phases", "inspect_phases") if k in structured}}
+    from ..governance.level import FUNCTIONAL, swe1_level
+
+    if swe1_level(assessment_manifest) == FUNCTIONAL:  # feature 020: governance before the functional SWE.1 author
+        if not structured or "SWE.1" not in (structured.get("phases") or []):
+            raise ValueError("SWE1_FUNCTIONAL_NEEDS_STRUCTURED_SWE1")
+        structured = {**structured, "swe1_governance": True}
     if structured and structured.get("c_parameter_list_note") is True:
         import re
 
@@ -325,6 +331,30 @@ def phase1_nodes(dot: str, structured: dict) -> str:
     return continuation(dot, "swe1_iq_rework", "swe1_iq_inspect", "iq-rework", "SWE.1", structured)
 
 
+def governance_nodes(dot: str, structured: dict) -> str:
+    """Feature 020 (functional-level SWE.1 only): the governance package before the SWE.1 author -
+      start -> swe1_governance -> swe1_governance_check -[coverage passed]-> swe1_author
+                                 swe1_governance_check -[otherwise]-> finalize (SWE.1 stops, items named)
+    The governance node is a structured task of the author model with the usual time-box continuation."""
+    run, t, box = runner_cmd(), structured.get("timeout_s", 3600), int(structured.get("visit_time_s", 1200))
+    am = structured.get("author_model") or structured["model"]
+    edge = "  start -> swe1_author\n"
+    if edge not in dot:
+        raise ValueError("STRUCTURED_EDGE_MISSING:start->swe1_author")
+    gov = f"{run} governance --phase SWE.1 --workspace . --model {am} --time-budget {box}"
+    chk = f"{run} governance-check --phase SWE.1 --workspace ."
+    dot = dot.replace(edge, "\n".join([
+        "  start -> swe1_governance",
+        f'  swe1_governance [shape=parallelogram, label="SWE.1 governance package (actors, use cases, open points)", '
+        f'max_visits={MAX_VISITS}, timeout="{t}s", script="{_q(gov)}"]',
+        "  swe1_governance -> swe1_governance_check",
+        f'  swe1_governance_check [shape=parallelogram, label="SWE.1 governance coverage check", '
+        f'max_visits={MAX_VISITS}, script="{_q(chk)}"]',
+        '  swe1_governance_check -> swe1_author [condition="outcome=succeeded"]',
+        "  swe1_governance_check -> finalize"]) + "\n", 1)
+    return continuation(dot, "swe1_governance", "swe1_governance_check", "governance", "SWE.1", structured)
+
+
 def structured_authors(dot: str, structured: dict, nodes: dict | None = None) -> str:
     """Feature 010 (explicit local profile only; ADR-0014): replace agent nodes of the listed phases with the profile's
     structured-task runner (a command node with the same id, edges, role binding and visit limit):
@@ -377,6 +407,10 @@ def structured_authors(dot: str, structured: dict, nodes: dict | None = None) ->
                 nodes["swe1_iq_rework"] = dict(nodes["swe1_author"])
         else:
             dot = cont(dot, f"swe{n}_author", f"swe{n}_author_gate", "author", phase)
+        if phase == "SWE.1" and structured.get("swe1_governance"):  # feature 020 (functional-level orders only)
+            dot = governance_nodes(dot, structured)
+            if nodes is not None:  # the governance task runs under the swe1-author role and skill
+                nodes["swe1_governance"] = dict(nodes["swe1_author"])
     for phase in structured.get("inspect_phases", []):
         n = phase[-1]
         dot = swap(dot, f"swe{n}_inspector", f"{phase} structured inspector (local profile)",
@@ -453,7 +487,7 @@ def serve_swaps(dot: str, structured: dict, nodes: dict | None = None) -> str:
     for _st, _en, _i, name, attrs in statements(dot):
         if re.search(r"forge_factory\.lrtx\.runner (?:inspect|iq-inspect) ", attrs):
             models[name] = im
-        elif re.search(r"forge_factory\.lrtx\.runner (?:author|code|tests|iq-rework) ", attrs):
+        elif re.search(r"forge_factory\.lrtx\.runner (?:author|code|tests|iq-rework|governance) ", attrs):
             models[name] = am
     for name in native_agent_nodes(dot):
         models.setdefault(name, im if name in native_inspectors else structured["model"])
