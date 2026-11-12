@@ -13,6 +13,10 @@ swe1_iq_rework -> swe1_iq_inspect ...):
 A requirement that still has findings when its rounds are used, whose rework makes no change or is invalid, or that
 the factory generates (budgets) is carried to the set phase (owner decision 2026-11-09). Phase 1 never blocks SWE.1
 and records no inspection: the route gate's rework cycles are untouched. No prompt or reasoning is stored.
+
+Feature 020 (T023, research R6): for a functional-level order the packet wording, the sources, the rework schema and
+validators and the splice come from `swe1_functional.py`; the criteria file is the same. Register-level packets are
+unchanged byte for byte (the branch is taken only when the manifest says `swe1_level: functional`).
 """
 from __future__ import annotations
 
@@ -81,6 +85,17 @@ def needs_rework(finding: dict, cl: dict | None = None) -> bool:
 
 def finding_text(f: dict) -> str:
     return f"{f['quality_id']} ({f['severity']}): {f['evidence']} -> {f.get('required_action') or 'resolve'}"
+
+
+def _functional(ws: Path):
+    """Feature 020: the functional author module for a functional-level order, None for every other order."""
+    from ..governance.level import FUNCTIONAL, of_workspace
+
+    if of_workspace(ws) != FUNCTIONAL:
+        return None
+    from . import swe1_functional
+
+    return swe1_functional
 
 
 # ---- the set under inspection ---------------------------------------------------------------------------------------
@@ -165,6 +180,8 @@ def _contexts(ws: Path) -> dict[str, list[dict]]:
     from . import swe1
 
     ws = Path(ws)
+    if (F := _functional(ws)) is not None:  # feature 020: the bounded sources of the functional tasks
+        return F.contexts(ws)
     out: dict[str, list[dict]] = {}
     try:
         for g in swe1.groups(swe1.inventory(ws)):
@@ -203,6 +220,12 @@ def iq_packet(ws: Path, ref: dict, model: str, sources: list[dict], findings=Non
     from . import swe1
 
     cl = quality_checklist()
+    if (F := _functional(ws)) is not None:  # feature 020: functional wording, same criteria and verdict schema
+        return S.packet(phase="SWE.1", task=f"iq:{ref['task']}:{ref['key']}", role="swe1-inspector",
+                        instructions=F.iq_instructions(ws, ref), sources=sources, artifacts=_iq_artifacts(ref),
+                        criteria=[f"{i['id']} {i['property']}: {i['criterion']}" for i in cl["individual"]],
+                        output_schema=verdict_schema(ref["swr"]), model=model, findings=findings, previous=previous,
+                        output_reserve=4096, assessment_workspace=Path(ws), sampling=R.inspector_sampling(ws, model))
     sysname = swe1.system_name(ws)
     instr = (f"Judge ONE software requirement of the {sysname} on its own against the individual quality criteria "
              "IQ-01..IQ-12 (Forge-C SWE.1 requirements quality guideline). The requirement is the CURRENT ARTIFACT "
@@ -234,6 +257,15 @@ def iq_packet(ws: Path, ref: dict, model: str, sources: list[dict], findings=Non
                     assessment_workspace=Path(ws), sampling=R.inspector_sampling(ws, model))
 
 
+def _iq_artifacts(ref: dict) -> list[dict]:
+    art = [{"path": "lrtx:requirement", "text": json.dumps(ref["obj"], indent=1, sort_keys=True)},
+           {"path": "lrtx:task_requirements",
+            "text": "\n".join(f"- [{r['key']}] {r['statement']}" for r in ref["siblings"]) or "(none)"}]
+    for a in art:
+        a["sha256"] = sha256_bytes(a["text"].encode())
+    return art
+
+
 def validate_iq(doc: dict, ref: dict) -> list[str]:
     out = []
     if doc.get("requirement_id") != ref["swr"]:
@@ -250,6 +282,14 @@ def rework_packet(ws: Path, ref: dict, model: str, sources: list[dict], fixes: l
                   previous=None) -> dict:
     from . import swe1
 
+    if (F := _functional(ws)) is not None:  # feature 020: the functional requirement schema and rules
+        return S.packet(phase="SWE.1", task=f"iqfix:{ref['task']}:{ref['key']}", role="swe1-author",
+                        instructions=F.rework_instructions(ws, ref, fixes), sources=sources,
+                        artifacts=_iq_artifacts(ref),
+                        criteria=["only this requirement, same key", "every finding resolved", "EARS, one 'shall'",
+                                  "functional level: no register-level vocabulary"],
+                        output_schema=F.rework_schema(ws), model=model, findings=findings, previous=previous,
+                        with_lessons=False)
     sysname = swe1.system_name(ws)
     req = swe1._req_schema(ws)
     obl = swe1.owner_obligations(ws)
@@ -402,6 +442,7 @@ def iq_rework(ws: Path, model: str, resume: bool = False, time_budget_s: float |
     ws = Path(ws)
     if not _author_passed(ws):
         return reply(ws, "iq-rework", "PASS", ["PHASE1_SKIPPED: the SWE.1 author reply is not PASS"])
+    author = _functional(ws) or swe1  # feature 020: a functional order splices with the functional validators
     st = _state(ws)
     todo = pending_rework(ws)
     srcs = _contexts(ws)
@@ -414,7 +455,7 @@ def iq_rework(ws: Path, model: str, resume: bool = False, time_budget_s: float |
             sources = srcs.get(ref["task"], [])
 
             def check(d, ref=ref):
-                errs, _state_ = swe1.splice(ws, ref["task"], ref["key"], (d or {}).get("requirement"))
+                errs, _state_ = author.splice(ws, ref["task"], ref["key"], (d or {}).get("requirement"))
                 return errs
             rec = V.run_task(ws, REWORK, f"iqfix:{ref['task']}:{ref['key']}:{ref['sha'][:12]}",
                              lambda fi, pr, ref=ref, fixes=fixes, sources=sources:
@@ -434,7 +475,7 @@ def iq_rework(ws: Path, model: str, resume: bool = False, time_budget_s: float |
                 _append(ws, REWORKS, {**entry, "status": "UNCHANGED", "after": after})
                 continue
             try:
-                swe1.replace_requirement(ws, ref["task"], ref["key"], new)
+                author.replace_requirement(ws, ref["task"], ref["key"], new)
             except ValueError as exc:
                 k["stopped"] = str(exc).split(":", 1)[0]
                 _append(ws, REWORKS, {**entry, "status": "REFUSED", "after": after, "errors": [str(exc)[:300]]})

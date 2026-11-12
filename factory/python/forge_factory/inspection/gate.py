@@ -129,6 +129,12 @@ def step_author(store: Store, phase: str, text: str) -> int:
         from ..assurance.owner_obligations import coverage_findings  # owner 2026-10-31: any author path, opt-in input
 
         generated += coverage_findings(store.workspace)
+        from ..governance.level import FUNCTIONAL, of_workspace
+
+        if of_workspace(store.workspace) == FUNCTIONAL:  # feature 020 (FR-020/FR-021): functional-level SWE.1 checks;
+            from ..assurance.swe1_functional_checks import findings as functional_findings  # no register contract
+
+            generated += functional_findings(store.workspace)
     if phase == "SWE.2" and (store.workspace / "workproducts/SWE.2/architecture_static.puml").is_file():
         from .views import check_views  # PlantUML views: syntax/content checked and SVGs rendered before freeze
 

@@ -31,8 +31,14 @@ def _call(ws: Path, fn, *args, **kwargs):
 
 def author_module(ws: Path, step: str, phase: str) -> str:
     """Feature 011: a work order of a profile listing the phase in structured.semantic_phases (local-rtx-v2) uses the
-    semantic author for it; every other work order keeps the feature 010 module (unchanged graphs and behaviour)."""
+    semantic author for it; every other work order keeps the feature 010 module (unchanged graphs and behaviour).
+    Feature 020: a functional-level SWE.1 order uses the functional author (swe1_functional) under every profile."""
     man = ws / ".forge-run/manifest.json"
+    if step == "author" and phase == "SWE.1":  # feature 020 (T020): functional-level SWE.1 has its own author
+        from ..governance.level import FUNCTIONAL, of_workspace
+
+        if of_workspace(ws) == FUNCTIONAL:
+            return "swe1_functional"
     prof_id = (json.loads(man.read_text()).get("local_profile") or {}).get("id") if man.is_file() else None
     if step == "author" and phase == "SWE.1" and prof_id:
         from .profile import load

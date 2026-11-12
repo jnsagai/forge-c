@@ -870,6 +870,13 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         # The legacy structured inspector also carries the generated-array note;
         # preserve its frozen context and select the existing CMSIS-aware native inspector.
         inspect = [x for x in inspect if x != "SWE.2"]
+    from .governance.level import FUNCTIONAL, swe1_level
+
+    functional = swe1_level(manifest) == FUNCTIONAL
+    if functional:  # feature 020 (T020, research R1): functional SWE.1 is the structured functional author with the
+        # feature 018 two-phase inspection whatever the profile's phases_by_layer says (code-side; profiles untouched)
+        phases = ["SWE.1", *[x for x in phases if x != "SWE.1"]]
+        inspect = ["SWE.1", *[x for x in inspect if x != "SWE.1"]]
     out = {
         "phases": phases,
         "inspect_phases": inspect,
@@ -882,7 +889,7 @@ def local_profile_structured(local: dict | None, manifest: dict, model: str) -> 
         out["visit_time_requested_s"] = int(st["visit_time_s"])
     from .lrtx.swe1_quality import enabled as two_phase_enabled
 
-    if two_phase_enabled(prof) and "SWE.1" in phases and "SWE.1" in inspect:  # feature 018 (owner 2026-11-09)
+    if (two_phase_enabled(prof) or functional) and "SWE.1" in phases and "SWE.1" in inspect:  # features 018, 020
         out["two_phase_inspection"] = True
     if st.get("role_models"):  # in-run model swap (owner 2026-10-31): author and inspector models per role
         out["author_model"] = st["role_models"]["author"]
