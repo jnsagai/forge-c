@@ -236,3 +236,24 @@ def test_the_ledger_keeps_the_order_verdict_and_blocked_profiles_are_reported_no
     assert out["ran"] == ["WO-F017Q-SWE1-CRCHAL-s"] and led["orders"]["WO-F017Q-SWE1-CRCHAL-s"]["status"] == "BLOCKED"
     assert out["blocked"] == {"WO-F017Q-SWE6-AFOQUAL-s": "REQUEST_MEASUREMENT_NOT_OFFERED_BY_MODEL_SERVICE"}
     assert "WO-F017Q-SWE6-AFOQUAL-s" not in led["orders"]
+
+
+def test_an_archived_order_id_is_never_run_again_and_new_ledgers_get_a_fresh_stamp(tmp_path):
+    """Qualification window 3 (2026-11-12): a re-used order id got the earlier window's sealed package back."""
+    q = tmp_path / "set.yaml"
+    q.write_text(yaml.safe_dump({"phases": [
+        {"phase": "SWE.1", "baseline": {"order": "WO-F014-SWE1-CRCHAL-20261103-L27",
+                                         "launch": {"example": "examples/0014m-crc-hal", "profile": "A"}}}]}))
+    lane_root = tmp_path / "lane"
+    (lane_root / "archives/WO-F017Q-SWE1-CRCHAL-s").mkdir(parents=True)
+    out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, owner_workorders=tmp_path,
+                                     lane_root=lane_root, env={}, run=lambda *a, **k: pytest.fail("must not run"), stamp="s")
+    assert out["ran"] == [] and out["blocked"] == {"WO-F017Q-SWE1-CRCHAL-s": "ORDER_ID_ALREADY_ARCHIVED"}
+    (lane_root / "qualification-ledger.json").unlink(missing_ok=True)
+
+    class P:
+        returncode, stdout, stderr = 0, '{"status": "READY_FOR_OFFLINE_REVIEW"}', ""
+    out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, owner_workorders=tmp_path,
+                                     lane_root=lane_root, env={}, run=lambda *a, **k: P())
+    import re
+    assert len(out["ran"]) == 1 and re.fullmatch(r"WO-F017Q-SWE1-CRCHAL-\d{8}T\d{4}", out["ran"][0])

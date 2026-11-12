@@ -234,7 +234,11 @@ def qualification(ctx: dict, *, qset_path: Path = ROOT / "config/factory/qualifi
             return qualification(ctx, qset_path=qset_path, owner_workorders=owner_workorders, lane_root=lane_root,
                                  env=first.env(), run=run_in_lane, stamp=stamp, blocked_profiles=why)
     ledger_path = lane_root / "qualification-ledger.json"
-    ledger = json.loads(ledger_path.read_text()) if ledger_path.is_file() else {"stamp": stamp or time.strftime("%Y%m%d"), "orders": {}}
+    # a new ledger gets a stamp no earlier attempt used: archives are write-once, and a reused order id would hand back
+    # the earlier run's sealed package (qualification window 3, 2026-11-12)
+    ledger = json.loads(ledger_path.read_text()) if ledger_path.is_file() else {
+        "stamp": stamp or time.strftime("%Y%m%dT%H%M", time.gmtime()), "orders": {}}
+    archives = Path(lane_root) / "archives"
     lane_wos = lane_root / "state/workorders"
     lane_wos.mkdir(parents=True, exist_ok=True)
     env = env or {**os.environ, "FORGE_STATE_DIR": str(lane_root / "state"), "FORGE_LRTX_ROOT": str(lane_root)}
@@ -244,6 +248,9 @@ def qualification(ctx: dict, *, qset_path: Path = ROOT / "config/factory/qualifi
             continue
         if (blocked_profiles or {}).get(o.get("profile")):  # explicit, not ledgered: it runs once the lane can
             blocked[o["wo"]] = blocked_profiles[o["profile"]]
+            continue
+        if (archives / o["wo"]).exists():  # never re-use an archived order id (its package would be the old one)
+            blocked[o["wo"]] = "ORDER_ID_ALREADY_ARCHIVED"
             continue
         if ctx["clock"]() > ctx["deadline"] - 3600:  # never start an order that cannot finish inside the window
             left.append(o["wo"])
