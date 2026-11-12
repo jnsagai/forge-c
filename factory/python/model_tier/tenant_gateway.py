@@ -154,7 +154,10 @@ def create_app(cfg: dict, cat: C.Catalog, controller: SwapController, shares: Sh
             return _err(404, "model_not_offered", str(name))
         m = cat.models[name]
         limit = min(int(t["max_context"]), m.context)
-        if estimate_tokens(body) + int(body.get("max_tokens") or body.get("max_completion_tokens") or 0) > limit:
+        # the input alone: max_tokens is a cap the engine applies itself (llama.cpp ends generation when the context is
+        # full, vLLM refuses and is mapped below) - counting it here refused requests the baseline engine serves
+        # (qualification window 5, 2026-11-12: Ornith input ~115k + max_tokens 147456 > 262144 refused in 4 ms)
+        if estimate_tokens(body) > limit:
             log.write({**rec, "status": 400, "forge_reason": "context_exceeded"})
             return _err(400, "context_exceeded", f"limit {limit}")
         thinking_off = m.reasoning_mode == "off" or t.get("reasoning_mode") == "off"

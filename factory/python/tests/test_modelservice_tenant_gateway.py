@@ -253,3 +253,15 @@ def test_native_route_serves_the_named_model_tokenizer_and_template(tmp_path):
         assert c.post(base + "/props", json={}, headers=H("factory-a")).status_code == 404
     text = log.read_text()
     assert "SECRET-PROMPT-TEXT" not in text and '"native_op": "tokenize"' in text
+
+
+
+def test_max_tokens_is_left_to_the_engine_only_the_input_is_checked_before_sending(tmp_path):
+    """Qualification window 5 (2026-11-12): input within the context but input + max_tokens above it was refused by
+    the tier while the baseline llama-server serves it (max_tokens is a cap, generation ends when the context is full)."""
+    app, seen, _, _ = make(tmp_path)
+    with TestClient(app) as c:
+        body = chat(A, max_tokens=60000)
+        body["messages"][0]["content"] = "x" * (4 * 30000)  # ~30k input + 60k cap > 65536, input alone fits
+        r = c.post("/v1/chat/completions", json=body, headers=H("factory-a"))
+    assert r.status_code == 200 and len(seen) == 1
