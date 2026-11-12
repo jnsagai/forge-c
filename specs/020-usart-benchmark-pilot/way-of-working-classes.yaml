@@ -1,0 +1,96 @@
+# Feature 020 FR-029: classification of the decision-log entries for the way-of-working proposal
+# (input of `python -m forge_factory.benchmark.proposal`). DRAFT until the pilot SWE.1 has passed on the line (T037):
+# entries with status "pilot" (D5, D11, D12, D16-D26) are re-checked against the run evidence before the proposal is
+# generated; a rule the pilot contradicts is moved to pilot_only or its log entry gets a new row.
+schema: forge-c/way-of-working-classes/1
+rules:
+  - id: D1
+    class: default
+    rule: A private reference project is used for its process and numeric metrics only; its content never enters the repository
+  - id: D2
+    class: default
+    rule: Delivered vendor code stays frozen; the factory generates the ASPICE work products around it and reports findings instead of edits
+  - id: D3
+    class: default
+    rule: One module per peripheral driver (its HAL and LL components) under one requirement set
+    ladder_need: the ladder runs one lineage per layer (LL, then HAL on the LL basis); adopting this merges each LL/HAL pair into one module lineage and retires the cross-lineage basis
+  - id: D4
+    class: default
+    rule: A component the delivered HAL does not call is a second public API with its own functional requirements
+  - id: D5
+    class: default
+    rule: SWE.1 states functional/API behaviour; register-level detail and concrete negative paths are specified at SWE.3
+    ladder_need: the register-level content of today's ladder SWE.1 must move into SWE.3 unit specifications, which needs the held ladder SWE.3 stage first
+  - id: D6
+    class: per_order
+    rule: The SWE.1 level (functional or register) is a versioned per-order setting; an order without it stays register-level
+  - id: D7
+    class: default
+    rule: The factory generates and coverage-checks the governance package (input register, actors, use cases, open points); no sign-off; the owner may add use cases
+    ladder_need: each ladder order needs a scope rule (in / out / not delivered) so the inventory can classify its delivered API
+  - id: D8
+    class: per_order
+    rule: The scope is the full delivered public API limited by the order's scope rule; everything else is recorded as delivered out of scope or not delivered
+  - id: D9
+    class: default
+    rule: Requirement quality keeps the two-phase per-requirement and set inspection criteria unchanged
+  - id: D10
+    class: default
+    rule: Every mechanism is module-agnostic; module facts are order data, and a second module needs no code change
+  - id: D11
+    class: default
+    rule: The inventory and scope classification are deterministic in prepare; actors and use cases come from a model step with a deterministic coverage check
+  - id: D12
+    class: pilot_only
+    rule: Functional orders refuse SWE.2 and later until those phases are defined for the functional level
+  - id: D13
+    class: pilot_only
+    rule: The pilot is built on the deployed owner-lane commit, without the held ladder SWE.3 work
+  - id: D14
+    class: per_order
+    rule: A functional order carries its scope rule under the work-order key scope_rule, beside the declared scope text
+  - id: D15
+    class: default
+    rule: The functional-level role text is a versioned skill reference rendered by the registry generator; the role skill stays unchanged
+  - id: D16
+    class: default
+    rule: Governance step and coverage check run before the SWE.1 author; an uncovered in-scope function stops SWE.1
+  - id: D17
+    class: default
+    rule: Scope patterns resolve exact name before longest pattern; ties are input gaps; delivered code and conversion provenance are never sources
+  - id: D18
+    class: default
+    rule: The functional author plans one bounded task per service group of the scope rule, one state-behaviour task and one design-constraint task per guideline part
+  - id: D19
+    class: default
+    rule: The author answer is schema-checked; conditional template rules, links to the input register, the level rule and EARS are deterministic validators, the same per task and at the gate
+  - id: D20
+    class: default
+    rule: The level-rule vocabulary comes from the order's reference-manual register sections and the device header symbols of the module's register prefixes
+  - id: D21
+    class: default
+    rule: A functional order always gets a structured SWE.1 with the two-phase inspection, independent of the local profile
+  - id: D22
+    class: pilot_only
+    rule: Functional packets offer no lessons until the lesson store holds functional-level lessons
+  - id: D23
+    class: default
+    rule: The set inspection of a functional order uses functional notes and the governance package as its source; criteria unchanged
+  - id: D24
+    class: default
+    rule: A guideline larger than the packet bound is split at headings into consecutive parts, each its own design-constraint task; never truncated
+  - id: D25
+    class: default
+    rule: The device header is an order input (level-rule term source) held in the inputs cache by digest; the delivery scope lists every function the delivered headers declare
+  - id: D26
+    class: default
+    rule: A new module runs as a pilot lineage on its own phases, after the ready ladder steps and without reordering or chaining the ladder
+  - id: D27
+    class: default
+    rule: A new owner-lane lineage needs no policy grant; the guardian admits its orders from the deployed source
+  - id: D28
+    class: default
+    rule: Every driver order carries a measurable CPU/timing budget before SWE.1 is placed
+  - id: D29
+    class: default
+    rule: Comparisons are metrics only (present = a real value; categories not reported are never zero); forbidden reference names are kept as salted digests

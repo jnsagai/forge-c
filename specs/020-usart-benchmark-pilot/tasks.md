@@ -116,11 +116,11 @@ unchanged.
 **Independent Test**: comparison generated from a finished SWE.1 and a metrics file; all metrics both sides; no
 benchmark names in the repository.
 
-- [ ] T032 [P] [US3] Write `factory/python/tests/test_f020_compare.py`: pilot metrics computed from a fixture SWE.1 (count, by type, attribute completeness, by origin group, link kinds, verification methods, test levels, scope coverage) validate against `contracts/benchmark-metrics.schema.json`; report contains both sides for every metric; missing benchmark file → clear refusal
-- [ ] T033 [P] [US3] Write `factory/python/tests/test_f020_privacy.py`: scan of tracked files for forbidden tokens given only as SHA-256 hashes in `factory/python/tests/fixtures/f020/forbidden-token-hashes.json` (tokens lower-cased, word-split); a planted token in a temp file is detected
+- [X] T032 [P] [US3] Write `factory/python/tests/test_f020_compare.py`: pilot metrics computed from a fixture SWE.1 (count, by type, attribute completeness, by origin group, link kinds, verification methods, test levels, scope coverage) validate against `contracts/benchmark-metrics.schema.json`; report contains both sides for every metric; missing benchmark file → clear refusal
+- [X] T033 [P] [US3] Write `factory/python/tests/test_f020_privacy.py`: scan of tracked files for forbidden tokens given only as SHA-256 hashes in `factory/python/tests/fixtures/f020/forbidden-token-hashes.json` (tokens lower-cased, word-split); a planted token in a temp file is detected
 - [X] T034 [US3] Outside the repository: write `/mnt/data/forge-c/model-service/private-benchmark/extract_metrics.py` (chmod 700 dir) that reads the private export and writes `metrics.json` (numbers and generic categories only, schema-valid); run it; never commit either file
-- [ ] T035 [US3] Implement `F/benchmark/__init__.py` and `F/benchmark/compare.py` (`python -m forge_factory.benchmark.compare --pilot <workspace> --benchmark <metrics.json> --out <dir>`), report Markdown + JSON (T032 must pass)
-- [ ] T036 [US3] Implement `F/benchmark/proposal.py` (`--log decision-log.md --metrics <dir>`): `specs/020-usart-benchmark-pilot/way-of-working-proposal.md` with default rules, per-order settings and what the ladder drivers would need, every rule citing its decision-log entry (SC-010); test in `factory/python/tests/test_f020_proposal.py`
+- [X] T035 [US3] Implement `F/benchmark/__init__.py` and `F/benchmark/compare.py` (`python -m forge_factory.benchmark.compare --pilot <workspace> --benchmark <metrics.json> --out <dir>`), report Markdown + JSON (T032 must pass)
+- [X] T036 [US3] Implement `F/benchmark/proposal.py` (`--log decision-log.md --metrics <dir>`): `specs/020-usart-benchmark-pilot/way-of-working-proposal.md` with default rules, per-order settings and what the ladder drivers would need, every rule citing its decision-log entry (SC-010); test in `factory/python/tests/test_f020_proposal.py`
 - [ ] T037 [US3] Generate the comparison and the proposal from the pilot's real SWE.1; add the forbidden-token hashes (computed locally from the private names, never written in clear) and run the privacy test
 
 ---
