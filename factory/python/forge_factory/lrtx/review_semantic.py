@@ -1103,7 +1103,11 @@ def visit(ws: Path, phase: str, model: str, max_calls: int | None = None, resume
           time_budget_s: float | None = None) -> dict:
     from ..registry.agents import load_agents
 
-    if phase != "SWE.1":
+    from .swe1_quality import _functional
+
+    # feature 020 (T023b): typed register claims do not apply to a functional-level SWE.1 set; its structured set
+    # inspection (functional wording, two-phase) judges it
+    if phase != "SWE.1" or _functional(Path(ws)) is not None:
         return R.visit(ws, phase, model, max_calls, resume, time_budget_s)
     opts = inspector_options(Path(ws), model)
     extra = 2 * len(scope_items(Path(ws))) if opts["coverage"] else 0  # one call and one repair per scope item

@@ -741,3 +741,53 @@ def rework_instructions(ws: Path, ref: dict, fixes: list[str]) -> str:
             f"exactly one 'shall', a subject of {_names(ws)}, and ends with a period; origin_group is one of "
             + ", ".join(t["origins"]) + ". " + LEVEL_RULE + " " + LINK_RULE + " INSPECTION FINDINGS TO RESOLVE: "
             + " | ".join(fixes) + " Work-order scope: " + _scope_text(ws))
+
+
+# ---- feature 018 phase 2 (the SET inspection) of a functional order (T023b) -------------------------------------------
+SET_NOTE = (
+    "This is a functional-level SWE.1 requirement set (template {template}): every requirement states title, "
+    "statement (EARS, exactly one 'shall', subject {names}), type (functional, design_constraint, architectural), "
+    "precondition, origin group (use_case, out_of_context, hal_design_constraint, state_behaviour or "
+    "awaiting_traceability), links, use cases (ids of the governance package), verification method and test level; "
+    "status draft, ASIL QM, CAL 0 and the allocation 'not applicable until SWE.2' are fixed by the lane. Traceability "
+    "at this level: a trace link names an input of the governance input register (IN-nn, requirement_source inputs "
+    "only) and the section it restates, a derive link also states its rationale, and a requirement no input supports "
+    "is in awaiting_traceability with no links (its share is reported); the delivered code is the implementation "
+    "under analysis and never a source. Level rule: the functional level names the delivered public API and "
+    "observable behaviour, never registers, bit fields, register addresses or reset values, and no hexadecimal value - "
+    "register-level detail and concrete negative cases belong to SWE.3; invalid use is specified generically "
+    "(parameter validity, operation permitted in the current state, error reporting). Never ask for register-level "
+    "content, reference-manual pages or register effects at this level. The governance package (input register, "
+    "actors, use cases, scope lists, assumptions, open points) is a source.")
+OUT_OF_CONTEXT_NOTE = (
+    "SWE1-01/SWE1-05: .forge-run/manifest.json upstream.status OUT_OF_CONTEXT records the owner decision that this "
+    "driver is developed out of context: no upstream system requirement and no allocated software safety requirement "
+    "exist. The upstream baseline is the governance package (its input register: reference manual, datasheet, "
+    "guideline, device description; its use cases) plus the work-order scope and budgets. SWE1-01 is met when that "
+    "baseline is stated; SWE1-05 is met when every requirement has a trace link to an input of the register, a derive "
+    "link with its rationale, or sits in awaiting traceability, and every in-scope use case and service group is "
+    "covered by requirements (both directions). The absence of upstream system requirements, of an approved upstream "
+    "template or of a safety allocation is not a finding.")
+
+
+def inspector_notes(ws: Path, item: str) -> list[str]:
+    """The SWE.1 inspector notes of a functional order (set-quality and gate-item packets); the register-level notes of
+    `review._notes` stay unchanged for every other order."""
+    from ..workflow import prompts
+    from . import review as R
+    from .c_language_context import for_workspace
+
+    out = [prompts.OWNER_SCOPE_NOTE]
+    if item in ("SWE1-01", "SWE1-05") and R.out_of_context(ws):
+        out.append(OUT_OF_CONTEXT_NOTE)
+    if note := for_workspace(ws):
+        out.append(note)
+    if item == "SWE1-03" and R.safe_state_outside_scope(ws):
+        out.append(R.SAFE_STATE_NOTE)
+    out.append(SET_NOTE.format(template=template(ws)["template_id"], names=_names(ws)))
+    return out
+
+
+def set_sources(ws: Path) -> list[str]:
+    """Extra sources of the SWE.1 set inspection: the governance package the links and use cases refer to."""
+    return [p for p in (GP.OUT_MD,) if (Path(ws) / p).is_file()]

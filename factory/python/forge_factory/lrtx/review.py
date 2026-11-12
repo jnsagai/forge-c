@@ -93,6 +93,11 @@ def _notes(ws: Path, phase: str, item: str) -> list[str]:
     from ..workflow import prompts
 
     out = []
+    if phase == "SWE.1":  # feature 020 (T023b): a functional-level order has its own SWE.1 inspector notes
+        from .swe1_quality import _functional
+
+        if (F := _functional(ws)) is not None:
+            return F.inspector_notes(ws, item)
     if phase == "SWE.1":  # the agent inspector reads it once for all items (prompts.inspector_prompt); lrtx9: the
         out.append(prompts.OWNER_SCOPE_NOTE)  # SWE1-05 packets lacked it and failed the recorded gaps
         if item in ("SWE1-01", "SWE1-05") and out_of_context(ws):  # owner 2026-11-09
@@ -181,8 +186,11 @@ def evidence(ws: Path, phase: str) -> tuple[dict, list[dict]]:
 
         files += [f for f in source_paths(ws) if f not in files]
         from .swe1 import delivered_interface  # CAPA-112: the FROZEN API's argument constants the author was given
+        from .swe1_quality import _functional
 
-        if (api := delivered_interface(ws)) and api not in files:
+        if (F := _functional(ws)) is not None:  # feature 020 (T023b): the governance package the functional links
+            files += [f for f in F.set_sources(ws) if f not in files]  # and use cases refer to; the code-derived
+        elif (api := delivered_interface(ws)) and api not in files:  # interface is no source (FR-003)
             files.append(api)
     limit = source_char_limit(ws)
     srcs = [S.source(ws, f, max_chars=limit) for f in files if (Path(ws) / f).is_file() and f not in ENGINE_FILES]
@@ -388,9 +396,10 @@ def two_phase(ws: Path) -> bool:
     if not pid:
         return False
     from .profile import load
-    from .swe1_quality import enabled
+    from .swe1_quality import _functional, enabled
 
-    return enabled(load(pid))
+    # feature 020 (T023b, D21): a functional-level SWE.1 runs the two-phase inspection under every local profile
+    return enabled(load(pid)) or _functional(ws) is not None
 
 
 def set_packet(ws: Path, sq: dict, bl: dict, srcs: list[dict], model: str, findings=None, previous=None) -> dict:
