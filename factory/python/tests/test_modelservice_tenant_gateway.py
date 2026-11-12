@@ -222,3 +222,34 @@ def test_capa240_reasoning_content_with_thinking_on_is_no_finding(tmp_path):
     recs = [json.loads(x) for x in log.read_text().splitlines()]
     assert not any(r.get("finding") == "REASONING_CONTENT_WITH_THINKING_OFF" for r in recs)
     assert all(r.get("reasoning_content_seen") for r in recs if r.get("status") == 200)
+
+
+def test_native_route_serves_the_named_model_tokenizer_and_template(tmp_path):
+    """CAPA-197 parity in external mode: the factory measures a request with the served model's own tokenizer."""
+    from urllib.parse import quote
+
+    def reply(req, body):
+        if req.url.path == "/tokenize":
+            return httpx.Response(200, json={"tokens": [1, 2, 3], "host": req.url.host})
+        if req.url.path == "/apply-template":
+            return httpx.Response(200, json={"prompt": "<rendered>", "model": body.get("model")})
+        return httpx.Response(200, json={"choices": [{"message": {"content": f"answer from {req.url.host}"}}]})
+    app, seen, log, _ = make(tmp_path, engine_reply=reply)
+    base = f"/forge/v1/native/{quote(A, safe='')}"
+    with TestClient(app) as c:
+        r = c.post(base + "/tokenize", json={"content": "SECRET-PROMPT-TEXT", "add_special": True}, headers=H("factory-a"))
+        assert r.status_code == 200 and r.json()["tokens"] == [1, 2, 3] and r.json()["host"] == "eng-a"
+        assert r.headers["x-forge-model-identity"] == "a" * 16
+        r = c.post(base + "/apply-template", json={"model": A, "messages": []}, headers=H("factory-a"))
+        assert r.json() == {"prompt": "<rendered>", "model": "ornith"}  # the engine's own model name
+        r = c.post(base + "/v1/chat/completions", json=chat(A), headers=H("factory-a"))
+        assert r.status_code == 200 and r.json()["choices"][0]["message"]["content"] == "answer from eng-a"
+        assert c.post(base + "/v1/chat/completions", json=chat(B), headers=H("factory-a")).status_code == 400
+        assert c.post(base + "/tokenize", json={"content": "x"}).status_code == 401
+        assert c.post(f"/forge/v1/native/{quote(A, safe='')}/tokenize", json={"content": "x"},
+                      headers=H("neighbour")).status_code == 404  # not an allowed model of that tenant
+        assert c.post(f"/forge/v1/native/{quote(B, safe='')}/tokenize", json={"content": "x"},
+                      headers=H("factory-a")).json()["error"]["forge_reason"] == "native_op_not_offered"  # vLLM
+        assert c.post(base + "/props", json={}, headers=H("factory-a")).status_code == 404
+    text = log.read_text()
+    assert "SECRET-PROMPT-TEXT" not in text and '"native_op": "tokenize"' in text

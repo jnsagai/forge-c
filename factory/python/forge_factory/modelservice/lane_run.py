@@ -150,6 +150,15 @@ class LaneRunner:
             g["FORGE_GATEWAY_NATIVE_CONTEXT_LIMIT"] = str(prof["runtime"]["context_limit_tokens"])
         if "drop_retries" in (prof.get("gateway") or {}):
             g["FORGE_GATEWAY_DROP_RETRIES"] = str(prof["gateway"]["drop_retries"])
+        measured = policy(prof)
+        if measured:  # CAPA-197 parity: the measured model's route is its own native route on the model service
+            from urllib.parse import quote
+
+            from .gateway_external import upstream_of
+
+            ms = external_model_service(self.root) or yaml.safe_load((self.root / "model-service.yaml").read_text())
+            root = upstream_of(ms)[0]
+            g["FORGE_GATEWAY_ROUTES"] = json.dumps({m: f"{root}/forge/v1/native/{quote(m, safe='')}" for m in measured})
         return g
 
     # ---- one-time preparation (outside a window: needs no GPU) ------------------------------------------------
@@ -207,11 +216,6 @@ class LaneRunner:
             return "FABRO_BINARY_MISSING"
         if not Path(self.cfg.secrets).is_file():
             return "MODEL_SERVICE_SECRETS_MISSING"
-        from ..lrtx.request_measurement import PINNED_PROFILE_ROUTES
-
-        measured = ((self.prof.get("gateway") or {}).get("request_measurement") or {}) or PINNED_PROFILE_ROUTES.get(self.prof["id"])
-        if measured:  # native measurement posts /apply-template and /tokenize to a llama.cpp route; the tier has none
-            return "REQUEST_MEASUREMENT_NOT_OFFERED_BY_MODEL_SERVICE"
         return None
 
     # ---- inside a window ---------------------------------------------------------------------------------------

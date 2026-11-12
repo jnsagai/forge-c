@@ -234,7 +234,76 @@ def create_app(cfg: dict, cat: C.Catalog, controller: SwapController, shares: Sh
         return JSONResponse(data if data is not None else {"error": {"type": "engine_error"}}, status_code=up.status_code,
                             headers=hdr)
 
+    @app.post("/forge/v1/native/{rest:path}")
+    async def native(request: Request, rest: str):
+        """A model's own llama.cpp route (`<model>/tokenize`, `<model>/apply-template`, `<model>/v1/chat/completions`):
+        the factory's native request measurement needs the served model's tokenizer and chat template (CAPA-197), and
+        its gateway sends the measured model's chat to the same route, as it does with llama-server. Same tenant
+        credential, share and swap lease as chat; metadata-only log; never another model than the one named."""
+        op = next((o for o in NATIVE_OPS if rest.endswith("/" + o)), None)
+        name = rest[: -len(op) - 1] if op else None
+        if op == "v1/chat/completions":
+            try:
+                named = (await request.json()).get("model")
+            except (ValueError, AttributeError):
+                return _err(400, "invalid_request")
+            if named != name:
+                return _err(400, "native_route_model_mismatch", f"{named} != {name}")
+            return await chat(request)
+        t = tenant_of(request)
+        rec = {"request_id": uuid.uuid4().hex[:16], "tenant_id": t["tenant_id"] if t else None, "model": name,
+               "native_op": op}
+        if t is None:
+            log.write({**rec, "status": 401, "forge_reason": "credential_refused"})
+            return _err(401, "credential_refused")
+        if op is None or name not in t["allowed_models"]:
+            log.write({**rec, "status": 404, "forge_reason": "model_not_offered"})
+            return _err(404, "model_not_offered", str(name))
+        m = cat.models[name]
+        if m.engine != "llama.cpp":
+            log.write({**rec, "status": 404, "forge_reason": "native_op_not_offered"})
+            return _err(404, "native_op_not_offered", f"{name}: engine {m.engine}")
+        try:
+            body = await request.json()
+        except ValueError:
+            return _err(400, "invalid_request")
+        if op == "apply-template" and isinstance(body, dict) and "model" in body:
+            body = {**body, "model": m.name_on_engine}
+        t0 = time.monotonic()
+        try:
+            await shares.acquire(t["tenant_id"])
+        except Refused as r:
+            log.write({**rec, "status": r.status, "forge_reason": r.reason})
+            return _err(r.status, r.reason)
+        try:
+            lease = await controller.acquire(name, int(t.get("priority", 0)))
+        except Refused as r:
+            shares.release(t["tenant_id"])
+            log.write({**rec, "status": r.status, "forge_reason": r.reason})
+            return _err(r.status, r.reason, r.detail)
+        except BaseException:
+            shares.release(t["tenant_id"])
+            raise
+        status = 503
+        try:
+            up = await http.post(f"{m.engine_url}/{op}", json=body, headers=eh, timeout=None)
+            status = up.status_code
+            try:
+                data = up.json()
+            except ValueError:
+                data = {"error": {"type": "engine_error"}}
+            return JSONResponse(data, status_code=status, headers={"x-forge-model-identity": short(m.identity)})
+        except httpx.HTTPError:
+            return _err(503, "model_unavailable")
+        finally:
+            lease.release()
+            shares.release(t["tenant_id"])
+            log.write({**rec, "status": status, "total_ms": round((time.monotonic() - t0) * 1000)})
+
     return app
+
+
+NATIVE_OPS = ("v1/chat/completions", "tokenize", "apply-template")
 
 
 def shares_from(cfg: dict, cat: C.Catalog) -> Shares:

@@ -2,6 +2,7 @@
 the model service as the only way out; the owner lane is never reached and no model server is started."""
 from __future__ import annotations
 
+import json
 import subprocess
 
 import pytest
@@ -202,19 +203,18 @@ def test_the_gateway_upstream_is_the_service_root_so_calls_are_not_doubled():
         assert httpx.Client(base_url=up).build_request("POST", "/v1/chat/completions").url.path == "/v1/chat/completions"
 
 
-def test_a_profile_that_needs_native_measurement_is_blocked_with_its_reason(tmp_path, monkeypatch):
+def test_a_measured_model_is_routed_to_its_native_route_on_the_model_service(tmp_path, clean_env, monkeypatch):
     from forge_factory.lrtx import request_measurement as RM
 
     r = _lane(tmp_path)
-    (r / "venv/bin").mkdir(parents=True)
-    (r / "venv/bin/python").write_text("")
-    (tmp_path / "s").write_text("forge-qual=x\n")
-    (tmp_path / "fabro").write_text("")
-    monkeypatch.setattr(lane_run, "FABRO_BIN", tmp_path / "fabro")
-    lr = lane_run.LaneRunner(LaneConfig(root=r, secrets=tmp_path / "s"), PROFILE)
-    assert lr.ready() is None
-    monkeypatch.setitem(RM.PINNED_PROFILE_ROUTES, PROFILE, {"qwen3.8:27b-q8_0": RM.METHOD})
-    assert lr.ready() == "REQUEST_MEASUREMENT_NOT_OFFERED_BY_MODEL_SERVICE"
+    lr = lane_run.LaneRunner(LaneConfig(root=r), PROFILE)
+    assert "FORGE_GATEWAY_ROUTES" not in lr.gateway_env(lr.env())  # nothing measured: no routes (baseline parity)
+    m = "hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q8_0"
+    monkeypatch.setitem(RM.PINNED_PROFILE_ROUTES, PROFILE, {m: RM.METHOD})
+    monkeypatch.setattr(lp, "load", lambda pid, _l=lp.load: {**_l(pid), "runtime": {**_l(pid)["runtime"], "llama_server": {"x": 1}}})
+    g = lane_run.LaneRunner(LaneConfig(root=r), PROFILE).gateway_env(lr.env())
+    assert json.loads(g["FORGE_GATEWAY_ROUTES"]) == {m: "http://model-service/forge/v1/native/hf.co%2Fornith-ai%2FOrnith-1.5-35B-A3B-GGUF%3AQ8_0"}
+    assert json.loads(g["FORGE_GATEWAY_REQUEST_MEASUREMENT"]) == {m: RM.METHOD}
 
 
 def test_the_ledger_keeps_the_order_verdict_and_blocked_profiles_are_reported_not_recorded(tmp_path):
