@@ -44,6 +44,11 @@ Owner decisions taken 2026-11-12 (recorded in the conversation that started this
 7. **Comparison.** The pilot ends with a comparison of our SWE.1 against the benchmark's measurable characteristics,
    without copying benchmark text.
 
+Owner 2026-11-12: "what we will do with UART will shape the new way of working with Forge-C workflow". The pilot is
+therefore the first use of a **new, general Forge-C way of working**, not a UART special case: every mechanism it adds
+(governance package, requirement template, level setting, origin groups, trace links, self-checks, comparison) must be
+peripheral- and module-agnostic, and the pilot ends with a way-of-working proposal for all future modules.
+
 This feature covers SWE.1 of the pilot. Aligning SWE.2 and SWE.3 with the benchmark (interfaces as groups, one
 sequence diagram per API use case, a unit-specification template with preconditions, inputs, expected result and
 failure behaviour, unit attributes, state machines) is a later feature.
@@ -227,6 +232,18 @@ benchmark sentence appears in the output.
   and category names only; no benchmark requirement text, identifiers, diagram content or programme names may be
   stored in the repository.
 
+**A new way of working, not a UART special case**
+
+- **FR-027**: Every mechanism of this feature MUST be defined independently of the UART: the governance package, the
+  template, the level setting, the origin groups, the trace rules, the gate checks and the comparison MUST take the
+  module, its components, its inputs and its scope rule as data, so another peripheral or module can use them with no
+  code change. UART-specific facts (files, scope lists, inputs) MUST live only in the UART order's data.
+- **FR-028**: The pilot MUST keep a decision log: every rule chosen during the pilot (by the owner or the factory), its
+  rationale and the evidence that confirmed or contradicted it.
+- **FR-029**: At the end of the pilot's SWE.1, the factory MUST produce a way-of-working proposal for future modules
+  from the decision log and the comparison: which rules become the default, which stay per-order settings, and what the
+  ladder drivers would need to adopt them.
+
 **Must keep**
 
 - **FR-026**: Every factory change of this feature MUST pass the CRE gate before any deploy; frozen code is never
@@ -264,6 +281,10 @@ benchmark sentence appears in the output.
   (verified by the existing frozen fingerprints and tests, all unchanged).
 - **SC-008**: The comparison reports all FR-024 metrics for both sides, and an automated scan finds no benchmark
   programme or peripheral names in the repository.
+- **SC-009**: A second, different peripheral module can be prepared with the governance step, template and checks of
+  this feature by supplying only its own data (inputs, components, scope rule) - zero factory code changes.
+- **SC-010**: The way-of-working proposal exists at the end of the pilot's SWE.1 and every rule in it cites the
+  decision-log entry and evidence behind it.
 
 ## Assumptions
 
