@@ -29,6 +29,21 @@
       "pdf_sha256": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
       "retrieved_via": "web.archive.org capture 20260815172300",
       "source_url": "https://www.st.com/resource/en/reference_manual/rm0486-stm32n647657xx-armbased-32bit-mcus-stmicroelectronics.pdf"
+    },
+    {
+      "doc": "RM0486",
+      "pdf": "rm0486.pdf",
+      "pdf_sha256": "83cb7e9c7f784a4c5dbbedec428adf58d2cbac8cd802d11e2cdc4d504cceaa86",
+      "retrieved_via": "web.archive.org capture 20260815172300",
+      "source_url": "https://www.st.com/resource/en/reference_manual/rm0486-stm32n647657xx-armbased-32bit-mcus-stmicroelectronics.pdf",
+      "converted_at": "2026-11-12T09:34:13Z",
+      "converter": "forge_factory.docs.pdf2md + pdftotext -layout",
+      "markdown": "RM0486-rev4-vector-table.md",
+      "markdown_sha256": "c888d42c1269160aa2a80a03234a96f61942371cdf40cc6e7e1e4df2c30d4ac6",
+      "pages": [
+        1117,
+        1124
+      ]
     }
   ]
 }
