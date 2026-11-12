@@ -1,0 +1,273 @@
+{
+  "budgets": {
+    "flash_bytes": 4096,
+    "stack_bytes": 128,
+    "static_ram_bytes": 64,
+    "status": "test fixture"
+  },
+  "code_mode": "FROZEN",
+  "created_at": "<volatile>",
+  "delivered": [
+    {
+      "bytes": 1917,
+      "licence": "Apache-2.0",
+      "origin": "synthetic feature 020 test fixture",
+      "path": "software/hal/ser_hal.c",
+      "role": "delivered_code",
+      "sha256": "56289ecff6147c7be93ebe3f42c1b0ed8ad5a76cdde12a93f2f1eb116da4e3b2"
+    },
+    {
+      "bytes": 1094,
+      "licence": "Apache-2.0",
+      "origin": "synthetic feature 020 test fixture",
+      "path": "software/hal/ser_hal.h",
+      "role": "delivered_code",
+      "sha256": "ec07b366f6f8f2949fc7925412b9f2da846a2db69acb8f58a0e7b30934201d31"
+    },
+    {
+      "bytes": 1790,
+      "licence": "Apache-2.0",
+      "origin": "synthetic feature 020 test fixture",
+      "path": "software/ll/ser_ll.h",
+      "role": "delivered_code",
+      "sha256": "cca09bfe91e0a3daad51f472a7630cea5dabde60950b588f39877697dbf27bb5"
+    }
+  ],
+  "delivery": {
+    "build": {
+      "style": "forge"
+    },
+    "code_mode": "FROZEN",
+    "files": [
+      {
+        "from": "ser_hal.c",
+        "to": "software/hal/ser_hal.c"
+      },
+      {
+        "from": "ser_hal.h",
+        "to": "software/hal/ser_hal.h"
+      },
+      {
+        "from": "ser_ll.h",
+        "to": "software/ll/ser_ll.h"
+      }
+    ],
+    "licence": "Apache-2.0",
+    "licence_allows_modification": true,
+    "origin": "synthetic feature 020 test fixture",
+    "scope": {
+      "functions": [
+        "HAL_SER_Init",
+        "HAL_SER_DeInit",
+        "HAL_SER_MspInit",
+        "HAL_SER_Transmit",
+        "HAL_SER_Receive",
+        "HAL_SER_TxCpltCallback",
+        "HAL_SER_GetState",
+        "HAL_SER_EnableLoop"
+      ]
+    },
+    "source": "factory/python/tests/fixtures/f020/module_ser/delivery"
+  },
+  "delivery_intake": {
+    "build_check": "PASS",
+    "status": "ACCEPTED",
+    "store": "<volatile>"
+  },
+  "development_safety": {
+    "base_policies": {
+      "factory/release-manager/policies/release-package-policy-v0.4.json": "c69fab88c6ec01509eda324cef4475254fe167cd4a601350e8e5c9da62094908",
+      "factory/release-manager/policies/release-package-policy-v0.5.json": "37dac9b31548bbd40dfebdbe40046ae75a19b5e7e4eec8f977b7ea8e2e02b98e"
+    },
+    "owner_decision": {
+      "approved_at": "2026-10-27",
+      "approved_by": "Jefferson Nascimento",
+      "decision": "OD-2026-10-27-02",
+      "deferred_documents": [
+        "software_safety_analysis",
+        "tool_assurance_assessment"
+      ],
+      "enabled": true,
+      "instruction": "about the safety signature, I want it to be ignored during the development of forge-c",
+      "purpose": "DEVELOPMENT",
+      "schema": "forge-c/development-safety-policy/1"
+    },
+    "policy_ref": {
+      "path": "config/factory/development-safety-policy.yaml",
+      "sha256": "e6aa207bd769fb7c3a8b896c68288e14e4c6fbda4f4b3f6bd426abc735335cdb"
+    },
+    "purpose": "DEVELOPMENT",
+    "safety_approval": null,
+    "schema": "forge-c/development-safety-binding/1",
+    "scope": "DEVELOPMENT_ONLY_SIGNATURES_DEFERRED",
+    "validator_sha256": "229a490d3601b0042fdd9075a507c9617dc66c22896b7f71a08e7bb2e26c0235"
+  },
+  "driver": "Synthetic SER module (HAL + LL), feature 020 test fixture",
+  "factory_revision": "<volatile>",
+  "guideline": "inputs/hal_guideline.md (synthetic fixture)",
+  "input_baseline_commit": "<volatile>",
+  "inputs": [
+    {
+      "bytes": 227,
+      "path": "inputs/DS9999-rev1-datasheet.md",
+      "role": "datasheet",
+      "sha256": "92fbe6556c6e2e3ada1ec5c083400feb03f4fbdf4afec124334368290729d801"
+    },
+    {
+      "bytes": 1721,
+      "path": "inputs/RM9999-rev2-ch42-ser.md",
+      "role": "reference_manual_ser_chapter",
+      "sha256": "ae7836425506ef94509b0aad76a7cc0de964238e0aa65aee499f54ce35a08d92"
+    },
+    {
+      "bytes": 287,
+      "path": "inputs/RM9999-rev2-memory-map-ser.md",
+      "role": "reference_manual_memory_map",
+      "sha256": "49b2dd150e63ff202d04a10417ad597169cca6f7625e5d39effe1f5fa5658042"
+    },
+    {
+      "bytes": 1121,
+      "path": "inputs/ser_device.h",
+      "role": "cmsis_device_header",
+      "sha256": "3250253fb1a781edb0945fe13ed8ace370d00a8856335cd145473515f4ca159c"
+    },
+    {
+      "bytes": 691,
+      "path": "inputs/inputs-manifest.json",
+      "role": "conversion_provenance",
+      "sha256": "03fca4405f9586eb2b84c75b997396d5d0c256391c0889b456567f6f785918b6"
+    },
+    {
+      "bytes": 295,
+      "path": "inputs/hal_guideline.md",
+      "role": "development_guideline",
+      "sha256": "e00609964421e3284f1bc11949865975d3352bb1f045cde2d2fe3f340497e810"
+    }
+  ],
+  "layer": "LL+HAL",
+  "outputs": {
+    "SWE.1": "workproducts/SWE.1/software_requirements.md (EARS) + traceability/requirements_to_tests.csv + safety/software_safety_requirements.md",
+    "SWE.2": "workproducts/SWE.2/software_architecture.md",
+    "SWE.3": "workproducts/SWE.3/detailed_design.md + software/hal/*.c|h + software/ll/*.h",
+    "SWE.4": "workproducts/SWE.4/unit_verification_report.md + software/tests/unit/test_*.c",
+    "SWE.5": "workproducts/SWE.5/integration_verification_report.md + software/tests/integration/test_*.c + software/tests/target/test_*.c (Renode)",
+    "SWE.6": "workproducts/SWE.6/software_verification_report.md"
+  },
+  "provided": [],
+  "purpose": "DEVELOPMENT",
+  "quality": {
+    "misra": {
+      "deviation_owner_approval": true,
+      "open_violations_max": 0,
+      "undeviated_rules_max": 0
+    },
+    "requirements_coverage": {
+      "swr_verified_swe6": {
+        "minimum": 100,
+        "target": 100
+      },
+      "uspec_tested": {
+        "minimum": 100,
+        "target": 100
+      }
+    },
+    "structural_coverage": {
+      "branch": {
+        "minimum": 100,
+        "target": 100
+      },
+      "line": {
+        "minimum": 100,
+        "target": 100
+      },
+      "mcdc": {
+        "minimum": 100,
+        "target": 100
+      }
+    }
+  },
+  "quality_source": "defaults",
+  "register_contract": "rc-v1",
+  "resume_identity": {
+    "configuration": {
+      ".forge-run/checklists/SWE.1.json": "c490a24a48487d77132b60059304a63e79de2e9083c283b09040c01729e55db9",
+      ".forge-run/checklists/SWE.2.json": "3b5c4151a0cb3ce78c7dbe8d0a98f0d02f87e6e17f9569aedce186ec62cd87b4",
+      ".forge-run/checklists/SWE.3.json": "6cc8a1fb5a4ec7bfe3c8d6e235447a819f7c8a550ff49e82226048fccff9b5a5",
+      ".forge-run/checklists/SWE.4.json": "10b9d7223f68d3f13f79b85614eef4336a5906c93f506f62c8277d1b1dcc22d3",
+      ".forge-run/checklists/SWE.5.json": "0e44ac297f6703fb8927cf07df224b4580a392f88de11fbc9fbe69af018c9a50",
+      ".forge-run/checklists/SWE.6.json": "019e1d02abb5d2fa6582dab85beef2f1f8f49afd51cb818f28ea34ad57a5e7fe",
+      "configuration/system_names.json": "c9aa42eef733b2311c80cdb1c98126c20a73d43add26c78d3682b97fb2a49971",
+      "configuration/target_baseline.json": "4d5613b303643c464dcc166ecb17e8bfa8c96557750e187a76e3b1200e66b424"
+    },
+    "contract_sha256": "26126aeff91dd5e8af5252c32df47734e822980d9f01cecd8758cf498308610e",
+    "input_files": {
+      "inputs/DS9999-rev1-datasheet.md": "92fbe6556c6e2e3ada1ec5c083400feb03f4fbdf4afec124334368290729d801",
+      "inputs/RM9999-rev2-ch42-ser.md": "ae7836425506ef94509b0aad76a7cc0de964238e0aa65aee499f54ce35a08d92",
+      "inputs/RM9999-rev2-memory-map-ser.md": "49b2dd150e63ff202d04a10417ad597169cca6f7625e5d39effe1f5fa5658042",
+      "inputs/hal_guideline.md": "e00609964421e3284f1bc11949865975d3352bb1f045cde2d2fe3f340497e810",
+      "inputs/index.md": "0ec52351421386cdf7a7e36cd3fa4131f0648ce75bd68250c0c1ed5baf3155cc",
+      "inputs/inputs-manifest.json": "03fca4405f9586eb2b84c75b997396d5d0c256391c0889b456567f6f785918b6",
+      "inputs/sections/RM9999/2.1_Peripheral_boundary_addresses.md": "2a3fab04a1ef9d6ff1147880c52be1d31e937edc18f542ea26a74a94bd372a90",
+      "inputs/sections/RM9999/2_Memory_map.md": "b3f9defffd29ed40ed5bfd91b4f4d2ec0a156f0154eb8630bf647f660ff2ff52",
+      "inputs/sections/RM9999/42.1_Introduction.md": "184321b55b16328cee186c97c7ea19c98e03aace054bb48608ed814ad5288687",
+      "inputs/sections/RM9999/42.2_Main_features.md": "fc2ee112f130c64ead002d399330318caa1f7ea889513fd268fa3e17e022703a",
+      "inputs/sections/RM9999/42.3.1_Transmitter.md": "e33b88db7df149f020a15555985775573771280d823ad0a7427151c8fe30699c",
+      "inputs/sections/RM9999/42.3.2_Receiver.md": "c55f6c1b7216c492c3cbd296b8373c5178b4bd2fb8e5f0cbac55333333fd391d",
+      "inputs/sections/RM9999/42.3.5_Loopback_mode.md": "a2b38b21cd2b6ead163b18ee13c114cfbc89d31c2b5dd3d4e309955568cda0e1",
+      "inputs/sections/RM9999/42.3_Functional_description.md": "f06ba5cb6a86ea458bb11bcb258f175cbb593107f169a83c6b3694b5fc629bbb",
+      "inputs/sections/RM9999/42.7.1_SER_control_register_SER_CR.md": "9f6cbba248fcbfd59cd94f76eb52ccee018254ff89e118bdeb7fbef83f2cd37d",
+      "inputs/sections/RM9999/42.7.2_SER_baud_rate_register_SER_BRR.md": "65d51812909c41aecf485ff3f73ef289e1bce20697b063b28b7abb4f02a192d6",
+      "inputs/sections/RM9999/42.7.3_SER_interrupt_and_status_register_SER_ISR.md": "3d9f4be19dbae8ca4ec3541c46d5992b4c03eb2665b8b74222bc8a8d40780c8f",
+      "inputs/sections/RM9999/42.7.4_SER_interrupt_flag_clear_register_SER_ICR.md": "8702c9a1eeaa99b4737f35f65373287ab9ff419bbed84f4f9ac5fb2b9f052163",
+      "inputs/sections/RM9999/42.7.5_SER_transmit_data_register_SER_TDR.md": "2c098a5c536ac2149ba9b71187a88249a8c9132fa141fe44f733faa86eaa11e2",
+      "inputs/sections/RM9999/42.7.6_SER_receive_data_register_SER_RDR.md": "da7b70e7eb0d170c17bd1195131be53bac0a58ca2ddf017822534ca643b57c36",
+      "inputs/sections/RM9999/42.7_SER_registers.md": "9109921312f7d36cf21b5778b79ceeaa306ae3fc0ed988f09db5262bf6e46e46",
+      "inputs/sections/RM9999/42_Serial_interface_SER.md": "58bc036cbb4211a0a58911a05caed1a7c2b19160d6bb987213244f9066d3c31f",
+      "inputs/ser_device.h": "3250253fb1a781edb0945fe13ed8ace370d00a8856335cd145473515f4ca159c"
+    },
+    "schema": "forge-c/brownfield-resume/1"
+  },
+  "rules": [
+    "Cite source as DOC p.N for every hardware fact",
+    "Never invent registers or bits",
+    "Final reply: compact JSON only"
+  ],
+  "schema": "forge-c/work-order/0.4",
+  "scope": [
+    "SER module: the HAL and LL services of the synthetic serial interface",
+    "Out of scope: loopback mode"
+  ],
+  "section_index_files": {
+    "inputs/DS9999-rev1-datasheet.md": ".forge-run/index/DS9999-rev1-datasheet.json",
+    "inputs/RM9999-rev2-ch42-ser.md": ".forge-run/index/RM9999-rev2-ch42-ser.json",
+    "inputs/RM9999-rev2-memory-map-ser.md": ".forge-run/index/RM9999-rev2-memory-map-ser.json",
+    "inputs/hal_guideline.md": ".forge-run/index/hal_guideline.json"
+  },
+  "system_names": [
+    "SER driver",
+    "SER HAL driver",
+    "SER LL driver"
+  ],
+  "target": {
+    "core": "Arm Cortex-M55",
+    "hsi_contract": "RM9999 Rev 2 (synthetic fixture)",
+    "part_number": "SYNTH-MCU (feature 020 fixture)",
+    "safety_allocation": "OUT_OF_SCOPE: QM test fixture, no safety allocation",
+    "silicon_revision": "UNSPECIFIED",
+    "source_documents": [
+      "RM9999 Rev 2",
+      "DS9999 Rev 1"
+    ]
+  },
+  "tool_versions": "<volatile>",
+  "trace_profile": "owner-2026-10-17",
+  "unit_verification": "uspec-gtest-v1",
+  "upstream": {
+    "issues": [
+      "UPSTREAM_FILE_MISSING"
+    ],
+    "sha256": null,
+    "status": "NOT_PROVIDED"
+  },
+  "work_order": "WO-F020-L2"
+}

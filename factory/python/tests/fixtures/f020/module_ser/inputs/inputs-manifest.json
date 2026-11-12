@@ -1,0 +1,28 @@
+{
+  "documents": [
+    {
+      "converter": "synthetic (feature 020 test fixture)",
+      "doc": "RM9999",
+      "markdown": "RM9999-rev2-ch42-ser.md",
+      "pages": [410, 413]
+    },
+    {
+      "converter": "synthetic (feature 020 test fixture)",
+      "doc": "RM9999",
+      "markdown": "RM9999-rev2-memory-map-ser.md",
+      "pages": [80, 80]
+    },
+    {
+      "converter": "synthetic (feature 020 test fixture)",
+      "doc": "RM9999",
+      "markdown": "RM9999-rev2-ch43-tmr.md",
+      "pages": [420, 421]
+    },
+    {
+      "converter": "synthetic (feature 020 test fixture)",
+      "doc": "DS9999",
+      "markdown": "DS9999-rev1-datasheet.md",
+      "pages": [12, 12]
+    }
+  ]
+}

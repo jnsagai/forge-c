@@ -234,6 +234,9 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
     qm_scope = qm.binding() if purpose == qm.PURPOSE else None
     development = binding(purpose) if aspice_scope is None and qm_scope is None else None
     spec = json.loads((example / "workorder.json").read_text())
+    from .governance import level as swe1_level_setting
+
+    level_keys = swe1_level_setting.manifest_keys(spec)  # feature 020: an invalid block is refused before anything
     onboarded = None
     from .onboarding.factory_hal import block as factory_hal_block
 
@@ -413,7 +416,9 @@ def prepare(example: Path, wo: str, provided_from: str | None = None, resume_lim
         **({"provided_build": provided_build} if provided_build else {}),  # CAPA-128 (brownfield/cmsis.py)
         "target": target,
         "trace_profile": TRACE_PROFILE,
-        "register_contract": REGISTER_CONTRACT,
+        # feature 020 (research R2): a functional-level SWE.1 order has no register contract; only it gets level keys
+        **({} if level_keys else {"register_contract": REGISTER_CONTRACT}),
+        **level_keys,
         "unit_verification": UNIT_VERIFICATION,
         "quality": quality_block, "quality_source": quality_source,  # owner rule 2026-11-03: the order's quality
         **({"hal_unit_isolation": HAL_UNIT_ISOLATION} if layer == "HAL" and not standalone else {}),
@@ -997,6 +1002,9 @@ def run(
         )
     # Preserve provider/profile/auth refusal order before touching a delivery or source workspace.
     spec = json.loads((example / "workorder.json").read_text())
+    from .governance.level import check_phase_scope
+
+    check_phase_scope(spec, stop_after)  # feature 020: a functional-level order runs SWE.1 only (R2)
     fresh_origin = None
     if fresh_recovery_from:
         from .brownfield.resume import source_workspace

@@ -118,6 +118,8 @@ def contract(man: dict) -> dict:
                                   "cmsis_host_test_linkage") if k in man},
             **({"semantic_required_operations": man["semantic_required_operations"]}
                if "semantic_required_operations" in man else {}),
+            # feature 020: the SWE.1 level setting, only when the order sets it (other contracts unchanged)
+            **{k: man[k] for k in ("swe1_level", "swe1_template", "swe1_use_cases_owner") if k in man},
             "inputs": sorted((r["path"], r["role"], r["sha256"]) for r in man.get("inputs", [])),
             "provided": sorted((r["path"], r["sha256"]) for r in man.get("provided", [])),
             "delivered": sorted((r["path"], r["role"], r["sha256"]) for r in man.get("delivered", []))}
