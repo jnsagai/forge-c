@@ -1,0 +1,121 @@
+{
+ "graphs": {
+  "native-hal": {
+   "graph": "f8773adc3fd74b3d51e0b112b3b1144e963090a257691406097442a81d8350ab",
+   "nodes": "33ca8b687fb41f2ae8643597654a26b2125a7d7f62f97cbbb4c7e68741e34e2a"
+  },
+  "native-ll-swe1": {
+   "graph": "edb4f5b88cf2389a6270bf7e21b6f263d983452b231b67019efdddfe06b6b86d",
+   "nodes": "b120259997119684b9d032a63d4428467bc2c45e018abbfba41d1f161168bcad"
+  },
+  "native-llhal-frozen-cmsis-swe1": {
+   "graph": "35d97d92fc53af6f99e6d3b521d60ca97ce6666dc7da296ae2d53d34b29bf9e8",
+   "nodes": "b120259997119684b9d032a63d4428467bc2c45e018abbfba41d1f161168bcad"
+  },
+  "structured-all": {
+   "graph": "f299e29b326ec2941259bada79264bcb2072b8ed135009a1b133f8ad7d92f9de",
+   "nodes": "1eb0bc0d5761b00a889922f341ecca2c4bc976cecaef3c9a013d2b871a349d08"
+  },
+  "structured-swe1-two-phase": {
+   "graph": "7d793a95849d8cb24c72cbfc28f54912915d86ec397cb9b000ab8218b281288e",
+   "nodes": "c0760ff80e654869a9c97b3997e47c86b094d85f9c97157a14a4e04e30f0579f"
+  },
+  "structured-swe1-two-phase-llhal-frozen": {
+   "graph": "403d13d45b9bdc9dc15f7c40f7561605a0a1e44f256ff82aa69ae7d23856d35d",
+   "nodes": "c0760ff80e654869a9c97b3997e47c86b094d85f9c97157a14a4e04e30f0579f"
+  }
+ },
+ "iwdg_register_level": {
+  "author_packets": {
+   "requirements:IWDG_KR": [
+    "510537e0bd2e0e9d690e80034ff4cbd88fbbc5817b0b329c225ab093a4ce7c6c",
+    "875f806a2a99b23dc89249efe3736ec785d8b94f767bab3c99d5d04410be1b6f"
+   ],
+   "requirements:IWDG_PR": [
+    "e58c044a0db245f89072926d52b0147e5943ba4b82d0d529b8d6c470bb548a9a",
+    "1b33b0cfddd93815511d0029a214482077293ef2eb6612eebfac301d51da9358"
+   ],
+   "requirements:IWDG_RLR": [
+    "dc674e30ce04b5db472bc2839caad3797bf13714871c8d157ce17883471f03cf",
+    "c770769b776bf567c9c8f29938ec56e25da20f459b0a770733a083cbf996dca8"
+   ],
+   "requirements:IWDG_SR_1": [
+    "7491235a8b79e6148d80c2082e07c6d26a96ca55a1d18223920fa802cd12461d",
+    "7bf1bb551af906aaa50a7e6b3be5d22bfb18e82bb3e5e9b964b340ae4a1d01b6"
+   ],
+   "requirements:IWDG_SR_2": [
+    "2fabe4dd318156c9a61c265f85a89efb86c71ba737d63af28d4fcf12dc9c4434",
+    "9b00c3e578b40dd6445fa7c3c02f59e53648bc4d1f60a8c369612fe67db08e65"
+   ],
+   "requirements:crosscutting": [
+    "f3933923f8800fd26cd2f139d78d36c3572f4ec0226c4451a3a46dd31c640fd8",
+    "d71951d59656c411ded9d5b512f969595e3c271e4442d10ab13ed5f029f54516"
+   ]
+  },
+  "gate": {
+   "rc": 0,
+   "steps": [
+    "step_author",
+    "RC.check_effects"
+   ]
+  },
+  "phase1_packets": {
+   "iq:budgets:budget_flash": [
+    "7ae8285caee4d4962bc6c12ed9c1861d824c8a66dfaa5ade4b09c6052f3efc08",
+    "4d52488db5dffa4a5afcc2168cc837d9109b98746bbde1df13d654ea518d726e"
+   ],
+   "iq:budgets:budget_stack": [
+    "b9dcf9b9eb9f0e55028255062146fde5f0de1fb32b666524f345fdaf643cfca3",
+    "ca38cda3d318fed446408f288f0927d15234adb9a5ad8ee185dfa2befbfb93de"
+   ],
+   "iq:budgets:budget_static_ram": [
+    "40ac0da87aa5627e74962294534b8cbe2bd4590e135264fd546359c702948ec1",
+    "8c1df069b21b1df3e59e4e9f7b284277a85561dd71016a2fcfc70e5d84a0a2af"
+   ],
+   "iq:requirements:IWDG_KR:lock": [
+    "c5b200412ff83e292184ca924d6eac85a9130cbd4b828cb7e0e53c1d8c6e8b78",
+    "b1e9966ed623f434767cc5a6b0cea771686adf87502a13a78cd2d9278d030bda"
+   ],
+   "iq:requirements:IWDG_KR:refresh": [
+    "53799a33f6e28ce2073aa9f20cf3c3ed548fdfd011bdfa7335b79ccf54c1e5c1",
+    "dc2c05e93c98f95e48d867eabc70c205f12308259b6accc4dfa3246286d051a3"
+   ],
+   "iq:requirements:IWDG_KR:start": [
+    "4152e9ed346ef4d0cc419c8ec6816df7acbf177198bdbedaf01a44d79fbc9fe9",
+    "7fa4155a18c1c1c29a53c561f6680e7aed0d3efe291e7190fea8f1a23f766806"
+   ],
+   "iq:requirements:IWDG_KR:unlock": [
+    "46e59ff3d8cede216e5e63e71f1fe60ea511d13b21b7fc517aa0d710bd46b278",
+    "b4529bcfa2faccecf04f400d786efdb5d12d5cb02cd67bdd5202a8df40bde254"
+   ],
+   "iq:requirements:IWDG_PR:prescaler": [
+    "7e82d1850ace7ae7e8bfedd878e90476a0082a5561e62789a7e9e141cc1e4c15",
+    "37337c39b37805c3075977986023485b05227cdf06e8eebb8f898161ed89cb9e"
+   ],
+   "iq:requirements:IWDG_RLR:reload": [
+    "d8b1565e9d07ec3b73960acf8062dbbdae2c0152a9df11b7d27565018ea38224",
+    "36ab05c553382aeec493fb66718b611d7095b98b86cb6223f48001652eb6190f"
+   ],
+   "iq:requirements:IWDG_SR_1:onf_set": [
+    "c2ad9d338006cc77d0b50d4b39941bfd67a6dcaa0a2e77c0b6934d9e96478a18",
+    "36cbd33c232f3941bc6b9dff24f1e50ee11fe46b746ef08cbcd92aace3d99658"
+   ],
+   "iq:requirements:IWDG_SR_2:pvu": [
+    "a92271c0783a84ba200887ffcc3a3ecefe748076d07f82ab42889113d03bff20",
+    "68fe5eae129629fd31616a3380475313396b6681217625b2a137a5efbf1cda65"
+   ],
+   "iq:requirements:IWDG_SR_2:rvu": [
+    "0a8e61417ad571ee36c65a0e3423ad6db372a40de1023877b081a6df5d7fdf6c",
+    "b7c7c5c50c02aade09de43ed8d5f284dae0e82d83d0c8fcabf5e138c81e0db92"
+   ],
+   "iq:requirements:crosscutting:startup": [
+    "6d69ed81abcb51f0311927bdbc97bec1d78bb8022c2e8f85916572130a4c8b1b",
+    "37a918aeb06e0c652e64ad8c36950ad9631dac9f7c365e9fef6e1c1b0a6d9089"
+   ]
+  }
+ },
+ "skills": {
+  "swe1-author": "b3a33693071fc130ed9bf6f3eb94cb1eaf6372f841b12dc9dfddf5623723922e",
+  "swe1-inspector": "dd9f825f05e63dbbf3dd8daa11e4a70737c30e21c9a85553f2282cc130f152f7"
+ }
+}
