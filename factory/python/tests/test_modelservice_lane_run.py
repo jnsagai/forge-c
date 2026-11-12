@@ -188,3 +188,51 @@ def test_each_order_rewrites_the_fabro_settings_for_its_profile(tmp_path, clean_
     lr.run(["python", "-m", "forge_factory.workorder"])
     from forge_factory.lrtx import stack
     assert (r / "fabro/settings.toml").read_text() == stack.fabro_config(lr.settings())
+
+
+def test_the_gateway_upstream_is_the_service_root_so_calls_are_not_doubled():
+    """Qualification window 1 (2026-11-12): every lane call went to /v1/v1/chat/completions and got HTTP 404."""
+    import httpx
+
+    from forge_factory.modelservice.gateway_external import upstream_of
+    for base, root in (("unix:/x/tier.sock", "http://model-service"), ("http://127.0.0.1:18480/v1", "http://127.0.0.1:18480"),
+                       ("http://127.0.0.1:18480/v1/", "http://127.0.0.1:18480"), ("http://h:1", "http://h:1")):
+        up, _ = upstream_of({"base_url": base})
+        assert up == root
+        assert httpx.Client(base_url=up).build_request("POST", "/v1/chat/completions").url.path == "/v1/chat/completions"
+
+
+def test_a_profile_that_needs_native_measurement_is_blocked_with_its_reason(tmp_path, monkeypatch):
+    from forge_factory.lrtx import request_measurement as RM
+
+    r = _lane(tmp_path)
+    (r / "venv/bin").mkdir(parents=True)
+    (r / "venv/bin/python").write_text("")
+    (tmp_path / "s").write_text("forge-qual=x\n")
+    (tmp_path / "fabro").write_text("")
+    monkeypatch.setattr(lane_run, "FABRO_BIN", tmp_path / "fabro")
+    lr = lane_run.LaneRunner(LaneConfig(root=r, secrets=tmp_path / "s"), PROFILE)
+    assert lr.ready() is None
+    monkeypatch.setitem(RM.PINNED_PROFILE_ROUTES, PROFILE, {"qwen3.8:27b-q8_0": RM.METHOD})
+    assert lr.ready() == "REQUEST_MEASUREMENT_NOT_OFFERED_BY_MODEL_SERVICE"
+
+
+def test_the_ledger_keeps_the_order_verdict_and_blocked_profiles_are_reported_not_recorded(tmp_path):
+    q = tmp_path / "set.yaml"
+    q.write_text(yaml.safe_dump({"phases": [
+        {"phase": "SWE.1", "baseline": {"order": "WO-F014-SWE1-CRCHAL-20261103-L27",
+                                         "launch": {"example": "examples/0014m-crc-hal", "profile": "A"}}},
+        {"phase": "SWE.6", "baseline": {"order": "WO-F014-SWE6-AFOQUAL-20261105-L90AC",
+                                         "launch": {"example": "examples/0014m-crc-hal", "profile": "B"}}}]}))
+
+    class P:
+        returncode = 0
+        stdout = 'log line\n{"work_order": "X", "status": "BLOCKED"}\n'
+        stderr = ""
+    out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, owner_workorders=tmp_path,
+                                     lane_root=tmp_path / "lane", env={}, run=lambda *a, **k: P(), stamp="s",
+                                     blocked_profiles={"B": "REQUEST_MEASUREMENT_NOT_OFFERED_BY_MODEL_SERVICE"})
+    led = __import__("json").loads((tmp_path / "lane/qualification-ledger.json").read_text())
+    assert out["ran"] == ["WO-F017Q-SWE1-CRCHAL-s"] and led["orders"]["WO-F017Q-SWE1-CRCHAL-s"]["status"] == "BLOCKED"
+    assert out["blocked"] == {"WO-F017Q-SWE6-AFOQUAL-s": "REQUEST_MEASUREMENT_NOT_OFFERED_BY_MODEL_SERVICE"}
+    assert "WO-F017Q-SWE6-AFOQUAL-s" not in led["orders"]

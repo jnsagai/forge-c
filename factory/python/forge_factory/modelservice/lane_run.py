@@ -207,6 +207,11 @@ class LaneRunner:
             return "FABRO_BINARY_MISSING"
         if not Path(self.cfg.secrets).is_file():
             return "MODEL_SERVICE_SECRETS_MISSING"
+        from ..lrtx.request_measurement import PINNED_PROFILE_ROUTES
+
+        measured = ((self.prof.get("gateway") or {}).get("request_measurement") or {}) or PINNED_PROFILE_ROUTES.get(self.prof["id"])
+        if measured:  # native measurement posts /apply-template and /tokenize to a llama.cpp route; the tier has none
+            return "REQUEST_MEASUREMENT_NOT_OFFERED_BY_MODEL_SERVICE"
         return None
 
     # ---- inside a window ---------------------------------------------------------------------------------------

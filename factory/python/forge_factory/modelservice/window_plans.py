@@ -211,7 +211,7 @@ def seed_lane(o: dict, owner_workorders: Path, lane_workorders: Path) -> list[st
 def qualification(ctx: dict, *, qset_path: Path = ROOT / "config/factory/qualification-set.yaml",
                   owner_workorders: Path = Path("/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders"),
                   lane_root: Path = STATE / "qual-lane", env: dict | None = None, run=None,
-                  stamp: str | None = None) -> dict:
+                  stamp: str | None = None, blocked_profiles: dict | None = None) -> dict:
     """Without an injected `run`, each order runs in the qualification lane's own namespace (lane_run.LaneRunner):
     the lane must have been bootstrapped outside the window, and the relay to the tier lives for this plan only."""
     qset = yaml.safe_load(Path(qset_path).read_text())
@@ -223,24 +223,27 @@ def qualification(ctx: dict, *, qset_path: Path = ROOT / "config/factory/qualifi
         if not profiles:
             return {"ran": [], "refused": "QUALIFICATION_SET_WITHOUT_PROFILE"}
         runners = {pid: LaneRunner(LaneConfig(root=Path(lane_root)), pid) for pid in profiles}
-        why = next((f"{w}:{pid}" for pid, r in runners.items() if (w := r.ready())), None)
-        if why:
-            return {"ran": [], "refused": why}
+        why = {pid: w for pid, r in runners.items() if (w := r.ready())}
+        if len(why) == len(runners):
+            return {"ran": [], "refused": "; ".join(f"{w}:{pid}" for pid, w in sorted(why.items()))}
 
         def run_in_lane(argv, **kw):  # each order runs under its own baseline profile
             return runners[argv[argv.index("--profile") + 1]].run(argv, **kw)
-        first = runners[profiles[0]]
+        first = next(r for pid, r in runners.items() if pid not in why)
         with first.relay():
             return qualification(ctx, qset_path=qset_path, owner_workorders=owner_workorders, lane_root=lane_root,
-                                 env=first.env(), run=run_in_lane, stamp=stamp)
+                                 env=first.env(), run=run_in_lane, stamp=stamp, blocked_profiles=why)
     ledger_path = lane_root / "qualification-ledger.json"
     ledger = json.loads(ledger_path.read_text()) if ledger_path.is_file() else {"stamp": stamp or time.strftime("%Y%m%d"), "orders": {}}
     lane_wos = lane_root / "state/workorders"
     lane_wos.mkdir(parents=True, exist_ok=True)
     env = env or {**os.environ, "FORGE_STATE_DIR": str(lane_root / "state"), "FORGE_LRTX_ROOT": str(lane_root)}
-    done, left = [], []
+    done, left, blocked = [], [], {}
     for o in orders(qset, ledger["stamp"]):
         if o["wo"] in ledger["orders"]:
+            continue
+        if (blocked_profiles or {}).get(o.get("profile")):  # explicit, not ledgered: it runs once the lane can
+            blocked[o["wo"]] = blocked_profiles[o["profile"]]
             continue
         if ctx["clock"]() > ctx["deadline"] - 3600:  # never start an order that cannot finish inside the window
             left.append(o["wo"])
@@ -253,7 +256,23 @@ def qualification(ctx: dict, *, qset_path: Path = ROOT / "config/factory/qualifi
         logs.mkdir(parents=True, exist_ok=True)
         (logs / f"{o['wo']}.out").write_text(f"{getattr(p, 'stdout', '') or ''}\n--- stderr ---\n{getattr(p, 'stderr', '') or ''}")
         ledger["orders"][o["wo"]] = {"phase": o["phase"], "baseline": o["baseline"], "exit": p.returncode,
+                                     "status": _order_status(getattr(p, "stdout", "") or ""),
                                      "wall_s": round(time.time() - t0), "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
         ledger_path.write_text(json.dumps(ledger, indent=1))
         done.append(o["wo"])
-    return {"ran": done, "not_started_for_time": left, "ledger": str(ledger_path)}
+    out = {"ran": done, "not_started_for_time": left, "ledger": str(ledger_path)}
+    if blocked:
+        out["blocked"] = blocked
+    return out
+
+
+def _order_status(stdout: str) -> str | None:
+    """The work order's own verdict (its last JSON line): exit 0 also ends a BLOCKED order."""
+    for line in reversed(stdout.strip().splitlines()):
+        try:
+            doc = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(doc, dict) and "status" in doc:
+            return str(doc["status"])
+    return None

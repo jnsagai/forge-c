@@ -24,9 +24,11 @@ def upstream_of(profile: dict, inner: httpx.AsyncBaseTransport | None = None) ->
     """'unix:/path' reaches a service socket on the shared filesystem (a lane in its own network namespace);
     anything else is the service URL itself."""
     base = profile["base_url"]
+    # llm_gateway posts to "/v1/chat/completions" relative to its upstream: give it the service ROOT (qualification
+    # window 1, 2026-11-12: a ".../v1" upstream made every call "/v1/v1/chat/completions" -> HTTP 404)
     if base.startswith("unix:"):
-        return "http://model-service/v1", inner or httpx.AsyncHTTPTransport(uds=base[len("unix:"):])
-    return base.rstrip("/"), inner or httpx.AsyncHTTPTransport()
+        return "http://model-service", inner or httpx.AsyncHTTPTransport(uds=base[len("unix:"):])
+    return base.rstrip("/").removesuffix("/v1"), inner or httpx.AsyncHTTPTransport()
 
 
 def build_app(profile: dict, *, secrets: Path, meter: Path, calls: Path, inner: httpx.AsyncBaseTransport | None = None,
