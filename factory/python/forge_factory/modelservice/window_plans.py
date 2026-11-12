@@ -210,9 +210,25 @@ def seed_lane(o: dict, owner_workorders: Path, lane_workorders: Path) -> list[st
 
 def qualification(ctx: dict, *, qset_path: Path = ROOT / "config/factory/qualification-set.yaml",
                   owner_workorders: Path = Path("/mnt/data/forge-c/swe1-fabro-20261031/lrtx/state/workorders"),
-                  lane_root: Path = STATE / "qual-lane", env: dict | None = None, run=subprocess.run,
+                  lane_root: Path = STATE / "qual-lane", env: dict | None = None, run=None,
                   stamp: str | None = None) -> dict:
+    """Without an injected `run`, each order runs in the qualification lane's own namespace (lane_run.LaneRunner):
+    the lane must have been bootstrapped outside the window, and the relay to the tier lives for this plan only."""
     qset = yaml.safe_load(Path(qset_path).read_text())
+    if run is None:
+        from .lane import LaneConfig
+        from .lane_run import LaneRunner
+
+        profiles = {(ph.get("baseline") or {}).get("launch", {}).get("profile") for ph in qset["phases"]} - {None}
+        if len(profiles) != 1:
+            return {"ran": [], "refused": f"QUALIFICATION_SET_PROFILES:{sorted(profiles)}"}
+        lr = LaneRunner(LaneConfig(root=Path(lane_root)), profiles.pop())
+        why = lr.ready()
+        if why:
+            return {"ran": [], "refused": why}
+        with lr.relay():
+            return qualification(ctx, qset_path=qset_path, owner_workorders=owner_workorders, lane_root=lane_root,
+                                 env=lr.env(), run=lr.run, stamp=stamp)
     ledger_path = lane_root / "qualification-ledger.json"
     ledger = json.loads(ledger_path.read_text()) if ledger_path.is_file() else {"stamp": stamp or time.strftime("%Y%m%d"), "orders": {}}
     lane_wos = lane_root / "state/workorders"
@@ -229,6 +245,9 @@ def qualification(ctx: dict, *, qset_path: Path = ROOT / "config/factory/qualifi
         t0 = time.time()
         p = run(argv_of(o), cwd=str(ROOT), env=env, capture_output=True, text=True,
                 timeout=max(60, int(ctx["deadline"] - ctx["clock"]() - 600)))
+        logs = lane_root / "logs"
+        logs.mkdir(parents=True, exist_ok=True)
+        (logs / f"{o['wo']}.out").write_text(f"{getattr(p, 'stdout', '') or ''}\n--- stderr ---\n{getattr(p, 'stderr', '') or ''}")
         ledger["orders"][o["wo"]] = {"phase": o["phase"], "baseline": o["baseline"], "exit": p.returncode,
                                      "wall_s": round(time.time() - t0), "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
         ledger_path.write_text(json.dumps(ledger, indent=1))
