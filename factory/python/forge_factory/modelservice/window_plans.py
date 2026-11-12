@@ -219,16 +219,20 @@ def qualification(ctx: dict, *, qset_path: Path = ROOT / "config/factory/qualifi
         from .lane import LaneConfig
         from .lane_run import LaneRunner
 
-        profiles = {(ph.get("baseline") or {}).get("launch", {}).get("profile") for ph in qset["phases"]} - {None}
-        if len(profiles) != 1:
-            return {"ran": [], "refused": f"QUALIFICATION_SET_PROFILES:{sorted(profiles)}"}
-        lr = LaneRunner(LaneConfig(root=Path(lane_root)), profiles.pop())
-        why = lr.ready()
+        profiles = sorted({(ph.get("baseline") or {}).get("launch", {}).get("profile") for ph in qset["phases"]} - {None})
+        if not profiles:
+            return {"ran": [], "refused": "QUALIFICATION_SET_WITHOUT_PROFILE"}
+        runners = {pid: LaneRunner(LaneConfig(root=Path(lane_root)), pid) for pid in profiles}
+        why = next((f"{w}:{pid}" for pid, r in runners.items() if (w := r.ready())), None)
         if why:
             return {"ran": [], "refused": why}
-        with lr.relay():
+
+        def run_in_lane(argv, **kw):  # each order runs under its own baseline profile
+            return runners[argv[argv.index("--profile") + 1]].run(argv, **kw)
+        first = runners[profiles[0]]
+        with first.relay():
             return qualification(ctx, qset_path=qset_path, owner_workorders=owner_workorders, lane_root=lane_root,
-                                 env=lr.env(), run=lr.run, stamp=stamp)
+                                 env=first.env(), run=run_in_lane, stamp=stamp)
     ledger_path = lane_root / "qualification-ledger.json"
     ledger = json.loads(ledger_path.read_text()) if ledger_path.is_file() else {"stamp": stamp or time.strftime("%Y%m%d"), "orders": {}}
     lane_wos = lane_root / "state/workorders"

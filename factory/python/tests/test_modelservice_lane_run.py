@@ -102,7 +102,7 @@ def test_the_window_plan_refuses_an_unprepared_lane_without_running_anything(tmp
         "launch": {"example": "examples/0014m-crc-hal", "profile": PROFILE}}}]}))
     r = _lane(tmp_path)
     out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, lane_root=r)
-    assert out == {"ran": [], "refused": "LANE_NOT_BOOTSTRAPPED:venv"}
+    assert out == {"ran": [], "refused": f"LANE_NOT_BOOTSTRAPPED:venv:{PROFILE}"}
 
 
 def test_select_reads_model_identity_from_the_model_service_in_the_lane(tmp_path, monkeypatch):
@@ -168,3 +168,23 @@ def test_relay_needs_socat_and_cleans_its_socket(tmp_path, clean_env):
         assert sock.exists()
     assert not sock.exists()
     assert subprocess.run(["true"]).returncode == 0
+
+
+def test_inputs_named_by_the_work_order_are_found_in_sibling_examples(tmp_path):
+    repo = tmp_path / "repo"
+    ex = repo / "examples/0014m-crc-hal"
+    ex.mkdir(parents=True)
+    (ex / "workorder.json").write_text(
+        '{"inputs": ["../0014-crc-st/inputs/RM.md", "inputs/local.md", "../../../outside.md"], "x": "plain"}')
+    got = lane_run._referenced_files(ex)
+    assert [str(p) for p in got] == ["examples/0014-crc-st/inputs/RM.md", "examples/0014m-crc-hal/inputs/local.md"]
+
+
+def test_each_order_rewrites_the_fabro_settings_for_its_profile(tmp_path, clean_env, monkeypatch):
+    r = _lane(tmp_path)
+    (r / "fabro").mkdir()
+    lr = lane_run.LaneRunner(LaneConfig(root=r), PROFILE)
+    monkeypatch.setattr(lane_run.subprocess, "run", lambda argv, **kw: 0)
+    lr.run(["python", "-m", "forge_factory.workorder"])
+    from forge_factory.lrtx import stack
+    assert (r / "fabro/settings.toml").read_text() == stack.fabro_config(lr.settings())

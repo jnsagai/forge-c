@@ -89,6 +89,23 @@ def served_identity(prof: dict, ms: dict, model: str, env: dict) -> dict:
             "expected_digest": want["digest"], "role_qualification": want["role_qualification"]}
 
 
+def _referenced_files(example: Path) -> list[Path]:
+    """Repo-relative paths of the files an example's work order names (its inputs may live in sibling examples)."""
+    import re
+
+    try:
+        text = (example / "workorder.json").read_text()
+    except OSError:
+        return []
+    repo = example.parents[1]
+    out = []
+    for ref in sorted(set(re.findall(r'"([^"\s]+\.(?:md|h|c|json|yaml|pdf|txt))"', text))):
+        target = (example / ref).resolve()
+        if target.is_relative_to(repo.resolve()):
+            out.append(target.relative_to(repo.resolve()))
+    return out
+
+
 class LaneRunner:
     """Runs one work order at a time inside the lane's namespace. `run` has `subprocess.run`'s calling shape."""
 
@@ -160,18 +177,22 @@ class LaneRunner:
         copied = []
         repo = Path(stack.REPO_ROOT)
         for ex in examples:
-            src = OWNER_EXAMPLES / Path(ex).name
-            if not src.is_dir():
-                continue
-            for f in src.rglob("*"):
-                rel = Path(ex) / f.relative_to(src)
-                dst = repo / rel
-                if f.is_file() and not dst.exists() and subprocess.run(
+            for rel in _referenced_files(repo / ex):
+                src, dst = OWNER_EXAMPLES.parent / rel, repo / rel
+                if src.is_file() and not dst.exists() and subprocess.run(
                         ["git", "-C", str(repo), "check-ignore", "-q", str(rel)]).returncode == 0:
                     dst.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(f, dst)
+                    shutil.copy2(src, dst)
                     copied.append(str(rel))
         return {**out, "model_service": str(ms_path), "inputs_copied": copied}
+
+    def prepare(self) -> None:
+        """This runner's profile owns the lane's Fabro settings for the next order (the set mixes profiles)."""
+        from ..lrtx import stack
+
+        f = self.root / "fabro/settings.toml"
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(stack.fabro_config(self.settings()))
 
     def ready(self) -> str | None:
         """Why the lane cannot run an order now (None = ready)."""
@@ -246,6 +267,7 @@ class LaneRunner:
     def run(self, argv: list[str], *, cwd=None, env=None, capture_output=False, text=False, timeout=None):
         """`subprocess.run` for one order, inside a fresh namespace of the lane. `python` is the lane's venv."""
         e = self.env()
+        self.prepare()
         argv = [e["FORGE_VENV"] + "/bin/python" if a == "python" and i == 0 else a for i, a in enumerate(argv)]
         return subprocess.run(["unshare", "-rn", "--kill-child", "bash", "-c", self.script(argv, e)],
                               cwd=cwd, env=e, capture_output=capture_output, text=text, timeout=timeout)
