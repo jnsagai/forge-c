@@ -307,6 +307,13 @@
 - [X] T047 [US3] Implement `factory/python/forge_factory/modelservice/qualify.py`, `report --out <dir>`. It reads the baseline from existing evidence and the per-node exchange export; it never replays C, B or L90 runs. It reads the candidate from qualification-lane runs, computes the measures per `contracts/qualification-report.schema.json` (including swaps and swap wait per phase from the SwapEvent records, FR-030), lists deviations from `params/omniverse2.yaml` against `params/production.yaml`, and writes JSON plus a plain-language markdown summary. T045 must pass.
 - [X] T048 [US3] Define the window plan `qualification` in `factory/python/forge_factory/modelservice/window_plans.py`. It queues fresh qualification-lane orders for the qualification-set phases, using the existing order mechanism for the qualification lane only. It resumes across windows from the last quality-checked part and stops cleanly at the window's hard end.
 - [ ] T049 [US3] [WINDOW] Run qualification windows until every qualification-set phase has a candidate result or is explicitly BLOCKED, within the owner's window limits (T043). Evidence goes to `specs/017-model-service-split/evidence/qualification/`.
+  Progress 2026-11-12 (not done): the qualification lane runs real orders through the model tier (lane_run,
+  68883523..3eead66b). Windows 1-2 and 3's packages were invalid (lane defects fixed: /v1 doubling, tenant context
+  65536, reused order ids); window 5 found a tier pre-check stricter than the engine (fixed c9d32218). Candidate gates
+  so far: SWE.1 1/2 PASS, SWE.2 1/2 PASS, SWE.3 1/1 PASS, SWE.4 not comparable, SWE.5 not run, SWE.6 window 6.
+  Method gap: every baseline ran on 2026-11-03..05 code, the candidate on current code; SWE.4 fails deterministically
+  because the exact-sentence timing check (5966722f) postdates the frozen baseline SWE.3 it resumes. A fair verdict
+  needs a same-revision baseline (owner decision). Draft report: model-service/qual-report-draft (INCOMPLETE).
 - [ ] T050 [US3] For every phase that passes on the baseline and fails on the candidate, open a CAPA via the CRE registry, attach the evidence and set `blocking_findings[].capa_id`.
 - [ ] T051 [US3] Produce the qualification report (`specs/017-model-service-split/evidence/qualification/report.json` and `report.md`) and hand it to the owner on the floor and in the summary. The verdict is one of `QUALIFIED_FOR_OWNER_REVIEW`, `NOT_QUALIFIED` or `INCOMPLETE`.
 
