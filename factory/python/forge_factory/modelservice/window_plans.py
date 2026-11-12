@@ -243,8 +243,9 @@ def qualification(ctx: dict, *, qset_path: Path = ROOT / "config/factory/qualifi
     lane_wos.mkdir(parents=True, exist_ok=True)
     env = env or {**os.environ, "FORGE_STATE_DIR": str(lane_root / "state"), "FORGE_LRTX_ROOT": str(lane_root)}
     done, left, blocked = [], [], {}
+    only = {x.strip() for x in os.environ.get("FORGE_QUALIFICATION_PHASES", "").split(",") if x.strip()}
     for o in orders(qset, ledger["stamp"]):
-        if o["wo"] in ledger["orders"]:
+        if o["wo"] in ledger["orders"] or (only and o["phase"] not in only):  # a window may target some phases only
             continue
         if (blocked_profiles or {}).get(o.get("profile")):  # explicit, not ledgered: it runs once the lane can
             blocked[o["wo"]] = blocked_profiles[o["profile"]]

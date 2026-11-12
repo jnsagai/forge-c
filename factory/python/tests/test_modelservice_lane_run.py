@@ -257,3 +257,18 @@ def test_an_archived_order_id_is_never_run_again_and_new_ledgers_get_a_fresh_sta
                                      lane_root=lane_root, env={}, run=lambda *a, **k: P())
     import re
     assert len(out["ran"]) == 1 and re.fullmatch(r"WO-F017Q-SWE1-CRCHAL-\d{8}T\d{4}", out["ran"][0])
+
+
+
+def test_a_window_can_target_some_phases_only(tmp_path, monkeypatch):
+    q = tmp_path / "set.yaml"
+    q.write_text(yaml.safe_dump({"phases": [
+        {"phase": ph, "baseline": {"order": 'WO-F014-' + ph.replace('.', '') + '-CRCHAL-20261103-L27',
+                                    "launch": {"example": "examples/0014m-crc-hal", "profile": "A"}}} for ph in ("SWE.1", "SWE.6")]}))
+
+    class P:
+        returncode, stdout, stderr = 0, '{"status": "BLOCKED"}', ""
+    monkeypatch.setenv("FORGE_QUALIFICATION_PHASES", "SWE.6")
+    out = window_plans.qualification({"deadline": 10 ** 10, "clock": lambda: 0}, qset_path=q, owner_workorders=tmp_path,
+                                     lane_root=tmp_path / "lane", env={}, run=lambda *a, **k: P(), stamp="s")
+    assert out["ran"] == ["WO-F017Q-SWE6-CRCHAL-s"]
