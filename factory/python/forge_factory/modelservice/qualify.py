@@ -133,8 +133,9 @@ def build(qset: dict, baseline_export: Path, candidate_export: Path, mirror: dic
                 cand.update(swaps=nswaps, swap_wait_s=wait)
             rows.append({"phase": ph["phase"], "node": node, "baseline": _side(b, bm.get(node), "NOT_RUN"), "candidate": cand})
         if bsum == "PASS" and csum in ("FAIL", "BLOCKED"):
+            ratio = f" (candidate samples passed {c['pass_ratio']})" if c.get("pass_ratio") else ""
             findings.append({"phase": ph["phase"], "summary": f"{ph['phase']} ({ph.get('lineage', '')}) passes on the current setup and "
-                             f"is {csum} on the production-like setup", "capa_id": ph.get("capa") or "CAPA-PENDING",
+                             f"is {csum} on the production-like setup{ratio}", "capa_id": ph.get("capa") or "CAPA-PENDING",
                              "evidence": [*(b.get("evidence") and [b["evidence"]] or []), *(c.get("evidence") and [c["evidence"]] or [])],
                              "status": ph.get("capa_status", "OPEN")})
     open_findings = [f for f in findings if f["status"] == "OPEN"]
@@ -161,17 +162,56 @@ def validate(report: dict) -> None:
 
 
 def gate_outcome(workspace: Path) -> str | None:
-    """The phase verdict of one order: the gate decision of the last inspection in its gate log."""
+    """The phase verdict of one order: PASS when its last inspection passed; BLOCKED when its phase stopped (a route or
+    gate decided BLOCKED, e.g. rework budget exhausted) or its last inspection did not pass; None without a gate log.
+    (Qualification window 4, 2026-11-12: a phase that ran out of rework rounds ended on REWORK, which the report showed
+    as NOT_RUN.)"""
     log = Path(workspace) / ".forge-run/gates/gate-log.jsonl"
-    last = None
-    for line in log.read_text().splitlines() if log.is_file() else []:
+    if not log.is_file():
+        return None
+    last, blocked, any_entry = None, False, False
+    for line in log.read_text().splitlines():
         try:
             e = json.loads(line)
         except ValueError:
             continue
-        if e.get("step") == "inspect" and isinstance(e.get("gate"), dict):
-            last = e["gate"].get("decision")
-    return last
+        any_entry = True
+        g = e.get("gate") if isinstance(e.get("gate"), dict) else {}
+        if e.get("step") == "inspect" and g:
+            last = g.get("decision")
+            blocked = False  # only a stop after the last inspection counts
+        if g.get("decision") == "BLOCKED":
+            blocked = True
+    if last == "PASS" and not blocked:
+        return "PASS"
+    return "BLOCKED" if any_entry else None
+
+
+def fill_candidates(qset: dict, ledgers: list[Path]) -> dict:
+    """The candidate side of every phase from the qualification lane's ledgers (the current one and kept earlier
+    windows whose gate logs are genuine). Several samples of one phase: PASS only if every sample passed, else the
+    worst outcome; each sample is listed (order, Fabro run, outcome) with the pass ratio."""
+    samples: dict[str, list[dict]] = defaultdict(list)
+    for ledger in ledgers:
+        doc = json.loads(Path(ledger).read_text())
+        for wo, rec in doc.get("orders", {}).items():
+            ws = next((w for w in (Path(ledger).parent / "state/workorders" / wo / "workspace",
+                                   Path(ledger).parent / wo / "workspace") if w.is_dir()), None)
+            if ws is None:
+                continue
+            rid_f = ws / ".forge-run/fabro_run_id"
+            samples[rec["phase"]].append({"order": wo, "run": rid_f.read_text().strip() if rid_f.is_file() else None,
+                                          "outcome": gate_outcome(ws) or "BLOCKED", "at": rec.get("at")})
+    rank = {"PASS": 0, "FAIL": 1, "BLOCKED": 2}
+    for ph in qset["phases"]:
+        got = sorted(samples.get(ph["phase"], []), key=lambda x: x.get("at") or "")
+        if not got:
+            ph["candidate"] = {"runs": [], "gate_outcome": None}
+            continue
+        worst = max((x["outcome"] for x in got), key=lambda o: rank.get(o, 2))
+        ph["candidate"] = {"runs": [x["run"] for x in got if x["run"]], "gate_outcome": worst,
+                           "samples": got, "pass_ratio": f"{sum(x['outcome'] == 'PASS' for x in got)}/{len(got)}"}
+    return qset
 
 
 def launch_of(workorders: Path, wo: str, queue: Path | None = None) -> dict:
@@ -251,7 +291,18 @@ def main(argv: list[str] | None = None) -> int:
     for k in ("export", "workorders", "spec", "out"):
         sp.add_argument(f"--{k}", required=True, type=Path)
     sp.add_argument("--queue", type=Path, help="the owner lane line queue (read-only), for each order's example target")
+    cp = sub.add_parser("candidates")
+    cp.add_argument("--set", required=True, type=Path)
+    cp.add_argument("--ledger", required=True, type=Path, action="append", help="a lane ledger; repeat for kept windows")
+    cp.add_argument("--out", required=True, type=Path)
     a = ap.parse_args(argv)
+    if a.cmd == "candidates":
+        doc = fill_candidates(yaml.safe_load(a.set.read_text()), a.ledger)
+        a.out.write_text("# Candidate side filled by forge_factory.modelservice.qualify candidates (feature 017, T049) from the\n"
+                         "# qualification lane ledgers; PASS only when every sample of a phase passed.\n"
+                         + yaml.safe_dump(doc, sort_keys=False, width=140))
+        print(json.dumps({p["phase"]: (p["candidate"].get("gate_outcome"), p["candidate"].get("pass_ratio")) for p in doc["phases"]}))
+        return 0
     if a.cmd == "set":
         spec = yaml.safe_load(a.spec.read_text())
         doc = build_set(a.export, a.workorders, spec["phases"], spec["baseline_setup"], spec["candidate_setup"], a.queue)

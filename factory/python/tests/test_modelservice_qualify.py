@@ -107,3 +107,48 @@ def test_set_takes_only_runs_whose_gate_passed(tmp_path):
     swe1, swe2 = doc["phases"]
     assert swe1["baseline"]["runs"] == ["r1"] and swe1["baseline"]["order"] == "WO-F014-SWE1-CRCHAL-L1"  # L2 failed its gate
     assert swe2["baseline"]["runs"] == [] and swe2["baseline"]["gate_outcome"] is None  # no gate decision: never assumed
+
+
+
+def _gate_log(ws, entries):
+    import json as _j
+    d = ws / ".forge-run/gates"
+    d.mkdir(parents=True)
+    (d / "gate-log.jsonl").write_text("".join(_j.dumps(e) + "\n" for e in entries))
+
+
+def test_a_phase_that_ran_out_of_rework_rounds_is_blocked_not_not_run(tmp_path):
+    """Qualification window 4 (2026-11-12): the last inspection said REWORK and the route stopped the phase."""
+    from forge_factory.modelservice import qualify as Q
+    _gate_log(tmp_path / "a", [{"step": "inspect", "gate": {"decision": "REWORK"}},
+                               {"step": "route", "gate": {"decision": "BLOCKED", "reason": "rework budget exhausted (3 failed cycles)"}}])
+    _gate_log(tmp_path / "b", [{"step": "inspect", "gate": {"decision": "REWORK"}}, {"step": "inspect", "gate": {"decision": "PASS"}}])
+    _gate_log(tmp_path / "c", [{"step": "author", "result": "REJECTED"}])
+    assert Q.gate_outcome(tmp_path / "a") == "BLOCKED"
+    assert Q.gate_outcome(tmp_path / "b") == "PASS"
+    assert Q.gate_outcome(tmp_path / "c") == "BLOCKED"
+    assert Q.gate_outcome(tmp_path / "none") is None
+    _gate_log(tmp_path / "d", [{"step": "route", "gate": {"decision": "BLOCKED"}}, {"step": "inspect", "gate": {"decision": "PASS"}}])
+    assert Q.gate_outcome(tmp_path / "d") == "PASS"  # an upstream loop that later passed
+
+
+def test_candidates_from_several_windows_pass_only_when_every_sample_passed(tmp_path):
+    import json as _j
+
+    from forge_factory.modelservice import qualify as Q
+    lane, kept = tmp_path / "lane", tmp_path / "lane/kept-w3"
+    for root, wo, ok, at in ((kept, "WO-F017Q-SWE1-CRCHAL-a", True, "1"), (lane / "state/workorders", "WO-F017Q-SWE1-CRCHAL-b", False, "2"),
+                             (kept, "WO-F017Q-SWE2-CRCHAL-a", True, "1")):
+        ws = root / wo / "workspace"
+        _gate_log(ws, [{"step": "inspect", "gate": {"decision": "PASS" if ok else "REWORK"}}]
+                  + ([] if ok else [{"step": "route", "gate": {"decision": "BLOCKED"}}]))
+        (ws / ".forge-run/fabro_run_id").write_text("RUN-" + wo[-1])
+    (kept / "qualification-ledger.json").write_text(_j.dumps({"orders": {
+        "WO-F017Q-SWE1-CRCHAL-a": {"phase": "SWE.1", "at": "1"}, "WO-F017Q-SWE2-CRCHAL-a": {"phase": "SWE.2", "at": "1"}}}))
+    (lane / "qualification-ledger.json").write_text(_j.dumps({"orders": {"WO-F017Q-SWE1-CRCHAL-b": {"phase": "SWE.1", "at": "2"}}}))
+    qset = {"phases": [{"phase": "SWE.1"}, {"phase": "SWE.2"}, {"phase": "SWE.3"}]}
+    out = Q.fill_candidates(qset, [lane / "qualification-ledger.json", kept / "qualification-ledger.json"])
+    c1, c2, c3 = (p["candidate"] for p in out["phases"])
+    assert c1["gate_outcome"] == "BLOCKED" and c1["pass_ratio"] == "1/2" and c1["runs"] == ["RUN-a", "RUN-b"]
+    assert c2["gate_outcome"] == "PASS" and c2["pass_ratio"] == "1/1"
+    assert c3 == {"runs": [], "gate_outcome": None}
