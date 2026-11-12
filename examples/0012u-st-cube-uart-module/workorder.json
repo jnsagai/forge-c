@@ -30,7 +30,7 @@
     "flash_bytes": 4096,
     "static_ram_bytes": 64,
     "stack_bytes": 128,
-    "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25)"
+    "status": "development targets set by the work-order owner (2026-10-15), reused for the feature 015 benchmark set (2026-10-25); simulation performance budget set 2026-11-12 under the owner delegation of timing/CPU decisions (same development target as the ladder HAL orders 0016m/0013m)"
   },
   "guideline": "inputs/hal_driver_guideline.md (ST Cube2 HAL SAD v1.2; automated subset = checklist SWE3-07)",
   "inputs": [
@@ -824,5 +824,12 @@
       "secure": true
     }
   },
-  "peripheral": "usart"
+  "peripheral": "usart",
+  "simulation_performance": {
+    "schema": "forge-c/simulation-performance-budget/1",
+    "instructions_per_call": 2000,
+    "microseconds_per_call": 1000,
+    "performance_mips": 100,
+    "test_source": "software/tests/target/test_performance.c"
+  }
 }
